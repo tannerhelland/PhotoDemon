@@ -1,0 +1,748 @@
+VERSION 5.00
+Begin VB.Form FormImageLevels 
+   AutoRedraw      =   -1  'True
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   " Adjust Image Levels"
+   ClientHeight    =   6420
+   ClientLeft      =   45
+   ClientTop       =   195
+   ClientWidth     =   6255
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   ScaleHeight     =   428
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   417
+   ShowInTaskbar   =   0   'False
+   StartUpPosition =   1  'CenterOwner
+   Begin VB.HScrollBar hsOutL 
+      Height          =   220
+      Left            =   1200
+      Max             =   255
+      MouseIcon       =   "VBP_FormImageLevels.frx":0000
+      MousePointer    =   99  'Custom
+      TabIndex        =   3
+      Top             =   4800
+      Width           =   4455
+   End
+   Begin VB.HScrollBar hsOutR 
+      Height          =   220
+      Left            =   1200
+      Max             =   255
+      MouseIcon       =   "VBP_FormImageLevels.frx":0152
+      MousePointer    =   99  'Custom
+      TabIndex        =   4
+      Top             =   5040
+      Value           =   255
+      Width           =   4455
+   End
+   Begin VB.HScrollBar hsInR 
+      Height          =   220
+      Left            =   1200
+      Max             =   255
+      Min             =   2
+      MouseIcon       =   "VBP_FormImageLevels.frx":02A4
+      MousePointer    =   99  'Custom
+      TabIndex        =   2
+      Top             =   4080
+      Value           =   255
+      Width           =   4455
+   End
+   Begin VB.HScrollBar hsInL 
+      Height          =   220
+      Left            =   1200
+      Max             =   253
+      MouseIcon       =   "VBP_FormImageLevels.frx":03F6
+      MousePointer    =   99  'Custom
+      TabIndex        =   0
+      Top             =   3600
+      Width           =   4455
+   End
+   Begin VB.HScrollBar hsInM 
+      Height          =   220
+      Left            =   1200
+      Max             =   254
+      Min             =   1
+      MouseIcon       =   "VBP_FormImageLevels.frx":0548
+      MousePointer    =   99  'Custom
+      TabIndex        =   1
+      Top             =   3840
+      Value           =   127
+      Width           =   4455
+   End
+   Begin VB.CommandButton cmdReset 
+      Appearance      =   0  'Flat
+      Caption         =   "Reset scrollbars"
+      Height          =   375
+      Left            =   240
+      MouseIcon       =   "VBP_FormImageLevels.frx":069A
+      MousePointer    =   99  'Custom
+      TabIndex        =   5
+      Top             =   5880
+      Width           =   1815
+   End
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "OK"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   3720
+      MouseIcon       =   "VBP_FormImageLevels.frx":07EC
+      MousePointer    =   99  'Custom
+      TabIndex        =   6
+      Top             =   5880
+      Width           =   1125
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "Cancel"
+      Height          =   375
+      Left            =   4920
+      MouseIcon       =   "VBP_FormImageLevels.frx":093E
+      MousePointer    =   99  'Custom
+      TabIndex        =   7
+      Top             =   5880
+      Width           =   1125
+   End
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   8
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   9
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.Label lblOutputLevels 
+      Alignment       =   2  'Center
+      BackStyle       =   0  'Transparent
+      Caption         =   "Output levels:"
+      ForeColor       =   &H00400000&
+      Height          =   255
+      Left            =   240
+      TabIndex        =   24
+      Top             =   4560
+      Width           =   5775
+   End
+   Begin VB.Label lblOutputL 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Left limit:    0"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   23
+      Top             =   4800
+      Width           =   930
+   End
+   Begin VB.Label Label1 
+      Alignment       =   1  'Right Justify
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "255"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   5745
+      TabIndex        =   22
+      Top             =   4800
+      Width           =   270
+   End
+   Begin VB.Label Label2 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Right limit:  0"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   21
+      Top             =   5040
+      Width           =   930
+   End
+   Begin VB.Label Label3 
+      Alignment       =   1  'Right Justify
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "255"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   5745
+      TabIndex        =   20
+      Top             =   5040
+      Width           =   270
+   End
+   Begin VB.Label Label4 
+      Alignment       =   2  'Center
+      BackStyle       =   0  'Transparent
+      Caption         =   "Input levels:"
+      ForeColor       =   &H00400000&
+      Height          =   255
+      Left            =   240
+      TabIndex        =   19
+      Top             =   3360
+      Width           =   5775
+   End
+   Begin VB.Label Label5 
+      Alignment       =   1  'Right Justify
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "255"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   5745
+      TabIndex        =   18
+      Top             =   4080
+      Width           =   270
+   End
+   Begin VB.Label Label6 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Right limit:"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   17
+      Top             =   4080
+      Width           =   750
+   End
+   Begin VB.Label lblLeftR 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "253"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   5745
+      TabIndex        =   16
+      Top             =   3600
+      Width           =   270
+   End
+   Begin VB.Label Label8 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Left limit:    0"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   15
+      Top             =   3600
+      Width           =   930
+   End
+   Begin VB.Label lblMiddleR 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "254"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   5745
+      TabIndex        =   14
+      Top             =   3840
+      Width           =   270
+   End
+   Begin VB.Label Label10 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Midtones:"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   13
+      Top             =   3840
+      Width           =   705
+   End
+   Begin VB.Label lblMiddleL 
+      Alignment       =   1  'Right Justify
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "1"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   1080
+      TabIndex        =   12
+      Top             =   3840
+      Width           =   90
+   End
+   Begin VB.Label lblRightL 
+      Alignment       =   1  'Right Justify
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "2"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   1080
+      TabIndex        =   11
+      Top             =   4080
+      Width           =   90
+   End
+   Begin VB.Label lblBeforeandAfter 
+      BackStyle       =   0  'Transparent
+      Caption         =   "  Before                                                           After"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   255
+      Left            =   120
+      TabIndex        =   10
+      Top             =   2880
+      Width           =   3975
+   End
+End
+Attribute VB_Name = "FormImageLevels"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+'***************************************************************************
+'Image Levels
+'©2012 Tanner Helland
+'Created: 22/July/2012
+'Last updated: 30/July/06
+'Last update: Adding the preview function.  This is somewhat useless without it.
+'
+'This form is an exact model of how to adjust image levels (identical to
+'Photoshop's method).  Be forewarned - there are some fairly involved (i.e. incomprehensible)
+'math sections.  Don't feel bad if you don't understand all the parabolic
+'stuff, because I didn't understand it the day after I wrote it.  Argh.
+'
+'***************************************************************************
+
+Option Explicit
+
+'**************
+'  VARIABLES  '
+'**************
+
+'Constants required for creating a gamma curve from .1 to 10
+Private Const MAXGAMMA As Double = 1.8460498941512
+Private Const MIDGAMMA As Double = 0.68377223398334
+Private Const ROOT10 As Double = 3.16227766
+
+'Used to track the ratio of the midtones scrollbar, so that when the left and
+'right values get changed, we automatically set the midtone to the same ratio
+'(i.e. as Photoshop does it)
+Dim midRatio As Double
+
+'Whether or not changing the midtone scrollbar is user-generated or program-generated
+'(so we only refresh if the user moved it - otherwise we get bad looping)
+Dim iRefresh As Boolean
+
+
+'Unload the form and exit
+Private Sub CmdCancel_Click()
+    Unload Me
+End Sub
+
+'Process the new image levels
+Private Sub CmdOK_Click()
+    Process ImageLevels, hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+
+'When the program starts, automatically initialize several things...
+Private Sub Form_Load()
+    
+    'Draw preview images to the top picture boxes
+    DrawPreviewImage PicPreview
+    DrawPreviewImage PicEffect
+    
+    'Set the default midtone scrollbar ratio to 1/2
+    midRatio = 0.5
+    
+    '...and allow refreshing
+    iRefresh = True
+End Sub
+
+
+'This will reset the scrollbars to default levels
+Private Sub cmdReset_Click()
+    'Allow refreshing
+    iRefresh = True
+    'Set the output levels to (0-255)
+    hsOutL.Value = 0
+    hsOutR.Value = 255
+    'Set the input levels to (0-255)
+    hsInL.Value = 0
+    hsInR.Value = 255
+    FixScrollBars
+    'Set the midtone level to default (127)
+    midRatio = 0.5
+    hsInM.Value = 127
+    FixScrollBars
+End Sub
+
+
+'*********************************************************************************
+'The following 10 subroutines are for changing/scrolling any of the scrollbars
+'on the main form
+'*********************************************************************************
+Private Sub hsInL_Change()
+    FixScrollBars
+    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+Private Sub hsInL_Scroll()
+    FixScrollBars
+    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+Private Sub hsInM_Change()
+    If iRefresh = True Then
+        midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
+        FixScrollBars True
+        PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    End If
+End Sub
+
+Private Sub hsInM_Scroll()
+    If iRefresh = True Then
+        midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
+        FixScrollBars True
+        PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    End If
+End Sub
+
+Private Sub hsInR_Change()
+    FixScrollBars
+    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+Private Sub hsInR_Scroll()
+    FixScrollBars
+    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+Private Sub hsOutL_Change()
+    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+Private Sub hsOutL_Scroll()
+    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+Private Sub hsOutR_Change()
+    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+Private Sub hsOutR_Scroll()
+    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+End Sub
+
+
+'Draw an image based on user-adjusted input and output levels
+Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long)
+    
+    Me.Visible = False
+    
+    Message "Mapping image levels..."
+    
+    'Instantiate a FastDrawing class and gather the image's data (into ImageData())
+    GetImageData
+    
+    'These variables will hold temporary pixel color values
+    Dim r As Long, g As Long, b As Long
+    
+    'Look-up table for the midtone (gamma) leveled values
+    Dim gValues(0 To 255) As Double
+    
+    'WARNING: This next chunk of code is a lot of messy math.  Don't worry too much
+    'if you can't make sense of it ;)
+    
+    'Fill the gamma table with appropriate gamma values (from 10 to .1, ranged quadratically)
+    'NOTE: This table is constant, and could be loaded from file instead of generated mathematically every time we run this function
+    Dim gStep As Double
+    gStep = (MAXGAMMA + MIDGAMMA) / 127
+    For X = 0 To 127
+        gValues(X) = (CDbl(X) / 127) * MIDGAMMA
+    Next X
+    For X = 128 To 255
+        gValues(X) = MIDGAMMA + (CDbl(X - 127) * gStep)
+    Next X
+    For X = 0 To 255
+        gValues(X) = 1 / ((gValues(X) + 1 / ROOT10) ^ 2)
+    Next X
+    
+    'Because we've built our look-up tables on a 0-255 scale, correct the inMLimit
+    'value (from the midtones scroll bar) to simply represent a ratio on that scale
+    Dim tRatio As Double
+    tRatio = (inMLimit - inLLimit) / (inRLimit - inLLimit)
+    tRatio = tRatio * 255
+    'Then convert that ratio into a byte (so we can access a look-up table with it)
+    Dim bRatio As Byte
+    bRatio = CByte(tRatio)
+    
+    'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
+    Dim gLevels(0 To 255) As Byte
+    Dim tmpGamma As Double
+    For X = 0 To 255
+        tmpGamma = CDbl(X) / 255
+        tmpGamma = tmpGamma ^ (1 / gValues(bRatio))
+        tmpGamma = tmpGamma * 255
+        If tmpGamma > 255 Then
+            tmpGamma = 255
+        ElseIf tmpGamma < 0 Then
+            tmpGamma = 0
+        End If
+        gLevels(X) = tmpGamma
+    Next X
+    
+    'Look-up table for the input leveled values
+    Dim newLevels(0 To 255) As Byte
+    
+    'Fill the look-up table with appropriately mapped input limits
+    Dim pStep As Single
+    pStep = 255 / (CSng(inRLimit) - CSng(inLLimit))
+    For X = 0 To 255
+        If X < inLLimit Then
+            newLevels(X) = 0
+        ElseIf X > inRLimit Then
+            newLevels(X) = 255
+        Else
+            newLevels(X) = ByteMe(((CSng(X) - CSng(inLLimit)) * pStep))
+        End If
+    Next X
+    
+    'Now run all input-mapped values through our midtone-correction look-up
+    For X = 0 To 255
+        newLevels(X) = gLevels(newLevels(X))
+    Next X
+    
+    'Last of all, remap all image values to match the user-specified output limits
+    Dim oStep As Double
+    oStep = (CSng(outRLimit) - CSng(outLLimit)) / 255
+    For X = 0 To 255
+        newLevels(X) = ByteMe(CSng(outLLimit) + (CSng(newLevels(X)) * oStep))
+    Next X
+    
+    
+    'Now run a quick loop through the image, adjusting pixel values with the look-up tables
+    SetProgBarMax PicWidthL
+    
+    Dim QuickX As Long
+    For X = 0 To PicWidthL
+        QuickX = X * 3
+    For Y = 0 To PicHeightL
+        'Grab red, green, and blue
+        r = ImageData(QuickX + 2, Y)
+        g = ImageData(QuickX + 1, Y)
+        b = ImageData(QuickX, Y)
+        'Correct them all
+        ImageData(QuickX + 2, Y) = newLevels(r)
+        ImageData(QuickX + 1, Y) = newLevels(g)
+        ImageData(QuickX, Y) = newLevels(b)
+    Next Y
+        If X Mod 20 = 0 Then SetProgBarVal X
+    Next X
+    
+    'Draw the new image data to the screen
+    SetImageData
+    
+    SetProgBarVal 0
+    Message "Finished."
+    Unload Me
+
+End Sub
+
+'Preview an image based on user-adjusted input and output levels
+Public Sub PreviewImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long)
+    
+    'Instantiate a FastDrawing class and gather the image's data (into ImageData())
+    GetPreviewData PicPreview
+    
+    'These variables will hold temporary pixel color values
+    Dim r As Long, g As Long, b As Long
+    
+    'Look-up table for the midtone (gamma) leveled values
+    Dim gValues(0 To 255) As Double
+    
+    'WARNING: This next chunk of code is a lot of messy math.  Don't worry too much
+    'if you can't make sense of it ;)
+    
+    'Fill the gamma table with appropriate gamma values (from 10 to .1, ranged quadratically)
+    'NOTE: This table is constant, and could be loaded from file instead of generated mathematically every time we run this function
+    Dim gStep As Double
+    gStep = (MAXGAMMA + MIDGAMMA) / 127
+    For X = 0 To 127
+        gValues(X) = (CDbl(X) / 127) * MIDGAMMA
+    Next X
+    For X = 128 To 255
+        gValues(X) = MIDGAMMA + (CDbl(X - 127) * gStep)
+    Next X
+    For X = 0 To 255
+        gValues(X) = 1 / ((gValues(X) + 1 / ROOT10) ^ 2)
+    Next X
+    
+    'Because we've built our look-up tables on a 0-255 scale, correct the inMLimit
+    'value (from the midtones scroll bar) to simply represent a ratio on that scale
+    Dim tRatio As Double
+    tRatio = (inMLimit - inLLimit) / (inRLimit - inLLimit)
+    tRatio = tRatio * 255
+    'Then convert that ratio into a byte (so we can access a look-up table with it)
+    Dim bRatio As Byte
+    bRatio = CByte(tRatio)
+    
+    'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
+    Dim gLevels(0 To 255) As Byte
+    Dim tmpGamma As Double
+    For X = 0 To 255
+        tmpGamma = CDbl(X) / 255
+        tmpGamma = tmpGamma ^ (1 / gValues(bRatio))
+        tmpGamma = tmpGamma * 255
+        If tmpGamma > 255 Then
+            tmpGamma = 255
+        ElseIf tmpGamma < 0 Then
+            tmpGamma = 0
+        End If
+        gLevels(X) = tmpGamma
+    Next X
+    
+    'Look-up table for the input leveled values
+    Dim newLevels(0 To 255) As Byte
+    
+    'Fill the look-up table with appropriately mapped input limits
+    Dim pStep As Single
+    pStep = 255 / (CSng(inRLimit) - CSng(inLLimit))
+    For X = 0 To 255
+        If X < inLLimit Then
+            newLevels(X) = 0
+        ElseIf X > inRLimit Then
+            newLevels(X) = 255
+        Else
+            newLevels(X) = ByteMe(((CSng(X) - CSng(inLLimit)) * pStep))
+        End If
+    Next X
+    
+    'Now run all input-mapped values through our midtone-correction look-up
+    For X = 0 To 255
+        newLevels(X) = gLevels(newLevels(X))
+    Next X
+    
+    'Last of all, remap all image values to match the user-specified output limits
+    Dim oStep As Double
+    oStep = (CSng(outRLimit) - CSng(outLLimit)) / 255
+    For X = 0 To 255
+        newLevels(X) = ByteMe(CSng(outLLimit) + (CSng(newLevels(X)) * oStep))
+    Next X
+    
+    'Now run a quick loop through the image, adjusting pixel values with the look-up tables
+    Dim QuickX As Long
+    
+    For X = PreviewX To PreviewX + PreviewWidth
+        QuickX = X * 3
+    For Y = PreviewY To PreviewY + PreviewHeight
+        'Grab red, green, and blue
+        r = ImageData(QuickX + 2, Y)
+        g = ImageData(QuickX + 1, Y)
+        b = ImageData(QuickX, Y)
+        'Correct them all
+        ImageData(QuickX + 2, Y) = newLevels(r)
+        ImageData(QuickX + 1, Y) = newLevels(g)
+        ImageData(QuickX, Y) = newLevels(b)
+    Next Y
+    Next X
+    
+    'Draw the new image data to the screen
+    SetPreviewData PicEffect
+
+End Sub
+
+
+'Used to make sure the scroll bars have appropriate limits
+Private Sub FixScrollBars(Optional midMoving As Boolean = False)
+    'Make sure that the input scrollbar values don't overlap, and update the labels
+    'to display such
+    hsInM.Min = hsInL.Value + 1
+    lblMiddleL.Caption = hsInL.Value + 1
+    hsInR.Min = hsInL.Value + 2
+    lblRightL.Caption = hsInL.Value + 2
+    hsInL.Max = hsInR.Value - 2
+    lblLeftR.Caption = hsInR.Value - 2
+    hsInM.Max = hsInR.Value - 1
+    lblMiddleR.Caption = hsInR.Value - 1
+    'If the user hasn't moved the midtones scrollbar, attempt to preserve its ratio
+    If midMoving = False Then
+        iRefresh = False
+        Dim newValue As Long
+        newValue = hsInL.Value + midRatio * (CDbl(hsInR.Value) - CDbl(hsInL.Value))
+        If newValue > hsInM.Max Then
+            newValue = hsInM.Max
+        ElseIf newValue < hsInM.Min Then
+            newValue = hsInM.Min
+        End If
+        hsInM.Value = newValue
+        DoEvents
+        iRefresh = True
+    End If
+End Sub
+
+
+'Used to restrict values to the (0-255) range
+Private Function ByteMe(ByVal Val As Long) As Byte
+    If Val > 255 Then
+        ByteMe = 255
+    ElseIf Val < 0 Then
+        ByteMe = 0
+    Else
+        ByteMe = Val
+    End If
+End Function
+
