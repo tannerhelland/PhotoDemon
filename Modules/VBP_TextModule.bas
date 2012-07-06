@@ -13,6 +13,8 @@ Attribute VB_Name = "Text_Processing"
 '
 '***************************************************************************
 
+Option Explicit
+
 'Make sure the right backslash of a path is existant
 Public Function FixPath(ByVal tempString As String) As String
     If Right(tempString, 1) <> "\" Then
@@ -105,7 +107,6 @@ Public Sub StripAcceleratorFromCaption(ByRef sString As String)
         End If
     Next x
 End Sub
-
 
 'This lovely function comes from "penagate"; it was downloaded from http://www.vbforums.com/showthread.php?t=342995 on 08 June '12
 Public Function GetDomainName(ByVal Address As String) As String
