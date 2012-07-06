@@ -324,7 +324,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
     dy = yDiffuse
     HDX = dx / 2
     HDY = dy / 2
-    Dim DstX As Long, DstY As Long
+    Dim dstX As Long, dstY As Long
     Dim tPicWI As Long, tPicHi As Long
     tPicWI = PicWidthL - 1
     tPicHi = PicHeightL - 1
@@ -334,13 +334,13 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
             For y = 0 To PicHeightL
                 DiffuseX = Rnd * dx - HDX
                 DiffuseY = Rnd * dy - HDY
-                DstX = DiffuseX + x
-                DstY = DiffuseY + y
-                If DstX < 0 Then DstX = 0
-                If DstY < 0 Then DstY = 0
-                If DstX > tPicWI Then DstX = tPicWI
-                If DstY > tPicHi Then DstY = tPicHi
-                TmpBitmapArray(x, y) = CalcArray(DstX, DstY)
+                dstX = DiffuseX + x
+                dstY = DiffuseY + y
+                If dstX < 0 Then dstX = 0
+                If dstY < 0 Then dstY = 0
+                If dstX > tPicWI Then dstX = tPicWI
+                If dstY > tPicHi Then dstY = tPicHi
+                TmpBitmapArray(x, y) = CalcArray(dstX, dstY)
             Next y
             If x Mod 20 = 0 Then SetProgBarVal x
         Next x
@@ -351,13 +351,13 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
             For y = 0 To PicHeightL
                 DiffuseX = Rnd * dx - HDX
                 DiffuseY = Rnd * dy - HDY
-                DstX = DiffuseX + x
-                DstY = DiffuseY + y
-                If DstX < 0 Then DstX = PicWidthL + DstX
-                If DstY < 0 Then DstY = PicHeightL + DstY
-                If DstX > tPicWI Then DstX = DstX - PicWidthL
-                If DstY > tPicHi Then DstY = DstY - PicHeightL
-                TmpBitmapArray(x, y) = CalcArray(DstX, DstY)
+                dstX = DiffuseX + x
+                dstY = DiffuseY + y
+                If dstX < 0 Then dstX = PicWidthL + dstX
+                If dstY < 0 Then dstY = PicHeightL + dstY
+                If dstX > tPicWI Then dstX = dstX - PicWidthL
+                If dstY > tPicHi Then dstY = dstY - PicHeightL
+                TmpBitmapArray(x, y) = CalcArray(dstX, dstY)
             Next y
             If x Mod 20 = 0 Then SetProgBarVal x
         Next x
@@ -437,23 +437,23 @@ Private Sub DrawPreviewDiffuse(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
     dy = yDiffuse
     HDX = dx / 2
     HDY = dy / 2
-    Dim DstX As Long, DstY As Long
+    Dim dstX As Long, dstY As Long
     Dim tPicWI As Long, tPicHi As Long
-    tPicWI = PreviewX + PreviewWidth - 1
-    tPicHi = PreviewY + PreviewHeight - 1
+    tPicWI = PreviewX + PreviewWidth
+    tPicHi = PreviewY + PreviewHeight
     'Diffusion for unwrapped data
     If ChkWrap.Value = vbUnchecked Then
-        For x = PreviewX To PreviewX + PreviewWidth - 1
-            For y = PreviewY To PreviewY + PreviewHeight - 1
+        For x = PreviewX To PreviewX + PreviewWidth
+            For y = PreviewY To PreviewY + PreviewHeight
                 DiffuseX = Rnd * dx - HDX
                 DiffuseY = Rnd * dy - HDY
-                DstX = DiffuseX + x
-                DstY = DiffuseY + y
-                If DstX < PreviewX Then DstX = PreviewX
-                If DstY < PreviewY Then DstY = PreviewY
-                If DstX > tPicWI Then DstX = PreviewX + PreviewWidth
-                If DstY > tPicHi Then DstY = PreviewY + PreviewHeight
-                TmpBitmapArray(x, y) = CalcArray(DstX, DstY)
+                dstX = DiffuseX + x
+                dstY = DiffuseY + y
+                If dstX < PreviewX Then dstX = PreviewX
+                If dstY < PreviewY Then dstY = PreviewY
+                If dstX > tPicWI Then dstX = PreviewX + PreviewWidth
+                If dstY > tPicHi Then dstY = PreviewY + PreviewHeight
+                TmpBitmapArray(x, y) = CalcArray(dstX, dstY)
             Next y
         Next x
     Else
@@ -463,13 +463,13 @@ Private Sub DrawPreviewDiffuse(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
             For y = PreviewY To PreviewY + PreviewHeight
                 DiffuseX = Rnd * dx - HDX
                 DiffuseY = Rnd * dy - HDY
-                DstX = DiffuseX + x
-                DstY = DiffuseY + y
-                If DstX < PreviewX Then DstX = PreviewWidth + PreviewX + DstX
-                If DstY < PreviewY Then DstY = PreviewHeight + PreviewY + DstY
-                If DstX > tPicWI Then DstX = DstX - PreviewX - PreviewWidth
-                If DstY > tPicHi Then DstY = DstY - PreviewY - PreviewHeight
-                TmpBitmapArray(x, y) = CalcArray(DstX, DstY)
+                dstX = DiffuseX + x
+                dstY = DiffuseY + y
+                If dstX < PreviewX Then dstX = PreviewWidth + PreviewX + dstX
+                If dstY < PreviewY Then dstY = PreviewHeight + PreviewY + dstY
+                If dstX > tPicWI Then dstX = dstX - PreviewX - PreviewWidth
+                If dstY > tPicHi Then dstY = dstY - PreviewY - PreviewHeight
+                TmpBitmapArray(x, y) = CalcArray(dstX, dstY)
             Next y
         Next x
     End If
@@ -511,7 +511,7 @@ Private Sub hsY_Scroll()
 End Sub
 
 Private Sub txtX_Change()
-    If EntryValid(txtX, hsX.Min, hsX.Max, False, False) Then hsX.Value = Val(txtX)
+    If EntryValid(txtX, hsX.Min, hsX.Max, False, False) Then hsX.Value = val(txtX)
 End Sub
 
 Private Sub txtX_GotFocus()
@@ -519,7 +519,7 @@ Private Sub txtX_GotFocus()
 End Sub
 
 Private Sub txtY_Change()
-    If EntryValid(txtY, hsY.Min, hsY.Max, False, False) Then hsY.Value = Val(txtY)
+    If EntryValid(txtY, hsY.Min, hsY.Max, False, False) Then hsY.Value = val(txtY)
 End Sub
 
 Private Sub txtY_GotFocus()

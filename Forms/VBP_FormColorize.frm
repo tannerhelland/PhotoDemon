@@ -262,9 +262,9 @@ Private Sub DrawPreview()
     hToUse = (CSng(hsHue.Value) - 60) / 60
     Dim HH As Single, SS As Single, LL As Single
     
-    For x = PreviewX To PreviewX + PreviewWidth - 1
+    For x = PreviewX To PreviewX + PreviewWidth
         QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight - 1
+    For y = PreviewY To PreviewY + PreviewHeight
         'Get the temporary values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)

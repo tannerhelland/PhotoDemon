@@ -218,6 +218,7 @@ Attribute VB_Exposed = False
 'Last updated: 26/October/06
 'Last update: Image preview and additional optimizations. Image previewing
 '             was a beast to add to this function o_O...
+'Still needs: replace gotos with text labels
 '
 'Optimized but non-processable rank filters.  Max, min, and the all-new,
 'all-original extreme version.  Very cool.
@@ -238,7 +239,7 @@ End Sub
 Private Sub CmdOK_Click()
     If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max) Then
         Me.Visible = False
-        Process CustomRank, Val(hsRadius.Value), cboRank.ListIndex
+        Process CustomRank, val(hsRadius.Value), cboRank.ListIndex
         Unload Me
     Else
         AutoSelectText txtRadius
@@ -537,7 +538,6 @@ Private Sub PreviewRank(ByVal Radius As Long, ByVal RankType As Byte)
     Dim MaxTotal As Long
     Dim c As Long, d As Long
     GetPreviewData PicPreview
-    'MsgBox PicWidthL & "," & PicHeightL
     Dim FTransfer() As Byte
     Dim tTransfer() As Integer
     Dim TempColor As Long
@@ -551,8 +551,8 @@ Private Sub PreviewRank(ByVal Radius As Long, ByVal RankType As Byte)
     Dim QuickVal As Long
     Dim QuickVal2 As Long
     Dim fX As Long, fY As Long
-    fX = PreviewX + PreviewWidth - 1
-    fY = PreviewY + PreviewHeight - 1
+    fX = PreviewX + PreviewWidth
+    fY = PreviewY + PreviewHeight
     For x = PreviewX To fX
         QuickVal = x * 3
     For y = PreviewY To fY
@@ -630,7 +630,7 @@ Private Sub hsRadius_Scroll()
 End Sub
 
 Private Sub txtRadius_Change()
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
+    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = val(txtRadius)
 End Sub
 
 Private Sub txtRadius_GotFocus()
