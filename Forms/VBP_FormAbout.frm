@@ -139,7 +139,7 @@ Private Sub Form_Load()
     curCredit = 1
     
     'Shout-outs to other programmers who provided various resources
-    GenerateThankyou "Kroc of camendesign.com for many insights regarding UI design and organization", "http://camendesign.com"
+    GenerateThankyou "Kroc of camendesign.com for many suggestions regarding UI design and organization", "http://camendesign.com"
     GenerateThankyou "chrfb of deviantart.com for PhotoDemon's icon ('Ecqlipse 2,' CC-BY-NC-SA-3.0)", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateThankyou "Juned Chhipa for the 'jcButton 1.7' customizable command button replacement control used on the left-hand toolbar", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
     GenerateThankyou "Steve McMahon for an excellent CommonDialog interface, accelerator key handler, and progress bar replacement", "http://www.vbaccelerator.com/home/VB/index.asp"
