@@ -104,5 +104,7 @@ Desktop.ini
 *.ini
 *.log
 *.bak
+*.vbw
+*.zip
 /no_sync
 
