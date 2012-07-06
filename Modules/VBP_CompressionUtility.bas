@@ -7,7 +7,7 @@ Attribute VB_Name = "CompressionUtility"
 'Last update: cleaned up error handling
 '
 'Module to handle file compression and decompression to a custom file format
-'using the zLib compression library.
+' via the zLib compression library.
 '
 '***************************************************************************
 
@@ -34,6 +34,7 @@ Dim DstFilename As String
 'Used to compare compression ratios
 Dim OriginalSize As Long, CompressedSize As Long
 
+'Compress a file
 Public Function CompressFile(ByVal SrcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
     
     'Manually load the DLL from the "PluginPath" folder (should be App.Path/Plugins)
@@ -117,6 +118,7 @@ Public Function CompressFile(ByVal SrcFilename As String, Optional ByVal DispRes
 
 End Function
 
+'Decompress a file
 Public Function DecompressFile(ByVal SrcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
     
     'Manually load the DLL from the "PluginPath" folder (should be App.Path/Plugins)
