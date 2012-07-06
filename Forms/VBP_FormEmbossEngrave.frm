@@ -200,8 +200,8 @@ Attribute VB_Exposed = False
 'Emboss/Engrave Filter Interface
 '©2000-2012 Tanner Helland
 'Created: 3/6/03
-'Last updated: 5/June/07
-'Last update: previews! Yay for previews!
+'Last updated: 05/July/12
+'Last update: fixed missing edge-pixels when previewing
 '
 'Module for handling all emboss and engrave filters.  It's basically just an
 'interfacing layer to the 4 main filters: Emboss/EmbossToColor and Engrave/EngraveToColor
@@ -262,7 +262,7 @@ Private Sub PicColor_Click()
     Dim CD1 As cCommonDialog
     Set CD1 = New cCommonDialog
     retColor = PicColor.BackColor
-    CD1.VBChooseColor retColor, True, True, False, Me.hWnd
+    CD1.VBChooseColor retColor, True, True, False, Me.HWnd
     If retColor > 0 Then
         PicColor.BackColor = retColor
         ChkToColor.Value = vbChecked
@@ -270,9 +270,10 @@ Private Sub PicColor_Click()
     DrawPreview
 End Sub
 
+'Emboss an image
 Public Sub FilterEmbossColor(ByVal cColor As Long)
 
-    Dim r As Long, g As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim tR As Long, tB As Long, tG As Long
     
     Message "Engraving image..."
@@ -292,20 +293,20 @@ Public Sub FilterEmbossColor(ByVal cColor As Long)
         QuickXRight = (x + 1) * 3
     For y = 0 To PicHeightL
         
-        r = Abs(CLng(ImageData(QuickX + 2, y + 1)) - CLng(ImageData(QuickXRight + 2, y)) + tR)
-        g = Abs(CLng(ImageData(QuickX + 1, y + 1)) - CLng(ImageData(QuickXRight + 1, y)) + tG)
-        B = Abs(CLng(ImageData(QuickX, y + 1)) - CLng(ImageData(QuickXRight, y)) + tB)
+        r = Abs(CLng(ImageData(QuickX + 2, y)) - CLng(ImageData(QuickXRight + 2, y)) + tR)
+        g = Abs(CLng(ImageData(QuickX + 1, y)) - CLng(ImageData(QuickXRight + 1, y)) + tG)
+        b = Abs(CLng(ImageData(QuickX, y)) - CLng(ImageData(QuickXRight, y)) + tB)
         
         If r > 255 Then r = 255
         If r < 0 Then r = 0
         If g > 255 Then g = 255
         If g < 0 Then g = 0
-        If B > 255 Then B = 255
-        If B < 0 Then B = 0
+        If b > 255 Then b = 255
+        If b < 0 Then b = 0
 
         tData(QuickX + 2, y) = r
         tData(QuickX + 1, y) = g
-        tData(QuickX, y) = B
+        tData(QuickX, y) = b
         
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
@@ -317,9 +318,10 @@ Public Sub FilterEmbossColor(ByVal cColor As Long)
     
 End Sub
 
+'Engrave an image
 Public Sub FilterEngraveColor(ByVal cColor As Long)
 
-    Dim r As Long, g As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim tR As Long, tB As Long, tG As Long
     
     Message "Engraving image..."
@@ -339,20 +341,20 @@ Public Sub FilterEngraveColor(ByVal cColor As Long)
         QuickXRight = (x + 1) * 3
     For y = 0 To PicHeightL
         
-        r = Abs(CLng(ImageData(QuickXRight + 2, y + 1)) - CLng(ImageData(QuickX + 2, y)) + tR)
-        g = Abs(CLng(ImageData(QuickXRight + 1, y + 1)) - CLng(ImageData(QuickX + 1, y)) + tG)
-        B = Abs(CLng(ImageData(QuickXRight, y + 1)) - CLng(ImageData(QuickX, y)) + tB)
+        r = Abs(CLng(ImageData(QuickXRight + 2, y)) - CLng(ImageData(QuickX + 2, y)) + tR)
+        g = Abs(CLng(ImageData(QuickXRight + 1, y)) - CLng(ImageData(QuickX + 1, y)) + tG)
+        b = Abs(CLng(ImageData(QuickXRight, y)) - CLng(ImageData(QuickX, y)) + tB)
         
         If r > 255 Then r = 255
         If r < 0 Then r = 0
         If g > 255 Then g = 255
         If g < 0 Then g = 0
-        If B > 255 Then B = 255
-        If B < 0 Then B = 0
+        If b > 255 Then b = 255
+        If b < 0 Then b = 0
 
         tData(QuickX + 2, y) = r
         tData(QuickX + 1, y) = g
-        tData(QuickX, y) = B
+        tData(QuickX, y) = b
         
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
@@ -377,52 +379,52 @@ Private Sub DrawPreview()
 
     GetPreviewData PicPreview
 
-    ReDim tData(0 To (PreviewWidth + PreviewX * 2) * 3, 0 To PreviewHeight + PreviewY * 2)
+    ReDim tData(0 To (PreviewWidth + PreviewX * 2) * 3 + 3, 0 To PreviewHeight + PreviewY * 2)
+    
+    Dim r As Integer, g As Integer, b As Integer
+    Dim tR As Integer, tB As Integer, tG As Integer
     
     If toEmboss = False Then
-        Dim r As Integer, g As Integer, B As Integer
-        Dim tR As Integer, tB As Integer, tG As Integer
         tR = ExtractR(cColor)
         tG = ExtractG(cColor)
         tB = ExtractB(cColor)
         For x = PreviewX To PreviewX + PreviewWidth - 1
-        For y = PreviewY To PreviewY + PreviewHeight - 1
-            r = Abs(CInt(ImageData((x + 1) * 3 + 2, y + 1)) - CInt(ImageData(x * 3 + 2, y)) + tR)
-            g = Abs(CInt(ImageData((x + 1) * 3 + 1, y + 1)) - CInt(ImageData(x * 3 + 1, y)) + tG)
-            B = Abs(CInt(ImageData((x + 1) * 3, y + 1)) - CInt(ImageData(x * 3, y)) + tB)
+        For y = PreviewY To PreviewY + PreviewHeight
+            r = Abs(CInt(ImageData((x + 1) * 3 + 2, y)) - CInt(ImageData(x * 3 + 2, y)) + tR)
+            g = Abs(CInt(ImageData((x + 1) * 3 + 1, y)) - CInt(ImageData(x * 3 + 1, y)) + tG)
+            b = Abs(CInt(ImageData((x + 1) * 3, y)) - CInt(ImageData(x * 3, y)) + tB)
             ByteMe r
             ByteMe g
-            ByteMe B
+            ByteMe b
             tData(x * 3 + 2, y) = r
             tData(x * 3 + 1, y) = g
-            tData(x * 3, y) = B
+            tData(x * 3, y) = b
         Next y
         Next x
     Else
-        Dim dR As Integer, dG As Integer, dB As Integer
-        dR = ExtractR(cColor)
-        dG = ExtractG(cColor)
-        dB = ExtractB(cColor)
+        tR = ExtractR(cColor)
+        tG = ExtractG(cColor)
+        tB = ExtractB(cColor)
         For x = PreviewX To PreviewX + PreviewWidth - 1
-        For y = PreviewY To PreviewY + PreviewHeight - 1
-            tR = Abs(CInt(ImageData(x * 3 + 2, y)) - CInt(ImageData((x + 1) * 3 + 2, y)) + dR)
-            tG = Abs(CInt(ImageData(x * 3 + 1, y)) - CInt(ImageData((x + 1) * 3 + 1, y)) + dG)
-            tB = Abs(CInt(ImageData(x * 3, y)) - CInt(ImageData((x + 1) * 3, y)) + dB)
-            ByteMe tR
-            ByteMe tG
-            ByteMe tB
-            tData(x * 3 + 2, y) = tR
-            tData(x * 3 + 1, y) = tG
-            tData(x * 3, y) = tB
+        For y = PreviewY To PreviewY + PreviewHeight
+            r = Abs(CInt(ImageData(x * 3 + 2, y)) - CInt(ImageData((x + 1) * 3 + 2, y)) + tR)
+            g = Abs(CInt(ImageData(x * 3 + 1, y)) - CInt(ImageData((x + 1) * 3 + 1, y)) + tG)
+            b = Abs(CInt(ImageData(x * 3, y)) - CInt(ImageData((x + 1) * 3, y)) + tB)
+            ByteMe r
+            ByteMe g
+            ByteMe b
+            tData(x * 3 + 2, y) = r
+            tData(x * 3 + 1, y) = g
+            tData(x * 3, y) = b
         Next y
         Next x
 
     End If
     
     Dim QuickVal As Long
-    For x = PreviewX To PreviewX + PreviewWidth - 1
+    For x = PreviewX To PreviewX + PreviewWidth
         QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight - 1
+    For y = PreviewY To PreviewY + PreviewHeight
         For z = 0 To 2
             ImageData(QuickVal + z, y) = tData(QuickVal + z, y)
         Next z
