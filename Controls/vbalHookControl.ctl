@@ -20,12 +20,23 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within PhotoDemon.
+
+'You may download the original version of this code at:
+' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
+
+'To the best of my knowledge, this code is released under a CC-BY-1.0 license.  (Assumed from the footer text of vbaccelerator.com: "All contents of this web site are licensed under a Creative Commons Licence, except where otherwise noted.")
+' You may access a complete copy of this license at the following link:
+' http://creativecommons.org/licenses/by/1.0/
+
+'Many thanks to Steve McMahon for this excellent set of code (which ties into his keyboard accelerator user control)
+
 Option Explicit
 
 Implements IWindowsHook
 
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetParent Lib "user32" (ByVal HWnd As Long) As Long
 Private Declare Function GetActiveWindow Lib "user32" () As Long
 
 Private Type tAccel
@@ -167,7 +178,7 @@ Attribute Key.VB_Description = "Gets the Key used to identify an accelerator."
 End Property
 Public Property Get IsActive() As Boolean
 Attribute IsActive.VB_Description = "Gets whether the form holding the accelerator control is the active form on the system or not."
-   If GetActiveWindow() = UserControl.Parent.hWnd Then
+   If GetActiveWindow() = UserControl.Parent.HWnd Then
       IsActive = True
    End If
 End Property
@@ -204,6 +215,10 @@ Dim eR As ShiftConstants
    eR = eR Or Abs(vbCtrlMask * bControl)
    ShiftState = eR
 End Property
+
+Private Sub imgIcon_Click()
+
+End Sub
 
 Private Function IWindowsHook_HookProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, bConsume As Boolean) As Long
 Dim bKeyUp As Boolean

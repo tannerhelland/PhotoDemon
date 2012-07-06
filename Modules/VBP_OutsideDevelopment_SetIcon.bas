@@ -1,6 +1,14 @@
 Attribute VB_Name = "Outside_SetIcon"
-'Many thanks to Steve McMahon and vbaccelerator.com for this excellent icon-related code
-'Downloaded from http://www.vbaccelerator.com/home/VB/Tips/Setting_the_App_Icon_Correctly/article.asp on 13/June/12
+'Note: this file has been modified for use within PhotoDemon.
+
+'This code was originally written by Steve McMahon.  You may download the original from this link:
+' http://www.vbaccelerator.com/home/VB/Tips/Setting_the_App_Icon_Correctly/article.asp
+
+'To the best of my knowledge, this code is released under a CC-BY-1.0 license.  (Assumed from the footer text of vbaccelerator.com: "All contents of this web site are licensed under a Creative Commons Licence, except where otherwise noted.")
+' You may access a complete copy of this license at the following link:
+' http://creativecommons.org/licenses/by/1.0/
+
+'Many thanks to Steve and vbaccelerator.com for this excellent icon-related code
 
 Option Explicit
 
@@ -37,18 +45,18 @@ Private Const LR_SHARED = &H8000&
 
 Private Const IMAGE_ICON = 1
 
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 Private Const WM_SETICON = &H80
 
 Private Const ICON_SMALL = 0
 Private Const ICON_BIG = 1
 
-Private Declare Function GetWindow Lib "user32" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
 Private Const GW_OWNER = 4
 
 
-Public Sub SetIcon(ByVal hwnd As Long, ByVal sIconResName As String, Optional ByVal bSetAsAppIcon As Boolean = True)
+Public Sub SetIcon(ByVal HWnd As Long, ByVal sIconResName As String, Optional ByVal bSetAsAppIcon As Boolean = True)
 
 Dim lhWndTop As Long
 Dim lHwnd As Long
@@ -59,7 +67,7 @@ Dim hIconSmall As Long
       
    If (bSetAsAppIcon) Then
       ' Find VB's hidden parent window:
-      lHwnd = hwnd
+      lHwnd = HWnd
       lhWndTop = lHwnd
       Do While Not (lHwnd = 0)
          lHwnd = GetWindow(lHwnd, GW_OWNER)
@@ -79,7 +87,7 @@ Dim hIconSmall As Long
    If (bSetAsAppIcon) Then
       SendMessageLong lhWndTop, WM_SETICON, ICON_BIG, hIconLarge
    End If
-   SendMessageLong hwnd, WM_SETICON, ICON_BIG, hIconLarge
+   SendMessageLong HWnd, WM_SETICON, ICON_BIG, hIconLarge
    
    cX = GetSystemMetrics(SM_CXSMICON)
    cY = GetSystemMetrics(SM_CYSMICON)
@@ -91,7 +99,7 @@ Dim hIconSmall As Long
    If (bSetAsAppIcon) Then
       SendMessageLong lhWndTop, WM_SETICON, ICON_SMALL, hIconSmall
    End If
-   SendMessageLong hwnd, WM_SETICON, ICON_SMALL, hIconSmall
+   SendMessageLong HWnd, WM_SETICON, ICON_SMALL, hIconSmall
    
 End Sub
 

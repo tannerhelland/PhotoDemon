@@ -1,4 +1,11 @@
 Attribute VB_Name = "Outside_ModFRX"
+'Note: this file has been modified for use within PhotoDemon.
+
+'IF YOU WANT TO USE THIS CODE IN YOUR OWN PROJECT, PLEASE DOWNLOAD THE ORIGINAL FROM THIS LINK:
+' http://btmtz.mvps.org/gfxfromfrx/
+
+'Many thanks to Brad Martinez for this excellent set of code.
+
 Option Explicit
 '
 ' Copyright © 1997-1999 Brad Martinez, http://www.mvps.org

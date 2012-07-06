@@ -11,12 +11,21 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within PhotoDemon.
+
+'This code was originally written by Alfred Koppold, and was sent to me via personal correspondence.
+
+'I believe you can download a publicly available version via this link:
+' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1
+
+' Many thanks to Alfred for providing a way to save PCX files natively in VB6
+
 'Autor: ALKO
 'e-mail: alfred.koppold@freenet.de
 Option Explicit
   Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
-   Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal XSrc As Long, ByVal YSrc As Long, ByVal dwRop As Long) As Long
+   Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
@@ -89,7 +98,7 @@ End Type
 'HAcK BY TANNER
 Dim lStart As Long
 
-Public Sub SavePCXinFile(filename As String, Pic As PictureBox, Optional ByVal BitspPix As Long = 24, Optional ByVal compress As Boolean = True)
+Public Sub SavePCXinFile(FileName As String, pic As PictureBox, Optional ByVal BitspPix As Long = 24, Optional ByVal compress As Boolean = True)
     lStart = 0
     Dim a As Long
     Dim i As Long
@@ -102,14 +111,14 @@ Public Sub SavePCXinFile(filename As String, Pic As PictureBox, Optional ByVal B
 Dim Übergabe() As Byte
 Compressed = compress
     BitCnt = BitspPix
-    a = Pic.Parent.ScaleMode
-    b = Pic.ScaleMode
-    Pic.Parent.ScaleMode = 3
-    Pic.ScaleMode = 3
-    Bildhöhe = Pic.ScaleHeight
-    Bildbreite = Pic.ScaleWidth
-    Pic.Parent.ScaleMode = a
-    Pic.ScaleMode = b
+    a = pic.Parent.ScaleMode
+    b = pic.ScaleMode
+    pic.Parent.ScaleMode = 3
+    pic.ScaleMode = 3
+    Bildhöhe = pic.ScaleHeight
+    Bildbreite = pic.ScaleWidth
+    pic.Parent.ScaleMode = a
+    pic.ScaleMode = b
     Bildbreiteright = Bildbreite
     Select Case BitspPix
         Case 1
@@ -186,10 +195,10 @@ Compressed = compress
         .biHeight = Bildhöhe
     End With
 
-    iDC = CreateCompatibleDC(Pic.hdc)
+    iDC = CreateCompatibleDC(pic.hdc)
     iBitmap = CreateDIBSection(iDC, bi24BitInfo, DIB_RGB_COLORS, ByVal 0&, ByVal 0&, ByVal 0&)
     SelectObject iDC, iBitmap
-    BitBlt iDC, 0, 0, bi24BitInfo.bmiHeader.biWidth, bi24BitInfo.bmiHeader.biHeight, Pic.hdc, 0, 0, vbSrcCopy
+    BitBlt iDC, 0, 0, bi24BitInfo.bmiHeader.biWidth, bi24BitInfo.bmiHeader.biHeight, pic.hdc, 0, 0, vbSrcCopy
 
     GetIconBits bBits(), BitCnt + BMPBIT, iDC, iBitmap, TempPal(), Bildhöhe, Bildbreite
     ReDim Übergabe(Bitcbr * Bildhöhe - 1)
@@ -214,7 +223,7 @@ Compressed = compress
     'If HasBeenReduced = True And BitCnt = 8 Then
     '    SavePCX Filename, iData(), Bildbreite, Bildhöhe, BitCnt, TmpPalette()
     'Else
-        SavePCX filename, Übergabe(), Bildbreite, Bildhöhe, BitCnt, TempPal()
+        SavePCX FileName, Übergabe(), Bildbreite, Bildhöhe, BitCnt, TempPal()
     'End If
 
 End Sub

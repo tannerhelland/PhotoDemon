@@ -11,6 +11,15 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within PhotoDemon.
+
+'This code was originally written by Alfred Koppold, and was sent to me via personal correspondence.
+
+'I believe you can download a publicly available version via this link:
+' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1
+
+' Many thanks to Alfred for providing a way to access PCX files natively in VB6
+
 'Autor: ALKO
 'e-mail: alfred.koppold@freenet.de
 
@@ -28,7 +37,7 @@ rgbGreen As Byte
 rgbRed As Byte
 rgbReserved As Byte
 End Type
-Private Type RGBTriple
+Private Type RGBTRIPLE
     Red As Byte
     Green As Byte
     Blue As Byte
@@ -38,14 +47,14 @@ Private Type PCXHeader
     Manufacturer As Byte  '10 = ZSoft
     Version As Byte 'Version
     Encoding As Byte    '1 = .PCX RLE
-    BPP As Byte    '1, 2, 4, 8
+    Bpp As Byte    '1, 2, 4, 8
     XMin As Integer
     YMin As Integer
     xMax As Integer
     yMax As Integer
     HDpi As Integer
     VDpi As Integer
-    ColourPalette(0 To 15) As RGBTriple
+    ColourPalette(0 To 15) As RGBTRIPLE
     Reserved1 As Byte
     Planes As Byte
     BytesperLine As Integer
@@ -90,7 +99,7 @@ Public Function LoadPCX(ByVal FileName As String) As StdPicture
     End With
 TW = PixelToTwips(nWidth, nHeight)
 
-    If Header.BPP = 1 Then
+    If Header.Bpp = 1 Then
         
         If Header.Planes = 1 Then
         Read1Bit FileName
@@ -103,12 +112,12 @@ TW = PixelToTwips(nWidth, nHeight)
         End If
 
         End If
-        If Header.BPP = 4 Then
+        If Header.Bpp = 4 Then
         If Header.Planes = 1 Then
         Read4bit FileName
         End If
         End If
-        If Header.BPP = 8 Then
+        If Header.Bpp = 8 Then
         If Header.Planes = 1 Then
          Read8Bit FileName
          ElseIf Header.Planes = 3 Then
@@ -121,7 +130,7 @@ Private Sub Read8Bit(ByRef FileName As String)
     'Variables and arrays
     Dim nFreefile As Integer
     Dim Header As PCXHeader
-    Dim Palette8(0 To 255) As RGBTriple
+    Dim Palette8(0 To 255) As RGBTRIPLE
     Dim PalByte As Byte
     Dim Übergabe() As Byte
     Const cStartOfPalette As Long = 12
@@ -270,7 +279,7 @@ End Function
 Private Function Read24bit(FileName As String)
     Dim nFreefile As Integer
     Dim Header As PCXHeader
-    Dim data() As Byte
+    Dim Data() As Byte
     Dim quad() As RGBQUAD
     
     nFreefile = FreeFile
@@ -278,9 +287,9 @@ Private Function Read24bit(FileName As String)
     Seek #nFreefile, 1
     Get #nFreefile, , Header
     
-    ReDim data(LOF(nFreefile) - Len(Header))
+    ReDim Data(LOF(nFreefile) - Len(Header))
     
-    Get #nFreefile, , data()
+    Get #nFreefile, , Data()
     
     Close #nFreefile
 
@@ -313,26 +322,26 @@ Private Function Read24bit(FileName As String)
 Dim Größe As Long
 Größe = nBitmapX * nHeight
 If Header.Encoding = 1 Then
-DecodePcx data
+DecodePcx Data
 End If
 'Sort from planes into a bitmap
 '==================================================
 
-    Dim X As Long, Y As Long, nStartPos As Long
+    Dim x As Long, y As Long, nStartPos As Long
     
-    For Y = 0 To nHeight - 1
-        For X = 0 To nWidth - 1
+    For y = 0 To nHeight - 1
+        For x = 0 To nWidth - 1
         
-            nStartPos = Y * Header.BytesperLine * 3 + X
+            nStartPos = y * Header.BytesperLine * 3 + x
         
-            With quad((X + (nHeight - 1 - Y) * nWidth))
-                .rgbRed = data(nStartPos)
-                .rgbGreen = data(nStartPos + Header.BytesperLine)
-                .rgbBlue = data(nStartPos + Header.BytesperLine * 2)
+            With quad((x + (nHeight - 1 - y) * nWidth))
+                .rgbRed = Data(nStartPos)
+                .rgbGreen = Data(nStartPos + Header.BytesperLine)
+                .rgbBlue = Data(nStartPos + Header.BytesperLine * 2)
             End With
         
-        Next X
-    Next Y
+        Next x
+    Next y
     
 
    ReDim BitmapData(UBound(quad) * 4 + 4)
@@ -345,7 +354,7 @@ Private Sub DecodePcx(ImageArray() As Byte)
 Dim Übergabe() As Byte
 Dim Stand As Long
 Dim i As Long
-Dim X As Long
+Dim x As Long
 Dim n As Long
 Dim c As Byte
 Dim Länge As Long
@@ -355,14 +364,14 @@ ReDim Übergabe(UBound(ImageArray))
 CopyMemory Übergabe(0), ImageArray(0), UBound(ImageArray)
 ReDim ImageArray(0)
 For Länge = 0 To UBound(Übergabe) - 1
-X = Übergabe(Länge)
-If X >= 192 Then
-n = X - 192
+x = Übergabe(Länge)
+If x >= 192 Then
+n = x - 192
 c = Übergabe(Länge + 1)
 Länge = Länge + 1
 Else
 n = 1
-c = X
+c = x
 End If
 For i = 1 To n
 ReDim Preserve ImageArray(Stand)
@@ -593,8 +602,8 @@ Compressed = False
 End Select
 
 End Property
-Public Property Get BPP() As Integer
-BPP = CInt(Header.BPP)
+Public Property Get Bpp() As Integer
+Bpp = CInt(Header.Bpp)
 End Property
 Public Property Get IsPCX() As Boolean
 Dim Test As Boolean

@@ -1,6 +1,14 @@
 Attribute VB_Name = "Outside_mWindowsHook"
-'Many thanks to Steve McMahon for this excellent sub (which ties into his keyboard accelerator user control)
-' You may download the original version of this code at: http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
+'Note: this file has been modified for use within PhotoDemon.
+
+'You may download the original version of this code at:
+' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
+
+'To the best of my knowledge, this code is released under a CC-BY-1.0 license.  (Assumed from the footer text of vbaccelerator.com: "All contents of this web site are licensed under a Creative Commons Licence, except where otherwise noted.")
+' You may access a complete copy of this license at the following link:
+' http://creativecommons.org/licenses/by/1.0/
+
+'Many thanks to Steve McMahon for this excellent set of code (which ties into his keyboard accelerator user control)
 
 Option Explicit
 
