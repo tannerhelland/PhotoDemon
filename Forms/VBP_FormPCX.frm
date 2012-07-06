@@ -247,15 +247,28 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'***************************************************************************
+'PCX Export Interface
+'©2000-2012 Tanner Helland
+'Created: 6/16/06
+'Last updated: 05/July/12
+'Last update: code changes to match interface redesign
+'
+'Form for allowing the user to set some PCX export options.  Interacts heavily
+' with Alfred Koppold's "SavePCX" class
+'
+'***************************************************************************
 
 Option Explicit
 
 Dim cdIndex As Long
 
+'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
+'OK button
 Private Sub CmdOK_Click()
     Me.Visible = False
     Message "Preparing image..."
