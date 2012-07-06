@@ -7,19 +7,19 @@ http://tannerhelland.com
 What makes PhotoDemon preferable to other image editing tools?
 -------------------------------------------------------------------------------------
 :: Portable and lightweight
-    PhotoDemon can be run as a standalone .exe.  No installer is provided or required.
+	PhotoDemon can be run as a standalone .exe.  No installer is provided or required.
 	An INI file is used to store program settings, and if no INI is found, PhotoDemon
 	will generate one for you.  (PhotoDemon does not touch the Windows registry.)
 
 :: Powerful macro and batch conversion support
-    PhotoDemon provides full macro support.  Simply hit "Record Macro", then perform
+	PhotoDemon provides full macro support.  Simply hit "Record Macro", then perform
 	as many actions as you'd like.  When finished, save that macro to the hard drive
 	so you can repeat it at any point in the future.  Macros fully integrate with a
 	built-in batch conversion tool - simply choose a saved macro and a folder or list 
 	of images, and PhotoDemon will apply the macro to every image automagically.
 		
 :: Emphasis on usability.
-    Most free, open-source image editors are usability nightmares.  PhotoDemon tries
+	Most free, open-source image editors are usability nightmares.  PhotoDemon tries
 	not to be.  Rather than including thousands of features that no human being will 
 	ever use, PhotoDemon focuses on a solid set of common filters and image adjustment
 	tools.  Similarly, the interface was built with input from professional designers,
@@ -44,27 +44,26 @@ What doesn't PhotoDemon do?
 	hobbyists, it is unlikely to ever gain ICC profile support.  If color management
 	is integral to your work, PhotoDemon is not the right tool for you.  (Note: if
 	you're interested, PhotoDemon relies on DIB sections via the Windows GDI, which
-	defaults to the sRGB space - http://technet.microsoft.com/en-us/query/ms536845)
+	default to the sRGB space - http://technet.microsoft.com/en-us/query/ms536845)
 		
 :: Run on non-Windows operating systems...probably
-	Wine (http://www.winehq.org/) finally added full DIB support in v1.4, released
-	in March 2012.  Because PhotoDemon relies heavily on DIB sections, it may work on 
-	OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 (or later) installed.  
-	However, should you choose to go down this route, you are effectively on your
-	own.  PhotoDemon's developers simply don't have the resources to support Wine in
-	any official capacity.
+	Wine (http://www.winehq.org/) finally added full DIB support in March 2012 (v1.4).
+	Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD,
+	Solaris or Maemo systems with Wine v1.4 (or later) installed.  However, should you
+	choose to go down this route, you are effectively on your own.  PhotoDemon's
+	developers don't have the resources to support Wine in any official capacity.
 
 		
 		
 Contents of this file:
 =====================================================================================
-[1] License (BSD)
+[1] License
 [2] Acknowledgements
 [3] How to support PhotoDemon
--------------------------------------------------------------------------------------
 
 
-[1] License:
+
+[1] License
 =====================================================================================
 PhotoDemon is Copyright (c) 2012 by Tanner Helland, www.tannerhelland.com
 
@@ -151,6 +150,6 @@ If you can't contribute monetarily to the project, here are other ways to help:
 * PhotoDemon is missing menu icons for some of its more obscure functions.  Most of the
   current icons come from the free Crystal and Tango icon sets.  If you're capable of 
   designing menu icons with a similar visual style, I'd love to showcase your work.
-* Send me an email and let me know how PhotoDemon's worked for you.  I love to hear from
-  users.  Even if it's a single word - "Thanks!" I'd love to hear it.  Get in touch at:
+* Send me an email and let me know how you use PhotoDemon.  I love to hear from users.
+  Even if it's a single word - "Thanks!" I'd love to hear it.  Get in touch at:
   tannerhelland.com/contact 
