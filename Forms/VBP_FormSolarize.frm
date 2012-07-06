@@ -172,8 +172,8 @@ Attribute VB_Exposed = False
 'Solarizing Effect Handler
 '©2000-2012 Tanner Helland
 'Created: 4/14/01
-'Last updated: 6/August/06
-'Last update: previewing, optimization, comments
+'Last updated: 05/July/12
+'Last update: optimized for speed
 '
 'Updated solarizing interface; it has been optimized for speed and
 '  ease-of-implementation.
@@ -200,29 +200,40 @@ End Sub
 
 'Subroutine for "solarizing" an image
 Public Sub SolarizeImage(ByVal Threshold As Byte)
-    Dim r As Integer, g As Integer, B As Integer
+    
     Message "Solarizing image..."
+    
+    Dim r As Byte, g As Byte, b As Byte
+    
     GetImageData
     SetProgBarMax PicWidthL
+    
     Dim QuickVal As Long
+    
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
+    
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
+        b = ImageData(QuickVal, y)
+        
         'Solarizing is simple - invert every value above the threshold
         If r > Threshold Then r = 255 - r
         If g > Threshold Then g = 255 - g
-        If B > Threshold Then B = 255 - B
+        If b > Threshold Then b = 255 - b
+        
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = B
+        ImageData(QuickVal, y) = b
+        
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
+    
     SetProgBarVal PicWidthL
     SetImageData
+    
 End Sub
 
 Private Sub Form_Load()
@@ -234,33 +245,46 @@ End Sub
 
 'Same as above, but exclusively for previewing
 Private Sub PreviewSolarize(ByVal Threshold As Byte)
-    Dim r As Integer, g As Integer, B As Integer
+
+    Dim r As Byte, g As Byte, b As Byte
+    
     GetPreviewData PicPreview
+    
     Dim QuickVal As Long
+    
     For x = PreviewX To PreviewX + PreviewWidth
         QuickVal = x * 3
     For y = PreviewY To PreviewY + PreviewHeight
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
+        b = ImageData(QuickVal, y)
         If r > Threshold Then r = 255 - r
         If g > Threshold Then g = 255 - g
-        If B > Threshold Then B = 255 - B
+        If b > Threshold Then b = 255 - b
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = B
+        ImageData(QuickVal, y) = b
     Next y
     Next x
+    
     SetPreviewData PicEffect
+    
 End Sub
 
+'When the horizontal scroll bar is moved, update the preview and text box to match
 Private Sub hsThreshold_Change()
     txtThreshold.Text = hsThreshold.Value
     PreviewSolarize hsThreshold.Value
 End Sub
 
+Private Sub hsThreshold_Scroll()
+    txtThreshold.Text = hsThreshold.Value
+    PreviewSolarize hsThreshold.Value
+End Sub
+
+'When the text box is changed, update the preview and text box to match (assuming the text box value is valid)
 Private Sub txtThreshold_Change()
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = Val(txtThreshold)
+    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = val(txtThreshold)
 End Sub
 
 Private Sub txtThreshold_GotFocus()
