@@ -103,5 +103,6 @@ Desktop.ini
 
 *.ini
 *.log
+*.bak
 /no_sync
 
