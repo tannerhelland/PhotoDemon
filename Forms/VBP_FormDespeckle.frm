@@ -144,10 +144,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
+'OK button
 Private Sub CmdOK_Click()
     Me.Visible = False
     Process CustomDespeckle, CLng(10 - hsDespeckle.Value)
@@ -293,6 +295,7 @@ Public Sub Despeckle(ByVal dThreshold As Long)
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
+    'Transfer the temporary array back into the main array
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
