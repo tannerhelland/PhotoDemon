@@ -5,6 +5,8 @@ Attribute VB_Name = "Filters_Area"
 'Created: 12/June/01
 'Last updated: 20/Apr/12
 'Last update: copied over optimizations and comments from my standalone Custom Filter project (on tannerhelland.com)
+'Still needs: -removal of goto numbers (text labels are preferable)
+'             -interpolation for isometric conversion
 '
 'Holder for generalized area filters.  Also contains the DoFilter routine, which is central to running
 ' custom filters (as well as some of the intrinsic PhotoDemon ones).
