@@ -874,17 +874,16 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'PHOTODEMON AND ALL SOURCE CODE HEREIN IS COPYRIGHTED 1999-2012 BY TANNER HELLAND.
-'DO NOT REDISTRIBUTE THE CODE WITHOUT EXPRESS, WRITTEN CONSENT OF TANNER HELLAND.
-'DO NOT MODIFY WITHOUT THE EXPRESS, WRITTEN CONSENT OF TANNER HELLAND.
-'©1999-2012 Tanner Helland, www.tannerhelland.com
+'Please see the included README.txt file for additional information regarding licensing and redistribution.
+
+'PhotoDemon is Copyright ©1999-2012 Tanner Helland, www.tannerhelland.com
 
 '***************************************************************************
 'Main Program MDI Form
 '©2000-2012 Tanner Helland
 'Created: 9/15/02
-'Last updated: 13/August/06
-'Last update: cleaned-up code, revamped form unloading and commented a lot of crap
+'Last updated: 05/July/12
+'Last update: new accelerators added
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
 ' primary purpose is sending parameters to other, more interesting sections of the program.
@@ -895,20 +894,11 @@ Option Explicit
 
 'When the zoom combo box is changed, redraw the image using the new zoom value
 Private Sub CmbZoom_Click()
-    'On Error Resume Next
     
     'Track the current zoom value
     If NumOfWindows > 0 Then pdImages(FormMain.ActiveForm.Tag).CurrentZoomValue = FormMain.CmbZoom.ListIndex
     
     PrepareViewport FormMain.ActiveForm
-    
-    'If NumOfWindows > 0 Then
-    '    If FormMain.ActiveForm.WindowState = 0 Then
-    '        FormMain.ActiveForm.SetFocus
-    '    Else
-    '        FormMain.SetFocus
-    '    End If
-    'End If
     
 End Sub
 
