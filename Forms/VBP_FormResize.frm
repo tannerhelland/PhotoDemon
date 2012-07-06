@@ -631,6 +631,8 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
         Message "Image resized successfully "
 End Sub
 
+'Because the scrollbars work backward (up means up and down means down) we have to reverse its input
+' relative to the associated text box
 Private Sub VSHeight_Change()
     If updateHeightBar = True Then
         txtHeight = Abs(32767 - CStr(VSHeight.Value))
@@ -646,7 +648,6 @@ Private Sub VSWidth_Change()
 End Sub
 
 Private Sub ChangeToWidth()
-
     If EntryValid(txtWidth, 1, 32767, False, True) Then
         updateWidthBar = False
         VSWidth.Value = Abs(32767 - CInt(txtWidth))
