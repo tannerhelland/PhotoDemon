@@ -11,6 +11,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within PhotoDemon.
+
+'This code was originally written by Leandro I. Ascierto.
+
+'You may download the original version of this code from the following link (good as of June 2012):
+' http://leandroascierto.com/blog/clsmenuimage/
+
+' Many thanks to Leandro for providing a way to apply PNG images to program menus in VB6
 
 Option Explicit
 

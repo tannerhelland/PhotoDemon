@@ -1,16 +1,33 @@
 VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
+  Persistable = 0  'NotPersistable
+  DataBindingBehavior = 0  'vbNone
+  DataSourceBehavior  = 0  'vbNone
+  MTSTransactionMode  = 0  'NotAnMTSObject
 END
 Attribute VB_Name = "pcMemDC"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within PhotoDemon.
+
+'This class was originally written by Steve McMahon.
+
+'You may download the original version of this code from the following link (good as of June 2012):
+' http://www.vbaccelerator.com/home/VB/Code/Controls/Progress_Bar/No_Progress_Bar_Class/article.asp
+
+'To the best of my knowledge, this code is released under a CC-BY-1.0 license.  (Assumed from the footer text of vbaccelerator.com: "All contents of this web site are licensed under a Creative Commons Licence, except where otherwise noted.")
+' You may access a complete copy of this license at the following link:
+' http://creativecommons.org/licenses/by/1.0/
+
+'This code is required by Steve McMahon's cProgressBar class.
+
 Option Explicit
 ' cMemDC - flicker free drawing
 
-Private Type BITMAP
+Private Type Bitmap
     bmType As Long
     bmWidth As Long
     bmHeight As Long
@@ -19,14 +36,14 @@ Private Type BITMAP
     bmBitsPixel As Integer
     bmBits As Long
 End Type
-Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
 Private Declare Function CreateDCAsNull Lib "gdi32" Alias "CreateDCA" (ByVal lpDriverName As String, _
            lpDeviceName As Any, lpOutput As Any, lpInitData As Any) As Long
 Private Declare Function CreateDC Lib "gdi32" Alias "CreateDCA" (ByVal lpDriverName As String, ByVal lpDeviceName As String, ByVal lpOutput As String, lpInitData As Any) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetObjectAPI Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, lpObject As Any) As Long
 
@@ -43,7 +60,7 @@ Public Property Let Width(ByVal Value As Long)
 Dim lJunk As Long
    If Not (Value = m_lWidth) Then
       m_lWidth = Value
-      lJunk = hDC(m_lWidth, m_lHeight)
+      lJunk = hdc(m_lWidth, m_lHeight)
    End If
 End Property
 Public Property Get Height() As Long
@@ -53,11 +70,11 @@ Public Property Let Height(ByVal Value As Long)
 Dim lJunk As Long
    If Not (Value = m_lHeight) Then
       m_lHeight = Value
-      lJunk = hDC(m_lWidth, m_lHeight)
+      lJunk = hdc(m_lWidth, m_lHeight)
    End If
 End Property
 
-Public Property Get hDC(Width As Long, Height As Long) As Long
+Public Property Get hdc(Width As Long, Height As Long) As Long
    If m_hDC = 0 Then
       If (Width > 0) And (Height > 0) Then
          pCreate Width, Height
@@ -67,28 +84,28 @@ Public Property Get hDC(Width As Long, Height As Long) As Long
          pCreate Width, Height
       End If
    End If
-   hDC = m_hDC
+   hdc = m_hDC
 End Property
 Public Sub Draw( _
-      ByVal hDC As Long, _
+      ByVal hdc As Long, _
       Optional ByVal xSrc As Long = 0, Optional ByVal ySrc As Long = 0, _
       Optional ByVal WidthSrc As Long = 0, Optional ByVal HeightSrc As Long = 0, _
       Optional ByVal xDst As Long = 0, Optional ByVal yDst As Long = 0 _
    )
    If WidthSrc <= 0 Then WidthSrc = m_lWidth
    If HeightSrc <= 0 Then HeightSrc = m_lHeight
-   BitBlt hDC, xDst, yDst, WidthSrc, HeightSrc, m_hDC, xSrc, ySrc, vbSrcCopy
+   BitBlt hdc, xDst, yDst, WidthSrc, HeightSrc, m_hDC, xSrc, ySrc, vbSrcCopy
 End Sub
 Public Sub CreateFromPicture(sPic As IPicture)
-Dim tB As BITMAP
+Dim tB As Bitmap
 Dim lhDCC As Long, lHDC As Long
 Dim lhBmpOld As Long
-   GetObjectAPI sPic.handle, Len(tB), tB
+   GetObjectAPI sPic.Handle, Len(tB), tB
    Width = tB.bmWidth
    Height = tB.bmHeight
    lhDCC = CreateDCAsNull("DISPLAY", ByVal 0&, ByVal 0&, ByVal 0&)
    lHDC = CreateCompatibleDC(lhDCC)
-   lhBmpOld = SelectObject(lHDC, sPic.handle)
+   lhBmpOld = SelectObject(lHDC, sPic.Handle)
    BitBlt m_hDC, 0, 0, tB.bmWidth, tB.bmHeight, lHDC, 0, 0, vbSrcCopy
    SelectObject lHDC, lhBmpOld
    DeleteDC lHDC

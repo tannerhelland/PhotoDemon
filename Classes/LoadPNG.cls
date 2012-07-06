@@ -11,12 +11,21 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within PhotoDemon.
+
+'This code was originally written by Alfred Koppold, and was sent to me via personal correspondence.
+
+'I believe you can download a publicly available version via this link:
+' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1
+
+' Many thanks to Alfred for providing a way to access PNG files natively in VB6
+
 'Autor: ALKO
 'e-mail: alfred.koppold@freenet.de
 Option Explicit
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal XSrc As Long, ByVal YSrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
@@ -105,7 +114,7 @@ Private m_OwnBkgnd As Boolean
 Private m_OBCol As Long
 Private m_PicBox As Object
 Private m_settoBG As Boolean
-Public Function OpenPNG(Filename As String) As Long
+Public Function OpenPNG(FileName As String) As Long
 Dim Stand As Long
 Dim Ende As Boolean
 Dim Filenumber As Long
@@ -125,7 +134,7 @@ BPPprivat = 0
 ReDim IDATData(0)
 IdataLen = 0
 Filenumber = FreeFile
-Open Filename For Binary As Filenumber
+Open FileName For Binary As Filenumber
 Get Filenumber, , Signature
 Test = IsValidSignature(Signature)
 If Test <> -1 Then
@@ -1455,12 +1464,12 @@ ErrorNumber = m_ErrorNumber
 End Property
 Private Sub MakeAlpha(PicObject As Object, Buffer() As Byte, Optional x As Long = 0, Optional y As Long = 0)
 Dim Myx As Long, Myy As Long, DatOff As Long
-Dim R As Long, G As Long, b As Long, a As Long
+Dim r As Long, g As Long, b As Long, a As Long
 Dim sR As Long, sG As Long, sB As Long
 Dim dR As Long, dG As Long, dB As Long
 Dim DestData() As Byte, bytesperrow As Long
 Dim DestOff As Long, DestHdr As BITMAPINFOHEADER
-Dim MemDC As Long, hBmp As Long, hOldBmp As Long
+Dim memDC As Long, hBmp As Long, hOldBmp As Long
 Dim SrcData() As Byte
 Dim hdc As Long
 On Error Resume Next
@@ -1491,14 +1500,14 @@ End If
  DestHdr.Width = Me.Width
  DestHdr.Planes = 1
  DestHdr.Size = 40
- MemDC = CreateCompatibleDC(hdc)
+ memDC = CreateCompatibleDC(hdc)
  hBmp = CreateCompatibleBitmap(hdc, Me.Width, Me.Height)
- hOldBmp = SelectObject(MemDC, hBmp)
- BitBlt MemDC, 0, 0, Me.Width, Me.Height, hdc, x, y, vbSrcCopy
- GetDIBits MemDC, hBmp, 0, Me.Height, SrcData(0), DestHdr, 0
-SelectObject hOldBmp, MemDC
+ hOldBmp = SelectObject(memDC, hBmp)
+ BitBlt memDC, 0, 0, Me.Width, Me.Height, hdc, x, y, vbSrcCopy
+ GetDIBits memDC, hBmp, 0, Me.Height, SrcData(0), DestHdr, 0
+SelectObject hOldBmp, memDC
  DeleteObject hBmp
- DeleteDC MemDC
+ DeleteDC memDC
 End If
  For Myy = 0 To Me.Height - 1
  For Myx = 0 To Me.Width - 1
@@ -1507,20 +1516,20 @@ End If
  sG = SrcData(DestOff + 1)
  sB = SrcData(DestOff)
  b = Buffer(DatOff)
- G = Buffer(DatOff + 1)
- R = Buffer(DatOff + 2)
+ g = Buffer(DatOff + 1)
+ r = Buffer(DatOff + 2)
  a = Buffer(DatOff + 3)
 If a = 255 Then
- DestData(DestOff + 2) = R
- DestData(DestOff + 1) = G
+ DestData(DestOff + 2) = r
+ DestData(DestOff + 1) = g
  DestData(DestOff) = b
  ElseIf a = 0 Then
  DestData(DestOff + 2) = sR
  DestData(DestOff + 1) = sG
  DestData(DestOff) = sB
  Else
- dR = R * a + (255 - a) * sR + 255
- dG = G * a + (255 - a) * sG + 255
+ dR = r * a + (255 - a) * sR + 255
+ dG = g * a + (255 - a) * sG + 255
  dB = b * a + (255 - a) * sB + 255
  CopyMemory DestData(DestOff + 2), ByVal VarPtr(dR) + 1, 1
  CopyMemory DestData(DestOff + 1), ByVal VarPtr(dG) + 1, 1
@@ -1560,7 +1569,7 @@ Private Sub PalToRGBA(Width As Long, Height As Long, BitDepth As Integer, Dat() 
  Dim DestOff As Long, TrnsBnd As Long
  Dim Testint As Integer
  Dim x As Long, y As Long, WidthBytes As Long
- Dim Pal() As RGBTriple
+ Dim Pal() As RGBTRIPLE
  Dim IdataLen As Long
  Dim i As Long
  Dim Anzahl As Long
@@ -1694,7 +1703,7 @@ Dim GBc As Long
 Dim u As Byte
 Dim bkLen As Long
 Dim ValR As Integer, ValG As Integer, ValB As Integer
-Dim R As Long, G As Long, b As Long
+Dim r As Long, g As Long, b As Long
 Dim BD As Byte
 Dim IntVal As Integer, UInt As Long
 Dim Testpal() As Byte
@@ -1737,10 +1746,10 @@ If bkLen = 6 Then
  Swap ValR
  Swap ValG
  Swap ValB
- R = UnsignedInt(ValR)
- G = UnsignedInt(ValG)
+ r = UnsignedInt(ValR)
+ g = UnsignedInt(ValG)
  b = UnsignedInt(ValB)
- m_bkgdColor = RGB(R / (2 ^ BD - 1) * 255, G / (2 ^ BD - 1) * 255, b / (2 ^ BD - 1) * 255)
+ m_bkgdColor = RGB(r / (2 ^ BD - 1) * 255, g / (2 ^ BD - 1) * 255, b / (2 ^ BD - 1) * 255)
 Else: GoTo Error
 End If
 End Select
@@ -1751,14 +1760,14 @@ End Function
 Private Function UnsignedInt(SignedInt As Integer) As Long
 UnsignedInt = CLng(SignedInt) And &HFFFF&
 End Function
-Private Sub Swap(Val As Integer)
+Private Sub Swap(val As Integer)
 Dim Bytef(1) As Byte
 Dim u As Byte
-CopyMemory Bytef(0), ByVal VarPtr(Val), 2
+CopyMemory Bytef(0), ByVal VarPtr(val), 2
 u = Bytef(0)
 Bytef(0) = Bytef(1)
 Bytef(1) = u
-CopyMemory ByVal VarPtr(Val), Bytef(0), 2
+CopyMemory ByVal VarPtr(val), Bytef(0), 2
 End Sub
 Public Property Get Text() As String
 Text = m_text

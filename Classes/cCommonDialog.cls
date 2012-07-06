@@ -11,15 +11,25 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Many thanks to Steve McMahon and vbaccelerator.com for this life-saving class.
+'Note: this file has been modified for use within PhotoDemon.
 
-'You may download the original version of this code from the following link (good as of June '12):
+'This class was originally written by Steve McMahon.
+
+'You may download the original version of this code from the following link (good as of June 2012):
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Common_Dialogs/Code_Only_Common_Dialogs/article.asp
 
-'If you would like to use this class in a project of your own: *** PLEASE DOWNLOAD THE ORIGINAL VERSION FROM THAT LINK. ***
+'To the best of my knowledge, this code is released under a CC-BY-1.0 license.  (Assumed from the footer text of vbaccelerator.com: "All contents of this web site are licensed under a Creative Commons Licence, except where otherwise noted.")
+' You may access a complete copy of this license at the following link:
+' http://creativecommons.org/licenses/by/1.0/
+
+'Many thanks to Steve McMahon and vbaccelerator.com for this excellent commondialog interface.
+
+'***IMPORTANT NOTE***
+'If you would like to use this class in a project of your own: *** PLEASE DOWNLOAD THE ORIGINAL VERSION FROM VBACCELERATOR.COM. ***
 ' I have made many edits to this class to make it more appropriate for use in PhotoDemon, and to solve some
 ' particular quirks with the types of file dialogs it requires.  If you copy this blindly into your own project,
 ' it is unlikely to work - so use the stock version and save yourself a lot of trouble.
+
 
 
 Option Explicit
@@ -137,7 +147,7 @@ Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 Private Type TCHOOSEFONT
     lStructSize As Long         ' Filled with UDT size
     hwndOwner As Long           ' Caller's window handle
-    hDC As Long                 ' Printer DC/IC or NULL
+    hdc As Long                 ' Printer DC/IC or NULL
     lpLogFont As Long           ' Pointer to LOGFONT
     iPointSize As Long          ' 10 * size in points of font
     Flags As Long               ' Type flags
@@ -223,7 +233,7 @@ Private Type TPRINTDLG
     hwndOwner As Long
     hDevMode As Long
     hDevNames As Long
-    hDC As Long
+    hdc As Long
     Flags As Long
     nFromPage As Integer
     nToPage As Integer
@@ -509,7 +519,7 @@ Private Sub Class_Initialize()
 End Sub
 #End If
 
-Function VBGetOpenFileName(Filename As String, _
+Function VBGetOpenFileName(FileName As String, _
                            Optional FileTitle As String, _
                            Optional FileMustExist As Boolean = True, _
                            Optional MultiSelect As Boolean = False, _
@@ -569,7 +579,7 @@ With opfile
     .nFilterIndex = FilterIndex
 
     ' Pad file and file title buffers to maximum path
-    s = Filename & String$(MAX_PATH - Len(Filename), 0)
+    s = FileName & String$(MAX_PATH - Len(FileName), 0)
     .lpstrFile = s
     .nMaxFile = MAX_PATH
     s = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
@@ -588,7 +598,7 @@ With opfile
         ' Success
         VBGetOpenFileName = True
         'Filename = StrZToStr(.lpstrFile)
-        Filename = .lpstrFile
+        FileName = .lpstrFile
         FileTitle = StrZToStr(.lpstrFileTitle)
         Flags = .Flags
         ' Return the filter index
@@ -606,7 +616,7 @@ With opfile
         ' Cancelled
         Message "Image load canceled. "
         VBGetOpenFileName = False
-        Filename = ""
+        FileName = ""
         FileTitle = ""
         Flags = 0
         FilterIndex = -1
@@ -615,7 +625,7 @@ With opfile
         ' Extended error
         m_lExtendedError = CommDlgExtendedError()
         VBGetOpenFileName = False
-        Filename = ""
+        FileName = ""
         FileTitle = ""
         Flags = 0
         FilterIndex = -1
@@ -627,7 +637,7 @@ Private Function StrZToStr(s As String) As String
     StrZToStr = Left$(s, lstrlen(s))
 End Function
 
-Function VBGetSaveFileName(Filename As String, _
+Function VBGetSaveFileName(FileName As String, _
                            Optional FileTitle As String, _
                            Optional OverWritePrompt As Boolean = True, _
                            Optional Filter As String = "All (*.*)| *.*", _
@@ -676,7 +686,7 @@ With opfile
     .nFilterIndex = FilterIndex
 
     ' Pad file and file title buffers to maximum path
-    s = Filename & String$(MAX_PATH - Len(Filename), 0)
+    s = FileName & String$(MAX_PATH - Len(FileName), 0)
     .lpstrFile = s
     .nMaxFile = MAX_PATH
     s = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
@@ -688,7 +698,7 @@ With opfile
     Select Case m_lApiReturn
     Case 1
         VBGetSaveFileName = True
-        Filename = StrZToStr(.lpstrFile)
+        FileName = StrZToStr(.lpstrFile)
         FileTitle = StrZToStr(.lpstrFileTitle)
         Flags = .Flags
         ' Return the filter index
@@ -698,7 +708,7 @@ With opfile
     Case 0
         ' Cancelled:
         VBGetSaveFileName = False
-        Filename = ""
+        FileName = ""
         FileTitle = ""
         Flags = 0
         FilterIndex = 0
@@ -707,7 +717,7 @@ With opfile
         ' Extended error:
         VBGetSaveFileName = False
         m_lExtendedError = CommDlgExtendedError()
-        Filename = ""
+        FileName = ""
         FileTitle = ""
         Flags = 0
         FilterIndex = 0

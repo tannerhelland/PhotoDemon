@@ -1,8 +1,11 @@
 Attribute VB_Name = "Outside_FreeImageV3"
 'Note: this file has been modified for use within PhotoDemon.
+
 'IF YOU WANT TO USE THIS CODE IN YOUR OWN PROJECT, PLEASE DOWNLOAD THE ORIGINAL FROM THIS LINK:
 'http://freeimage.sourceforge.net/download.html
+
 'Many thanks to Carsten Klein and the FreeImage team for this excellent library (and associated DLL).
+
 
 '// ==========================================================
 '// Visual Basic Wrapper for FreeImage 3

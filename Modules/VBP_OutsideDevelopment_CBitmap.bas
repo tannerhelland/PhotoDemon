@@ -1,9 +1,18 @@
 Attribute VB_Name = "Outside_PCXPNGTGAInterface"
+'Note: this file has been modified for use within PhotoDemon.
+
+'This code was originally written by Alfred Koppold, and was sent to me via personal correspondence.
+
+'I believe you can download a publicly available version via this link:
+' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1
+
+' Many thanks to Alfred for providing a way to access PCX/PNG/TGA files natively in VB6
+
 'Autor: ALKO
 'e-mail: alfred.koppold@freenet.de
 
 Option Explicit
-Public Declare Sub CopyMem Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal length As Long)
+Public Declare Sub CopyMem Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
 
 ' Constants
 Private Const SRCCOPY = &HCC0020
@@ -11,7 +20,7 @@ Private Const BI_RGB = 0&
 Private Const CBM_INIT = &H4
 Private Const DIB_RGB_COLORS = 0
 ' Types
-Public Type RGBTriple
+Public Type RGBTRIPLE
     Red As Byte
     Green As Byte
     Blue As Byte
@@ -64,14 +73,14 @@ Private Type BITMAPINFO_24
 End Type
 Private Type BITMAPINFO_24a
     bmiHeader As BITMAPINFOHEADER
-    bmiColors As RGBTriple
+    bmiColors As RGBTRIPLE
 End Type
 
 ' Functions
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal length As Long)
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal XSrc As Long, ByVal YSrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal HWnd As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
@@ -140,7 +149,7 @@ End Sub
 Public Sub InitColorTable_8(ByteArray() As Byte)
 'Construct the palette
 '==================================================
-    Dim Palette8() As RGBTriple
+    Dim Palette8() As RGBTRIPLE
         ReDim Palette8(255)
         CopyMemory Palette8(0), ByteArray(0), UBound(ByteArray) + 1
     Dim nCount As Long
@@ -154,7 +163,7 @@ Public Sub InitColorTable_8(ByteArray() As Byte)
     Next nCount
 End Sub
 Public Sub InitColorTable_4(ByteArray() As Byte)
-    Dim Palette4() As RGBTriple
+    Dim Palette4() As RGBTRIPLE
         ReDim Palette4(15)
         CopyMemory Palette4(0), ByteArray(0), UBound(ByteArray) + 1
 
@@ -343,7 +352,7 @@ Public Sub CreateBitmap_24(ByteArray() As Byte, PicWidth As Long, PicHeight As L
 
 Dim hdc As Long
 Dim Bits() As RGBQUAD
-Dim BitsA() As RGBTriple
+Dim BitsA() As RGBTRIPLE
 Select Case ThreeToOrToFour
 Case 0
 ReDim Bits((UBound(ByteArray) / 4) - 1)
@@ -454,7 +463,7 @@ Public Function InitColorTable_Grey(BitDepth As Integer, Optional To8Bit As Bool
     Dim n As Long
     Dim LevelDiff As Byte
     Dim Tbl() As RGBQUAD
-    Dim Table3() As RGBTriple
+    Dim Table3() As RGBTRIPLE
     Erase bm8.bmiColors
     If BitDepth <> 16 Then
         ReDim Tbl(2 ^ BitDepth - 1)
