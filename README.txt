@@ -33,11 +33,11 @@ What doesn't PhotoDemon do?
 	filters that operate on an entire image.
 
 :: Alpha-channels (transparency) and high bit-depths
-	PhotoDemon will happily import images with alpha channels or bit-depths greater
-	than 16 million colors.  However, it will internally convert these images to true
-	color (24-bit RGB) before operating on them, and it will only save images in 
-	non-alpha 8 or 24-bit color depths.  If you need alpha or deep color support,
-	PhotoDemon is not for you.
+	Per its name, PhotoDemon is designed for use with photos.  It will happily import
+	images with alpha channels or bit-depths greater than 16 million colors, but it
+	will internally convert these images to true color (24-bit RGB) before operating
+	on them, and it will only save images in non-alpha 8 or 24-bit color depths.  If
+	you need alpha or deep color support, I'm afraid PhotoDemon is not for you.
 		
 :: Advanced color management (ICC profiles)
 	PhotoDemon ignores embedded ICC profiles.  As a tool designed for consumers and
