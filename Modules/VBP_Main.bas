@@ -36,10 +36,6 @@ Public Sub Main()
     With iccex
        .lngSize = LenB(iccex)
        .lngICC = ICC_STANDARD_CLASSES
-       ' ICC_STANDARD_CLASSES = vb intrinsic controls (buttons, textbox, etc)
-       ' if using Common Controls; add appropriate ICC_ constants for type of control you are using
-       ' example if using CommonControls v5.0 Progress bar:
-       ' .lngICC = ICC_STANDARD_CLASSES Or ICC_PROGRESS_CLASS
     End With
     On Error Resume Next ' error? InitCommonControlsEx requires IEv3 or above
     hmod = LoadLibraryA("shell32.dll") ' patch to prevent XP crashes when VB usercontrols present
@@ -49,16 +45,9 @@ Public Sub Main()
         Err.Clear
     End If
     On Error GoTo 0
-    '... show your main form next (i.e., Form1.Show)
     
     Load FormMain
     
     If hmod Then FreeLibrary hmod
-
-
-'** Tip 1: Avoid using VB Frames when applying XP/Vista themes
-'          In place of VB Frames, use pictureboxes instead.
-'** Tip 2: Avoid using Graphical Style property of buttons, checkboxes and option buttons
-'          Doing so will prevent them from being themed.
 
 End Sub
