@@ -861,6 +861,9 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuEmailAuthor 
          Caption         =   "Submit Feedback..."
       End
+      Begin VB.Menu MnuBugReport 
+         Caption         =   "Submit Bug Report..."
+      End
       Begin VB.Menu MnuHelpSepBar1 
          Caption         =   "-"
       End
@@ -1043,6 +1046,13 @@ End Sub
 
 Private Sub MnuBrightness_Click()
     Process BrightnessAndContrast, , , , , , , , , , True
+End Sub
+
+Private Sub MnuBugReport_Click()
+    
+    'Shell a browser window with the GitHub issue report form
+    ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+
 End Sub
 
 Private Sub MnuBurn_Click()
@@ -1558,8 +1568,8 @@ Private Sub MnuVibrate_Click()
 End Sub
 
 Private Sub MnuVisitWebsite_Click()
-    'Nothing special here - just launch the default web browser with my site
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com", "", 0, SW_SHOWNORMAL
+    'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuWater_Click()
