@@ -291,6 +291,7 @@ Public Sub Draw()
       DrawToDC m_obj.HWnd, m_obj.hdc, tR.Left, tR.Top, tR.Right, tR.Bottom
       Me.DrawObject.Picture = Me.DrawObject.Image
       Me.DrawObject.Refresh
+      DoEvents
    Else
       ' Could use this to automatically paint the owner object
       ' when setting Min,Max,Value,Text etc
