@@ -20,7 +20,8 @@ Public PreviewWidth As Long, PreviewHeight As Long, PreviewX As Long, PreviewY A
 'Used to draw the main image onto a preview picture box
 Public Sub DrawPreviewImage(ByRef DstPicture As PictureBox)
     GetImageData
-    Dim DWidth As Single, DHeight As Single
+    'Dim DWidth As Single, DHeight As Single
+    Dim DWidth As Long, DHeight As Long
     
     Dim dstWidth As Single, dstHeight As Single
     dstWidth = DstPicture.ScaleWidth
@@ -32,22 +33,22 @@ Public Sub DrawPreviewImage(ByRef DstPicture As PictureBox)
     
     If srcAspect > dstAspect Then
         DWidth = DstPicture.ScaleWidth
-        DHeight = CSng(PicHeightL / PicWidthL) * DWidth
+        DHeight = CSng(PicHeightL / PicWidthL) * DWidth + 0.5
         PreviewY = CInt((DstPicture.ScaleHeight - DHeight) / 2)
         PreviewX = 0
         SetStretchBltMode DstPicture.hdc, STRETCHBLT_HALFTONE
         StretchBlt DstPicture.hdc, 0, PreviewY, DWidth, DHeight, FormMain.ActiveForm.BackBuffer.hdc, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
     Else
         DHeight = DstPicture.ScaleHeight
-        DWidth = CSng(PicWidthL / PicHeightL) * DHeight
+        DWidth = CSng(PicWidthL / PicHeightL) * DHeight + 0.5
         PreviewX = CInt((DstPicture.ScaleWidth - DWidth) / 2)
         PreviewY = 0
         SetStretchBltMode DstPicture.hdc, STRETCHBLT_HALFTONE
         StretchBlt DstPicture.hdc, PreviewX, 0, DWidth, DHeight, FormMain.ActiveForm.BackBuffer.hdc, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
     End If
     
-    PreviewWidth = DWidth
-    PreviewHeight = DHeight
+    PreviewWidth = DWidth - 1
+    PreviewHeight = DHeight - 1
     
     DstPicture.Picture = DstPicture.Image
     DstPicture.Refresh
