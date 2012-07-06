@@ -3,127 +3,34 @@ Attribute VB_Name = "Miscellaneous"
 'Miscellaneous Operations Handler
 '©2000-2012 Tanner Helland
 'Created: 6/12/01
-'Last updated: 10/June/12
-'Last update: Get rid of SetFormTopMost. It's obnoxious as hell when other programs force forms on top,
-'             so I definitely don't want to emulate the behavior.
+'Last updated: 05/July/12
+'Last update: Moved all string functions to a dedicated module.
 '
 'Handles messaging, value checking, RGB Extraction, checking if files exist,
-'variable truncation, and the old array transfer routines.
+' variable truncation, and old array transfer routines.
 '
 '***************************************************************************
 
 Option Explicit
 
-'Straight from MSDN (with some help from PSC) - generate a "browse for folder" dialog
+'Straight from MSDN - generate a "browse for folder" dialog
 Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
-    Dim objShell   As Shell
-    Dim objFolder  As Folder
+    
+    Dim objShell As Shell
+    Dim objFolder As Folder
     Dim returnString As String
         
     Set objShell = New Shell
-        Set objFolder = objShell.BrowseForFolder(srcHwnd, "Please select a folder:", 0)
-            If (Not objFolder Is Nothing) Then
-                returnString = objFolder.Items.Item.Path
-            Else
-                returnString = ""
-            End If
-        Set objFolder = Nothing
-    Set objShell = Nothing
-    BrowseForFolder = returnString
-End Function
-
-'Make sure the right backslash of a path is existant
-Public Function FixPath(ByVal tempString As String) As String
-    If Right(tempString, 1) <> "\" Then
-        FixPath = tempString & "\"
-    Else
-        FixPath = tempString
-    End If
-End Function
-
-'Pull the directory out of a filename
-Public Sub StripDirectory(ByRef sString As String)
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
-            sString = Left(sString, x)
-            Exit Sub
-        End If
-    Next x
-End Sub
-
-'Pull the filename ONLY (no directory) off a path
-Public Sub StripFilename(ByRef sString As String)
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
-            sString = Right(sString, Len(sString) - x)
-            Exit Sub
-        End If
-    Next x
-End Sub
-
-'Pull the filename & directory out WITHOUT any extension (but with the ".")
-Public Sub StripOffExtension(ByRef sString As String)
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = ".") Then
-            sString = Left(sString, x - 1)
-            Exit Sub
-        End If
-    Next x
-End Sub
-
-'Function to strip the extension from a filename (taken long ago from the Internet; thank you to whoever wrote it!)
-Public Function GetExtension(FileName As String) As String
-    Dim pathLoc As Long, extLoc As Long
-    Dim i As Long, j As Long
-
-    For i = Len(FileName) To 1 Step -1
-        If Mid(FileName, i, 1) = "." Then
-            extLoc = i
-            For j = Len(FileName) To 1 Step -1
-                If Mid(FileName, j, 1) = "\" Then
-                    pathLoc = j
-                    Exit For
-                End If
-            Next j
-            Exit For
-        End If
-    Next i
-    
-    If pathLoc > extLoc Then
-        GetExtension = ""
-    Else
-        If extLoc = 0 Then GetExtension = ""
-        GetExtension = Mid(FileName, extLoc + 1, Len(FileName) - extLoc)
-    End If
+    Set objFolder = objShell.BrowseForFolder(srcHwnd, "Please select a folder:", 0)
             
+    If (Not objFolder Is Nothing) Then returnString = objFolder.Items.Item.Path Else returnString = ""
+    
+    Set objFolder = Nothing
+    Set objShell = Nothing
+    
+    BrowseForFolder = returnString
+    
 End Function
-
-'Take a string and replace any invalid characters with "_"
-Public Sub makeValidWindowsFilename(ByRef FileName As String)
-
-    Dim strInvalidChars As String
-    strInvalidChars = "/*?""<>|"
-    
-    Dim invLoc As Long
-    
-    For x = 1 To Len(strInvalidChars)
-        invLoc = InStr(FileName, Mid$(strInvalidChars, x, 1))
-        If invLoc <> 0 Then
-            FileName = Left(FileName, invLoc - 1) & "_" & Right(FileName, Len(FileName) - invLoc)
-        End If
-    Next x
-
-End Sub
-
-'Remove the accelerator (e.g. "Ctrl+0") from the tail end of a string
-Public Sub StripAcceleratorFromCaption(ByRef sString As String)
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = vbTab) Then
-            sString = Left(sString, x - 1)
-            Exit Sub
-        End If
-    Next x
-End Sub
 
 'These two routines make it easier to interact with the progress bar; note that they are disabled while a batch
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
@@ -166,7 +73,7 @@ Public Sub Message(ByVal MString As String)
     
     Debug.Print MString
     
-    'If we're logging program messages, open up a log file and dump the message in there
+    'If we're logging program messages, open up a log file and dump the message there
     If LogProgramMessages = True Then
         Dim fileNum As Integer
         fileNum = FreeFile
@@ -235,6 +142,7 @@ Public Sub ByteMe(ByRef TempVar As Integer)
     If TempVar > 255 Then TempVar = 255
     If TempVar < 0 Then TempVar = 0
 End Sub
+
 'Convert to absolute byte values (Long-type)
 Public Sub ByteMeL(ByRef TempVar As Long)
     If TempVar > 255 Then TempVar = 255
@@ -267,33 +175,3 @@ Public Function AutoSelectText(ByRef tBox As TextBox)
     tBox.SelStart = 0
     tBox.SelLength = Len(tBox.Text)
 End Function
-
-'This lovely function comes from "penagate"; it was downloaded from http://www.vbforums.com/showthread.php?t=342995 on 08 June '12
-Public Function GetDomainName(ByVal Address As String) As String
-        Dim strOutput       As String
-        Dim strTemp         As String
-        Dim lngLoopCount    As Long
-        Dim lngBCount       As Long
-        Dim lngCharCount    As Long
-        strOutput$ = Replace(Address, "\", "/")
-        lngCharCount = Len(strOutput)
-        If (InStrB(1, strOutput, "/")) Then
-            Do Until ((strTemp = "/") Or (lngLoopCount = lngCharCount))
-                lngLoopCount = lngLoopCount + 1
-                strTemp = Mid$(strOutput, lngBCount + 1, 1)
-                lngBCount = lngBCount + 1
-            Loop
-        End If
-        strOutput = Right$(strOutput, Len(strOutput) - lngBCount)
-        lngBCount = 0
-        strTemp = "/"
-        If (InStrB(1, strOutput, "/")) Then
-            Do Until strTemp <> "/"
-                strTemp = Mid$(strOutput, lngBCount + 1, 1)
-                If strTemp = "/" Then lngBCount = lngBCount + 1
-            Loop
-        End If
-        strOutput = Right$(strOutput, Len(strOutput) - lngBCount)
-        strOutput = Left$(strOutput, InStr(1, strOutput, "/", vbTextCompare) - 1)
-        GetDomainName = strOutput
-    End Function
