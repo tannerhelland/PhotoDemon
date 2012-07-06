@@ -87,6 +87,7 @@ Module=Menu_Icons; Modules\VBP_MenuIcons.bas
 Class=clsMenuImage; Classes\clsMenuImage.cls
 Form=Forms\VBP_FormWhiteBalance.frm
 ResFile32="Resources\PD_icons.RES"
+Module=Text_Processing; Modules\VBP_TextModule.bas
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""
