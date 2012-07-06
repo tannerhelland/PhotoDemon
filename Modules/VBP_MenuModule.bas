@@ -145,6 +145,9 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
         PhotoDemon_OpenImageDialog = False
     End If
+    
+    'Release the common dialog object
+    Set CC = Nothing
 
 End Function
 
@@ -225,6 +228,9 @@ Public Sub MenuSaveAs(ByVal ImageID As Long)
         PhotoDemon_SaveImage CurrentImage, sFile, True
 
     End If
+    
+    'Release the common dialog object
+    Set CC = Nothing
     
 End Sub
 
