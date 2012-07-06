@@ -131,8 +131,7 @@ Attribute VB_Exposed = False
 '             FreeImage also offers more advanced options for compression, and it's faster to boot.  So,
 '             if FreeImage is found it will be used, otherwise the job falls to John's class.
 '
-'Form for giving the user a couple options for exporting JPEGs.  Unlike many
-' of the forms in this project, this one is actually quite user-friendly :)
+'Form for giving the user a couple options for exporting JPEGs.
 '
 '***************************************************************************
 
@@ -212,7 +211,7 @@ Private Sub hsQuality_Scroll()
 End Sub
 
 Private Sub txtQuality_Change()
-    If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max, False, False) Then hsQuality.Value = Val(txtQuality)
+    If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max, False, False) Then hsQuality.Value = val(txtQuality)
 End Sub
 
 Private Sub txtQuality_GotFocus()

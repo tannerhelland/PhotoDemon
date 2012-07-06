@@ -4,8 +4,7 @@ Attribute VB_Name = "Drawing"
 '©2000-2012 Tanner Helland
 'Created: 4/3/01
 'Last updated: 04/July/12
-'Last update: Rewrote DrawCrossHatch as DrawSpecificCanvas (now that a checkboard pattern and/or specific
-'              color is being used as canvas background).
+'Last update: Rewrote DrawPreviewImage so edge pixels weren't being missed
 '
 'Miscellaneous drawing routines that don't fit elsewhere.  At present, this includes rendering preview images,
 ' drawing the canvas background of image forms, and a gradient-rendering sub (used primarily on the histogram form).
@@ -19,8 +18,6 @@ Public PreviewWidth As Long, PreviewHeight As Long, PreviewX As Long, PreviewY A
 
 
 'Used to draw the main image onto a preview picture box
-'NOTE: AT PRESENT (6/November/06) this sometimes misses edge pixels on an image
-'NEED TO FIX!
 Public Sub DrawPreviewImage(ByRef DstPicture As PictureBox)
     GetImageData
     Dim DWidth As Single, DHeight As Single
@@ -51,8 +48,8 @@ Public Sub DrawPreviewImage(ByRef DstPicture As PictureBox)
         'DstPicture.PaintPicture FormMain.ActiveForm.BackBuffer.Picture, PreviewX, 0, DWidth, DHeight, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
     End If
     
-    PreviewWidth = DWidth - 1
-    PreviewHeight = DHeight - 1
+    PreviewWidth = DWidth '- 1
+    PreviewHeight = DHeight '- 1
     
     DstPicture.Picture = DstPicture.Image
     DstPicture.Refresh
