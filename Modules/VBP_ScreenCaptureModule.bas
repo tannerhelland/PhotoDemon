@@ -46,7 +46,7 @@ Public Sub CaptureScreen()
     FixScrolling = False
     
     'Create a new, blank form
-    CreateNewImageForm
+    CreateNewImageForm True
     
     'Get the window handle of the screen
     Dim scrHwnd As Long

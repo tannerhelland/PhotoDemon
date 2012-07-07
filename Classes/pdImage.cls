@@ -110,6 +110,9 @@ Option Explicit
     Public targetTop As Long
     Public targetLeft As Long               'Formerly the left and top of the .FrontBuffer picture box
     
+    'If this image is simply being used for internal PhotoDemon processing, hide it from the user
+    Public forInternalUseOnly As Boolean
+    
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface
 Public Sub UpdateSaveState(ByVal newSaveState As Boolean)
@@ -268,5 +271,6 @@ Private Sub Class_Initialize()
     'Initially, mark the image as *not* having been saved
     HasBeenSaved = False
     UndoNumAtLastSave = 0
+    forInternalUseOnly = False
     
 End Sub

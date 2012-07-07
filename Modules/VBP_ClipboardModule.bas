@@ -46,7 +46,7 @@ Public Sub ClipboardPaste()
         FixScrolling = False
         
         'We'll need a temporary form for saving the data to file
-        CreateNewImageForm
+        CreateNewImageForm True
         
         FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
         FormMain.ActiveForm.BackBuffer.Picture = Clipboard.GetData(2)

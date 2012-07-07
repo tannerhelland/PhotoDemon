@@ -30,7 +30,7 @@ Public pdImages() As pdImage
 
 
 'Create a new, blank MDI child
-Public Sub CreateNewImageForm()
+Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
 
     'Disable viewport adjustments
     FixScrolling = False
@@ -49,7 +49,7 @@ Public Sub CreateNewImageForm()
     frm.Tag = NumOfImagesLoaded
     
     'Remember this ID in the associated image class
-    pdImages(NumOfImagesLoaded).isActive = True
+    pdImages(NumOfImagesLoaded).IsActive = True
     pdImages(NumOfImagesLoaded).ImageID = NumOfImagesLoaded
     
     'Default size (stupid twip measurements, unfortunately)
@@ -92,6 +92,9 @@ Public Sub CreateNewImageForm()
     
     'Re-enable viewport adjustments
     FixScrolling = True
+    
+    'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
+    pdImages(NumOfImagesLoaded).forInternalUseOnly = forInternalUse
     
 End Sub
 
