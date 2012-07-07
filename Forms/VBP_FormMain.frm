@@ -954,37 +954,23 @@ Private Sub MDIForm_Load()
     
 End Sub
 
-Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-'Make sure the exit is planned
-'    Dim ReturnVal
-'    ReturnVal = MsgBox("Are you sure you want to exit?", vbExclamation + vbYesNo + vbDefaultButton2, App.Title)
-'    If ReturnVal = vbYes Then
-    
-    'NEED TO DO: scan all images for unsaved ones.  If multiples are found, put up one "warning to rule them all"
-    
-    'Clear out every Undo file we've generated (gotta be polite!)
-    ClearALLUndo
-    
-    'Unload every form manually (since we can't trust VB to do it for us...)
-    Dim tForm As Form
-    For Each tForm In VB.Forms
-        If tForm.Name <> "Main" Then Unload tForm
-    Next
-
-    'Save the MRU list to the INI file (I suppose this could be done as files are loaded, but the
-    ' only time that would matter is if the program crashes, and if it does crash, you wouldn't
-    ' want to use that image again anyway!)
-    MRU_SaveToINI
-
-End Sub
-
 'When the form is resized, the progress bar at bottom needs to be manually redrawn
 Private Sub MDIForm_Resize()
     picProgBar.Refresh
     cProgBar.Draw
 End Sub
 
-Public Sub MDIForm_Unload(Cancel As Integer)
+'UNLOAD EVERYTHING
+Private Sub MDIForm_Unload(Cancel As Integer)
+    
+    'By this point, all the child forms should have taken care of their Undo clearing-out.
+    ' Just in case, however, prompt a final cleaning.
+    ClearALLUndo
+
+    'Save the MRU list to the INI file.  (I've considered doing this as files are loaded, but the
+    ' only time that would be an improvement is if the program crashes, and if it does crash, the user probably
+    ' wouldn't want to re-load the problematic image anyway.)
+    MRU_SaveToINI
     
 End Sub
 

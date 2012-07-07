@@ -232,14 +232,14 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'If the user wants to be prompted about unsaved images, do it now
-    If (ConfirmClosingUnsaved = True) And (pdImages(Me.Tag).IsActive = True) Then
+    If (ConfirmClosingUnsaved = True) And (pdImages(Me.Tag).IsActive = True) And (pdImages(Me.Tag).forInternalUseOnly = False) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
         If pdImages(Me.Tag).HasBeenSaved = False Then
             
             'Generate our save message
             Dim saveMsg As String
-            saveMsg = "This image (" & pdImages(Me.Tag).OriginalFileName & ") has not been saved.  Would you like to save it now?"
+            saveMsg = "The image """ & pdImages(Me.Tag).OriginalFileNameAndExtension & """ has not been saved.  Would you like to save it now?"
             
             'If this file exists on disk, warn them that this will initiate a SAVE, not a SAVE AS
             If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then use the Menu -> Save As command."
@@ -250,14 +250,17 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         
             'There are now three possible courses of action:
             ' 1) The user canceled.  Quit and abandon all notion of closing.
-            ' 2) The user asked us to save for them.  Pass control to MenuSave (which will in turn call SaveAs if necessary)
+            ' 2) The user asked us to save this image.  Pass control to MenuSave (which will in turn call SaveAs if necessary)
             ' 3) The user doesn't give a shit.  Exit without saving.
             If confirmReturn = vbCancel Then
                 Cancel = True
             ElseIf confirmReturn = vbYes Then
+                
+                'Attempt to save.  Note that the user can still cancel at this point, and we want to honor their cancellation
                 Dim saveSuccessful As Boolean
                 saveSuccessful = MenuSave(CLng(Me.Tag))
                 
+                'If something went wrong, or the user canceled the save dialog, stop the unload process
                 Cancel = Not saveSuccessful
             End If
         
