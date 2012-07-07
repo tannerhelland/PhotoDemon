@@ -29,6 +29,10 @@ Public Sub LoadTheProgram()
     'Now, before doing anything else, load the INI file and corresponding data (via the INIProcessor module)
     LoadINI
     
+    'Check for plug-ins (we do this early, because other routies rely on this knowledge)
+    LoadMessage "Loading plugins..."
+    LoadPlugins
+    
     'Set default variables
     LoadMessage "Initializing all variables..."
     
@@ -109,7 +113,6 @@ Public Sub LoadTheProgram()
     cProgBar.Draw
     
     'Set up GUI defaults
-    LoadMessage "Loading GUI..."
     FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
     
     'Clear the progress bar
@@ -120,10 +123,6 @@ Public Sub LoadTheProgram()
     
     'Load the most-recently-used file list (MRU)
     MRU_LoadFromINI
-    
-    'Check for plug-ins...
-    LoadMessage "Loading plugins..."
-    LoadPlugins
     
     LoadMessage "Fixing icon..."
     SetIcon FormMain.HWnd, "AAA", True
