@@ -275,7 +275,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             pdImages(CurrentImage).OriginalFileName = tmpFileName
             
             'Disable the save button, because this file exists on disk
-            tInit tSave, False
+            pdImages(CurrentImage).UpdateSaveState True
             
         Else
             'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
@@ -288,7 +288,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             pdImages(CurrentImage).OriginalFileName = tmpFileName
             
             'Similarly, enable the save button
-            tInit tSave, True
+            pdImages(CurrentImage).UpdateSaveState False
             
         End If
             

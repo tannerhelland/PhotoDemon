@@ -179,10 +179,8 @@ Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, x As Single, y
     SetBitmapCoordinates x, y
 End Sub
 
-'NOTE: VB6 does not check focus events for non-maximized MDI child forms.
-'This creates a problem when trying to perform events tied to an MDI child form "losing focus"
-' (in the traditional sense).  As a result, I've been forced to rig a handler that fires only
-' upon form "activation"; this is necessary for tracking Undo/Redo, among other things.
+'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
+' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
 
 Private Sub Form_Activate()
     'Update the current form variable
@@ -200,6 +198,9 @@ Private Sub Form_Activate()
     tInit tUndo, pdImages(CurrentImage).UndoState
     tInit tRedo, pdImages(CurrentImage).RedoState
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
+    
+    'Determine whether save is enabled
+    tInit tSave, Not pdImages(CurrentImage).HasBeenSaved
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If pdImages(CurrentImage).PicWidth <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
@@ -225,6 +226,45 @@ End Sub
 
 Private Sub Form_LostFocus()
     'MsgBox "Lost focus" & Me.Tag
+End Sub
+
+'In VB6, _QueryUnload fires before _Unload.  We check for unsaved images here.
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+
+    'If the user wants to be prompted about unsaved images, do it now
+    If (ConfirmClosingUnsaved = True) And (pdImages(Me.Tag).IsActive = True) Then
+    
+        'Check the .HasBeenSaved property of the image associated with this form
+        If pdImages(Me.Tag).HasBeenSaved = False Then
+            
+            'Generate our save message
+            Dim saveMsg As String
+            saveMsg = "This image (" & pdImages(Me.Tag).OriginalFileName & ") has not been saved.  Would you like to save it now?"
+            
+            'If this file exists on disk, warn them that this will initiate a SAVE, not a SAVE AS
+            If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then use the Menu -> Save As command."
+            
+            'Get the user's input
+            Dim confirmReturn As VbMsgBoxResult
+            confirmReturn = MsgBox(saveMsg, vbYesNoCancel + vbApplicationModal + vbQuestion, "Unsaved image data")
+        
+            'There are now three possible courses of action:
+            ' 1) The user canceled.  Quit and abandon all notion of closing.
+            ' 2) The user asked us to save for them.  Pass control to MenuSave (which will in turn call SaveAs if necessary)
+            ' 3) The user doesn't give a shit.  Exit without saving.
+            If confirmReturn = vbCancel Then
+                Cancel = True
+            ElseIf confirmReturn = vbYes Then
+                Dim saveSuccessful As Boolean
+                saveSuccessful = MenuSave(CLng(Me.Tag))
+                
+                Cancel = Not saveSuccessful
+            End If
+        
+        End If
+    
+    End If
+    
 End Sub
 
 Private Sub Form_Resize()

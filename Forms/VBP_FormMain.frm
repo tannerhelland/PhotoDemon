@@ -954,17 +954,13 @@ Private Sub MDIForm_Load()
     
 End Sub
 
-'When the form is resized, the progress bar at bottom needs to be manually redrawn
-Private Sub MDIForm_Resize()
-    picProgBar.Refresh
-    cProgBar.Draw
-End Sub
-
-Public Sub MDIForm_Unload(Cancel As Integer)
+Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 'Make sure the exit is planned
 '    Dim ReturnVal
 '    ReturnVal = MsgBox("Are you sure you want to exit?", vbExclamation + vbYesNo + vbDefaultButton2, App.Title)
 '    If ReturnVal = vbYes Then
+    
+    'NEED TO DO: scan all images for unsaved ones.  If multiples are found, put up one "warning to rule them all"
     
     'Clear out every Undo file we've generated (gotta be polite!)
     ClearALLUndo
@@ -979,11 +975,16 @@ Public Sub MDIForm_Unload(Cancel As Integer)
     ' only time that would matter is if the program crashes, and if it does crash, you wouldn't
     ' want to use that image again anyway!)
     MRU_SaveToINI
-    
-    'Now (and *only* now) we can rely on VB's 'End' function to finish the job
-    'NOTE: as of 13 January 2009, using "End" crashes VB and creates a nasty illegal exception
-    'error.  So, I just don't use it.
-    'End
+
+End Sub
+
+'When the form is resized, the progress bar at bottom needs to be manually redrawn
+Private Sub MDIForm_Resize()
+    picProgBar.Refresh
+    cProgBar.Draw
+End Sub
+
+Public Sub MDIForm_Unload(Cancel As Integer)
     
 End Sub
 

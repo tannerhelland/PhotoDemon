@@ -39,13 +39,10 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
         Case tSave
             If FormMain.MnuSave.Enabled <> tState Then
                 FormMain.cmdSave.Enabled = tState
-                FormMain.MnuSaveAs.Enabled = tState
                 FormMain.MnuSave.Enabled = tState
             End If
         Case tSaveAs
-            If FormMain.MnuSaveAs.Enabled <> tState Then
-                FormMain.MnuSaveAs.Enabled = tState
-            End If
+            If FormMain.MnuSaveAs.Enabled <> tState Then FormMain.MnuSaveAs.Enabled = tState
         Case tCopy
             If FormMain.MnuCopy.Enabled <> tState Then FormMain.MnuCopy.Enabled = tState
         Case tPaste
