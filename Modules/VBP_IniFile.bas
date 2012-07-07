@@ -130,6 +130,7 @@ Public Sub LoadINI()
             Print #fileNum, "LastSaveFilter=3"   'Default to JPEG for saving
             Print #fileNum, ""
             Print #fileNum, "[General Preferences]"
+            Print #fileNum, "ConfirmClosingUnsaved=1"
             Print #fileNum, "CanvasBackground=16777215"
             Print #fileNum, "LogProgramMessages=0"
             Print #fileNum, "PromptForPluginDownload=1"
@@ -185,6 +186,11 @@ Public Sub LoadINI()
     tempString = GetFromIni("General Preferences", "CanvasBackground")
     x = val(tempString)
     CanvasBackground = x
+    
+    'Check if the user wants us to prompt them about closing unsaved images
+    tempString = GetFromIni("General Preferences", "ConfirmClosingUnsaved")
+    x = val(tempString)
+    If x = 0 Then ConfirmClosingUnsaved = False Else ConfirmClosingUnsaved = True
     
 End Sub
 

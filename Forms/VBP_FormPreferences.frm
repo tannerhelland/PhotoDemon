@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormPreferences 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Preferences"
-   ClientHeight    =   5205
+   ClientHeight    =   5580
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   5055
@@ -18,11 +18,23 @@ Begin VB.Form FormPreferences
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   347
+   ScaleHeight     =   372
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   337
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CheckBox chkConfirmUnsaved 
+      Appearance      =   0  'Flat
+      Caption         =   "Confirm closing of unsaved images"
+      ForeColor       =   &H00400000&
+      Height          =   255
+      Left            =   240
+      MouseIcon       =   "VBP_FormPreferences.frx":0000
+      MousePointer    =   99  'Custom
+      TabIndex        =   15
+      Top             =   2760
+      Width           =   3375
+   End
    Begin VB.PictureBox picCanvasImg 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -31,7 +43,7 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H80000008&
       Height          =   270
       Left            =   5040
-      Picture         =   "VBP_FormPreferences.frx":0000
+      Picture         =   "VBP_FormPreferences.frx":0152
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
@@ -47,12 +59,13 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H80000008&
       Height          =   375
       Left            =   120
-      MouseIcon       =   "VBP_FormPreferences.frx":008A
+      MouseIcon       =   "VBP_FormPreferences.frx":01DC
       MousePointer    =   99  'Custom
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   319
       TabIndex        =   12
+      ToolTipText     =   "Click to change color"
       Top             =   840
       Width           =   4815
    End
@@ -60,7 +73,7 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   2280
-      MouseIcon       =   "VBP_FormPreferences.frx":01DC
+      MouseIcon       =   "VBP_FormPreferences.frx":032E
       MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   11
@@ -71,7 +84,7 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   240
-      MouseIcon       =   "VBP_FormPreferences.frx":032E
+      MouseIcon       =   "VBP_FormPreferences.frx":0480
       MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   8
@@ -84,10 +97,11 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      MouseIcon       =   "VBP_FormPreferences.frx":0480
+      MouseIcon       =   "VBP_FormPreferences.frx":05D2
       MousePointer    =   99  'Custom
       TabIndex        =   2
-      Top             =   3120
+      ToolTipText     =   $"VBP_FormPreferences.frx":0724
+      Top             =   3480
       Width           =   4455
    End
    Begin VB.CommandButton CmdTmpPath 
@@ -103,10 +117,11 @@ Begin VB.Form FormPreferences
       EndProperty
       Height          =   330
       Left            =   4560
-      MouseIcon       =   "VBP_FormPreferences.frx":05D2
+      MouseIcon       =   "VBP_FormPreferences.frx":0816
       MousePointer    =   99  'Custom
       TabIndex        =   5
-      Top             =   3960
+      ToolTipText     =   "Click to open a browser-folder dialog"
+      Top             =   4320
       Width           =   255
    End
    Begin VB.TextBox TxtTempPath 
@@ -117,7 +132,7 @@ Begin VB.Form FormPreferences
       TabIndex        =   4
       Text            =   "automatically generated at run-time"
       ToolTipText     =   "Folder used for temporary calculations"
-      Top             =   3960
+      Top             =   4320
       Width           =   4215
    End
    Begin VB.CommandButton cmdCancel 
@@ -125,10 +140,10 @@ Begin VB.Form FormPreferences
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormPreferences.frx":0724
+      MouseIcon       =   "VBP_FormPreferences.frx":0968
       MousePointer    =   99  'Custom
       TabIndex        =   1
-      Top             =   4680
+      Top             =   5040
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
@@ -136,10 +151,10 @@ Begin VB.Form FormPreferences
       Default         =   -1  'True
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormPreferences.frx":0876
+      MouseIcon       =   "VBP_FormPreferences.frx":0ABA
       MousePointer    =   99  'Custom
       TabIndex        =   0
-      Top             =   4680
+      Top             =   5040
       Width           =   1125
    End
    Begin VB.CheckBox ChkPromptPluginDownload 
@@ -148,12 +163,11 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      MouseIcon       =   "VBP_FormPreferences.frx":09C8
+      MouseIcon       =   "VBP_FormPreferences.frx":0C0C
       MousePointer    =   99  'Custom
       TabIndex        =   3
-      ToolTipText     =   "Checked = faster effects; unchecked = progress bar displayed"
-      Top             =   2760
-      Width           =   4575
+      Top             =   3120
+      Width           =   3375
    End
    Begin VB.Label lblGeneralOptions 
       AutoSize        =   -1  'True
@@ -224,7 +238,7 @@ Begin VB.Form FormPreferences
       Height          =   255
       Left            =   240
       TabIndex        =   6
-      Top             =   3600
+      Top             =   3960
       Width           =   4575
    End
 End
@@ -291,7 +305,23 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-        
+    
+    'Store whether the user wants to be prompted when closing unsaved images
+    If chkConfirmUnsaved.Value = vbChecked Then
+        ConfirmClosingUnsaved = True
+        WriteToIni "General Preferences", "ConfirmClosingUnsaved", 1
+    Else
+        ConfirmClosingUnsaved = False
+        WriteToIni "General Preferences", "ConfirmClosingUnsaved", 0
+    End If
+    
+    'Store whether PhotoDemon is allowed to offer the automatic download of missing core plugins
+    If ChkPromptPluginDownload.Value = vbChecked Then
+        WriteToIni "General Preferences", "PromptForPluginDownload", 1
+    Else
+        WriteToIni "General Preferences", "PromptForPluginDownload", 0
+    End If
+    
     'Store whether we'll log system messages or not
     If ChkLogMessages.Value = vbChecked Then
         LogProgramMessages = True
@@ -299,13 +329,6 @@ Private Sub CmdOK_Click()
     Else
         LogProgramMessages = False
         WriteToIni "General Preferences", "LogProgramMessages", 0
-    End If
-    
-    'Store that PhotoDemon is allowed to offer the automatic download of missing core plugins
-    If ChkPromptPluginDownload.Value = vbChecked Then
-        WriteToIni "General Preferences", "PromptForPluginDownload", 1
-    Else
-        WriteToIni "General Preferences", "PromptForPluginDownload", 0
     End If
     
     'Store the canvas background preference
@@ -383,8 +406,11 @@ Private Sub Form_Load()
     DrawSampleCanvasBackground
     userInitiatedColorSelection = True
     
-    'Assign the check box related to logging program messages
+    'Assign the check box for logging program messages
     If LogProgramMessages = True Then ChkLogMessages.Value = vbChecked Else ChkLogMessages.Value = vbUnchecked
+    
+    'Assign the check box for prompting about unsaved images
+    If ConfirmClosingUnsaved = True Then chkConfirmUnsaved.Value = vbChecked Else chkConfirmUnsaved.Value = vbUnchecked
     
     'Display the current temporary file path
     TxtTempPath.Text = TempPath

@@ -89,6 +89,9 @@ Public HasCreatedFilter As Boolean
 'How to draw the background of image forms; -1 is checkerboard, any other value is treated as an RGB long
 Public CanvasBackground As Long
 
+'Does the user want us to prompt them when they try to close unsaved images?
+Public ConfirmClosingUnsaved As Boolean
+
 'Whether or not to log program messages in a separate file - this is useful for debugging
 Public LogProgramMessages As Boolean
 
