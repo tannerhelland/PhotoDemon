@@ -322,6 +322,10 @@ Public Sub PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As String, 
         pdImages(CurrentImage).OriginalFileNameAndExtension = tmpFileName
         StripOffExtension tmpFileName
         pdImages(CurrentImage).OriginalFileName = tmpFileName
+        
+        'Mark this file as having been saved
+        pdImages(CurrentImage).HasBeenSaved = True
+        tInit tSave, False
     
     End If
 

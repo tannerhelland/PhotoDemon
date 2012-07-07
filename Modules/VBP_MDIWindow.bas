@@ -49,7 +49,7 @@ Public Sub CreateNewImageForm()
     frm.Tag = NumOfImagesLoaded
     
     'Remember this ID in the associated image class
-    pdImages(NumOfImagesLoaded).IsActive = True
+    pdImages(NumOfImagesLoaded).isActive = True
     pdImages(NumOfImagesLoaded).ImageID = NumOfImagesLoaded
     
     'Default size (stupid twip measurements, unfortunately)
@@ -255,6 +255,7 @@ Public Sub UpdateMDIStatus()
     If NumOfWindows < 1 Then
         tInit tFilter, False
         tInit tSave, False
+        tInit tSaveAs, False
         tInit tCopy, False
         tInit tUndo, False
         tInit tRedo, False
@@ -285,6 +286,7 @@ Public Sub UpdateMDIStatus()
     Else
         tInit tFilter, True
         tInit tSave, True
+        tInit tSaveAs, True
         tInit tCopy, True
         tInit tUndo, pdImages(CurrentImage).UndoState
         tInit tRedo, pdImages(CurrentImage).RedoState

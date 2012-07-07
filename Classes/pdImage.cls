@@ -11,6 +11,24 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon Image class
+'©2000-2012 Tanner Helland
+'Created: sometime 2006
+'Last updated: 07/July/12
+'Last update: implemented HasBeenSaved tracking
+'
+'The pdImage class is used to store information on each image loaded by the user.  One copy of this
+' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
+' in the MDIWindow module.
+'
+'At present, the main purpose of this class is to hold a bunch of variables related to a given image -
+' things like size, zoom, name, file path, containing form, Undo/Redo tracking.  In the future, I'd like
+' for this class to reference an in-memory copy of an image's data, which would finally break PhotoDemon's
+' reliance on picture boxes for storing image data (and would allow things like deep color support).
+'
+'***************************************************************************
+
 
 Option Explicit
 
@@ -35,13 +53,12 @@ Option Explicit
 'Two save flags (e.g. which format the image was saved in, and any attached parameters - such as JPEG quality)
 
 'Eventually, it might be nice to add the following information:
-'Saved: yes/no
-'Full image data (instead of storing it in a picture box, as we do now)
+' Full image data (instead of storing it in a picture box, as we do now)
 
     Public ImageID As Long
 
     'Is the form associated with this image still loaded?
-    Public IsActive As Boolean
+    Public isActive As Boolean
 
     'The ID of the MDI child form containing this particular image
     Public containingForm As Form
@@ -79,6 +96,9 @@ Option Explicit
     Public saveFlag0 As Long
     Public saveFlag1 As Long
     
+    'Has this image been saved?
+    Public HasBeenSaved As Boolean
+    
     'These two variables are only used at form load; they can be safely ignored once the image is visible.
     Public WindowLeft As Long
     Public WindowTop As Long
@@ -100,7 +120,6 @@ Public Sub BuildUndo()
     
     'If the present image is NOT the last image in the undo train (i.e., an Undo
     'was fired before running the current operation) treat this as the new "last"
-    'If UndoNum < UndoMax Then UndoMax = UndoNum
     UndoMax = UndoNum
     
     'Increase the number of Undos we recognize as existant
@@ -114,6 +133,11 @@ Public Sub BuildUndo()
     'Allow the user to Undo, but no longer Redo
     UndoState = True
     RedoState = False
+    
+    'Mark this image as NOT saved (because if we're creating an Undo file, the image is being changed somehow)
+    HasBeenSaved = False
+    tInit tSave, True
+    
     Debug.Print "Undo created successfully."
 
     'MsgBox UndoNum & "," & UndoMax & "," & UndoTotal & "," & vbCrLf & UndoState & "," & RedoState
@@ -139,6 +163,14 @@ Public Sub Undo()
     'If we're now at the end of our Undo chain, disable further undo-ing
     If UndoNum = 0 Then
         UndoState = False
+        
+        'Also, if this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
+        ' some other source), note that the image has now BEEN SAVED (because it has not been changed at all). If the image
+        ' was imported from somewhere, it HAS NOT BEEN SAVED just because the user Undo'd all the way back to its
+        ' original state.
+        If LocationOnDisk = "" Then HasBeenSaved = False Else HasBeenSaved = True
+        tInit tSave, Not (HasBeenSaved)
+        
     End If
     
 End Sub
@@ -150,6 +182,10 @@ Public Sub Redo()
     If UndoNum < UndoMax Then
         UndoNum = UndoNum + 1
         UndoState = True
+        
+        'Allow saving
+        tInit tSave, True
+        
     End If
     
     'If we're at the end of our action chain, disable any further Redo-ing
@@ -199,3 +235,10 @@ Private Function FileExist(fName As String) As Boolean
     FileExist = Not CBool(Err)
 End Function
 
+'INITIALIZE class
+Private Sub Class_Initialize()
+
+    'Initially, mark the image as *not* having been saved
+    HasBeenSaved = False
+    
+End Sub

@@ -16,16 +16,17 @@ Option Explicit
 
 Public Const tOpen As Byte = 0
 Public Const tSave As Byte = 1
-Public Const tCopy As Byte = 2
-Public Const tPaste As Byte = 3
-Public Const tUndo As Byte = 4
-Public Const tImageOps As Byte = 5
-Public Const tFilter As Byte = 6
-Public Const tRedo As Byte = 7
-Public Const tHistogram As Byte = 8
-Public Const tMacro As Byte = 9
-Public Const tEdit As Byte = 10
-Public Const tRepeatLast As Byte = 11
+Public Const tSaveAs As Byte = 2
+Public Const tCopy As Byte = 3
+Public Const tPaste As Byte = 4
+Public Const tUndo As Byte = 5
+Public Const tImageOps As Byte = 6
+Public Const tFilter As Byte = 7
+Public Const tRedo As Byte = 8
+Public Const tHistogram As Byte = 9
+Public Const tMacro As Byte = 10
+Public Const tEdit As Byte = 11
+Public Const tRepeatLast As Byte = 12
 
 Public Sub tInit(tButton As Byte, tState As Boolean)
     
@@ -40,6 +41,10 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 FormMain.cmdSave.Enabled = tState
                 FormMain.MnuSaveAs.Enabled = tState
                 FormMain.MnuSave.Enabled = tState
+            End If
+        Case tSaveAs
+            If FormMain.MnuSaveAs.Enabled <> tState Then
+                FormMain.MnuSaveAs.Enabled = tState
             End If
         Case tCopy
             If FormMain.MnuCopy.Enabled <> tState Then FormMain.MnuCopy.Enabled = tState

@@ -187,7 +187,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         FormMain.ActiveForm.VScroll.Value = 0
         
         'Prepare the user interface for a new image
-        tInit tSave, True
+        tInit tSaveAs, True
         tInit tCopy, True
         tInit tPaste, True
         tInit tUndo, False
@@ -274,6 +274,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             StripOffExtension tmpFileName
             pdImages(CurrentImage).OriginalFileName = tmpFileName
             
+            'Disable the save button, because this file exists on disk
+            tInit tSave, False
+            
         Else
             'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
             ' dialog in the future by not specifying a location on disk
@@ -283,6 +286,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             tmpFileName = imgName
             StripOffExtension tmpFileName
             pdImages(CurrentImage).OriginalFileName = tmpFileName
+            
+            'Similarly, enable the save button
+            tInit tSave, True
+            
         End If
             
         If imgFormTitle = "" Then FormMain.ActiveForm.Caption = sFile(thisImage) Else FormMain.ActiveForm.Caption = imgFormTitle
