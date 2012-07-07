@@ -58,7 +58,7 @@ Option Explicit
     Public ImageID As Long
 
     'Is the form associated with this image still loaded?
-    Public isActive As Boolean
+    Public IsActive As Boolean
 
     'The ID of the MDI child form containing this particular image
     Public containingForm As Form
@@ -98,6 +98,7 @@ Option Explicit
     
     'Has this image been saved?
     Public HasBeenSaved As Boolean
+    Public UndoNumAtLastSave As Integer
     
     'These two variables are only used at form load; they can be safely ignored once the image is visible.
     Public WindowLeft As Long
@@ -108,6 +109,21 @@ Option Explicit
     Public targetHeight As Long       'Formerly the width and height of the .FrontBuffer picture box
     Public targetTop As Long
     Public targetLeft As Long               'Formerly the left and top of the .FrontBuffer picture box
+    
+'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
+' processing based on the state of this variable, we provide this interface
+Public Sub UpdateSaveState(ByVal newSaveState As Boolean)
+
+    If newSaveState = True Then
+        HasBeenSaved = True
+        UndoNumAtLastSave = UndoNum '- 1
+    Else
+        HasBeenSaved = False
+    End If
+
+    tInit tSave, Not HasBeenSaved
+
+End Sub
     
 'UNDO routines:
 
@@ -161,30 +177,41 @@ Public Sub Undo()
     End If
     
     'If we're now at the end of our Undo chain, disable further undo-ing
-    If UndoNum = 0 Then
-        UndoState = False
-        
-        'Also, if this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
-        ' some other source), note that the image has now BEEN SAVED (because it has not been changed at all). If the image
-        ' was imported from somewhere, it HAS NOT BEEN SAVED just because the user Undo'd all the way back to its
-        ' original state.
+    If UndoNum = 0 Then UndoState = False
+    
+            
+    'Also, if this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
+    ' some other source), note that the image has now BEEN SAVED (because it has not been changed at all). If the image
+    ' was imported from somewhere, it HAS NOT BEEN SAVED just because the user Undo'd all the way back to its
+    ' original state.
+    If UndoNum = UndoNumAtLastSave Then
+    
+        'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
         If LocationOnDisk = "" Then HasBeenSaved = False Else HasBeenSaved = True
-        tInit tSave, Not (HasBeenSaved)
-        
+        tInit tSave, Not HasBeenSaved
+    Else
+        HasBeenSaved = False
+        tInit tSave, Not HasBeenSaved
     End If
     
 End Sub
 
 'Restore an undo entry : "Redo"
 Public Sub Redo()
-
+    
     'If we're not at the end of our action chain, advance us by 1
     If UndoNum < UndoMax Then
         UndoNum = UndoNum + 1
         UndoState = True
         
         'Allow saving
-        tInit tSave, True
+        If UndoNum = UndoNumAtLastSave Then
+            HasBeenSaved = True
+            tInit tSave, False
+        Else
+            HasBeenSaved = False
+            tInit tSave, True
+        End If
         
     End If
     
@@ -240,5 +267,6 @@ Private Sub Class_Initialize()
 
     'Initially, mark the image as *not* having been saved
     HasBeenSaved = False
+    UndoNumAtLastSave = 0
     
 End Sub

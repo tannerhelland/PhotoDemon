@@ -154,20 +154,20 @@ End Function
 'Subroutine for saving an image to file.  This function assumes the image already exists on disk and is simply
 ' being replaced; if the file does not exist on disk, this routine will automatically transfer control to Save As...
 ' The imageToSave is a reference to an ID in the pdImages() array.  It can be grabbed from the form.Tag value as well.
-Public Sub MenuSave(ByVal ImageID As Long)
+Public Function MenuSave(ByVal ImageID As Long) As Boolean
 
     If pdImages(ImageID).LocationOnDisk = "" Then
         'This image hasn't been saved before.  Launch the Save As... dialog
-        MenuSaveAs ImageID
+        MenuSave = MenuSaveAs(ImageID)
     Else
         'This image has been saved before.  Overwrite it.
-        PhotoDemon_SaveImage ImageID, pdImages(ImageID).LocationOnDisk, False, pdImages(ImageID).saveFlag0, pdImages(ImageID).saveFlag1
+        MenuSave = PhotoDemon_SaveImage(ImageID, pdImages(ImageID).LocationOnDisk, False, pdImages(ImageID).saveFlag0, pdImages(ImageID).saveFlag1)
     End If
 
-End Sub
+End Function
 
 'Subroutine for displaying a commondialog save box, then saving an image to the specified file
-Public Sub MenuSaveAs(ByVal ImageID As Long)
+Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
 
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -225,19 +225,21 @@ Public Sub MenuSaveAs(ByVal ImageID As Long)
         SaveFileName = sFile
         
         'Transfer control to the core SaveImage routine, which will handle file extension analysis and actual saving
-        PhotoDemon_SaveImage CurrentImage, sFile, True
-
+        MenuSaveAs = PhotoDemon_SaveImage(CurrentImage, sFile, True)
+        
+    Else
+        MenuSaveAs = False
     End If
     
     'Release the common dialog object
     Set CC = Nothing
     
-End Sub
+End Function
 
 'This routine will blindly save the image from the form containing pdImages(imageID) to dstPath.  It is up to
 ' the calling routine to make sure this is what is wanted. (Note: this routine will erase any existing image
 ' at dstPath, so BE VERY CAREFUL with what you send here!)
-Public Sub PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal optionalSaveParameter0 As Long = -1, Optional ByVal optionalSaveParameter1 As Long = -1)
+Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal optionalSaveParameter0 As Long = -1, Optional ByVal optionalSaveParameter1 As Long = -1) As Boolean
 
     'Used to determine what kind of file the user is trying to open
     Dim FileExtension As String
@@ -324,12 +326,15 @@ Public Sub PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As String, 
         pdImages(CurrentImage).OriginalFileName = tmpFileName
         
         'Mark this file as having been saved
-        pdImages(CurrentImage).HasBeenSaved = True
-        tInit tSave, False
+        pdImages(CurrentImage).UpdateSaveState True
     
+        PhotoDemon_SaveImage = True
+    
+    Else
+        PhotoDemon_SaveImage = False
     End If
 
-End Sub
+End Function
 
 'Return a string containing the expected file extension of the supplied commondialog filter index
 Private Function getExtensionFromFilterIndex(ByVal FilterIndex As Long) As String
