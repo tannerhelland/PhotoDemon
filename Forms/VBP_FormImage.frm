@@ -286,6 +286,41 @@ Private Sub Form_Resize()
         Me.Height = 6000
         Me.Width = 8000
     End If
+    
+    Dim i As Long
+    
+    'If the window is being un-maximized, it's necessary to redraw every image buffer (to check for scroll bar enabling/disabling)
+    If pdImages(Me.Tag).WindowState = vbMaximized And Me.WindowState = 0 Then
+        
+        For i = 1 To CurrentImage
+            If pdImages(i).IsActive = True Then
+                pdImages(i).WindowState = 0
+                PrepareViewport pdImages(i).containingForm
+                
+                'While we're at it, make sure the images aren't still hidden off-form (which can happen if they were loaded while the window was maximized)
+                If pdImages(i).containingForm.Left >= FormMain.ScaleWidth Then pdImages(i).containingForm.Left = pdImages(i).WindowLeft
+                If pdImages(i).containingForm.Top >= FormMain.ScaleHeight Then pdImages(i).containingForm.Top = pdImages(i).WindowTop
+
+            End If
+        Next i
+        
+    End If
+    
+    'If this window is going from non-maximized to maximized, note that across all relevant pdImage objects
+    If pdImages(Me.Tag).WindowState <> vbMaximized And Me.WindowState = vbMaximized Then
+    
+        For i = 1 To CurrentImage
+            If pdImages(i).IsActive = True Then
+                pdImages(i).WindowState = vbMaximized
+                PrepareViewport pdImages(i).containingForm
+            End If
+        Next i
+    
+    End If
+    
+    
+    'Remember this window state in the relevant pdImages object
+    pdImages(Me.Tag).WindowState = Me.WindowState
         
 End Sub
 

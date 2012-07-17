@@ -309,6 +309,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
     
         PrepareViewport FormMain.ActiveForm
         
+        'Note the window state, as it may be important in the future
+        pdImages(CurrentImage).WindowState = FormMain.ActiveForm.WindowState
+        
         'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
         If FormMain.ActiveForm.WindowState = 0 Then
             FormMain.ActiveForm.Left = pdImages(CurrentImage).WindowLeft
