@@ -41,7 +41,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     
     Set pdImages(NumOfImagesLoaded) = New pdImage
 
-    'This is the actual, physical form object that the image will reside on
+    'This is the actual, physical form object on which an image will reside
     Dim frm As New FormImage
     
     'IMPORTANT: the form tag is the only way we can keep track of separate forms
@@ -70,13 +70,12 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     Dim RandPercent As Long
     RandPercent = Int(Rnd * 100)
     
-    'Hide the form off-screen while the loading takes place.
-    If frm.WindowState = 0 Then
-        pdImages(NumOfImagesLoaded).WindowLeft = frm.Left
-        pdImages(NumOfImagesLoaded).WindowTop = frm.Top
-        frm.Left = FormMain.ScaleWidth
-        frm.Top = FormMain.ScaleHeight
-    End If
+    'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
+    pdImages(NumOfImagesLoaded).WindowLeft = frm.Left
+    pdImages(NumOfImagesLoaded).WindowTop = frm.Top
+    frm.Left = FormMain.ScaleWidth
+    frm.Top = FormMain.ScaleHeight
+    
     frm.Show
     frm.Caption = "Loading image (" & RandPercent & "%)..."
     frm.SetFocus

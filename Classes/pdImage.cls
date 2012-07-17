@@ -104,6 +104,10 @@ Option Explicit
     Public WindowLeft As Long
     Public WindowTop As Long
     
+    'Track the current window state; if the image's containing form goes from maximized to normal, all images need their
+    ' buffer refreshed (as scroll bars may then be needed)
+    Public WindowState As Long
+    
     'Variables related to drawing the buffer on-screen; these are set by PrepareViewport and read by ScrollViewport
     Public targetWidth As Long
     Public targetHeight As Long       'Formerly the width and height of the .FrontBuffer picture box
