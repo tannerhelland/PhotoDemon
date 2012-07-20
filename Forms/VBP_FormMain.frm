@@ -855,6 +855,12 @@ Begin VB.MDIForm FormMain
    End
    Begin VB.Menu MnuHelp 
       Caption         =   "&Help"
+      Begin VB.Menu MnuDonate 
+         Caption         =   "Support PhotoDemon with a small donation (thank you!)"
+      End
+      Begin VB.Menu MnuHelpSepBar0 
+         Caption         =   "-"
+      End
       Begin VB.Menu MnuVisitWebsite 
          Caption         =   "&Visit the PhotoDemon Website"
       End
@@ -1120,6 +1126,11 @@ End Sub
 
 Private Sub MnuDiffuseMore_Click()
     Process DiffuseMore
+End Sub
+
+Private Sub MnuDonate_Click()
+    'Launch the default web browser with the tannerhelland.com donation page
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuDream_Click()
