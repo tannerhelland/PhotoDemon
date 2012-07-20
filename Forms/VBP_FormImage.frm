@@ -281,7 +281,7 @@ Private Sub Form_Resize()
     'The height of a newly created form is automatically set to 1.  This is normally changed when the image is
     ' resized to fit on screen, but if an image is loaded into a maximized window, the height value will remain
     ' at 1.  If the user ever un-maximized the window, it will leave a bare title bar behind, which looks
-    ' terrible.  Thus, let's check for a height of 1, and if found resize the form to a larger arbitrary value.
+    ' terrible.  Thus, let's check for a height of 1, and if found resize the form to a larger (arbitrary) value.
     If Me.ScaleHeight <= 1 Then
         Me.Height = 6000
         Me.Width = 8000
