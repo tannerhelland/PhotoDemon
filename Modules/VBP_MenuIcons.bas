@@ -69,6 +69,7 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("RECORD", "CUSTOM")     '37
         .AddImageFromStream LoadResData("RECORDSTOP", "CUSTOM") '38
         .AddImageFromStream LoadResData("BUG", "CUSTOM") '39
+        .AddImageFromStream LoadResData("FAVORITE", "CUSTOM") '40
         
         
         'File Menu
@@ -127,10 +128,11 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 35, 9, 6     'Restore All
         
         'Help Menu
-        .PutImageToVBMenu 25, 0, 7     'Visit the PhotoDemon website
-        .PutImageToVBMenu 26, 1, 7     'Submit Feedback
-        .PutImageToVBMenu 39, 2, 7     'Submit Bug
-        .PutImageToVBMenu 27, 4, 7     'About PD
+        .PutImageToVBMenu 40, 0, 7     'Donate
+        .PutImageToVBMenu 25, 2, 7     'Visit the PhotoDemon website
+        .PutImageToVBMenu 26, 3, 7     'Submit Feedback
+        .PutImageToVBMenu 39, 4, 7     'Submit Bug
+        .PutImageToVBMenu 27, 6, 7     'About PD
     
     End With
 
