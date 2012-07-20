@@ -61,11 +61,14 @@ Public Sub MenuFadeLastEffect()
     
 End Sub
 
-'Right now this is a work in progress; it's somewhat based off
+'Right now this is a work in progress; it's somewhat based off... <description forthcoming>
 Public Sub MenuAnimate()
 
-
-
+    MsgBox "Sorry, but this filter is still under heavy development.  It's disabled right now due to some instability in the code.  Stay tuned for updates!", vbInformation + vbOKOnly + vbApplicationModal, "Animate filter disabled... for now"
+    
+    Message "Animate filter canceled"
+    
+    Exit Sub
 
 End Sub
 
