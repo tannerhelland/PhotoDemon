@@ -1,7 +1,7 @@
 Attribute VB_Name = "UndoFunctions"
 '***************************************************************************
 'Undo/Redo Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 2/April/01
 'Last updated: 20/June/12
 'Last update: ClearUndo now requires an image ID parameter.  Because that can by triggered by a non-active form
@@ -64,7 +64,7 @@ Public Sub ClearALLUndo()
         'If it's a valid image form...
         If tForm.Name = "FormImage" Then
             'Strip tag out
-            CurWindow = Val(tForm.Tag)
+            CurWindow = val(tForm.Tag)
             'Clear the undos internally
             pdImages(CurWindow).ClearUndos
         End If
@@ -73,13 +73,13 @@ Public Sub ClearALLUndo()
 End Sub
 
 'Clear all known undo images from the temporary directory for the current image
-Public Sub ClearUndo(ByVal imageID As Long)
+Public Sub ClearUndo(ByVal ImageID As Long)
 
     'Tell this pdImage class to destroy all its Undo files
-    pdImages(imageID).ClearUndos
+    pdImages(ImageID).ClearUndos
     
     'If the active form is requesting the clear, adjust the Undo button/menu to match
-    If imageID = CurrentImage Then
+    If ImageID = CurrentImage Then
         tInit tUndo, pdImages(CurrentImage).UndoState
     
         'Also, disable fading any previous effects on this image (since there is no long an image to use for the function)

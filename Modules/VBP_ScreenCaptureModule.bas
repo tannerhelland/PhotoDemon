@@ -1,7 +1,7 @@
 Attribute VB_Name = "ScreenCapture"
 '***************************************************************************
 'Screen Capture Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/99
 'Last updated: 15/June/12
 'Last update: append today's date to the default screen capture filename

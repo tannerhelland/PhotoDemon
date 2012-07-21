@@ -1,7 +1,7 @@
 Attribute VB_Name = "MRU_List"
 '***************************************************************************
 'MRU (Most Recently Used) List Handler
-'©2005-2012 Tanner Helland
+'Copyright ©2005-2012 by Tanner Helland
 'Created: 22/May/05
 'Last updated: 4/May/07
 'Last update: MRU entries are kept in the INI file, not the registry.

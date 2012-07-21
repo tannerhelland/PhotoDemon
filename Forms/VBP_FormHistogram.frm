@@ -265,11 +265,9 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Option Explicit
-
 '***************************************************************************
 'Histogram Handler
-'©2012 Tanner "DemonSpectre" Helland
+'Copyright ©2001-2012 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 11/September/11
 'Last update: made the form resizable
@@ -284,6 +282,8 @@ Option Explicit
 '2 - Blue
 '3 - Luminance
 'This applies especially to the hData() and hMax() arrays
+
+Option Explicit
 
 'Old functions use these:
 Dim rData(0 To 255) As Long, gData(0 To 255) As Long, bData(0 To 255) As Long

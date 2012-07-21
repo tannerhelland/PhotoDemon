@@ -1,19 +1,17 @@
 Attribute VB_Name = "Processor"
-Option Explicit
-
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 20/June/12
 'Last update: changed the way RepeatLastAction is handled to prevent collisions when the user repeats
 '             their previous action but NOT by clicking RepeatLastAction (basically, when they do the
 '             exact same filter with identical parameters twice in a row).
 '
-'Module for controlling calls to the various program functions.  Basically, any
-' action that the program takes has to pass through here.  Why do that?  A couple of reasons:
+'Module for controlling calls to the various program functions.  Any action the program takes has to pass
+' through here.  Why go to all that extra work?  A couple of reasons:
 ' 1) a central error handler that works for every sub throughout the program (due to recursive error handling)
-' 2) PhotoDemon can run macros by simply tracking the numbers that pass through this routine
+' 2) PhotoDemon can run macros by simply tracking the values that pass through this routine
 ' 3) PhotoDemon can control code flow by delaying requests that pass through here (for example,
 '    if the program is busy applying a filter, we can wait to process subsequent calls)
 ' 4) miscellaneous semantic benefits
@@ -22,6 +20,8 @@ Option Explicit
 ' for various functions, so the majority of the routine is a huge Case Select statement.
 '
 '***************************************************************************
+
+Option Explicit
 
 'GROUP IDENTIFIERS: Specify the broader group that an option is within
     '...may be added later, depending on preview options (such as if an effect browser is

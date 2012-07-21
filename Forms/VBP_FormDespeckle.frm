@@ -126,7 +126,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Advanced Despeckle Form
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 12/September/11
 'Last updated: 12/September/11
 'Last update: first build of the form and the custom routine
@@ -363,3 +363,4 @@ Public Sub QuickDespeckle()
     Message "Finished."
 
 End Sub
+

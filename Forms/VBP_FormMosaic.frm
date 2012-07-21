@@ -221,7 +221,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Mosaic filter interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 8/5/00
 'Last updated: 4/November/07
 'Last update: preview no longer gets "Divide by 0" errors for small images
@@ -273,27 +273,27 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As Byte)
     
     Message "Preparing transfer array..."
     Dim QuickVal As Long
-    For X = 0 To PicWidthL
-        QuickVal = X * 3
-    For Y = 0 To PicHeightL
+    For x = 0 To PicWidthL
+        QuickVal = x * 3
+    For y = 0 To PicHeightL
     For z = 0 To 2
-        PicArray(QuickVal + z, Y) = ImageData(QuickVal + z, Y)
+        PicArray(QuickVal + z, y) = ImageData(QuickVal + z, y)
     Next z
-    Next Y
-    Next X
+    Next y
+    Next x
     
     Message "Generating mosaic image..."
     SetProgBarMax XLoop
     
     'Begin the main mosaic loop
-    For X = 0 To XLoop
-    For Y = 0 To YLoop
+    For x = 0 To XLoop
+    For y = 0 To YLoop
     
         'This sub loop is to gather all of the data for the current mosaic tile
-        InitXLoop = X * BlockSizeX
-        InitYLoop = Y * BlockSizeY
-        DstXLoop = (X + 1) * BlockSizeX - 1
-        DstYLoop = (Y + 1) * BlockSizeY - 1
+        InitXLoop = x * BlockSizeX
+        InitYLoop = y * BlockSizeY
+        DstXLoop = (x + 1) * BlockSizeX - 1
+        DstYLoop = (y + 1) * BlockSizeY - 1
         For a = InitXLoop To DstXLoop
             QuickVal = a * 3
         For b = InitYLoop To DstYLoop
@@ -349,9 +349,9 @@ NextMosaicPixel3:
         tG = 0
         tB = 0
         NumOfPixels = 0
-    Next Y
-        If X Mod 10 = 0 Then SetProgBarVal X
-    Next X
+    Next y
+        If x Mod 10 = 0 Then SetProgBarVal x
+    Next x
     
     SetImageData True
     
@@ -393,22 +393,22 @@ Private Sub PreviewMosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As By
     ReDim PicArray(0 To UBound(ImageData, 1), 0 To UBound(ImageData, 2)) As Byte
     Dim a As Long, b As Long
     Dim QuickVal As Long
-    For X = PreviewX To PreviewX + PreviewWidth
-        QuickVal = X * 3
-    For Y = PreviewY To PreviewY + PreviewHeight
+    For x = PreviewX To PreviewX + PreviewWidth
+        QuickVal = x * 3
+    For y = PreviewY To PreviewY + PreviewHeight
     For z = 0 To 2
-        PicArray(QuickVal + z, Y) = ImageData(QuickVal + z, Y)
+        PicArray(QuickVal + z, y) = ImageData(QuickVal + z, y)
     Next z
-    Next Y
-    Next X
+    Next y
+    Next x
     'Begin the main mosaic loop
-    For X = 0 To XLoop
-    For Y = 0 To YLoop
+    For x = 0 To XLoop
+    For y = 0 To YLoop
         'This sub loop is to gather all of the data for the current mosaic tile
-        InitXLoop = PreviewX + X * BlockSizeX
-        InitYLoop = PreviewY + Y * BlockSizeY
-        DstXLoop = PreviewX + (X + 1) * BlockSizeX - 1
-        DstYLoop = PreviewY + (Y + 1) * BlockSizeY - 1
+        InitXLoop = PreviewX + x * BlockSizeX
+        InitYLoop = PreviewY + y * BlockSizeY
+        DstXLoop = PreviewX + (x + 1) * BlockSizeX - 1
+        DstYLoop = PreviewY + (y + 1) * BlockSizeY - 1
         For a = InitXLoop To DstXLoop
             QuickVal = a * 3
         For b = InitYLoop To DstYLoop
@@ -447,8 +447,8 @@ Private Sub PreviewMosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As By
         tG = 0
         tB = 0
         NumOfPixels = 0
-    Next Y
-    Next X
+    Next y
+    Next x
     
     SetPreviewData PicEffect
 
@@ -475,7 +475,7 @@ Private Sub hsWidth_Scroll()
 End Sub
 
 Private Sub txtHeight_Change()
-    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(txtHeight)
+    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = val(txtHeight)
 End Sub
 
 Private Sub txtHeight_GotFocus()
@@ -483,7 +483,7 @@ Private Sub txtHeight_GotFocus()
 End Sub
 
 Private Sub txtWidth_Change()
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(txtWidth)
+    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = val(txtWidth)
 End Sub
 
 Private Sub txtWidth_GotFocus()

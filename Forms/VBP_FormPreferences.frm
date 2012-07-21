@@ -249,7 +249,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Program Preferences Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 03/July/12
 'Last update: added support for custom canvas backgrounds (checkerboard or colors)

@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Grayscale Conversion Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 1/12/02
 'Last updated: 18/August/09
 'Last update: homebrew methods now use the simpler (R+G+B)\3 method
@@ -363,7 +363,7 @@ End Sub
 
 Private Sub txtShades_Change()
     If EntryValid(txtShades, hsShades.Min, hsShades.Max, False, False) Then
-        hsShades.Value = Val(txtShades)
+        hsShades.Value = val(txtShades)
     End If
 End Sub
 

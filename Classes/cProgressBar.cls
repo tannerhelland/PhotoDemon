@@ -11,9 +11,9 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'This class is ©2003 Steve McMahon, vbaccelerator.com
-
 'Note: this file has been modified for use within PhotoDemon.
+
+'This class is ©2003 Steve McMahon, vbaccelerator.com
 
 'This class was originally written by Steve McMahon.
 

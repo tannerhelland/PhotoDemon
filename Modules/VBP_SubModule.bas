@@ -1,7 +1,7 @@
 Attribute VB_Name = "Miscellaneous"
 '***************************************************************************
 'Miscellaneous Operations Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 05/July/12
 'Last update: Moved all string functions to a dedicated module.

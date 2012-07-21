@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Rotate"
 '***************************************************************************
 'Filter (Rotation) Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 1/25/03
 'Last updated: 4/November/07
 'Last update: Conversion to DIB section broke some things I didn't previously notice... o_O

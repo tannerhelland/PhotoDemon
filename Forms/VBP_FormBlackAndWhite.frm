@@ -145,7 +145,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Black-White Color Reduction Form
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: some time 2002
 'Last updated: 19/June/12
 'Last update: reordered the algorithms and improved descriptions
@@ -183,7 +183,7 @@ Private Sub CmdOK_Click()
         Case 2
             Process BWNearestColor
         Case 3
-            Process Threshold, Val(txtThreshold.Text)
+            Process Threshold, val(txtThreshold.Text)
         Case 4
             Process BWOrderedDither
         Case 5
@@ -260,7 +260,7 @@ End Sub
 
 Private Sub txtThreshold_Change()
     If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then
-        hsThreshold.Value = Val(txtThreshold)
+        hsThreshold.Value = val(txtThreshold)
     End If
 End Sub
 

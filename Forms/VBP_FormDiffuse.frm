@@ -231,7 +231,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Diffuse Filter Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 8/14/01
 'Last updated: 5/May/07
 'Last update: Fixed grabbing of off-image pixels when previewing and erroneous

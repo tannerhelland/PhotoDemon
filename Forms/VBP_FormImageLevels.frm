@@ -354,8 +354,8 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'©2012 Tanner Helland
-'Created: 22/July/2012
+'Copyright ©2006-2012 by Tanner Helland
+'Created: 22/July/06
 'Last updated: 30/July/06
 'Last update: Adding the preview function.  This is somewhat useless without it.
 '
@@ -511,15 +511,15 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     'NOTE: This table is constant, and could be loaded from file instead of generated mathematically every time we run this function
     Dim gStep As Double
     gStep = (MAXGAMMA + MIDGAMMA) / 127
-    For X = 0 To 127
-        gValues(X) = (CDbl(X) / 127) * MIDGAMMA
-    Next X
-    For X = 128 To 255
-        gValues(X) = MIDGAMMA + (CDbl(X - 127) * gStep)
-    Next X
-    For X = 0 To 255
-        gValues(X) = 1 / ((gValues(X) + 1 / ROOT10) ^ 2)
-    Next X
+    For x = 0 To 127
+        gValues(x) = (CDbl(x) / 127) * MIDGAMMA
+    Next x
+    For x = 128 To 255
+        gValues(x) = MIDGAMMA + (CDbl(x - 127) * gStep)
+    Next x
+    For x = 0 To 255
+        gValues(x) = 1 / ((gValues(x) + 1 / ROOT10) ^ 2)
+    Next x
     
     'Because we've built our look-up tables on a 0-255 scale, correct the inMLimit
     'value (from the midtones scroll bar) to simply represent a ratio on that scale
@@ -533,8 +533,8 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
     Dim gLevels(0 To 255) As Byte
     Dim tmpGamma As Double
-    For X = 0 To 255
-        tmpGamma = CDbl(X) / 255
+    For x = 0 To 255
+        tmpGamma = CDbl(x) / 255
         tmpGamma = tmpGamma ^ (1 / gValues(bRatio))
         tmpGamma = tmpGamma * 255
         If tmpGamma > 255 Then
@@ -542,8 +542,8 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
         ElseIf tmpGamma < 0 Then
             tmpGamma = 0
         End If
-        gLevels(X) = tmpGamma
-    Next X
+        gLevels(x) = tmpGamma
+    Next x
     
     'Look-up table for the input leveled values
     Dim newLevels(0 To 255) As Byte
@@ -551,47 +551,47 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     'Fill the look-up table with appropriately mapped input limits
     Dim pStep As Single
     pStep = 255 / (CSng(inRLimit) - CSng(inLLimit))
-    For X = 0 To 255
-        If X < inLLimit Then
-            newLevels(X) = 0
-        ElseIf X > inRLimit Then
-            newLevels(X) = 255
+    For x = 0 To 255
+        If x < inLLimit Then
+            newLevels(x) = 0
+        ElseIf x > inRLimit Then
+            newLevels(x) = 255
         Else
-            newLevels(X) = ByteMe(((CSng(X) - CSng(inLLimit)) * pStep))
+            newLevels(x) = ByteMe(((CSng(x) - CSng(inLLimit)) * pStep))
         End If
-    Next X
+    Next x
     
     'Now run all input-mapped values through our midtone-correction look-up
-    For X = 0 To 255
-        newLevels(X) = gLevels(newLevels(X))
-    Next X
+    For x = 0 To 255
+        newLevels(x) = gLevels(newLevels(x))
+    Next x
     
     'Last of all, remap all image values to match the user-specified output limits
     Dim oStep As Double
     oStep = (CSng(outRLimit) - CSng(outLLimit)) / 255
-    For X = 0 To 255
-        newLevels(X) = ByteMe(CSng(outLLimit) + (CSng(newLevels(X)) * oStep))
-    Next X
+    For x = 0 To 255
+        newLevels(x) = ByteMe(CSng(outLLimit) + (CSng(newLevels(x)) * oStep))
+    Next x
     
     
     'Now run a quick loop through the image, adjusting pixel values with the look-up tables
     SetProgBarMax PicWidthL
     
     Dim QuickX As Long
-    For X = 0 To PicWidthL
-        QuickX = X * 3
-    For Y = 0 To PicHeightL
+    For x = 0 To PicWidthL
+        QuickX = x * 3
+    For y = 0 To PicHeightL
         'Grab red, green, and blue
-        r = ImageData(QuickX + 2, Y)
-        g = ImageData(QuickX + 1, Y)
-        b = ImageData(QuickX, Y)
+        r = ImageData(QuickX + 2, y)
+        g = ImageData(QuickX + 1, y)
+        b = ImageData(QuickX, y)
         'Correct them all
-        ImageData(QuickX + 2, Y) = newLevels(r)
-        ImageData(QuickX + 1, Y) = newLevels(g)
-        ImageData(QuickX, Y) = newLevels(b)
-    Next Y
-        If X Mod 20 = 0 Then SetProgBarVal X
-    Next X
+        ImageData(QuickX + 2, y) = newLevels(r)
+        ImageData(QuickX + 1, y) = newLevels(g)
+        ImageData(QuickX, y) = newLevels(b)
+    Next y
+        If x Mod 20 = 0 Then SetProgBarVal x
+    Next x
     
     'Draw the new image data to the screen
     SetImageData
@@ -621,15 +621,15 @@ Public Sub PreviewImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, By
     'NOTE: This table is constant, and could be loaded from file instead of generated mathematically every time we run this function
     Dim gStep As Double
     gStep = (MAXGAMMA + MIDGAMMA) / 127
-    For X = 0 To 127
-        gValues(X) = (CDbl(X) / 127) * MIDGAMMA
-    Next X
-    For X = 128 To 255
-        gValues(X) = MIDGAMMA + (CDbl(X - 127) * gStep)
-    Next X
-    For X = 0 To 255
-        gValues(X) = 1 / ((gValues(X) + 1 / ROOT10) ^ 2)
-    Next X
+    For x = 0 To 127
+        gValues(x) = (CDbl(x) / 127) * MIDGAMMA
+    Next x
+    For x = 128 To 255
+        gValues(x) = MIDGAMMA + (CDbl(x - 127) * gStep)
+    Next x
+    For x = 0 To 255
+        gValues(x) = 1 / ((gValues(x) + 1 / ROOT10) ^ 2)
+    Next x
     
     'Because we've built our look-up tables on a 0-255 scale, correct the inMLimit
     'value (from the midtones scroll bar) to simply represent a ratio on that scale
@@ -643,8 +643,8 @@ Public Sub PreviewImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, By
     'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
     Dim gLevels(0 To 255) As Byte
     Dim tmpGamma As Double
-    For X = 0 To 255
-        tmpGamma = CDbl(X) / 255
+    For x = 0 To 255
+        tmpGamma = CDbl(x) / 255
         tmpGamma = tmpGamma ^ (1 / gValues(bRatio))
         tmpGamma = tmpGamma * 255
         If tmpGamma > 255 Then
@@ -652,8 +652,8 @@ Public Sub PreviewImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, By
         ElseIf tmpGamma < 0 Then
             tmpGamma = 0
         End If
-        gLevels(X) = tmpGamma
-    Next X
+        gLevels(x) = tmpGamma
+    Next x
     
     'Look-up table for the input leveled values
     Dim newLevels(0 To 255) As Byte
@@ -661,44 +661,44 @@ Public Sub PreviewImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, By
     'Fill the look-up table with appropriately mapped input limits
     Dim pStep As Single
     pStep = 255 / (CSng(inRLimit) - CSng(inLLimit))
-    For X = 0 To 255
-        If X < inLLimit Then
-            newLevels(X) = 0
-        ElseIf X > inRLimit Then
-            newLevels(X) = 255
+    For x = 0 To 255
+        If x < inLLimit Then
+            newLevels(x) = 0
+        ElseIf x > inRLimit Then
+            newLevels(x) = 255
         Else
-            newLevels(X) = ByteMe(((CSng(X) - CSng(inLLimit)) * pStep))
+            newLevels(x) = ByteMe(((CSng(x) - CSng(inLLimit)) * pStep))
         End If
-    Next X
+    Next x
     
     'Now run all input-mapped values through our midtone-correction look-up
-    For X = 0 To 255
-        newLevels(X) = gLevels(newLevels(X))
-    Next X
+    For x = 0 To 255
+        newLevels(x) = gLevels(newLevels(x))
+    Next x
     
     'Last of all, remap all image values to match the user-specified output limits
     Dim oStep As Double
     oStep = (CSng(outRLimit) - CSng(outLLimit)) / 255
-    For X = 0 To 255
-        newLevels(X) = ByteMe(CSng(outLLimit) + (CSng(newLevels(X)) * oStep))
-    Next X
+    For x = 0 To 255
+        newLevels(x) = ByteMe(CSng(outLLimit) + (CSng(newLevels(x)) * oStep))
+    Next x
     
     'Now run a quick loop through the image, adjusting pixel values with the look-up tables
     Dim QuickX As Long
     
-    For X = PreviewX To PreviewX + PreviewWidth
-        QuickX = X * 3
-    For Y = PreviewY To PreviewY + PreviewHeight
+    For x = PreviewX To PreviewX + PreviewWidth
+        QuickX = x * 3
+    For y = PreviewY To PreviewY + PreviewHeight
         'Grab red, green, and blue
-        r = ImageData(QuickX + 2, Y)
-        g = ImageData(QuickX + 1, Y)
-        b = ImageData(QuickX, Y)
+        r = ImageData(QuickX + 2, y)
+        g = ImageData(QuickX + 1, y)
+        b = ImageData(QuickX, y)
         'Correct them all
-        ImageData(QuickX + 2, Y) = newLevels(r)
-        ImageData(QuickX + 1, Y) = newLevels(g)
-        ImageData(QuickX, Y) = newLevels(b)
-    Next Y
-    Next X
+        ImageData(QuickX + 2, y) = newLevels(r)
+        ImageData(QuickX + 1, y) = newLevels(g)
+        ImageData(QuickX, y) = newLevels(b)
+    Next y
+    Next x
     
     'Draw the new image data to the screen
     SetPreviewData PicEffect
@@ -736,13 +736,13 @@ End Sub
 
 
 'Used to restrict values to the (0-255) range
-Private Function ByteMe(ByVal Val As Long) As Byte
-    If Val > 255 Then
+Private Function ByteMe(ByVal val As Long) As Byte
+    If val > 255 Then
         ByteMe = 255
-    ElseIf Val < 0 Then
+    ElseIf val < 0 Then
         ByteMe = 0
     Else
-        ByteMe = Val
+        ByteMe = val
     End If
 End Function
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menu_Icons"
 '***************************************************************************
 'Menu Icon Handler
-'©2011-2012 Tanner Helland
+'Copyright ©2011-2012 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 24/June/12
 'Last update: Initial build

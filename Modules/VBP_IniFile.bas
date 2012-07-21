@@ -1,7 +1,7 @@
 Attribute VB_Name = "IniProcessor"
 '***************************************************************************
 'Program INI Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 9/26/01
 'Last updated: 7/May/09
 'Last update: If an INI file isn't found, build a default one (with proper folders!)

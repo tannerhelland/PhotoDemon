@@ -216,6 +216,7 @@ Dim eR As ShiftConstants
    ShiftState = eR
 End Property
 
+
 Private Function IWindowsHook_HookProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, bConsume As Boolean) As Long
 Dim bKeyUp As Boolean
 Dim bAlt As Boolean

@@ -39,9 +39,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12240
       Top             =   6960
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -94,24 +94,16 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   120
          Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "Open Image"
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":06E0
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
+         _extentx        =   3413
+         _extenty        =   1085
+         buttonstyle     =   13
+         showfocusrect   =   -1
+         font            =   "VBP_FormMain.frx":06E0
+         caption         =   "Open Image"
+         handpointer     =   -1
+         picturenormal   =   "VBP_FormMain.frx":0708
+         disabledpicturemode=   1
+         captioneffects  =   0
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -119,24 +111,16 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   840
          Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "Save Image"
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":1732
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
+         _extentx        =   3413
+         _extenty        =   1085
+         buttonstyle     =   13
+         showfocusrect   =   -1
+         font            =   "VBP_FormMain.frx":175A
+         caption         =   "Save Image"
+         handpointer     =   -1
+         picturenormal   =   "VBP_FormMain.frx":1782
+         disabledpicturemode=   1
+         captioneffects  =   0
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -144,24 +128,16 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   1680
          Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "Undo Last Action"
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":2784
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
+         _extentx        =   3413
+         _extenty        =   1085
+         buttonstyle     =   13
+         showfocusrect   =   -1
+         font            =   "VBP_FormMain.frx":27D4
+         caption         =   "Undo Last Action"
+         handpointer     =   -1
+         picturenormal   =   "VBP_FormMain.frx":27FC
+         disabledpicturemode=   1
+         captioneffects  =   0
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -169,24 +145,16 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   2400
          Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "Redo Last Action"
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":37D6
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
+         _extentx        =   3413
+         _extenty        =   1085
+         buttonstyle     =   13
+         showfocusrect   =   -1
+         font            =   "VBP_FormMain.frx":384E
+         caption         =   "Redo Last Action"
+         handpointer     =   -1
+         picturenormal   =   "VBP_FormMain.frx":3876
+         disabledpicturemode=   1
+         captioneffects  =   0
       End
       Begin VB.Line Line3 
          BorderColor     =   &H80000002&
@@ -885,11 +853,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Please see the included README.txt file for additional information regarding licensing and redistribution.
 
-'PhotoDemon is Copyright ©1999-2012 Tanner Helland, www.tannerhelland.com
+'PhotoDemon is Copyright ©1999-2012 by Tanner Helland, www.tannerhelland.com
 
 '***************************************************************************
 'Main Program MDI Form
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 9/15/02
 'Last updated: 05/July/12
 'Last update: new accelerators added

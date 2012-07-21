@@ -190,7 +190,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Noise Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 3/15/01
 'Last updated: 6/August/06
 'Last update: previewing, optimization, comments, variable type changes
@@ -238,7 +238,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean)
     'Double the amount of noise we plan on using (so we can add noise above or below 0)
     dNoise = Noise * 2
     
-    Dim r As Long, g As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim QuickX As Long
     
     For x = 0 To PicWidthL
@@ -248,30 +248,30 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean)
             
             r = ImageData(QuickX + 2, y)
             g = ImageData(QuickX + 1, y)
-            B = ImageData(QuickX, y)
+            b = ImageData(QuickX, y)
             
             If MC = True Then
                 'Monochromatic noise - same amount for each color
                 Ncolor = (dNoise * Rnd) - Noise
                 r = r + Ncolor
                 g = g + Ncolor
-                B = B + Ncolor
+                b = b + Ncolor
             Else
                 'Colored noise - each color generated randomly
                 r = r + (dNoise * Rnd) - Noise
                 g = g + (dNoise * Rnd) - Noise
-                B = B + (dNoise * Rnd) - Noise
+                b = b + (dNoise * Rnd) - Noise
             End If
             
             'Trim values
             ByteMeL r
             ByteMeL g
-            ByteMeL B
+            ByteMeL b
             
             'Replace pixel data
             ImageData(QuickX + 2, y) = r
             ImageData(QuickX + 1, y) = g
-            ImageData(QuickX, y) = B
+            ImageData(QuickX, y) = b
             
         Next y
         If x Mod 20 = 0 Then SetProgBarVal x
@@ -296,30 +296,30 @@ Private Sub PreviewNoise(ByVal Noise As Long, ByVal MC As Boolean)
     Dim Ncolor As Long
     Dim dNoise As Long
     dNoise = Noise * 2
-    Dim r As Long, g As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim QuickX As Long
     For x = PreviewX To PreviewX + PreviewWidth
         QuickX = x * 3
         For y = PreviewY To PreviewY + PreviewHeight
             r = ImageData(QuickX + 2, y)
             g = ImageData(QuickX + 1, y)
-            B = ImageData(QuickX, y)
+            b = ImageData(QuickX, y)
             If MC = True Then
                 Ncolor = (dNoise * Rnd) - Noise
                 r = r + Ncolor
                 g = g + Ncolor
-                B = B + Ncolor
+                b = b + Ncolor
             Else
                 r = r + (dNoise * Rnd) - Noise
                 g = g + (dNoise * Rnd) - Noise
-                B = B + (dNoise * Rnd) - Noise
+                b = b + (dNoise * Rnd) - Noise
             End If
             ByteMeL r
             ByteMeL g
-            ByteMeL B
+            ByteMeL b
             ImageData(QuickX + 2, y) = r
             ImageData(QuickX + 1, y) = g
-            ImageData(QuickX, y) = B
+            ImageData(QuickX, y) = b
         Next y
     Next x
     SetPreviewData PicEffect
@@ -337,7 +337,7 @@ Private Sub hsNoise_Scroll()
 End Sub
 
 Private Sub txtNoise_Change()
-    If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max, False, False) Then hsNoise.Value = Val(txtNoise)
+    If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max, False, False) Then hsNoise.Value = val(txtNoise)
 End Sub
 
 Private Sub txtNoise_GotFocus()

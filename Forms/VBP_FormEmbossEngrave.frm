@@ -198,7 +198,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Emboss/Engrave Filter Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 3/6/03
 'Last updated: 05/July/12
 'Last update: fixed missing edge-pixels when previewing
