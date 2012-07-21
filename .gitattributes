@@ -8,6 +8,10 @@
 *.vbproj merge=union
 *.fsproj merge=union
 *.dbproj merge=union
+*.frx -crlf -diff
+*.ctx -crlf -diff
+*.RES -crlf -diff
+*.res -crlf -diff
 
 # Standard to msysgit
 *.doc	 diff=astextplain
