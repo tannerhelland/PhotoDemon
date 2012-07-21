@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image class
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: sometime 2006
 'Last updated: 07/July/12
 'Last update: implemented HasBeenSaved tracking

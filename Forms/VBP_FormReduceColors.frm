@@ -275,7 +275,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Reduction Form
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 20/June/12
 'Last update: Rewrote much of the code to align with the new UI.

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'Program/File Loading Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 03/July/12
 'Last update: Implemented bad file format error handling in the FreeImage load routine.

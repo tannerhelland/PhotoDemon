@@ -1,7 +1,7 @@
 Attribute VB_Name = "FastDrawing"
 '***************************************************************************
 'Fast API Graphics Routines Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 13/January/07
 'Last update: Merged the separate Get/SetImageData routines into a single one.  Now a parameter can

@@ -132,7 +132,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Detection Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 1/11/02
 'Last updated: 19/June/12
 'Last update: rewritten descriptions, code clean-up.
@@ -318,41 +318,41 @@ Public Sub FilterSmoothContour()
     
     Dim QuickX As Long, QuickXLeft As Long, QuickXRight As Long
     
-    For Y = 1 To PicHeightL - 1
-    For X = 1 To PicWidthL - 1
-        QuickX = X * 3
-        QuickXLeft = (X - 1) * 3
-        QuickXRight = (X + 1) * 3
+    For y = 1 To PicHeightL - 1
+    For x = 1 To PicWidthL - 1
+        QuickX = x * 3
+        QuickXLeft = (x - 1) * 3
+        QuickXRight = (x + 1) * 3
     For z = 0 To 2
         tMin = 255
-        TC = ImageData(QuickXRight + z, Y)
+        TC = ImageData(QuickXRight + z, y)
         If TC < tMin Then tMin = TC
-        TC = ImageData(QuickXRight + z, Y - 1)
+        TC = ImageData(QuickXRight + z, y - 1)
         If TC < tMin Then tMin = TC
-        TC = ImageData(QuickXRight + z, Y + 1)
+        TC = ImageData(QuickXRight + z, y + 1)
         If TC < tMin Then tMin = TC
-        TC = ImageData(QuickXLeft + z, Y)
+        TC = ImageData(QuickXLeft + z, y)
         If TC < tMin Then tMin = TC
-        TC = ImageData(QuickXLeft + z, Y - 1)
+        TC = ImageData(QuickXLeft + z, y - 1)
         If TC < tMin Then tMin = TC
-        TC = ImageData(QuickXLeft + z, Y + 1)
+        TC = ImageData(QuickXLeft + z, y + 1)
         If TC < tMin Then tMin = TC
-        TC = ImageData(QuickX + z, Y)
+        TC = ImageData(QuickX + z, y)
         If TC < tMin Then tMin = TC
-        TC = ImageData(QuickX + z, Y - 1)
+        TC = ImageData(QuickX + z, y - 1)
         If TC < tMin Then tMin = TC
-        TC = ImageData(QuickX + z, Y + 1)
+        TC = ImageData(QuickX + z, y + 1)
         If TC < tMin Then tMin = TC
         
         If tMin > 255 Then tMin = 255
         If tMin < 0 Then tMin = 0
         
-        tData(QuickX + z, Y) = 255 - (ImageData(QuickX + z, Y) - tMin)
+        tData(QuickX + z, y) = 255 - (ImageData(QuickX + z, y) - tMin)
         
     Next z
-    Next X
-        If Y Mod 20 = 0 Then SetProgBarVal Y
-    Next Y
+    Next x
+        If y Mod 20 = 0 Then SetProgBarVal y
+    Next y
     
     TransferImageData
     SetImageData
@@ -362,14 +362,14 @@ End Sub
 Private Sub TransferImageData()
     Message "Transferring data..."
     Dim QuickX As Long
-    For X = 0 To PicWidthL
-        QuickX = X * 3
-    For Y = 0 To PicHeightL
+    For x = 0 To PicWidthL
+        QuickX = x * 3
+    For y = 0 To PicHeightL
         For z = 0 To 2
-            ImageData(QuickX + z, Y) = tData(QuickX + z, Y)
+            ImageData(QuickX + z, y) = tData(QuickX + z, y)
         Next z
-    Next Y
-    Next X
+    Next y
+    Next x
 End Sub
 
 Private Sub LstEdgeOptions_Click()

@@ -173,7 +173,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fade Filter Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 11/7/01
 'Last updated: 19/June/12
 'Last update: condensed all fade routines into a single, percentage-based one.  The speed increase provided by
@@ -341,7 +341,7 @@ End Sub
 
 Private Sub txtPercent_Change()
     If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, False, False) Then
-        hsPercent.Value = Val(txtPercent)
+        hsPercent.Value = val(txtPercent)
     End If
 End Sub
 

@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG Export interface
-'©2001-2012 Tanner Helland
+'Copyright ©2001-2012 by Tanner Helland
 'Created: 5/8/00
 'Last updated: 12/June/12
 'Last update: added FreeImage option for saving JPEGs.  John's class is great, but it's largely untested.

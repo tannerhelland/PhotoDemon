@@ -610,7 +610,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Filter Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 05/June/12
 'Last update: FilterWeight and FilterBias are now Long-type.  A new filter version (2012)
@@ -654,13 +654,13 @@ Private Sub CmdOK_Click()
         ReDim FM(-2 To 2, -2 To 2) As Long
         For x = -2 To 2
         For y = -2 To 2
-            FM(x, y) = Val(TxtF((x + 2) + (y + 2) * 5))
+            FM(x, y) = val(TxtF((x + 2) + (y + 2) * 5))
         Next y
         Next x
 'What to divide the final value by
-    FilterWeight = Val(TxtWeight.Text)
+    FilterWeight = val(TxtWeight.Text)
 'Any offset value
-    FilterBias = Val(TxtBias.Text)
+    FilterBias = val(TxtBias.Text)
 'Set that we have created a filter during this program session, and save it accordingly
     HasCreatedFilter = True
     SaveCustomFilter TempPath & "~W096THCF.tmp"
@@ -688,7 +688,7 @@ Private Sub MnuOpen_Click()
     
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , tempPathString, "Open a custom filter", , FormCustomFilter.hWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , tempPathString, "Open a custom filter", , FormCustomFilter.HWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
             'Save the new directory as the default path for future usage
             tempPathString = sFile
@@ -714,7 +714,7 @@ Private Sub MnuSave_Click()
     
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , tempPathString, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , tempPathString, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.HWnd, 0) Then
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
@@ -876,12 +876,12 @@ Private Function SaveCustomFilter(ByRef FilterPath As String) As Boolean
         Put #fileNum, , CUSTOM_FILTER_VERSION_2012
         'Strip the information out of the text boxes and send it
         Dim TmpVal As Long
-        TmpVal = Val(TxtWeight.Text)
+        TmpVal = val(TxtWeight.Text)
         Put #fileNum, , TmpVal
-        TmpVal = Val(TxtBias.Text)
+        TmpVal = val(TxtBias.Text)
         Put #fileNum, , TmpVal
         For x = 0 To 24
-            TmpVal = Val(TxtF(x).Text)
+            TmpVal = val(TxtF(x).Text)
             Put #fileNum, , TmpVal
         Next x
     Close #fileNum

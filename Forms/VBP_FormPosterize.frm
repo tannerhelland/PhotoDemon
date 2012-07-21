@@ -170,7 +170,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Posterizing Effect Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 6/August/06
 'Last update: previewing, optimization, comments, variable type changes
@@ -268,7 +268,7 @@ Private Sub hsBits_Scroll()
 End Sub
 
 Private Sub txtBits_Change()
-    If EntryValid(txtBits, hsBits.Min, hsBits.Max, False, False) Then hsBits.Value = Val(txtBits)
+    If EntryValid(txtBits, hsBits.Min, hsBits.Max, False, False) Then hsBits.Value = val(txtBits)
 End Sub
 
 Private Sub txtBits_GotFocus()

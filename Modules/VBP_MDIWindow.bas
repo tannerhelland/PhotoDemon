@@ -1,7 +1,7 @@
 Attribute VB_Name = "MDIWindow"
 '***************************************************************************
 'MDI Window Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 29/June/12
 'Last update: added a SuppressUpdating component to two routines; this prevents a call to PrepareViewport.

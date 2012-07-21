@@ -1,8 +1,7 @@
 Attribute VB_Name = "File_Menu"
-
 '***************************************************************************
 'File Menu Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 15/Apr/01
 'Last updated: 14/June/12
 'Last update: moved the bulk of the Open dialog to a standalone routine, so that it can be used elsewhere

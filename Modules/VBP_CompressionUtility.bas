@@ -1,7 +1,7 @@
 Attribute VB_Name = "CompressionUtility"
 '***************************************************************************
 'File Compression Interface (via zLib)
-'©2003-2012 Tanner 'DemonSpectre' Helland
+'Copyright ©2003-2012 by Tanner Helland
 'Created: 3/02/02
 'Last updated: 24/October/07
 'Last update: cleaned up error handling

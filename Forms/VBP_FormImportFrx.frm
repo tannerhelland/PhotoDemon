@@ -160,10 +160,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'VB Binary File Import Tool
-'©2000-2012 Tanner Helland
-'Original Version ©1997-1999 Brad Martinez, http://www.mvps.org
+'Copyright ©2000-2012 by Tanner Helland
+'(Some segments adopted from the original version, which is ©1997-1999 by Brad Martinez, http://www.mvps.org - see Outside_ModFrx.bas for more details)
 'Created: 2/14/03
-'Last updated: 2/14/03
+'Last updated: 5/June/12
+'Last update: if binary import fails, allow the user to try another file
 '
 'Module for importing images from VB binary files.  Allows the user to browse through
 'all data within the resource file, and load any images (ico, jpeg, whatever) contained
@@ -227,7 +228,7 @@ TryBinaryImportAgain:
     
     Set CC = New cCommonDialog
     
-    If CC.VBGetOpenFileName(sFile, , , , , True, "All VB Binary Files (*.frx,*.ctx,*.dsx,*.dox,*.pgx)|*.frx;*.ctx;*.dsx;*.dox;*.pgx|All files (*.*)|*.*", , tempPathString, "Select a VB Binary File", , FormMain.hWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, "All VB Binary Files (*.frx,*.ctx,*.dsx,*.dox,*.pgx)|*.frx;*.ctx;*.dsx;*.dox;*.pgx|All files (*.*)|*.*", , tempPathString, "Select a VB Binary File", , FormMain.HWnd, 0) Then
     
         Message "Scanning binary file..."
     
@@ -270,13 +271,13 @@ Private Sub LstInfo_Click()
     With m_cff(LstInfo.ListIndex + 1)
         If .PictureType Then
             Image1.Picture = .Picture
-            cmdOK.Enabled = True
+            CmdOK.Enabled = True
             LblData.Visible = False
             DoEvents
         Else
             Image1.Picture = Nothing
             LblData.Visible = True
-            cmdOK.Enabled = False
+            CmdOK.Enabled = False
             If .ImageSize And (.ImageSize < 2 ^ 15) Then
                 LblData.Caption = "Binary data: " & StrConv(.Bits, vbUnicode)
             Else

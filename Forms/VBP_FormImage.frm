@@ -158,7 +158,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Form (Child MDI form)
-'©2012 Tanner "DemonSpectre" Helland
+'Copyright ©2002-2012 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 20/April/12
 'Last update: added mousewheel support via subclassing. Note that this is

@@ -170,7 +170,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Blacklight Form
-'©2001-2012 Tanner Helland
+'Copyright ©2001-2012 by Tanner Helland
 'Created: some time 2001
 'Last updated: 05/July/12
 'Last update: code clean-up and optimization

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Drawing"
 '***************************************************************************
 'PhotoDemon Drawing Routines
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/3/01
 'Last updated: 04/July/12
 'Last update: Rewrote DrawPreviewImage so edge pixels weren't being missed

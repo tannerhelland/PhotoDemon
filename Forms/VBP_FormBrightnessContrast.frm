@@ -230,7 +230,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brightness and Contrast Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 2/6/01
 'Last updated: 11/June/12
 'Last update: removed all image-streaming code as part of a system-wide purge.
@@ -452,7 +452,7 @@ End Sub
 
 Private Sub txtBrightness_Change()
     If EntryValid(txtBrightness, hsBright.Min, hsBright.Max, False, False) Then
-        hsBright.Value = Val(txtBrightness)
+        hsBright.Value = val(txtBrightness)
     End If
 End Sub
 
@@ -462,7 +462,7 @@ End Sub
 
 Private Sub txtContrast_Change()
     If EntryValid(txtContrast, hsContrast.Min, hsContrast.Max, False, False) Then
-        hsContrast.Value = Val(txtContrast)
+        hsContrast.Value = val(txtContrast)
     End If
 End Sub
 

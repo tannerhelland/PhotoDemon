@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Edge"
 '***************************************************************************
 'Filter (Edge) Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 1/25/03
 '

@@ -1,14 +1,16 @@
 Attribute VB_Name = "Toolbar"
 '***************************************************************************
 'Toolbar Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 15/June/12
 'Last update: because PhotoDemon can now load multiple images simultaneously, the toolbar would flicker madly
 '             as various buttons were enabled/disabled upon each new form's creation.  Now, those button states
 '             are checked against requests to enable/disable, and a change is made only when absolutely necessary.
 '
-'Module for enabling/disabling toolbar buttons and menus.
+'Module for enabling/disabling toolbar buttons and menus.  Note that the toolbar was removed in June 2012 in favor of
+' the new left-hand bar; this module remains, however, because the code handles menu items and the left-hand bar
+' (not just toolbar-related code, as the name may imply).
 '
 '***************************************************************************
 

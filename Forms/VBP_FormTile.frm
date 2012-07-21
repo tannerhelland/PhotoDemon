@@ -155,7 +155,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Twin" Filter Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 13/June/12
 'Last update: fixed RGB misalignment when performing vertical flipping

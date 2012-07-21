@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Natural"
 '***************************************************************************
 '"Natural" Filters
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 12/January/07
 'Last update: added the cool "rainbow" effect and finally finished basic
@@ -14,7 +14,7 @@ Attribute VB_Name = "Filters_Natural"
 Option Explicit
 
 Public Sub MenuRainbow()
-    Dim R As Long, G As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim HH As Single, SS As Single, LL As Single
     Dim hVal As Single
     Message "Applying rainbow effect..."
@@ -30,17 +30,17 @@ Public Sub MenuRainbow()
         
     For y = 0 To PicHeightL
         'Get the temporary values
-        R = ImageData(QuickVal + 2, y)
-        G = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         'Get the hue and saturation
-        tRGBToHSL R, G, B, HH, SS, LL
+        tRGBToHSL r, g, b, HH, SS, LL
         'Convert back to RGB using our artificial hue value
-        tHSLToRGB hVal, 0.5, LL, R, G, B
+        tHSLToRGB hVal, 0.5, LL, r, g, b
         'Assign those values into the array
-        ImageData(QuickVal + 2, y) = R
-        ImageData(QuickVal + 1, y) = G
-        ImageData(QuickVal, y) = B
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -49,7 +49,7 @@ Public Sub MenuRainbow()
 End Sub
 
 Public Sub MenuFogEffect()
-    Dim R As Long, G As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim FogLimit As Long
     'Change this value to change the "thickness" of the fog
     FogLimit = 36
@@ -59,34 +59,34 @@ Public Sub MenuFogEffect()
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        R = ImageData(QuickVal + 2, y)
-        G = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        If R > 127 Then
-            R = R - FogLimit
-            If R < 127 Then R = 127
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        If r > 127 Then
+            r = r - FogLimit
+            If r < 127 Then r = 127
         Else
-            R = R + FogLimit
-            If R > 127 Then R = 127
+            r = r + FogLimit
+            If r > 127 Then r = 127
         End If
-        If G > 127 Then
-            G = G - FogLimit
-            If G < 127 Then G = 127
+        If g > 127 Then
+            g = g - FogLimit
+            If g < 127 Then g = 127
         Else
-            G = G + FogLimit
-            If G > 127 Then G = 127
+            g = g + FogLimit
+            If g > 127 Then g = 127
         End If
-        If B > 127 Then
-            B = B - FogLimit
-            If B < 127 Then B = 127
+        If b > 127 Then
+            b = b - FogLimit
+            If b < 127 Then b = 127
         Else
-            B = B + FogLimit
-            If B > 127 Then B = 127
+            b = b + FogLimit
+            If b > 127 Then b = 127
         End If
         
-        ImageData(QuickVal + 2, y) = R
-        ImageData(QuickVal + 1, y) = G
-        ImageData(QuickVal, y) = B
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -94,7 +94,7 @@ Public Sub MenuFogEffect()
 End Sub
 
 Public Sub MenuWater()
-    Dim R As Long, G As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim TC As Long
     Dim QuickVal As Long
     Message "Running water filter..."
@@ -102,19 +102,19 @@ Public Sub MenuWater()
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        R = ImageData(QuickVal + 2, y)
-        G = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        TC = ((222 * R + 707 * G + 71 * B) \ 1000)
-        R = TC - G - B
-        G = TC - R - B
-        B = TC - R - G
-        ByteMeL R
-        ByteMeL G
-        ByteMeL B
-        ImageData(QuickVal + 2, y) = R
-        ImageData(QuickVal + 1, y) = G
-        ImageData(QuickVal, y) = B
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        TC = ((222 * r + 707 * g + 71 * b) \ 1000)
+        r = TC - g - b
+        g = TC - r - b
+        b = TC - r - g
+        ByteMeL r
+        ByteMeL g
+        ByteMeL b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -122,23 +122,23 @@ Public Sub MenuWater()
 End Sub
 
 Public Sub MenuAtmospheric()
-    Dim R As Integer, G As Integer, B As Integer
-    Dim TR As Integer, TB As Integer, TG As Integer
+    Dim r As Integer, g As Integer, b As Integer
+    Dim tR As Integer, tB As Integer, tG As Integer
     Dim QuickVal As Long
     Message "Running atmospheric filter..."
     SetProgBarMax PicWidthL
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        R = ImageData(QuickVal + 2, y)
-        G = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        TR = (G + B) \ 2
-        TG = (R + B) \ 2
-        TB = (R + G) \ 2
-        ImageData(QuickVal + 2, y) = TR
-        ImageData(QuickVal + 1, y) = TG
-        ImageData(QuickVal, y) = TB
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        tR = (g + b) \ 2
+        tG = (r + b) \ 2
+        tB = (r + g) \ 2
+        ImageData(QuickVal + 2, y) = tR
+        ImageData(QuickVal + 1, y) = tG
+        ImageData(QuickVal, y) = tB
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -146,25 +146,25 @@ Public Sub MenuAtmospheric()
 End Sub
 
 Public Sub MenuFrozen()
-    Dim R As Integer, G As Integer, B As Integer
+    Dim r As Integer, g As Integer, b As Integer
     Message "Running freeze filter..."
     SetProgBarMax PicWidthL
     Dim QuickVal As Long
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        R = ImageData(QuickVal + 2, y)
-        G = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        R = Abs((R - G - B) * 1.5)
-        G = Abs((G - B - R) * 1.5)
-        B = Abs((B - R - G) * 1.5)
-        ByteMe R
-        ByteMe G
-        ByteMe B
-        ImageData(QuickVal + 2, y) = R
-        ImageData(QuickVal + 1, y) = G
-        ImageData(QuickVal, y) = B
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        r = Abs((r - g - b) * 1.5)
+        g = Abs((g - b - r) * 1.5)
+        b = Abs((b - r - g) * 1.5)
+        ByteMe r
+        ByteMe g
+        ByteMe b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -172,7 +172,7 @@ Public Sub MenuFrozen()
 End Sub
 
 Public Sub MenuLava()
-    Dim R As Long, G As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim TC As Long
     Message "Running lava filter..."
     SetProgBarMax PicWidthL
@@ -180,16 +180,16 @@ Public Sub MenuLava()
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        R = ImageData(QuickVal + 2, y)
-        G = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        TC = Int((222 * R + 707 * G + 71 * B) \ 1000)
-        R = TC
-        G = Abs(B - 128)
-        B = Abs(B - 128)
-        ImageData(QuickVal + 2, y) = R
-        ImageData(QuickVal + 1, y) = G
-        ImageData(QuickVal, y) = B
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        TC = Int((222 * r + 707 * g + 71 * b) \ 1000)
+        r = TC
+        g = Abs(b - 128)
+        b = Abs(b - 128)
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -197,7 +197,7 @@ Public Sub MenuLava()
 End Sub
 
 Public Sub MenuBurn()
-    Dim R As Long, G As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim TC As Long
     Message "Running burn filter..."
     SetProgBarMax PicWidthL
@@ -205,19 +205,19 @@ Public Sub MenuBurn()
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        R = ImageData(QuickVal + 2, y)
-        G = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        TC = Int((222 * R + 707 * G + 71 * B) \ 1000)
-        R = TC * 3
-        G = TC
-        B = TC \ 3
-        ByteMeL R
-        ByteMeL G
-        ByteMeL B
-        ImageData(QuickVal + 2, y) = R
-        ImageData(QuickVal + 1, y) = G
-        ImageData(QuickVal, y) = B
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        TC = Int((222 * r + 707 * g + 71 * b) \ 1000)
+        r = TC * 3
+        g = TC
+        b = TC \ 3
+        ByteMeL r
+        ByteMeL g
+        ByteMeL b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -225,7 +225,7 @@ Public Sub MenuBurn()
 End Sub
 
 Public Sub MenuOcean()
-    Dim R As Long, G As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim TC As Long
     Message "Running ocean filter..."
     SetProgBarMax PicWidthL
@@ -233,19 +233,19 @@ Public Sub MenuOcean()
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        R = ImageData(QuickVal + 2, y)
-        G = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        TC = Int((222 * R + 707 * G + 71 * B) \ 1000)
-        R = TC \ 3
-        G = TC
-        B = TC * 3
-        ByteMeL R
-        ByteMeL G
-        ByteMeL B
-        ImageData(QuickVal + 2, y) = R
-        ImageData(QuickVal + 1, y) = G
-        ImageData(QuickVal, y) = B
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        TC = Int((222 * r + 707 * g + 71 * b) \ 1000)
+        r = TC \ 3
+        g = TC
+        b = TC * 3
+        ByteMeL r
+        ByteMeL g
+        ByteMeL b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -253,31 +253,31 @@ Public Sub MenuOcean()
 End Sub
 
 Public Sub MenuSteel()
-    Dim R As Long, G As Long, B As Long
-    Dim TC As Long, TR As Long
+    Dim r As Long, g As Long, b As Long
+    Dim TC As Long, tR As Long
     Message "Running steel filter..."
     SetProgBarMax PicWidthL
     Dim QuickVal As Long
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        TR = ImageData(QuickVal + 2, y)
-        R = Abs(TR - 64)
-        G = Abs(R - 64)
-        B = Abs(G - 64)
-        TC = Int((222 * R + 707 * G + 71 * B) \ 1000)
-        R = TC + 70
-        R = R + (((R - 128) * 100) \ 100)
-        G = Abs(TC - 6) + 70
-        G = G + (((G - 128) * 100) \ 100)
-        B = (TC + 5) + 70
-        B = B + (((B - 128) * 100) \ 100)
-        ByteMeL R
-        ByteMeL G
-        ByteMeL B
-        ImageData(QuickVal + 2, y) = R
-        ImageData(QuickVal + 1, y) = G
-        ImageData(QuickVal, y) = B
+        tR = ImageData(QuickVal + 2, y)
+        r = Abs(tR - 64)
+        g = Abs(r - 64)
+        b = Abs(g - 64)
+        TC = Int((222 * r + 707 * g + 71 * b) \ 1000)
+        r = TC + 70
+        r = r + (((r - 128) * 100) \ 100)
+        g = Abs(TC - 6) + 70
+        g = g + (((g - 128) * 100) \ 100)
+        b = (TC + 5) + 70
+        b = b + (((b - 128) * 100) \ 100)
+        ByteMeL r
+        ByteMeL g
+        ByteMeL b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x

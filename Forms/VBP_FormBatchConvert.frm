@@ -550,7 +550,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 22/July/12
 'Last update: all batch-related paths (input, output, list saving/loading, macros) are now connected to the INI file.

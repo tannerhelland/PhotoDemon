@@ -252,10 +252,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 08/September/11
-'Last update: fixed an error when changing image size and attempting to preserve the image's aspect ratio
+'Last updated: 5/July/11
+'Last update: added support for additional FreeImage resampling filters
 '
 'Handles all image-size related functions.  Currently supports standard resizing and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it in VB code) and bilinear resampling via pure VB)

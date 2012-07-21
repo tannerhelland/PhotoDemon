@@ -1,12 +1,10 @@
 Attribute VB_Name = "Public_Variables"
 
-Option Explicit
-
 'Contains any and all publicly-declared variables.  I am trying to move
 ' all public variables to here for obvious reasons, but the transition may
 ' not be completely done as long as this comment remains!
 
-
+Option Explicit
 
 'Progress bar class
 Public cProgBar As cProgressBar

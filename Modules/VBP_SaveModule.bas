@@ -1,7 +1,7 @@
 Attribute VB_Name = "Saving"
 '***************************************************************************
 'File Saving Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 03/June/12
 'Last update: Rewrite all save code against FreeImage v3.15.3, which is faster, cleaner,

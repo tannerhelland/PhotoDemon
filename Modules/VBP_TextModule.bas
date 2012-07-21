@@ -1,7 +1,7 @@
 Attribute VB_Name = "Text_Processing"
 '***************************************************************************
 'Text Operations Module
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 05/July/12
 'Last updated: 05/July/12
 'Last update: Initial build.  The "Miscellaneous" module was getting overrun

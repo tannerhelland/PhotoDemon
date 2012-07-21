@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 'Filter (Area) Interface
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 20/Apr/12
 'Last update: copied over optimizations and comments from my standalone Custom Filter project (on tannerhelland.com)

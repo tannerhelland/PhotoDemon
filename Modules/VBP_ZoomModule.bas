@@ -1,7 +1,7 @@
 Attribute VB_Name = "ZoomHandler"
 '***************************************************************************
 'Zoom Handler - builds and draws the image viewport and associated scroll bars
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 05/July/12
 'Last update: Fixed a stretching bug when zoomed-in to an image and resizing the window.

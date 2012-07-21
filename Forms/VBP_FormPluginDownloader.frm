@@ -326,7 +326,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Plugin Downloader (for downloading core plugins that were not found at program start)
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 10/June/12
 'Last updated: 13/June/12
 'Last update: added compression support.  The total download size for all three plugins is now under 1.0M.  Sweet!
@@ -600,17 +600,17 @@ End Function
 
 'Launch the website for downloading the EZTW32 DLL
 Private Sub lblEZTW32_Click()
-    ShellExecute FormMain.hWnd, "Open", "http://eztwain.com/eztwain1.htm", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://eztwain.com/eztwain1.htm", "", 0, SW_SHOWNORMAL
 End Sub
 
 'Launch the website for downloading the FreeImage DLL
 Private Sub lblFreeImage_Click()
-    ShellExecute FormMain.hWnd, "Open", "http://freeimage.sourceforge.net/download.html", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://freeimage.sourceforge.net/download.html", "", 0, SW_SHOWNORMAL
 End Sub
 
 'Launch the website for downloading the zLibwapi DLL
 Private Sub lblzLib_Click()
-    ShellExecute FormMain.hWnd, "Open", "http://www.winimage.com/zLibDll/index.html", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://www.winimage.com/zLibDll/index.html", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Function DownloadPlugin(ByVal pluginURL As String, ByVal curNumFile As Long, ByVal maxNumFile As Long, ByVal downloadSize As Long, ByVal toDecompress As Boolean)

@@ -1,7 +1,7 @@
 Attribute VB_Name = "ClipboardFunctions"
 '***************************************************************************
 'Clipboard Interface
-'©2000-2005 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 07/June/12
 'Last update: previously this routine only allowed pasting bitmaps, but there's no reason it shouldn't

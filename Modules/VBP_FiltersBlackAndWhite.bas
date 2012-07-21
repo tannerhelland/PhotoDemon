@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_BlackAndWhite"
 '***************************************************************************
 'Black and White Conversion Handler
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 22/December/01
 'Last updated: 13/January/07
 'Last update: Finished basic optimizations for each routine
@@ -17,7 +17,7 @@ Option Explicit
 
 'A standard threshold-based reduction.  Very simple.
 Public Sub MenuThreshold(ByVal Threshold As Long)
-        Dim r As Integer, g As Integer, B As Integer
+        Dim r As Integer, g As Integer, b As Integer
         Dim CurrentColor As Integer
         Dim QuickVal As Long
         Message "Generating threshold data..."
@@ -27,8 +27,8 @@ Public Sub MenuThreshold(ByVal Threshold As Long)
         For y = 0 To PicHeightL
             r = ImageData(QuickVal + 2, y)
             g = ImageData(QuickVal + 1, y)
-            B = ImageData(QuickVal, y)
-            CurrentColor = (r + g + B) / 3
+            b = ImageData(QuickVal, y)
+            CurrentColor = (r + g + b) / 3
             If CurrentColor > Threshold Then
                 ImageData(QuickVal, y) = 255
                 ImageData(QuickVal + 1, y) = 255
@@ -46,7 +46,7 @@ End Sub
 
 'Nearest color conversion - about as simple as it gets.
 Public Sub MenuBWNearestColor()
-    Dim r As Integer, g As Integer, B As Integer
+    Dim r As Integer, g As Integer, b As Integer
     Dim TC As Integer
     Dim QuickVal As Long
     Message "Converting to black and white..."
@@ -56,8 +56,8 @@ Public Sub MenuBWNearestColor()
     For y = 0 To PicHeightL
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        TC = (r + g + B) \ 3
+        b = ImageData(QuickVal, y)
+        TC = (r + g + b) \ 3
         If TC < 128 Then
             ImageData(QuickVal + 2, y) = 0
             ImageData(QuickVal + 1, y) = 0
@@ -76,7 +76,7 @@ End Sub
 'This is a strange method I found on the net somewhere.  It's white-weighted, setting the
 'pixel to black only if every component is less than 128.
 Public Sub MenuBWNearestColor2()
-    Dim r As Integer, g As Integer, B As Integer
+    Dim r As Integer, g As Integer, b As Integer
     Dim QuickVal As Long
     Message "Converting to black and white..."
     SetProgBarMax PicWidthL
@@ -85,8 +85,8 @@ Public Sub MenuBWNearestColor2()
     For y = 0 To PicHeightL
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        If r < 128 And g < 128 And B < 128 Then
+        b = ImageData(QuickVal, y)
+        If r < 128 And g < 128 And b < 128 Then
             ImageData(QuickVal + 2, y) = 0
             ImageData(QuickVal + 1, y) = 0
             ImageData(QuickVal, y) = 0
@@ -104,7 +104,7 @@ End Sub
 'Standard ordered dither.  Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
 ' As you'd expect, this routine is quite fast, but it gives an image that "obviously dithered" Windows 3.1 look.
 Public Sub MenuBWOrderedDither()
-    Dim r As Integer, g As Integer, B As Integer
+    Dim r As Integer, g As Integer, b As Integer
     Dim DitherTable(1 To 4, 1 To 4) As Byte
     Dim dTable(0 To 765) As Byte
     DitherTable(1, 1) = 1
@@ -137,8 +137,8 @@ Public Sub MenuBWOrderedDither()
     For y = 0 To PicHeightL
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        TC = dTable(r + g + B)
+        b = ImageData(QuickVal, y)
+        TC = dTable(r + g + b)
         TX = 1 + (x Mod 4)
         TY = 1 + (y Mod 4)
         If TC < DitherTable(TX, TY) Then
@@ -201,7 +201,7 @@ End Sub
 
 'A freakish converter that uses a nice every-other sampling routine.  I like it.
 Public Sub MenuBWImpressionist()
-    Dim r As Integer, g As Integer, B As Integer
+    Dim r As Integer, g As Integer, b As Integer
     Dim tR As Long
     Dim QuickVal As Long
     Message "Converting to black and white..."
@@ -211,28 +211,28 @@ Public Sub MenuBWImpressionist()
     For y = 0 To PicHeightL
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
-        tR = Int((222 * CLng(r) + 707 * CLng(g) + 71 * CLng(B)) \ 1000)
+        b = ImageData(QuickVal, y)
+        tR = Int((222 * CLng(r) + 707 * CLng(g) + 71 * CLng(b)) \ 1000)
         If tR < 64 Then
             r = 0
             g = 0
-            B = 0
+            b = 0
         ElseIf tR >= 64 And tR < 128 Then
             r = 255
             g = 255
-            B = 255
+            b = 255
         ElseIf tR >= 128 And tR < 192 Then
             r = 0
             g = 0
-            B = 0
+            b = 0
         ElseIf tR >= 192 Then
             r = 255
             g = 255
-            B = 255
+            b = 255
         End If
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = B
+        ImageData(QuickVal, y) = b
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
@@ -242,7 +242,7 @@ End Sub
 'This is based off Manuel Augusto Santos's "Enhanced Dither" algoritm; a link to his original code can be found on the
 ' "About" page of this project
 Public Sub MenuBWEnhancedDither()
-  Dim r As Long, g As Long, B As Long
+  Dim r As Long, g As Long, b As Long
   Dim ErrorDif As Long, nColors As Long
   Dim gray As Long
   Dim AveColor As Long
@@ -261,10 +261,10 @@ Public Sub MenuBWEnhancedDither()
   For x = 0 To PicWidthL
     QuickVal = x * 3
   For y = 0 To PicHeightL
-      B = ImageData(QuickVal, y)
+      b = ImageData(QuickVal, y)
       g = ImageData(QuickVal + 1, y)
       r = ImageData(QuickVal + 2, y)
-      gray = LookUp(r + g + B)
+      gray = LookUp(r + g + b)
       AveColor = AveColor + gray
       nColors = nColors + 1
   Next y
@@ -278,21 +278,21 @@ Public Sub MenuBWEnhancedDither()
     For x = 0 To PicWidthL
         QuickVal = x * 3
       If (x > 0) And (y > 0) And (x < PicWidthL - 1) And (y < PicHeightL - 1) Then
-        B = CLng(ImageData((x - 1) * 3, y - 1)) + CLng(ImageData((x - 1) * 3, y)) + CLng(ImageData((x - 1) * 3, y + 1)) + CLng(ImageData(QuickVal, y - 1)) + CLng(ImageData(QuickVal, y + 1)) + CLng(ImageData((x + 1) * 3, y - 1)) + CLng(ImageData((x + 1) * 3, y)) + CLng(ImageData((x + 1) * 3, y + 1))
+        b = CLng(ImageData((x - 1) * 3, y - 1)) + CLng(ImageData((x - 1) * 3, y)) + CLng(ImageData((x - 1) * 3, y + 1)) + CLng(ImageData(QuickVal, y - 1)) + CLng(ImageData(QuickVal, y + 1)) + CLng(ImageData((x + 1) * 3, y - 1)) + CLng(ImageData((x + 1) * 3, y)) + CLng(ImageData((x + 1) * 3, y + 1))
         g = CLng(ImageData((x - 1) * 3 + 1, y - 1)) + CLng(ImageData((x - 1) * 3 + 1, y)) + CLng(ImageData((x - 1) * 3 + 1, y + 1)) + CLng(ImageData(QuickVal + 1, y - 1)) + CLng(ImageData(QuickVal + 1, y + 1)) + CLng(ImageData((x + 1) * 3 + 1, y - 1)) + CLng(ImageData((x + 1) * 3 + 1, y)) + CLng(ImageData((x + 1) * 3 + 1, y + 1))
         r = CLng(ImageData((x - 1) * 3 + 2, y - 1)) + CLng(ImageData((x - 1) * 3 + 2, y)) + CLng(ImageData((x - 1) * 3 + 2, y + 1)) + CLng(ImageData(QuickVal + 2, y - 1)) + CLng(ImageData(QuickVal + 2, y + 1)) + CLng(ImageData((x + 1) * 3 + 2, y - 1)) + CLng(ImageData((x + 1) * 3 + 2, y)) + CLng(ImageData((x + 1) * 3 + 2, y + 1))
-        B = (10 * CLng(ImageData(QuickVal, y)) - B) \ 2
+        b = (10 * CLng(ImageData(QuickVal, y)) - b) \ 2
         g = (10 * CLng(ImageData(QuickVal + 1, y)) - g) \ 2
         r = (10 * CLng(ImageData(QuickVal + 2, y)) - r) \ 2
         ByteMeL r
         ByteMeL g
-        ByteMeL B
+        ByteMeL b
       Else
-        B = ImageData(QuickVal, y)
+        b = ImageData(QuickVal, y)
         g = ImageData(QuickVal + 1, y)
         r = ImageData(QuickVal + 2, y)
       End If
-      gray = LookUp(r + g + B)
+      gray = LookUp(r + g + b)
       gray = gray + ErrorDif
       ByteMeL gray
       If gray < AveColor Then nColors = 0 Else nColors = 255
