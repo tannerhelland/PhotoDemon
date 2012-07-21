@@ -79,7 +79,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Simple Splash Screen
-'©2000-2012 Tanner Helland
+'Copyright ©2000-2012 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 10/June/12
 'Last update: no more "force to top" z-order code.  It was never necessary in
