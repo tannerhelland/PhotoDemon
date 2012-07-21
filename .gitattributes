@@ -12,6 +12,7 @@
 *.ctx -crlf -diff
 *.RES -crlf -diff
 *.res -crlf -diff
+* text=auto
 
 # Standard to msysgit
 *.doc	 diff=astextplain
