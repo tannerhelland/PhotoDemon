@@ -39,9 +39,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12240
       Top             =   6960
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -94,16 +94,24 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   120
          Width           =   1935
-         _extentx        =   3413
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":06E0
-         caption         =   "Open Image"
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":0708
-         disabledpicturemode=   1
-         captioneffects  =   0
+         _ExtentX        =   3413
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "Open Image"
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":06E0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -111,16 +119,24 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   840
          Width           =   1935
-         _extentx        =   3413
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":175A
-         caption         =   "Save Image"
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":1782
-         disabledpicturemode=   1
-         captioneffects  =   0
+         _ExtentX        =   3413
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "Save Image"
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":1732
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -128,16 +144,24 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   1680
          Width           =   1935
-         _extentx        =   3413
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":27D4
-         caption         =   "Undo Last Action"
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":27FC
-         disabledpicturemode=   1
-         captioneffects  =   0
+         _ExtentX        =   3413
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "Undo Last Action"
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":2784
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -145,16 +169,24 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   2400
          Width           =   1935
-         _extentx        =   3413
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":384E
-         caption         =   "Redo Last Action"
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":3876
-         disabledpicturemode=   1
-         captioneffects  =   0
+         _ExtentX        =   3413
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "Redo Last Action"
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":37D6
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
       End
       Begin VB.Line Line3 
          BorderColor     =   &H80000002&
@@ -859,8 +891,8 @@ Attribute VB_Exposed = False
 'Main Program MDI Form
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 9/15/02
-'Last updated: 05/July/12
-'Last update: new accelerators added
+'Last updated: 30/July/12
+'Last update: new accelerators added (page up, page down for previous, next image respectively)
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
 ' primary purpose is sending parameters to other, more interesting sections of the program.
@@ -1599,6 +1631,69 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Escape - right now it's only used to cancel batch conversions, but it could be applied elsewhere
     If ctlAccelerator.Key(nIndex) = "Escape" Then
         If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
+    End If
+    
+    'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
+    If ctlAccelerator.Key(nIndex) = "Prev_Image" Or ctlAccelerator.Key(nIndex) = "Next_Image" Then
+    
+        'If one (or zero) images are loaded, ignore this accelerator
+        If NumOfWindows <= 1 Then Exit Sub
+    
+        'Rather than check the ctlAccelerator.Key value, store it to a faster variable
+        Dim chkDirection As Long
+        If ctlAccelerator.Key(nIndex) = "Prev_Image" Then chkDirection = 0 Else chkDirection = 1
+    
+        'Note - this routine relies on public variables from the MDIWindow() module
+       
+        'Start with the current image number
+        Dim curImageNum As Long
+        curImageNum = CurrentImage
+        
+        Dim stopLooking As Boolean
+        stopLooking = False
+        
+        'Loop through the pdImages() array, looking for the next available image
+        Do
+            
+            'Bounds checking is different depending on the direction
+            If chkDirection = 0 Then
+            
+                curImageNum = curImageNum - 1
+            
+                'If we've hit the first image, start over from the top
+                If curImageNum < 1 Then curImageNum = NumOfImagesLoaded
+                
+                'If we've circled through all images and not found any active ones, exit.  (This shouldn't trigger; it exists as a fail-safe.)
+                If curImageNum = CurrentImage Then
+                    stopLooking = True
+                    Exit Do
+                End If
+                
+            Else
+            
+                curImageNum = curImageNum + 1
+            
+                'If we've hit the first image, start over from the top
+                If curImageNum > NumOfImagesLoaded Then curImageNum = 1
+            
+                'If we've circled through all images and not found any active ones, exit.  (This shouldn't trigger; it exists as a fail-safe.)
+                If curImageNum = CurrentImage Then
+                    stopLooking = True
+                    Exit Do
+                End If
+            
+            End If
+            
+            'If this image is active, give its containing form focus and exit the loop
+            If pdImages(curImageNum).IsActive = True Then
+                stopLooking = True
+                pdImages(curImageNum).containingForm.SetFocus
+                Exit Do
+            End If
+        
+        'If necessary, keep searching for a valid image
+        Loop While stopLooking = False
+    
     End If
     
     'MRU files

@@ -518,6 +518,7 @@ Public Sub LoadMenuShortcuts()
         .AddAccelerator vbKeyAdd, vbCtrlMask, "Zoom_In"
         .AddAccelerator vbKeySubtract, vbCtrlMask, "Zoom_Out"
         .AddAccelerator vbKeyEscape, 0, "Escape"
+        
         'Most-recently used files
         .AddAccelerator vbKey0, vbCtrlMask, "MRU_0"
         .AddAccelerator vbKey1, vbCtrlMask, "MRU_1"
@@ -529,6 +530,11 @@ Public Sub LoadMenuShortcuts()
         .AddAccelerator vbKey7, vbCtrlMask, "MRU_7"
         .AddAccelerator vbKey8, vbCtrlMask, "MRU_8"
         .AddAccelerator vbKey9, vbCtrlMask, "MRU_9"
+        
+        'Next/previous image
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image"
+        
         .Enabled = True
     End With
 
