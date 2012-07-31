@@ -15,13 +15,13 @@ Attribute VB_Name = "MDIWindow"
 
 Option Explicit
 
-'The image number we are currently at (always goes up, never down)
+'The image number PhotoDemon is currently at (always goes up, never down; starts at zero when the program is loaded)
 Public NumOfImagesLoaded As Long
 
 'The current image we are working with (generally FormMain.ActiveForm.Tag)
 Public CurrentImage As Long
 
-'Number of existing windows
+'Number of existing windows (goes up or down as images are opened or closed)
 Public NumOfWindows As Long
 
 'This array holds ALL IMPORTANT IMAGE INFORMATION for every loaded image.
