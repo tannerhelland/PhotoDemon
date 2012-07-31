@@ -48,6 +48,7 @@ Public Sub ClipboardPaste()
         'We'll need a temporary form for saving the data to file
         CreateNewImageForm True
         
+        'Load the image to the temporary form's back buffer picture box
         FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
         FormMain.ActiveForm.BackBuffer.Picture = Clipboard.GetData(2)
         DoEvents
