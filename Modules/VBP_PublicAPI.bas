@@ -21,7 +21,7 @@ Public Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As
 
 'ShellExecute is preferable to VB's 'Shell' command; I use it for two items in the "Help" menu - sending
 ' me an email, and opening the PhotoDemon website (currently just tannerhelland.com)
-Public Declare Function ShellExecute Lib "shell32" Alias "ShellExecuteA" (ByVal HWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Public Declare Function ShellExecute Lib "shell32" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 Public Const SW_SHOWNORMAL = 1
 
 'Various API calls for manually downloading files from the Internet
@@ -38,3 +38,4 @@ Public Const HTTP_QUERY_CONTENT_LENGTH As Long = 5
 
 'Some PhotoDemon functions are capable of timing themselves.  GetTickCount is used to do this.
 Public Declare Function GetTickCount Lib "kernel32" () As Long
+

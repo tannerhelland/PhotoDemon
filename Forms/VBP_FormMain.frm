@@ -901,6 +901,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'These functions are used to scroll through consecutive MDI windows without flickering
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+
+
 'When the zoom combo box is changed, redraw the image using the new zoom value
 Private Sub CmbZoom_Click()
     
@@ -1044,7 +1049,7 @@ End Sub
 Private Sub MnuBugReport_Click()
     
     'Shell a browser window with the GitHub issue report form
-    ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1130,7 +1135,7 @@ End Sub
 
 Private Sub MnuDonate_Click()
     'Launch the default web browser with the tannerhelland.com donation page
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuDream_Click()
@@ -1144,7 +1149,7 @@ End Sub
 Private Sub MnuEmailAuthor_Click()
     
     'Shell a browser window with the tannerhelland.com contact form
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1567,7 +1572,7 @@ End Sub
 
 Private Sub MnuVisitWebsite_Click()
     'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuWater_Click()
@@ -1639,60 +1644,16 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
         'If one (or zero) images are loaded, ignore this accelerator
         If NumOfWindows <= 1 Then Exit Sub
     
-        'Rather than check the ctlAccelerator.Key value, store it to a faster variable
-        Dim chkDirection As Long
-        If ctlAccelerator.Key(nIndex) = "Prev_Image" Then chkDirection = 0 Else chkDirection = 1
-    
-        'Note - this routine relies on public variables from the MDIWindow() module
-       
-        'Start with the current image number
-        Dim curImageNum As Long
-        curImageNum = CurrentImage
+        'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
+        Dim MDIClient As Long
+        MDIClient = GetWindow(FormMain.hWnd, 5)
         
-        Dim stopLooking As Boolean
-        stopLooking = False
-        
-        'Loop through the pdImages() array, looking for the next available image
-        Do
-            
-            'Bounds checking is different depending on the direction
-            If chkDirection = 0 Then
-            
-                curImageNum = curImageNum - 1
-            
-                'If we've hit the first image, start over from the top
-                If curImageNum < 1 Then curImageNum = NumOfImagesLoaded
-                
-                'If we've circled through all images and not found any active ones, exit.  (This shouldn't trigger; it exists as a fail-safe.)
-                If curImageNum = CurrentImage Then
-                    stopLooking = True
-                    Exit Do
-                End If
-                
-            Else
-            
-                curImageNum = curImageNum + 1
-            
-                'If we've hit the first image, start over from the top
-                If curImageNum > NumOfImagesLoaded Then curImageNum = 1
-            
-                'If we've circled through all images and not found any active ones, exit.  (This shouldn't trigger; it exists as a fail-safe.)
-                If curImageNum = CurrentImage Then
-                    stopLooking = True
-                    Exit Do
-                End If
-            
-            End If
-            
-            'If this image is active, give its containing form focus and exit the loop
-            If pdImages(curImageNum).IsActive = True Then
-                stopLooking = True
-                pdImages(curImageNum).containingForm.SetFocus
-                Exit Do
-            End If
-        
-        'If necessary, keep searching for a valid image
-        Loop While stopLooking = False
+        'Use the API to instruct the MDI window to move one window forward or back
+        If ctlAccelerator.Key(nIndex) = "Prev_Image" Then
+            SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
+        Else
+            SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
+        End If
     
     End If
     

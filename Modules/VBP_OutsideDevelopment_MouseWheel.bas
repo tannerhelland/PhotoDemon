@@ -10,44 +10,44 @@ Option Explicit
 
 ' Store WndProcs
 Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" ( _
-                ByVal HWnd As Long, _
+                ByVal hWnd As Long, _
                 ByVal lpString As String) As Long
 
 Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" ( _
-                ByVal HWnd As Long, _
+                ByVal hWnd As Long, _
                 ByVal lpString As String, _
                 ByVal hData As Long) As Long
 
 Private Declare Function RemoveProp Lib "user32.dll" Alias "RemovePropA" ( _
-                ByVal HWnd As Long, _
+                ByVal hWnd As Long, _
                 ByVal lpString As String) As Long
 
 ' Hooking
 Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" ( _
                 ByVal lpPrevWndFunc As Long, _
-                ByVal HWnd As Long, _
+                ByVal hWnd As Long, _
                 ByVal Msg As Long, _
                 ByVal wParam As Long, _
                 ByVal lParam As Long) As Long
 
 Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" ( _
-                ByVal HWnd As Long, _
+                ByVal hWnd As Long, _
                 ByVal nIndex As Long, _
                 ByVal dwNewLong As Long) As Long
 
 Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" ( _
-                ByVal HWnd As Long, _
-                ByVal Msg As Long, _
-                wParam As Any, _
+                ByVal hWnd As Long, _
+                ByVal wMsg As Long, _
+                ByVal wParam As Any, _
                 lParam As Any) As Long
 
 ' Position Checking
 Private Declare Function GetWindowRect Lib "user32" ( _
-                ByVal HWnd As Long, _
+                ByVal hWnd As Long, _
                 lpRect As RECT) As Long
                 
 Private Declare Function GetParent Lib "user32" ( _
-                ByVal HWnd As Long) As Long
+                ByVal hWnd As Long) As Long
 
 Private Const GWL_WNDPROC = -4
 Private Const WM_MOUSEWHEEL = &H20A
@@ -101,7 +101,7 @@ Private Function WindowProc(ByVal lWnd As Long, ByVal lMsg As Long, ByVal wParam
         End If
       Else
         ' it's a form so fire mousewheel
-        If IsOver(fFrm.HWnd, Xpos, Ypos) Then fFrm.MouseWheel MouseKeys, Rotation, Xpos, Ypos
+        If IsOver(fFrm.hWnd, Xpos, Ypos) Then fFrm.MouseWheel MouseKeys, Rotation, Xpos, Ypos
       End If
       
     'Forgive my use of arbitrary numbers here, but I used brute force testing to discover what messages my
@@ -117,41 +117,41 @@ Private Function WindowProc(ByVal lWnd As Long, ByVal lMsg As Long, ByVal wParam
             If pdImages(CurrentImage).RedoState = True Then Process Redo
         End If
             
-        'This line of code can be used to display the parameters in PhotoDemon's status bar - it's useful for tracking
-        ' arbitrary key presses or functions on devices VB doesn't inherently support.
-        'If lMsg > 700 Then Message CStr(lMsg) & "," & CStr(wParam) & "," & CStr(lParam)
-            
   End Select
+  
+    'This line of code can be used to display the parameters in PhotoDemon's status bar - it's useful for tracking
+    ' arbitrary key presses or functions on devices VB doesn't inherently support.
+    'If lMsg > 500 Then Message CStr(lMsg) & "," & CStr(wParam) & "," & CStr(lParam)
   
   WindowProc = CallWindowProc(GetProp(lWnd, "PrevWndProc"), lWnd, lMsg, wParam, lParam)
 End Function
 
 ' Hook / UnHook
 ' ================================================
-Public Sub WheelHook(ByVal HWnd As Long)
+Public Sub WheelHook(ByVal hWnd As Long)
   On Error Resume Next
-  SetProp HWnd, "PrevWndProc", SetWindowLong(HWnd, GWL_WNDPROC, AddressOf WindowProc)
+  SetProp hWnd, "PrevWndProc", SetWindowLong(hWnd, GWL_WNDPROC, AddressOf WindowProc)
 End Sub
 
-Public Sub WheelUnHook(ByVal HWnd As Long)
+Public Sub WheelUnHook(ByVal hWnd As Long)
   On Error Resume Next
-  SetWindowLong HWnd, GWL_WNDPROC, GetProp(HWnd, "PrevWndProc")
-  RemoveProp HWnd, "PrevWndProc"
+  SetWindowLong hWnd, GWL_WNDPROC, GetProp(hWnd, "PrevWndProc")
+  RemoveProp hWnd, "PrevWndProc"
 End Sub
 
 ' Window Checks
 ' ================================================
-Public Function IsOver(ByVal HWnd As Long, ByVal Lx As Long, ByVal lY As Long) As Boolean
+Public Function IsOver(ByVal hWnd As Long, ByVal Lx As Long, ByVal lY As Long) As Boolean
   Dim rectCtl As RECT
-  GetWindowRect HWnd, rectCtl
+  GetWindowRect hWnd, rectCtl
   With rectCtl
     IsOver = (Lx >= .Left And Lx <= .Right And lY >= .Top And lY <= .Bottom)
   End With
 End Function
 
-Private Function GetForm(ByVal HWnd As Long) As Form
+Private Function GetForm(ByVal hWnd As Long) As Form
   For Each GetForm In Forms
-    If GetForm.HWnd = HWnd Then Exit Function
+    If GetForm.hWnd = hWnd Then Exit Function
   Next GetForm
   Set GetForm = Nothing
 End Function
