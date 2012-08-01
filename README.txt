@@ -7,25 +7,38 @@ http://tannerhelland.com
 What makes PhotoDemon preferable to other image editing tools?
 -------------------------------------------------------------------------------------
 :: Portable and lightweight
-	PhotoDemon can be run as a standalone .exe.  No installer is provided or required.
-	An INI file is used to store program settings, and if no INI is found, PhotoDemon
-	will generate one for you.  (PhotoDemon does not touch the Windows registry.)
+	PhotoDemon is designed to be run as a standalone .exe.  No installer is provided
+	or required.  An INI file is used to store program settings, and if no INI is
+	found, PhotoDemon will generate one for you.  PhotoDemon does not touch the
+	Windows registry, and aside from a temporary file folder – which you can specify
+	in the Preferences menu – it leaves no trace of itself on your hard drive.
 
 :: Powerful macro and batch conversion support
-	PhotoDemon provides full macro support.  Simply hit "Record Macro", then perform
-	as many actions as you'd like.  When finished, save that macro to the hard drive
+	PhotoDemon provides full macro support.  Simply hit “Record Macro”, then perform
+	as many actions as you’d like.  When finished, save that macro to the hard drive
 	so you can repeat it at any point in the future.  Macros fully integrate with a
-	built-in batch conversion tool - simply choose a saved macro and a folder or list 
-	of images, and PhotoDemon will apply the macro to every image automagically.
+	built-in batch conversion tool – simply choose a saved macro and a folder or list
+	of images, and PhotoDemon will apply that macro to every image automagically.  For
+	large batches (50+ images), PhotoDemon will give you a running estimate of
+	time-to-completion.
 		
-:: Emphasis on usability.
+:: Emphasis on usability
 	Most free, open-source image editors are usability nightmares.  PhotoDemon tries
-	not to be.  Rather than including thousands of features that no human being will 
-	ever use, PhotoDemon focuses on a solid set of common filters and image adjustment
-	tools.  Similarly, the interface was built with input from professional designers,
-	(not just software engineers!).
+	not to be.  The interface was built with input from professional designers – not
+	just software engineers – and small touches, like unlimited Undo/Redo, “Fade last
+	effect,” keyboard accelerators, effect previews, mouse wheel and forward-back
+	button support, and descriptive menu icons make PhotoDemon useful to novices and
+	professionals alike.
+	
+:: A comprehensive selection of image editing tools and filters
+	2D transformations: image resizing, rotation, isometric conversion.  Color tools:
+	image levels, white balance, grayscale, sepia, color reduction, full-featured
+	histogram (including equalization and stretching).  Filters: blur, sharpen, edge
+	detection, solarize, despeckle, dilate/erode, diffuse, mosaic, and many more.
+	50+ in the current build – and that’s not including a custom filter tool that
+	allows you to build your own 5×5 convolution filters.
 
-		
+	
 What doesn't PhotoDemon do?
 -------------------------------------------------------------------------------------
 :: Painting tools.
@@ -37,7 +50,8 @@ What doesn't PhotoDemon do?
 	images with alpha channels or bit-depths greater than 16 million colors, but it
 	will internally convert these images to true color (24-bit RGB) before operating
 	on them, and it will only save images in non-alpha 8 or 24-bit color depths.  If
-	you need alpha or deep color support, I'm afraid PhotoDemon is not for you.
+	you need alpha or deep color support, I'm afraid PhotoDemon is not the right tool
+	for you.
 		
 :: Advanced color management (ICC profiles)
 	PhotoDemon ignores embedded ICC profiles.  As a tool designed for consumers and
@@ -51,7 +65,7 @@ What doesn't PhotoDemon do?
 	Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD,
 	Solaris or Maemo systems with Wine v1.4 (or later) installed.  However, should you
 	choose to go down this route, you are effectively on your own.  PhotoDemon's
-	developers don't have the resources to support Wine in any official capacity.
+	developer doesn't have the resources to support Wine in any official capacity.
 
 		
 		
@@ -105,6 +119,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=50065&lngWId=1)
 * Brad Martinez for the original implementation of VB binary file extraction
   (http://btmtz.mvps.org/gfxfromfrx/)
+* Ron van Tilburg for a native-VB implementation of Xiaolin Wu's line antialiasing routine
+  (http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1)
+* Jason Bullen for a native-VB implementation of knot-based cubic spline interpolation
+  (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1)
 * Dosadi for the EZTW32 scanner/digital camera library
   (http://eztwain.com/eztwain1.htm)
 * Jean-Loup Gailly and Mark Adler for the zLib compression library, and Gilles Vollant for the WAPI wrapper
