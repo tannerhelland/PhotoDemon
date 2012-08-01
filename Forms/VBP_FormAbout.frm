@@ -4,7 +4,7 @@ Begin VB.Form FormAbout
    BackColor       =   &H00FFFFFF&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
-   ClientHeight    =   7965
+   ClientHeight    =   8115
    ClientLeft      =   2340
    ClientTop       =   1875
    ClientWidth     =   9030
@@ -23,7 +23,7 @@ Begin VB.Form FormAbout
    MaxButton       =   0   'False
    MinButton       =   0   'False
    Picture         =   "VBP_FormAbout.frx":058A
-   ScaleHeight     =   531
+   ScaleHeight     =   541
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   602
    ShowInTaskbar   =   0   'False
@@ -32,13 +32,13 @@ Begin VB.Form FormAbout
       Cancel          =   -1  'True
       Caption         =   "OK"
       Default         =   -1  'True
-      Height          =   345
-      Left            =   7755
+      Height          =   465
+      Left            =   7635
       MouseIcon       =   "VBP_FormAbout.frx":A6C2
       MousePointer    =   99  'Custom
       TabIndex        =   0
-      Top             =   7440
-      Width           =   1125
+      Top             =   7560
+      Width           =   1245
    End
    Begin VB.Line Line3 
       BorderColor     =   &H80000002&
@@ -147,6 +147,8 @@ Private Sub Form_Load()
     GenerateThankyou "Alfred Koppold for native-VB PCX import/export and PNG import interfaces", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1"
     GenerateThankyou "John Korejwa for his native-VB JPEG encoding class", "http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=50065&lngWId=1"
     GenerateThankyou "Brad Martinez for the original implementation of VB binary file extraction", "http://btmtz.mvps.org/gfxfromfrx/"
+    GenerateThankyou "Ron van Tilburg for a native-VB implementation of Xiaolin Wu's line antialiasing routine", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
+    GenerateThankyou "Jason Bullen for a native-VB implementation of knot-based cubic spline interpolation", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateThankyou "Dosadi for the EZTW32 scanner/digital camera library", "http://eztwain.com/eztwain1.htm"
     GenerateThankyou "Jean-Loup Gailly and Mark Adler for the zLib compression library, and Gilles Vollant for the WAPI wrapper", "http://www.winimage.com/zLibDll/index.html"
     GenerateThankyou "Waty Thierry for many insights regarding printer interfacing in VB", "http://www.ppreview.net/"
