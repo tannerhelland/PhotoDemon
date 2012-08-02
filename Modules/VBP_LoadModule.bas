@@ -307,7 +307,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
         FixScrolling = True
     
-        PrepareViewport FormMain.ActiveForm
+        PrepareViewport FormMain.ActiveForm, "PreLoadImage"
         
         'Note the window state, as it may be important in the future
         pdImages(CurrentImage).WindowState = FormMain.ActiveForm.WindowState
@@ -490,7 +490,7 @@ Public Sub LoadUndo(ByVal UndoFile As String)
     
     DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
     
-    PrepareViewport FormMain.ActiveForm
+    PrepareViewport FormMain.ActiveForm, "Undo"
     
     Message "Undo restored successfully."
     

@@ -902,8 +902,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These functions are used to scroll through consecutive MDI windows without flickering
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
 
 
 'When the zoom combo box is changed, redraw the image using the new zoom value
@@ -912,7 +912,7 @@ Private Sub CmbZoom_Click()
     'Track the current zoom value
     If NumOfWindows > 0 Then pdImages(FormMain.ActiveForm.Tag).CurrentZoomValue = FormMain.CmbZoom.ListIndex
     
-    PrepareViewport FormMain.ActiveForm
+    PrepareViewport FormMain.ActiveForm, "Zoom changed"
     
 End Sub
 
@@ -1049,7 +1049,7 @@ End Sub
 Private Sub MnuBugReport_Click()
     
     'Shell a browser window with the GitHub issue report form
-    ShellExecute FormMain.hWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1064,7 +1064,7 @@ Private Sub MnuCascadeWindows_Click()
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
     For i = 1 To CurrentImage
-        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm
+        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Cascade"
     Next i
     
 End Sub
@@ -1135,7 +1135,7 @@ End Sub
 
 Private Sub MnuDonate_Click()
     'Launch the default web browser with the tannerhelland.com donation page
-    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuDream_Click()
@@ -1149,7 +1149,7 @@ End Sub
 Private Sub MnuEmailAuthor_Click()
     
     'Shell a browser window with the tannerhelland.com contact form
-    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1437,7 +1437,7 @@ Private Sub MnuRestoreAllWindows_Click()
             tForm.WindowState = vbNormal
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - VB is quirky about triggering that event reliably)
-            If pdImages(tForm.Tag).IsActive = True Then PrepareViewport tForm
+            If pdImages(tForm.Tag).IsActive = True Then PrepareViewport tForm, "Restore all windows"
         End If
     Next
 End Sub
@@ -1537,7 +1537,7 @@ Private Sub MnuTileHorizontally_Click()
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
     For i = 1 To CurrentImage
-        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm
+        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
     Next i
     
 End Sub
@@ -1549,7 +1549,7 @@ Private Sub MnuTileVertically_Click()
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
     For i = 1 To CurrentImage
-        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm
+        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
     Next i
     
 End Sub
@@ -1572,7 +1572,7 @@ End Sub
 
 Private Sub MnuVisitWebsite_Click()
     'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
-    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuWater_Click()
@@ -1646,7 +1646,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
         'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
         Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.hWnd, 5)
+        MDIClient = GetWindow(FormMain.HWnd, 5)
         
         'Use the API to instruct the MDI window to move one window forward or back
         If ctlAccelerator.Key(nIndex) = "Prev_Image" Then

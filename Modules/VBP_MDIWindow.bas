@@ -110,24 +110,24 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
     FormMain.ActiveForm.WindowState = 0
     
     'Now let's get some dimensions for our calculations
-    Dim tDif As Long, hDif As Long
+    Dim wDif As Long, hDif As Long
     'This variable determines the difference between scalewidth and width...
-    tDif = FormMain.ActiveForm.Width - FormMain.ActiveForm.ScaleWidth
+    wDif = FormMain.ActiveForm.Width - FormMain.ActiveForm.ScaleWidth
     '...while this variable does the same thing for scaleheight and height
     hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
     
     'Now we set the form dimensions to match the image's
-    FormMain.ActiveForm.Width = tDif + (FormMain.ActiveForm.BackBuffer.Width * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+    FormMain.ActiveForm.Width = wDif + (FormMain.ActiveForm.BackBuffer.Width * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
     FormMain.ActiveForm.Height = hDif + (FormMain.ActiveForm.BackBuffer.Height * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
     
-    'Set the scalemode back to a decent value
+    'Set the scalemode back to a decent pixels
     FormMain.ActiveForm.ScaleMode = 3
     
     'Re-enable scrolling
     FixScrolling = True
     
     'Now fix scrollbars and everything
-    If suppressRendering = False Then PrepareViewport FormMain.ActiveForm
+    If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitWindowToImage"
     
 End Sub
 
@@ -190,7 +190,7 @@ Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
     FixScrolling = True
     
     'Now fix scrollbars and everything
-    If suppressRendering = False Then PrepareViewport FormMain.ActiveForm
+    If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitImageToWindow"
     
 End Sub
 
@@ -246,7 +246,7 @@ Public Sub FitOnScreen()
     FixScrolling = True
     FitWindowToImage
     'Now fix scrollbars and everything
-    PrepareViewport FormMain.ActiveForm
+    PrepareViewport FormMain.ActiveForm, "FitOnScreen"
     
 End Sub
 

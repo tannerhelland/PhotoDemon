@@ -86,7 +86,7 @@ Public Sub MenuRotate90Clockwise()
     
     Message "Finished. "
     
-    PrepareViewport FormMain.ActiveForm
+    PrepareViewport FormMain.ActiveForm, "Rotate90Clockwise"
     SetProgBarVal 0
 End Sub
 
@@ -145,6 +145,6 @@ Public Sub MenuRotate270Clockwise()
     
     Message "Finished. "
     
-    PrepareViewport FormMain.ActiveForm
+    PrepareViewport FormMain.ActiveForm, "Rotate270Clockwise"
     SetProgBarVal 0
 End Sub
