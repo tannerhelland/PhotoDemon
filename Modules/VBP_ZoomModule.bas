@@ -85,7 +85,7 @@ End Sub
 'This routine requires a target form as a parameter.  This form will almost always be FormMain.ActiveForm, but in
 ' certain rare cases (cascading windows, for example), it may be necessary to recalculate the viewport and scroll bars
 ' in non-active windows - in those cases, the calling routine must tell us which viewport it wants rebuilt.
-Public Sub PrepareViewport(ByRef formToBuffer As Form)
+Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForRedraw As String)
 
     'Don't attempt to resize the scroll bars if FixScrolling is disabled. Yhis is used to provide a smoother user experience,
     ' especially when images are being loaded. (This routine is triggered on Form_Resize, which is in turn triggered when a
@@ -97,6 +97,9 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form)
     
     'If the image associated with this form is inactive, ignore this request
     If pdImages(formToBuffer.Tag).IsActive = False Then Exit Sub
+    
+    'Because this routine is time-consuming, I track it carefully to try and minimize how frequently it's called.  Feel free to comment out this line.
+    Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & formToBuffer.Tag & ") | " & formToBuffer.Caption
     
     On Error GoTo ZoomErrorHandler
     

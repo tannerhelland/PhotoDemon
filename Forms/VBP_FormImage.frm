@@ -191,6 +191,13 @@ Private Sub Form_Activate()
     ' unless the actually exist.)
     If pdImages(CurrentImage).PicWidth <> 0 Then DisplaySize pdImages(CurrentImage).PicWidth, pdImages(CurrentImage).PicHeight
 
+    'If this MDI child is maximized, double-check that it's been drawn correctly.
+    ' (This is necessary because VB doesn't handle _Resize() properly when switching between maximized MDI child forms)
+    If Me.WindowState = 2 Then
+        DoEvents
+        PrepareViewport Me, "Maximized MDI child redraw"
+    End If
+
     'Grab the image data
     GetImageData
     
@@ -273,9 +280,9 @@ End Sub
 Private Sub Form_Resize()
     
     'Redraw this form if certain criteria are met (image loaded, form visible, viewport adjustments allowed)
-    If (FixScrolling = True) And (Me.BackBuffer.ScaleWidth > 0) And (Me.BackBuffer.ScaleHeight > 0) And (Me.Visible = True) Then
+    If (Me.BackBuffer.ScaleWidth > 0) And (Me.BackBuffer.ScaleHeight > 0) And (Me.Visible = True) Then
         DrawSpecificCanvas Me
-        PrepareViewport Me
+        PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
     End If
     
     'The height of a newly created form is automatically set to 1.  This is normally changed when the image is
@@ -292,32 +299,38 @@ Private Sub Form_Resize()
     'If the window is being un-maximized, it's necessary to redraw every image buffer (to check for scroll bar enabling/disabling)
     If pdImages(Me.Tag).WindowState = vbMaximized And Me.WindowState = 0 Then
         
-        For i = 1 To CurrentImage
-            If pdImages(i).IsActive = True Then
-                pdImages(i).WindowState = 0
-                PrepareViewport pdImages(i).containingForm
-                
-                'While we're at it, make sure the images aren't still hidden off-form (which can happen if they were loaded while the window was maximized)
-                If pdImages(i).containingForm.Left >= FormMain.ScaleWidth Then pdImages(i).containingForm.Left = pdImages(i).WindowLeft
-                If pdImages(i).containingForm.Top >= FormMain.ScaleHeight Then pdImages(i).containingForm.Top = pdImages(i).WindowTop
-
+        'Run a loop through every child form to see if all windows are being un-maximized
+        ' (This will only happen when the user presses the "unmaximize" window button)
+        Dim allShrunk As Boolean
+        allShrunk = True
+        
+        Dim tForm As Form
+        For Each tForm In VB.Forms
+            If tForm.Name = "FormImage" Then
+                If tForm.WindowState = vbMaximized Then allShrunk = False
             End If
-        Next i
+        Next
+        
+        'If the user has unmaximized all windows, we need to redraw them
+        If allShrunk = True Then
+        
+            'Loop through every image, redrawing as we go
+            For i = 1 To CurrentImage
+                If pdImages(i).IsActive = True Then
+                    
+                    'Remember this new window state and redraw the form containing this image
+                    pdImages(i).WindowState = 0
+                    PrepareViewport pdImages(i).containingForm, "Form_Resize(), user unmaximized MDI children"
+                    
+                    'While we're at it, make sure the images aren't still hidden off-form (which can happen if they were loaded while the window was maximized)
+                    If pdImages(i).containingForm.Left >= FormMain.ScaleWidth Then pdImages(i).containingForm.Left = pdImages(i).WindowLeft
+                    If pdImages(i).containingForm.Top >= FormMain.ScaleHeight Then pdImages(i).containingForm.Top = pdImages(i).WindowTop
+    
+                End If
+            Next i
+        End If
         
     End If
-    
-    'If this window is going from non-maximized to maximized, note that across all relevant pdImage objects
-    If pdImages(Me.Tag).WindowState <> vbMaximized And Me.WindowState = vbMaximized Then
-    
-        For i = 1 To CurrentImage
-            If pdImages(i).IsActive = True Then
-                pdImages(i).WindowState = vbMaximized
-                PrepareViewport pdImages(i).containingForm
-            End If
-        Next i
-    
-    End If
-    
     
     'Remember this window state in the relevant pdImages object
     pdImages(Me.Tag).WindowState = Me.WindowState
