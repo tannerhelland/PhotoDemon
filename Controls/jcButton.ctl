@@ -92,40 +92,40 @@ Option Explicit
 '* N'joy ;)
 
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINT) As Long
+Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINT) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
-Private Declare Function SetPixel Lib "gdi32.dll" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
-Private Declare Function GetPixel Lib "gdi32.dll" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function CreateRectRgn Lib "gdi32" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
-Private Declare Function GetTextColor Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function SetTextColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
+Private Declare Function SetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
+Private Declare Function GetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function CreateRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function GetTextColor Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function OleTranslateColor Lib "OLEPRO32.DLL" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, ByRef pccolorref As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function GetNearestColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
+Private Declare Function GetNearestColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (lpLogFont As tLOGFONT) As Long
 Private Declare Function GetObject Lib "gdi32.dll" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 
 'User32 Declares
 Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function CopyRect Lib "user32" (lpDestRect As RECT, lpSourceRect As RECT) As Long
-Private Declare Function DrawEdge Lib "user32" (ByVal hdc As Long, qrc As RECT, ByVal edge As Long, ByVal grfFlags As Long) As Long
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hdc As Long, lpRect As RECT) As Long
+Private Declare Function DrawEdge Lib "user32" (ByVal hDC As Long, qrc As RECT, ByVal edge As Long, ByVal grfFlags As Long) As Long
+Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal HWnd As Long, lpRect As RECT) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal HWnd As Long, lpRect As RECT) As Long
-Private Declare Function FrameRect Lib "user32" (ByVal hdc As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
-Private Declare Function TransparentBlt Lib "MSIMG32.dll" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal crTransparent As Long) As Boolean
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function TransparentBlt Lib "MSIMG32.dll" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal crTransparent As Long) As Boolean
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINT) As Long
 Private Declare Function SetWindowRgn Lib "user32" (ByVal HWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
@@ -146,18 +146,18 @@ Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal 
 Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal HWnd As Long, ByVal pszClassList As Long) As Long
 Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
 Private Declare Function DrawThemeBackground Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal lHDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pClipRect As RECT) As Long
-Private Declare Function GetThemeBackgroundRegion Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal hdc As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pRegion As Long) As Long
+Private Declare Function GetThemeBackgroundRegion Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal hDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pRegion As Long) As Long
 Private Declare Function IsAppThemed Lib "uxtheme.dll" () As Long
 
 Private Declare Function ReleaseCapture Lib "user32.dll" () As Long
 Private Declare Function SetCapture Lib "user32" (ByVal HWnd As Long) As Long
 Private Declare Function GetCapture Lib "user32.dll" () As Long
 
-Private Declare Function FillRect Lib "user32.dll" (ByVal hdc As Long, ByRef lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hdc As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
-Private Declare Function DrawTextW Lib "user32" (ByVal hdc As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
-Private Declare Function DrawIconEx Lib "user32" (ByVal hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
-Private Declare Function SetLayout Lib "gdi32" (ByVal hdc As Long, ByVal dwLayout As Long) As Long
+Private Declare Function FillRect Lib "user32.dll" (ByVal hDC As Long, ByRef lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawTextW Lib "user32" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
+Private Declare Function SetLayout Lib "gdi32" (ByVal hDC As Long, ByVal dwLayout As Long) As Long
 
 '==========================================================================================================================================================================================================================================================================================
 ' Subclassing Declares
@@ -642,7 +642,7 @@ Private m_lMaskColor    As Long                 'Set Transparent color
 Private m_lButtonRgn    As Long                 'Button Region
 Private m_bIsSpaceBarDown As Boolean              'Space bar down boolean
 Private m_ButtonRect    As RECT                 'Button Position
-Private m_FocusRect     As RECT
+'Private m_FocusRect     As RECT
 Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
 Private m_lXPColor      As enumXPThemeColors
@@ -676,10 +676,10 @@ Private m_hMode         As Long                 'Added this, as tooltips
                                                 'were not displayed in
                                                 'compiled exe. (Thanks to Jim Jose)
 ' --Caption variables
-Private CaptionW        As Long                 'Width of Caption
-Private CaptionH        As Long                 'Height of Caption
-Private CaptionX        As Long                 'Left of Caption
-Private CaptionY        As Long                 'Top of Caption
+'Private CaptionW        As Long                 'Width of Caption
+'Private CaptionH        As Long                 'Height of Caption
+'Private CaptionX        As Long                 'Left of Caption
+'Private CaptionY        As Long                 'Top of Caption
 Private lpSignRect      As RECT                 'Drop down Symbol rect
 Private m_bRTL          As Boolean
 Private m_TextRect      As RECT                 'Caption drawing area
@@ -696,14 +696,14 @@ Private m_PictureAlign  As enumPictureAlign     'Picture Alignments
 Private m_PicEffectonOver As enumPicEffect
 Private m_PicEffectonDown As enumPicEffect
 Private m_bPicPushOnHover As Boolean
-Private PicH            As Long
+Private picH            As Long
 Private PicW            As Long
 Private aLighten(255)   As Byte                 'Light Picture
 Private aDarken(255)    As Byte                 'Dark Picture
 
 Private tmppic          As New StdPicture       'Temp picture
-Private PicX            As Long                 'X position of picture
-Private PicY            As Long                 'Y Position of Picture
+'Private PicX            As Long                 'X position of picture
+'Private PicY            As Long                 'Y Position of Picture
 Private m_PicRect       As RECT                 'Picture drawing area
 Private lh              As Long                 'ScaleHeight of button
 Private lw              As Long                 'ScaleWidth of button
@@ -738,7 +738,7 @@ Public Event KeyPress(KeyAcsii As Integer)
 Attribute KeyPress.VB_Description = "Occurs when the user presses and releases an ANSI key."
 Attribute KeyPress.VB_UserMemId = -603
 
-Private Sub DrawLineApi(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal Color As Long)
+Private Sub DrawLineApi(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal Color As Long)
 
    '****************************************************************************
    '*  draw lines
@@ -749,10 +749,10 @@ Private Sub DrawLineApi(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, By
    Dim hPenOld          As Long
 
    hPen = CreatePen(0, 1, Color)
-   hPenOld = SelectObject(hdc, hPen)
-   MoveToEx hdc, X1, Y1, pt
-   LineTo hdc, X2, Y2
-   SelectObject hdc, hPenOld
+   hPenOld = SelectObject(hDC, hPen)
+   MoveToEx hDC, x1, y1, pt
+   LineTo hDC, x2, y2
+   SelectObject hDC, hPenOld
    DeleteObject hPen
 
 End Sub
@@ -814,7 +814,7 @@ Private Sub DrawRectangle(ByVal x As Long, ByVal y As Long, ByVal Width As Long,
 
    hBrush = CreateSolidBrush(Color)
 
-   ret = FrameRect(hdc, brect, hBrush)
+   ret = FrameRect(hDC, brect, hBrush)
 
    ret = DeleteObject(hBrush)
 
@@ -836,7 +836,7 @@ Private Sub DrawFocusRectangle(ByVal x As Long, ByVal y As Long, ByVal Width As 
       .Bottom = y + Height
    End With
 
-   RetVal = DrawFocusRect(hdc, brect)
+   RetVal = DrawFocusRect(hDC, brect)
 
 End Sub
 
@@ -849,13 +849,14 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
    '* Modified by Dana Seaman
    '****************************************************************************
 
-   Dim b                As Long, h As Long, F As Long, i As Long, newW As Long
+   Dim b                As Long, h As Long, f As Long, i As Long, newW As Long
    Dim TmpDC            As Long, TmpBmp As Long, TmpObj As Long
    Dim Sr2DC            As Long, Sr2Bmp As Long, Sr2Obj As Long
    Dim DataDest()       As RGBTRIPLE, DataSrc() As RGBTRIPLE
    Dim Info             As BITMAPINFO, BrushRGB As RGBTRIPLE, gCol As Long
-   Dim hOldOb           As Long, PicEffect As enumPicEffect
-   Dim SrcDC            As Long, tObj As Long, ttt As Long
+   'Dim hOldOb           As Long
+   Dim PicEffect As enumPicEffect
+   Dim SrcDC            As Long, tObj As Long  ', ttt As Long
    Dim bDisOpacity      As Byte
    Dim OverOpacity      As Byte
    Dim a2               As Long
@@ -884,7 +885,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
       OverOpacity = m_PicOpacityOnOver
    End If
 
-   SrcDC = CreateCompatibleDC(hdc)
+   SrcDC = CreateCompatibleDC(hDC)
 
    If DstW < 0 Then DstW = UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode)
    If DstH < 0 Then DstH = UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode)
@@ -932,16 +933,16 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
    newW = DstW - 1
 
    For h = 0 To DstH - 1
-      F = h * DstW
+      f = h * DstW
       For b = 0 To newW
-         i = F + b
+         i = f + b
          If m_Buttonstate = eStateOver Then
             a1 = OverOpacity
          Else
             a1 = IIf(m_bEnabled, m_PictureOpacity, bDisOpacity)
          End If
          a2 = 255 - a1
-         If GetNearestColor(hdc, CLng(DataSrc(i).rgbRed) + 256& * DataSrc(i).rgbGreen + 65536 * DataSrc(i).rgbBlue) <> TransColor Then
+         If GetNearestColor(hDC, CLng(DataSrc(i).rgbRed) + 256& * DataSrc(i).rgbGreen + 65536 * DataSrc(i).rgbBlue) <> TransColor Then
             With DataDest(i)
                If BrushColor > -1 Then
                   If MonoMask Then
@@ -1021,13 +1022,14 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
    '* Author  : Dana Seaman                                                    *
    '****************************************************************************
 
-   Dim b                As Long, h As Long, F As Long, i As Long, newW As Long
+   Dim b                As Long, h As Long, f As Long, i As Long, newW As Long
    Dim TmpDC            As Long, TmpBmp As Long, TmpObj As Long
    Dim Sr2DC            As Long, Sr2Bmp As Long, Sr2Obj As Long
    Dim DataDest()       As RGBQUAD, DataSrc() As RGBQUAD
    Dim Info             As BITMAPINFO, BrushRGB As RGBQUAD, gCol As Long
-   Dim hOldOb           As Long, PicEffect As enumPicEffect
-   Dim SrcDC            As Long, tObj As Long, ttt As Long
+   'Dim hOldOb           As Long
+   Dim PicEffect As enumPicEffect
+   Dim SrcDC            As Long, tObj As Long  ', ttt As Long
    Dim bDisOpacity      As Byte
    Dim OverOpacity      As Byte
    Dim a2               As Long
@@ -1056,7 +1058,7 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
       OverOpacity = m_PicOpacityOnOver
    End If
    
-   SrcDC = CreateCompatibleDC(hdc)
+   SrcDC = CreateCompatibleDC(hDC)
 
    If DstW < 0 Then DstW = UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode)
    If DstH < 0 Then DstH = UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode)
@@ -1096,9 +1098,9 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
    newW = DstW - 1
 
    For h = 0 To DstH - 1
-      F = h * DstW
+      f = h * DstW
       For b = 0 To newW
-         i = F + b
+         i = f + b
          If m_bEnabled Then
              If m_Buttonstate = eStateOver Then
                 a1 = (CLng(DataSrc(i).rgbAlpha) * OverOpacity) \ 255
@@ -1336,7 +1338,7 @@ Private Sub DrawGradientEx(ByVal x As Long, ByVal y As Long, ByVal Width As Long
    End With
 
    '-- Paint it!
-   StretchDIBits hdc, x, y, Width, Height, 0, 0, Width, Height, lBits(0), uBIH, DIB_RGB_COLORS, vbSrcCopy
+   StretchDIBits hDC, x, y, Width, Height, 0, 0, Width, Height, lBits(0), uBIH, DIB_RGB_COLORS, vbSrcCopy
 
 End Sub
 
@@ -1439,13 +1441,13 @@ Private Sub DrawSymbol(ByVal eArrow As enumSymbol)
    Dim hOldFont         As Long
    Dim hNewFont         As Long
    Dim sSign            As String
-   Dim BtnSymbol        As enumSymbol
+   'Dim BtnSymbol        As enumSymbol
 
    hNewFont = BuildSymbolFont(14)
-   hOldFont = SelectObject(hdc, hNewFont)
+   hOldFont = SelectObject(hDC, hNewFont)
 
    sSign = eArrow
-   DrawText hdc, sSign, 1, lpSignRect, DT_WORDBREAK '!!
+   DrawText hDC, sSign, 1, lpSignRect, DT_WORDBREAK '!!
    DeleteObject hNewFont
 
 End Sub
@@ -1473,7 +1475,7 @@ Private Sub DrawPicwithCaption()
    Dim lpRect           As RECT            'RECT to draw caption
    Dim pRect            As RECT
    Dim lShadowClr       As Long
-   Dim lPixelClr        As Long
+   'Dim lPixelClr        As Long
    lw = ScaleWidth                         'ScaleHeight of Button
    lh = ScaleHeight                        'ScaleWidth of Button
 
@@ -1501,7 +1503,7 @@ Private Sub DrawPicwithCaption()
    End If
 
    ' --Adjust Picture Sizes
-   PicH = ScaleX(tmppic.Height, vbHiMetric, vbPixels)
+   picH = ScaleX(tmppic.Height, vbHiMetric, vbPixels)
    PicW = ScaleX(tmppic.Width, vbHiMetric, vbPixels)
    
    ' --Get the drawing area of caption
@@ -1517,9 +1519,9 @@ Private Sub DrawPicwithCaption()
 
    ' --Calc rects for multiline
    If m_WindowsNT Then
-      DrawTextW hdc, StrPtr(m_Caption), -1, m_TextRect, DT_CALCRECT Or DT_WORDBREAK Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawTextW hDC, StrPtr(m_Caption), -1, m_TextRect, DT_CALCRECT Or DT_WORDBREAK Or IIf(m_bRTL, DT_RTLREADING, 0)
    Else
-      DrawText hdc, m_Caption, -1, m_TextRect, DT_CALCRECT Or DT_WORDBREAK Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawText hDC, m_Caption, -1, m_TextRect, DT_CALCRECT Or DT_WORDBREAK Or IIf(m_bRTL, DT_RTLREADING, 0)
    End If
 
    ' --Copy rect into temp var
@@ -1564,10 +1566,10 @@ Private Sub DrawPicwithCaption()
                End If
 
             Case epTopOfCaption, epTopEdge
-               OffsetRect lpRect, 0, PicH \ 2
+               OffsetRect lpRect, 0, picH \ 2
 
             Case epBottomOfCaption, epBottomEdge
-               OffsetRect lpRect, 0, -PicH \ 2
+               OffsetRect lpRect, 0, -picH \ 2
 
             Case epBackGround
                If m_CaptionAlign = ecCenterAlign Then
@@ -1607,12 +1609,12 @@ Private Sub DrawPicwithCaption()
    If m_bDropDownSep Then
       If m_PictureAlign <> epRightEdge Or m_PictureAlign <> epRightOfCaption Then
          If m_TextRect.Right < ScaleWidth - 8 Then
-            DrawLineApi lw - 16, 3, lw - 16, lh - 3, ShiftColor(GetPixel(hdc, 7, 7), -0.1)
-            DrawLineApi lw - 15, 3, lw - 15, lh - 3, ShiftColor(GetPixel(hdc, 7, 7), 0.1)
+            DrawLineApi lw - 16, 3, lw - 16, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), -0.1)
+            DrawLineApi lw - 15, 3, lw - 15, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), 0.1)
          End If
       ElseIf m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
-         DrawLineApi lw - 16, 3, lw - 16, lh - 3, ShiftColor(GetPixel(hdc, 7, 7), -0.1)
-         DrawLineApi lw - 15, 3, lw - 15, lh - 3, ShiftColor(GetPixel(hdc, 7, 7), 0.1)
+         DrawLineApi lw - 16, 3, lw - 16, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), -0.1)
+         DrawLineApi lw - 15, 3, lw - 15, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), 0.1)
       End If
    End If
 
@@ -1696,7 +1698,7 @@ Private Sub CalcPicRects()
 
             Case epLeftEdge
                .Left = 3
-               .Top = (lh - PicH) \ 2
+               .Top = (lh - picH) \ 2
                If m_PicRect.Left < 0 Then
                   OffsetRect m_PicRect, PicW, 0
                   OffsetRect m_TextRect, PicW, 0
@@ -1704,11 +1706,11 @@ Private Sub CalcPicRects()
 
             Case epLeftOfCaption
                .Left = m_TextRect.Left - PicW - 4
-               .Top = (lh - PicH) \ 2
+               .Top = (lh - picH) \ 2
 
             Case epRightEdge
                .Left = lw - PicW - 3
-               .Top = (lh - PicH) \ 2
+               .Top = (lh - picH) \ 2
                ' --If picture overlaps text
                If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
                   OffsetRect m_PicRect, -16, 0
@@ -1719,7 +1721,7 @@ Private Sub CalcPicRects()
 
             Case epRightOfCaption
                .Left = m_TextRect.Right + 4
-               .Top = (lh - PicH) \ 2
+               .Top = (lh - picH) \ 2
                If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
                   OffsetRect m_PicRect, -16, 0
                End If
@@ -1730,7 +1732,7 @@ Private Sub CalcPicRects()
 
             Case epTopOfCaption
                .Left = (lw - PicW) \ 2
-               .Top = m_TextRect.Top - PicH - 2
+               .Top = m_TextRect.Top - picH - 2
                If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
                   OffsetRect m_PicRect, -8, 0
                End If
@@ -1751,7 +1753,7 @@ Private Sub CalcPicRects()
 
             Case epBottomEdge
                .Left = (lw - PicW) \ 2
-               .Top = lh - PicH - 4
+               .Top = lh - picH - 4
                If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
                   OffsetRect m_PicRect, -8, 0
                End If
@@ -1759,7 +1761,7 @@ Private Sub CalcPicRects()
          End Select
       Else
          .Left = (lw - PicW) \ 2
-         .Top = (lh - PicH) \ 2
+         .Top = (lh - picH) \ 2
          If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
             OffsetRect m_PicRect, -8, 0
          End If
@@ -1767,7 +1769,7 @@ Private Sub CalcPicRects()
 
         ' --Set the height and width
         .Right = .Left + PicW
-        .Bottom = .Top + PicH
+        .Bottom = .Top + picH
        
    End With
 
@@ -1789,9 +1791,9 @@ Private Sub DrawPicture(lpRect As RECT, Optional lBrushColor As Long = -1)
    End If
    
    If Is32BitBMP(tmppic) Then
-      TransBlt32 hdc, lpRect.Left, lpRect.Top, PicW, PicH, tmppic, lBrushColor
+      TransBlt32 hDC, lpRect.Left, lpRect.Top, PicW, picH, tmppic, lBrushColor
    Else
-      TransBlt hdc, lpRect.Left, lpRect.Top, PicW, PicH, tmppic, tmpMaskColor, lBrushColor
+      TransBlt hDC, lpRect.Left, lpRect.Top, PicW, picH, tmppic, tmpMaskColor, lBrushColor
    End If
    
 End Sub
@@ -1801,7 +1803,7 @@ Private Sub DrawPicShadow()
 '  Still not satisfied results for picture shadows
 
    Dim lShadowClr       As Long
-   Dim lPixelClr        As Long
+   'Dim lPixelClr        As Long
    Dim lpRect           As RECT
 
    If m_bPicPushOnHover And m_Buttonstate = eStateOver Then
@@ -1865,21 +1867,21 @@ Private Sub DrawCaptionEx(lpRect As RECT, lColor As Long, OffsetX As Long, Offse
    Dim lOldForeColor    As Long
 
    ' --Get current forecolor
-   lOldForeColor = GetTextColor(hdc)
+   lOldForeColor = GetTextColor(hDC)
 
    CopyRect tRECT, lpRect
    OffsetRect tRECT, OffsetX, OffsetY
 
-   SetTextColor hdc, lColor
+   SetTextColor hDC, lColor
 
    If m_WindowsNT Then
-      DrawTextW hdc, StrPtr(m_Caption), -1, tRECT, DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawTextW hDC, StrPtr(m_Caption), -1, tRECT, DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
    Else
-      DrawText hdc, m_Caption, -1, tRECT, DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawText hDC, m_Caption, -1, tRECT, DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
    End If
 
    ' --Restore previous forecolor
-   SetTextColor hdc, lOldForeColor
+   SetTextColor hDC, lOldForeColor
 
 End Sub
 
@@ -1937,10 +1939,10 @@ Private Sub DrawCorners(Color As Long)
    lh = ScaleHeight
    lw = ScaleWidth
 
-   SetPixel hdc, 1, 1, Color
-   SetPixel hdc, 1, lh - 2, Color
-   SetPixel hdc, lw - 2, 1, Color
-   SetPixel hdc, lw - 2, lh - 2, Color
+   SetPixel hDC, 1, 1, Color
+   SetPixel hDC, 1, lh - 2, Color
+   SetPixel hDC, lw - 2, 1, Color
+   SetPixel hDC, lw - 2, lh - 2, Color
 
 End Sub
 
@@ -1961,9 +1963,9 @@ Private Sub DrawStandardButton(ByVal vState As enumButtonStates)
    If Not m_bEnabled Then
       ' --Draws raised edge border
       If m_ButtonStyle = eStandard Then
-         DrawEdge hdc, m_ButtonRect, BDR_RAISED95, BF_RECT
+         DrawEdge hDC, m_ButtonRect, BDR_RAISED95, BF_RECT
       ElseIf m_ButtonStyle = eFlat Then
-         DrawEdge hdc, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
+         DrawEdge hDC, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
       End If
       DrawPicwithCaption
       Exit Sub
@@ -1973,7 +1975,7 @@ Private Sub DrawStandardButton(ByVal vState As enumButtonStates)
       PaintRect ShiftColor(TranslateColor(m_bColors.tBackColor), 0.02), m_ButtonRect
       DrawPicwithCaption
       If m_ButtonStyle <> eFlatHover Then
-         DrawEdge hdc, m_ButtonRect, BDR_SUNKEN95, BF_RECT
+         DrawEdge hDC, m_ButtonRect, BDR_SUNKEN95, BF_RECT
          If m_bShowFocus And m_bHasFocus And m_ButtonStyle = eStandard Then
             DrawRectangle 4, 4, lw - 7, lh - 7, TranslateColor(vbApplicationWorkspace)
          End If
@@ -1988,9 +1990,9 @@ Private Sub DrawStandardButton(ByVal vState As enumButtonStates)
          DrawPicwithCaption
          Select Case m_ButtonStyle
             Case eStandard
-               DrawEdge hdc, m_ButtonRect, BDR_RAISED95, BF_RECT
+               DrawEdge hDC, m_ButtonRect, BDR_RAISED95, BF_RECT
             Case eFlat
-               DrawEdge hdc, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
+               DrawEdge hDC, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
          End Select
       Case eStateOver
          PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
@@ -1998,10 +2000,10 @@ Private Sub DrawStandardButton(ByVal vState As enumButtonStates)
          Select Case m_ButtonStyle
             Case eFlatHover, eFlat
                ' --Draws flat raised edge border
-               DrawEdge hdc, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
+               DrawEdge hDC, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
             Case Else
                ' --Draws 3d raised edge border
-               DrawEdge hdc, m_ButtonRect, BDR_RAISED95, BF_RECT
+               DrawEdge hDC, m_ButtonRect, BDR_RAISED95, BF_RECT
          End Select
 
       Case eStateDown
@@ -2012,7 +2014,7 @@ Private Sub DrawStandardButton(ByVal vState As enumButtonStates)
                DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(&H99A8AC)
                DrawRectangle 0, 0, lw, lh, TranslateColor(vbBlack)
             Case e3DHover
-               DrawEdge hdc, m_ButtonRect, BDR_SUNKEN95, BF_RECT
+               DrawEdge hDC, m_ButtonRect, BDR_SUNKEN95, BF_RECT
             Case eFlatHover, eFlat
                ' --Draws flat pressed edge
                DrawRectangle 0, 0, lw, lh, TranslateColor(vbWhite)
@@ -2031,12 +2033,12 @@ Private Sub DrawStandardButton(ByVal vState As enumButtonStates)
             SetRect FocusRect, 3, 3, lw - 3, lh - 3
          End If
          If m_bParentActive Then
-            DrawFocusRect hdc, FocusRect
+            DrawFocusRect hDC, FocusRect
          End If
       End If
       If vState <> eStateDown And m_ButtonStyle = eStandard Then
          SetRect tmpRect, 0, 0, lw - 1, lh - 1
-         DrawEdge hdc, tmpRect, BDR_RAISED95, BF_RECT
+         DrawEdge hDC, tmpRect, BDR_RAISED95, BF_RECT
          DrawRectangle 0, 0, lw - 1, lh - 1, TranslateColor(vbApplicationWorkspace)
          DrawRectangle 0, 0, lw, lh, TranslateColor(vbBlack)
       End If
@@ -2235,7 +2237,7 @@ Private Sub DrawWinXPButton(ByVal vState As enumButtonStates)
    If m_bParentActive Then 'I mean some times ;)
       If m_bShowFocus And m_bParentActive And (m_bHasFocus Or m_bDefault) Then  'show focusrect at runtime only
          SetRect lpRect, 2, 2, lw - 2, lh - 2     'I don't like this ugly focusrect!!
-         DrawFocusRect hdc, lpRect
+         DrawFocusRect hDC, lpRect
       End If
    End If
 
@@ -2253,7 +2255,7 @@ End Sub
 Private Sub DrawOfficeXP(ByVal vState As enumButtonStates)
 
    Dim lpRect           As RECT
-   Dim pRect            As RECT
+   'Dim pRect            As RECT
    Dim bColor           As Long
    Dim oColor           As Long
    Dim BorderColor      As Long
@@ -2316,7 +2318,7 @@ Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
    '****************************************************************************
 
    Dim FocusRect        As RECT
-   Dim lpRect           As RECT
+   'Dim lpRect           As RECT
 
    lh = ScaleHeight
    lw = ScaleWidth
@@ -2372,7 +2374,7 @@ Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
 
    If m_bParentActive And m_bShowFocus And (m_bHasFocus Or m_bDefault) Then
       SetRect FocusRect, 3, 3, lw - 3, lh - 3
-      DrawFocusRect hdc, FocusRect
+      DrawFocusRect hDC, FocusRect
    End If
 
 End Sub
@@ -2459,7 +2461,7 @@ End Sub
 Private Sub DrawVistaToolbarStyle(ByVal vState As enumButtonStates)
 
    Dim lpRect           As RECT
-   Dim FocusRect        As RECT
+   'Dim FocusRect        As RECT
 
    lh = ScaleHeight
    lw = ScaleWidth
@@ -2622,7 +2624,7 @@ Private Sub DrawVistaButton(ByVal vState As enumButtonStates)
 
       If (m_bShowFocus And m_bHasFocus) Then
          SetRect lpRect, 1.5, 1.5, lw - 2, lh - 2
-         DrawFocusRect hdc, lpRect
+         DrawFocusRect hDC, lpRect
       End If
    End If
 
@@ -2633,7 +2635,7 @@ End Sub
 
 Private Sub DrawOutlook2007(ByVal vState As enumButtonStates)
 
-   Dim lpRect           As RECT
+   'Dim lpRect           As RECT
    Dim bColor           As Long
 
    lh = ScaleHeight
@@ -2676,7 +2678,7 @@ End Sub
 
 Private Sub DrawOffice2003(ByVal vState As enumButtonStates)
 
-   Dim lpRect           As RECT
+   'Dim lpRect           As RECT
    Dim bColor           As Long
 
    lh = UserControl.ScaleHeight
@@ -2760,12 +2762,12 @@ Private Function DrawTheme(sClass As String, ByVal iPart As Long, ByVal vState A
    If hTheme Then
       ' --Necessary for rounded buttons
       SetRect m_btnRect, m_ButtonRect.Left - 1, m_ButtonRect.Top - 1, m_ButtonRect.Right + 1, m_ButtonRect.Bottom + 2
-      GetThemeBackgroundRegion hTheme, hdc, iPart, vState, m_btnRect, hRgn
+      GetThemeBackgroundRegion hTheme, hDC, iPart, vState, m_btnRect, hRgn
       SetWindowRgn HWnd, hRgn, True
       ' --clean up
       DeleteObject hRgn
       ' --Draw the theme
-      lResult = DrawThemeBackground(hTheme, hdc, iPart, vState, m_ButtonRect, m_ButtonRect)
+      lResult = DrawThemeBackground(hTheme, hDC, iPart, vState, m_ButtonRect, m_ButtonRect)
       DrawTheme = lResult
    Else
       DrawTheme = False
@@ -2781,11 +2783,11 @@ Private Sub PaintRect(ByVal lColor As Long, lpRect As RECT)
    Dim hBrush           As Long
 
    hBrush = CreateSolidBrush(lColor)
-   hOldBrush = SelectObject(hdc, hBrush)
+   hOldBrush = SelectObject(hDC, hBrush)
 
-   FillRect hdc, lpRect, hBrush
+   FillRect hDC, lpRect, hBrush
 
-   SelectObject hdc, hOldBrush
+   SelectObject hDC, hOldBrush
    DeleteObject hBrush
 
 End Sub
@@ -3769,7 +3771,7 @@ Public Sub Subclass_WndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean,
    'hWnd, uMsg, wParam and lParam parameters in a 'before' callback so that different
    'values get passed to the default handler.. and optionaly, the 'after' callback
 
-   Static bMoving As Boolean
+   'Static bMoving As Boolean
 
    Select Case uMsg
 

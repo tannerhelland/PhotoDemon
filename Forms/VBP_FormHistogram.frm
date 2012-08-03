@@ -335,7 +335,6 @@ Private iY() As Single
 Private p() As Single
 Private u() As Single
 Private results() As Long   'Stores the y-values for each x-value in the final spline
-Dim minX As Long, MaxX As Long    'Used for calculating leading and trailing values
 
 'When the smoothing option is changed, redraw the histogram
 Private Sub chkSmooth_Click()
@@ -390,9 +389,9 @@ Private Sub cmdExportHistogram_Click()
         oHeight = FormMain.ActiveForm.BackBuffer.Height
         
         'Now copy the histogram image over that image.  Hackish, isn't it?  Don't say I didn't warn you. ;)
-        FormMain.ActiveForm.BackBuffer.Width = FormHistogram.PicH.Width
-        FormMain.ActiveForm.BackBuffer.Height = FormHistogram.PicH.Height
-        FormMain.ActiveForm.BackBuffer.Picture = FormHistogram.PicH.Image
+        FormMain.ActiveForm.BackBuffer.Width = FormHistogram.picH.Width
+        FormMain.ActiveForm.BackBuffer.Height = FormHistogram.picH.Height
+        FormMain.ActiveForm.BackBuffer.Picture = FormHistogram.picH.Image
         
         'With our hackery complete, use the core PhotoDemon save function to save the histogram image to file
         PhotoDemon_SaveImage CurrentImage, sFile, False, &H8
@@ -525,13 +524,13 @@ Private Sub DrawHistogram()
     
     'Clear out whatever was there before
     'picH.Cls
-    PicH.Picture = LoadPicture("")
+    picH.Picture = LoadPicture("")
     
     'tHeight is used to determine the height of the maximum value in the
     'histogram.  We want it to be slightly shorter than the height of the
     'picture box; this way the tallest histogram value fills the entire box
     Dim tHeight As Long
-    tHeight = PicH.ScaleHeight - 2
+    tHeight = picH.ScaleHeight - 2
     
     'LastX and LastY are used to draw a connecting line between histogram points
     Dim LastX As Long, LastY As Long
@@ -549,16 +548,16 @@ Private Sub DrawHistogram()
         Select Case hType
             'Red
             Case 0
-                PicH.ForeColor = RGB(255, 0, 0)
+                picH.ForeColor = RGB(255, 0, 0)
             'Green
             Case 1
-                PicH.ForeColor = RGB(0, 255, 0)
+                picH.ForeColor = RGB(0, 255, 0)
             'Blue
             Case 2
-                PicH.ForeColor = RGB(0, 0, 255)
+                picH.ForeColor = RGB(0, 0, 255)
             'Luminance
             Case 3
-                PicH.ForeColor = RGB(0, 0, 0)
+                picH.ForeColor = RGB(0, 0, 0)
         End Select
     
 
@@ -578,12 +577,12 @@ Private Sub DrawHistogram()
                 Dim xCalc As Long
                 
                 'Run a loop through every histogram value...
-                For x = 0 To PicH.ScaleWidth
+                For x = 0 To picH.ScaleWidth
             
                     'The y-value of the histogram is drawn as a percentage (RData(x) / MaxVal) * tHeight) with tHeight being
                     ' the tallest possible value (when RData(x) = MaxVal).  We then subtract that value from tHeight because
                     ' y values INCREASE as we move DOWN a picture box - remember that (0,0) is in the top left.
-                    xCalc = Int((x / PicH.ScaleWidth) * 256)
+                    xCalc = Int((x / picH.ScaleWidth) * 256)
                     If xCalc > 255 Then xCalc = 255
                     
                     y = tHeight - (hData(hType, xCalc) / HMax) * tHeight
@@ -591,7 +590,7 @@ Private Sub DrawHistogram()
                     'For connecting lines...
                     If drawMethod = 0 Then
                         'Then draw a line from the last (x,y) to the current (x,y)
-                        PicH.Line (LastX, LastY + 2)-(x, y + 2)
+                        picH.Line (LastX, LastY + 2)-(x, y + 2)
                         'The line below can be used for antialiased drawing, FYI
                         'DrawLineWuAA picH.hDC, LastX, LastY + 2, x, y + 2, picH.ForeColor
                         LastX = x
@@ -600,7 +599,7 @@ Private Sub DrawHistogram()
                     'For a bar graph...
                     ElseIf drawMethod = 1 Then
                         'Draw a line from the bottom of the picture box to the calculated y-value
-                        PicH.Line (x, tHeight + 2)-(x, y + 2)
+                        picH.Line (x, tHeight + 2)-(x, y + 2)
                     End If
                 Next x
                 
@@ -613,8 +612,8 @@ Private Sub DrawHistogram()
                 
     Next hType
     
-    PicH.Picture = PicH.Image
-    PicH.Refresh
+    picH.Picture = picH.Image
+    picH.Refresh
     
     'Last but not least, generate the statistics at the bottom of the form
     
@@ -630,11 +629,11 @@ End Sub
 'If the form is resized, adjust all the controls to match
 Private Sub Form_Resize()
 
-    PicH.Width = Me.ScaleWidth - PicH.Left - 8
+    picH.Width = Me.ScaleWidth - picH.Left - 8
     picGradient.Width = Me.ScaleWidth - picGradient.Left - 8
     
     CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
-    lineStats.X2 = Me.ScaleWidth - lineStats.X1
+    lineStats.x2 = Me.ScaleWidth - lineStats.x1
     
     DrawHistogram
     
@@ -648,7 +647,7 @@ End Sub
 'entry at the x-value over which the mouse passes
 Private Sub picH_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim xCalc As Long
-    xCalc = Int((x / PicH.ScaleWidth) * 256)
+    xCalc = Int((x / picH.ScaleWidth) * 256)
     If xCalc > 255 Then xCalc = 255
     lblLevel.Caption = xCalc
     lblCountRed.Caption = hData(0, xCalc)
@@ -1056,12 +1055,12 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     'Now, populate the iX and iY arrays with the histogram values for the specified channel (0-3, corresponds to hType above)
     Dim i As Long
     For i = 1 To nPoints
-        iX(i) = (i - 1) * (PicH.ScaleWidth / 255)
+        iX(i) = (i - 1) * (picH.ScaleWidth / 255)
         iY(i) = tHeight - (hData(histogramChannel, i - 1) / HMax) * tHeight
     Next i
     
     'results() will hold the actual pixel (x,y) values for each line to be drawn to the picture box
-    ReDim results(0 To PicH.ScaleWidth) As Long
+    ReDim results(0 To picH.ScaleWidth) As Long
     
     'Now run a loop through the knots, calculating spline values as we go
     Call SetPandU
@@ -1076,12 +1075,12 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     Next i
     
     'Draw the finished spline
-    For i = 1 To PicH.ScaleWidth
+    For i = 1 To picH.ScaleWidth
         'picH.Line (i, results(i) + 2)-(i - 1, results(i - 1) + 2)
-        DrawLineWuAA PicH.hdc, i, results(i) + 2, i - 1, results(i - 1) + 2, PicH.ForeColor
+        DrawLineWuAA picH.hDC, i, results(i) + 2, i - 1, results(i - 1) + 2, picH.ForeColor
     Next i
     
-    PicH.Picture = PicH.Image
+    picH.Picture = picH.Image
     
 End Function
 
@@ -1091,12 +1090,12 @@ Private Function getCurvePoint(ByVal i As Long, ByVal v As Single) As Single
     Dim t As Single
     'derived curve equation (which uses p's and u's for coefficients)
     t = (v - iX(i)) / u(i)
-    getCurvePoint = t * iY(i + 1) + (1 - t) * iY(i) + u(i) * u(i) * (F(t) * p(i + 1) + F(1 - t) * p(i)) / 6#
+    getCurvePoint = t * iY(i + 1) + (1 - t) * iY(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
 End Function
 
 'Original required spline function:
-Private Function F(x As Single) As Single
-        F = x * x * x - x
+Private Function f(x As Single) As Single
+        f = x * x * x - x
 End Function
 
 'Original required spline function:

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon.
 
-'This code was originally written by Alfred Koppold, and was sent to me via personal correspondence.
+'This code was originally written by Alfred Koppold.  I acquired it via personal correspondence with Alfred.
 
 'I believe you can download a publicly available version via this link:
 ' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1
@@ -23,14 +23,14 @@ Attribute VB_Exposed = False
 'Autor: ALKO
 'e-mail: alfred.koppold@freenet.de
 Option Explicit
-  Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+  Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
    Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (pDst As Any, pSrc As Any, ByVal ByteLen As Long)
-Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hdc As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, ByVal lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, ByVal lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 
 Private BitCnt As Long
 Private Bildhöhe As Long
@@ -195,10 +195,10 @@ Compressed = compress
         .biHeight = Bildhöhe
     End With
 
-    iDC = CreateCompatibleDC(pic.hdc)
+    iDC = CreateCompatibleDC(pic.hDC)
     iBitmap = CreateDIBSection(iDC, bi24BitInfo, DIB_RGB_COLORS, ByVal 0&, ByVal 0&, ByVal 0&)
     SelectObject iDC, iBitmap
-    BitBlt iDC, 0, 0, bi24BitInfo.bmiHeader.biWidth, bi24BitInfo.bmiHeader.biHeight, pic.hdc, 0, 0, vbSrcCopy
+    BitBlt iDC, 0, 0, bi24BitInfo.bmiHeader.biWidth, bi24BitInfo.bmiHeader.biHeight, pic.hDC, 0, 0, vbSrcCopy
 
     GetIconBits bBits(), BitCnt + BMPBIT, iDC, iBitmap, TempPal(), Bildhöhe, Bildbreite
     ReDim Übergabe(Bitcbr * Bildhöhe - 1)
@@ -230,12 +230,6 @@ End Sub
 Private Sub SavePCX(DSTFile As String, BitmapBytes() As Byte, PCXWidth As Long, PCXHeight As Long, BBP As Long, BitmapPalette() As RGBQUAD)
     Dim PCXMap() As Byte
     Dim FileHeader As PCXHeader
-    Dim i As Long
-    Dim PCXRed() As Byte
-    Dim PCXGreen() As Byte
-    Dim PCXBlue() As Byte
-    Dim Übergabe() As Byte
-    Dim a As Long
     
     FileHeader.ZSoftID = 10
     FileHeader.Version = 5
