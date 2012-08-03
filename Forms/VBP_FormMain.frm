@@ -974,6 +974,9 @@ End Sub
 'UNLOAD EVERYTHING
 Private Sub MDIForm_Unload(Cancel As Integer)
     
+    'If the histogram form is open, close it
+    If FormHistogram.Visible = True Then Unload FormHistogram
+    
     'By this point, all the child forms should have taken care of their Undo clearing-out.
     ' Just in case, however, prompt a final cleaning.
     ClearALLUndo

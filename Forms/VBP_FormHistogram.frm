@@ -25,13 +25,25 @@ Begin VB.Form FormHistogram
    ScaleWidth      =   794
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CheckBox chkLog 
+      Appearance      =   0  'Flat
+      Caption         =   "Use logarithmic values"
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Left            =   4920
+      MouseIcon       =   "VBP_FormHistogram.frx":0000
+      MousePointer    =   99  'Custom
+      TabIndex        =   18
+      Top             =   6900
+      Width           =   2055
+   End
    Begin VB.CheckBox chkSmooth 
       Appearance      =   0  'Flat
       Caption         =   "Use smooth lines"
       ForeColor       =   &H80000008&
       Height          =   375
       Left            =   3000
-      MouseIcon       =   "VBP_FormHistogram.frx":0000
+      MouseIcon       =   "VBP_FormHistogram.frx":0152
       MousePointer    =   99  'Custom
       TabIndex        =   17
       Top             =   6900
@@ -42,7 +54,7 @@ Begin VB.Form FormHistogram
       Caption         =   "Export Histogram to File..."
       Height          =   495
       Left            =   240
-      MouseIcon       =   "VBP_FormHistogram.frx":0152
+      MouseIcon       =   "VBP_FormHistogram.frx":02A4
       MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   6840
@@ -53,7 +65,7 @@ Begin VB.Form FormHistogram
       Default         =   -1  'True
       Height          =   495
       Left            =   10440
-      MouseIcon       =   "VBP_FormHistogram.frx":02A4
+      MouseIcon       =   "VBP_FormHistogram.frx":03F6
       MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   6840
@@ -320,10 +332,11 @@ Dim rData(0 To 255) As Long, gData(0 To 255) As Long, bData(0 To 255) As Long
 
 'Histogram data for each particular type (r/g/b/luminance)
 Dim hData(0 To 3, 0 To 255) As Single
+Dim hDataLog(0 To 3, 0 To 255) As Single
 
 'Maximum histogram values (r/g/b/luminance)
 'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Dim HMax(0 To 3) As Single
-Dim HMax As Single
+Dim hMax As Single, hMaxLog As Single
 
 'Loop and position variables
 Dim x As Long, y As Long
@@ -335,6 +348,10 @@ Private iY() As Single
 Private p() As Single
 Private u() As Single
 Private results() As Long   'Stores the y-values for each x-value in the final spline
+
+Private Sub chkLog_Click()
+    DrawHistogram
+End Sub
 
 'When the smoothing option is changed, redraw the histogram
 Private Sub chkSmooth_Click()
@@ -413,79 +430,13 @@ End Sub
 'Generate the histogram data upon form load (we only need to do it once per image)
 Private Sub Form_Load()
     
-    Message "Gathering histogram data..."
-    SetProgBarMax PicWidthL * 3
-    SetProgBarVal 0
-    
-    'Blank the red, green, blue, and luminance count text boxes
-    lblCountRed = ""
-    lblCountGreen = ""
-    lblCountBlue = ""
-    lblCountLuminance = ""
-    
-    'Grab image information
-    GetImageData
-    
-    'These variables will hold temporary histogram values
-    Dim r As Long, g As Long, b As Long, l As Long
-    
-    'If the histogram has already been used, we need to clear out all the
-    'maximum values and histogram values
-    HMax = 0
-    For x = 0 To 3
-        For y = 0 To 255
-            hData(x, y) = 0
-        Next y
-    Next x
-    
-    'Run a quick loop through the image, gathering what we need to
-    'calculate our histogram
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        'We have to gather the red, green, and blue in order to calculate luminance
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        'Rather than generate authentic luminance (which requires an HSL
-        ' conversion routine), we'll use an average value.  It's accurate
-        ' enough for a project like this.
-        l = (r + g + b) \ 3
-        'Increment each value in the array, depending on its present value;
-        'this will let us see how many of each color value (and luminance
-        'value) there is in the image
-        'Red
-        hData(0, r) = hData(0, r) + 1
-        'Green
-        hData(1, g) = hData(1, g) + 1
-        'Blue
-        hData(2, b) = hData(2, b) + 1
-        'Luminance
-        hData(3, l) = hData(3, l) + 1
-    Next y
-        If x Mod 5 = 0 Then SetProgBarVal QuickVal
-    Next x
-    
-    'Run a quick loop through the completed array to find maximum values
-    For x = 0 To 255
-        'Red
-        If hData(0, x) > HMax Then HMax = hData(0, x)
-        'Green
-        If hData(1, x) > HMax Then HMax = hData(1, x)
-        'Blue
-        If hData(2, x) > HMax Then HMax = hData(2, x)
-        'Luminance
-        If hData(3, x) > HMax Then HMax = hData(3, x)
-    Next x
-    
-    Message "Finished."
-    SetProgBarVal 0
-    
-    'When all has been completed, off we go to draw the histogram.  Yay.
-    'We'll always draw the luminance histogram first; if the user has already looked
-    'at a particular histogram, remember which one and display it instead.
+    TallyHistogramValues
+
     DrawHistogram
+    
+    'Commented code below is from a previous build where the user could specify which channel to draw.
+    ' I haven't implemented per-channel checkboxes yet.  It's coming.
+    
     'DrawHistogram lastHistSource, lastHistMethod
     
     'Clear out the combo box that displays histogram sources and fill it with
@@ -517,7 +468,7 @@ End Sub
 '0 - Connected lines (like a line graph)
 '1 - Solid bars (like a bar graph) - CURRENTLY UNUSED
 '2 - Smooth lines (using cubic spline code adopted from the Curves function)
-Private Sub DrawHistogram()
+Public Sub DrawHistogram()
 
     Dim drawMethod As Long
     If chkSmooth.Value = vbUnchecked Then drawMethod = 0 Else drawMethod = 2
@@ -572,7 +523,11 @@ Private Sub DrawHistogram()
                 'same as the first value in the histogram. (We care about this only if we're
                 'drawing a "connected lines" type of histogram.)
                 LastX = 0
-                LastY = tHeight - (hData(hType, 0) / HMax) * tHeight
+                If chkLog.Value = vbChecked Then
+                    LastY = tHeight - (hDataLog(hType, 0) / hMaxLog) * tHeight
+                Else
+                    LastY = tHeight - (hData(hType, 0) / hMax) * tHeight
+                End If
                     
                 Dim xCalc As Long
                 
@@ -585,7 +540,11 @@ Private Sub DrawHistogram()
                     xCalc = Int((x / picH.ScaleWidth) * 256)
                     If xCalc > 255 Then xCalc = 255
                     
-                    y = tHeight - (hData(hType, xCalc) / HMax) * tHeight
+                    If chkLog.Value = vbChecked Then
+                        y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
+                    Else
+                        y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
+                    End If
                     
                     'For connecting lines...
                     If drawMethod = 0 Then
@@ -622,7 +581,7 @@ Private Sub DrawHistogram()
     lblTotalPixels.Caption = "Total pixels: " & (PicWidthL * PicHeightL)
     
     'Maximum value
-    lblMaxCount.Caption = HMax
+    lblMaxCount.Caption = hMax
 
 End Sub
 
@@ -1056,7 +1015,11 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     Dim i As Long
     For i = 1 To nPoints
         iX(i) = (i - 1) * (picH.ScaleWidth / 255)
-        iY(i) = tHeight - (hData(histogramChannel, i - 1) / HMax) * tHeight
+        If chkLog.Value = vbChecked Then
+            iY(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
+        Else
+            iY(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight
+        End If
     Next i
     
     'results() will hold the actual pixel (x,y) values for each line to be drawn to the picture box
@@ -1132,4 +1095,81 @@ Private Sub SetPandU()
         p(i) = (w(i) - u(i) * p(i + 1)) / d(i)
     Next
     p(nPoints) = 0#
+End Sub
+
+Public Sub TallyHistogramValues()
+    
+    Message "Gathering histogram data..."
+    
+    'Blank the red, green, blue, and luminance count text boxes
+    lblCountRed = ""
+    lblCountGreen = ""
+    lblCountBlue = ""
+    lblCountLuminance = ""
+    
+    'Grab image information
+    GetImageData
+    
+    'These variables will hold temporary histogram values
+    Dim r As Long, g As Long, b As Long, l As Long
+    
+    'If the histogram has already been used, we need to clear out all the
+    'maximum values and histogram values
+    hMax = 0
+    For x = 0 To 3
+        For y = 0 To 255
+            hData(x, y) = 0
+        Next y
+    Next x
+    
+    'Run a quick loop through the image, gathering what we need to
+    'calculate our histogram
+    Dim QuickVal As Long
+    For x = 0 To PicWidthL
+        QuickVal = x * 3
+    For y = 0 To PicHeightL
+        'We have to gather the red, green, and blue in order to calculate luminance
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        'Rather than generate authentic luminance (which requires an HSL
+        ' conversion routine), we'll use an average value.  It's accurate
+        ' enough for a project like this.
+        l = (r + g + b) \ 3
+        'Increment each value in the array, depending on its present value;
+        'this will let us see how many of each color value (and luminance
+        'value) there is in the image
+        'Red
+        hData(0, r) = hData(0, r) + 1
+        'Green
+        hData(1, g) = hData(1, g) + 1
+        'Blue
+        hData(2, b) = hData(2, b) + 1
+        'Luminance
+        hData(3, l) = hData(3, l) + 1
+    Next y
+    Next x
+    
+    'Run a quick loop through the completed array to find maximum values
+    For x = 0 To 255
+        'Red
+        If hData(0, x) > hMax Then hMax = hData(0, x)
+        'Green
+        If hData(1, x) > hMax Then hMax = hData(1, x)
+        'Blue
+        If hData(2, x) > hMax Then hMax = hData(2, x)
+        'Luminance
+        If hData(3, x) > hMax Then hMax = hData(3, x)
+    Next x
+    
+    'Now calculate the logarithmic version of the histogram
+    hMaxLog = Log(hMax)
+    For x = 0 To 3
+        For y = 0 To 255
+            hDataLog(x, y) = Log(hData(x, y))
+        Next y
+    Next x
+    
+    Message "Finished."
+
 End Sub
