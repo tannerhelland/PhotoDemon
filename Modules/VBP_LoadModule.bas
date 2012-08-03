@@ -195,7 +195,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         tInit tImageOps, True
         tInit tFilter, True
         tInit tHistogram, True
-        Unload FormHistogram
         
         Message "Determining filetype..."
         

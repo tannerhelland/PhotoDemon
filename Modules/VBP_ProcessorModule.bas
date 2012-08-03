@@ -381,7 +381,7 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     If PType >= 100 And PType <= 199 Then
         Select Case PType
             Case ViewHistogram
-                FormHistogram.Show 0, FormMain
+                FormHistogram.Show 0
             Case StretchHistogram
                 FormHistogram.StretchHistogram
             Case Equalize
@@ -743,10 +743,15 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     ' The batch routine will handle restoring the cursor to normal.
     If MacroStatus <> MacroBATCH Then FormMain.MousePointer = vbDefault
     
-    'If the histogram form is visible, redraw the histogram
+    'If the histogram form is visible and images are loaded, redraw the histogram
     If FormHistogram.Visible = True Then
-        FormHistogram.TallyHistogramValues
-        FormHistogram.DrawHistogram
+        If NumOfWindows > 0 Then
+            FormHistogram.TallyHistogramValues
+            FormHistogram.DrawHistogram
+        Else
+            'If the histogram is visible but no images are open, unload the histogram
+            Unload FormHistogram
+        End If
     End If
     
     'Mark the processor as no longer busy
