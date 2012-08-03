@@ -327,6 +327,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Have we generated a histogram yet?
+Dim histogramGenerated As Boolean
+
 'Old functions use these:
 Dim rData(0 To 255) As Long, gData(0 To 255) As Long, bData(0 To 255) As Long
 
@@ -427,13 +430,18 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-'Generate the histogram data upon form load (we only need to do it once per image)
-Private Sub Form_Load()
-    
-    TallyHistogramValues
+Private Sub Form_Activate()
 
+    TallyHistogramValues
     DrawHistogram
     
+End Sub
+
+'Generate the histogram data upon form load (we only need to do it once per image)
+Private Sub Form_Load()
+
+    histogramGenerated = False
+
     'Commented code below is from a previous build where the user could specify which channel to draw.
     ' I haven't implemented per-channel checkboxes yet.  It's coming.
     
@@ -594,12 +602,10 @@ Private Sub Form_Resize()
     CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
     lineStats.x2 = Me.ScaleWidth - lineStats.x1
     
-    DrawHistogram
+    'Only draw the histogram if the histogram data has been initialized
+    ' (This is necessary because VB triggers the Resize event before the Activate event)
+    If histogramGenerated = True Then DrawHistogram
     
-End Sub
-
-Private Sub Form_Terminate()
-    Unload Me
 End Sub
 
 'When the mouse moves over the histogram, display the level and count for the histogram
@@ -1099,7 +1105,7 @@ End Sub
 
 Public Sub TallyHistogramValues()
     
-    Message "Gathering histogram data..."
+    Message "Updating histogram..."
     
     'Blank the red, green, blue, and luminance count text boxes
     lblCountRed = ""
@@ -1163,12 +1169,23 @@ Public Sub TallyHistogramValues()
     Next x
     
     'Now calculate the logarithmic version of the histogram
-    hMaxLog = Log(hMax)
+    If hMax <> 0 Then
+        hMaxLog = Log(hMax)
+    Else
+        hMaxLog = 0
+    End If
+    
     For x = 0 To 3
         For y = 0 To 255
-            hDataLog(x, y) = Log(hData(x, y))
+            If hData(x, y) <> 0 Then
+                hDataLog(x, y) = Log(hData(x, y))
+            Else
+                hDataLog(x, y) = 0
+            End If
         Next y
     Next x
+    
+    histogramGenerated = True
     
     Message "Finished."
 

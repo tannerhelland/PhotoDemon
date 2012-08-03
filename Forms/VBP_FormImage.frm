@@ -183,6 +183,7 @@ End Sub
 ' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
 
 Private Sub Form_Activate()
+
     'Update the current form variable
     CurrentImage = val(Me.Tag)
     
@@ -211,6 +212,12 @@ Private Sub Form_Activate()
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If pdImages(CurrentImage).PicWidth <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
+    
+    'Finally, if the histogram window is open, redraw it
+    If FormHistogram.Visible = True Then
+        FormHistogram.TallyHistogramValues
+        FormHistogram.DrawHistogram
+    End If
     
 End Sub
 
@@ -350,6 +357,10 @@ Private Sub Form_Unload(Cancel As Integer)
     NumOfWindows = NumOfWindows - 1
     
     Message "Finished."
+
+    'If this was the last (or only) open image and the histogram is loaded, unload the histogram
+    ' (If we don't do this, the histogram may attempt to update, and without an active image it will throw an error)
+    If NumOfWindows = 0 Then Unload FormHistogram
     
     UpdateMDIStatus
     

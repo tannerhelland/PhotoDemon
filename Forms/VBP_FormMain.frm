@@ -965,6 +965,15 @@ Private Sub MDIForm_Load()
     
 End Sub
 
+'If the user is attempting to close the program, run some checks
+' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
+Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    
+    'If the histogram form is open, close it
+    Unload FormHistogram
+    
+End Sub
+
 'When the form is resized, the progress bar at bottom needs to be manually redrawn
 Private Sub MDIForm_Resize()
     picProgBar.Refresh
@@ -973,10 +982,7 @@ End Sub
 
 'UNLOAD EVERYTHING
 Private Sub MDIForm_Unload(Cancel As Integer)
-    
-    'If the histogram form is open, close it
-    If FormHistogram.Visible = True Then Unload FormHistogram
-    
+        
     'By this point, all the child forms should have taken care of their Undo clearing-out.
     ' Just in case, however, prompt a final cleaning.
     ClearALLUndo
