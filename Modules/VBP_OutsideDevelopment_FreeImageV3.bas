@@ -880,7 +880,7 @@ Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" ( _
 'USER32
 Private Declare Function ReleaseDC Lib "user32.dll" ( _
     ByVal HWnd As Long, _
-    ByVal hdc As Long) As Long
+    ByVal hDC As Long) As Long
 
 Private Declare Function GetDC Lib "user32.dll" ( _
     ByVal HWnd As Long) As Long
@@ -952,21 +952,21 @@ End Type
     
 'GDI32
 Private Declare Function GetDeviceCaps Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal nIndex As Long) As Long
     
 Private Const HORZRES As Long = 8
 Private Const VERTRES As Long = 10
 
 Private Declare Function GetStretchBltMode Lib "gdi32.dll" ( _
-    ByVal hdc As Long) As Long
+    ByVal hDC As Long) As Long
 
 Private Declare Function SetStretchBltMode Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal nStretchMode As Long) As Long
     
 Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
     ByVal dx As Long, _
@@ -980,7 +980,7 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal wUsage As Long) As Long
     
 Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
     ByVal dx As Long, _
@@ -995,7 +995,7 @@ Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal dwRop As Long) As Long
     
 Private Declare Function CreateDIBitmap Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal lpInfoHeader As Long, _
     ByVal dwUsage As Long, _
     ByVal lpInitBits As Long, _
@@ -1003,7 +1003,7 @@ Private Declare Function CreateDIBitmap Lib "gdi32.dll" ( _
     ByVal wUsage As Long) As Long
     
 Private Declare Function CreateDIBSection Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal pbmi As Long, _
     ByVal iUsage As Long, _
     ByRef ppvBits As Long, _
@@ -1013,15 +1013,15 @@ Private Declare Function CreateDIBSection Lib "gdi32.dll" ( _
 Private Const CBM_INIT As Long = &H4
     
 Private Declare Function CreateCompatibleBitmap Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal nWidth As Long, _
     ByVal nHeight As Long) As Long
 
 Private Declare Function CreateCompatibleDC Lib "gdi32.dll" ( _
-    ByVal hdc As Long) As Long
+    ByVal hDC As Long) As Long
     
 Private Declare Function DeleteDC Lib "gdi32.dll" ( _
-    ByVal hdc As Long) As Long
+    ByVal hDC As Long) As Long
     
 Private Declare Function BitBlt Lib "gdi32.dll" ( _
     ByVal hDestDC As Long, _
@@ -1049,14 +1049,14 @@ Private Declare Function GetObjectAPI Lib "gdi32.dll" Alias "GetObjectA" ( _
     ByRef lpObject As Any) As Long
     
 Private Declare Function SelectObject Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal hObject As Long) As Long
 
 Private Declare Function DeleteObject Lib "gdi32.dll" ( _
     ByVal hObject As Long) As Long
     
 Private Declare Function GetCurrentObject Lib "gdi32.dll" ( _
-    ByVal hdc As Long, _
+    ByVal hDC As Long, _
     ByVal uObjectType As Long) As Long
 
 Private Const OBJ_BITMAP As Long = 7
@@ -6582,8 +6582,8 @@ Dim hDIBNew As Long
 Dim hDIBTemp As Long
 Dim lBPP As Long
 Dim bForceLinearRamp As Boolean
-Dim lpReservePalette As Long
-Dim bAdjustReservePaletteSize As Boolean
+'Dim lpReservePalette As Long
+'Dim bAdjustReservePaletteSize As Boolean
 
    ' This function is an easy-to-use wrapper for color depth conversion, intended
    ' to work around some tweaks in the FreeImage library.
@@ -6976,7 +6976,7 @@ End Function
 
 ' Painting functions
 
-Public Function FreeImage_PaintDC(ByVal hdc As Long, _
+Public Function FreeImage_PaintDC(ByVal hDC As Long, _
                                   ByVal Bitmap As Long, _
                          Optional ByVal xDst As Long, _
                          Optional ByVal yDst As Long, _
@@ -6997,7 +6997,7 @@ Dim abInfoBuffer() As Byte
    ' If any of parameters 'Width' and 'Height' is zero, it is transparently substituted
    ' by the width or height of teh bitmap to be drawn, resprectively.
    
-   If ((hdc <> 0) And (Bitmap <> 0)) Then
+   If ((hDC <> 0) And (Bitmap <> 0)) Then
    
       If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
@@ -7012,13 +7012,13 @@ Dim abInfoBuffer() As Byte
          Height = FreeImage_GetHeight(Bitmap)
       End If
       
-      FreeImage_PaintDC = SetDIBitsToDevice(hdc, xDst, yDst - ySrc, Width, Height, xSrc, ySrc, 0, _
+      FreeImage_PaintDC = SetDIBitsToDevice(hDC, xDst, yDst - ySrc, Width, Height, xSrc, ySrc, 0, _
             Height, FreeImage_GetBits(Bitmap), FreeImage_GetInfoEx(Bitmap, abInfoBuffer), DIB_RGB_COLORS)
    End If
 
 End Function
 
-Public Function FreeImage_PaintDCEx(ByVal hdc As Long, _
+Public Function FreeImage_PaintDCEx(ByVal hDC As Long, _
                                     ByVal Bitmap As Long, _
                            Optional ByVal xDst As Long, _
                            Optional ByVal yDst As Long, _
@@ -7042,15 +7042,15 @@ Dim abInfoBuffer() As Byte
    ' that this function supports both mirroring and stretching of the image to be
    ' painted and so, is somewhat slower than 'FreeImage_PaintDC'.
    
-   If ((hdc <> 0) And (Bitmap <> 0)) Then
+   If ((hDC <> 0) And (Bitmap <> 0)) Then
    
       If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to paint a 'header-only' bitmap.")
       End If
       
-      eLastStretchMode = GetStretchBltMode(hdc)
-      Call SetStretchBltMode(hdc, StretchMode)
+      eLastStretchMode = GetStretchBltMode(hDC)
+      Call SetStretchBltMode(hDC, StretchMode)
       
       If (WidthSrc = 0) Then
          WidthSrc = FreeImage_GetWidth(Bitmap)
@@ -7076,17 +7076,17 @@ Dim abInfoBuffer() As Byte
          WidthDst = -WidthDst
       End If
 
-      Call StretchDIBits(hdc, xDst, yDst, WidthDst, HeightDst, xSrc, ySrc, WidthSrc, HeightSrc, _
+      Call StretchDIBits(hDC, xDst, yDst, WidthDst, HeightDst, xSrc, ySrc, WidthSrc, HeightSrc, _
             FreeImage_GetBits(Bitmap), FreeImage_GetInfoEx(Bitmap, abInfoBuffer), DIB_RGB_COLORS, _
             RasterOperator)
       
       ' restore last mode
-      Call SetStretchBltMode(hdc, eLastStretchMode)
+      Call SetStretchBltMode(hDC, eLastStretchMode)
    End If
 
 End Function
 
-Public Function FreeImage_PaintTransparent(ByVal hdc As Long, _
+Public Function FreeImage_PaintTransparent(ByVal hDC As Long, _
                                            ByVal Bitmap As Long, _
                                   Optional ByVal xDst As Long = 0, _
                                   Optional ByVal yDst As Long = 0, _
@@ -7140,7 +7140,7 @@ Dim bIsTransparent As Boolean
    ' paint the image fully opaque. The 'Alpha' value controls, how the non per-pixel
    ' portions of the image will be drawn.
                                   
-   If ((hdc <> 0) And (Bitmap <> 0)) Then
+   If ((hDC <> 0) And (Bitmap <> 0)) Then
    
       If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
@@ -7195,7 +7195,7 @@ Dim bIsTransparent As Boolean
                
                ' if there is no transparency in the image, paint it with
                ' a single SRCCOPY
-               Call StretchDIBits(hdc, _
+               Call StretchDIBits(hDC, _
                                   xDst, yDst, WidthDst, HeightDst, _
                                   xSrc, ySrc, WidthSrc, HeightSrc, _
                                   FreeImage_GetBits(Bitmap), _
@@ -7205,7 +7205,7 @@ Dim bIsTransparent As Boolean
             
                ' set mask palette and paint with SRCAND
                Call CopyMemory(ByVal lpPalette, alPalMask(0), lPaletteSize)
-               Call StretchDIBits(hdc, _
+               Call StretchDIBits(hDC, _
                                   xDst, yDst, WidthDst, HeightDst, _
                                   xSrc, ySrc, WidthSrc, HeightSrc, _
                                   FreeImage_GetBits(Bitmap), _
@@ -7214,7 +7214,7 @@ Dim bIsTransparent As Boolean
                
                ' set mask modified and paint with SRCPAINT
                Call CopyMemory(ByVal lpPalette, alPalMod(0), lPaletteSize)
-               Call StretchDIBits(hdc, _
+               Call StretchDIBits(hDC, _
                                   xDst, yDst, WidthDst, HeightDst, _
                                   xSrc, ySrc, WidthSrc, HeightSrc, _
                                   FreeImage_GetBits(Bitmap), _
@@ -7268,7 +7268,7 @@ Dim bIsTransparent As Boolean
             End With
             Call CopyMemory(lBF, tBF, 4)
             
-            Call AlphaBlend(hdc, xDst, yDst, WidthDst, HeightDst, _
+            Call AlphaBlend(hDC, xDst, yDst, WidthDst, HeightDst, _
                             hMemDC, xSrc, ySrc, WidthSrc, HeightSrc, _
                             lBF)
                             
@@ -8177,7 +8177,7 @@ End Function
 '--------------------------------------------------------------------------------
 
 Public Function FreeImage_GetBitmap(ByVal Bitmap As Long, _
-                           Optional ByVal hdc As Long, _
+                           Optional ByVal hDC As Long, _
                            Optional ByVal UnloadSource As Boolean) As Long
                                
 Dim bReleaseDC As Boolean
@@ -8196,12 +8196,12 @@ Dim abInfoBuffer() As Byte
                         "Unable to create a bitmap from a 'header-only' bitmap.")
       End If
    
-      If (hdc = 0) Then
-         hdc = GetDC(0)
+      If (hDC = 0) Then
+         hDC = GetDC(0)
          bReleaseDC = True
       End If
-      If (hdc) Then
-         FreeImage_GetBitmap = CreateDIBSection(hdc, FreeImage_GetInfoEx(Bitmap, abInfoBuffer), _
+      If (hDC) Then
+         FreeImage_GetBitmap = CreateDIBSection(hDC, FreeImage_GetInfoEx(Bitmap, abInfoBuffer), _
                DIB_RGB_COLORS, ppvBits, 0, 0)
          If ((FreeImage_GetBitmap <> 0) And (ppvBits <> 0)) Then
             Call CopyMemory(ByVal ppvBits, ByVal FreeImage_GetBits(Bitmap), _
@@ -8211,7 +8211,7 @@ Dim abInfoBuffer() As Byte
             Call FreeImage_Unload(Bitmap)
          End If
          If (bReleaseDC) Then
-            Call ReleaseDC(0, hdc)
+            Call ReleaseDC(0, hDC)
          End If
       End If
    End If
@@ -8219,7 +8219,7 @@ Dim abInfoBuffer() As Byte
 End Function
 
 Public Function FreeImage_GetBitmapForDevice(ByVal Bitmap As Long, _
-                                    Optional ByVal hdc As Long, _
+                                    Optional ByVal hDC As Long, _
                                     Optional ByVal UnloadSource As Boolean) As Long
                                     
 Dim bReleaseDC As Boolean
@@ -8237,20 +8237,20 @@ Dim abInfoBuffer() As Byte
                         "Unable to create a bitmap from a 'header-only' bitmap.")
       End If
    
-      If (hdc = 0) Then
-         hdc = GetDC(0)
+      If (hDC = 0) Then
+         hDC = GetDC(0)
          bReleaseDC = True
       End If
-      If (hdc) Then
+      If (hDC) Then
          FreeImage_GetBitmapForDevice = _
-               CreateDIBitmap(hdc, FreeImage_GetInfoHeader(Bitmap), CBM_INIT, _
+               CreateDIBitmap(hDC, FreeImage_GetInfoHeader(Bitmap), CBM_INIT, _
                      FreeImage_GetBits(Bitmap), FreeImage_GetInfoEx(Bitmap, abInfoBuffer), _
                            DIB_RGB_COLORS)
          If (UnloadSource) Then
             Call FreeImage_Unload(Bitmap)
          End If
          If (bReleaseDC) Then
-            Call ReleaseDC(0, hdc)
+            Call ReleaseDC(0, hDC)
          End If
       End If
    End If
@@ -8293,7 +8293,7 @@ End Function
 '--------------------------------------------------------------------------------
 
 Public Function FreeImage_GetOlePicture(ByVal Bitmap As Long, _
-                               Optional ByVal hdc As Long, _
+                               Optional ByVal hDC As Long, _
                                Optional ByVal UnloadSource As Boolean) As IPicture
 
 Dim hBitmap As Long
@@ -8324,7 +8324,7 @@ Dim cPictureDisp As IPictureDisp
                         "Unable to create a picture from a 'header-only' bitmap.")
       End If
    
-      hBitmap = FreeImage_GetBitmapForDevice(Bitmap, hdc, UnloadSource)
+      hBitmap = FreeImage_GetBitmapForDevice(Bitmap, hDC, UnloadSource)
       If (hBitmap) Then
          ' fill tPictDesc structure with necessary parts
          With tPicDesc
@@ -8389,7 +8389,7 @@ End Function
 
 Public Function FreeImage_GetOlePictureThumbnail(ByVal Bitmap As Long, _
                                                  ByVal MaxPixelSize As Long, _
-                                        Optional ByVal hdc As Long, _
+                                        Optional ByVal hDC As Long, _
                                         Optional ByVal UnloadSource As Boolean) As IPicture
 
 Dim hDIBThumbnail As Long
@@ -8410,7 +8410,7 @@ Dim hDIBThumbnail As Long
       End If
       
       hDIBThumbnail = FreeImage_MakeThumbnail(Bitmap, MaxPixelSize)
-      Set FreeImage_GetOlePictureThumbnail = FreeImage_GetOlePicture(hDIBThumbnail, hdc, True)
+      Set FreeImage_GetOlePictureThumbnail = FreeImage_GetOlePicture(hDIBThumbnail, hDC, True)
       
       If (UnloadSource) Then
          Call FreeImage_Unload(Bitmap)
@@ -8424,7 +8424,7 @@ Public Function FreeImage_CreateFromOlePicture(ByRef Picture As IPicture) As Lon
 Dim hBitmap As Long
 Dim tBM As BITMAP_API
 Dim hDIB As Long
-Dim hdc As Long
+Dim hDC As Long
 Dim lResult As Long
 Dim nColors As Long
 Dim lpInfo As Long
@@ -8448,8 +8448,8 @@ Dim lpInfo As Long
                ' This is needed for palletized images only.
                nColors = FreeImage_GetColorsUsed(hDIB)
             
-               hdc = GetDC(0)
-               lResult = GetDIBits(hdc, hBitmap, 0, _
+               hDC = GetDC(0)
+               lResult = GetDIBits(hDC, hBitmap, 0, _
                                    FreeImage_GetHeight(hDIB), _
                                    FreeImage_GetBits(hDIB), _
                                    FreeImage_GetInfo(hDIB), _
@@ -8467,7 +8467,7 @@ Dim lpInfo As Long
                Else
                   Call FreeImage_Unload(hDIB)
                End If
-               Call ReleaseDC(0, hdc)
+               Call ReleaseDC(0, hDC)
             End If
          End If
       End If
@@ -8475,7 +8475,7 @@ Dim lpInfo As Long
 
 End Function
 
-Public Function FreeImage_CreateFromDC(ByVal hdc As Long, _
+Public Function FreeImage_CreateFromDC(ByVal hDC As Long, _
                               Optional ByRef hBitmap As Long) As Long
 
 Dim tBM As BITMAP_API
@@ -8507,7 +8507,7 @@ Dim lpInfo As Long
    If (hBitmap = 0) Then
       ' if not, the parameter may be missing or is NULL so get the
       ' DC's current bitmap
-      hBitmap = GetCurrentObject(hdc, OBJ_BITMAP)
+      hBitmap = GetCurrentObject(hDC, OBJ_BITMAP)
    End If
 
    lResult = GetObjectAPI(hBitmap, Len(tBM), tBM)
@@ -8521,7 +8521,7 @@ Dim lpInfo As Long
          ' This is needed for palletized images only.
          nColors = FreeImage_GetColorsUsed(hDIB)
          
-         lResult = GetDIBits(hdc, hBitmap, 0, _
+         lResult = GetDIBits(hDC, hBitmap, 0, _
                              FreeImage_GetHeight(hDIB), _
                              FreeImage_GetBits(hDIB), _
                              FreeImage_GetInfo(hDIB), _
@@ -8587,7 +8587,7 @@ End Function
 Public Function FreeImage_CreateFromScreen(Optional ByVal HWnd As Long, _
                                            Optional ByVal ClientAreaOnly As Boolean) As Long
 
-Dim hdc As Long
+Dim hDC As Long
 Dim lWidth As Long
 Dim lHeight As Long
 Dim hMemDC As Long
@@ -8602,21 +8602,21 @@ Dim tR As RECT
 
    If (HWnd = 0) Then
       HWnd = GetDesktopWindow()
-      hdc = GetDCEx(HWnd, 0, 0)
+      hDC = GetDCEx(HWnd, 0, 0)
       ' get desktop's width and height
-      lWidth = GetDeviceCaps(hdc, HORZRES)
-      lHeight = GetDeviceCaps(hdc, VERTRES)
+      lWidth = GetDeviceCaps(hDC, HORZRES)
+      lHeight = GetDeviceCaps(hDC, VERTRES)
    
    ElseIf (ClientAreaOnly) Then
       ' get window's client area DC
-      hdc = GetDCEx(HWnd, 0, 0)
+      hDC = GetDCEx(HWnd, 0, 0)
       Call GetClientRect(HWnd, tR)
       lWidth = tR.Right
       lHeight = tR.Bottom
       
    Else
       ' get window DC
-      hdc = GetDCEx(HWnd, 0, DCX_WINDOW)
+      hDC = GetDCEx(HWnd, 0, DCX_WINDOW)
       Call GetWindowRect(HWnd, tR)
       lWidth = tR.Right - tR.Left
       lHeight = tR.Bottom - tR.Top
@@ -8624,12 +8624,12 @@ Dim tR As RECT
    End If
    
    ' create compatible memory DC and bitmap
-   hMemDC = CreateCompatibleDC(hdc)
-   hMemBMP = CreateCompatibleBitmap(hdc, lWidth, lHeight)
+   hMemDC = CreateCompatibleDC(hDC)
+   hMemBMP = CreateCompatibleBitmap(hDC, lWidth, lHeight)
    ' select compatible bitmap
    hMemOldBMP = SelectObject(hMemDC, hMemBMP)
    ' blit bits
-   Call BitBlt(hMemDC, 0, 0, lWidth, lHeight, hdc, 0, 0, SRCCOPY Or CAPTUREBLT)
+   Call BitBlt(hMemDC, 0, 0, lWidth, lHeight, hDC, 0, 0, SRCCOPY Or CAPTUREBLT)
    
    ' create FreeImage Bitmap from memory DC
    FreeImage_CreateFromScreen = FreeImage_CreateFromDC(hMemDC, hMemBMP)
@@ -8638,7 +8638,7 @@ Dim tR As RECT
    Call SelectObject(hMemDC, hMemOldBMP)
    Call DeleteObject(hMemBMP)
    Call DeleteDC(hMemDC)
-   Call ReleaseDC(HWnd, hdc)
+   Call ReleaseDC(HWnd, hDC)
 
 End Function
 
@@ -8825,7 +8825,7 @@ Dim atBitsQDst() As RGBQUAD
 
 Dim bMaskPixel As Boolean
 Dim x As Long
-Dim X2 As Long
+Dim x2 As Long
 Dim lPixelIndex As Long
 Dim y As Long
 Dim i As Long
@@ -9137,8 +9137,8 @@ Dim i As Long
                      Select Case lBitDepthSrc
                      
                      Case 4
-                        X2 = x \ 2
-                        lPixelIndex = (abBitsBSrc(X2, y) And abBitMasks(x Mod 2)) \ abBitShifts(x Mod 2)
+                        x2 = x \ 2
+                        lPixelIndex = (abBitsBSrc(x2, y) And abBitMasks(x Mod 2)) \ abBitShifts(x Mod 2)
                         bMaskPixel = (abTransparencyTableSrc(lPixelIndex) = 0)
                         If (Not bMaskPixel) Then
                            bMaskPixel = ((abTransparencyTableSrc(lPixelIndex) < 255) And _
@@ -9178,8 +9178,8 @@ Dim i As Long
                      Select Case lBitDepthSrc
                      
                      Case 4
-                        X2 = x \ 2
-                        lPixelIndex = (abBitsBSrc(X2, y) And abBitMasks(x Mod 2)) \ abBitShifts(x Mod 2)
+                        x2 = x \ 2
+                        lPixelIndex = (abBitsBSrc(x2, y) And abBitMasks(x Mod 2)) \ abBitShifts(x Mod 2)
                         If (eMaskColorsFormat And FICFF_COLOR_PALETTE_INDEX) Then
                            For i = 0 To lMaskColorsMaxIndex
                               If (lColorTolerance = 0) Then
@@ -9270,15 +9270,15 @@ Dim i As Long
                      Select Case lBitDepth
                      
                      Case 1
-                        X2 = x \ 8
+                        x2 = x \ 8
                         If ((bMaskPixel) Xor (bInvertMask)) Then
-                           abBitsBDst(X2, y) = abBitsBDst(X2, y) Or abBitValues(x Mod 8)
+                           abBitsBDst(x2, y) = abBitsBDst(x2, y) Or abBitValues(x Mod 8)
                         End If
                         
                      Case 4
-                        X2 = x \ 2
+                        x2 = x \ 2
                         If ((bMaskPixel) Xor (bInvertMask)) Then
-                           abBitsBDst(X2, y) = abBitsBDst(X2, y) Or abBitValues(x Mod 2)
+                           abBitsBDst(x2, y) = abBitsBDst(x2, y) Or abBitValues(x Mod 2)
                         End If
                         
                      Case 8
@@ -9309,16 +9309,16 @@ Dim i As Long
                      Select Case lBitDepthSrc
                      
                      Case 4
-                        X2 = x \ 2
+                        x2 = x \ 2
                         If ((bMaskPixel) Xor (bInvertMask)) Then
                            If (bHaveMaskColorSrc) Then
-                              abBitsBSrc(X2, y) = _
-                                  (abBitsBSrc(X2, y) And (Not abBitMasks(x Mod 2))) Or _
+                              abBitsBSrc(x2, y) = _
+                                  (abBitsBSrc(x2, y) And (Not abBitMasks(x Mod 2))) Or _
                                             (lciMaskColorSrc * abBitShifts(x Mod 2))
                             End If
                         ElseIf (bHaveUnmaskColorSrc) Then
-                           abBitsBSrc(X2, y) = _
-                               (abBitsBSrc(X2, y) And (Not abBitMasks(x Mod 2))) Or _
+                           abBitsBSrc(x2, y) = _
+                               (abBitsBSrc(x2, y) And (Not abBitMasks(x Mod 2))) Or _
                                          (lciUnmaskColorSrc * abBitShifts(x Mod 2))
                         End If
                      
@@ -9718,7 +9718,7 @@ Public Function FreeImage_GetIcon(ByVal hDIB As Long, _
                          Optional ByVal eTransparencyOptions As FREE_IMAGE_ICON_TRANSPARENCY_OPTION_FLAGS = ITOF_USE_DEFAULT_TRANSPARENCY, _
                          Optional ByVal lciTransparentColor As Long, _
                          Optional ByVal eTransparentColorType As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                         Optional ByVal hdc As Long, _
+                         Optional ByVal hDC As Long, _
                          Optional ByVal UnloadSource As Boolean) As Long
 
 Dim tICONINFO As ICONINFO
@@ -9860,12 +9860,12 @@ Dim hBmp As Long
          hDIBMask = FreeImage_CreateMaskImage(hDIB, 1, FIMF_MASK_FULL_TRANSPARENCY)
       End If
      
-      If (hdc = 0) Then
-         hdc = GetDC(0)
+      If (hDC = 0) Then
+         hDC = GetDC(0)
          bReleaseDC = True
       End If
 
-      hBmp = CreateDIBitmap(hdc, _
+      hBmp = CreateDIBitmap(hDC, _
                             FreeImage_GetInfoHeader(hDIBSrc), _
                             CBM_INIT, _
                             FreeImage_GetBits(hDIBSrc), _
@@ -9873,7 +9873,7 @@ Dim hBmp As Long
                             DIB_RGB_COLORS)
    
       
-      hBMPMask = CreateDIBitmap(hdc, _
+      hBMPMask = CreateDIBitmap(hDC, _
                                 FreeImage_GetInfoHeader(hDIBMask), _
                                 CBM_INIT, _
                                 FreeImage_GetBits(hDIBMask), _
@@ -9901,7 +9901,7 @@ Dim hBmp As Long
       End If
       
       If (bReleaseDC) Then
-         Call ReleaseDC(0, hdc)
+         Call ReleaseDC(0, hDC)
       End If
    End If
 

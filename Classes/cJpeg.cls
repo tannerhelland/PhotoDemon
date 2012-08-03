@@ -151,15 +151,15 @@ Private Type BITMAPINFO
 End Type
 
 'API needed for creating DIBSections for sampling and pixel access.
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function CreateDIBSection2 Lib "gdi32" Alias "CreateDIBSection" (ByVal hdc As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long   'lplpVoid changed to ByRef
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function CreateDIBSection2 Lib "gdi32" Alias "CreateDIBSection" (ByVal hDC As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long   'lplpVoid changed to ByRef
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As Any) As Long
-Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hdc As Long, ByVal nStretchMode As Long) As Long
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDC As Long, ByVal nStretchMode As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 
 
@@ -213,14 +213,16 @@ Private m_Comment     As String
 '========================================================================================
 '              D I S C R E T E   C O S I N E   T R A N S F O R M A T I O N
 '========================================================================================
+
 Private Sub FDCT()
-    Static t0   As Single 'Given an 8X8 block of discretely sampled values [m_Block(0-7, 0-7)],
-    Static t1   As Single 'replace them with their (scaled) Forward Discrete Cosine Transformation values.
-    Static t2   As Single '80 (+64) multiplications and 464 additions are needed.
-    Static t3   As Single 'Values are scaled on output, meaning that each of the 64 elements must be
-    Static t4   As Single 'multiplied by constants for a final FDCT.  These final constants are combined
-    Static t5   As Single 'with Quantization constants, so a final 64 multiplications combine the
-    Static t6   As Single 'completion of the FDCT and Quantization in one step.
+    
+    Static t0   As Single   'Given an 8X8 block of discretely sampled values [m_Block(0-7, 0-7)],
+    Static t1   As Single   'replace them with their (scaled) Forward Discrete Cosine Transformation values.
+    Static t2   As Single   '80 (+64) multiplications and 464 additions are needed.
+    Static t3   As Single   'Values are scaled on output, meaning that each of the 64 elements must be
+    Static t4   As Single   'multiplied by constants for a final FDCT.  These final constants are combined
+    Static t5   As Single   'with Quantization constants, so a final 64 multiplications combine the
+    Static t6   As Single   'completion of the FDCT and Quantization in one step.
     Static t7   As Single
     Static t8   As Single
     Static i    As Long
@@ -958,12 +960,12 @@ Public Function SampleHDC(ByVal lHDC As Long, lWidth As Long, lHeight As Long, O
 '         1 = API error while generating a DIBSection
     Dim hDIB       As Long    'Handle to the DIBSection
     Dim hBmpOld    As Long    'Handle to the old bitmap in the DC, for clear up
-    Dim hdc        As Long    'Handle to the Device context holding the DIBSection
+    Dim hDC        As Long    'Handle to the Device context holding the DIBSection
     Dim lPtr       As Long    'Address of memory pointing to the DIBSection's bits
     Dim BI         As BITMAPINFO 'Type containing the Bitmap information
     Dim SA         As SAFEARRAY2D
     Dim Pixel()    As Byte   'Byte array containing pixel data
-    Dim F          As Long   'Index counter for components
+    Dim f          As Long   'Index counter for components
     Dim qp         As Long   'Index for quantized FDCT value (in component data)
     Dim rm         As Single 'Scale factor for red   pixel when converting RGB->YCbCr
     Dim gm         As Single 'Scale factor for green pixel when converting RGB->YCbCr
@@ -988,8 +990,8 @@ Public Function SampleHDC(ByVal lHDC As Long, lWidth As Long, lHeight As Long, O
     XX = lWidth
 
    'Create a DIBSection to store Sampling(s) of the Image
-    hdc = CreateCompatibleDC(0)
-    If hdc = 0 Then
+    hDC = CreateCompatibleDC(0)
+    If hDC = 0 Then
         SampleHDC = 1 'CreateCompatibleDC() API Failure
     Else
         With BI.bmiHeader
@@ -1001,7 +1003,7 @@ Public Function SampleHDC(ByVal lHDC As Long, lWidth As Long, lHeight As Long, O
             .biCompression = BI_RGB
             .biSizeImage = ((.biWidth * 3 + 3) And &HFFFFFFFC) * .biHeight '4 byte barrier
         End With
-        hDIB = CreateDIBSection2(hdc, BI, DIB_RGB_COLORS, lPtr, 0, 0)
+        hDIB = CreateDIBSection2(hDC, BI, DIB_RGB_COLORS, lPtr, 0, 0)
         If hDIB = 0 Then
             SampleHDC = 1 'CreateDIBSection2() API Failure
         Else
@@ -1014,12 +1016,12 @@ Public Function SampleHDC(ByVal lHDC As Long, lWidth As Long, lHeight As Long, O
                 .Bounds(1).cElements = ((BI.bmiHeader.biWidth * 3 + 3) And &HFFFFFFFC)
                 .pvData = lPtr             'Note that this is extreamly efficient, since it copies
             End With                       'a pointer to the data, and not the data itself.
-            hBmpOld = SelectObject(hdc, hDIB) 'Select DIBSection into DC
-            If SetStretchBltMode(hdc, HALFTONE) = 0 Then SetStretchBltMode hdc, COLORONCOLOR
+            hBmpOld = SelectObject(hDC, hDIB) 'Select DIBSection into DC
+            If SetStretchBltMode(hDC, HALFTONE) = 0 Then SetStretchBltMode hDC, COLORONCOLOR
 
 
-    For F = 0 To Nf - 1
-        Select Case F 'Select scaling factors for RGB->YCbCr conversion for this component
+    For f = 0 To Nf - 1
+        Select Case f 'Select scaling factors for RGB->YCbCr conversion for this component
         Case 0 'Luminance
             rm = 0.299
             gm = 0.587
@@ -1037,8 +1039,8 @@ Public Function SampleHDC(ByVal lHDC As Long, lWidth As Long, lHeight As Long, O
             s = 0
         End Select
 
-        With Comp(F)
-           .Ci = F + 1 'Assign an ID to this component
+        With Comp(f)
+           .Ci = f + 1 'Assign an ID to this component
 
             xi = -Int(-XX * .Hi / HMax)        'determine Sample dimensions
             yi = -Int(-YY * .Vi / VMax)
@@ -1048,15 +1050,15 @@ Public Function SampleHDC(ByVal lHDC As Long, lWidth As Long, lHeight As Long, O
 
             If xi8 <> xi2 Or yi8 <> yi2 Then  'We need to Sample the Image
                 If xi = XX And yi = YY Then 'Just copy the image to our DIBSection
-                    BitBlt hdc, 0, BI.bmiHeader.biHeight - yi8, xi, yi, lHDC, lSrcLeft, lSrcTop, vbSrcCopy
+                    BitBlt hDC, 0, BI.bmiHeader.biHeight - yi8, xi, yi, lHDC, lSrcLeft, lSrcTop, vbSrcCopy
                 Else                        'Resample/Resize the Image
-                    StretchBlt hdc, 0, BI.bmiHeader.biHeight - yi8, xi, yi, lHDC, lSrcLeft, lSrcTop, lWidth, lHeight, vbSrcCopy
+                    StretchBlt hDC, 0, BI.bmiHeader.biHeight - yi8, xi, yi, lHDC, lSrcLeft, lSrcTop, lWidth, lHeight, vbSrcCopy
                 End If
                 For i = xi To xi8 - 1  'Pad right of Sample to 8 block barrier
-                    BitBlt hdc, i, BI.bmiHeader.biHeight - yi8, 1, yi, hdc, i - 1, BI.bmiHeader.biHeight - yi8, vbSrcCopy
+                    BitBlt hDC, i, BI.bmiHeader.biHeight - yi8, 1, yi, hDC, i - 1, BI.bmiHeader.biHeight - yi8, vbSrcCopy
                 Next i
                 For j = BI.bmiHeader.biHeight - (yi8 - yi) To BI.bmiHeader.biHeight - 1 'Pad bottom of Sample to 8 block barrier
-                    BitBlt hdc, 0, j, xi8, 1, hdc, 0, j - 1, vbSrcCopy
+                    BitBlt hDC, 0, j, xi8, 1, hDC, 0, j - 1, vbSrcCopy
                 Next j
             End If
             xi2 = xi8
@@ -1089,13 +1091,13 @@ Public Function SampleHDC(ByVal lHDC As Long, lWidth As Long, lHeight As Long, O
             Wend
             CopyMemory ByVal VarPtrArray(Pixel), 0&, 4 'Clear the Pixel array descriptor
         End With
-    Next F
+    Next f
 
 
-            SelectObject hdc, hBmpOld 'Select CompatibleDC  (unselect DIBSection)
+            SelectObject hDC, hBmpOld 'Select CompatibleDC  (unselect DIBSection)
             DeleteObject hDIB         'Delete DIBSection
         End If
-        DeleteObject hdc              'Delete CompatibleDC
+        DeleteObject hDC              'Delete CompatibleDC
     End If
 
 End Function
@@ -1310,7 +1312,7 @@ End Sub
 Private Sub InsertSOSInterleaved(CompIndex() As Long, Td() As Long, Ta() As Long, FirstIndex As Long, SecondIndex As Long)
 'Insert an SOS marker and scan data for an interleaved Sequential scan.
 
-    Dim F         As Long      'Index counter  (component)
+    Dim f         As Long      'Index counter  (component)
     Dim g         As Long      'Index counter  (sampling factor, vertical)
     Dim h         As Long      'Index counter  (sampling factor, horizontal)
     Dim i         As Long      'Index counter  (MCU horizontal)
@@ -1357,76 +1359,76 @@ Private Sub InsertSOSInterleaved(CompIndex() As Long, Td() As Long, Ta() As Long
     MCUx = (XX + 8 * HMax - 1) \ (8 * HMax)
     MCUy = (YY + 8 * VMax - 1) \ (8 * VMax)
 
-    For F = FirstIndex To SecondIndex
-        With Comp(CompIndex(F))
+    For f = FirstIndex To SecondIndex
+        With Comp(CompIndex(f))
             h = (-Int(-XX * .Hi / HMax) + 7) \ 8  'Width of scanline in .data (MCUs)
 
             For g = 0 To .Vi - 1                  'Initialize .data pointers
-                p(F, g) = 64 * h * g
+                p(f, g) = 64 * h * g
             Next g
-            pLF(F) = 64 * h * (.Vi - 1)           'Initialize .data pointer advancer
+            pLF(f) = 64 * h * (.Vi - 1)           'Initialize .data pointer advancer
 
-            MCUr(F) = (h Mod .Hi)                 'Number of complete 8X8 Blocks in rightmost MCU
-            If MCUr(F) = 0 Then MCUr(F) = .Hi
+            MCUr(f) = (h Mod .Hi)                 'Number of complete 8X8 Blocks in rightmost MCU
+            If MCUr(f) = 0 Then MCUr(f) = .Hi
         End With
-    Next F
+    Next f
 
     WriteBitsBegin
     For j = 1 To MCUy - 1
 
        'Encode MCUs across a scanline
         For i = 1 To MCUx - 1
-        For F = FirstIndex To SecondIndex '0 To Ns - 1
-        With Comp(CompIndex(F))
+        For f = FirstIndex To SecondIndex '0 To Ns - 1
+        With Comp(CompIndex(f))
         For g = 1 To .Vi
         For h = 1 To .Hi
-        EncodeCoefficients .Data, p(F, g - 1), Pred(F), Td(F), Ta(F)
+        EncodeCoefficients .Data, p(f, g - 1), Pred(f), Td(f), Ta(f)
         Next h
         Next g
         End With
-        Next F
+        Next f
         Next i
 
        'Encode Rightmost MCU
-        For F = FirstIndex To SecondIndex '0 To Ns - 1
-        With Comp(CompIndex(F))
+        For f = FirstIndex To SecondIndex '0 To Ns - 1
+        With Comp(CompIndex(f))
         For g = 1 To .Vi
         For h = 1 To .Hi
-        If h > MCUr(F) Then 'Pad with dummy block
-            Pad64(0) = Pred(F)
-            EncodeCoefficients Pad64, 0, Pred(F), Td(F), Ta(F)
+        If h > MCUr(f) Then 'Pad with dummy block
+            Pad64(0) = Pred(f)
+            EncodeCoefficients Pad64, 0, Pred(f), Td(f), Ta(f)
         Else
-            EncodeCoefficients .Data, p(F, g - 1), Pred(F), Td(F), Ta(F)
+            EncodeCoefficients .Data, p(f, g - 1), Pred(f), Td(f), Ta(f)
         End If
         Next h
         Next g
         End With
-        Next F
+        Next f
 
        'Advance .data pointers
-        For F = FirstIndex To SecondIndex
-        For g = 0 To Comp(CompIndex(F)).Vi - 1
-        p(F, g) = p(F, g) + pLF(F)
+        For f = FirstIndex To SecondIndex
+        For g = 0 To Comp(CompIndex(f)).Vi - 1
+        p(f, g) = p(f, g) + pLF(f)
         Next g
-        Next F
+        Next f
      Next j
 
    'Encode Bottommost MCU Scanline
     For i = 1 To MCUx
-    For F = FirstIndex To SecondIndex
-    With Comp(CompIndex(F))
+    For f = FirstIndex To SecondIndex
+    With Comp(CompIndex(f))
     For g = 1 To .Vi
     For h = 1 To .Hi
-    If p(F, g - 1) > UBound(.Data) Or (i = MCUx And h > MCUr(F)) Then 'Pad with dummy block
-        Pad64(0) = Pred(F)
-        EncodeCoefficients Pad64, 0, Pred(F), Td(F), Ta(F)
+    If p(f, g - 1) > UBound(.Data) Or (i = MCUx And h > MCUr(f)) Then 'Pad with dummy block
+        Pad64(0) = Pred(f)
+        EncodeCoefficients Pad64, 0, Pred(f), Td(f), Ta(f)
     Else
-        EncodeCoefficients .Data, p(F, g - 1), Pred(F), Td(F), Ta(F)
+        EncodeCoefficients .Data, p(f, g - 1), Pred(f), Td(f), Ta(f)
     End If
     Next h
     Next g
     End With
-    Next F
+    Next f
     Next i
 
     WriteBitsEnd
@@ -1437,36 +1439,36 @@ Private Sub InsertSequentialScans(CompIndex() As Long, Td() As Long, Ta() As Lon
 'Insert scan components CompIndex(FirstIndex) to CompIndex(SecondIndex) sequentially in compliance
 'with JPEG rules.  Components are interleaved whenever possible to emit as few scans as possible.
 
-    Dim F            As Long       'First Index
+    Dim f            As Long       'First Index
     Dim g            As Long       'Second Index
     Dim Nb           As Long       'Number of 8X8 blocks in MCU
     Const MaxNb      As Long = 10  'Max 8X8 blocks in MCU  (10 for JPEG compliance)
     Dim flag         As Boolean    'True when ready to insert scan(s)
 
-    F = FirstIndex
+    f = FirstIndex
     g = FirstIndex
     Nb = 0
     flag = False
-    While F <= SecondIndex
+    While f <= SecondIndex
 
         Nb = Nb + Comp(CompIndex(g)).Hi * Comp(CompIndex(g)).Vi
         g = g + 1
 
         If Nb > MaxNb Then
             flag = True
-            If F <> g - 1 Then g = g - 1
+            If f <> g - 1 Then g = g - 1
         Else
-            If (g - F) = 3 Or g > SecondIndex Then flag = True
+            If (g - f) = 3 Or g > SecondIndex Then flag = True
         End If
 
         If flag Then
-            If F = g - 1 Then
-                InsertSOSNonInterleaved CompIndex(F), Td(F), Ta(F)
+            If f = g - 1 Then
+                InsertSOSNonInterleaved CompIndex(f), Td(f), Ta(f)
             Else
-                InsertSOSInterleaved CompIndex, Td, Ta, F, g - 1
+                InsertSOSInterleaved CompIndex, Td, Ta, f, g - 1
             End If
             Nb = 0
-            F = g
+            f = g
             flag = False
         End If
     Wend
@@ -1485,7 +1487,7 @@ Private Function OptimizeHuffmanTables(CompIndex() As Long, Td() As Long, Ta() A
 'Returns an estimate of the number of bytes needed for entropy coded data.
 'Estimate assumes a single scan, and entropy coded FF bytes are not followed by a zero stuff byte.
 
-    Dim F            As Long      'First Index
+    Dim f            As Long      'First Index
     Dim g            As Long      'Second Index
     Dim i            As Long
     Dim j            As Long
@@ -1507,36 +1509,36 @@ Private Function OptimizeHuffmanTables(CompIndex() As Long, Td() As Long, Ta() A
 
 
    'Determine which components will be interleaved by InsertSequentialScans(), which tables are used
-    F = FirstIndex
+    f = FirstIndex
     g = FirstIndex
     Nb = 0
     flag = False
-    While F <= SecondIndex
+    While f <= SecondIndex
 
         Nb = Nb + Comp(CompIndex(g)).Hi * Comp(CompIndex(g)).Vi
         g = g + 1
 
         If Nb > MaxNb Then
             flag = True
-            If F <> g - 1 Then g = g - 1
+            If f <> g - 1 Then g = g - 1
         Else
-            If (g - F) = 3 Or g > SecondIndex Then flag = True
+            If (g - f) = 3 Or g > SecondIndex Then flag = True
         End If
 
         If flag Then
-            If F = g - 1 Then
-                    TdUsed(Td(F)) = True
-                    TaUsed(Ta(F)) = True
-                    IsInter(F) = False
+            If f = g - 1 Then
+                    TdUsed(Td(f)) = True
+                    TaUsed(Ta(f)) = True
+                    IsInter(f) = False
             Else
-                For i = F To g - 1
+                For i = f To g - 1
                     TdUsed(Td(i)) = True
                     TaUsed(Ta(i)) = True
                     IsInter(i) = True
                 Next i
             End If
             Nb = 0
-            F = g
+            f = g
             flag = False
         End If
     Wend
@@ -1545,17 +1547,17 @@ Private Function OptimizeHuffmanTables(CompIndex() As Long, Td() As Long, Ta() A
    'Optimize huffman tables for the scan sequence
     For i = 0 To 3
         If TdUsed(i) Then
-            For F = FirstIndex To SecondIndex
-                With Comp(CompIndex(F))
-                    If Td(F) = i Then
-                        If IsInter(F) Then
+            For f = FirstIndex To SecondIndex
+                With Comp(CompIndex(f))
+                    If Td(f) = i Then
+                        If IsInter(f) Then
                             CollectStatisticsDCInterleaved .Data, freq, .Hi, .Vi
                         Else
                             CollectStatisticsDCNonInterleaved .Data, freq
                         End If
                     End If
                 End With
-            Next F
+            Next f
 
            'Optimize and create this DC table
             freq2 = freq
@@ -1574,9 +1576,9 @@ Private Function OptimizeHuffmanTables(CompIndex() As Long, Td() As Long, Ta() A
 
         End If
         If TaUsed(i) Then
-            For F = FirstIndex To SecondIndex
-                If Td(F) = i Then CollectStatisticsAC Comp(CompIndex(F)).Data, freq
-            Next F
+            For f = FirstIndex To SecondIndex
+                If Td(f) = i Then CollectStatisticsAC Comp(CompIndex(f)).Data, freq
+            Next f
 
            'Optimize and create this AC table
             freq2 = freq

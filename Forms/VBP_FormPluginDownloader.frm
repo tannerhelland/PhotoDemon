@@ -587,7 +587,6 @@ End Sub
 Private Function getPluginSize(ByVal hInternet As Long, ByVal pluginURL As String) As Long
     
     'Check the size of the file to be downloaded...
-    Dim downloadSize As Long
     Dim tmpStrBuffer As String
     tmpStrBuffer = String$(1024, 0)
     Dim hUrl As Long

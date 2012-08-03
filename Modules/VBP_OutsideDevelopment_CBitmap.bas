@@ -79,18 +79,18 @@ End Type
 ' Functions
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal HWnd As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
-Private Declare Function CreateDIBitmap_1 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hdc As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_1, ByVal wUsage As Long) As Long
-Private Declare Function CreateDIBitmap_2 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hdc As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_2, ByVal wUsage As Long) As Long
-Private Declare Function CreateDIBitmap_4 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hdc As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_4, ByVal wUsage As Long) As Long
-Private Declare Function CreateDIBitmap_8 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hdc As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_8, ByVal wUsage As Long) As Long
-Private Declare Function CreateDIBitmap_16 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hdc As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_16, ByVal wUsage As Long) As Long
-Private Declare Function CreateDIBitmap_24 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hdc As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_24, ByVal wUsage As Long) As Long
-Private Declare Function CreateDIBitmap_24a Lib "gdi32" Alias "CreateDIBitmap" (ByVal hdc As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_24a, ByVal wUsage As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function CreateDIBitmap_1 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hDC As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_1, ByVal wUsage As Long) As Long
+Private Declare Function CreateDIBitmap_2 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hDC As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_2, ByVal wUsage As Long) As Long
+Private Declare Function CreateDIBitmap_4 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hDC As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_4, ByVal wUsage As Long) As Long
+Private Declare Function CreateDIBitmap_8 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hDC As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_8, ByVal wUsage As Long) As Long
+Private Declare Function CreateDIBitmap_16 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hDC As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_16, ByVal wUsage As Long) As Long
+Private Declare Function CreateDIBitmap_24 Lib "gdi32" Alias "CreateDIBitmap" (ByVal hDC As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_24, ByVal wUsage As Long) As Long
+Private Declare Function CreateDIBitmap_24a Lib "gdi32" Alias "CreateDIBitmap" (ByVal hDC As Long, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Long, lpInitBits As Any, lpInitInfo As BITMAPINFO_24a, ByVal wUsage As Long) As Long
 
 
 
@@ -181,7 +181,7 @@ End Sub
 
 Public Sub CreateBitmap_1(ByteArray() As Byte, BMPWidth As Long, BMPHeight As Long, Orientation As Integer, Optional Colorused As Long = 0)
 ' Create a 1bit Bitmap
-Dim hdc As Long
+Dim hDC As Long
 With bm1.bmiHeader
 .biSize = Len(bm1.bmiHeader)
 .biWidth = BMPWidth
@@ -200,12 +200,12 @@ With bm1.bmiHeader
 .biClrImportant = 0
 End With
 ' Get the DC.
-hdc = GetDC(0)
-hBmp = CreateDIBitmap_1(hdc, bm1.bmiHeader, CBM_INIT, ByteArray(0), bm1, DIB_RGB_COLORS)
+hDC = GetDC(0)
+hBmp = CreateDIBitmap_1(hDC, bm1.bmiHeader, CBM_INIT, ByteArray(0), bm1, DIB_RGB_COLORS)
 End Sub
 Public Sub CreateBitmap_2(ByteArray() As Byte, BMPWidth As Long, BMPHeight As Long, Orientation As Integer, Optional Colorused As Long = 0)
 ' Create a 2bit Bitmap
-Dim hdc As Long
+Dim hDC As Long
 With bm1.bmiHeader
 .biSize = Len(bm1.bmiHeader)
 .biWidth = BMPWidth
@@ -224,14 +224,14 @@ With bm1.bmiHeader
 .biClrImportant = 0
 End With
 ' Get the DC.
-hdc = GetDC(0)
-hBmp = CreateDIBitmap_2(hdc, bm2.bmiHeader, CBM_INIT, ByteArray(0), bm2, DIB_RGB_COLORS)
+hDC = GetDC(0)
+hBmp = CreateDIBitmap_2(hDC, bm2.bmiHeader, CBM_INIT, ByteArray(0), bm2, DIB_RGB_COLORS)
 End Sub
 
 Public Sub CreateBitmap_4(ByteArray() As Byte, PicWidth As Long, PicHeight As Long, Orientation As Integer, Optional Colorused As Long = 0)
 ' Creates a device independent bitmap
 ' from the pixel data in Data().
-Dim hdc As Long
+Dim hDC As Long
 With bm4.bmiHeader
 .biSize = Len(bm1.bmiHeader)
 .biWidth = PicWidth
@@ -250,14 +250,14 @@ With bm4.bmiHeader
 .biClrImportant = 0
 End With
 ' Get the DC.
-hdc = GetDC(0)
-hBmp = CreateDIBitmap_4(hdc, bm4.bmiHeader, CBM_INIT, ByteArray(0), bm4, DIB_RGB_COLORS)
+hDC = GetDC(0)
+hBmp = CreateDIBitmap_4(hDC, bm4.bmiHeader, CBM_INIT, ByteArray(0), bm4, DIB_RGB_COLORS)
 End Sub
 
 Public Sub CreateBitmap_8(BitmapArray() As Byte, PicWidth As Long, PicHeight As Long, Orientation As Integer, Optional Colorused As Long = 0)
 ' Creates a device independent bitmap
 ' from the pixel data in BitmapArry().
-Dim hdc As Long
+Dim hDC As Long
 With bm8.bmiHeader
 .biSize = Len(bm8.bmiHeader)
 .biWidth = PicWidth
@@ -276,8 +276,8 @@ With bm8.bmiHeader
 .biClrImportant = 0
 End With
 ' Get the DC.
-hdc = GetDC(0)
-hBmp = CreateDIBitmap_8(hdc, bm8.bmiHeader, CBM_INIT, BitmapArray(0), bm8, DIB_RGB_COLORS)
+hDC = GetDC(0)
+hBmp = CreateDIBitmap_8(hDC, bm8.bmiHeader, CBM_INIT, BitmapArray(0), bm8, DIB_RGB_COLORS)
 End Sub
 
 Public Sub DrawBitmap(PicWidth As Long, PicHeight As Long, PicObject As Object, Scalierung As Boolean, Optional x As Long = 0, Optional y As Long = 0, Optional DrawToBG As Boolean = False)
@@ -325,9 +325,9 @@ PicHeight = realheight
 PicWidth = realwidth
 End If
 If hBmp Then
-cDC = CreateCompatibleDC(PicObject.hdc)
+cDC = CreateCompatibleDC(PicObject.hDC)
 SelectObject cDC, hBmp
-Call StretchBlt(PicObject.hdc, x, y, realwidth, realheight, cDC, 0, 0, PicWidth, PicHeight, SRCCOPY)
+Call StretchBlt(PicObject.hDC, x, y, realwidth, realheight, cDC, 0, 0, PicWidth, PicHeight, SRCCOPY)
 DeleteDC cDC
 DeleteObject hBmp
 hBmp = 0
@@ -350,7 +350,7 @@ Public Sub CreateBitmap_24(ByteArray() As Byte, PicWidth As Long, PicHeight As L
 ' Creates a device independent bitmap
 ' from the pixel data in BitmapArray().
 
-Dim hdc As Long
+Dim hDC As Long
 Dim Bits() As RGBQUAD
 Dim BitsA() As RGBTRIPLE
 Select Case ThreeToOrToFour
@@ -398,18 +398,18 @@ CopyMemory BitsA(0), ByteArray(0), UBound(ByteArray)
     End With
 End Select
 ' Get the DC.
-hdc = GetDC(0)
+hDC = GetDC(0)
 Select Case ThreeToOrToFour
 Case 0
-hBmp = CreateDIBitmap_24(hdc, bm24.bmiHeader, CBM_INIT, Bits(0), bm24, DIB_RGB_COLORS)
+hBmp = CreateDIBitmap_24(hDC, bm24.bmiHeader, CBM_INIT, Bits(0), bm24, DIB_RGB_COLORS)
 Case 1
-hBmp = CreateDIBitmap_24a(hdc, bm24a.bmiHeader, CBM_INIT, BitsA(0), bm24a, DIB_RGB_COLORS)
+hBmp = CreateDIBitmap_24a(hDC, bm24a.bmiHeader, CBM_INIT, BitsA(0), bm24a, DIB_RGB_COLORS)
 End Select
 End Sub
 Public Sub CreateBitmap_16(ByteArray() As Byte, PicWidth As Long, PicHeight As Long, Orientation As Integer)
 ' Creates a device independent bitmap
 ' from the pixel data in BitmapArray().
-Dim hdc As Long
+Dim hDC As Long
 
     With bm16.bmiHeader
         .biSize = Len(bm16.bmiHeader)        'SizeOf Struct
@@ -429,28 +429,24 @@ Dim hdc As Long
         .biClrImportant = 0                     'Default
     End With
 ' Get the DC.
-hdc = GetDC(0)
-hBmp = CreateDIBitmap_16(hdc, bm16.bmiHeader, CBM_INIT, ByteArray(0), bm16, DIB_RGB_COLORS)
+hDC = GetDC(0)
+hBmp = CreateDIBitmap_16(hDC, bm16.bmiHeader, CBM_INIT, ByteArray(0), bm16, DIB_RGB_COLORS)
 End Sub
 
 Private Function PixelToTwips(xwert As Long, ywert As Long) As ScTw
 Dim ux As Long
 Dim uy As Long
-Dim XWert1 As Long
-Dim yWert1 As Long
+
 ux = Screen.TwipsPerPixelX
 PixelToTwips.Width = xwert * ux
 uy = Screen.TwipsPerPixelY
 PixelToTwips.Height = ywert * uy
 End Function
 
-
-
 Public Function Twipstopixel(xwert As Long, ywert As Long) As ScTw
 Dim ux As Long
 Dim uy As Long
-Dim XWert1 As Long
-Dim yWert1 As Long
+
 ux = Screen.TwipsPerPixelX
 Twipstopixel.Width = xwert / ux
 uy = Screen.TwipsPerPixelY

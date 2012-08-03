@@ -24,14 +24,14 @@ Attribute VB_Exposed = False
 'e-mail: alfred.koppold@freenet.de
 Option Explicit
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Sub FillMemory Lib "kernel32.dll" Alias "RtlFillMemory" (Destination As Any, ByVal Length As Long, ByVal Fill As Byte)
 Private Type BITMAPINFOHEADER
  Size As Long
@@ -63,7 +63,7 @@ Private Type CodesType
  Lenght() As Long
  code() As Long
 End Type
-Private m_Backcolor As Long
+'Private m_Backcolor As Long
 Private Palettenbyte() As Byte
 Private OutStream() As Byte
 Private OutPos As Long
@@ -124,9 +124,9 @@ Dim Länge As Long
 Dim ChunkName As String * 4
 Dim ChunkInhalt() As Byte
 Dim CRC32Inhalt As Long
-Dim Teststring As String
+'Dim Teststring As String
 'Dim crc32test As New clsCRC
-Dim TestCRC32 As Long
+'Dim TestCRC32 As Long
 Dim Testint As Integer
 m_hbkgd = False
 m_hTrans = False
@@ -776,10 +776,11 @@ BitNum = BitNum - Numbits
 End Function
 Private Function DeFilter(Dat() As Byte) As Byte()
 Dim NewDat() As Byte, y As Long, iVal As Long
-Dim n As Long, StartByte As Long, DestByte As Long
+'Dim n As Long
+Dim StartByte As Long, DestByte As Long
 Dim BPRow As Long, x As Long, RowBytes() As Byte
 Dim PrevRowBytes() As Byte
-Dim i As Long
+'Dim i As Long
 iVal = Interval()
 BPRow = DataPerRow()
 ReDim NewDat(UBound(Dat) - Me.Height)
@@ -1232,9 +1233,9 @@ End If
 DeFilterInterlaced = ZwischenBuffer
 End Function
 Private Function BerechneZeilenlänge(x As Long, Bpp As Long, Stand As String) As Long
-Dim Hilfslong As Long
+'Dim Hilfslong As Long
 Dim Längenrest As Long
-Dim Länge8 As Long
+'Dim Länge8 As Long
 Dim Testlong As Long
 Dim Anzahl8 As Long
 Dim AnzahlBits As Long
@@ -1300,9 +1301,9 @@ End Sub
 Private Sub PutBuffer(Buffer() As Byte, Zeilenbuffer() As Byte, Zeilentyp As Byte, Zeilennummer As Long, Zeilenzähler As Long, Zeilenlänge As Long)
 Dim Anfang As Long
 Dim Achtschritt As Long
-Dim Zeile As Long
+'Dim Zeile As Long
 Dim Zeilenanfang As Long
-Dim i As Long
+'Dim i As Long
 Dim Bufferstand As Long
 Dim Zeilenstand As Long
 Dim Größe As Long
@@ -1471,9 +1472,9 @@ Dim DestData() As Byte, bytesperrow As Long
 Dim DestOff As Long, DestHdr As BITMAPINFOHEADER
 Dim memDC As Long, hBmp As Long, hOldBmp As Long
 Dim SrcData() As Byte
-Dim hdc As Long
+Dim hDC As Long
 On Error Resume Next
-hdc = PicObject.hdc
+hDC = PicObject.hDC
 If Err.Number = 91 Then
  ReDim SrcData(UBound(Buffer))
   bytesperrow = LineBytes(Me.Width, 24)
@@ -1491,7 +1492,7 @@ End If
 If PicObject.Height < Me.Height * Screen.TwipsPerPixelY Then
  PicObject.Height = Screen.TwipsPerPixelY * Me.Height + 100
 End If
- hdc = PicObject.hdc
+ hDC = PicObject.hDC
  bytesperrow = LineBytes(Me.Width, 24)
  ReDim DestData(bytesperrow * Me.Height - 1)
  ReDim SrcData(UBound(Buffer))
@@ -1500,10 +1501,10 @@ End If
  DestHdr.Width = Me.Width
  DestHdr.Planes = 1
  DestHdr.Size = 40
- memDC = CreateCompatibleDC(hdc)
- hBmp = CreateCompatibleBitmap(hdc, Me.Width, Me.Height)
+ memDC = CreateCompatibleDC(hDC)
+ hBmp = CreateCompatibleBitmap(hDC, Me.Width, Me.Height)
  hOldBmp = SelectObject(memDC, hBmp)
- BitBlt memDC, 0, 0, Me.Width, Me.Height, hdc, x, y, vbSrcCopy
+ BitBlt memDC, 0, 0, Me.Width, Me.Height, hDC, x, y, vbSrcCopy
  GetDIBits memDC, hBmp, 0, Me.Height, SrcData(0), DestHdr, 0
 SelectObject hOldBmp, memDC
  DeleteObject hBmp
@@ -1570,7 +1571,7 @@ Private Sub PalToRGBA(Width As Long, Height As Long, BitDepth As Integer, Dat() 
  Dim Testint As Integer
  Dim x As Long, y As Long, WidthBytes As Long
  Dim Pal() As RGBTRIPLE
- Dim IdataLen As Long
+ 'Dim IdataLen As Long
  Dim i As Long
  Dim Anzahl As Long
  ReDim DestDat(4 * Width * Height - 1)
@@ -1660,13 +1661,13 @@ End Sub
 Private Sub MakeRGBTransparent(Buffer() As Byte)
 Dim i As Long
 Dim Wo As Long
-Dim Testlong As Long
-Dim Testint As Integer
-Dim Farblong As Long
+'Dim Testlong As Long
+'Dim Testint As Integer
+'Dim Farblong As Long
 Dim Übergabe() As Byte
 Dim TestArray(5) As Byte
 Dim Farbarray(5) As Byte
-Dim l As Byte
+'Dim l As Byte
 Dim Ft As Long
 Ft = Me.Bitdepht
 Dim Größe As Long
@@ -1700,7 +1701,7 @@ BkgdColor = m_bkgdColor
 End Property
 Private Function ReadBkgd() As Long
 Dim GBc As Long
-Dim u As Byte
+'Dim u As Byte
 Dim bkLen As Long
 Dim ValR As Integer, ValG As Integer, ValB As Integer
 Dim r As Long, g As Long, b As Long
@@ -1780,9 +1781,9 @@ Dim ztxt() As Byte
 Dim Ende As Long
 Dim Anfang As Long
 Dim Teststring As String
-Dim StringText As String
+'Dim StringText As String
 Dim Größe As Long
-Dim Beendet As Boolean
+'Dim Beendet As Boolean
 Größe = UBound(Inhalt)
 Ende = FindNull(Inhalt, Anfang)
 ReDim ztxt(Ende)

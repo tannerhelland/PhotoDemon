@@ -50,7 +50,6 @@ Private m_iCount As Long
 Private m_bEnabled As Boolean
 Private m_bInstalled As Boolean
 Private m_bRunTime As Boolean
-Private m_hWndParent As Long
 
 Public Event KeyDown(ByVal KeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, ByRef bCancel As Boolean)
 Attribute KeyDown.VB_Description = "Raised whenever a key is pressed in the application."
@@ -215,7 +214,6 @@ Dim eR As ShiftConstants
    eR = eR Or Abs(vbCtrlMask * bControl)
    ShiftState = eR
 End Property
-
 
 Private Function IWindowsHook_HookProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, bConsume As Boolean) As Long
 Dim bKeyUp As Boolean
