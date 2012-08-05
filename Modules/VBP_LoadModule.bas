@@ -140,11 +140,69 @@ Public Sub LoadTheProgram()
         
         LoadMessage "Loading image(s)..."
         
-        'Parse the command line for multiple files, then pass the array over to PreLoadImage
-        Dim sFile() As String
-        sFile = Split(Mid$(CommandLine, 2, Len(CommandLine) - 2), """ """)
+        'NOTE: Windows will pass multiple filenames in a command line parameter, but its behavior is idiotic.
+        ' Specifically, it will place quotation marks around filenames IFF they contain a space, otherwise that filename
+        ' will be from its neighboring filenames by a space.  This creates a problem when passing a mixture of filenames
+        ' with spaces and filenames without, because Windows will switch between using and not using quotation marks to
+        ' delimit the filenames.  Stupid, isn't it?
         
+        'At any rate, this means we must perform some specialized parsing of the command line.
+        
+        'This array will ultimately contain each filename to be loaded (one filename per index)
+        Dim sFile() As String
+        
+        'First, check the command line for quotation marks
+        If InStr(CommandLine, Chr(34)) = 0 Then
+        
+            'If there aren't any, our work is simple - simply split the array using the "space" character as the delimiter
+            sFile = Split(CommandLine, Chr(32))
+            
+        'If there are quotation marks, things get a bit messier.
+        Else
+        
+            Dim inQuotes As Boolean
+            inQuotes = False
+            Dim tChar As String
+            
+            'Scan the command line one character at a time
+            For x = 1 To Len(CommandLine)
+            
+                tChar = Mid(CommandLine, x, 1)
+                
+                'If the current character is a quotation mark, change inQuotes to specify that we are either inside
+                ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
+                ' how Windows handles command line parameters)
+                If tChar = Chr(34) Then inQuotes = Not inQuotes
+                
+                'If the current character is a space...
+                If tChar = Chr(32) Then
+                    
+                    '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
+                    ' filename and NOT a delimiter.  Replace it with an asterisk.
+                    If inQuotes = True Then
+                        CommandLine = Left(CommandLine, x - 1) & "*" & Right(CommandLine, Len(CommandLine) - x)
+                    End If
+                    
+                End If
+            Next x
+            
+            'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
+            ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
+            ' between filenames.
+            sFile = Split(CommandLine, Chr(32))
+            
+            'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
+            ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
+            For x = 0 To UBound(sFile)
+                sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
+                sFile(x) = Replace$(sFile(x), Chr(34), "")
+            Next x
+        
+        End If
+        
+        'Finally, pass the array of filenames to the loading routine
         PreLoadImage sFile
+        
     End If
 
     'Set a generic message and start unloading and loading forms
