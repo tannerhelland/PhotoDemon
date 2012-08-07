@@ -902,8 +902,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These functions are used to scroll through consecutive MDI windows without flickering
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 
 
 'When the zoom combo box is changed, redraw the image using the new zoom value
@@ -986,9 +986,12 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     'By this point, all the child forms should have taken care of their Undo clearing-out.
     ' Just in case, however, prompt a final cleaning.
     ClearALLUndo
+    
+    'Destroy all custom-created form icons
+    destroyAllIcons
 
     'Save the MRU list to the INI file.  (I've considered doing this as files are loaded, but the
-    ' only time that would be an improvement is if the program crashes, and if it does crash, the user probably
+    ' only time that would be an improvement is if the program crashes, and if it does crash, the user
     ' wouldn't want to re-load the problematic image anyway.)
     MRU_SaveToINI
     
@@ -1058,7 +1061,7 @@ End Sub
 Private Sub MnuBugReport_Click()
     
     'Shell a browser window with the GitHub issue report form
-    ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1144,7 +1147,7 @@ End Sub
 
 Private Sub MnuDonate_Click()
     'Launch the default web browser with the tannerhelland.com donation page
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuDream_Click()
@@ -1158,7 +1161,7 @@ End Sub
 Private Sub MnuEmailAuthor_Click()
     
     'Shell a browser window with the tannerhelland.com contact form
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1581,7 +1584,7 @@ End Sub
 
 Private Sub MnuVisitWebsite_Click()
     'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuWater_Click()
@@ -1655,7 +1658,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
         'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
         Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.HWnd, 5)
+        MDIClient = GetWindow(FormMain.hWnd, 5)
         
         'Use the API to instruct the MDI window to move one window forward or back
         If ctlAccelerator.Key(nIndex) = "Prev_Image" Then
