@@ -329,8 +329,12 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
                 ClipboardEmpty
             Case Undo
                 RestoreImage
+                'Also, redraw the current child form icon
+                CreateCustomFormIcon FormMain.ActiveForm
             Case Redo
                 RedoImageRestore
+                'Also, redraw the current child form icon
+                CreateCustomFormIcon FormMain.ActiveForm
             Case MacroStartRecording
                 StartMacro
             Case MacroStopRecording
@@ -753,6 +757,10 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
             Unload FormHistogram
         End If
     End If
+    
+    'If the image is potentially being changed and we are not performing a batch conversion (disabled to save speed!),
+    ' redraw the active MDI child form icon.
+    If (PType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) And (RecordAction <> False) And (PType <> CountColors) Then CreateCustomFormIcon FormMain.ActiveForm
     
     'Mark the processor as no longer busy
     Processing = False
