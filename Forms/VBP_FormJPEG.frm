@@ -137,6 +137,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+
 'QUALITY combo box - when adjusted, enable or disable the custom slider
 Private Sub CmbSaveQuality_Click()
     ShowAdditionalControls
@@ -148,6 +149,7 @@ End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
+    saveDialogCanceled = True
     Message "Image save canceled. "
     Unload Me
 End Sub
@@ -181,13 +183,17 @@ Private Sub CmdOK_Click()
             End If
     End Select
     
+    Me.Visible = False
+    
     'I implement two separate save functions for JPEG images.  While I greatly appreciate John Korejwa's native
     ' VB JPEG encoder, it's not nearly as robust, or fast, or tested as the FreeImage implementation.  As such,
     ' PhotoDemon will default to FreeImage if it's available; otherwise John's JPEG class will be used.
-    Me.Visible = False
-    PhotoDemon_SaveImage CurrentImage, SaveFileName, False, jpegQuality
+    
+    'Also, if the save function fails for some reason, return the save dialog as canceled (so the user can try again)
+    saveDialogCanceled = Not PhotoDemon_SaveImage(CurrentImage, SaveFileName, False, jpegQuality)
 
     Unload Me
+    
 End Sub
 
 Private Sub Form_Load()
@@ -200,6 +206,9 @@ Private Sub Form_Load()
     CmbSaveQuality.AddItem "Custom value", 5
     CmbSaveQuality.ListIndex = 1
     Message "Waiting for user to specify JPEG export options... "
+    
+    'Mark the form as having NOT been canceled
+    saveDialogCanceled = False
 End Sub
 
 Private Sub hsQuality_Change()
