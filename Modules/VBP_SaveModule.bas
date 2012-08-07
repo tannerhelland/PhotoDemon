@@ -140,7 +140,7 @@ Public Sub SaveJPEGImageUsingVB(ByVal ImageID As Long, ByVal JPEGPath As String,
     
     'The image can only be sampled AFTER the quality has been set
     GetImageData
-    m_Jpeg.SampleHDC pdImages(ImageID).containingForm.BackBuffer.hdc, PicWidthL + 1, PicHeightL + 1
+    m_Jpeg.SampleHDC pdImages(ImageID).containingForm.BackBuffer.hDC, PicWidthL + 1, PicHeightL + 1
     
     'Delete file if it exists
     If FileExist(JPEGPath) Then
