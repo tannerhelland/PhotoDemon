@@ -15,7 +15,7 @@ Public EmbossEngraveColor As Long 'last used emboss/engrave color
 'Rotation variables
 Public Type TDPoint
     x As Integer
-    y As Integer
+    Y As Integer
     z As Integer
 End Type
 Public rm(0 To 3, 0 To 3) As Double 'rotation matrix
@@ -63,7 +63,7 @@ Public CommandLine As String
 
 'Commonly used loop variables
 Public x As Long
-Public y As Long
+Public Y As Long
 Public z As Long
 
 'The file size of the image
@@ -104,5 +104,9 @@ Public FixScrolling As Boolean
 ' upon program load and unload
 Public LastOpenFilter As Long
 Public LastSaveFilter As Long
+
+'Was the save dialog canceled?
+Public saveDialogCanceled As Boolean
+
 
 

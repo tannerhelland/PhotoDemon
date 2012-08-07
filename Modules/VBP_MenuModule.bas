@@ -21,7 +21,7 @@ Public Sub MenuOpen()
     'String returned from the common dialog wrapper
     Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, FormMain.HWnd) Then PreLoadImage sFile
+    If PhotoDemon_OpenImageDialog(sFile, FormMain.hWnd) Then PreLoadImage sFile
 
 End Sub
 
@@ -210,7 +210,7 @@ Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
     End If
     
     
-    If CC.VBGetSaveFileName(sFile, , True, cdfStr, LastSaveFilter, tempPathString, "Save an image", ".bmp|.gif|.jpg|.pcx|.pdi|.png|.ppm|.tga|.tif|.*", FormMain.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, cdfStr, LastSaveFilter, tempPathString, "Save an image", ".bmp|.gif|.jpg|.pcx|.pdi|.png|.ppm|.tga|.tif|.*", FormMain.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         tempPathString = sFile
@@ -251,6 +251,8 @@ Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As Str
     If FileExtension = "JPG" Or FileExtension = "JPEG" Or FileExtension = "JPE" Then
         If loadRelevantForm = True Then
             FormJPEG.Show 1, FormMain
+            'If the dialog was canceled, note it
+            PhotoDemon_SaveImage = Not saveDialogCanceled
         Else
             'Remember the JPEG quality so we don't have to pester the user for it if they save again
             pdImages(ImageID).saveFlag0 = optionalSaveParameter0
@@ -330,7 +332,8 @@ Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As Str
         PhotoDemon_SaveImage = True
     
     Else
-        PhotoDemon_SaveImage = False
+        'Was a save dialog called?  If it was, use that value to return "success" or not
+        If loadRelevantForm <> True Then PhotoDemon_SaveImage = False
     End If
 
 End Function
