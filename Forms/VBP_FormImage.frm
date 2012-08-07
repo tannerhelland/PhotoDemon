@@ -202,9 +202,9 @@ Option Explicit
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
     
-Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
     'Draw the current coordinates to the status bar
-    SetBitmapCoordinates X, Y
+    SetBitmapCoordinates x, Y
 End Sub
 
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
@@ -281,7 +281,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             
             'Generate our save message
             Dim saveMsg As String
-            saveMsg = "The image """ & pdImages(Me.Tag).OriginalFileNameAndExtension & """ has not been saved.  Would you like to save it now?"
+            Me.SetFocus
+            DoEvents
+            saveMsg = "This image (""" & pdImages(Me.Tag).OriginalFileNameAndExtension & """) has not been saved.  Would you like to save it now?"
             
             'If this file exists on disk, warn them that this will initiate a SAVE, not a SAVE AS
             If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then use the Menu -> Save As command."
@@ -304,7 +306,14 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 
                 'If something went wrong, or the user canceled the save dialog, stop the unload process
                 Cancel = Not saveSuccessful
-            End If
+ 
+                'If we make it here and the save was successful, force an immediate unload
+                If Cancel = False Then
+                    Me.Visible = False
+                    Unload Me
+                End If
+            
+           End If
         
         End If
     

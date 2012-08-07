@@ -190,7 +190,7 @@ Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
     cdfStr = cdfStr & "|All files|*.*"
     
     Dim sFile As String
-    sFile = pdImages(CurrentImage).OriginalFileName
+    sFile = pdImages(ImageID).OriginalFileName
     
     'This next chunk of code checks to see if an image with this filename appears in the download location.
     ' If it does, PhotoDemon will append ascending numbers (of the format "_(#)") to the filename until it
@@ -220,11 +220,11 @@ Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
         WriteToIni "File Formats", "LastSaveFilter", CStr(LastSaveFilter)
         
-        FormMain.ActiveForm.Caption = sFile
+        pdImages(ImageID).containingForm.Caption = sFile
         SaveFileName = sFile
         
         'Transfer control to the core SaveImage routine, which will handle file extension analysis and actual saving
-        MenuSaveAs = PhotoDemon_SaveImage(CurrentImage, sFile, True)
+        MenuSaveAs = PhotoDemon_SaveImage(ImageID, sFile, True)
         
     Else
         MenuSaveAs = False
@@ -316,19 +316,19 @@ Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As Str
         MRU_AddNewFile dstPath
     
         'Remember the file's location for future saves
-        pdImages(CurrentImage).LocationOnDisk = dstPath
+        pdImages(ImageID).LocationOnDisk = dstPath
         
         'Remember the file's filename
         Dim tmpFileName As String
         tmpFileName = dstPath
         StripFilename tmpFileName
-        pdImages(CurrentImage).OriginalFileNameAndExtension = tmpFileName
+        pdImages(ImageID).OriginalFileNameAndExtension = tmpFileName
         StripOffExtension tmpFileName
-        pdImages(CurrentImage).OriginalFileName = tmpFileName
+        pdImages(ImageID).OriginalFileName = tmpFileName
         
         'Mark this file as having been saved
-        pdImages(CurrentImage).UpdateSaveState True
-    
+        pdImages(ImageID).UpdateSaveState True
+        
         PhotoDemon_SaveImage = True
     
     Else
