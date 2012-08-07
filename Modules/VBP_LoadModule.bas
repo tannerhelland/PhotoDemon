@@ -60,14 +60,14 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing zoom processor..."
     
     'Create the first half of the zoom combo box values (zoomed out)
-    For x = 16 To 1 Step -1
-        If x <> 1 Then FormMain.CmbZoom.AddItem (Format((CDbl(1) / CDbl(x)) * CDbl(100), "##.0") & "%") Else FormMain.CmbZoom.AddItem "100%"
-    Next x
+    For X = 16 To 1 Step -1
+        If X <> 1 Then FormMain.CmbZoom.AddItem (Format((CDbl(1) / CDbl(X)) * CDbl(100), "##.0") & "%") Else FormMain.CmbZoom.AddItem "100%"
+    Next X
     
     'Create the second half of the zoom combo box values (zoomed in)
-    For x = 2 To 16 Step 1
-        FormMain.CmbZoom.AddItem (CInt((CDbl(x) / CDbl(1)) * CDbl(100)) & "%")
-    Next x
+    For X = 2 To 16 Step 1
+        FormMain.CmbZoom.AddItem (CInt((CDbl(X) / CDbl(1)) * CDbl(100)) & "%")
+    Next X
 
     'Set the global "zoom object"'s # of available zoom values
     Zoom.ZoomCount = FormMain.CmbZoom.ListCount - 1
@@ -78,14 +78,14 @@ Public Sub LoadTheProgram()
     ' with the matching combo box values; ZoomFactor stores whole-number values of the zoom ratio, and it
     ' is up to the zoom routine to remember that < index 16 is zoomed out values, while > index 15 is
     ' zoomed in values.
-    For x = 0 To 15
-        Zoom.ZoomArray(x) = 1 / (16 - x)
-        Zoom.ZoomFactor(x) = 16 - x
-    Next x
-    For x = 2 To 16
-        Zoom.ZoomArray(x + 14) = x
-        Zoom.ZoomFactor(x + 14) = x
-    Next x
+    For X = 0 To 15
+        Zoom.ZoomArray(X) = 1 / (16 - X)
+        Zoom.ZoomFactor(X) = 16 - X
+    Next X
+    For X = 2 To 16
+        Zoom.ZoomArray(X + 14) = X
+        Zoom.ZoomFactor(X + 14) = X
+    Next X
     
     'Set the zoom box to display "100%"
     FormMain.CmbZoom.ListIndex = 15
@@ -124,14 +124,16 @@ Public Sub LoadTheProgram()
     'Load the most-recently-used file list (MRU)
     MRU_LoadFromINI
     
+    'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.HWnd, "AAA", True
+    SetIcon FormMain.hWnd, "AAA", True
     
-    'Menu icons are on hold until I can figure out how I want to do it.  I'm not thrilled about implementing
-    ' a full-on owner-drawn menu system, but that seems preferable to a mess of third-party dependencies
-    ' that do their own subclassing... this will take some time to sort out.  :/
+    'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
     LoadMenuIcons
+    
+    'Initialize the custom MDI child form icon handler
+    initializeIconHandler
     
     'Check the command line to see if the user is attempting to load an image
     LoadMessage "Checking command line..."
@@ -165,9 +167,9 @@ Public Sub LoadTheProgram()
             Dim tChar As String
             
             'Scan the command line one character at a time
-            For x = 1 To Len(CommandLine)
+            For X = 1 To Len(CommandLine)
             
-                tChar = Mid(CommandLine, x, 1)
+                tChar = Mid(CommandLine, X, 1)
                 
                 'If the current character is a quotation mark, change inQuotes to specify that we are either inside
                 ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
@@ -180,11 +182,11 @@ Public Sub LoadTheProgram()
                     '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
                     ' filename and NOT a delimiter.  Replace it with an asterisk.
                     If inQuotes = True Then
-                        CommandLine = Left(CommandLine, x - 1) & "*" & Right(CommandLine, Len(CommandLine) - x)
+                        CommandLine = Left(CommandLine, X - 1) & "*" & Right(CommandLine, Len(CommandLine) - X)
                     End If
                     
                 End If
-            Next x
+            Next X
             
             'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
             ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
@@ -193,10 +195,10 @@ Public Sub LoadTheProgram()
             
             'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
             ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-            For x = 0 To UBound(sFile)
-                sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
-                sFile(x) = Replace$(sFile(x), Chr(34), "")
-            Next x
+            For X = 0 To UBound(sFile)
+                sFile(X) = Replace$(sFile(X), Chr(42), Chr(32))
+                sFile(X) = Replace$(sFile(X), Chr(34), "")
+            Next X
         
         End If
         
@@ -365,6 +367,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         FixScrolling = True
     
         PrepareViewport FormMain.ActiveForm, "PreLoadImage"
+        
+        'Render an icon-sized version of this image as the MDI child form's icon
+        CreateCustomFormIcon FormMain.ActiveForm
         
         'Note the window state, as it may be important in the future
         pdImages(CurrentImage).WindowState = FormMain.ActiveForm.WindowState

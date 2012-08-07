@@ -3,10 +3,10 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H00FFFFFF&
    Caption         =   "Image Window"
-   ClientHeight    =   1950
+   ClientHeight    =   2310
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   6225
+   ClientWidth     =   5550
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Arial"
@@ -21,11 +21,39 @@ Begin VB.Form FormImage
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
-   ScaleHeight     =   130
+   ScaleHeight     =   154
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   415
+   ScaleWidth      =   370
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin VB.PictureBox picIcon 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FF00FF&
+      BorderStyle     =   0  'None
+      ClipControls    =   0   'False
+      FillColor       =   &H00FFFFFF&
+      FillStyle       =   0  'Solid
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FFFFFF&
+      Height          =   240
+      Left            =   3960
+      ScaleHeight     =   16
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   16
+      TabIndex        =   6
+      Top             =   2640
+      Visible         =   0   'False
+      Width           =   240
+   End
    Begin VB.PictureBox BackBuffer2 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -174,9 +202,9 @@ Option Explicit
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
     
-Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     'Draw the current coordinates to the status bar
-    SetBitmapCoordinates x, y
+    SetBitmapCoordinates X, Y
 End Sub
 
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
@@ -235,7 +263,7 @@ End Sub
 
 Private Sub Form_Load()
     'Add support for scrolling with the mouse wheel
-    If IsProgramCompiled Then Call WheelHook(Me.HWnd)
+    If IsProgramCompiled Then Call WheelHook(Me.hWnd)
 End Sub
 
 Private Sub Form_LostFocus()
@@ -347,7 +375,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'Release mouse wheel support
-    If IsProgramCompiled Then Call WheelUnHook(Me.HWnd)
+    If IsProgramCompiled Then Call WheelUnHook(Me.hWnd)
     
     Message "Closing image..."
     
