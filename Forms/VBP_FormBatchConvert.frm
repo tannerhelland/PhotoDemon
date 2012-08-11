@@ -6,7 +6,7 @@ Begin VB.Form FormBatchConvert
    ClientHeight    =   8190
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   12030
+   ClientWidth     =   12135
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,7 +21,7 @@ Begin VB.Form FormBatchConvert
    MinButton       =   0   'False
    ScaleHeight     =   546
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
+   ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.OptionButton optActions 
@@ -249,7 +249,7 @@ Begin VB.Form FormBatchConvert
       MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   5880
-      Width           =   3135
+      Width           =   3255
    End
    Begin VB.CommandButton cmdUseCD 
       Caption         =   "Alternatively, you can use a Windows ""Common Dialog"" to select images..."
@@ -259,13 +259,13 @@ Begin VB.Form FormBatchConvert
       MousePointer    =   99  'Custom
       TabIndex        =   5
       Top             =   6480
-      Width           =   3135
+      Width           =   3255
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   10680
+      Left            =   10800
       MouseIcon       =   "VBP_FormBatchConvert.frx":17C4
       MousePointer    =   99  'Custom
       TabIndex        =   21
@@ -276,7 +276,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   9480
+      Left            =   9600
       MouseIcon       =   "VBP_FormBatchConvert.frx":1916
       MousePointer    =   99  'Custom
       TabIndex        =   20
@@ -552,14 +552,8 @@ Attribute VB_Exposed = False
 'Batch Conversion Form
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 3/Nov/07
-'Last updated: 22/July/12
-'Last update: all batch-related paths (input, output, list saving/loading, macros) are now connected to the INI file.
-'             The user is no longer forced to manually set those every time this form is loaded.  (These changes were
-'             also mirrored to the INI handler, which now autogenerates default batch-related paths if no INI file
-'             is found at startup.)  I also built a new file type combo box, which is a much more elegant solution
-'             than the previous manual file pattern text box.  The code for generating it is unfortunately complex, and
-'             there's no good way to mirror the content from the regular File -> Open format filter, so any future
-'             changes to file format support will need to be manually mirrored here.
+'Last updated: 11/August/12
+'Last update: implemented error-handling for an empty file list.
 '
 'Convert any number of files using any recorded macro.  Fast, impressive, bravo.
 '
@@ -582,6 +576,8 @@ Dim outputExtensions() As String
 ' is the only format with user-settable options.
 Dim jpegFormatIndex As Long
 
+
+'When the user changes the output file format, update relevant controls (for example, JPEG provides a scrollbar for setting encode quality)
 Private Sub cmbOutputFormat_Click()
     UpdateVisibleControls
 End Sub
@@ -590,6 +586,7 @@ Private Sub cmbOutputFormat_KeyDown(KeyCode As Integer, Shift As Integer)
     UpdateVisibleControls
 End Sub
 
+'Update the file list box to display only images of the selected file format
 Private Sub cmbPattern_Click()
     File1.Pattern = filePatterns(cmbPattern.ListIndex)
 End Sub
@@ -602,6 +599,7 @@ Private Sub cmbPattern_Scroll()
     File1.Pattern = filePatterns(cmbPattern.ListIndex)
 End Sub
 
+'Adds selected files from the left list box to the center list box
 Private Sub cmdAddFiles_Click()
     For x = 0 To File1.ListCount - 1
         If File1.Selected(x) = True Then lstFiles.AddItem Dir1.Path & "\" & File1.List(x)
@@ -613,7 +611,7 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
-'Load a list of images (saved from PD) into the center list box
+'Load a list of images (previously saved from within PhotoDemon) into the center list box
 Private Sub cmdLoadList_Click()
     
     Dim sFile As String
@@ -684,6 +682,12 @@ End Sub
 'Save the current list of images to be processed to a text file
 Private Sub cmdSaveList_Click()
     
+    'First, make sure some images have been placed in the list
+    If lstFiles.ListCount < 1 Then
+        MsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before attempting to save the list to file." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbCritical + vbOKOnly + vbApplicationModal, "Empty image list"
+        Exit Sub
+    End If
+    
     Dim sFile As String
     
     'Get the last "open/save image list" path from the INI file
@@ -742,6 +746,12 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
+    
+    'Make sure the user has selected some files to operate on
+    If lstFiles.ListCount < 1 Then
+        MsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before continuing." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbCritical + vbOKOnly + vbApplicationModal, "No image files selected"
+        Exit Sub
+    End If
     
     'Ensure that the macro text box has a macro file loaded
     If optActions(1).Value = True And ((txtMacro.Text = "No macro selected") Or (txtMacro.Text = "")) Then
@@ -954,6 +964,7 @@ Private Sub cmdUseCD_Click()
 
 End Sub
 
+'When the drive and directory boxes are changed, update the connected boxes to match
 Private Sub Dir1_Change()
     File1.Path = Dir1
 End Sub
@@ -1261,6 +1272,7 @@ Private Sub txtQuality_GotFocus()
 End Sub
 '*****
 
+'Display or hide controls associated with the current save file format
 Private Sub UpdateVisibleControls()
     If outputExtensions(cmbOutputFormat.ListIndex) = "jpg" Then
         lblQuality.Visible = True
