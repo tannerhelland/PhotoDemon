@@ -232,7 +232,7 @@ Begin VB.Form FormPrint
       Left            =   5520
       TabIndex        =   22
       Top             =   3510
-      Width           =   1815
+      Width           =   1935
    End
    Begin VB.Label lblDPI 
       BackStyle       =   0  'Transparent
@@ -273,7 +273,7 @@ Begin VB.Form FormPrint
       Height          =   210
       Left            =   3945
       TabIndex        =   14
-      Top             =   2160
+      Top             =   2205
       Width           =   915
    End
    Begin VB.Label lblQuality 
@@ -743,13 +743,13 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
     If cbOrientation.ListIndex = 0 Then
         DrawPreviewImage picThumb
         iSrc.Picture = LoadPicture("")
-        SetStretchBltMode iSrc.hdc, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hdc, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumb.hdc, PreviewX, PreviewY, PreviewWidth, PreviewHeight, vbSrcCopy
+        SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
+        StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, PreviewX, PreviewY, PreviewWidth, PreviewHeight, vbSrcCopy
     Else
         DrawPreviewImage picThumb90
         iSrc.Picture = LoadPicture("")
-        SetStretchBltMode iSrc.hdc, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hdc, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hdc, PreviewY, PreviewX, PreviewHeight, PreviewWidth, vbSrcCopy
+        SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
+        StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, PreviewY, PreviewX, PreviewHeight, PreviewWidth, vbSrcCopy
     End If
     
     iSrc.Picture = iSrc.Image
