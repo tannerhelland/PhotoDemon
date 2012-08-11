@@ -60,14 +60,14 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing zoom processor..."
     
     'Create the first half of the zoom combo box values (zoomed out)
-    For X = 16 To 1 Step -1
-        If X <> 1 Then FormMain.CmbZoom.AddItem (Format((CDbl(1) / CDbl(X)) * CDbl(100), "##.0") & "%") Else FormMain.CmbZoom.AddItem "100%"
-    Next X
+    For x = 16 To 1 Step -1
+        If x <> 1 Then FormMain.CmbZoom.AddItem (Format((CDbl(1) / CDbl(x)) * CDbl(100), "##.0") & "%") Else FormMain.CmbZoom.AddItem "100%"
+    Next x
     
     'Create the second half of the zoom combo box values (zoomed in)
-    For X = 2 To 16 Step 1
-        FormMain.CmbZoom.AddItem (CInt((CDbl(X) / CDbl(1)) * CDbl(100)) & "%")
-    Next X
+    For x = 2 To 16 Step 1
+        FormMain.CmbZoom.AddItem (CInt((CDbl(x) / CDbl(1)) * CDbl(100)) & "%")
+    Next x
 
     'Set the global "zoom object"'s # of available zoom values
     Zoom.ZoomCount = FormMain.CmbZoom.ListCount - 1
@@ -78,14 +78,14 @@ Public Sub LoadTheProgram()
     ' with the matching combo box values; ZoomFactor stores whole-number values of the zoom ratio, and it
     ' is up to the zoom routine to remember that < index 16 is zoomed out values, while > index 15 is
     ' zoomed in values.
-    For X = 0 To 15
-        Zoom.ZoomArray(X) = 1 / (16 - X)
-        Zoom.ZoomFactor(X) = 16 - X
-    Next X
-    For X = 2 To 16
-        Zoom.ZoomArray(X + 14) = X
-        Zoom.ZoomFactor(X + 14) = X
-    Next X
+    For x = 0 To 15
+        Zoom.ZoomArray(x) = 1 / (16 - x)
+        Zoom.ZoomFactor(x) = 16 - x
+    Next x
+    For x = 2 To 16
+        Zoom.ZoomArray(x + 14) = x
+        Zoom.ZoomFactor(x + 14) = x
+    Next x
     
     'Set the zoom box to display "100%"
     FormMain.CmbZoom.ListIndex = 15
@@ -126,7 +126,7 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.hWnd, "AAA", True
+    SetIcon FormMain.HWnd, "AAA", True
     
     'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
@@ -167,9 +167,9 @@ Public Sub LoadTheProgram()
             Dim tChar As String
             
             'Scan the command line one character at a time
-            For X = 1 To Len(CommandLine)
+            For x = 1 To Len(CommandLine)
             
-                tChar = Mid(CommandLine, X, 1)
+                tChar = Mid(CommandLine, x, 1)
                 
                 'If the current character is a quotation mark, change inQuotes to specify that we are either inside
                 ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
@@ -182,11 +182,11 @@ Public Sub LoadTheProgram()
                     '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
                     ' filename and NOT a delimiter.  Replace it with an asterisk.
                     If inQuotes = True Then
-                        CommandLine = Left(CommandLine, X - 1) & "*" & Right(CommandLine, Len(CommandLine) - X)
+                        CommandLine = Left(CommandLine, x - 1) & "*" & Right(CommandLine, Len(CommandLine) - x)
                     End If
                     
                 End If
-            Next X
+            Next x
             
             'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
             ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
@@ -195,10 +195,10 @@ Public Sub LoadTheProgram()
             
             'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
             ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-            For X = 0 To UBound(sFile)
-                sFile(X) = Replace$(sFile(X), Chr(42), Chr(32))
-                sFile(X) = Replace$(sFile(X), Chr(34), "")
-            Next X
+            For x = 0 To UBound(sFile)
+                sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
+                sFile(x) = Replace$(sFile(x), Chr(34), "")
+            Next x
         
         End If
         
@@ -662,5 +662,3 @@ Public Sub LoadPlugins()
         FreeImageEnabled = True
     End If
 End Sub
-
-
