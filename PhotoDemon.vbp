@@ -1,6 +1,6 @@
 Type=Exe
-Reference=*\G{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}#1.0#0#..\..\Windows\SysWOW64\shell32.dll#Microsoft Shell Controls And Automation
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\Windows\SysWOW64\stdole2.tlb#OLE Automation
+Reference=*\G{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}#1.0#0#..\..\..\..\..\WINDOWS\system32\SHELL32.dll#Microsoft Shell Controls And Automation
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\..\WINDOWS\system32\stdole2.tlb#OLE Automation
 Module=Public_Variables; Modules\VBP_PublicVariables.bas
 Form=Forms\VBP_FormAbout.frm
 Form=Forms\VBP_FormSplash.frm
@@ -101,7 +101,7 @@ Description="PhotoDemon"
 CompatibleMode="0"
 MajorVer=4
 MinorVer=3
-RevisionVer=3
+RevisionVer=5
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="©2000-2012 Tanner Helland -  www.tannerhelland.com"

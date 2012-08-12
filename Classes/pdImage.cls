@@ -47,7 +47,8 @@ Option Explicit
     'Current Undo state (e.g. have undo files been created?)
     'Current Redo state (e.g. has the user pressed the undo button, meaning it's possible to redo actions?)
     'Number of Undo files created
-    'Position in the current Undo chain (the number moves down as the Undo button is pressed)
+    'Position in the current Undo chain (the number moves down as the Undo button is pressed, up as Redo is pressed or new actions are performed)
+    'Array containing the Process IDs of each action at each Undo value.  This is used to rebuild the Undo and Redo text with the name of the action performed.
 'Current size
 'Current zoom level
 'Two save flags (e.g. which format the image was saved in, and any attached parameters - such as JPEG quality)
