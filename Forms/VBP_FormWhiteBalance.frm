@@ -204,6 +204,10 @@ Private Sub Form_Load()
     DrawPreviewImage PicEffect
     
     PreviewWhiteBalance CSng(val(txtIgnore))
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 

@@ -177,10 +177,14 @@ Option Explicit
 Private Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As String) As Long
 
 Dim m_cff As New cFrxFile
+Dim requestUnload As Boolean
 
 'CANCEL button
 Private Sub CmdCancel_Click()
+    
+    Message "VB binary file import canceled"
     Unload Me
+    
 End Sub
 
 'OK button
@@ -210,9 +214,18 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
+'If the user cancels the initial common dialog box, the requestUnload flag will be set to TRUE
+Private Sub Form_Activate()
+    If requestUnload = True Then Unload Me
+End Sub
+
+'LOAD form
 Private Sub Form_Load()
+    
     Dim cfi As cFrxItem
     Dim CC As cCommonDialog
+    
+    requestUnload = False
     
     'Get the last "open FRX" path from the INI file
     Dim tempPathString As String
@@ -259,9 +272,12 @@ TryBinaryImportAgain:
             GoTo TryBinaryImportAgain
         End If
         
+        'Assign the system hand cursor to all relevant objects
+        setHandCursorForAll Me
+        
     'If the commondialog box is canceled...
     Else
-        Unload Me
+        requestUnload = True
     End If
     
 End Sub

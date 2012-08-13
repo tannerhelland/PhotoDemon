@@ -292,12 +292,16 @@ Public Sub UnfadeImage()
     
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
     
     'Create the previews
     DrawPreviewImage PicPreview
     DrawPreviewImage PicEffect
     PreviewFadeImage hsPercent.Value
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
     
 End Sub
 

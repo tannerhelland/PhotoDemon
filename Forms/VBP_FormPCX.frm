@@ -292,8 +292,14 @@ Private Sub CmdOK_Click()
 
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
     cdIndex = 3
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 Private Sub OptColorDepth_Click(Index As Integer)

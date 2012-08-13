@@ -252,6 +252,9 @@ Private Sub Form_Load()
     'Actually do the effect
     DrawPreview
     
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Same as above, but operates on the preview window

@@ -380,6 +380,9 @@ Private Sub Form_Load()
     
    'Create the preview
     DrawBCPreview hsBright.Value, hsContrast.Value
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
 
 End Sub
 

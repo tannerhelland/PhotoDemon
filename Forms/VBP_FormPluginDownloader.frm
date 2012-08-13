@@ -505,6 +505,7 @@ Private Sub cmdYesDownload_Click()
     
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
 
     'First things first - if the user isn't connected to the Internet, the wording of this page must be adjusted
@@ -580,6 +581,9 @@ Private Sub Form_Load()
     txtPlugins.Text = txtPlugins.Text & vbCrLf & vbCrLf & "Total download size: " & Int(totalDownloadSize \ 1000) & " kB"
 
     Message "Ready to update. Awaiting user permission..."
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
 
 End Sub
 

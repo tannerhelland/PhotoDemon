@@ -178,8 +178,10 @@ Private Sub CmdOK_Click()
 
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
     
+    'Generate a list box with all the various edge detection algorithms
     LstEdgeOptions.AddItem "Prewitt Horizontal"
     LstEdgeOptions.AddItem "Prewitt Vertical"
     LstEdgeOptions.AddItem "Sobel Horizontal"
@@ -193,6 +195,9 @@ Private Sub Form_Load()
     LstEdgeOptions.ListIndex = 5
     
     UpdateDescriptions
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
     
 End Sub
 

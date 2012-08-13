@@ -668,14 +668,20 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-'Cancel button
+'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
     'If a filter has been used previously, load it from the temp file
     If HasCreatedFilter = True Then OpenCustomFilter TempPath & "~W096THCF.tmp"
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 Private Sub MnuOpen_Click()

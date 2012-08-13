@@ -1210,6 +1210,9 @@ Private Sub Form_Load()
     
     cmbPattern.ListIndex = 0
     
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Enable/disable the macro selection box and command button contingent on which macro option button is selected

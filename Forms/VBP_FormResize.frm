@@ -265,10 +265,10 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Resampling declarations
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal un1 As Long, ByVal n1 As Long, ByVal n2 As Long, ByVal un2 As Long) As Long
 Private Buffer As Long, Buffer_hBitmap As Long
 
@@ -323,7 +323,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
         FormMain.ActiveForm.BackBuffer.Cls
         FormMain.ActiveForm.BackBuffer.Width = iWidth + 2
         FormMain.ActiveForm.BackBuffer.Height = iHeight + 2
-        StretchBlt FormMain.ActiveForm.BackBuffer.hdc, 0, 0, iWidth, iHeight, Buffer, 0, 0, iWidth, iHeight, vbSrcCopy
+        StretchBlt FormMain.ActiveForm.BackBuffer.hDC, 0, 0, iWidth, iHeight, Buffer, 0, 0, iWidth, iHeight, vbSrcCopy
         DeleteDC Buffer
         DeleteObject Buffer_hBitmap
         FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
@@ -535,6 +535,9 @@ Private Sub Form_Load()
         cboResample.ListIndex = 5
     End If
     
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 '*************************************************************************************
@@ -607,7 +610,7 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
         FormMain.ActiveForm.BackBuffer.Width = iWidth + 2
         FormMain.ActiveForm.BackBuffer.Height = iHeight + 2
         Dim PaintReturn As Long
-        PaintReturn = FreeImage_PaintDC(FormMain.ActiveForm.BackBuffer.hdc, resizedDib)
+        PaintReturn = FreeImage_PaintDC(FormMain.ActiveForm.BackBuffer.hDC, resizedDib)
         FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
         FormMain.ActiveForm.BackBuffer.Refresh
         PicWidthL = iWidth

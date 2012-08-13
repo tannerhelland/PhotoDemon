@@ -163,7 +163,7 @@ Public Sub Despeckle(ByVal dThreshold As Long)
     SetProgBarMax PicWidthL
     Dim QuickVal As Long
     
-    Dim X2 As Long, Y2 As Long
+    Dim x2 As Long, y2 As Long
     
     'To prevent bleeding from the top-left, we need a second array to store our despeckled data
     Dim tArray() As Byte
@@ -221,15 +221,15 @@ Public Sub Despeckle(ByVal dThreshold As Long)
         dMost = 0
         dMostLoc = 0
         
-        For X2 = x - 1 To x + 1
-        For Y2 = y - 1 To y + 1
+        For x2 = x - 1 To x + 1
+        For y2 = y - 1 To y + 1
             
             'Ignore the center pixel in the ring (obviously)
-            If (X2 <> x) Or (Y2 <> y) Then
+            If (x2 <> x) Or (y2 <> y) Then
             
-                curR = ImageData(X2 * 3 + 2, Y2)
-                curG = ImageData(X2 * 3 + 1, Y2)
-                curB = ImageData(X2 * 3, Y2)
+                curR = ImageData(x2 * 3 + 2, y2)
+                curG = ImageData(x2 * 3 + 1, y2)
+                curB = ImageData(x2 * 3, y2)
             
                 'If this pixel matches the center pixel, ignore it
                 If refR <> curR Or refG <> curG Or refB <> curB Then
@@ -282,8 +282,8 @@ Public Sub Despeckle(ByVal dThreshold As Long)
             
             End If
 
-        Next Y2
-        Next X2
+        Next y2
+        Next x2
         
         If dMost >= dThreshold Then
             tArray(QuickVal + 2, y) = dArrayR(dMostLoc)
@@ -318,7 +318,7 @@ Public Sub QuickDespeckle()
     SetProgBarMax PicWidthL
     Dim QuickVal As Long
     
-    Dim X2 As Long, Y2 As Long
+    Dim x2 As Long, y2 As Long
     
     Dim refR As Byte, refB As Byte, refG As Byte
     
@@ -337,15 +337,15 @@ Public Sub QuickDespeckle()
         'Perform a quick check to see if the current pixel matches the one to the above-right; if it does, skip this one.
         If ImageData(QuickVal + 2, y) <> refR Or ImageData(QuickVal + 1, y) <> refG Or ImageData(QuickVal, y) <> refB Then
         
-            For X2 = x - 1 To x + 1
-            For Y2 = y - 1 To y + 1
-                If (X2 <> x - 1) Or (Y2 <> y - 1) Then
-                    If (X2 <> x) Or (Y2 <> y) Then
-                        If refR = ImageData(X2 * 3 + 2, Y2) And refG = ImageData(X2 * 3 + 1, Y2) And refB = ImageData(X2 * 3, Y2) Then dChecker = dChecker + 1
+            For x2 = x - 1 To x + 1
+            For y2 = y - 1 To y + 1
+                If (x2 <> x - 1) Or (y2 <> y - 1) Then
+                    If (x2 <> x) Or (y2 <> y) Then
+                        If refR = ImageData(x2 * 3 + 2, y2) And refG = ImageData(x2 * 3 + 1, y2) And refB = ImageData(x2 * 3, y2) Then dChecker = dChecker + 1
                     End If
                 End If
-            Next Y2
-            Next X2
+            Next y2
+            Next x2
             
             If dChecker >= 7 Then
                 ImageData(QuickVal + 2, y) = refR
@@ -364,3 +364,10 @@ Public Sub QuickDespeckle()
 
 End Sub
 
+'LOAD form
+Private Sub Form_Load()
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
+End Sub

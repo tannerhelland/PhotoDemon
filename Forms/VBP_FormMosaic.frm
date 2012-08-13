@@ -357,14 +357,20 @@ NextMosaicPixel3:
     
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
     'Create the previews
     DrawPreviewImage PicPreview
     DrawPreviewImage PicEffect
-    'getimagedata
+    
     hsWidth.Max = PicWidthL
     hsHeight.Max = PicHeightL
     PreviewMosaicFilter (CSng(hsWidth.Value) / hsWidth.Max) * PreviewWidth, (CSng(hsHeight.Value) / hsHeight.Max) * PreviewHeight
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 Private Sub PreviewMosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As Byte)

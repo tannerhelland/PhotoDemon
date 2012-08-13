@@ -518,17 +518,25 @@ Public Sub rExtreme()
     SetImageData
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
     'Possible methods of calculating rank filters:
     cboRank.AddItem "Maximum (Dilate)", 0
     cboRank.AddItem "Minimum (Erode)", 1
     cboRank.AddItem "Extreme (Furthest value)", 2
+    
     'Make "Maximum" the default value
     cboRank.ListIndex = 0
+    
     'Create the image previews
     DrawPreviewImage PicPreview
     DrawPreviewImage PicEffect
     UpdatePreview
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Same as above, but exclusively for previewing

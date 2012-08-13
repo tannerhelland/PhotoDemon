@@ -34,8 +34,6 @@ Begin VB.Form FormAbout
       Default         =   -1  'True
       Height          =   465
       Left            =   7635
-      MouseIcon       =   "VBP_FormAbout.frx":A6C2
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   7560
       Width           =   1245
@@ -57,7 +55,7 @@ Begin VB.Form FormAbout
       Height          =   195
       Index           =   0
       Left            =   240
-      MouseIcon       =   "VBP_FormAbout.frx":A814
+      MouseIcon       =   "VBP_FormAbout.frx":A6C2
       MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   2880
@@ -161,10 +159,15 @@ Private Sub Form_Load()
     
     lblThanks(0).MousePointer = vbDefault
     
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
+'Generate a label with the specified "thank you" text, and link it to the specified URL
 Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL As String = "")
-
+    
+    'Generate a new label
     Load lblThanks(curCredit)
     
     lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4

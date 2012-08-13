@@ -195,12 +195,17 @@ End Sub
 
 'Initialize the combo box
 Private Sub Form_Load()
+    
     cboMethod.AddItem "Average", 0
     cboMethod.AddItem "ITU Standard", 1
     cboMethod.AddItem "Desaturate", 2
     cboMethod.AddItem "X # of shades", 3
     cboMethod.AddItem "X # of shades (dithered)", 4
     cboMethod.ListIndex = 1
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Reduce to X # gray shades

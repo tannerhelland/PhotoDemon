@@ -254,6 +254,10 @@ Private Sub Form_Load()
     DoEvents
     
     PreviewGamma CSng(val(txtGamma)), CByte(CboChannel.ListIndex)
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Basic gamma correction.  It's a simple function - use an exponent to adjust R/G/B values.

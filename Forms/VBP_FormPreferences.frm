@@ -428,6 +428,9 @@ Private Sub Form_Load()
     tmpString = GetFromIni("General Preferences", "AutosizeLargeImages")
     cmbLargeImages.ListIndex = val(tmpString)
     
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Draw a sample of the current background to the PicCanvasColor picture box
@@ -442,7 +445,7 @@ Private Sub DrawSampleCanvasBackground()
 
         For x = 0 To picCanvasColor.ScaleWidth Step stepIntervalX
         For y = 0 To picCanvasColor.ScaleHeight Step stepIntervalY
-            BitBlt Me.picCanvasColor.hdc, x, y, stepIntervalX, stepIntervalY, Me.picCanvasImg.hdc, 0, 0, vbSrcCopy
+            BitBlt Me.picCanvasColor.hDC, x, y, stepIntervalX, stepIntervalY, Me.picCanvasImg.hDC, 0, 0, vbSrcCopy
         Next y
         Next x
         picCanvasColor.Picture = picCanvasColor.Image

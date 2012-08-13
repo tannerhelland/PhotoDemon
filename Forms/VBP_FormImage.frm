@@ -202,9 +202,9 @@ Option Explicit
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
     
-Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     'Draw the current coordinates to the status bar
-    SetBitmapCoordinates x, Y
+    SetBitmapCoordinates x, y
 End Sub
 
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
@@ -261,9 +261,15 @@ Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
     AltDown = (Shift And vbAltMask) > 0
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
     'Add support for scrolling with the mouse wheel
-    If IsProgramCompiled Then Call WheelHook(Me.hWnd)
+    If IsProgramCompiled Then Call WheelHook(Me.HWnd)
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 Private Sub Form_LostFocus()
@@ -384,7 +390,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'Release mouse wheel support
-    If IsProgramCompiled Then Call WheelUnHook(Me.hWnd)
+    If IsProgramCompiled Then Call WheelUnHook(Me.HWnd)
     
     Message "Closing image..."
     

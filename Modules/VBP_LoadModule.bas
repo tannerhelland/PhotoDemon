@@ -101,11 +101,14 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.HWnd, "AAA", True
+    SetIcon FormMain.hWnd, "AAA", True
     
     'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
     LoadMenuIcons
+    
+    'Initialize the hand cursor we use for all clickable objects
+    initHandCursor
     
     'Look in the MDIWindow module for this code - it enables/disables various control and menus based on
     ' whether or not images have been loaded

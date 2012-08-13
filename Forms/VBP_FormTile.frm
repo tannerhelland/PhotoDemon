@@ -244,11 +244,17 @@ Public Sub GenerateTwins(ByVal TType As Byte)
     SetImageData
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
     'Create the image previews
     DrawPreviewImage PicPreview
     DrawPreviewImage PicEffect
     PreviewTwins 1
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 Private Sub OptHorizontal_Click()
