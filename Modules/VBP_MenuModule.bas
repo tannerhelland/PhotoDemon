@@ -21,7 +21,7 @@ Public Sub MenuOpen()
     'String returned from the common dialog wrapper
     Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, FormMain.hWnd) Then PreLoadImage sFile
+    If PhotoDemon_OpenImageDialog(sFile, FormMain.HWnd) Then PreLoadImage sFile
 
 End Sub
 
@@ -210,7 +210,7 @@ Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
     End If
     
     
-    If CC.VBGetSaveFileName(sFile, , True, cdfStr, LastSaveFilter, tempPathString, "Save an image", ".bmp|.gif|.jpg|.pcx|.pdi|.png|.ppm|.tga|.tif|.*", FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, cdfStr, LastSaveFilter, tempPathString, "Save an image", ".bmp|.gif|.jpg|.pcx|.pdi|.png|.ppm|.tga|.tif|.*", FormMain.HWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         tempPathString = sFile
