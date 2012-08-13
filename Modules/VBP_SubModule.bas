@@ -4,7 +4,7 @@ Attribute VB_Name = "Miscellaneous"
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 12/August/12
-'Last update: Built several subs dedicated to assigning the system's hand cursor to controls.
+'Last update: Built several subs dedicated to assigning the system's hand cursor to clickable controls.
 '
 'Handles messaging, value checking, RGB Extraction, checking if files exist,
 ' variable truncation, and old array transfer routines.

@@ -30,7 +30,7 @@ Attribute VB_Exposed = False
 ' particular quirks with the types of file dialogs it requires.  If you copy this blindly into your own project,
 ' it is unlikely to work - so use the stock version and save yourself a lot of trouble.
 
-
+'Tanner's last edit: don't zero out the filter index on dialog box cancellation
 
 Option Explicit
 
@@ -147,7 +147,7 @@ Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 Private Type TCHOOSEFONT
     lStructSize As Long         ' Filled with UDT size
     hwndOwner As Long           ' Caller's window handle
-    hdc As Long                 ' Printer DC/IC or NULL
+    hDC As Long                 ' Printer DC/IC or NULL
     lpLogFont As Long           ' Pointer to LOGFONT
     iPointSize As Long          ' 10 * size in points of font
     Flags As Long               ' Type flags
@@ -233,7 +233,7 @@ Private Type TPRINTDLG
     hwndOwner As Long
     hDevMode As Long
     hDevNames As Long
-    hdc As Long
+    hDC As Long
     Flags As Long
     nFromPage As Integer
     nToPage As Integer
@@ -619,7 +619,7 @@ With opfile
         FileName = ""
         FileTitle = ""
         Flags = 0
-        FilterIndex = -1
+        'FilterIndex = -1  'Don't zero this out just because of cancellation (it's passed ByRef and is used elsewhere)
         Filter = ""
     Case Else
         ' Extended error
@@ -628,7 +628,7 @@ With opfile
         FileName = ""
         FileTitle = ""
         Flags = 0
-        FilterIndex = -1
+        'FilterIndex = -1
         Filter = ""
     End Select
 End With
@@ -708,20 +708,20 @@ With opfile
     Case 0
         ' Cancelled:
         VBGetSaveFileName = False
-        FileName = ""
-        FileTitle = ""
+        'FileName = ""
+        'FileTitle = ""
         Flags = 0
-        FilterIndex = 0
-        Filter = ""
+        'FilterIndex = 0   'Tanner's edit: it's not necessary to zero out the filter index just because of dialog cancellation
+        'Filter = ""
     Case Else
         ' Extended error:
         VBGetSaveFileName = False
         m_lExtendedError = CommDlgExtendedError()
-        FileName = ""
-        FileTitle = ""
+        'FileName = ""
+        'FileTitle = ""
         Flags = 0
-        FilterIndex = 0
-        Filter = ""
+        'FilterIndex = 0
+        'Filter = ""
     End Select
 End With
 End Function
