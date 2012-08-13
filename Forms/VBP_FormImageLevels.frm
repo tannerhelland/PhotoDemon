@@ -28,8 +28,6 @@ Begin VB.Form FormImageLevels
       Height          =   220
       Left            =   1200
       Max             =   255
-      MouseIcon       =   "VBP_FormImageLevels.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   4800
       Width           =   4455
@@ -38,8 +36,6 @@ Begin VB.Form FormImageLevels
       Height          =   220
       Left            =   1200
       Max             =   255
-      MouseIcon       =   "VBP_FormImageLevels.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   5040
       Value           =   255
@@ -50,8 +46,6 @@ Begin VB.Form FormImageLevels
       Left            =   1200
       Max             =   255
       Min             =   2
-      MouseIcon       =   "VBP_FormImageLevels.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   4080
       Value           =   255
@@ -61,8 +55,6 @@ Begin VB.Form FormImageLevels
       Height          =   220
       Left            =   1200
       Max             =   253
-      MouseIcon       =   "VBP_FormImageLevels.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   3600
       Width           =   4455
@@ -72,8 +64,6 @@ Begin VB.Form FormImageLevels
       Left            =   1200
       Max             =   254
       Min             =   1
-      MouseIcon       =   "VBP_FormImageLevels.frx":0548
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   3840
       Value           =   127
@@ -84,8 +74,6 @@ Begin VB.Form FormImageLevels
       Caption         =   "Reset scrollbars"
       Height          =   375
       Left            =   240
-      MouseIcon       =   "VBP_FormImageLevels.frx":069A
-      MousePointer    =   99  'Custom
       TabIndex        =   5
       Top             =   5880
       Width           =   1815
@@ -95,8 +83,6 @@ Begin VB.Form FormImageLevels
       Default         =   -1  'True
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormImageLevels.frx":07EC
-      MousePointer    =   99  'Custom
       TabIndex        =   6
       Top             =   5880
       Width           =   1125
@@ -106,8 +92,6 @@ Begin VB.Form FormImageLevels
       Caption         =   "Cancel"
       Height          =   375
       Left            =   4920
-      MouseIcon       =   "VBP_FormImageLevels.frx":093E
-      MousePointer    =   99  'Custom
       TabIndex        =   7
       Top             =   5880
       Width           =   1125

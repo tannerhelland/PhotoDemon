@@ -18,7 +18,6 @@ Begin VB.Form FormBlackAndWhite
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   MouseIcon       =   "VBP_FormBlackAndWhite.frx":0000
    ScaleHeight     =   277
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   409
@@ -29,8 +28,6 @@ Begin VB.Form FormBlackAndWhite
       Left            =   3120
       Max             =   254
       Min             =   1
-      MouseIcon       =   "VBP_FormBlackAndWhite.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   1920
       Value           =   128
@@ -62,8 +59,6 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00400000&
       Height          =   495
       Left            =   1440
-      MouseIcon       =   "VBP_FormBlackAndWhite.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   2640
       Value           =   1  'Checked
@@ -73,8 +68,6 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00400000&
       Height          =   2010
       Left            =   240
-      MouseIcon       =   "VBP_FormBlackAndWhite.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   225
       Width           =   2535
@@ -85,8 +78,6 @@ Begin VB.Form FormBlackAndWhite
       Caption         =   "Cancel"
       Height          =   375
       Left            =   4800
-      MouseIcon       =   "VBP_FormBlackAndWhite.frx":0548
-      MousePointer    =   99  'Custom
       TabIndex        =   5
       Top             =   3600
       Width           =   1125
@@ -99,8 +90,6 @@ Begin VB.Form FormBlackAndWhite
       Height          =   375
       Left            =   3600
       MaskColor       =   &H00000000&
-      MouseIcon       =   "VBP_FormBlackAndWhite.frx":069A
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   3600
       Width           =   1125

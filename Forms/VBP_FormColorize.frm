@@ -28,8 +28,6 @@ Begin VB.Form FormColorize
       Left            =   240
       Max             =   359
       Min             =   1
-      MouseIcon       =   "VBP_FormColorize.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   3000
       Value           =   180
@@ -109,8 +107,6 @@ Begin VB.Form FormColorize
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormColorize.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   4080
       Width           =   1125
@@ -120,8 +116,6 @@ Begin VB.Form FormColorize
       Default         =   -1  'True
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormColorize.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   4080
       Width           =   1125

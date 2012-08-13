@@ -29,8 +29,6 @@ Begin VB.Form FormMosaic
       Left            =   240
       Max             =   64
       Min             =   2
-      MouseIcon       =   "VBP_FormMosaic.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   4320
       Value           =   2
@@ -41,8 +39,6 @@ Begin VB.Form FormMosaic
       Left            =   240
       Max             =   64
       Min             =   2
-      MouseIcon       =   "VBP_FormMosaic.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   3240
       Value           =   2
@@ -135,8 +131,6 @@ Begin VB.Form FormMosaic
       Caption         =   "Cancel"
       Height          =   435
       Left            =   3720
-      MouseIcon       =   "VBP_FormMosaic.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   5
       Top             =   4920
       Width           =   1125
@@ -146,8 +140,6 @@ Begin VB.Form FormMosaic
       Default         =   -1  'True
       Height          =   435
       Left            =   2520
-      MouseIcon       =   "VBP_FormMosaic.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   4920
       Width           =   1125

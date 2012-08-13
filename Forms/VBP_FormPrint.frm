@@ -27,8 +27,6 @@ Begin VB.Form FormPrint
    Begin VB.ComboBox cmbDPI 
       Height          =   315
       Left            =   4320
-      MouseIcon       =   "VBP_FormPrint.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   9
       Top             =   3675
       Width           =   1095
@@ -37,8 +35,6 @@ Begin VB.Form FormPrint
       Caption         =   "Change Paper Size..."
       Height          =   375
       Left            =   3960
-      MouseIcon       =   "VBP_FormPrint.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   960
       Width           =   3375
@@ -94,8 +90,6 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00800000&
       Height          =   240
       Left            =   5280
-      MouseIcon       =   "VBP_FormPrint.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   8
       Top             =   3120
       Value           =   1  'Checked
@@ -107,8 +101,6 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00800000&
       Height          =   240
       Left            =   5280
-      MouseIcon       =   "VBP_FormPrint.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   7
       Top             =   2760
       Value           =   1  'Checked
@@ -117,11 +109,9 @@ Begin VB.Form FormPrint
    Begin VB.ComboBox cbOrientation 
       ForeColor       =   &H00800000&
       Height          =   315
-      ItemData        =   "VBP_FormPrint.frx":0548
+      ItemData        =   "VBP_FormPrint.frx":0000
       Left            =   4965
-      List            =   "VBP_FormPrint.frx":0552
-      MouseIcon       =   "VBP_FormPrint.frx":056B
-      MousePointer    =   99  'Custom
+      List            =   "VBP_FormPrint.frx":000A
       Style           =   2  'Dropdown List
       TabIndex        =   6
       Top             =   2160
@@ -130,11 +120,9 @@ Begin VB.Form FormPrint
    Begin VB.ComboBox cbQuality 
       ForeColor       =   &H00800000&
       Height          =   315
-      ItemData        =   "VBP_FormPrint.frx":06BD
+      ItemData        =   "VBP_FormPrint.frx":0023
       Left            =   4575
-      List            =   "VBP_FormPrint.frx":06CD
-      MouseIcon       =   "VBP_FormPrint.frx":06EB
-      MousePointer    =   99  'Custom
+      List            =   "VBP_FormPrint.frx":0033
       Style           =   2  'Dropdown List
       TabIndex        =   4
       Top             =   1575
@@ -144,8 +132,6 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   3945
-      MouseIcon       =   "VBP_FormPrint.frx":083D
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   2
       Top             =   360
@@ -178,7 +164,7 @@ Begin VB.Form FormPrint
       Width           =   3300
       Begin VB.Label lblWarning 
          BackStyle       =   0  'Transparent
-         Caption         =   $"VBP_FormPrint.frx":098F
+         Caption         =   $"VBP_FormPrint.frx":0051
          ForeColor       =   &H00C00000&
          Height          =   1935
          Left            =   120
@@ -193,8 +179,6 @@ Begin VB.Form FormPrint
       Default         =   -1  'True
       Height          =   435
       Left            =   4920
-      MouseIcon       =   "VBP_FormPrint.frx":0AB2
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   4680
       Width           =   1140
@@ -204,8 +188,6 @@ Begin VB.Form FormPrint
       Caption         =   "Cancel"
       Height          =   435
       Left            =   6240
-      MouseIcon       =   "VBP_FormPrint.frx":0C04
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   4680
       Width           =   1140

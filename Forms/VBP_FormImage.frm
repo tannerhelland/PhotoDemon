@@ -85,8 +85,6 @@ Begin VB.Form FormImage
       Height          =   3615
       LargeChange     =   10
       Left            =   6240
-      MouseIcon       =   "VBP_FormImage.frx":000C
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       TabStop         =   0   'False
       Top             =   120
@@ -97,8 +95,6 @@ Begin VB.Form FormImage
       Height          =   255
       LargeChange     =   10
       Left            =   120
-      MouseIcon       =   "VBP_FormImage.frx":015E
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       TabStop         =   0   'False
       Top             =   3720
@@ -113,7 +109,7 @@ Begin VB.Form FormImage
       ForeColor       =   &H80000008&
       Height          =   270
       Left            =   3480
-      Picture         =   "VBP_FormImage.frx":02B0
+      Picture         =   "VBP_FormImage.frx":000C
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16

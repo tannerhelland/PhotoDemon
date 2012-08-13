@@ -19,8 +19,6 @@ Begin VB.Form FormWhiteBalance
       Left            =   240
       Max             =   100
       Min             =   1
-      MouseIcon       =   "VBP_FormWhiteBalance.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   3360
       Value           =   5
@@ -88,8 +86,6 @@ Begin VB.Form FormWhiteBalance
       EndProperty
       Height          =   375
       Left            =   3600
-      MouseIcon       =   "VBP_FormWhiteBalance.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   4080
       Width           =   1125
@@ -108,13 +104,11 @@ Begin VB.Form FormWhiteBalance
       EndProperty
       Height          =   375
       Left            =   2400
-      MouseIcon       =   "VBP_FormWhiteBalance.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   4080
       Width           =   1125
    End
-   Begin VB.Label Label3 
+   Begin VB.Label lblPreview 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
@@ -135,7 +129,7 @@ Begin VB.Form FormWhiteBalance
       Top             =   2310
       Width           =   4575
    End
-   Begin VB.Label Label2 
+   Begin VB.Label lblAmount 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "Amount:"

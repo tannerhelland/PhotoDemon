@@ -28,8 +28,6 @@ Begin VB.Form FormInternetImport
       Default         =   -1  'True
       Height          =   375
       Left            =   6480
-      MouseIcon       =   "VBP_FormInternetImport.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   1320
       Width           =   1095
@@ -39,8 +37,6 @@ Begin VB.Form FormInternetImport
       Caption         =   "Cancel"
       Height          =   375
       Left            =   7680
-      MouseIcon       =   "VBP_FormInternetImport.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   1320
       Width           =   1095
@@ -54,11 +50,11 @@ Begin VB.Form FormInternetImport
       Top             =   600
       Width           =   8655
    End
-   Begin VB.Label Label1 
+   Begin VB.Label lblCopyrightWarning 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormInternetImport.frx":02A4
+      Caption         =   $"VBP_FormInternetImport.frx":0000
       ForeColor       =   &H00808080&
       Height          =   495
       Left            =   120

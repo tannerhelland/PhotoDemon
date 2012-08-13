@@ -29,8 +29,6 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      MouseIcon       =   "VBP_FormPreferences.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   15
       Top             =   2760
       Width           =   3375
@@ -43,7 +41,7 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H80000008&
       Height          =   270
       Left            =   5040
-      Picture         =   "VBP_FormPreferences.frx":0152
+      Picture         =   "VBP_FormPreferences.frx":0000
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
@@ -59,8 +57,6 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H80000008&
       Height          =   375
       Left            =   120
-      MouseIcon       =   "VBP_FormPreferences.frx":01DC
-      MousePointer    =   99  'Custom
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   319
@@ -73,8 +69,6 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   2280
-      MouseIcon       =   "VBP_FormPreferences.frx":032E
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   11
       Top             =   435
@@ -84,8 +78,6 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   240
-      MouseIcon       =   "VBP_FormPreferences.frx":0480
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   8
       Top             =   1800
@@ -97,10 +89,8 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      MouseIcon       =   "VBP_FormPreferences.frx":05D2
-      MousePointer    =   99  'Custom
       TabIndex        =   2
-      ToolTipText     =   $"VBP_FormPreferences.frx":0724
+      ToolTipText     =   $"VBP_FormPreferences.frx":008A
       Top             =   3480
       Width           =   4455
    End
@@ -117,8 +107,6 @@ Begin VB.Form FormPreferences
       EndProperty
       Height          =   330
       Left            =   4560
-      MouseIcon       =   "VBP_FormPreferences.frx":0816
-      MousePointer    =   99  'Custom
       TabIndex        =   5
       ToolTipText     =   "Click to open a browser-folder dialog"
       Top             =   4320
@@ -140,8 +128,6 @@ Begin VB.Form FormPreferences
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormPreferences.frx":0968
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   5040
       Width           =   1125
@@ -151,8 +137,6 @@ Begin VB.Form FormPreferences
       Default         =   -1  'True
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormPreferences.frx":0ABA
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   5040
       Width           =   1125
@@ -163,8 +147,6 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      MouseIcon       =   "VBP_FormPreferences.frx":0C0C
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   3120
       Width           =   3375
@@ -430,6 +412,7 @@ Private Sub Form_Load()
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
+    setHandCursor picCanvasColor
     
 End Sub
 

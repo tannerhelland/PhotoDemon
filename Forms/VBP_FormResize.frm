@@ -27,8 +27,6 @@ Begin VB.Form FormResize
       Height          =   420
       Left            =   2430
       Min             =   1
-      MouseIcon       =   "VBP_FormResize.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   12
       TabStop         =   0   'False
       Top             =   1140
@@ -39,8 +37,6 @@ Begin VB.Form FormResize
       Height          =   420
       Left            =   2430
       Min             =   1
-      MouseIcon       =   "VBP_FormResize.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   11
       TabStop         =   0   'False
       Top             =   540
@@ -96,8 +92,6 @@ Begin VB.Form FormResize
       ForeColor       =   &H00800000&
       Height          =   330
       Left            =   240
-      MouseIcon       =   "VBP_FormResize.frx":02A4
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   2760
@@ -108,8 +102,6 @@ Begin VB.Form FormResize
       Caption         =   "Cancel"
       Height          =   375
       Left            =   2640
-      MouseIcon       =   "VBP_FormResize.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   6
       Top             =   3600
       Width           =   1125
@@ -129,8 +121,6 @@ Begin VB.Form FormResize
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   1080
-      MouseIcon       =   "VBP_FormResize.frx":0548
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   1920
       Value           =   1  'Checked
@@ -141,8 +131,6 @@ Begin VB.Form FormResize
       Default         =   -1  'True
       Height          =   375
       Left            =   1440
-      MouseIcon       =   "VBP_FormResize.frx":069A
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   3600
       Width           =   1125

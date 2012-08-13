@@ -28,8 +28,6 @@ Begin VB.Form FormPosterize
       Left            =   240
       Max             =   7
       Min             =   1
-      MouseIcon       =   "VBP_FormPosterize.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   3360
       Value           =   7
@@ -104,8 +102,6 @@ Begin VB.Form FormPosterize
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3600
-      MouseIcon       =   "VBP_FormPosterize.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   4200
       Width           =   1125
@@ -115,8 +111,6 @@ Begin VB.Form FormPosterize
       Default         =   -1  'True
       Height          =   375
       Left            =   2400
-      MouseIcon       =   "VBP_FormPosterize.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   4200
       Width           =   1125

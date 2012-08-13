@@ -29,8 +29,6 @@ Begin VB.Form FormJPEG
       Left            =   960
       Max             =   100
       Min             =   1
-      MouseIcon       =   "VBP_FormJPEG.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   5
       TabStop         =   0   'False
       Top             =   1200
@@ -50,8 +48,6 @@ Begin VB.Form FormJPEG
       ForeColor       =   &H00800000&
       Height          =   330
       Left            =   360
-      MouseIcon       =   "VBP_FormJPEG.frx":0152
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   600
@@ -79,8 +75,6 @@ Begin VB.Form FormJPEG
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3120
-      MouseIcon       =   "VBP_FormJPEG.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   1800
       Width           =   1125
@@ -90,8 +84,6 @@ Begin VB.Form FormJPEG
       Default         =   -1  'True
       Height          =   375
       Left            =   1920
-      MouseIcon       =   "VBP_FormJPEG.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   1800
       Width           =   1125

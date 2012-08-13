@@ -31,8 +31,6 @@ Begin VB.Form FormBatchConvert
       Height          =   495
       Index           =   1
       Left            =   8520
-      MouseIcon       =   "VBP_FormBatchConvert.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   39
       Top             =   960
       Width           =   3255
@@ -44,8 +42,6 @@ Begin VB.Form FormBatchConvert
       Height          =   495
       Index           =   0
       Left            =   8520
-      MouseIcon       =   "VBP_FormBatchConvert.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   38
       Top             =   480
       Value           =   -1  'True
@@ -55,8 +51,6 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   240
-      MouseIcon       =   "VBP_FormBatchConvert.frx":02A4
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   2
       Top             =   3240
@@ -67,8 +61,6 @@ Begin VB.Form FormBatchConvert
       Left            =   9840
       Max             =   100
       Min             =   1
-      MouseIcon       =   "VBP_FormBatchConvert.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   19
       Top             =   6120
       Value           =   92
@@ -78,8 +70,6 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   8520
-      MouseIcon       =   "VBP_FormBatchConvert.frx":0548
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   17
       Top             =   5640
@@ -107,8 +97,6 @@ Begin VB.Form FormBatchConvert
       Caption         =   "..."
       Height          =   280
       Left            =   11400
-      MouseIcon       =   "VBP_FormBatchConvert.frx":069A
-      MousePointer    =   99  'Custom
       TabIndex        =   14
       Top             =   3000
       Width           =   375
@@ -126,8 +114,6 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   8520
-      MouseIcon       =   "VBP_FormBatchConvert.frx":07EC
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   16
       Top             =   4440
@@ -148,8 +134,6 @@ Begin VB.Form FormBatchConvert
       Enabled         =   0   'False
       Height          =   280
       Left            =   11400
-      MouseIcon       =   "VBP_FormBatchConvert.frx":093E
-      MousePointer    =   99  'Custom
       TabIndex        =   12
       Top             =   1560
       Width           =   375
@@ -158,8 +142,6 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   4740
       Left            =   4080
-      MouseIcon       =   "VBP_FormBatchConvert.frx":0A90
-      MousePointer    =   99  'Custom
       MultiSelect     =   2  'Extended
       TabIndex        =   6
       Top             =   840
@@ -169,8 +151,6 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Remove selected file(s)"
       Height          =   375
       Left            =   4080
-      MouseIcon       =   "VBP_FormBatchConvert.frx":0BE2
-      MousePointer    =   99  'Custom
       TabIndex        =   7
       Top             =   5760
       Width           =   1935
@@ -179,8 +159,6 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Load an image list..."
       Height          =   495
       Left            =   4080
-      MouseIcon       =   "VBP_FormBatchConvert.frx":0D34
-      MousePointer    =   99  'Custom
       TabIndex        =   9
       Top             =   6720
       Width           =   1935
@@ -189,8 +167,6 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Save the current list..."
       Height          =   495
       Left            =   6120
-      MouseIcon       =   "VBP_FormBatchConvert.frx":0E86
-      MousePointer    =   99  'Custom
       TabIndex        =   10
       Top             =   6720
       Width           =   1935
@@ -199,8 +175,6 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Remove all files"
       Height          =   375
       Left            =   6120
-      MouseIcon       =   "VBP_FormBatchConvert.frx":0FD8
-      MousePointer    =   99  'Custom
       TabIndex        =   8
       Top             =   5760
       Width           =   1935
@@ -210,8 +184,6 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   840
-      MouseIcon       =   "VBP_FormBatchConvert.frx":112A
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   480
       Width           =   2895
@@ -222,8 +194,6 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   1665
       Left            =   240
-      MouseIcon       =   "VBP_FormBatchConvert.frx":127C
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   1200
       Width           =   3495
@@ -233,8 +203,6 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   1785
       Left            =   240
-      MouseIcon       =   "VBP_FormBatchConvert.frx":13CE
-      MousePointer    =   99  'Custom
       MultiSelect     =   2  'Extended
       Pattern         =   "*.jpg"
       TabIndex        =   3
@@ -245,8 +213,6 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Add selected files to the batch list ->"
       Height          =   375
       Left            =   360
-      MouseIcon       =   "VBP_FormBatchConvert.frx":1520
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   5880
       Width           =   3255
@@ -255,8 +221,6 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Alternatively, you can use a Windows ""Common Dialog"" to select images..."
       Height          =   735
       Left            =   360
-      MouseIcon       =   "VBP_FormBatchConvert.frx":1672
-      MousePointer    =   99  'Custom
       TabIndex        =   5
       Top             =   6480
       Width           =   3255
@@ -266,8 +230,6 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Cancel"
       Height          =   375
       Left            =   10800
-      MouseIcon       =   "VBP_FormBatchConvert.frx":17C4
-      MousePointer    =   99  'Custom
       TabIndex        =   21
       Top             =   7680
       Width           =   1095
@@ -277,15 +239,13 @@ Begin VB.Form FormBatchConvert
       Default         =   -1  'True
       Height          =   375
       Left            =   9600
-      MouseIcon       =   "VBP_FormBatchConvert.frx":1916
-      MousePointer    =   99  'Custom
       TabIndex        =   20
       Top             =   7680
       Width           =   1095
    End
    Begin VB.Label lblDisclaimer 
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormBatchConvert.frx":1A68
+      Caption         =   $"VBP_FormBatchConvert.frx":0000
       ForeColor       =   &H00800000&
       Height          =   855
       Left            =   8400

@@ -38,8 +38,6 @@ Begin VB.Form FormFindEdges
       EndProperty
       Height          =   375
       Left            =   4080
-      MouseIcon       =   "VBP_FormFindEdges.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   2640
       Width           =   1125
@@ -58,8 +56,6 @@ Begin VB.Form FormFindEdges
       EndProperty
       Height          =   375
       Left            =   5280
-      MouseIcon       =   "VBP_FormFindEdges.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   2640
       Width           =   1125
@@ -77,8 +73,6 @@ Begin VB.Form FormFindEdges
       ForeColor       =   &H00800000&
       Height          =   1950
       Left            =   120
-      MouseIcon       =   "VBP_FormFindEdges.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   240
       Width           =   3135

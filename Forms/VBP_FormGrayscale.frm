@@ -29,8 +29,6 @@ Begin VB.Form FormGrayscale
       Left            =   1080
       Max             =   254
       Min             =   3
-      MouseIcon       =   "VBP_FormGrayscale.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   1200
       Value           =   3
@@ -69,8 +67,6 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00800000&
       Height          =   330
       Left            =   1080
-      MouseIcon       =   "VBP_FormGrayscale.frx":0152
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   0
       Top             =   480
@@ -90,8 +86,6 @@ Begin VB.Form FormGrayscale
       EndProperty
       Height          =   375
       Left            =   2880
-      MouseIcon       =   "VBP_FormGrayscale.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   1920
       Width           =   1125
@@ -110,8 +104,6 @@ Begin VB.Form FormGrayscale
       EndProperty
       Height          =   375
       Left            =   4080
-      MouseIcon       =   "VBP_FormGrayscale.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   1920
       Width           =   1125

@@ -111,8 +111,6 @@ Begin VB.Form FormPluginDownloader
          Default         =   -1  'True
          Height          =   495
          Left            =   6480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":0000
-         MousePointer    =   99  'Custom
          TabIndex        =   14
          Top             =   5280
          Width           =   1335
@@ -127,7 +125,7 @@ Begin VB.Form FormPluginDownloader
          Locked          =   -1  'True
          MultiLine       =   -1  'True
          TabIndex        =   7
-         Text            =   "VBP_FormPluginDownloader.frx":0152
+         Text            =   "VBP_FormPluginDownloader.frx":0000
          Top             =   1440
          Width           =   7935
       End
@@ -180,7 +178,7 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00C00000&
          Height          =   195
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":030E
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":01BC
          MousePointer    =   99  'Custom
          TabIndex        =   10
          Top             =   3840
@@ -202,7 +200,7 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00C00000&
          Height          =   195
          Left            =   4080
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":0460
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":030E
          MousePointer    =   99  'Custom
          TabIndex        =   9
          Top             =   3360
@@ -224,7 +222,7 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00C00000&
          Height          =   195
          Left            =   3360
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":05B2
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":0460
          MousePointer    =   99  'Custom
          TabIndex        =   8
          Top             =   2880
@@ -241,7 +239,7 @@ Begin VB.Form FormPluginDownloader
       Locked          =   -1  'True
       MultiLine       =   -1  'True
       TabIndex        =   4
-      Text            =   "VBP_FormPluginDownloader.frx":0704
+      Text            =   "VBP_FormPluginDownloader.frx":05B2
       Top             =   240
       Width           =   7815
    End
@@ -255,7 +253,7 @@ Begin VB.Form FormPluginDownloader
       Locked          =   -1  'True
       MultiLine       =   -1  'True
       TabIndex        =   3
-      Text            =   "VBP_FormPluginDownloader.frx":086C
+      Text            =   "VBP_FormPluginDownloader.frx":071A
       Top             =   1440
       Width           =   7815
    End
@@ -272,8 +270,6 @@ Begin VB.Form FormPluginDownloader
       EndProperty
       Height          =   495
       Left            =   240
-      MouseIcon       =   "VBP_FormPluginDownloader.frx":08B6
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   4080
       Width           =   7815
@@ -282,8 +278,6 @@ Begin VB.Form FormPluginDownloader
       Caption         =   "No.  Do not download these files right now, but please remind me again in the future."
       Height          =   495
       Left            =   240
-      MouseIcon       =   "VBP_FormPluginDownloader.frx":0A08
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   4680
       Width           =   7815
@@ -292,8 +286,6 @@ Begin VB.Form FormPluginDownloader
       Caption         =   "No.  Do not download these files, and do not prompt me again."
       Height          =   495
       Left            =   240
-      MouseIcon       =   "VBP_FormPluginDownloader.frx":0B5A
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   5280
       Width           =   7815

@@ -15,7 +15,6 @@ Begin VB.Form FormImportFrx
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   Icon            =   "VBP_FormImportFrx.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -55,8 +54,6 @@ Begin VB.Form FormImportFrx
       Caption         =   "Cancel"
       Height          =   375
       Left            =   5640
-      MouseIcon       =   "VBP_FormImportFrx.frx":0BC2
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   3960
       Width           =   1125
@@ -67,8 +64,6 @@ Begin VB.Form FormImportFrx
       Enabled         =   0   'False
       Height          =   375
       Left            =   4440
-      MouseIcon       =   "VBP_FormImportFrx.frx":0D14
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   3960
       Width           =   1125
@@ -86,8 +81,6 @@ Begin VB.Form FormImportFrx
       ForeColor       =   &H00800000&
       Height          =   3000
       Left            =   120
-      MouseIcon       =   "VBP_FormImportFrx.frx":0E66
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   720
       Width           =   3495

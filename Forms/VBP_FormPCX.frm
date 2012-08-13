@@ -39,8 +39,6 @@ Begin VB.Form FormPCX
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   2640
-      MouseIcon       =   "VBP_FormPCX.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   5
       Top             =   960
       Value           =   1  'Checked
@@ -61,8 +59,6 @@ Begin VB.Form FormPCX
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   2640
-      MouseIcon       =   "VBP_FormPCX.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   600
       Value           =   1  'Checked
@@ -84,8 +80,6 @@ Begin VB.Form FormPCX
       Height          =   255
       Index           =   0
       Left            =   360
-      MouseIcon       =   "VBP_FormPCX.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Tag             =   "1"
       Top             =   600
@@ -107,8 +101,6 @@ Begin VB.Form FormPCX
       Height          =   255
       Index           =   1
       Left            =   360
-      MouseIcon       =   "VBP_FormPCX.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Tag             =   "4"
       Top             =   960
@@ -130,8 +122,6 @@ Begin VB.Form FormPCX
       Height          =   255
       Index           =   2
       Left            =   360
-      MouseIcon       =   "VBP_FormPCX.frx":0548
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Tag             =   "8"
       Top             =   1320
@@ -153,8 +143,6 @@ Begin VB.Form FormPCX
       Height          =   255
       Index           =   3
       Left            =   360
-      MouseIcon       =   "VBP_FormPCX.frx":069A
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Tag             =   "24"
       Top             =   1680
@@ -175,8 +163,6 @@ Begin VB.Form FormPCX
       EndProperty
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormPCX.frx":07EC
-      MousePointer    =   99  'Custom
       TabIndex        =   7
       Top             =   2280
       Width           =   1125
@@ -195,8 +181,6 @@ Begin VB.Form FormPCX
       EndProperty
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormPCX.frx":093E
-      MousePointer    =   99  'Custom
       TabIndex        =   6
       Top             =   2280
       Width           =   1125
