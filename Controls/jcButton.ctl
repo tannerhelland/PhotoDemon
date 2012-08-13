@@ -606,9 +606,14 @@ Private Const TOOLTIPS_CLASSA As String = "tooltips_class32"
 ' --Formatting Text Consts
 Private Const DT_CALCRECT As Long = &H400
 Private Const DT_CENTER As Long = &H1
+Private Const DT_VCENTER = &H4
 Private Const DT_WORDBREAK As Long = &H10
+Private Const DT_END_ELLIPSIS = &H8000
+Private Const DT_MULTILINE = (&H1)
+Private Const DT_MODIFYSTRING = &H10000
+Private Const DT_NOCLIP = &H100
 Private Const DT_RTLREADING = &H20000              ' Right to left
-Private Const DT_DRAWFLAG As Long = DT_CENTER Or DT_WORDBREAK
+Private Const DT_DRAWFLAG As Long = DT_CENTER Or DT_WORDBREAK Or DT_END_ELLIPSIS Or DT_MULTILINE Or DT_MODIFYSTRING
 
 ' --drawing Icon Constants
 Private Const DI_NORMAL As Long = &H3
@@ -856,7 +861,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
    Dim Info             As BITMAPINFO, BrushRGB As RGBTRIPLE, gCol As Long
    'Dim hOldOb           As Long
    Dim PicEffect As enumPicEffect
-   Dim SrcDC            As Long, tObj As Long  ', ttt As Long
+   Dim srcDC            As Long, tObj As Long  ', ttt As Long
    Dim bDisOpacity      As Byte
    Dim OverOpacity      As Byte
    Dim a2               As Long
@@ -885,23 +890,23 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
       OverOpacity = m_PicOpacityOnOver
    End If
 
-   SrcDC = CreateCompatibleDC(hDC)
+   srcDC = CreateCompatibleDC(hDC)
 
    If DstW < 0 Then DstW = UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode)
    If DstH < 0 Then DstH = UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode)
 
    If SrcPic.Type = vbPicTypeBitmap Then 'check if it's an icon or a bitmap
-      tObj = SelectObject(SrcDC, SrcPic)
+      tObj = SelectObject(srcDC, SrcPic)
    Else
       Dim hBrush           As Long
-      tObj = SelectObject(SrcDC, CreateCompatibleBitmap(DstDC, DstW, DstH))
+      tObj = SelectObject(srcDC, CreateCompatibleBitmap(DstDC, DstW, DstH))
       hBrush = CreateSolidBrush(TransColor)
-      DrawIconEx SrcDC, 0, 0, SrcPic.Handle, DstW, DstH, 0, hBrush, DI_NORMAL
+      DrawIconEx srcDC, 0, 0, SrcPic.Handle, DstW, DstH, 0, hBrush, DI_NORMAL
       DeleteObject hBrush
    End If
 
-   TmpDC = CreateCompatibleDC(SrcDC)
-   Sr2DC = CreateCompatibleDC(SrcDC)
+   TmpDC = CreateCompatibleDC(srcDC)
+   Sr2DC = CreateCompatibleDC(srcDC)
    TmpBmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
    Sr2Bmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
    TmpObj = SelectObject(TmpDC, TmpBmp)
@@ -917,7 +922,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
    End With
 
    BitBlt TmpDC, 0, 0, DstW, DstH, DstDC, dstX, dstY, vbSrcCopy
-   BitBlt Sr2DC, 0, 0, DstW, DstH, SrcDC, 0, 0, vbSrcCopy
+   BitBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, vbSrcCopy
    GetDIBits TmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
    GetDIBits Sr2DC, Sr2Bmp, 0, DstH, DataSrc(0), Info, 0
 
@@ -1007,11 +1012,11 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
    Erase DataDest, DataSrc
    DeleteObject SelectObject(TmpDC, TmpObj)
    DeleteObject SelectObject(Sr2DC, Sr2Obj)
-   If SrcPic.Type = vbPicTypeIcon Then DeleteObject SelectObject(SrcDC, tObj)
+   If SrcPic.Type = vbPicTypeIcon Then DeleteObject SelectObject(srcDC, tObj)
    DeleteDC TmpDC
    DeleteDC Sr2DC
    DeleteObject tObj
-   DeleteDC SrcDC
+   DeleteDC srcDC
 
 End Sub
 
@@ -1029,7 +1034,7 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
    Dim Info             As BITMAPINFO, BrushRGB As RGBQUAD, gCol As Long
    'Dim hOldOb           As Long
    Dim PicEffect As enumPicEffect
-   Dim SrcDC            As Long, tObj As Long  ', ttt As Long
+   Dim srcDC            As Long, tObj As Long  ', ttt As Long
    Dim bDisOpacity      As Byte
    Dim OverOpacity      As Byte
    Dim a2               As Long
@@ -1058,15 +1063,15 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
       OverOpacity = m_PicOpacityOnOver
    End If
    
-   SrcDC = CreateCompatibleDC(hDC)
+   srcDC = CreateCompatibleDC(hDC)
 
    If DstW < 0 Then DstW = UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode)
    If DstH < 0 Then DstH = UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode)
 
-   tObj = SelectObject(SrcDC, SrcPic)
+   tObj = SelectObject(srcDC, SrcPic)
 
-   TmpDC = CreateCompatibleDC(SrcDC)
-   Sr2DC = CreateCompatibleDC(SrcDC)
+   TmpDC = CreateCompatibleDC(srcDC)
+   Sr2DC = CreateCompatibleDC(srcDC)
 
    TmpBmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
    Sr2Bmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
@@ -1085,7 +1090,7 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
    ReDim DataSrc(UBound(DataDest))
 
    BitBlt TmpDC, 0, 0, DstW, DstH, DstDC, dstX, dstY, vbSrcCopy
-   BitBlt Sr2DC, 0, 0, DstW, DstH, SrcDC, 0, 0, vbSrcCopy
+   BitBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, vbSrcCopy
    GetDIBits TmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
    GetDIBits Sr2DC, Sr2Bmp, 0, DstH, DataSrc(0), Info, 0
 
@@ -1170,11 +1175,11 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
    Erase DataDest, DataSrc
    DeleteObject SelectObject(TmpDC, TmpObj)
    DeleteObject SelectObject(Sr2DC, Sr2Obj)
-   If SrcPic.Type = vbPicTypeIcon Then DeleteObject SelectObject(SrcDC, tObj)
+   If SrcPic.Type = vbPicTypeIcon Then DeleteObject SelectObject(srcDC, tObj)
    DeleteDC TmpDC
    DeleteDC Sr2DC
    DeleteObject tObj
-   DeleteDC SrcDC
+   DeleteDC srcDC
 
 End Sub
 
@@ -1519,9 +1524,9 @@ Private Sub DrawPicwithCaption()
 
    ' --Calc rects for multiline
    If m_WindowsNT Then
-      DrawTextW hDC, StrPtr(m_Caption), -1, m_TextRect, DT_CALCRECT Or DT_WORDBREAK Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawTextW hDC, StrPtr(m_Caption), -1, m_TextRect, DT_CALCRECT Or DT_DRAWFLAG 'Or IIf(m_bRTL, DT_RTLREADING, 0)
    Else
-      DrawText hDC, m_Caption, -1, m_TextRect, DT_CALCRECT Or DT_WORDBREAK Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawText hDC, m_Caption, -1, m_TextRect, DT_CALCRECT Or DT_DRAWFLAG 'Or IIf(m_bRTL, DT_RTLREADING, 0)
    End If
 
    ' --Copy rect into temp var
@@ -1873,11 +1878,13 @@ Private Sub DrawCaptionEx(lpRect As RECT, lColor As Long, OffsetX As Long, Offse
    OffsetRect tRECT, OffsetX, OffsetY
 
    SetTextColor hDC, lColor
+   
+   'Message tRECT.Left & "," & tRECT.Top & " - " & tRECT.Right & "," & tRECT.Bottom
 
    If m_WindowsNT Then
-      DrawTextW hDC, StrPtr(m_Caption), -1, tRECT, DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawTextW hDC, StrPtr(m_Caption), -1, tRECT, DT_DRAWFLAG 'Or IIf(m_bRTL, DT_RTLREADING, 0)
    Else
-      DrawText hDC, m_Caption, -1, tRECT, DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawText hDC, m_Caption, -1, tRECT, DT_DRAWFLAG 'Or IIf(m_bRTL, DT_RTLREADING, 0)
    End If
 
    ' --Restore previous forecolor
@@ -3846,13 +3853,6 @@ Attribute UnsetPopupMenu.VB_Description = "Unsets a popupmenu that was previousl
    m_bPopupEnabled = False
    m_bPopupShown = False
 
-End Sub
-
-Public Sub OpenWebsite(ByVal sAddress As String)
-Attribute OpenWebsite.VB_Description = "Opens a website specified by URL"
-    
-    ShellExecute HWnd, "open", sAddress, vbNullString, vbNullString, 1
-    
 End Sub
 
 Public Sub About()

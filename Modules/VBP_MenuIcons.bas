@@ -3,8 +3,9 @@ Attribute VB_Name = "Menu_Icons"
 'Specialized Icon Handler
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 06/August/12
-'Last update: Added CreateCustomFormIcon, which sets the icon of an MDI child form to match its contained image
+'Last updated: 12/August/12
+'Last update: Added ResetMenuIcons, which redraws menu icons that may have been dropped due to the menu
+'             caption changing (necessary for Undo/Redo text updating)
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of
 ' icon-related functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written
@@ -27,7 +28,7 @@ Attribute VB_Name = "Menu_Icons"
 Option Explicit
 
 'API calls for building an icon at run-time
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
@@ -42,7 +43,7 @@ Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColo
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
 'Types required by the above API calls
-Private Type BITMAP
+Private Type Bitmap
    bmType As Long
    bmWidth As Long
    bmHeight As Long
@@ -56,8 +57,8 @@ Private Type ICONINFO
    fIcon As Boolean
    xHotspot As Long
    yHotspot As Long
-   hBMMask As Long
-   hBMColor As Long
+   hbmMask As Long
+   hbmColor As Long
    End Type
 
 'This array will be used to store our icon handles so we can delete them on program exit
@@ -84,7 +85,7 @@ Dim iconHandles() As Long
 'Private Const PICTYPE_ICON = 3
 
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'clsMenuImage does the heavy lifting for inserting icons into menus
 Dim cMenuImage As clsMenuImage
@@ -100,7 +101,7 @@ Public Sub LoadMenuIcons()
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
         If (Not .IsWindowVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
         
-        .Init FormMain.hWnd, 16, 16
+        .Init FormMain.HWnd, 16, 16
         
         .AddImageFromStream LoadResData("OPENIMG", "CUSTOM")    '0
         .AddImageFromStream LoadResData("OPENREC", "CUSTOM")    '1
@@ -211,12 +212,23 @@ Public Sub LoadMenuIcons()
 
 End Sub
 
+'When menu captions are changed, the associated images are lost.  This forces a reset.
+' At present, it only address the Undo and Redo menu items.
+Public Sub ResetMenuIcons()
+
+    With cMenuImage
+        .PutImageToVBMenu 12, 0, 1      'Undo
+        .PutImageToVBMenu 13, 1, 1      'Redo
+    End With
+    
+End Sub
+
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
 'Again, thanks to Paul Turcksin for the original draft of this code.
 Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
 
     'Generating an icon requires many variables; see below for specific comments on each one
-    Dim bitmapData As BITMAP
+    Dim BitmapData As Bitmap
     Dim iWidth As Long
     Dim iHeight As Long
     Dim srcDC As Long
@@ -274,9 +286,9 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     imgForm.picIcon.Picture = imgForm.picIcon.Image
    
     'Now that we have a first draft to work from, start preparing the data types required by the icon API calls
-    GetObject imgForm.picIcon.Picture.Handle, Len(bitmapData), bitmapData
+    GetObject imgForm.picIcon.Picture.Handle, Len(BitmapData), BitmapData
 
-    With bitmapData
+    With BitmapData
         iWidth = .bmWidth
         iHeight = .bmHeight
     End With
@@ -322,8 +334,8 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
       .fIcon = True
       .xHotspot = icoSize
       .yHotspot = icoSize
-      .hBMMask = MonoBmp
-      .hBMColor = InvertBmp
+      .hbmMask = MonoBmp
+      .hbmColor = InvertBmp
     End With
       
     'Render the icon to a handle
@@ -331,13 +343,13 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     generatedIcon = CreateIconIndirect(icoInfo)
     
     'Clear out our temporary masks (whose info are now embedded in the icon itself)
-    DeleteObject icoInfo.hBMMask
-    DeleteObject icoInfo.hBMColor
+    DeleteObject icoInfo.hbmMask
+    DeleteObject icoInfo.hbmColor
     DeleteDC MonoDC
     DeleteDC InvertDC
    
     'Use the API to assign this new icon to the specified MDI child form
-    SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
+    SendMessageLong imgForm.HWnd, &H80, 0, generatedIcon
     
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon

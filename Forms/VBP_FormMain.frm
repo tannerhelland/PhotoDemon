@@ -85,7 +85,7 @@ Begin VB.MDIForm FormMain
          MousePointer    =   99  'Custom
          Style           =   2  'Dropdown List
          TabIndex        =   5
-         Top             =   3270
+         Top             =   2910
          Width           =   1215
       End
       Begin PhotoDemon.jcbutton cmdOpen 
@@ -142,9 +142,9 @@ Begin VB.MDIForm FormMain
          Height          =   615
          Left            =   120
          TabIndex        =   3
-         Top             =   1680
-         Width           =   1935
-         _ExtentX        =   3413
+         Top             =   1800
+         Width           =   900
+         _ExtentX        =   1588
          _ExtentY        =   1085
          ButtonStyle     =   13
          ShowFocusRect   =   -1  'True
@@ -157,19 +157,22 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "Undo Last Action"
+         Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":2784
          DisabledPictureMode=   1
          CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Undo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
-         Left            =   120
+         Left            =   1155
          TabIndex        =   4
-         Top             =   2400
-         Width           =   1935
-         _ExtentX        =   3413
+         Top             =   1800
+         Width           =   900
+         _ExtentX        =   1588
          _ExtentY        =   1085
          ButtonStyle     =   13
          ShowFocusRect   =   -1  'True
@@ -182,18 +185,21 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "Redo Last Action"
+         Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":37D6
          DisabledPictureMode=   1
          CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Redo"
+         TooltipBackColor=   -2147483643
       End
       Begin VB.Line Line3 
          BorderColor     =   &H80000002&
          X1              =   5
          X2              =   142
-         Y1              =   304
-         Y2              =   304
+         Y1              =   264
+         Y2              =   264
       End
       Begin VB.Label lblRecording 
          Alignment       =   2  'Center
@@ -212,7 +218,7 @@ Begin VB.MDIForm FormMain
          Height          =   255
          Left            =   0
          TabIndex        =   10
-         Top             =   4590
+         Top             =   3840
          Visible         =   0   'False
          Width           =   2175
       End
@@ -231,9 +237,10 @@ Begin VB.MDIForm FormMain
          EndProperty
          ForeColor       =   &H80000002&
          Height          =   195
-         Left            =   150
+         Left            =   120
          TabIndex        =   9
-         Top             =   4200
+         Top             =   7560
+         Visible         =   0   'False
          Width           =   1845
       End
       Begin VB.Label lblImgSize 
@@ -253,7 +260,7 @@ Begin VB.MDIForm FormMain
          Height          =   195
          Left            =   150
          TabIndex        =   8
-         Top             =   3840
+         Top             =   3480
          Width           =   1845
       End
       Begin VB.Label lblZoom 
@@ -273,15 +280,15 @@ Begin VB.MDIForm FormMain
          Height          =   240
          Left            =   150
          TabIndex        =   6
-         Top             =   3330
+         Top             =   2970
          Width           =   555
       End
       Begin VB.Line Line2 
          BorderColor     =   &H80000002&
          X1              =   5
          X2              =   142
-         Y1              =   208
-         Y2              =   208
+         Y1              =   176
+         Y2              =   176
       End
       Begin VB.Line Line1 
          BorderColor     =   &H80000002&
@@ -902,8 +909,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These functions are used to scroll through consecutive MDI windows without flickering
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
 
 
 'When the zoom combo box is changed, redraw the image using the new zoom value
@@ -1061,7 +1068,7 @@ End Sub
 Private Sub MnuBugReport_Click()
     
     'Shell a browser window with the GitHub issue report form
-    ShellExecute FormMain.hWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1147,7 +1154,7 @@ End Sub
 
 Private Sub MnuDonate_Click()
     'Launch the default web browser with the tannerhelland.com donation page
-    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuDream_Click()
@@ -1161,7 +1168,7 @@ End Sub
 Private Sub MnuEmailAuthor_Click()
     
     'Shell a browser window with the tannerhelland.com contact form
-    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1584,7 +1591,7 @@ End Sub
 
 Private Sub MnuVisitWebsite_Click()
     'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
-    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuWater_Click()
@@ -1658,7 +1665,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
         'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
         Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.hWnd, 5)
+        MDIClient = GetWindow(FormMain.HWnd, 5)
         
         'Use the API to instruct the MDI window to move one window forward or back
         If ctlAccelerator.Key(nIndex) = "Prev_Image" Then
