@@ -369,7 +369,9 @@ Public Sub MenuTest()
     
     Exit Sub
     
-    BuildImageRestore
+    'Supply an arbitrary process value to the Undo file generator
+    CreateUndoFile 9999
+    
     GetImageData
     Dim r As Long, g As Long, b As Long
     Dim TC As Long, tR As Long, tB As Long, tG As Long

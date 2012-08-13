@@ -76,6 +76,8 @@ Option Explicit
     'State of undo/redo buttons
     Public UndoState As Boolean
     Public RedoState As Boolean
+    'IDs of the processes associated with each undo file
+    Private UndoIDs() As Long
     
     'Current index of the zoom combo box
     Public CurrentZoomValue As Long
@@ -124,7 +126,10 @@ Public Sub UpdateSaveState(ByVal newSaveState As Boolean)
 
     If newSaveState = True Then
         HasBeenSaved = True
-        UndoNumAtLastSave = UndoNum '- 1
+        
+        'Remember the undo value at this juncture; if the user performs additional actions, but "Undos" to this point,
+        ' we still want the save button disabled
+        UndoNumAtLastSave = UndoNum
     Else
         HasBeenSaved = False
     End If
@@ -135,12 +140,17 @@ End Sub
     
 'UNDO routines:
 
-'Create an undo entry (a copy of the present image) (formerly BuildImageRestore)
-Public Sub BuildUndo()
+'Create an undo entry (a copy of the present image); also required is the ID of the process that required this action.
+' This is used to generate a string of the undo action's name (for example, "Undo Blur")
+Public Sub BuildUndo(ByVal processID As Long)
     
     'Easy enough - just store a 24-bit bitmap of the current image
     SavePicture FormMain.ActiveForm.BackBuffer.Picture, GenerateUndoFile(UndoNum)
     Debug.Print "Saved " & GenerateUndoFile(UndoNum) & " as Undo file #" & UndoNum & "."
+    
+    'Remember this processID for future use
+    ReDim Preserve UndoIDs(0 To UndoNum) As Long
+    UndoIDs(UndoNum) = processID
     
     'If the present image is NOT the last image in the undo train (i.e., an Undo
     'was fired before running the current operation) treat this as the new "last"
@@ -158,7 +168,7 @@ Public Sub BuildUndo()
     UndoState = True
     RedoState = False
     
-    'Mark this image as NOT saved (because if we're creating an Undo file, the image is being changed somehow)
+    'Mark this image as NOT saved (because if we're creating an Undo file, the image has changed from its saved version)
     HasBeenSaved = False
     tInit tSave, True
     
@@ -175,6 +185,9 @@ Public Sub Undo()
     If UndoNum = UndoMax Then
         SavePicture FormMain.ActiveForm.BackBuffer.Picture, GenerateUndoFile(UndoNum)
         Debug.Print "Undo initiated by user. Saved " & GenerateUndoFile(UndoNum) & " for Redo purposes."
+        'Mirror the current processID
+        ReDim Preserve UndoIDs(0 To UndoNum) As Long
+        UndoIDs(UndoNum) = UndoIDs(UndoNum - 1)
     End If
     
     'If this is not the last Undo state, decrease the number of Undos available
@@ -190,7 +203,7 @@ Public Sub Undo()
             
     'Also, if this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
     ' some other source), note that the image has now BEEN SAVED (because it has not been changed at all). If the image
-    ' was imported from somewhere, it HAS NOT BEEN SAVED just because the user Undo'd all the way back to its
+    ' was imported from somewhere, it has NOT BEEN SAVED just because the user Undo'd all the way back to its
     ' original state.
     If UndoNum = UndoNumAtLastSave Then
     
@@ -252,6 +265,30 @@ Public Sub ClearUndos()
     
 End Sub
 
+'Return the processID associated with the current Undo state
+Public Function getUndoProcessID() As Long
+    
+    'If we don't have a relevant Undo state, return -1.  Otherwise return the proper process ID.
+    If UndoState = False Then
+        getUndoProcessID = -1
+    Else
+        getUndoProcessID = UndoIDs(UndoNum - 1)
+    End If
+        
+End Function
+
+'Return the processID associated with the current Redo state
+Public Function getRedoProcessID() As Long
+
+    'If we don't have a relevant Redo state, return -1.  Otherwise return the proper process ID.
+    If RedoState = False Then
+        getRedoProcessID = -1
+    Else
+        getRedoProcessID = UndoIDs(UndoNum)
+    End If
+
+End Function
+
 'Subroutine for generating an Undo/Redo filename
 Private Function GenerateUndoFile(ByVal uIndex As Integer) As String
     GenerateUndoFile = TempPath & "~cPDU" & ImageID & "_" & uIndex & ".tmp"
@@ -277,5 +314,8 @@ Private Sub Class_Initialize()
     HasBeenSaved = False
     UndoNumAtLastSave = 0
     forInternalUseOnly = False
+    
+    'Set up the process ID array
+    ReDim UndoIDs(0 To 0) As Long
     
 End Sub

@@ -93,36 +93,11 @@ Public Sub LoadTheProgram()
     'Get the auto-zoom preference from the INI file
     AutosizeLargeImages = CLng(GetFromIni("General Preferences", "AutosizeLargeImages"))
     
-    'Set up the toolbar
+    'Render various aspects of the UI
     LoadMessage "Initializing user interface..."
-    
-    'Look in the MDIWindow module for this code - it enables/disables various control and menus based on
-    ' whether or not images have been loaded
-    UpdateMDIStatus
-    
-    'Set up our main progress bar control
-    Set cProgBar = New cProgressBar
-    cProgBar.DrawObject = FormMain.picProgBar
-    cProgBar.Min = 0
-    cProgBar.Max = 100
-    cProgBar.XpStyle = True
-    cProgBar.TextAlignX = EVPRGcenter
-    cProgBar.TextAlignY = EVPRGcenter
-    cProgBar.ShowText = True
-    cProgBar.Text = "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
-    cProgBar.Draw
-    
-    'Set up GUI defaults
-    FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
-    
-    'Clear the progress bar
-    SetProgBarVal 0
     
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
     LoadMenuShortcuts
-    
-    'Load the most-recently-used file list (MRU)
-    MRU_LoadFromINI
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
@@ -131,6 +106,34 @@ Public Sub LoadTheProgram()
     'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
     LoadMenuIcons
+    
+    'Look in the MDIWindow module for this code - it enables/disables various control and menus based on
+    ' whether or not images have been loaded
+    UpdateMDIStatus
+    
+    'Set up our main progress bar control
+    Set cProgBar = New cProgressBar
+    
+    With cProgBar
+        .DrawObject = FormMain.picProgBar
+        .Min = 0
+        .Max = 100
+        .XpStyle = True
+        .TextAlignX = EVPRGcenter
+        .TextAlignY = EVPRGcenter
+        .ShowText = True
+        .Text = "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
+        .Draw
+    End With
+    
+    'Set up GUI defaults
+    FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
+    
+    'Clear the progress bar
+    SetProgBarVal 0
+    
+    'Load the most-recently-used file list (MRU)
+    MRU_LoadFromINI
     
     'Initialize the custom MDI child form icon handler
     initializeIconHandler

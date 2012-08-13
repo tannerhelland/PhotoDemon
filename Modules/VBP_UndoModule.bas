@@ -3,11 +3,9 @@ Attribute VB_Name = "UndoFunctions"
 'Undo/Redo Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 20/June/12
-'Last update: ClearUndo now requires an image ID parameter.  Because that can by triggered by a non-active form
-'             (for example, when closing the program while many images are open - VB will not correctly fire the
-'             Activate event as each child form is unloaded in turn), it is necessary to specify which image will
-'             have its Undo cleared out.  This now guarantees that PhotoDemon won't leave temp files behind.
+'Last updated: 12/August/12
+'Last update: BuildImageRestore requests are now required to supply the ID of the process requesting
+'             Undo generation.  This is used to generate text related to undos (e.g. "Undo Blur")
 '
 'Handles all "Undo"/"Redo" operations.  I currently have it programmed to use the hard
 'drive for all backups in order to free up RAM; this could be changed with in-memory images,
@@ -22,11 +20,12 @@ Option Explicit
 
 
 'Create an Undo entry (save a copy of the present image to the temp directory)
-Public Sub BuildImageRestore()
+' Required: the ID of the process that called this action
+Public Sub CreateUndoFile(ByVal processID As Long)
     
     'All undo work is handled internally in the pdImage class
     Message "Creating Undo data..."
-    pdImages(CurrentImage).BuildUndo
+    pdImages(CurrentImage).BuildUndo processID
     
     'Since an undo exists, enable the Undo button and disable the Redo button
     tInit tUndo, pdImages(CurrentImage).UndoState
@@ -35,7 +34,7 @@ Public Sub BuildImageRestore()
 
 End Sub
 
-'Restore an undo entry (i.e. ctrl+z)
+'Restore an undo entry : "Undo"
 Public Sub RestoreImage()
     
     'Let the internal pdImage Undo handler take care of any changes
@@ -52,7 +51,7 @@ Public Sub RestoreImage()
     
 End Sub
 
-'Run through every form and wipe every undo file we can find
+'Erase every undo file for every open image
 Public Sub ClearALLUndo()
     
     'Temporary value for tracking forms
@@ -72,7 +71,7 @@ Public Sub ClearALLUndo()
 
 End Sub
 
-'Clear all known undo images from the temporary directory for the current image
+'Clear all undo images for a single image
 Public Sub ClearUndo(ByVal ImageID As Long)
 
     'Tell this pdImage class to destroy all its Undo files
@@ -110,7 +109,7 @@ Private Function GenerateUndoFile(ByVal uIndex As Integer) As String
     GenerateUndoFile = TempPath & "~cPDU" & CurrentImage & "_" & uIndex & ".tmp"
 End Function
 
-'Subroutine for returning the path of the last Undo file (used for fading)
+'Subroutine for returning the path of the last Undo file (used for fading last effect)
 Public Function GetLastUndoFile() As String
     'Launch the undo loading routine
     GetLastUndoFile = GenerateUndoFile(pdImages(CurrentImage).UndoNum - 2)

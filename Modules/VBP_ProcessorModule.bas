@@ -246,13 +246,13 @@ Public LastFilterCall As ProcessCall
 Public Processing As Boolean
 
 'PhotoDemon's software processor.  Almost every action the program takes is routed through this method.  This is what
-' allows us to record amd playback macros, among other things.  (See comment at top of page for more details.)
-Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optional pOPCODE2 As Variant = 0, Optional pOPCODE3 As Variant = 0, Optional pOPCODE4 As Variant = 0, Optional pOPCODE5 As Variant = 0, Optional pOPCODE6 As Variant = 0, Optional pOPCODE7 As Variant = 0, Optional pOPCODE8 As Variant = 0, Optional pOPCODE9 As Variant = 0, Optional LoadForm As Boolean = False, Optional RecordAction As Boolean = True)
+' allows us to record and playback macros, among other things.  (See comment at top of page for more details.)
+Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optional pOPCODE2 As Variant = 0, Optional pOPCODE3 As Variant = 0, Optional pOPCODE4 As Variant = 0, Optional pOPCODE5 As Variant = 0, Optional pOPCODE6 As Variant = 0, Optional pOPCODE7 As Variant = 0, Optional pOPCODE8 As Variant = 0, Optional pOPCODE9 As Variant = 0, Optional LoadForm As Boolean = False, Optional RecordAction As Boolean = True)
 
     'Main error handler for the entire program is initialized by this line
     On Error GoTo MainErrHandler
     
-    'This line is used for raising errors to test the error handler
+    'If desired, this line can be used to artificially raise errors (to test the error handler)
     'Err.Raise 339
     
     'Mark the software processor as busy
@@ -263,8 +263,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     
     'If we are to perform the last command, simply replace all the method parameters using data from the
     ' LastFilterCall object, then let the routine carry on as usual
-    If PType = LastCommand Then
-        PType = LastFilterCall.MainType
+    If pType = LastCommand Then
+        pType = LastFilterCall.MainType
         pOPCODE = LastFilterCall.pOPCODE
         pOPCODE2 = LastFilterCall.pOPCODE2
         pOPCODE3 = LastFilterCall.pOPCODE3
@@ -286,7 +286,7 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
         'Copy the current function variables into the array
         ReDim Preserve Calls(0 To CurrentCall) As ProcessCall
         With Calls(CurrentCall)
-            .MainType = PType
+            .MainType = pType
             .pOPCODE = pOPCODE
             .pOPCODE2 = pOPCODE2
             .pOPCODE3 = pOPCODE3
@@ -303,16 +303,16 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     
     
     'SUB HANDLER/PROCESSOR
-    'From this point on, all we do is check the PType variable (the constant that is the first
-    'variable passed to this subroutine) and depending on what it is, we call the appropriate
-    'subroutine.  Very simple and very fast to do.
+    'From this point on, all we do is check the pType variable (the first variable passed
+    ' to this subroutine) and depending on what it is, we call the appropriate subroutine.
+    ' Very simple and very fast.
     
-    'I have also subdivided the "Select Case" statements up by groups of 100, just as I do
-    'above in the declarations part.
+    'I have also subdivided the "Select Case" statements into groups of 100, just as I do
+    ' above in the declarations part.  This is purely organizational.
     
-    'Main functions.  These are never recorded by macros.
-    If PType > 0 And PType <= 99 Then
-        Select Case PType
+    'Process types 0-99.  Main functions.  These are never recorded as part of macros.
+    If pType > 0 And pType <= 99 Then
+        Select Case pType
             Case FileOpen
                 MenuOpen
             Case FileSave
@@ -352,7 +352,7 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     'Get image data and build the undo for any action that changes the image buffer
     
     'First, make sure that the current command is a filter or image-changing event
-    If PType >= 101 Then
+    If pType >= 101 Then
     
         'Get the image data (to get image size and information)
         GetImageData
@@ -361,13 +361,13 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
         'we ARE allowed to record this action, and if it's not counting colors (useless),
         ' and if we're not performing a batch conversion (saves a lot of time to not generate undo files!)
         If MacroStatus <> MacroBATCH Then
-            If LoadForm <> True And RecordAction <> False And PType <> CountColors Then BuildImageRestore
+            If LoadForm <> True And RecordAction <> False And pType <> CountColors Then CreateUndoFile pType
         End If
         
         'Save this information in the LastFilterCall variable (to be used if the user clicks on
         ' Edit -> Redo Last Command.
         FormMain.MnuRepeatLast.Enabled = True
-        LastFilterCall.MainType = PType
+        LastFilterCall.MainType = pType
         LastFilterCall.pOPCODE = pOPCODE
         LastFilterCall.pOPCODE2 = pOPCODE2
         LastFilterCall.pOPCODE3 = pOPCODE3
@@ -382,8 +382,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Histogram functions
-    If PType >= 100 And PType <= 199 Then
-        Select Case PType
+    If pType >= 100 And pType <= 199 Then
+        Select Case pType
             Case ViewHistogram
                 FormHistogram.Show 0
             Case StretchHistogram
@@ -402,8 +402,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Black/White conversion
-    If PType >= 200 And PType <= 299 Then
-        Select Case PType
+    If pType >= 200 And pType <= 299 Then
+        Select Case pType
             Case BWImpressionist
                 If LoadForm = True Then
                     FormBlackAndWhite.Show 1, FormMain
@@ -430,8 +430,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Grayscale conversion
-    If PType >= 300 And PType <= 399 Then
-        Select Case PType
+    If pType >= 300 And pType <= 399 Then
+        Select Case pType
             Case Desaturate
                 FormGrayscale.MenuDesaturate
             Case GrayScale
@@ -450,8 +450,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Area filters
-    If PType >= 400 And PType <= 499 Then
-        Select Case PType
+    If pType >= 400 And pType <= 499 Then
+        Select Case pType
             Case Blur
                 FilterBlur
             Case BlurMore
@@ -506,8 +506,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Edge filters
-    If PType >= 500 And PType <= 599 Then
-        Select Case PType
+    If pType >= 500 And pType <= 599 Then
+        Select Case pType
             Case EmbossToColor
                 If LoadForm = True Then
                     FormEmbossEngrave.Show 1, FormMain
@@ -548,8 +548,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Color operations
-    If PType >= 600 And PType <= 699 Then
-        Select Case PType
+    If pType >= 600 And pType <= 699 Then
+        Select Case pType
             Case RechannelBlue
                 MenuRechannel pOPCODE
             Case RechannelGreen
@@ -616,8 +616,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Coordinate filters/transformations
-    If PType >= 700 And PType <= 799 Then
-        Select Case PType
+    If pType >= 700 And pType <= 799 Then
+        Select Case pType
             Case Flip
                 MenuFlip
             'Case FreeRotate
@@ -642,8 +642,8 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Other filters
-    If PType >= 800 And PType <= 899 Then
-        Select Case PType
+    If pType >= 800 And pType <= 899 Then
+        Select Case pType
             Case Antique
                 MenuAntique
             Case Atmospheric
@@ -741,7 +741,7 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Finally, check to see if the user wants us to fade the last effect applied to the image...
-    If PType = FadeLastEffect Then MenuFadeLastEffect
+    If pType = FadeLastEffect Then MenuFadeLastEffect
     
     'Restore the mouse pointer to its default value; if we are running a batch conversion, however, leave it busy
     ' The batch routine will handle restoring the cursor to normal.
@@ -760,7 +760,7 @@ Public Sub Process(ByVal PType As Long, Optional pOPCODE As Variant = 0, Optiona
     
     'If the image is potentially being changed and we are not performing a batch conversion (disabled to save speed!),
     ' redraw the active MDI child form icon.
-    If (PType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) And (RecordAction <> False) And (PType <> CountColors) Then CreateCustomFormIcon FormMain.ActiveForm
+    If (pType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) And (RecordAction <> False) And (pType <> CountColors) Then CreateCustomFormIcon FormMain.ActiveForm
     
     'Mark the processor as no longer busy
     Processing = False
