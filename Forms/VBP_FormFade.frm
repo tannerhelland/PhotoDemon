@@ -28,8 +28,6 @@ Begin VB.Form FormFade
       Left            =   240
       Max             =   100
       Min             =   1
-      MouseIcon       =   "VBP_FormFade.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   3360
       Value           =   50
@@ -107,8 +105,6 @@ Begin VB.Form FormFade
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormFade.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   4080
       Width           =   1125
@@ -118,8 +114,6 @@ Begin VB.Form FormFade
       Default         =   -1  'True
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormFade.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   4080
       Width           =   1125

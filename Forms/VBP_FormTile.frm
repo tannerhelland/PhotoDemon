@@ -58,8 +58,6 @@ Begin VB.Form FormTile
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   2640
-      MouseIcon       =   "VBP_FormTile.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   2760
       Width           =   2175
@@ -79,8 +77,6 @@ Begin VB.Form FormTile
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   1200
-      MouseIcon       =   "VBP_FormTile.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   2760
       Value           =   -1  'True
@@ -100,8 +96,6 @@ Begin VB.Form FormTile
       EndProperty
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormTile.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   3360
       Width           =   1125
@@ -120,13 +114,11 @@ Begin VB.Form FormTile
       EndProperty
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormTile.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   3360
       Width           =   1125
    End
-   Begin VB.Label Label3 
+   Begin VB.Label lblPreview 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent

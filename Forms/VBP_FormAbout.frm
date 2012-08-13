@@ -22,7 +22,7 @@ Begin VB.Form FormAbout
    Icon            =   "VBP_FormAbout.frx":0000
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   Picture         =   "VBP_FormAbout.frx":058A
+   Picture         =   "VBP_FormAbout.frx":000C
    ScaleHeight     =   541
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   602
@@ -55,7 +55,7 @@ Begin VB.Form FormAbout
       Height          =   195
       Index           =   0
       Left            =   240
-      MouseIcon       =   "VBP_FormAbout.frx":A6C2
+      MouseIcon       =   "VBP_FormAbout.frx":A144
       MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   2880

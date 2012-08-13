@@ -28,8 +28,6 @@ Begin VB.Form FormRank
       Left            =   240
       Max             =   25
       Min             =   1
-      MouseIcon       =   "VBP_FormMaximum.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   3960
       Value           =   1
@@ -113,8 +111,6 @@ Begin VB.Form FormRank
       ForeColor       =   &H00800000&
       Height          =   330
       Left            =   1560
-      MouseIcon       =   "VBP_FormMaximum.frx":0152
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   0
       Top             =   2760
@@ -125,8 +121,6 @@ Begin VB.Form FormRank
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3600
-      MouseIcon       =   "VBP_FormMaximum.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   4560
       Width           =   1125
@@ -136,8 +130,6 @@ Begin VB.Form FormRank
       Default         =   -1  'True
       Height          =   375
       Left            =   2400
-      MouseIcon       =   "VBP_FormMaximum.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   4560
       Width           =   1125

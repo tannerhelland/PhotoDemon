@@ -28,8 +28,6 @@ Begin VB.Form FormSolarize
       Left            =   240
       Max             =   254
       Min             =   1
-      MouseIcon       =   "VBP_FormSolarize.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   3240
       Value           =   127
@@ -104,8 +102,6 @@ Begin VB.Form FormSolarize
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormSolarize.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   3960
       Width           =   1125
@@ -115,8 +111,6 @@ Begin VB.Form FormSolarize
       Default         =   -1  'True
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormSolarize.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   3960
       Width           =   1125

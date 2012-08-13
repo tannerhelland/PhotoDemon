@@ -38,8 +38,6 @@ Begin VB.Form FormEmbossEngrave
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   1200
-      MouseIcon       =   "VBP_FormEmbossEngrave.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   2880
       Value           =   -1  'True
@@ -60,8 +58,6 @@ Begin VB.Form FormEmbossEngrave
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   2880
-      MouseIcon       =   "VBP_FormEmbossEngrave.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   2880
       Width           =   975
@@ -108,8 +104,6 @@ Begin VB.Form FormEmbossEngrave
       EndProperty
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormEmbossEngrave.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   5
       Top             =   4440
       Width           =   1125
@@ -128,8 +122,6 @@ Begin VB.Form FormEmbossEngrave
       EndProperty
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormEmbossEngrave.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   4440
       Width           =   1125
@@ -140,8 +132,6 @@ Begin VB.Form FormEmbossEngrave
       ForeColor       =   &H80000008&
       Height          =   495
       Left            =   3600
-      MouseIcon       =   "VBP_FormEmbossEngrave.frx":0548
-      MousePointer    =   99  'Custom
       ScaleHeight     =   465
       ScaleWidth      =   1185
       TabIndex        =   2
@@ -163,8 +153,6 @@ Begin VB.Form FormEmbossEngrave
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   360
-      MouseIcon       =   "VBP_FormEmbossEngrave.frx":069A
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   3615
       Width           =   3255
@@ -249,6 +237,7 @@ Private Sub Form_Load()
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
+    setHandCursor PicColor
     
 End Sub
 

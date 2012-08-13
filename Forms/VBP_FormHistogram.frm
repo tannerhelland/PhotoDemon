@@ -31,8 +31,6 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H80000008&
       Height          =   375
       Left            =   4920
-      MouseIcon       =   "VBP_FormHistogram.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   18
       Top             =   6900
       Width           =   2055
@@ -43,8 +41,6 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H80000008&
       Height          =   375
       Left            =   3000
-      MouseIcon       =   "VBP_FormHistogram.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   17
       Top             =   6900
       Value           =   1  'Checked
@@ -54,8 +50,6 @@ Begin VB.Form FormHistogram
       Caption         =   "Export Histogram to File..."
       Height          =   495
       Left            =   240
-      MouseIcon       =   "VBP_FormHistogram.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   6840
       Width           =   2535
@@ -65,8 +59,6 @@ Begin VB.Form FormHistogram
       Default         =   -1  'True
       Height          =   495
       Left            =   10440
-      MouseIcon       =   "VBP_FormHistogram.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   6840
       Width           =   1245

@@ -46,8 +46,6 @@ Begin VB.Form FormCustomFilter
       Caption         =   "Cancel"
       Height          =   375
       Left            =   1800
-      MouseIcon       =   "VBP_FormCustomFilter.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   28
       Top             =   2520
       Width           =   1125
@@ -57,8 +55,6 @@ Begin VB.Form FormCustomFilter
       Default         =   -1  'True
       Height          =   375
       Left            =   600
-      MouseIcon       =   "VBP_FormCustomFilter.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   27
       Top             =   2520
       Width           =   1125

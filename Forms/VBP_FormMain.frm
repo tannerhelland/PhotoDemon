@@ -81,8 +81,6 @@ Begin VB.MDIForm FormMain
          ItemData        =   "VBP_FormMain.frx":058A
          Left            =   840
          List            =   "VBP_FormMain.frx":058C
-         MouseIcon       =   "VBP_FormMain.frx":058E
-         MousePointer    =   99  'Custom
          Style           =   2  'Dropdown List
          TabIndex        =   5
          Top             =   2910
@@ -109,7 +107,7 @@ Begin VB.MDIForm FormMain
          EndProperty
          Caption         =   "Open Image"
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":06E0
+         PictureNormal   =   "VBP_FormMain.frx":058E
          DisabledPictureMode=   1
          CaptionEffects  =   0
       End
@@ -134,7 +132,7 @@ Begin VB.MDIForm FormMain
          EndProperty
          Caption         =   "Save Image"
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":1732
+         PictureNormal   =   "VBP_FormMain.frx":15E0
          DisabledPictureMode=   1
          CaptionEffects  =   0
       End
@@ -159,7 +157,7 @@ Begin VB.MDIForm FormMain
          EndProperty
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":2784
+         PictureNormal   =   "VBP_FormMain.frx":2632
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipType     =   1
@@ -187,7 +185,7 @@ Begin VB.MDIForm FormMain
          EndProperty
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":37D6
+         PictureNormal   =   "VBP_FormMain.frx":3684
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipType     =   1

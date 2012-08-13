@@ -19,8 +19,6 @@ Begin VB.Form FormGamma
       Left            =   240
       Max             =   200
       Min             =   1
-      MouseIcon       =   "VBP_FormGamma.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   4080
       Value           =   100
@@ -88,8 +86,6 @@ Begin VB.Form FormGamma
       EndProperty
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormGamma.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   4680
       Width           =   1125
@@ -108,8 +104,6 @@ Begin VB.Form FormGamma
       EndProperty
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormGamma.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   4680
       Width           =   1125
@@ -128,8 +122,6 @@ Begin VB.Form FormGamma
       ForeColor       =   &H00800000&
       Height          =   330
       Left            =   2520
-      MouseIcon       =   "VBP_FormGamma.frx":03F6
-      MousePointer    =   99  'Custom
       Style           =   2  'Dropdown List
       TabIndex        =   0
       Top             =   2880

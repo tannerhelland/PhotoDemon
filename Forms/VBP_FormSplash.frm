@@ -31,8 +31,9 @@ Begin VB.Form FormSplash
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Begin VB.Label lblVersion 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Version 2.0"
+      Caption         =   "Version (populated at run-time)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -47,7 +48,7 @@ Begin VB.Form FormSplash
       Left            =   120
       TabIndex        =   1
       Top             =   2280
-      Width           =   4125
+      Width           =   2925
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblMessage 

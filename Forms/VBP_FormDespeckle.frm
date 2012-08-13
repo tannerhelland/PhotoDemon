@@ -29,8 +29,6 @@ Begin VB.Form FormDespeckle
       Left            =   2160
       Max             =   5
       Min             =   2
-      MouseIcon       =   "VBP_FormDespeckle.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   480
       Value           =   5
@@ -41,8 +39,6 @@ Begin VB.Form FormDespeckle
       Default         =   -1  'True
       Height          =   375
       Left            =   3240
-      MouseIcon       =   "VBP_FormDespeckle.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   1440
       Width           =   1125
@@ -52,8 +48,6 @@ Begin VB.Form FormDespeckle
       Caption         =   "Cancel"
       Height          =   375
       Left            =   4440
-      MouseIcon       =   "VBP_FormDespeckle.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   1440
       Width           =   1125

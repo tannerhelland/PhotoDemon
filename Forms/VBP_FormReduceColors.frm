@@ -28,8 +28,6 @@ Begin VB.Form FormReduceColors
       Left            =   3360
       Max             =   256
       Min             =   1
-      MouseIcon       =   "VBP_FormReduceColors.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   8
       Top             =   2895
       Value           =   6
@@ -40,8 +38,6 @@ Begin VB.Form FormReduceColors
       Left            =   3360
       Max             =   256
       Min             =   1
-      MouseIcon       =   "VBP_FormReduceColors.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   6
       Top             =   2535
       Value           =   7
@@ -52,8 +48,6 @@ Begin VB.Form FormReduceColors
       Left            =   3360
       Max             =   256
       Min             =   1
-      MouseIcon       =   "VBP_FormReduceColors.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   2175
       Value           =   6
@@ -66,8 +60,6 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Index           =   2
       Left            =   840
-      MouseIcon       =   "VBP_FormReduceColors.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   1320
       Width           =   2775
@@ -105,8 +97,6 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   720
-      MouseIcon       =   "VBP_FormReduceColors.frx":0548
-      MousePointer    =   99  'Custom
       TabIndex        =   9
       Top             =   3840
       Value           =   1  'Checked
@@ -118,8 +108,6 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   3480
-      MouseIcon       =   "VBP_FormReduceColors.frx":069A
-      MousePointer    =   99  'Custom
       TabIndex        =   10
       Top             =   3840
       Value           =   1  'Checked
@@ -132,8 +120,6 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Index           =   0
       Left            =   840
-      MouseIcon       =   "VBP_FormReduceColors.frx":07EC
-      MousePointer    =   99  'Custom
       TabIndex        =   0
       Top             =   600
       Value           =   -1  'True
@@ -146,8 +132,6 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Index           =   1
       Left            =   840
-      MouseIcon       =   "VBP_FormReduceColors.frx":093E
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   960
       Width           =   3375
@@ -157,8 +141,6 @@ Begin VB.Form FormReduceColors
       Default         =   -1  'True
       Height          =   375
       Left            =   3960
-      MouseIcon       =   "VBP_FormReduceColors.frx":0A90
-      MousePointer    =   99  'Custom
       TabIndex        =   11
       Top             =   4440
       Width           =   1125
@@ -167,8 +149,6 @@ Begin VB.Form FormReduceColors
       Caption         =   "Cancel"
       Height          =   375
       Left            =   5160
-      MouseIcon       =   "VBP_FormReduceColors.frx":0BE2
-      MousePointer    =   99  'Custom
       TabIndex        =   12
       Top             =   4440
       Width           =   1125

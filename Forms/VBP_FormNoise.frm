@@ -28,8 +28,6 @@ Begin VB.Form FormNoise
       Left            =   240
       Max             =   500
       Min             =   1
-      MouseIcon       =   "VBP_FormNoise.frx":0000
-      MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   3240
       Value           =   1
@@ -114,8 +112,6 @@ Begin VB.Form FormNoise
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   1680
-      MouseIcon       =   "VBP_FormNoise.frx":0152
-      MousePointer    =   99  'Custom
       TabIndex        =   2
       Top             =   3720
       Width           =   1575
@@ -124,8 +120,6 @@ Begin VB.Form FormNoise
       Caption         =   "Cancel"
       Height          =   375
       Left            =   3720
-      MouseIcon       =   "VBP_FormNoise.frx":02A4
-      MousePointer    =   99  'Custom
       TabIndex        =   4
       Top             =   4320
       Width           =   1125
@@ -135,8 +129,6 @@ Begin VB.Form FormNoise
       Default         =   -1  'True
       Height          =   375
       Left            =   2520
-      MouseIcon       =   "VBP_FormNoise.frx":03F6
-      MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   4320
       Width           =   1125
