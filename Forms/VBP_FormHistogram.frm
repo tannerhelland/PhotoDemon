@@ -339,7 +339,7 @@ Dim hDataLog(0 To 3, 0 To 255) As Single
 
 'Maximum histogram values (r/g/b/luminance)
 'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Dim HMax(0 To 3) As Single
-Dim hMax As Single, hMaxLog As Single
+Dim HMax As Single, hMaxLog As Single
 
 'Loop and position variables
 Dim x As Long, y As Long
@@ -442,6 +442,9 @@ Private Sub Form_Load()
 
     histogramGenerated = False
 
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+
     'Commented code below is from a previous build where the user could specify which channel to draw.
     ' I haven't implemented per-channel checkboxes yet.  It's coming.
     
@@ -534,7 +537,7 @@ Public Sub DrawHistogram()
                 If chkLog.Value = vbChecked Then
                     LastY = tHeight - (hDataLog(hType, 0) / hMaxLog) * tHeight
                 Else
-                    LastY = tHeight - (hData(hType, 0) / hMax) * tHeight
+                    LastY = tHeight - (hData(hType, 0) / HMax) * tHeight
                 End If
                     
                 Dim xCalc As Long
@@ -551,7 +554,7 @@ Public Sub DrawHistogram()
                     If chkLog.Value = vbChecked Then
                         y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
                     Else
-                        y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
+                        y = tHeight - (hData(hType, xCalc) / HMax) * tHeight
                     End If
                     
                     'For connecting lines...
@@ -589,7 +592,7 @@ Public Sub DrawHistogram()
     lblTotalPixels.Caption = "Total pixels: " & (PicWidthL * PicHeightL)
     
     'Maximum value
-    lblMaxCount.Caption = hMax
+    lblMaxCount.Caption = HMax
 
 End Sub
 
@@ -1024,7 +1027,7 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
         If chkLog.Value = vbChecked Then
             iY(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
         Else
-            iY(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight
+            iY(i) = tHeight - (hData(histogramChannel, i - 1) / HMax) * tHeight
         End If
     Next i
     
@@ -1121,7 +1124,7 @@ Public Sub TallyHistogramValues()
     
     'If the histogram has already been used, we need to clear out all the
     'maximum values and histogram values
-    hMax = 0
+    HMax = 0
     For x = 0 To 3
         For y = 0 To 255
             hData(x, y) = 0
@@ -1159,18 +1162,18 @@ Public Sub TallyHistogramValues()
     'Run a quick loop through the completed array to find maximum values
     For x = 0 To 255
         'Red
-        If hData(0, x) > hMax Then hMax = hData(0, x)
+        If hData(0, x) > HMax Then HMax = hData(0, x)
         'Green
-        If hData(1, x) > hMax Then hMax = hData(1, x)
+        If hData(1, x) > HMax Then HMax = hData(1, x)
         'Blue
-        If hData(2, x) > hMax Then hMax = hData(2, x)
+        If hData(2, x) > HMax Then HMax = hData(2, x)
         'Luminance
-        If hData(3, x) > hMax Then hMax = hData(3, x)
+        If hData(3, x) > HMax Then HMax = hData(3, x)
     Next x
     
     'Now calculate the logarithmic version of the histogram
-    If hMax <> 0 Then
-        hMaxLog = Log(hMax)
+    If HMax <> 0 Then
+        hMaxLog = Log(HMax)
     Else
         hMaxLog = 0
     End If

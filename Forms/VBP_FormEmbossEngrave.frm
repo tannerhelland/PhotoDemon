@@ -236,8 +236,9 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-'LOAD the form
+'LOAD form
 Private Sub Form_Load()
+    
     'Remember the last emboss/engrave color selection
     PicColor.BackColor = EmbossEngraveColor
     
@@ -245,6 +246,9 @@ Private Sub Form_Load()
     DrawPreviewImage PicPreview
     DrawPreviewImage PicEffect
     DrawPreview
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
     
 End Sub
 

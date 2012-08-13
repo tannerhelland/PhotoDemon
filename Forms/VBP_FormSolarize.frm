@@ -236,11 +236,17 @@ Public Sub SolarizeImage(ByVal Threshold As Byte)
     
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
-'Create the previews
+    
+    'Create the previews
     DrawPreviewImage PicPreview
     DrawPreviewImage PicEffect
     PreviewSolarize hsThreshold.Value
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Same as above, but exclusively for previewing

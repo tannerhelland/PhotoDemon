@@ -281,11 +281,17 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean)
     
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
-'Create the previews
+    
+    'Create the previews
     DrawPreviewImage PicPreview
     DrawPreviewImage PicEffect
     PreviewNoise hsNoise.Value, ChkM.Value
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 

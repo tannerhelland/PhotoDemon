@@ -351,7 +351,9 @@ Private Sub CmdOK_Click()
     
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
     'Only allow AutoReduction stuff if the FreeImage dll was found.
     If FreeImageEnabled = False Then
         OptQuant(0).Enabled = False
@@ -363,6 +365,10 @@ Private Sub Form_Load()
         OptQuant(0).Value = True
         DisplayManualOptions False
     End If
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Enable/disable the manual settings depending on which option button has been selected
@@ -504,7 +510,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long)
     'Paint the quantized image to the current picture box
     Message "Rendering..."
     Dim PaintReturn As Long
-    PaintReturn = FreeImage_PaintDC(FormMain.ActiveForm.BackBuffer.hdc, quantizeDib)
+    PaintReturn = FreeImage_PaintDC(FormMain.ActiveForm.BackBuffer.hDC, quantizeDib)
     FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
     FormMain.ActiveForm.BackBuffer.Refresh
     ScrollViewport FormMain.ActiveForm

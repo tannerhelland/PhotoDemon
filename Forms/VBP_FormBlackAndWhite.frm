@@ -196,7 +196,10 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
+    'Generate a list box with all the various grayscale conversion algorithms
     LstConvert.AddItem "Component Color"
     LstConvert.AddItem "Impressionist"
     LstConvert.AddItem "Nearest Color"
@@ -207,6 +210,10 @@ Private Sub Form_Load()
     LstConvert.AddItem "Floyd-Steinberg (Dithered)"
     LstConvert.ListIndex = 7
     UpdateDescription
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 Private Sub hsThreshold_Change()

@@ -3,8 +3,8 @@ Attribute VB_Name = "Miscellaneous"
 'Miscellaneous Operations Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 05/July/12
-'Last update: Moved all string functions to a dedicated module.
+'Last updated: 12/August/12
+'Last update: Built several subs dedicated to assigning the system's hand cursor to controls.
 '
 'Handles messaging, value checking, RGB Extraction, checking if files exist,
 ' variable truncation, and old array transfer routines.
@@ -12,6 +12,17 @@ Attribute VB_Name = "Miscellaneous"
 '***************************************************************************
 
 Option Explicit
+
+'Used to set the cursor for an object to the system's hand cursor
+Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
+Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
+Private Const IDC_HAND  As Long = 32649
+Private Const GCL_HCURSOR = (-12)
+
+'This variable will hold the value of the loaded hand cursor.  We need to delete it (via DestroyCursor) when the program exits.
+Dim hc_Handle As Long
+
 
 'Straight from MSDN - generate a "browse for folder" dialog
 Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
@@ -46,12 +57,12 @@ Public Sub SetProgBarVal(ByVal val As Long)
 End Sub
 
 'Display the current mouse position in the main form's status bar
-Public Sub SetBitmapCoordinates(ByVal X1 As Long, ByVal Y1 As Long)
+Public Sub SetBitmapCoordinates(ByVal x1 As Long, ByVal y1 As Long)
     Dim ZoomVal As Single
     ZoomVal = Zoom.ZoomArray(FormMain.CmbZoom.ListIndex)
-    X1 = FormMain.ActiveForm.HScroll.Value + Int(X1 / ZoomVal)
-    Y1 = FormMain.ActiveForm.VScroll.Value + Int(Y1 / ZoomVal)
-    FormMain.lblCoordinates.Caption = "(" & X1 & "," & Y1 & ")"
+    x1 = FormMain.ActiveForm.HScroll.Value + Int(x1 / ZoomVal)
+    y1 = FormMain.ActiveForm.VScroll.Value + Int(y1 / ZoomVal)
+    FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
     DoEvents
 End Sub
 
@@ -175,3 +186,33 @@ Public Function AutoSelectText(ByRef tBox As TextBox)
     tBox.SelStart = 0
     tBox.SelLength = Len(tBox.Text)
 End Function
+
+'Load the hand cursor into memory
+Public Sub initHandCursor()
+    hc_Handle = LoadCursor(0, IDC_HAND)
+End Sub
+
+'Remove the hand cursor from memory
+Public Sub destroyHandCursor()
+    DestroyCursor hc_Handle
+End Sub
+
+'Set all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor
+Public Sub setHandCursorForAll(ByRef tForm As Form)
+
+    Dim eControl As Control
+    
+    For Each eControl In tForm.Controls
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Then
+            eControl.MouseIcon = LoadPicture("")
+            eControl.MousePointer = 0
+            setHandCursor eControl
+        End If
+    Next
+    
+End Sub
+
+'Set a single object ot use a particular hand cursor
+Public Sub setHandCursor(ByRef tControl As Control)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle
+End Sub

@@ -398,7 +398,7 @@ Private Sub CmdOK_Click()
 End Sub
 
 
-'When the program starts, automatically initialize several things...
+'LOAD form
 Private Sub Form_Load()
     
     'Draw preview images to the top picture boxes
@@ -410,6 +410,9 @@ Private Sub Form_Load()
     
     '...and allow refreshing
     iRefresh = True
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 

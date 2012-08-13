@@ -513,6 +513,9 @@ Private Sub Form_Load()
     cmbDPI.AddItem "3600"
     cmbDPI.AddItem "4000"
     cmbDPI = baseDPI
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
 
 End Sub
 

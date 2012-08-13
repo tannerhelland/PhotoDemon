@@ -371,11 +371,11 @@ Private Sub BuildTmpArray()
     Message "Gathering image information..."
     ReDim CalcArray(0 To PicWidthL, 0 To PicHeightL) As Long
     ReDim TmpBitmapArray(0 To PicWidthL, 0 To PicHeightL) As Long
-    Dim TX As Long
+    Dim tX As Long
     For x = 0 To PicWidthL
-        TX = x * 3
+        tX = x * 3
     For y = 0 To PicHeightL
-        TmpBitmapArray(x, y) = RGB(ImageData(TX + 2, y), ImageData(TX + 1, y), ImageData(TX, y))
+        TmpBitmapArray(x, y) = RGB(ImageData(tX + 2, y), ImageData(tX + 1, y), ImageData(tX, y))
         CalcArray(x, y) = TmpBitmapArray(x, y)
     Next y
     Next x
@@ -384,21 +384,22 @@ End Sub
 Public Sub SetTmpArray()
     'Copy the information from the temporary arrays back into the main one
     SetProgBarVal cProgBar.Max
-    Dim TX As Long
+    Dim tX As Long
     Dim TV As Long
     For x = 0 To PicWidthL
-        TX = x * 3
+        tX = x * 3
     For y = 0 To PicHeightL
         TV = TmpBitmapArray(x, y)
-        ImageData(TX + 2, y) = CByte(ExtractR(TV))
-        ImageData(TX + 1, y) = CByte(ExtractG(TV))
-        ImageData(TX, y) = CByte(ExtractB(TV))
+        ImageData(tX + 2, y) = CByte(ExtractR(TV))
+        ImageData(tX + 1, y) = CByte(ExtractG(TV))
+        ImageData(tX, y) = CByte(ExtractB(TV))
     Next y
     Next x
     SetImageData
 End Sub
 
 Private Sub Form_Load()
+    
     GetImageData
     DrawPreviewImage PicPreview
     DrawPreviewImage PicEffect
@@ -411,6 +412,9 @@ Private Sub Form_Load()
     'Draw preview effect
     DrawPreviewDiffuse (hsX.Value / PicWidthL) * PreviewWidth, (hsY.Value / PicHeightL) * PreviewHeight
     
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Diffuse preview
@@ -419,11 +423,11 @@ Private Sub DrawPreviewDiffuse(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
 
     ReDim CalcArray(0 To PreviewWidth + PreviewX * 2, 0 To PreviewHeight + PreviewY * 2) As Long
     ReDim TmpBitmapArray(0 To PreviewWidth + PreviewX * 2, 0 To PreviewHeight + PreviewY * 2) As Long
-    Dim TX As Long
+    Dim tX As Long
     For x = PreviewX To PreviewX + PreviewWidth
-        TX = x * 3
+        tX = x * 3
     For y = PreviewY To PreviewY + PreviewHeight
-        TmpBitmapArray(x, y) = RGB(ImageData(TX + 2, y), ImageData(TX + 1, y), ImageData(TX, y))
+        TmpBitmapArray(x, y) = RGB(ImageData(tX + 2, y), ImageData(tX + 1, y), ImageData(tX, y))
         CalcArray(x, y) = TmpBitmapArray(x, y)
     Next y
     Next x
@@ -477,12 +481,12 @@ Private Sub DrawPreviewDiffuse(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
     Dim TV As Long
     
     For x = PreviewX To PreviewX + PreviewWidth
-        TX = x * 3
+        tX = x * 3
     For y = PreviewY To PreviewY + PreviewHeight
         TV = TmpBitmapArray(x, y)
-        ImageData(TX + 2, y) = (TV And 255)
-        ImageData(TX + 1, y) = (TV \ 256) And 255
-        ImageData(TX, y) = (TV \ 65536) And 255
+        ImageData(tX + 2, y) = (TV And 255)
+        ImageData(tX + 1, y) = (TV \ 256) And 255
+        ImageData(tX, y) = (TV \ 65536) And 255
     Next y
     Next x
     SetPreviewData PicEffect

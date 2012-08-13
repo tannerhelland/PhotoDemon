@@ -196,7 +196,9 @@ Private Sub CmdOK_Click()
     
 End Sub
 
+'LOAD form
 Private Sub Form_Load()
+    
     'I've found that pre-existing combo box entries are more user-friendly
     CmbSaveQuality.AddItem "Perfect (99)", 0
     CmbSaveQuality.AddItem "Excellent (92)", 1
@@ -209,6 +211,10 @@ Private Sub Form_Load()
     
     'Mark the form as having NOT been canceled
     saveDialogCanceled = False
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 Private Sub hsQuality_Change()

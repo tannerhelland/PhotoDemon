@@ -249,6 +249,9 @@ Private Sub Form_Load()
     'Actually do the effect
     DrawPreview
     
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+    
 End Sub
 
 'Preview a colorize effect
