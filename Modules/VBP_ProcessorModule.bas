@@ -3,10 +3,8 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 20/June/12
-'Last update: changed the way RepeatLastAction is handled to prevent collisions when the user repeats
-'             their previous action but NOT by clicking RepeatLastAction (basically, when they do the
-'             exact same filter with identical parameters twice in a row).
+'Last updated: 13/August/12
+'Last update: built GetNameOfProcess for returning human-readable descriptions of processes
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -1097,7 +1095,7 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
         Case 900
             GetNameOfProcess = "Repeat Last Action"
         Case 901
-            GetNameOfProcess = "Fade " & GetNameOfProcess(LastFilterCall.MainType)
+            GetNameOfProcess = "Fade last effect"
             
         'This "Else" statement should never trigger, but if it does, return an empty string
         Case Else
