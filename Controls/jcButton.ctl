@@ -1380,23 +1380,23 @@ Private Sub RedrawButton()
    Select Case m_ButtonStyle
 
       Case eStandard
-         DrawStandardButton m_Buttonstate
+
       Case e3DHover
-         DrawStandardButton m_Buttonstate
+
       Case eFlat
-         DrawStandardButton m_Buttonstate
+
       Case eFlatHover
-         DrawStandardButton m_Buttonstate
+
       Case eWindowsXP
          DrawWinXPButton m_Buttonstate
       Case eXPToolbar
          DrawXPToolbar m_Buttonstate
       Case eGelButton
-         DrawGelButton m_Buttonstate
+
       Case eOfficeXP
          DrawOfficeXP m_Buttonstate
       Case eInstallShield
-         DrawInstallShieldButton m_Buttonstate
+
       Case eVistaAero
          DrawVistaButton m_Buttonstate
       Case eVistaToolbar
@@ -1953,106 +1953,6 @@ Private Sub DrawCorners(Color As Long)
 
 End Sub
 
-Private Sub DrawStandardButton(ByVal vState As enumButtonStates)
-
-   '****************************************************************************
-   ' Draws  four different styles in one procedure                             *
-   ' Makes reading the code difficult, but saves much space!! ;)               *
-   '****************************************************************************
-
-   Dim FocusRect        As RECT
-   Dim tmpRect          As RECT
-
-   lh = ScaleHeight
-   lw = ScaleWidth
-   SetRect m_ButtonRect, 0, 0, lw, lh
-
-   If Not m_bEnabled Then
-      ' --Draws raised edge border
-      If m_ButtonStyle = eStandard Then
-         DrawEdge hDC, m_ButtonRect, BDR_RAISED95, BF_RECT
-      ElseIf m_ButtonStyle = eFlat Then
-         DrawEdge hDC, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
-      End If
-      DrawPicwithCaption
-      Exit Sub
-   End If
-
-   If m_ButtonMode <> ebmCommandButton And m_bValue Then
-      PaintRect ShiftColor(TranslateColor(m_bColors.tBackColor), 0.02), m_ButtonRect
-      DrawPicwithCaption
-      If m_ButtonStyle <> eFlatHover Then
-         DrawEdge hDC, m_ButtonRect, BDR_SUNKEN95, BF_RECT
-         If m_bShowFocus And m_bHasFocus And m_ButtonStyle = eStandard Then
-            DrawRectangle 4, 4, lw - 7, lh - 7, TranslateColor(vbApplicationWorkspace)
-         End If
-      End If
-      Exit Sub
-   End If
-
-   Select Case vState
-      Case eStateNormal
-         CreateRegion
-         PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
-         DrawPicwithCaption
-         Select Case m_ButtonStyle
-            Case eStandard
-               DrawEdge hDC, m_ButtonRect, BDR_RAISED95, BF_RECT
-            Case eFlat
-               DrawEdge hDC, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
-         End Select
-      Case eStateOver
-         PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
-         DrawPicwithCaption
-         Select Case m_ButtonStyle
-            Case eFlatHover, eFlat
-               ' --Draws flat raised edge border
-               DrawEdge hDC, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
-            Case Else
-               ' --Draws 3d raised edge border
-               DrawEdge hDC, m_ButtonRect, BDR_RAISED95, BF_RECT
-         End Select
-
-      Case eStateDown
-         PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
-         DrawPicwithCaption
-         Select Case m_ButtonStyle
-            Case eStandard
-               DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(&H99A8AC)
-               DrawRectangle 0, 0, lw, lh, TranslateColor(vbBlack)
-            Case e3DHover
-               DrawEdge hDC, m_ButtonRect, BDR_SUNKEN95, BF_RECT
-            Case eFlatHover, eFlat
-               ' --Draws flat pressed edge
-               DrawRectangle 0, 0, lw, lh, TranslateColor(vbWhite)
-               DrawRectangle 0, 0, lw + 1, lh + 1, TranslateColor(vbGrayText)
-         End Select
-   End Select
-
-   ' --Button has focus but not downstate Or button is Default
-
-   If m_bHasFocus Or m_bDefault Then
-      On Error Resume Next
-      If m_bShowFocus And Ambient.UserMode Then
-         If m_ButtonStyle = e3DHover Or m_ButtonStyle = eStandard Then
-            SetRect FocusRect, 4, 4, lw - 4, lh - 4
-         Else
-            SetRect FocusRect, 3, 3, lw - 3, lh - 3
-         End If
-         If m_bParentActive Then
-            DrawFocusRect hDC, FocusRect
-         End If
-      End If
-      If vState <> eStateDown And m_ButtonStyle = eStandard Then
-         SetRect tmpRect, 0, 0, lw - 1, lh - 1
-         DrawEdge hDC, tmpRect, BDR_RAISED95, BF_RECT
-         DrawRectangle 0, 0, lw - 1, lh - 1, TranslateColor(vbApplicationWorkspace)
-         DrawRectangle 0, 0, lw, lh, TranslateColor(vbBlack)
-      End If
-   End If
-
-End Sub
-
 Private Sub DrawXPToolbar(ByVal vState As enumButtonStates)
 
    Dim lpRect           As RECT
@@ -2313,155 +2213,6 @@ Private Sub DrawOfficeXP(ByVal vState As enumButtonStates)
    If m_Buttonstate <> eStateNormal Then
       DrawRectangle 0, 0, lw, lh, BorderColor
    End If
-
-End Sub
-
-Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
-
-   '****************************************************************************
-   '* I saw this style while installing JetAudio in my PC.                     *
-   '* I liked it, so I implemented and gave it a name 'InstallShield'          *
-   '* hehe .....
-   '****************************************************************************
-
-   Dim FocusRect        As RECT
-   'Dim lpRect           As RECT
-
-   lh = ScaleHeight
-   lw = ScaleWidth
-
-   If Not m_bEnabled Then
-      vState = eStateNormal                 'Simple draw normal state for Disabled
-   End If
-
-   Select Case vState
-      Case eStateNormal
-         CreateRegion
-         SetRect m_ButtonRect, 0, 0, lw, lh 'Maybe have changed before!
-
-         ' --Draw upper gradient
-         DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), TranslateColor(m_bColors.tBackColor), gdVertical
-         ' --Draw Bottom Gradient
-         DrawGradientEx 0, lh / 2, lw, lh, TranslateColor(m_bColors.tBackColor), TranslateColor(m_bColors.tBackColor), gdVertical
-         DrawPicwithCaption
-         ' --Draw Inner White Border
-         DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
-         ' --Draw Outer Rectangle
-         DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.2)
-         DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.25)
-      Case eStateOver
-
-         ' --Draw upper gradient
-         DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), TranslateColor(m_bColors.tBackColor), gdVertical
-         ' --Draw Bottom Gradient
-         DrawGradientEx 0, lh / 2, lw, lh, TranslateColor(m_bColors.tBackColor), TranslateColor(m_bColors.tBackColor), gdVertical
-         DrawPicwithCaption
-         ' --Draw Inner White Border
-         DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
-         ' --Draw Outer Rectangle
-         DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.2)
-         DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.25)
-      Case eStateDown
-
-         ' --draw upper gradient
-         DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1), gdVertical
-         ' --Draw Bottom Gradient
-         DrawGradientEx 0, lh / 2, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1), ShiftColor(TranslateColor(m_bColors.tBackColor), -0.05), gdVertical
-         DrawPicwithCaption
-         ' --Draw Inner White Border
-         DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
-         ' --Draw Outer Rectangle
-         DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.23)
-         DrawCorners ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1)
-         DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.4)
-
-   End Select
-
-   DrawCorners ShiftColor(TranslateColor(m_bColors.tBackColor), 0.05)
-
-   If m_bParentActive And m_bShowFocus And (m_bHasFocus Or m_bDefault) Then
-      SetRect FocusRect, 3, 3, lw - 3, lh - 3
-      DrawFocusRect hDC, FocusRect
-   End If
-
-End Sub
-
-Private Sub DrawGelButton(ByVal vState As enumButtonStates)
-
-   '****************************************************************************
-   ' Draws a Gelbutton                                                         *
-   '****************************************************************************
-
-   Dim lpRect           As RECT                              'RECT to fill regions
-   Dim bColor           As Long                              'Original backcolor
-
-   lh = ScaleHeight
-   lw = ScaleWidth
-
-   bColor = TranslateColor(m_bColors.tBackColor)
-
-   If Not m_bEnabled Then
-
-      ' --Fill the button region with background color
-      SetRect lpRect, 0, 0, lw, lh
-      PaintRect bColor, lpRect
-
-      ' --Make a shining Upper Light
-      DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.05), bColor, gdVertical
-      DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.02), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.08)), gdVertical
-
-      DrawPicwithCaption
-      DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.2)
-      DrawCorners ShiftColor(bColor, -0.23)
-
-      Exit Sub
-   End If
-
-   Select Case vState
-
-      Case eStateNormal                                'Normal State
-
-         CreateRegion
-
-         ' --Fill the button region with background color
-         SetRect lpRect, 0, 0, lw, lh
-         PaintRect ShiftColor(bColor, -0.03), lpRect
-
-         ' --Make a shining Upper Light
-         DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.1), bColor, gdVertical
-         DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.05), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.1)), gdVertical
-
-         DrawPicwithCaption
-         DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.33)
-
-      Case eStateOver
-         ' --Fill the button region with background color
-         SetRect lpRect, 0, 0, lw, lh
-         PaintRect ShiftColor(bColor, -0.03), lpRect
-
-         ' --Make a shining Upper Light
-         DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.15), bColor, gdVertical
-         DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.05), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.2)), gdVertical
-
-         DrawPicwithCaption
-         DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.28)
-
-      Case eStateDown
-
-         ' --fill the button region with background color
-         SetRect lpRect, 0, 0, lw, lh
-         PaintRect ShiftColor(bColor, -0.03), lpRect
-
-         ' --Make a shining Upper Light
-         DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.1), bColor, gdVertical
-         DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.08), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.05)), gdVertical
-
-         DrawPicwithCaption
-         DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.36)
-
-   End Select
-
-   DrawCorners ShiftColor(bColor, -0.36)
 
 End Sub
 
