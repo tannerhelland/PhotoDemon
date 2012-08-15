@@ -4,7 +4,7 @@ Begin VB.Form FormHistogram
    AutoRedraw      =   -1  'True
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Histogram"
-   ClientHeight    =   7485
+   ClientHeight    =   8445
    ClientLeft      =   120
    ClientTop       =   360
    ClientWidth     =   11910
@@ -20,19 +20,67 @@ Begin VB.Form FormHistogram
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   499
+   ScaleHeight     =   563
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   794
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CheckBox chkChannel 
+      Appearance      =   0  'Flat
+      Caption         =   "Luminance"
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   3
+      Left            =   5160
+      TabIndex        =   23
+      Top             =   6480
+      Value           =   1  'Checked
+      Width           =   1215
+   End
+   Begin VB.CheckBox chkChannel 
+      Appearance      =   0  'Flat
+      Caption         =   "Blue"
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   2
+      Left            =   4080
+      TabIndex        =   22
+      Top             =   6480
+      Value           =   1  'Checked
+      Width           =   855
+   End
+   Begin VB.CheckBox chkChannel 
+      Appearance      =   0  'Flat
+      Caption         =   "Green"
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   1
+      Left            =   3000
+      TabIndex        =   21
+      Top             =   6480
+      Value           =   1  'Checked
+      Width           =   855
+   End
+   Begin VB.CheckBox chkChannel 
+      Appearance      =   0  'Flat
+      Caption         =   "Red"
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   0
+      Left            =   2040
+      TabIndex        =   20
+      Top             =   6480
+      Value           =   1  'Checked
+      Width           =   855
+   End
    Begin VB.CheckBox chkLog 
       Appearance      =   0  'Flat
       Caption         =   "Use logarithmic values"
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   4920
+      Left            =   3600
       TabIndex        =   18
-      Top             =   6900
+      Top             =   7080
       Width           =   2055
    End
    Begin VB.CheckBox chkSmooth 
@@ -40,9 +88,9 @@ Begin VB.Form FormHistogram
       Caption         =   "Use smooth lines"
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   3000
+      Left            =   1800
       TabIndex        =   17
-      Top             =   6900
+      Top             =   7080
       Value           =   1  'Checked
       Width           =   1695
    End
@@ -51,7 +99,7 @@ Begin VB.Form FormHistogram
       Height          =   495
       Left            =   240
       TabIndex        =   3
-      Top             =   6840
+      Top             =   7800
       Width           =   2535
    End
    Begin VB.CommandButton CmdOK 
@@ -60,7 +108,7 @@ Begin VB.Form FormHistogram
       Height          =   495
       Left            =   10440
       TabIndex        =   2
-      Top             =   6840
+      Top             =   7800
       Width           =   1245
    End
    Begin VB.PictureBox picH 
@@ -110,6 +158,69 @@ Begin VB.Form FormHistogram
       Top             =   4950
       Width           =   11655
    End
+   Begin VB.Label lblMouseInstructions 
+      Alignment       =   2  'Center
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "(Note: move the mouse over the histogram to calculate these values)"
+      ForeColor       =   &H00808080&
+      Height          =   435
+      Left            =   9000
+      TabIndex        =   25
+      Top             =   5880
+      Width           =   2745
+   End
+   Begin VB.Line lineStats 
+      BorderColor     =   &H80000002&
+      Index           =   3
+      X1              =   8
+      X2              =   784
+      Y1              =   504
+      Y2              =   504
+   End
+   Begin VB.Label lblDrawOptions 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "Rendering Options:"
+      ForeColor       =   &H00400000&
+      Height          =   195
+      Left            =   210
+      TabIndex        =   24
+      Top             =   7155
+      Width           =   1395
+   End
+   Begin VB.Line lineStats 
+      BorderColor     =   &H80000002&
+      Index           =   2
+      X1              =   8
+      X2              =   784
+      Y1              =   464
+      Y2              =   464
+   End
+   Begin VB.Label lblDrawThese 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "Draw these channels:"
+      ForeColor       =   &H00400000&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   19
+      Top             =   6555
+      Width           =   1560
+   End
+   Begin VB.Line lineStats 
+      BorderColor     =   &H80000002&
+      Index           =   1
+      X1              =   8
+      X2              =   784
+      Y1              =   424
+      Y2              =   424
+   End
    Begin VB.Label lblLevel 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
@@ -120,7 +231,7 @@ Begin VB.Form FormHistogram
       Height          =   195
       Left            =   720
       TabIndex        =   16
-      Top             =   5880
+      Top             =   6000
       Width           =   525
    End
    Begin VB.Label lblMaxCount 
@@ -130,9 +241,9 @@ Begin VB.Form FormHistogram
       Caption         =   "lblMaxCount"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   1440
+      Left            =   3600
       TabIndex        =   15
-      Top             =   6360
+      Top             =   5460
       Width           =   2415
    End
    Begin VB.Label Label5 
@@ -143,9 +254,9 @@ Begin VB.Form FormHistogram
       Caption         =   "Maximum count:"
       ForeColor       =   &H00400000&
       Height          =   195
-      Left            =   240
+      Left            =   2400
       TabIndex        =   14
-      Top             =   6360
+      Top             =   5460
       Width           =   1170
    End
    Begin VB.Label lblCountRed 
@@ -155,9 +266,9 @@ Begin VB.Form FormHistogram
       Caption         =   "lblRed"
       ForeColor       =   &H000000C0&
       Height          =   255
-      Left            =   600
+      Left            =   2160
       TabIndex        =   13
-      Top             =   6120
+      Top             =   6000
       Width           =   1095
    End
    Begin VB.Label Label4 
@@ -167,14 +278,15 @@ Begin VB.Form FormHistogram
       Caption         =   "Red:"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
+      Left            =   1800
       TabIndex        =   12
-      Top             =   6120
+      Top             =   6000
       Width           =   375
    End
    Begin VB.Line lineStats 
       BorderColor     =   &H80000002&
-      X1              =   16
+      Index           =   0
+      X1              =   8
       X2              =   784
       Y1              =   387
       Y2              =   387
@@ -188,7 +300,7 @@ Begin VB.Form FormHistogram
       Height          =   255
       Left            =   240
       TabIndex        =   11
-      Top             =   5880
+      Top             =   6000
       Width           =   495
    End
    Begin VB.Label lblTotalPixels 
@@ -201,7 +313,7 @@ Begin VB.Form FormHistogram
       Height          =   195
       Left            =   240
       TabIndex        =   10
-      Top             =   5520
+      Top             =   5460
       Width           =   870
    End
    Begin VB.Label Label1 
@@ -211,9 +323,9 @@ Begin VB.Form FormHistogram
       Caption         =   "Green:"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   1560
+      Left            =   3120
       TabIndex        =   9
-      Top             =   6120
+      Top             =   6000
       Width           =   495
    End
    Begin VB.Label lblCountGreen 
@@ -223,9 +335,9 @@ Begin VB.Form FormHistogram
       Caption         =   "lblGreen"
       ForeColor       =   &H00008000&
       Height          =   255
-      Left            =   2160
+      Left            =   3720
       TabIndex        =   8
-      Top             =   6120
+      Top             =   6000
       Width           =   855
    End
    Begin VB.Label Label6 
@@ -235,9 +347,9 @@ Begin VB.Form FormHistogram
       Caption         =   "Blue:"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   3240
+      Left            =   4800
       TabIndex        =   7
-      Top             =   6120
+      Top             =   6000
       Width           =   375
    End
    Begin VB.Label lblCountBlue 
@@ -247,9 +359,9 @@ Begin VB.Form FormHistogram
       Caption         =   "lblBlue"
       ForeColor       =   &H00C00000&
       Height          =   255
-      Left            =   3720
+      Left            =   5280
       TabIndex        =   6
-      Top             =   6120
+      Top             =   6000
       Width           =   975
    End
    Begin VB.Label Label8 
@@ -259,9 +371,9 @@ Begin VB.Form FormHistogram
       Caption         =   "Luminance:"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   4920
+      Left            =   6480
       TabIndex        =   5
-      Top             =   6120
+      Top             =   6000
       Width           =   855
    End
    Begin VB.Label lblCountLuminance 
@@ -271,9 +383,9 @@ Begin VB.Form FormHistogram
       Caption         =   "lblLuminance"
       ForeColor       =   &H80000008&
       Height          =   255
-      Left            =   5760
+      Left            =   7320
       TabIndex        =   4
-      Top             =   6120
+      Top             =   6000
       Width           =   1215
    End
 End
@@ -286,10 +398,8 @@ Attribute VB_Exposed = False
 'Histogram Handler
 'Copyright ©2001-2012 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 01/August/12
-'Last update: added "smooth lines" option, which uses a cubic spline function and antialiasing
-'             to smooth the histogram output.  Note that antialiasing can be enabled for the non-cubic
-'             drawing routine; check the comments for details.
+'Last updated: 15/August/12
+'Last update: per-channel rendering and mad optimizations
 '
 'This form runs the basic code for calculating and displaying an image's histogram. Throughout the code, the
 ' following array locations refer to a type of histogram:
@@ -332,6 +442,13 @@ Dim hDataLog(0 To 3, 0 To 255) As Single
 'Maximum histogram values (r/g/b/luminance)
 'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Dim HMax(0 To 3) As Single
 Dim HMax As Single, hMaxLog As Single
+Dim channelMax(0 To 3) As Single
+Dim channelMaxLog(0 To 3) As Single
+Dim channelMaxPosition(0 To 3) As Byte
+Dim maxChannel As Byte, maxPosition As Byte   'These identify the channel with the highest value (red, green, or blue) and the position at which it's located
+
+'Which histograms does the user want drawn?
+Dim hEnabled(0 To 3) As Boolean
 
 'Loop and position variables
 Dim x As Long, y As Long
@@ -343,6 +460,17 @@ Private iY() As Single
 Private p() As Single
 Private u() As Single
 Private results() As Long   'Stores the y-values for each x-value in the final spline
+
+'When channels are enabled or disabled, redraw the histogram
+Private Sub chkChannel_Click(Index As Integer)
+    
+    For x = 0 To 3
+        If chkChannel(x).Value = vbChecked Then hEnabled(x) = True Else hEnabled(x) = False
+    Next x
+    
+    DrawHistogram
+    
+End Sub
 
 Private Sub chkLog_Click()
     DrawHistogram
@@ -422,6 +550,7 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
+'Just to be safe, regenerate the histogram whenever the form receives focus
 Private Sub Form_Activate()
 
     TallyHistogramValues
@@ -436,21 +565,14 @@ Private Sub Form_Load()
 
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
+    
+    'For now, initialize all histogram types
+    For x = 0 To 3
+        hEnabled(x) = True
+    Next x
 
-    'Commented code below is from a previous build where the user could specify which channel to draw.
-    ' I haven't implemented per-channel checkboxes yet.  It's coming.
-    
-    'DrawHistogram lastHistSource, lastHistMethod
-    
-    'Clear out the combo box that displays histogram sources and fill it with
-    'appropriate choices
-    'cmbHistSource.Clear
-    'cmbHistSource.AddItem "Red"
-    'cmbHistSource.AddItem "Green"
-    'cmbHistSource.AddItem "Blue"
-    'cmbHistSource.AddItem "Luminance"
-    'Set the current combo box option to be whatever we used last
-    'cmbHistSource.ListIndex = lastHistSource
+    'Commented code below is from a previous build where the user could specify bars or lines.
+    ' I haven't implemented transparent line drawing yet, so that code is disabled for now.
     
     'Clear out the combo box that displays histogram drawing methods and fill it
     'with appropriate choices
@@ -469,7 +591,7 @@ End Sub
 '3 - Luminance
 'drawMethod tells us what kind of histogram to draw:
 '0 - Connected lines (like a line graph)
-'1 - Solid bars (like a bar graph) - CURRENTLY UNUSED
+'1 - Solid bars (like a bar graph) - CURRENTLY UNUSED, REQUIRES A CUSTOM TRANSPARENT LINE RENDER METHOD TO IMPLEMENT
 '2 - Smooth lines (using cubic spline code adopted from the Curves function)
 Public Sub DrawHistogram()
 
@@ -492,85 +614,108 @@ Public Sub DrawHistogram()
     'Now draw a little gradient below the histogram window, to help orient the user
     DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
     
-    'We'll need to draw four lines - one each for red, green, blue, and luminance
+    'We now need to calculate a max histogram value based on which RGB channels are enabled
+    HMax = 0:    hMaxLog = 0:   maxChannel = 4  'Set maxChannel to an arbitrary value higher than 2
+    
+    For x = 0 To 2
+        If hEnabled(x) = True Then
+            If channelMax(x) > HMax Then
+                HMax = channelMax(x)
+                hMaxLog = channelMaxLog(x)
+                maxChannel = x
+            End If
+        End If
+    Next x
+    
+    'We'll need to draw up to four lines - one each for red, green, blue, and luminance,
+    ' depending on what channels the user has enabled.
     Dim hType As Long
     
     For hType = 0 To 3
     
-        'The type of histogram we're drawing will determine the color of the histogram
-        'line - we'll make it match what we're drawing (red/green/blue/black)
-        Select Case hType
-            'Red
-            Case 0
-                picH.ForeColor = RGB(255, 0, 0)
-            'Green
-            Case 1
-                picH.ForeColor = RGB(0, 255, 0)
-            'Blue
-            Case 2
-                picH.ForeColor = RGB(0, 0, 255)
-            'Luminance
-            Case 3
-                picH.ForeColor = RGB(0, 0, 0)
-        End Select
-    
-
-    
-        'Now we'll draw the histogram.  The drawing code will change based on the drawMethod specified by the user.
-        'Remember: 0 - Connected lines, 1 - Solid bars, 2 - Smooth lines
-        Select Case drawMethod
+        'Only draw this histogram channel if the user has requested it
+        If hEnabled(hType) Then
         
-            Case 0
-        
-                'For the first point there is no last 'x' or 'y', so we'll just make it the
-                'same as the first value in the histogram. (We care about this only if we're
-                'drawing a "connected lines" type of histogram.)
-                LastX = 0
-                If chkLog.Value = vbChecked Then
-                    LastY = tHeight - (hDataLog(hType, 0) / hMaxLog) * tHeight
-                Else
-                    LastY = tHeight - (hData(hType, 0) / HMax) * tHeight
-                End If
-                    
-                Dim xCalc As Long
-                
-                'Run a loop through every histogram value...
-                For x = 0 To picH.ScaleWidth
+            'The type of histogram we're drawing will determine the color of the histogram
+            'line - we'll make it match what we're drawing (red/green/blue/black)
+            Select Case hType
+                'Red
+                Case 0
+                    picH.ForeColor = RGB(255, 0, 0)
+                'Green
+                Case 1
+                    picH.ForeColor = RGB(0, 255, 0)
+                'Blue
+                Case 2
+                    picH.ForeColor = RGB(0, 0, 255)
+                'Luminance
+                Case 3
+                    picH.ForeColor = RGB(0, 0, 0)
+            End Select
             
-                    'The y-value of the histogram is drawn as a percentage (RData(x) / MaxVal) * tHeight) with tHeight being
-                    ' the tallest possible value (when RData(x) = MaxVal).  We then subtract that value from tHeight because
-                    ' y values INCREASE as we move DOWN a picture box - remember that (0,0) is in the top left.
-                    xCalc = Int((x / picH.ScaleWidth) * 256)
-                    If xCalc > 255 Then xCalc = 255
-                    
+            'The luminance channel is a special case - it uses its own max values, so check for that here
+            If hType = 3 Then
+                HMax = channelMax(hType)
+                hMaxLog = channelMaxLog(hType)
+            End If
+    
+            'Now we'll draw the histogram.  The drawing code will change based on the drawMethod specified by the user.
+            'Remember: 0 - Connected lines, 1 - Solid bars, 2 - Smooth lines
+            Select Case drawMethod
+            
+                Case 0
+            
+                    'For the first point there is no last 'x' or 'y', so we'll just make it the
+                    'same as the first value in the histogram. (We care about this only if we're
+                    'drawing a "connected lines" type of histogram.)
+                    LastX = 0
                     If chkLog.Value = vbChecked Then
-                        y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
+                        LastY = tHeight - (hDataLog(hType, 0) / hMaxLog) * tHeight
                     Else
-                        y = tHeight - (hData(hType, xCalc) / HMax) * tHeight
+                        LastY = tHeight - (hData(hType, 0) / HMax) * tHeight
                     End If
-                    
-                    'For connecting lines...
-                    If drawMethod = 0 Then
-                        'Then draw a line from the last (x,y) to the current (x,y)
-                        picH.Line (LastX, LastY + 2)-(x, y + 2)
-                        'The line below can be used for antialiased drawing, FYI
-                        'DrawLineWuAA picH.hDC, LastX, LastY + 2, x, y + 2, picH.ForeColor
-                        LastX = x
-                        LastY = y
                         
-                    'For a bar graph...
-                    ElseIf drawMethod = 1 Then
-                        'Draw a line from the bottom of the picture box to the calculated y-value
-                        picH.Line (x, tHeight + 2)-(x, y + 2)
-                    End If
-                Next x
+                    Dim xCalc As Long
+                    
+                    'Run a loop through every histogram value...
+                    For x = 0 To picH.ScaleWidth
                 
-            Case 2
-        
-                'Drawing a cubic spline line is complex enough to warrant its own subroutine.  Check there for details.
-                drawCubicSplineHistogram hType, tHeight
+                        'The y-value of the histogram is drawn as a percentage (RData(x) / MaxVal) * tHeight) with tHeight being
+                        ' the tallest possible value (when RData(x) = MaxVal).  We then subtract that value from tHeight because
+                        ' y values INCREASE as we move DOWN a picture box - remember that (0,0) is in the top left.
+                        xCalc = Int((x / picH.ScaleWidth) * 256)
+                        If xCalc > 255 Then xCalc = 255
+                        
+                        If chkLog.Value = vbChecked Then
+                            y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
+                        Else
+                            y = tHeight - (hData(hType, xCalc) / HMax) * tHeight
+                        End If
+                        
+                        'For connecting lines...
+                        If drawMethod = 0 Then
+                            'Then draw a line from the last (x,y) to the current (x,y)
+                            picH.Line (LastX, LastY + 2)-(x, y + 2)
+                            'The line below can be used for antialiased drawing, FYI
+                            'DrawLineWuAA picH.hDC, LastX, LastY + 2, x, y + 2, picH.ForeColor
+                            LastX = x
+                            LastY = y
+                            
+                        'For a bar graph...
+                        ElseIf drawMethod = 1 Then
+                            'Draw a line from the bottom of the picture box to the calculated y-value
+                            picH.Line (x, tHeight + 2)-(x, y + 2)
+                        End If
+                    Next x
+                    
+                Case 2
+            
+                    'Drawing a cubic spline line is complex enough to warrant its own subroutine.  Check there for details.
+                    drawCubicSplineHistogram hType, tHeight
+                    
+            End Select
                 
-        End Select
+        End If
                 
     Next hType
     
@@ -583,9 +728,30 @@ Public Sub DrawHistogram()
     GetImageData
     lblTotalPixels.Caption = "Total pixels: " & (PicWidthL * PicHeightL)
     
-    'Maximum value
-    lblMaxCount.Caption = HMax
-
+    'Maximum value; if a color channel is enabled, use that
+    If hEnabled(0) = True Or hEnabled(1) = True Or hEnabled(2) = True Then
+        
+        'Reset hMax, which may have been changed if the luminance histogram was rendered
+        HMax = channelMax(maxChannel)
+        lblMaxCount.Caption = HMax
+        
+        'Also display the channel with that max value, if applicable
+        Select Case maxChannel
+            Case 0
+                lblMaxCount.Caption = lblMaxCount.Caption & " (Red"
+            Case 1
+                lblMaxCount.Caption = lblMaxCount.Caption & " (Green"
+            Case 2
+                lblMaxCount.Caption = lblMaxCount.Caption & " (Blue"
+        End Select
+        
+        lblMaxCount.Caption = lblMaxCount.Caption & ", level " & channelMaxPosition(maxChannel) & ")"
+    
+    'Otherwise, default to luminance
+    Else
+        lblMaxCount.Caption = channelMax(3) & " (Luminance, level " & channelMaxPosition(3) & ")"
+    End If
+    
 End Sub
 
 'If the form is resized, adjust all the controls to match
@@ -595,7 +761,9 @@ Private Sub Form_Resize()
     picGradient.Width = Me.ScaleWidth - picGradient.Left - 8
     
     CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
-    lineStats.x2 = Me.ScaleWidth - lineStats.x1
+    For x = 0 To lineStats.Count - 1
+        lineStats(x).x2 = Me.ScaleWidth - lineStats(x).x1
+    Next x
     
     'Only draw the histogram if the histogram data has been initialized
     ' (This is necessary because VB triggers the Resize event before the Activate event)
@@ -861,6 +1029,197 @@ Public Sub EqualizeLuminance()
     Message "Finished."
 End Sub
 
+'This routine draws the histogram using cubic splines to smooth the output
+Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeight As Long)
+    
+    'Create an array consisting of 256 points, where each point corresponds to a histogram value
+    nPoints = 256
+    ReDim iX(nPoints) As Single
+    ReDim iY(nPoints) As Single
+    ReDim p(nPoints) As Single
+    ReDim u(nPoints) As Single
+    
+    'Now, populate the iX and iY arrays with the histogram values for the specified channel (0-3, corresponds to hType above)
+    Dim i As Long
+    For i = 1 To nPoints
+        iX(i) = (i - 1) * (picH.ScaleWidth / 255)
+        If chkLog.Value = vbChecked Then
+            iY(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
+        Else
+            iY(i) = tHeight - (hData(histogramChannel, i - 1) / HMax) * tHeight
+        End If
+    Next i
+    
+    'results() will hold the actual pixel (x,y) values for each line to be drawn to the picture box
+    ReDim results(0 To picH.ScaleWidth) As Long
+    
+    'Now run a loop through the knots, calculating spline values as we go
+    Call SetPandU
+    Dim Xpos As Long, Ypos As Single
+    For i = 1 To nPoints - 1
+        For Xpos = iX(i) To iX(i + 1)
+            Ypos = getCurvePoint(i, Xpos)
+            'If yPos > 255 Then yPos = 254       'Force values to be in the 1-254 range (0-255 also
+            'If yPos < 0 Then yPos = 1           ' works, but is harder to see on the picture box)
+            results(Xpos) = Ypos
+        Next Xpos
+    Next i
+    
+    'Draw the finished spline
+    For i = 1 To picH.ScaleWidth
+        'picH.Line (i, results(i) + 2)-(i - 1, results(i - 1) + 2)
+        DrawLineWuAA picH.hDC, i, results(i) + 2, i - 1, results(i - 1) + 2, picH.ForeColor
+    Next i
+    
+    picH.Picture = picH.Image
+    
+End Function
+
+'Original required spline function:
+Private Function getCurvePoint(ByVal i As Long, ByVal v As Single) As Single
+    Dim t As Single
+    'derived curve equation (which uses p's and u's for coefficients)
+    t = (v - iX(i)) / u(i)
+    getCurvePoint = t * iY(i + 1) + (1 - t) * iY(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
+End Function
+
+'Original required spline function:
+Private Function f(x As Single) As Single
+        f = x * x * x - x
+End Function
+
+'Original required spline function:
+Private Sub SetPandU()
+    Dim i As Integer
+    Dim d() As Single
+    Dim w() As Single
+    ReDim d(nPoints) As Single
+    ReDim w(nPoints) As Single
+    'Routine to compute the parameters of our cubic spline.  Based on equations derived from some basic facts...
+    'Each segment must be a cubic polynomial.  Curve segments must have equal first and second derivatives
+    'at knots they share.  General algorithm taken from a book which has long since been lost.
+    
+    'The math that derived this stuff is pretty messy...  expressions are isolated and put into
+    'arrays.  we're essentially trying to find the values of the second derivative of each polynomial
+    'at each knot within the curve.  That's why theres only N-2 p's (where N is # points).
+    'later, we use the p's and u's to calculate curve points...
+
+    For i = 2 To nPoints - 1
+        d(i) = 2 * (iX(i + 1) - iX(i - 1))
+    Next
+    For i = 1 To nPoints - 1
+        u(i) = iX(i + 1) - iX(i)
+    Next
+    For i = 2 To nPoints - 1
+        w(i) = 6# * ((iY(i + 1) - iY(i)) / u(i) - (iY(i) - iY(i - 1)) / u(i - 1))
+    Next
+    For i = 2 To nPoints - 2
+        w(i + 1) = w(i + 1) - w(i) * u(i) / d(i)
+        d(i + 1) = d(i + 1) - u(i) * u(i) / d(i)
+    Next
+    p(1) = 0#
+    For i = nPoints - 1 To 2 Step -1
+        p(i) = (w(i) - u(i) * p(i + 1)) / d(i)
+    Next
+    p(nPoints) = 0#
+End Sub
+
+'Build the histogram tables.  This only needs to be called once, when the image is changed. It will generate all histogram
+' data for all channels (including luminance, and all log variants).
+Public Sub TallyHistogramValues()
+    
+    Message "Updating histogram..."
+    
+    'Blank the red, green, blue, and luminance count text boxes
+    lblCountRed = ""
+    lblCountGreen = ""
+    lblCountBlue = ""
+    lblCountLuminance = ""
+    
+    'Grab image information
+    GetImageData
+    
+    'These variables will hold temporary histogram values
+    Dim r As Long, g As Long, b As Long, l As Long
+    
+    'If the histogram has already been used, we need to clear out all the
+    'maximum values and histogram values
+    HMax = 0:    hMaxLog = 0
+    
+    For x = 0 To 3
+        channelMax(x) = 0
+        channelMaxLog(x) = 0
+        For y = 0 To 255
+            hData(x, y) = 0
+        Next y
+    Next x
+    
+    'Build a look-up table for luminance conversion; 765 = 255 * 3
+    Dim lumLookup(0 To 765) As Byte
+    
+    For x = 0 To 765
+        lumLookup(x) = x \ 3
+    Next x
+    
+    'Run a quick loop through the image, gathering what we need to
+    'calculate our histogram
+    Dim QuickVal As Long
+    For x = 0 To PicWidthL
+        QuickVal = x * 3
+    For y = 0 To PicHeightL
+        'We have to gather the red, green, and blue in order to calculate luminance
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        'Rather than generate authentic luminance (which requires an HSL
+        ' conversion routine), we'll use an average value.  It's accurate
+        ' enough for a project like this.
+        l = lumLookup(r + g + b)
+        'Increment each value in the array, depending on its present value;
+        'this will let us see how many of each color value (and luminance
+        'value) there is in the image
+        'Red
+        hData(0, r) = hData(0, r) + 1
+        'Green
+        hData(1, g) = hData(1, g) + 1
+        'Blue
+        hData(2, b) = hData(2, b) + 1
+        'Luminance
+        hData(3, l) = hData(3, l) + 1
+    Next y
+    Next x
+    
+    'Run a quick loop through the completed array to find maximum values
+    For x = 0 To 3
+        For y = 0 To 255
+            If hData(x, y) > channelMax(x) Then
+                channelMax(x) = hData(x, y)
+                channelMaxPosition(x) = y
+            End If
+        Next y
+    Next x
+    
+    'Now calculate the logarithmic version of the histogram
+    For x = 0 To 3
+        If channelMax(x) <> 0 Then channelMaxLog(x) = Log(channelMax(x)) Else channelMaxLog(x) = 0
+    Next x
+    
+    For x = 0 To 3
+        For y = 0 To 255
+            If hData(x, y) <> 0 Then
+                hDataLog(x, y) = Log(hData(x, y))
+            Else
+                hDataLog(x, y) = 0
+            End If
+        Next y
+    Next x
+    
+    histogramGenerated = True
+    
+    Message "Finished."
+
+End Sub
+
 'The next four functions are required for converting between the HSL and RGB color spaces
 Private Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, s As Single, l As Single)
 Dim Max As Single
@@ -912,7 +1271,7 @@ Dim rR As Single, rG As Single, rB As Single
     l = Int(l * 255)
 End Sub
 
-Public Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long, b As Long)
+Private Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long, b As Long)
 Dim rR As Single, rG As Single, rB As Single
 Dim Min As Single, Max As Single
 'This one requires the stupid values; such is life
@@ -1002,186 +1361,3 @@ Private Function Minimum(rR As Single, rG As Single, rB As Single) As Single
    End If
 End Function
 
-'This routine draws the histogram using cubic splines to smooth the output
-Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeight As Long)
-    
-    'Create an array consisting of 256 points, where each point corresponds to a histogram value
-    nPoints = 256
-    ReDim iX(nPoints) As Single
-    ReDim iY(nPoints) As Single
-    ReDim p(nPoints) As Single
-    ReDim u(nPoints) As Single
-    
-    'Now, populate the iX and iY arrays with the histogram values for the specified channel (0-3, corresponds to hType above)
-    Dim i As Long
-    For i = 1 To nPoints
-        iX(i) = (i - 1) * (picH.ScaleWidth / 255)
-        If chkLog.Value = vbChecked Then
-            iY(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
-        Else
-            iY(i) = tHeight - (hData(histogramChannel, i - 1) / HMax) * tHeight
-        End If
-    Next i
-    
-    'results() will hold the actual pixel (x,y) values for each line to be drawn to the picture box
-    ReDim results(0 To picH.ScaleWidth) As Long
-    
-    'Now run a loop through the knots, calculating spline values as we go
-    Call SetPandU
-    Dim Xpos As Long, Ypos As Single
-    For i = 1 To nPoints - 1
-        For Xpos = iX(i) To iX(i + 1)
-            Ypos = getCurvePoint(i, Xpos)
-            'If yPos > 255 Then yPos = 254       'Force values to be in the 1-254 range (0-255 also
-            'If yPos < 0 Then yPos = 1           ' works, but is harder to see on the picture box)
-            results(Xpos) = Ypos
-        Next Xpos
-    Next i
-    
-    'Draw the finished spline
-    For i = 1 To picH.ScaleWidth
-        'picH.Line (i, results(i) + 2)-(i - 1, results(i - 1) + 2)
-        DrawLineWuAA picH.hDC, i, results(i) + 2, i - 1, results(i - 1) + 2, picH.ForeColor
-    Next i
-    
-    picH.Picture = picH.Image
-    
-End Function
-
-
-'Original required spline function:
-Private Function getCurvePoint(ByVal i As Long, ByVal v As Single) As Single
-    Dim t As Single
-    'derived curve equation (which uses p's and u's for coefficients)
-    t = (v - iX(i)) / u(i)
-    getCurvePoint = t * iY(i + 1) + (1 - t) * iY(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
-End Function
-
-'Original required spline function:
-Private Function f(x As Single) As Single
-        f = x * x * x - x
-End Function
-
-'Original required spline function:
-Private Sub SetPandU()
-    Dim i As Integer
-    Dim d() As Single
-    Dim w() As Single
-    ReDim d(nPoints) As Single
-    ReDim w(nPoints) As Single
-    'Routine to compute the parameters of our cubic spline.  Based on equations derived from some basic facts...
-    'Each segment must be a cubic polynomial.  Curve segments must have equal first and second derivatives
-    'at knots they share.  General algorithm taken from a book which has long since been lost.
-    
-    'The math that derived this stuff is pretty messy...  expressions are isolated and put into
-    'arrays.  we're essentially trying to find the values of the second derivative of each polynomial
-    'at each knot within the curve.  That's why theres only N-2 p's (where N is # points).
-    'later, we use the p's and u's to calculate curve points...
-
-    For i = 2 To nPoints - 1
-        d(i) = 2 * (iX(i + 1) - iX(i - 1))
-    Next
-    For i = 1 To nPoints - 1
-        u(i) = iX(i + 1) - iX(i)
-    Next
-    For i = 2 To nPoints - 1
-        w(i) = 6# * ((iY(i + 1) - iY(i)) / u(i) - (iY(i) - iY(i - 1)) / u(i - 1))
-    Next
-    For i = 2 To nPoints - 2
-        w(i + 1) = w(i + 1) - w(i) * u(i) / d(i)
-        d(i + 1) = d(i + 1) - u(i) * u(i) / d(i)
-    Next
-    p(1) = 0#
-    For i = nPoints - 1 To 2 Step -1
-        p(i) = (w(i) - u(i) * p(i + 1)) / d(i)
-    Next
-    p(nPoints) = 0#
-End Sub
-
-Public Sub TallyHistogramValues()
-    
-    Message "Updating histogram..."
-    
-    'Blank the red, green, blue, and luminance count text boxes
-    lblCountRed = ""
-    lblCountGreen = ""
-    lblCountBlue = ""
-    lblCountLuminance = ""
-    
-    'Grab image information
-    GetImageData
-    
-    'These variables will hold temporary histogram values
-    Dim r As Long, g As Long, b As Long, l As Long
-    
-    'If the histogram has already been used, we need to clear out all the
-    'maximum values and histogram values
-    HMax = 0
-    For x = 0 To 3
-        For y = 0 To 255
-            hData(x, y) = 0
-        Next y
-    Next x
-    
-    'Run a quick loop through the image, gathering what we need to
-    'calculate our histogram
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        'We have to gather the red, green, and blue in order to calculate luminance
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        'Rather than generate authentic luminance (which requires an HSL
-        ' conversion routine), we'll use an average value.  It's accurate
-        ' enough for a project like this.
-        l = (r + g + b) \ 3
-        'Increment each value in the array, depending on its present value;
-        'this will let us see how many of each color value (and luminance
-        'value) there is in the image
-        'Red
-        hData(0, r) = hData(0, r) + 1
-        'Green
-        hData(1, g) = hData(1, g) + 1
-        'Blue
-        hData(2, b) = hData(2, b) + 1
-        'Luminance
-        hData(3, l) = hData(3, l) + 1
-    Next y
-    Next x
-    
-    'Run a quick loop through the completed array to find maximum values
-    For x = 0 To 255
-        'Red
-        If hData(0, x) > HMax Then HMax = hData(0, x)
-        'Green
-        If hData(1, x) > HMax Then HMax = hData(1, x)
-        'Blue
-        If hData(2, x) > HMax Then HMax = hData(2, x)
-        'Luminance
-        If hData(3, x) > HMax Then HMax = hData(3, x)
-    Next x
-    
-    'Now calculate the logarithmic version of the histogram
-    If HMax <> 0 Then
-        hMaxLog = Log(HMax)
-    Else
-        hMaxLog = 0
-    End If
-    
-    For x = 0 To 3
-        For y = 0 To 255
-            If hData(x, y) <> 0 Then
-                hDataLog(x, y) = Log(hData(x, y))
-            Else
-                hDataLog(x, y) = 0
-            End If
-        Next y
-    Next x
-    
-    histogramGenerated = True
-    
-    Message "Finished."
-
-End Sub
