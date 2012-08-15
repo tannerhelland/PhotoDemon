@@ -246,7 +246,7 @@ Begin VB.Form FormHistogram
       Top             =   5460
       Width           =   2415
    End
-   Begin VB.Label Label5 
+   Begin VB.Label lblMaxCountTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
@@ -266,19 +266,19 @@ Begin VB.Form FormHistogram
       Caption         =   "lblRed"
       ForeColor       =   &H000000C0&
       Height          =   255
-      Left            =   2160
+      Left            =   2040
       TabIndex        =   13
       Top             =   6000
       Width           =   1095
    End
-   Begin VB.Label Label4 
+   Begin VB.Label lblRedTitle 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Red:"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   1800
+      Left            =   1680
       TabIndex        =   12
       Top             =   6000
       Width           =   375
@@ -291,7 +291,7 @@ Begin VB.Form FormHistogram
       Y1              =   387
       Y2              =   387
    End
-   Begin VB.Label Label3 
+   Begin VB.Label lblLevelTitle 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
@@ -316,14 +316,14 @@ Begin VB.Form FormHistogram
       Top             =   5460
       Width           =   870
    End
-   Begin VB.Label Label1 
+   Begin VB.Label lblGreenTitle 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Green:"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   3120
+      Left            =   2880
       TabIndex        =   9
       Top             =   6000
       Width           =   495
@@ -335,19 +335,19 @@ Begin VB.Form FormHistogram
       Caption         =   "lblGreen"
       ForeColor       =   &H00008000&
       Height          =   255
-      Left            =   3720
+      Left            =   3480
       TabIndex        =   8
       Top             =   6000
       Width           =   855
    End
-   Begin VB.Label Label6 
+   Begin VB.Label lblBlueTitle 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Blue:"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   4800
+      Left            =   4440
       TabIndex        =   7
       Top             =   6000
       Width           =   375
@@ -359,19 +359,19 @@ Begin VB.Form FormHistogram
       Caption         =   "lblBlue"
       ForeColor       =   &H00C00000&
       Height          =   255
-      Left            =   5280
+      Left            =   4920
       TabIndex        =   6
       Top             =   6000
       Width           =   975
    End
-   Begin VB.Label Label8 
+   Begin VB.Label lblLumTitle 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Luminance:"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   6480
+      Left            =   6000
       TabIndex        =   5
       Top             =   6000
       Width           =   855
@@ -383,7 +383,7 @@ Begin VB.Form FormHistogram
       Caption         =   "lblLuminance"
       ForeColor       =   &H80000008&
       Height          =   255
-      Left            =   7320
+      Left            =   6840
       TabIndex        =   4
       Top             =   6000
       Width           =   1215
@@ -570,6 +570,13 @@ Private Sub Form_Load()
     For x = 0 To 3
         hEnabled(x) = True
     Next x
+    
+    'Blank out the specific level labels populated by moving the mouse across the form
+    lblLevel = ""
+    lblCountRed = ""
+    lblCountGreen = ""
+    lblCountBlue = ""
+    lblCountLuminance = ""
 
     'Commented code below is from a previous build where the user could specify bars or lines.
     ' I haven't implemented transparent line drawing yet, so that code is disabled for now.
@@ -764,6 +771,7 @@ Private Sub Form_Resize()
     For x = 0 To lineStats.Count - 1
         lineStats(x).x2 = Me.ScaleWidth - lineStats(x).x1
     Next x
+    lblMouseInstructions.Left = Me.ScaleWidth - 194
     
     'Only draw the histogram if the histogram data has been initialized
     ' (This is necessary because VB triggers the Resize event before the Activate event)
