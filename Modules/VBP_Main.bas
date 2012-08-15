@@ -1,19 +1,27 @@
 Attribute VB_Name = "modMain"
+'Note: this file has been modified for use within PhotoDemon.
+
 'This module is required for theming via embedded manifest.  Many thanks to LaVolpe for the automated tool that coincides
 ' with this fine piece of code.  Download it yourself at: http://www.vbforums.com/showthread.php?t=606736
 
 Private Declare Function LoadLibraryA Lib "kernel32.dll" (ByVal lpLibFileName As String) As Long
 Private Declare Function FreeLibrary Lib "kernel32.dll" (ByVal hLibModule As Long) As Long
 Private Declare Function InitCommonControlsEx Lib "comctl32.dll" (iccex As InitCommonControlsExStruct) As Boolean
+
 Private Declare Sub InitCommonControls Lib "comctl32.dll" ()
+
 Private Type InitCommonControlsExStruct
     lngSize As Long
     lngICC As Long
 End Type
 
+'PhotoDemon starts here.  Main() is necessary as a start point (vs a form) to make sure that theming is implemented
+' correctly.  Note that this code is irrelevant within the IDE.
 Public Sub Main()
-    Dim iccex As InitCommonControlsExStruct, hmod As Long
-    ' constant descriptions: http://msdn.microsoft.com/en-us/library/bb775507%28VS.85%29.aspx
+
+    Dim iccex As InitCommonControlsExStruct
+    
+    'For descriptions of these constants, visit: http://msdn.microsoft.com/en-us/library/bb775507%28VS.85%29.aspx
     Const ICC_ANIMATE_CLASS As Long = &H80&
     Const ICC_BAR_CLASSES As Long = &H4&
     Const ICC_COOL_CLASSES As Long = &H400&
@@ -35,19 +43,24 @@ Public Sub Main()
 
     With iccex
        .lngSize = LenB(iccex)
-       .lngICC = ICC_STANDARD_CLASSES
+       .lngICC = ICC_STANDARD_CLASSES Or ICC_BAR_CLASSES Or ICC_WIN95_CLASSES
     End With
+    
     On Error Resume Next ' error? InitCommonControlsEx requires IEv3 or above
-    hmod = LoadLibraryA("shell32.dll") ' patch to prevent XP crashes when VB usercontrols present
+    
+    Dim hMod As Long
+    hMod = LoadLibraryA("shell32.dll") ' patch to prevent XP crashes when VB usercontrols present
     InitCommonControlsEx iccex
+    
     If Err Then
         InitCommonControls ' try Win9x version
         Err.Clear
     End If
+    
     On Error GoTo 0
     
     Load FormMain
     
-    If hmod Then FreeLibrary hmod
+    If hMod Then FreeLibrary hMod
 
 End Sub

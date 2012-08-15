@@ -7,8 +7,8 @@ Attribute VB_Name = "MRU_List"
 'Last update: MRU entries are kept in the INI file, not the registry.
 '
 'Handles the creation and maintenance of the program's MRU list.  Originally
-'this stored our MRU information in the registry, but I have rewritten the
-'entire thing to use only the INI file. PhotoDemon doesn't touch the registry!
+' this stored our MRU information in the registry, but I have rewritten the
+' entire thing to use only the INI file. PhotoDemon doesn't touch the registry!
 '
 '***************************************************************************
 
