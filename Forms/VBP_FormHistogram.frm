@@ -78,7 +78,7 @@ Begin VB.Form FormHistogram
       Caption         =   "Use logarithmic values"
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   3600
+      Left            =   3720
       TabIndex        =   18
       Top             =   7080
       Width           =   2055
@@ -88,7 +88,7 @@ Begin VB.Form FormHistogram
       Caption         =   "Use smooth lines"
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   1800
+      Left            =   1920
       TabIndex        =   17
       Top             =   7080
       Value           =   1  'Checked
@@ -187,7 +187,7 @@ Begin VB.Form FormHistogram
       Caption         =   "Rendering Options:"
       ForeColor       =   &H00400000&
       Height          =   195
-      Left            =   210
+      Left            =   240
       TabIndex        =   24
       Top             =   7155
       Width           =   1395
