@@ -74,7 +74,7 @@ Begin VB.Form FormGrayscale
       Height          =   255
       Left            =   3000
       Max             =   254
-      Min             =   3
+      Min             =   2
       TabIndex        =   2
       Top             =   4200
       Value           =   3
