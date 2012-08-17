@@ -314,7 +314,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                     Me.Visible = False
                     Unload Me
                 End If
-            
+                
+            ElseIf confirmReturn = vbNo Then
+                Me.Visible = False
+                Unload Me
            End If
         
         End If
