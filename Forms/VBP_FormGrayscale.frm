@@ -112,11 +112,11 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   330
-      Left            =   2400
+      Left            =   2160
       Style           =   2  'Dropdown List
       TabIndex        =   0
       Top             =   3600
-      Width           =   3495
+      Width           =   3975
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "OK"
@@ -188,7 +188,7 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   600
+      Left            =   360
       TabIndex        =   5
       Top             =   3645
       Width           =   1620
@@ -304,16 +304,16 @@ End Sub
 Private Sub Form_Load()
         
     'Set up the grayscale options combo box
-    cboMethod.AddItem "Average", 0
-    cboMethod.AddItem "ITU Standard", 1
+    cboMethod.AddItem "Average value [(R+G+B) / 3]", 0
+    cboMethod.AddItem "Adjusted for the human eye [ITU Standard]", 1
     cboMethod.AddItem "Desaturate", 2
-    cboMethod.AddItem "X # of shades", 3
-    cboMethod.AddItem "X # of shades (dithered)", 4
+    cboMethod.AddItem "Specific # of shades", 3
+    cboMethod.AddItem "Specific # of shades (dithered)", 4
     cboMethod.ListIndex = 1
     
     'Render the preview images
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
+    DrawPreviewImage picPreview
+    DrawPreviewImage picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -324,24 +324,29 @@ Private Sub Form_Load()
 End Sub
 
 'Reduce to X # gray shades
-Public Sub fGrayscaleCustom(ByVal NumToConvertTo As Long, Optional ByVal toPreview As Boolean = False)
+Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData picPreview
     Else
-        Message "Converting to " & NumToConvertTo & " shades of gray..."
+        Message "Converting to " & numOfShades & " shades of gray..."
         GetImageData
         SetProgBarMax PicHeightL
     End If
     
+    'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
+    Dim conversionFactor As Single
+    conversionFactor = (255 / (numOfShades - 1))
+    
     'Build a look-up table for our custom grayscale conversion results
-    Dim MagicNum As Single
-    MagicNum = (255 / (NumToConvertTo - 1))
-    Dim LookUp(0 To 255) As Long
+    Dim LookUp(0 To 255) As Byte
+    Dim grayTempCalc As Long
+    
     For x = 0 To 255
-        LookUp(x) = Int((CDbl(x) / MagicNum) + 0.5) * MagicNum
-        If LookUp(x) > 255 Then LookUp(x) = 255
+        grayTempCalc = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
+        ByteMeL grayTempCalc
+        LookUp(x) = CByte(grayTempCalc)
     Next x
     
     'Build another look-up table for our initial grayscale index calculation
@@ -350,7 +355,7 @@ Public Sub fGrayscaleCustom(ByVal NumToConvertTo As Long, Optional ByVal toPrevi
         grayLookUp(x) = x \ 3
     Next x
     
-    Dim r As Long, g As Long, b As Long, gray As Long
+    Dim R As Long, G As Long, B As Long, Gray As Long
     
     'Calculate loop values based on previewing/not-previewing
     Dim initX As Long, initY As Long, finX As Long, finY As Long
@@ -366,20 +371,23 @@ Public Sub fGrayscaleCustom(ByVal NumToConvertTo As Long, Optional ByVal toPrevi
         finY = PicHeightL
     End If
     
+    'Loop through each pixel in the image, converting values as we go
     Dim QuickVal As Long
     For y = initY To finY
     For x = initX To finX
         
         QuickVal = x * 3
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        gray = grayLookUp(r + g + b)
+        'Get the source pixel color values
+        R = ImageData(QuickVal + 2, y)
+        G = ImageData(QuickVal + 1, y)
+        B = ImageData(QuickVal, y)
+        Gray = grayLookUp(R + G + B)
         
-        ImageData(QuickVal + 2, y) = LookUp(gray)
-        ImageData(QuickVal + 1, y) = LookUp(gray)
-        ImageData(QuickVal, y) = LookUp(gray)
+        'Assign all color channels the new gray value
+        ImageData(QuickVal + 2, y) = LookUp(Gray)
+        ImageData(QuickVal + 1, y) = LookUp(Gray)
+        ImageData(QuickVal, y) = LookUp(Gray)
         
     Next x
         If toPreview = False Then
@@ -387,8 +395,9 @@ Public Sub fGrayscaleCustom(ByVal NumToConvertTo As Long, Optional ByVal toPrevi
         End If
     Next y
     
+    'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData picEffect
     Else
         SetImageData
         Message "Finished."
@@ -397,25 +406,37 @@ Public Sub fGrayscaleCustom(ByVal NumToConvertTo As Long, Optional ByVal toPrevi
 End Sub
 
 'Reduce to X # gray shades (dithered)
-Public Sub fGrayscaleCustomDither(ByVal NumToConvertTo As Long, Optional ByVal toPreview As Boolean = False)
+Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData picPreview
     Else
-        Message "Converting to " & NumToConvertTo & " shades of gray, with dithering..."
+        Message "Converting to " & numOfShades & " shades of gray, with dithering..."
         GetImageData
         SetProgBarMax PicHeightL
     End If
     
-    Dim MagicNum As Single
-    MagicNum = (255 / (NumToConvertTo - 1))
+    'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
+    Dim conversionFactor As Single
+    conversionFactor = (255 / (numOfShades - 1))
     
-    Dim CurrentColor As Long
+    'Build another look-up table for our initial grayscale index calculation
+    Dim grayLookUp(0 To 765) As Byte
+    For x = 0 To 765
+        grayLookUp(x) = x \ 3
+    Next x
     
-    Dim EV As Long
-    Dim CC As Long
-    Dim r1 As Long, g1 As Long, b1 As Long
+    'Unfortunately, this algorithm (unlike its non-dithering counterpart) is not well-suited to using a look-up table, so all calculations have been moved into the loop
+    Dim grayTempCalc As Long
+    
+    'This value tracks the drifting error of our conversions, which allows us to dither
+    Dim errorValue As Long
+    errorValue = 0
+    
+    'Color and grayscale variables
+    Dim R As Long, G As Long, B As Long
+    Dim Gray As Byte
 
     'Calculate loop values based on previewing/not-previewing
     Dim initX As Long, initY As Long, finX As Long, finY As Long
@@ -431,31 +452,54 @@ Public Sub fGrayscaleCustomDither(ByVal NumToConvertTo As Long, Optional ByVal t
         finY = PicHeightL
     End If
     
+    'Loop through each pixel in the image, converting values as we go
     Dim QuickVal As Long
     For y = initY To finY
     For x = initX To finX
+    
         QuickVal = x * 3
-        r1 = ImageData(QuickVal + 2, y)
-        g1 = ImageData(QuickVal + 1, y)
-        b1 = ImageData(QuickVal, y)
-        CurrentColor = (r1 + g1 + b1) \ 3
-        CurrentColor = CurrentColor + EV
-        CC = Int((CDbl(CurrentColor) / MagicNum) + 0.5) * MagicNum
-        EV = CurrentColor - CC
-        If CC > 255 Then CC = 255
-        If CC < 0 Then CC = 0
-        ImageData(QuickVal + 2, y) = CC
-        ImageData(QuickVal + 1, y) = CC
-        ImageData(QuickVal, y) = CC
+        
+        'Get the source pixel color values
+        R = ImageData(QuickVal + 2, y)
+        G = ImageData(QuickVal + 1, y)
+        B = ImageData(QuickVal, y)
+        
+        'Look up our initial grayscale value in the table
+        Gray = grayLookUp(R + G + B)
+        grayTempCalc = Gray
+        
+        'Add the error value (a cumulative value of the difference between actual gray values and gray values we've selected) to the current gray value
+        grayTempCalc = grayTempCalc + errorValue
+        
+        'Rebuild our temporary calculation variable using the shade reduction formula
+        grayTempCalc = Int((CDbl(grayTempCalc) / conversionFactor) + 0.5) * conversionFactor
+        
+        'Adjust our error value to include this latest calculation
+        errorValue = CLng(Gray) + errorValue - grayTempCalc
+        
+        ByteMeL grayTempCalc
+        Gray = CByte(grayTempCalc)
+        
+        'Assign all color channels the new gray value
+        ImageData(QuickVal + 2, y) = Gray
+        ImageData(QuickVal + 1, y) = Gray
+        ImageData(QuickVal, y) = Gray
+        
     Next x
-        EV = 0
+    
+        'Reset the error value at the end of each line
+        errorValue = 0
+        
+        'If we aren't previewing, update the progress bar
         If toPreview = False Then
             If (y Mod 20 = 0) Then SetProgBarVal y
         End If
+        
     Next y
     
+    'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData picEffect
     Else
         SetImageData
         Message "Finished."
@@ -468,19 +512,21 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData picPreview
     Else
         Message "Converting image to grayscale..."
         GetImageData
         SetProgBarMax PicWidthL
     End If
     
-    Dim CurrentColor As Byte
-    Dim r As Long, g As Long, b As Long
+    'Color and grayscale variables
+    Dim R As Long, G As Long, B As Long
+    Dim Gray As Byte
     
-    Dim LookUp(0 To 765) As Byte
+    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
+    Dim grayLookUp(0 To 765) As Byte
     For x = 0 To 765
-        LookUp(x) = x \ 3
+        grayLookUp(x) = x \ 3
     Next x
     
     'Calculate loop values based on previewing/not-previewing
@@ -497,25 +543,34 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False)
         finY = PicHeightL
     End If
     
+    'Loop through each pixel in the image, converting values as we go
     Dim QuickVal As Long
     For x = initX To finX
         QuickVal = x * 3
     For y = initY To finY
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        CurrentColor = LookUp(r + g + b)
-        ImageData(QuickVal, y) = CurrentColor
-        ImageData(QuickVal + 1, y) = CurrentColor
-        ImageData(QuickVal + 2, y) = CurrentColor
+    
+        'Get the source pixel color values
+        R = ImageData(QuickVal + 2, y)
+        G = ImageData(QuickVal + 1, y)
+        B = ImageData(QuickVal, y)
+        
+        'Calculate the gray value using the look-up table
+        Gray = grayLookUp(R + G + B)
+        
+        'Assign that gray value to each color channel
+        ImageData(QuickVal, y) = Gray
+        ImageData(QuickVal + 1, y) = Gray
+        ImageData(QuickVal + 2, y) = Gray
+        
     Next y
         If toPreview = False Then
             If (x Mod 20 = 0) Then SetProgBarVal x
         End If
     Next x
     
+    'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData picEffect
     Else
         SetImageData
         Message "Finished."
@@ -528,15 +583,16 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False)
 
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData picPreview
     Else
-        Message "Generating ITU standard grayscale image..."
+        Message "Generating ITU-R compatible grayscale image..."
         GetImageData
         SetProgBarMax PicWidthL
     End If
 
-    Dim CurrentColor As Long
-    Dim r As Long, g As Long, b As Long
+    'Color and gray variables
+    Dim R As Long, G As Long, B As Long
+    Dim Gray As Long
     
     'Calculate loop values based on previewing/not-previewing
     Dim initX As Long, initY As Long, finX As Long, finY As Long
@@ -552,26 +608,35 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False)
         finY = PicHeightL
     End If
     
+    'Loop through each pixel in the image, converting values as we go
     Dim QuickVal As Long
     For x = initX To finX
         QuickVal = x * 3
     For y = initY To finY
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        CurrentColor = (222 * r + 707 * g + 71 * b) \ 1000
-        ByteMeL CurrentColor
-        ImageData(QuickVal, y) = CurrentColor
-        ImageData(QuickVal + 1, y) = CurrentColor
-        ImageData(QuickVal + 2, y) = CurrentColor
+    
+        'Get the source pixel color values
+        R = ImageData(QuickVal + 2, y)
+        G = ImageData(QuickVal + 1, y)
+        B = ImageData(QuickVal, y)
+        
+        'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+        Gray = (213 * R + 715 * G + 72 * B) \ 1000
+        ByteMeL Gray
+        
+        'Assign all color channels the new gray value
+        ImageData(QuickVal, y) = Gray
+        ImageData(QuickVal + 1, y) = Gray
+        ImageData(QuickVal + 2, y) = Gray
+        
     Next y
         If toPreview = False Then
             If (x Mod 20 = 0) Then SetProgBarVal x
         End If
     Next x
     
+    'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData picEffect
     Else
         SetImageData
         Message "Finished."
@@ -584,17 +649,23 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData picPreview
     Else
         Message "Desaturating image..."
         GetImageData
         SetProgBarMax PicWidthL
     End If
     
-    Dim r As Long, g As Long, b As Long
-    Dim HH As Single, SS As Single, LL As Single
+    'These variables will hold temporary pixel color values (red, green, blue)
+    Dim R As Long, G As Long, B As Long
     
-    'Calculate loop values based on previewing/not-previewing
+    'This value will hold the grayscale value of each pixel
+    Dim Gray As Long
+    
+    'These variables will hold the maximum and minimum channel values for each pixel
+    Dim cMax As Long, cMin As Long
+    
+    'Calculate initial and terminal loop values based on previewing/not-previewing
     Dim initX As Long, initY As Long, finX As Long, finY As Long
     If toPreview = True Then
         initX = PreviewX
@@ -608,34 +679,38 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False)
         finY = PicHeightL
     End If
     
+    'Loop through each pixel in the image, converting values as we go
     Dim QuickVal As Long
     For x = initX To finX
         QuickVal = x * 3
     For y = initY To finY
     
-        'Get the temporary values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        'Get the source pixel color values
+        R = ImageData(QuickVal + 2, y)
+        G = ImageData(QuickVal + 1, y)
+        B = ImageData(QuickVal, y)
         
-        'Use the RGB values to calculate corresponding hue, saturation, and luminance values
-        tRGBToHSL r, g, b, HH, SS, LL
+        'Find the highest and lowest of the RGB values
+        cMax = Maximum(R, G, B)
+        cMin = Minimum(R, G, B)
         
-        'Set saturation to zero, then convert HSL back into RGB values
-        tHSLToRGB HH, 0, LL, r, g, b
+        'Calculate luminance and make sure it falls between 255 and 0 (it always should, but it doesn't hurt to check)
+        Gray = (cMax + cMin) \ 2
+        ByteMeL Gray
         
-        'Assign those values into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        'Assign all color channels to the new gray value
+        ImageData(QuickVal + 2, y) = CByte(Gray)
+        ImageData(QuickVal + 1, y) = Gray
+        ImageData(QuickVal, y) = Gray
     Next y
         If toPreview = False Then
             If (x Mod 20 = 0) Then SetProgBarVal x
         End If
     Next x
     
+    'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData picEffect
     Else
         SetImageData
         Message "Finished."
@@ -643,6 +718,7 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False)
     
 End Sub
 
+'When the "# of shades" horizontal scroll bar is changed, update the text box to match
 Private Sub hsShades_Change()
     txtShades.Text = hsShades.Value
 End Sub
@@ -651,6 +727,7 @@ Private Sub hsShades_Scroll()
     txtShades.Text = hsShades.Value
 End Sub
 
+'When the "# of shades" text box is changed, check the value for errors and redraw the preview
 Private Sub txtShades_Change()
     If EntryValid(txtShades, hsShades.Min, hsShades.Max, False, False) Then
         hsShades.Value = val(txtShades)
@@ -658,6 +735,41 @@ Private Sub txtShades_Change()
     End If
 End Sub
 
+'As a convenience to the user, when they click the "# of shades" text box, automatically select the text for them
 Private Sub txtShades_GotFocus()
     AutoSelectText txtShades
 End Sub
+
+'Return the maximum of three Long-type variables
+Private Function Maximum(rR As Long, rG As Long, rB As Long) As Long
+   If (rR > rG) Then
+      If (rR > rB) Then
+         Maximum = rR
+      Else
+         Maximum = rB
+      End If
+   Else
+      If (rB > rG) Then
+         Maximum = rB
+      Else
+         Maximum = rG
+      End If
+   End If
+End Function
+
+'Return the minimum of three Long-type variables
+Private Function Minimum(rR As Long, rG As Long, rB As Long) As Long
+   If (rR < rG) Then
+      If (rR < rB) Then
+         Minimum = rR
+      Else
+         Minimum = rB
+      End If
+   Else
+      If (rB < rG) Then
+         Minimum = rB
+      Else
+         Minimum = rG
+      End If
+   End If
+End Function
