@@ -73,7 +73,7 @@ Option Explicit
     Public Const GrayScale As Long = 301
     Public Const GrayscaleAverage As Long = 302
     Public Const GrayscaleCustom As Long = 303
-    Public Const GrayscaleDitherCustom As Long = 304
+    Public Const GrayscaleCustomDither As Long = 304
     
     'Area filters; numbers 400-499
     '-Blur
@@ -442,7 +442,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormGrayscale.MenuGrayscaleAverage
             Case GrayscaleCustom
                 FormGrayscale.fGrayscaleCustom pOPCODE
-            Case GrayscaleDitherCustom
+            Case GrayscaleCustomDither
                 FormGrayscale.fGrayscaleCustomDither pOPCODE
         End Select
     End If
