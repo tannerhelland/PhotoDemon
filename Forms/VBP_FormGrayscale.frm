@@ -43,7 +43,7 @@ Begin VB.Form FormGrayscale
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
-      TabIndex        =   8
+      TabIndex        =   13
       Top             =   240
       Width           =   2895
    End
@@ -66,7 +66,7 @@ Begin VB.Form FormGrayscale
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
-      TabIndex        =   7
+      TabIndex        =   12
       Top             =   240
       Width           =   2895
    End
@@ -123,7 +123,7 @@ Begin VB.Form FormGrayscale
       Default         =   -1  'True
       Height          =   375
       Left            =   3960
-      TabIndex        =   3
+      TabIndex        =   8
       Top             =   5400
       Width           =   1125
    End
@@ -132,7 +132,7 @@ Begin VB.Form FormGrayscale
       Caption         =   "Cancel"
       Height          =   375
       Left            =   5160
-      TabIndex        =   4
+      TabIndex        =   9
       Top             =   5400
       Width           =   1125
    End
@@ -144,7 +144,7 @@ Begin VB.Form FormGrayscale
       Left            =   2160
       ScaleHeight     =   375
       ScaleWidth      =   3975
-      TabIndex        =   13
+      TabIndex        =   16
       Top             =   4200
       Width           =   3975
       Begin VB.OptionButton optChannel 
@@ -163,7 +163,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   2
          Left            =   2400
-         TabIndex        =   16
+         TabIndex        =   7
          Top             =   0
          Width           =   1095
       End
@@ -183,7 +183,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   0
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   5
          Top             =   0
          Value           =   -1  'True
          Width           =   855
@@ -204,7 +204,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   1
          Left            =   1200
-         TabIndex        =   14
+         TabIndex        =   6
          Top             =   0
          Width           =   1095
       End
@@ -217,7 +217,7 @@ Begin VB.Form FormGrayscale
       Left            =   2160
       ScaleHeight     =   375
       ScaleWidth      =   3975
-      TabIndex        =   10
+      TabIndex        =   15
       Top             =   4200
       Width           =   3975
       Begin VB.OptionButton optDecompose 
@@ -236,7 +236,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   1
          Left            =   1920
-         TabIndex        =   12
+         TabIndex        =   4
          Top             =   0
          Width           =   1455
       End
@@ -256,7 +256,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   0
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   3
          Top             =   0
          Value           =   -1  'True
          Width           =   1455
@@ -277,7 +277,7 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      TabIndex        =   9
+      TabIndex        =   14
       Top             =   3000
       Width           =   3975
    End
@@ -296,7 +296,7 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00400000&
       Height          =   210
       Left            =   360
-      TabIndex        =   6
+      TabIndex        =   11
       Top             =   4200
       Width           =   1515
    End
@@ -315,7 +315,7 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00400000&
       Height          =   210
       Left            =   360
-      TabIndex        =   5
+      TabIndex        =   10
       Top             =   3645
       Width           =   1620
    End
