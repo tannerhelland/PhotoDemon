@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormPreferences 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Preferences"
-   ClientHeight    =   5580
+   ClientHeight    =   6165
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   5055
@@ -18,19 +18,37 @@ Begin VB.Form FormPreferences
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   372
+   ScaleHeight     =   411
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   337
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton cmdInternetExplanation 
+      Caption         =   "?"
+      Height          =   255
+      Left            =   3210
+      TabIndex        =   4
+      Top             =   2250
+      Width           =   255
+   End
+   Begin VB.CheckBox chkProgramUpdates 
+      Appearance      =   0  'Flat
+      Caption         =   "Automatically check for software updates"
+      ForeColor       =   &H00400000&
+      Height          =   255
+      Left            =   240
+      TabIndex        =   5
+      Top             =   2640
+      Width           =   4575
+   End
    Begin VB.CheckBox chkConfirmUnsaved 
       Appearance      =   0  'Flat
       Caption         =   "Confirm closing of unsaved images"
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      TabIndex        =   15
-      Top             =   2760
+      TabIndex        =   7
+      Top             =   3840
       Width           =   3375
    End
    Begin VB.PictureBox picCanvasImg 
@@ -45,7 +63,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
-      TabIndex        =   13
+      TabIndex        =   16
       Top             =   840
       Visible         =   0   'False
       Width           =   270
@@ -60,7 +78,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   319
-      TabIndex        =   12
+      TabIndex        =   15
       ToolTipText     =   "Click to change color"
       Top             =   840
       Width           =   4815
@@ -70,7 +88,7 @@ Begin VB.Form FormPreferences
       Height          =   315
       Left            =   2280
       Style           =   2  'Dropdown List
-      TabIndex        =   11
+      TabIndex        =   2
       Top             =   435
       Width           =   2655
    End
@@ -79,20 +97,20 @@ Begin VB.Form FormPreferences
       Height          =   315
       Left            =   240
       Style           =   2  'Dropdown List
-      TabIndex        =   8
-      Top             =   1800
+      TabIndex        =   3
+      Top             =   1770
       Width           =   4575
    End
    Begin VB.CheckBox ChkLogMessages 
       Appearance      =   0  'Flat
-      Caption         =   "Log program messages to file (useful for debugging)"
+      Caption         =   "Log program messages to file (advanced users only)"
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      TabIndex        =   2
+      TabIndex        =   8
       ToolTipText     =   $"VBP_FormPreferences.frx":008A
-      Top             =   3480
-      Width           =   4455
+      Top             =   4200
+      Width           =   4575
    End
    Begin VB.CommandButton CmdTmpPath 
       Caption         =   "..."
@@ -105,11 +123,11 @@ Begin VB.Form FormPreferences
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   330
+      Height          =   315
       Left            =   4560
-      TabIndex        =   5
+      TabIndex        =   10
       ToolTipText     =   "Click to open a browser-folder dialog"
-      Top             =   4320
+      Top             =   5040
       Width           =   255
    End
    Begin VB.TextBox TxtTempPath 
@@ -117,10 +135,10 @@ Begin VB.Form FormPreferences
       Height          =   315
       Left            =   240
       Locked          =   -1  'True
-      TabIndex        =   4
+      TabIndex        =   9
       Text            =   "automatically generated at run-time"
       ToolTipText     =   "Folder used for temporary calculations"
-      Top             =   4320
+      Top             =   5040
       Width           =   4215
    End
    Begin VB.CommandButton cmdCancel 
@@ -129,7 +147,7 @@ Begin VB.Form FormPreferences
       Height          =   375
       Left            =   3720
       TabIndex        =   1
-      Top             =   5040
+      Top             =   5640
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
@@ -138,23 +156,23 @@ Begin VB.Form FormPreferences
       Height          =   375
       Left            =   2520
       TabIndex        =   0
-      Top             =   5040
+      Top             =   5640
       Width           =   1125
    End
    Begin VB.CheckBox ChkPromptPluginDownload 
       Appearance      =   0  'Flat
-      Caption         =   "Check for missing plugins on program start"
+      Caption         =   "If core plugins cannot be located, offer to download them"
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      TabIndex        =   3
-      Top             =   3120
-      Width           =   3375
+      TabIndex        =   6
+      Top             =   3000
+      Width           =   4575
    End
-   Begin VB.Label lblGeneralOptions 
+   Begin VB.Label lblUpdateOptions 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "General Program Options"
+      Caption         =   "Features That Access The Internet"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -167,9 +185,29 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00800000&
       Height          =   195
       Left            =   120
-      TabIndex        =   14
-      Top             =   2400
-      Width           =   2130
+      TabIndex        =   18
+      Top             =   2280
+      Width           =   2940
+   End
+   Begin VB.Label lblGeneralOptions 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Other Program Options"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   120
+      TabIndex        =   17
+      Top             =   3480
+      Width           =   1950
    End
    Begin VB.Label lblCanvasFX 
       AutoSize        =   -1  'True
@@ -178,7 +216,7 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00400000&
       Height          =   195
       Left            =   240
-      TabIndex        =   10
+      TabIndex        =   14
       Top             =   480
       Width           =   1980
    End
@@ -198,7 +236,7 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00800000&
       Height          =   195
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   13
       Top             =   120
       Width           =   1485
    End
@@ -209,7 +247,7 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00400000&
       Height          =   195
       Left            =   240
-      TabIndex        =   7
+      TabIndex        =   12
       Top             =   1440
       Width           =   2340
    End
@@ -219,8 +257,8 @@ Begin VB.Form FormPreferences
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
-      TabIndex        =   6
-      Top             =   3960
+      TabIndex        =   11
+      Top             =   4680
       Width           =   4575
    End
 End
@@ -285,6 +323,14 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
+'Because I take privacy very seriously, I want users to know that PhotoDemon does not transmit any data off their computer.
+Private Sub cmdInternetExplanation_Click()
+    MsgBox "PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download the three core plugins (FreeImage, EZTwain, and ZLib) if they aren't present in the /Plugins subdirectory." _
+    & vbCrLf & vbCrLf & "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features.  Checking for software updates results in the download of a single ""updates.txt"" file containing the latest PhotoDemon version and a list of changes.  Similarly, downloading missing plugins simply involves downloading one or more of the compressed plugin files from tannerhelland.com/photodemon_files." _
+    & vbCrLf & vbCrLf & "Again, these two features do not upload any data, personal or otherwise, besides the bare minimum necessary to initiate a download (what's required by HTTP/GET, basically)." _
+    & vbCrLf & vbCrLf & "If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the software.", vbInformation + vbOKOnly, "Important Information About PhotoDemon's Internet-Related Features"
+End Sub
+
 'OK button
 Private Sub CmdOK_Click()
     
@@ -295,6 +341,13 @@ Private Sub CmdOK_Click()
     Else
         ConfirmClosingUnsaved = False
         WriteToIni "General Preferences", "ConfirmClosingUnsaved", 0
+    End If
+    
+    'Store whether PhotoDemon is allowed to check for updates
+    If chkProgramUpdates.Value = vbChecked Then
+        WriteToIni "General Preferences", "CheckForUpdates", 1
+    Else
+        WriteToIni "General Preferences", "CheckForUpdates", 0
     End If
     
     'Store whether PhotoDemon is allowed to offer the automatic download of missing core plugins
@@ -402,6 +455,10 @@ Private Sub Form_Load()
     Dim tmpString As String
     tmpString = GetFromIni("General Preferences", "PromptForPluginDownload")
     If val(tmpString) = 1 Then ChkPromptPluginDownload.Value = vbChecked Else ChkPromptPluginDownload.Value = vbUnchecked
+    
+    'Same for checking for software updates
+    tmpString = GetFromIni("General Preferences", "CheckForUpdates")
+    If val(tmpString) = 1 Then chkProgramUpdates.Value = vbChecked Else chkProgramUpdates.Value = vbUnchecked
     
     'Populate the "what to do when loading large images" combo box
     cmbLargeImages.AddItem "Automatically zoom out so the images fit on-screen", 0
