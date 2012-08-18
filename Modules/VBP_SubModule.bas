@@ -208,23 +208,8 @@ Public Sub setHandCursorForAll(ByRef tForm As Form)
             eControl.MousePointer = 0
             setHandCursor eControl
         End If
-        If eControl.Controls.Count > 0 Then setHandCursorForAllInContainer eControl
     Next
     
-End Sub
-
-Public Sub setHandCursorForAllInContainer(ByRef tControl As Control)
-
-    Dim eControl As Control
-    
-    For Each eControl In tControl.Controls
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Then
-            eControl.MouseIcon = LoadPicture("")
-            eControl.MousePointer = 0
-            setHandCursor eControl
-        End If
-    Next
-
 End Sub
 
 'Set a single object ot use a particular hand cursor
