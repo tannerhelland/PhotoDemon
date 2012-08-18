@@ -74,6 +74,8 @@ Option Explicit
     Public Const GrayscaleAverage As Long = 302
     Public Const GrayscaleCustom As Long = 303
     Public Const GrayscaleCustomDither As Long = 304
+    Public Const GrayscaleDecompose As Long = 305
+    Public Const GrayscaleSingleChannel As Long = 306
     
     'Area filters; numbers 400-499
     '-Blur
@@ -444,6 +446,10 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormGrayscale.fGrayscaleCustom pOPCODE
             Case GrayscaleCustomDither
                 FormGrayscale.fGrayscaleCustomDither pOPCODE
+            Case GrayscaleDecompose
+                FormGrayscale.MenuDecompose pOPCODE
+            Case GrayscaleSingleChannel
+                FormGrayscale.MenuGrayscaleSingleChannel pOPCODE
         End Select
     End If
     
@@ -905,6 +911,10 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Grayscale (Custom # of Colors)"
         Case 304
             GetNameOfProcess = "Grayscale (Custom Dither)"
+        Case 305
+            GetNameOfProcess = "Grayscale (Decomposition)"
+        Case 306
+            GetNameOfProcess = "Grayscale (Single Channel)"
         
         'Area filters; numbers 400-499
         Case 416
