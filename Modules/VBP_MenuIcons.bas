@@ -353,8 +353,9 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon
-   
-    If imgForm.WindowState = vbMaximized Then DoEvents
+
+    'When an MDI child form is maximized, the icon is not updated properly.  This requires further investigation to solve.
+    'If imgForm.WindowState = vbMaximized Then DoEvents
    
     'The chunk of code below will generate an actual icon object for use within VB.  I don't use this mechanism because
     ' VB will internally convert the icon to 256-colors before assigning it to the form. <sigh>  Rather than do that,

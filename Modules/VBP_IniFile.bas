@@ -2,14 +2,13 @@ Attribute VB_Name = "IniProcessor"
 '***************************************************************************
 'Program INI Handler
 'Copyright ©2000-2012 by Tanner Helland
-'Created: 9/26/01
-'Last updated: 7/May/09
-'Last update: If an INI file isn't found, build a default one (with proper folders!)
+'Created: 26/September/01
+'Last updated: 18/August/12
+'Last update: Added update-checking to the INI auto-build script
 '
 'Module for handling the initialization of the program via an INI file.  This
-'routine sets program defaults, determines folders, and generally prepares the
-'program information required for successful execution.
-'
+' routine sets program defaults, determines folders, and generally prepares the
+' information PhotoDemon requires for successful execution.
 '
 '***************************************************************************
 
@@ -130,11 +129,12 @@ Public Sub LoadINI()
             Print #fileNum, "LastSaveFilter=3"   'Default to JPEG for saving
             Print #fileNum, ""
             Print #fileNum, "[General Preferences]"
-            Print #fileNum, "ConfirmClosingUnsaved=1"
+            Print #fileNum, "AutosizeLargeImages=0"
             Print #fileNum, "CanvasBackground=16777215"
+            Print #fileNum, "CheckForUpdates=1"
+            Print #fileNum, "ConfirmClosingUnsaved=1"
             Print #fileNum, "LogProgramMessages=0"
             Print #fileNum, "PromptForPluginDownload=1"
-            Print #fileNum, "AutosizeLargeImages=0"
             Print #fileNum, ""
             Print #fileNum, "[Batch Preferences]"
             Print #fileNum, "DriveBox="

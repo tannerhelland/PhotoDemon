@@ -949,13 +949,16 @@ Private Sub MDIForm_Load()
     'After the program has been successfully loaded, change the focus to the Open Image button
     cmdOpen.SetFocus
     
+    'If the user wants us to check for updates, now's the time to do it
+    Dim tmpString As String
+    
+    
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
     If (zLibEnabled = False) Or (ScanEnabled = False) Or (FreeImageEnabled = False) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
         
         'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
-        Dim tmpString As String
         tmpString = GetFromIni("General Preferences", "PromptForPluginDownload")
         Dim promptToDownload As Boolean
         If val(tmpString) = 0 Then promptToDownload = False Else promptToDownload = True
