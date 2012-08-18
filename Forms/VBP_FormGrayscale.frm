@@ -350,29 +350,29 @@ Private Sub drawGrayscalePreview()
         
         Select Case cboMethod.ListIndex
             Case 0
-                MenuGrayscaleAverage True
+                MenuGrayscaleAverage True, PicPreview, PicEffect
             Case 1
-                MenuGrayscale True
+                MenuGrayscale True, PicPreview, PicEffect
             Case 2
-                MenuDesaturate True
+                MenuDesaturate True, PicPreview, PicEffect
             Case 3
                 If optDecompose(0).Value = True Then
-                    MenuDecompose 0, True
+                    MenuDecompose 0, True, PicPreview, PicEffect
                 Else
-                    MenuDecompose 1, True
+                    MenuDecompose 1, True, PicPreview, PicEffect
                 End If
             Case 4
                 If optChannel(0).Value = True Then
-                    MenuGrayscaleSingleChannel 0, True
+                    MenuGrayscaleSingleChannel 0, True, PicPreview, PicEffect
                 ElseIf optChannel(1).Value = True Then
-                    MenuGrayscaleSingleChannel 1, True
+                    MenuGrayscaleSingleChannel 1, True, PicPreview, PicEffect
                 Else
-                    MenuGrayscaleSingleChannel 2, True
+                    MenuGrayscaleSingleChannel 2, True, PicPreview, PicEffect
                 End If
             Case 5
-                fGrayscaleCustom hsShades.Value, True
+                fGrayscaleCustom hsShades.Value, True, PicPreview, PicEffect
             Case 6
-                fGrayscaleCustomDither hsShades.Value, True
+                fGrayscaleCustomDither hsShades.Value, True, PicPreview, PicEffect
         End Select
         
     End If
@@ -480,7 +480,7 @@ Private Sub Form_Load()
         
     'Set up the grayscale options combo box
     cboMethod.AddItem "Average value [(R+G+B) / 3]", 0
-    cboMethod.AddItem "Adjusted for the human eye [ITU Standard]", 1
+    cboMethod.AddItem "Human eye equivalent [ITU Standard]", 1
     cboMethod.AddItem "Desaturate", 2
     cboMethod.AddItem "Decompose", 3
     cboMethod.AddItem "Single color channel", 4
@@ -503,11 +503,11 @@ Private Sub Form_Load()
 End Sub
 
 'Reduce to X # gray shades
-Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False)
+Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData srcPic
     Else
         Message "Converting to " & numOfShades & " shades of gray..."
         GetImageData
@@ -576,7 +576,7 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     
     'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData dstPic
     Else
         SetImageData
         Message "Finished."
@@ -585,11 +585,11 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
 End Sub
 
 'Reduce to X # gray shades (dithered)
-Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False)
+Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData srcPic
     Else
         Message "Converting to " & numOfShades & " shades of gray, with dithering..."
         GetImageData
@@ -678,7 +678,7 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     
     'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData dstPic
     Else
         SetImageData
         Message "Finished."
@@ -687,11 +687,11 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
 End Sub
 
 'Reduce to gray via (r+g+b)/3
-Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False)
+Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData srcPic
     Else
         Message "Converting image to grayscale..."
         GetImageData
@@ -749,7 +749,7 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False)
     
     'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData dstPic
     Else
         SetImageData
         Message "Finished."
@@ -758,11 +758,11 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False)
 End Sub
 
 'Reduce to gray in a more human-eye friendly manner
-Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False)
+Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
 
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData srcPic
     Else
         Message "Generating ITU-R compatible grayscale image..."
         GetImageData
@@ -815,7 +815,7 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False)
     
     'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData dstPic
     Else
         SetImageData
         Message "Finished."
@@ -824,11 +824,11 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False)
 End Sub
 
 'Reduce to gray via HSL -> convert S to 0
-Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False)
+Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData srcPic
     Else
         Message "Desaturating image..."
         GetImageData
@@ -889,7 +889,7 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False)
     
     'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData dstPic
     Else
         SetImageData
         Message "Finished."
@@ -898,11 +898,11 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False)
 End Sub
 
 'Reduce to gray by selecting the minimum (maxOrMin = 0) or maximum (maxOrMin = 1) color in each pixel
-Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boolean = False)
+Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData srcPic
     Else
         Message "Decomposing image..."
         GetImageData
@@ -955,7 +955,7 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
     
     'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData dstPic
     Else
         SetImageData
         Message "Finished."
@@ -964,11 +964,11 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
 End Sub
 
 'Reduce to gray by selecting a single color channel (represeted by cChannel: 0 = Red, 1 = Green, 2 = Blue)
-Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toPreview As Boolean = False)
+Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData PicPreview
+        GetPreviewData srcPic
     Else
         Message "Converting to grayscale by isolating single color channel..."
         GetImageData
@@ -1028,7 +1028,7 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
     
     'Render the finished output to the appropriate image container
     If toPreview = True Then
-        SetPreviewData PicEffect
+        SetPreviewData dstPic
     Else
         SetImageData
         Message "Finished."

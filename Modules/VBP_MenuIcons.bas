@@ -253,7 +253,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     aspectRatio = CSng(imgForm.BackBuffer.ScaleWidth) / CSng(imgForm.BackBuffer.ScaleHeight)
     
     'The target icon's width and height, x and y positioning
-    Dim tIcoWidth As Single, tIcoHeight As Single, tX As Single, tY As Single
+    Dim tIcoWidth As Single, tIcoHeight As Single, TX As Single, TY As Single
     
     'If the form is wider than it is tall...
     If aspectRatio > 1 Then
@@ -261,16 +261,16 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
         'Determine proper sizes and (x, y) positioning so the icon will be centered
         tIcoWidth = icoSize
         tIcoHeight = icoSize * (1 / aspectRatio)
-        tX = 0
-        tY = (icoSize - tIcoHeight) / 2
+        TX = 0
+        TY = (icoSize - tIcoHeight) / 2
         
     Else
     
         'Same thing, but with the math adjusted for images taller than they are wide
         tIcoHeight = icoSize
         tIcoWidth = icoSize * aspectRatio
-        tY = 0
-        tX = (icoSize - tIcoWidth) / 2
+        TY = 0
+        TX = (icoSize - tIcoWidth) / 2
         
     End If
     
@@ -282,7 +282,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     SetStretchBltMode imgForm.picIcon.hDC, STRETCHBLT_HALFTONE
     
     'Render the bitmap that will ultimately be converted into an icon
-    StretchBlt imgForm.picIcon.hDC, CLng(tX), CLng(tY), CLng(tIcoWidth), CLng(tIcoHeight), imgForm.BackBuffer.hDC, 0, 0, imgForm.BackBuffer.ScaleWidth, imgForm.BackBuffer.ScaleHeight, vbSrcCopy
+    StretchBlt imgForm.picIcon.hDC, CLng(TX), CLng(TY), CLng(tIcoWidth), CLng(tIcoHeight), imgForm.BackBuffer.hDC, 0, 0, imgForm.BackBuffer.ScaleWidth, imgForm.BackBuffer.ScaleHeight, vbSrcCopy
     imgForm.picIcon.Picture = imgForm.picIcon.Image
    
     'Now that we have a first draft to work from, start preparing the data types required by the icon API calls
@@ -353,6 +353,8 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon
+   
+    If imgForm.WindowState = vbMaximized Then DoEvents
    
     'The chunk of code below will generate an actual icon object for use within VB.  I don't use this mechanism because
     ' VB will internally convert the icon to 256-colors before assigning it to the form. <sigh>  Rather than do that,
