@@ -29,7 +29,7 @@ Public Sub LoadTheProgram()
     'Now, before doing anything else, load the INI file and corresponding data (via the INIProcessor module)
     LoadINI
     
-    'Check for plug-ins (we do this early, because other routies rely on this knowledge)
+    'Check for plug-ins (we do this early, because other routines rely on this knowledge)
     LoadMessage "Loading plugins..."
     LoadPlugins
     
@@ -101,7 +101,7 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.hWnd, "AAA", True
+    SetIcon FormMain.HWnd, "AAA", True
     
     'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
@@ -129,11 +129,11 @@ Public Sub LoadTheProgram()
         .Draw
     End With
     
-    'Set up GUI defaults
-    FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
-    
-    'Clear the progress bar
+    'Clear the newly built progress bar
     SetProgBarVal 0
+    
+    'Set up the program's title bar
+    FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
     
     'Load the most-recently-used file list (MRU)
     MRU_LoadFromINI
@@ -625,7 +625,7 @@ End Sub
 ' experience: zLib, EZTwain32, and FreeImage.
 Public Sub LoadPlugins()
     
-    'Use the path the program was launched from to determine plug-in folder, etc.
+    'Use the path the program was launched from to determine plug-in folder
     PluginPath = ProgramPath & "Plugins\"
     
     'Check for image scanning
