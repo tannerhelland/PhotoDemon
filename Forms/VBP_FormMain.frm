@@ -952,9 +952,33 @@ Private Sub MDIForm_Load()
     'If the user wants us to check for updates, now's the time to do it
     Dim tmpString As String
     
+    'Start by seeing if we're allowed to check for software updates
+    tmpString = GetFromIni("General Preferences", "CheckForUpdates")
+    Dim allowedToUpdate As Boolean
+    If val(tmpString) = 0 Then allowedToUpdate = False Else allowedToUpdate = True
+    
+    'If updates are allowed, now is the time to check
+    If allowedToUpdate = True Then
+    
+        Message "Checking for software updates..."
+    
+        'Use the CheckForSoftwareUpdate
+        Dim updateNeeded As Boolean
+        updateNeeded = CheckForSoftwareUpdate
+        
+        If updateNeeded = True Then
+            Message "Update found!  Launching update notifier..."
+            FormSoftwareUpdate.Show 1, Me
+        Else
+            Message "Software is up-to-date."
+        End If
+    
+    End If
     
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
-    If (zLibEnabled = False) Or (ScanEnabled = False) Or (FreeImageEnabled = False) Then
+    ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
+    '        so ignore this request if the user was already notified of an update.)
+    If (updateNeeded = False) And ((zLibEnabled = False) Or (ScanEnabled = False) Or (FreeImageEnabled = False)) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
         
@@ -964,11 +988,15 @@ Private Sub MDIForm_Load()
         If val(tmpString) = 0 Then promptToDownload = False Else promptToDownload = True
         
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
-        If promptToDownload = True Then FormPluginDownloader.Show 1, FormMain
-        
-        Message "Please load an image (File -> Open)"
+        If promptToDownload = True Then
+            FormPluginDownloader.Show 1, FormMain
+        Else
+            Message "Ignoring plugin update request per user's INI settings"
+        End If
     
     End If
+    
+    Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
