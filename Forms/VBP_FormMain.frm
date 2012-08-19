@@ -866,6 +866,9 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuHelpSepBar0 
          Caption         =   "-"
       End
+      Begin VB.Menu MnuCheckUpdates 
+         Caption         =   "Check for &Updates..."
+      End
       Begin VB.Menu MnuVisitWebsite 
          Caption         =   "&Visit the PhotoDemon Website"
       End
@@ -963,7 +966,6 @@ Private Sub MDIForm_Load()
     
         Message "Checking for software updates..."
     
-        'Use the CheckForSoftwareUpdate
         Dim updateNeeded As Boolean
         updateNeeded = CheckForSoftwareUpdate
         
@@ -1115,6 +1117,23 @@ Private Sub MnuCascadeWindows_Click()
         If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Cascade"
     Next i
     
+End Sub
+
+'This allows the user to manually check for updates.
+Private Sub MnuCheckUpdates_Click()
+        
+    Message "Checking for software updates..."
+    
+    Dim updateNeeded As Boolean
+    updateNeeded = CheckForSoftwareUpdate
+    
+    If updateNeeded = True Then
+        Message "Update found!  Launching update notifier..."
+        FormSoftwareUpdate.Show 1, Me
+    Else
+        Message "This copy of PhotoDemon is up-to-date.  (Version " & App.Major & "." & App.Minor & ")"
+    End If
+
 End Sub
 
 Private Sub MnuClearMRU_Click()
