@@ -271,11 +271,13 @@ Attribute VB_Exposed = False
 'Program Preferences Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 03/July/12
-'Last update: added support for custom canvas backgrounds (checkerboard or colors)
+'Last updated: 19/August/12
+'Last update: added support for checking for software updates
 '
 'Module for interfacing with the user's desired program preferences.  Handles
-'reading from and copying to the program's ".INI" file.
+' reading from and copying to the program's ".INI" file.
+'
+'Note that this form interacts with the INIProcessor module
 '
 '***************************************************************************
 

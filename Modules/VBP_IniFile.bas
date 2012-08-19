@@ -3,8 +3,8 @@ Attribute VB_Name = "IniProcessor"
 'Program INI Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 26/September/01
-'Last updated: 18/August/12
-'Last update: Added update-checking to the INI auto-build script
+'Last updated: 19/August/12
+'Last update: Added functions for reading/writing arbitrary INI files.  These features will be used by the new update checker.
 '
 'Module for handling the initialization of the program via an INI file.  This
 ' routine sets program defaults, determines folders, and generally prepares the
@@ -207,15 +207,6 @@ Public Function WriteToIni(strSectionHeader As String, strVariableName As String
     WriteToIni = WritePrivateProfileString(strSectionHeader, strVariableName, strValue, INIPath)
 End Function
 
-'NOTE: back when we were manually registering DLLs in the system directory, this was important.  Now it's no longer needed.
-'Get the system directory from Windows
-'Public Function GetSystemPath() As String
-'    Dim sRet As String, lngRet As Long
-'    sRet = String$(255, 0)
-'    lngRet = GetSystemDirectory(sRet, 255)
-'    GetSystemPath = FixPath(Left(sRet, lngRet))
-'End Function
-
 'Get the temp directory from Windows
 Public Function GetTemporaryPath() As String
     Dim sRet As String, lngLen As Long
@@ -227,15 +218,32 @@ End Function
 
 'Get a special folder from Windows (as specified by the CSIDL)
 Public Function GetWindowsFolder(eFolder As CSIDLs) As String
-    'Calling Syntax: sPath = GetWindowsFolder(folderMyDocuments)
-    'Parameters: EFolder - use one of the provided enums
+
     Dim iR As Integer
     Dim sPath As String
     
-    sPath = String$(MAX_LENGTH, " ") 'Pad for dll
-    If SHGetFolderPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, sPath) = S_OK Then 'Does it exist?
-        iR = InStr(1, sPath, vbNullChar) - 1 'Find the end of the string
-        GetWindowsFolder = FixPath(Left$(sPath, iR)) 'Return everything up to the NULL + (Tanner's fix) add a terminating slash
+    sPath = String$(MAX_LENGTH, " ")
+    If SHGetFolderPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, sPath) = S_OK Then
+        
+        'Find the end of the string
+        iR = InStr(1, sPath, vbNullChar) - 1
+        
+        'Return everything up to the NULL + (Tanner's fix) add a terminating slash
+        GetWindowsFolder = FixPath(Left$(sPath, iR))
+        
     End If
     
+End Function
+
+'Read values from an arbitrary INI file (e.g. NOT the core PhotoDemon one)
+Public Function GetFromArbitraryIni(strINIFile As String, strSectionHeader As String, strVariableName As String) As String
+    Dim strReturn As String
+    'Blank out the string (required by the API call)
+    strReturn = String(255, Chr(0))
+    GetFromArbitraryIni = Left$(strReturn, GetPrivateProfileString(strSectionHeader, ByVal strVariableName, "", strReturn, Len(strReturn), strINIFile))
+End Function
+
+'Set values into an arbitrary INI file (e.g. NOT the core PhotoDemon one)
+Public Function WriteToArbitraryIni(strINIFile As String, strSectionHeader As String, strVariableName As String, strValue As String) As Long
+    WriteToArbitraryIni = WritePrivateProfileString(strSectionHeader, strVariableName, strValue, strINIFile)
 End Function
