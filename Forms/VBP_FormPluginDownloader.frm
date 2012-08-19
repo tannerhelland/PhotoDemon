@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormPluginDownloader 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PhotoDemon Plugin Downloader"
-   ClientHeight    =   6000
+   ClientHeight    =   6015
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   8295
@@ -18,11 +18,20 @@ Begin VB.Form FormPluginDownloader
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   400
+   ScaleHeight     =   401
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   553
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton cmdOKNo 
+      Caption         =   "OK"
+      Height          =   495
+      Left            =   6720
+      TabIndex        =   18
+      Top             =   5280
+      Visible         =   0   'False
+      Width           =   1335
+   End
    Begin VB.PictureBox picYes 
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
@@ -32,7 +41,7 @@ Begin VB.Form FormPluginDownloader
       ScaleHeight     =   145
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   120
       Visible         =   0   'False
       Width           =   8295
@@ -46,7 +55,7 @@ Begin VB.Form FormPluginDownloader
          Left            =   2160
          ScaleHeight     =   255
          ScaleWidth      =   6015
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   1080
          Width           =   6015
       End
@@ -68,7 +77,7 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00800000&
          Height          =   375
          Left            =   240
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   480
          Width           =   7815
       End
@@ -88,7 +97,7 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00400000&
          Height          =   240
          Left            =   360
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   1080
          Width           =   1725
       End
@@ -97,24 +106,16 @@ Begin VB.Form FormPluginDownloader
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   6015
+      Height          =   5295
       Left            =   0
-      ScaleHeight     =   401
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   353
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   545
       TabIndex        =   6
-      Top             =   6000
+      Top             =   6480
       Visible         =   0   'False
       Width           =   8175
-      Begin VB.CommandButton cmdOKNo 
-         Caption         =   "OK"
-         Default         =   -1  'True
-         Height          =   495
-         Left            =   6480
-         TabIndex        =   14
-         Top             =   5280
-         Width           =   1335
-      End
       Begin VB.TextBox txtNoExplanation 
          Appearance      =   0  'Flat
          BackColor       =   &H8000000F&
@@ -259,6 +260,7 @@ Begin VB.Form FormPluginDownloader
    End
    Begin VB.CommandButton cmdYesDownload 
       Caption         =   "Yes.  Please download these files to the plugins directory."
+      Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -275,7 +277,7 @@ Begin VB.Form FormPluginDownloader
       Width           =   7815
    End
    Begin VB.CommandButton cmdNoDownload 
-      Caption         =   "No.  Do not download these files right now, but please remind me again in the future."
+      Caption         =   "Not right now, but please remind me again in the future."
       Height          =   495
       Left            =   240
       TabIndex        =   1
@@ -283,7 +285,7 @@ Begin VB.Form FormPluginDownloader
       Width           =   7815
    End
    Begin VB.CommandButton cmdNoDownloadNoReminder 
-      Caption         =   "No.  Do not download these files, and do not prompt me again."
+      Caption         =   "Not now, not ever.  Do not download these files, and do not prompt me again."
       Height          =   495
       Left            =   240
       TabIndex        =   2
@@ -364,11 +366,16 @@ Private Sub cmdNoDownload_Click()
     If hInternetSession Then InternetCloseHandle hInternetSession
     Message "Automatic update canceled."
     
+    cmdYesDownload.Visible = False
+    cmdNoDownload.Visible = False
+    cmdNoDownloadNoReminder.Visible = False
     picNo.Left = 0
     picNo.Top = 0
     DoEvents
     txtNoExplanation.Text = "The next time you launch " & PROGRAMNAME & ", it will repeat this check for missing plugins." & vbCrLf & vbCrLf & "Note: if you're the adventurous type, you can manually download these plugin files from their respective sites.  " & PROGRAMNAME & " will look for the DLL versions of these libraries in the 'plugins' subdirectory of wherever the " & PROGRAMNAME & " executable file is located."
     picNo.Visible = True
+    cmdOKNo.Visible = True
+    cmdOKNo.SetFocus
     
 End Sub
 
@@ -378,11 +385,16 @@ Private Sub cmdNoDownloadNoReminder_Click()
     If hInternetSession Then InternetCloseHandle hInternetSession
     Message "Automatic update canceled."
     
+    cmdYesDownload.Visible = False
+    cmdNoDownload.Visible = False
+    cmdNoDownloadNoReminder.Visible = False
     picNo.Left = 0
     picNo.Top = 0
     txtNoExplanation.Text = PROGRAMNAME & " will no longer prompt you about missing plugins.  (If you change your mind in the future, this setting can be reversed from the 'Edit' -> 'Program Preferences' menu.)" & vbCrLf & vbCrLf & "Note: if you're the adventurous type, you can manually download these plugin files from their respective sites.  " & PROGRAMNAME & " will look for the DLL versions of these libraries in the 'plugins' subdirectory of wherever the " & PROGRAMNAME & " executable file is located."
     DoEvents
     picNo.Visible = True
+    cmdOKNo.Visible = True
+    cmdOKNo.SetFocus
     
 End Sub
 
@@ -480,6 +492,7 @@ Private Sub cmdYesDownload_Click()
     End If
     
     dProgBar.Value = dProgBar.Max
+    DoEvents
     
     If hInternetSession Then InternetCloseHandle hInternetSession
     

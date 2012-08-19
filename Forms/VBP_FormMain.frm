@@ -947,6 +947,7 @@ Private Sub MDIForm_Load()
     LoadTheProgram
     
     'After the program has been successfully loaded, change the focus to the Open Image button
+    Me.Visible = True
     cmdOpen.SetFocus
     
     'If the user wants us to check for updates, now's the time to do it
