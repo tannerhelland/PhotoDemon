@@ -46,7 +46,7 @@ Public Function CheckForSoftwareUpdate() As Boolean
     
     'Using the new Internet session, attempt to find the URL; if found, assign it a handle
     Dim hUrl As Long
-    hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_EXISTING_CONNECT, 0)
+    hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_EXISTING_CONNECT Or INTERNET_FLAG_RELOAD, 0)
 
     'If the URL couldn't be found, the server may be down.  Close out this connection and exit out
     If hUrl = 0 Then

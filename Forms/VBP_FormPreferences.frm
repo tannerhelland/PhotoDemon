@@ -327,10 +327,10 @@ End Sub
 
 'Because I take privacy very seriously, I want users to know that PhotoDemon does not transmit any data off their computer.
 Private Sub cmdInternetExplanation_Click()
-    MsgBox "PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download the three core plugins (FreeImage, EZTwain, and ZLib) if they aren't present in the /Plugins subdirectory." _
-    & vbCrLf & vbCrLf & "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features.  Checking for software updates results in the download of a single ""updates.txt"" file containing the latest PhotoDemon version number.  Similarly, downloading missing plugins simply involves downloading one or more of the compressed plugin files from tannerhelland.com/photodemon_files." _
+    MsgBox PROGRAMNAME & " provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins (FreeImage, EZTwain, and ZLib) if they aren't present in the /Plugins subdirectory." _
+    & vbCrLf & vbCrLf & "The developers of " & PROGRAMNAME & " take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features.  Checking for software updates involves downloading a single ""updates.txt"" file containing the latest PhotoDemon version number.  Similarly, downloading missing plugins simply involves downloading one or more of the compressed plugin files from the " & PROGRAMNAME & " server." _
     & vbCrLf & vbCrLf & "Again, these two features do not upload any data besides the bare minimum necessary to initiate a download (what's required by HTTP/GET, basically)." _
-    & vbCrLf & vbCrLf & "If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the software.", vbInformation + vbOKOnly, "Important Information About PhotoDemon's Internet-Related Features"
+    & vbCrLf & vbCrLf & "If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.", vbInformation + vbOKOnly, "Important Information About " & PROGRAMNAME & "'s Internet-Related Features"
 End Sub
 
 'OK button
