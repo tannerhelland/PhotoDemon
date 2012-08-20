@@ -4,8 +4,8 @@ Begin VB.MDIForm FormMain
    BackColor       =   &H00808080&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
    ClientHeight    =   8280
-   ClientLeft      =   225
-   ClientTop       =   855
+   ClientLeft      =   165
+   ClientTop       =   735
    ClientWidth     =   13845
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
@@ -94,8 +94,7 @@ Begin VB.MDIForm FormMain
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -120,8 +119,7 @@ Begin VB.MDIForm FormMain
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -131,6 +129,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15199212
          Caption         =   "Save Image"
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":15E0
@@ -145,8 +144,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -156,6 +154,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":2632
@@ -173,8 +172,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -184,6 +182,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":3684
