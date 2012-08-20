@@ -105,6 +105,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15199212
          Caption         =   "Open Image"
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":058E
@@ -341,7 +342,7 @@ Begin VB.MDIForm FormMain
             Caption         =   "-"
          End
          Begin VB.Menu MnuImportFrx 
-            Caption         =   "From VB Binary File..."
+            Caption         =   "From Visual Basic Binary File..."
          End
       End
       Begin VB.Menu MnuFileSepBar2 
