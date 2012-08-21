@@ -52,8 +52,6 @@ Public Sub StartMacro()
     ReDim Calls(0 To CurrentCall) As ProcessCall
     Message "Macro recording started."
     FormMain.lblRecording.Visible = True
-    FormMain.Line3.y1 = 280
-    FormMain.Line3.y2 = 280
 End Sub
 
 Public Sub StopMacro()
@@ -103,8 +101,6 @@ SaveMacroAgain:
     End If
     Message "Macro recording stopped."
     FormMain.lblRecording.Visible = False
-    FormMain.Line3.y1 = 264
-    FormMain.Line3.y2 = 264
     CurrentCall = 0
 End Sub
 

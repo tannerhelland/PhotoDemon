@@ -83,7 +83,7 @@ Begin VB.MDIForm FormMain
          List            =   "VBP_FormMain.frx":058C
          Style           =   2  'Dropdown List
          TabIndex        =   5
-         Top             =   2910
+         Top             =   2610
          Width           =   1215
       End
       Begin PhotoDemon.jcbutton cmdOpen 
@@ -141,7 +141,7 @@ Begin VB.MDIForm FormMain
          Height          =   615
          Left            =   120
          TabIndex        =   3
-         Top             =   1800
+         Top             =   1680
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
@@ -169,7 +169,7 @@ Begin VB.MDIForm FormMain
          Height          =   615
          Left            =   1155
          TabIndex        =   4
-         Top             =   1800
+         Top             =   1680
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
@@ -197,8 +197,8 @@ Begin VB.MDIForm FormMain
          BorderColor     =   &H80000002&
          X1              =   5
          X2              =   142
-         Y1              =   264
-         Y2              =   264
+         Y1              =   232
+         Y2              =   232
       End
       Begin VB.Label lblRecording 
          Alignment       =   2  'Center
@@ -217,7 +217,7 @@ Begin VB.MDIForm FormMain
          Height          =   255
          Left            =   0
          TabIndex        =   10
-         Top             =   3840
+         Top             =   3720
          Visible         =   0   'False
          Width           =   2175
       End
@@ -257,9 +257,9 @@ Begin VB.MDIForm FormMain
          EndProperty
          ForeColor       =   &H00D1B499&
          Height          =   195
-         Left            =   150
+         Left            =   120
          TabIndex        =   8
-         Top             =   3480
+         Top             =   3120
          Width           =   1845
       End
       Begin VB.Label lblZoom 
@@ -279,15 +279,15 @@ Begin VB.MDIForm FormMain
          Height          =   240
          Left            =   150
          TabIndex        =   6
-         Top             =   2970
+         Top             =   2640
          Width           =   555
       End
       Begin VB.Line Line2 
          BorderColor     =   &H80000002&
          X1              =   5
          X2              =   142
-         Y1              =   176
-         Y2              =   176
+         Y1              =   160
+         Y2              =   160
       End
       Begin VB.Line Line1 
          BorderColor     =   &H80000002&
