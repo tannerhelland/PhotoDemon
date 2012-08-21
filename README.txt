@@ -1,4 +1,4 @@
-PhotoDemon v4.3 - Copyright (c) 2012 by Tanner Helland
+PhotoDemon v4.4 - Copyright (c) 2012 by Tanner Helland
 =====================================================================================
 A free, open-source image processing tool.
 http://tannerhelland.com
