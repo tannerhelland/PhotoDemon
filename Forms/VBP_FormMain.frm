@@ -1099,8 +1099,19 @@ End Sub
 
 Private Sub MnuBugReport_Click()
     
-    'Shell a browser window with the GitHub issue report form
-    ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+    'GitHub requires a login for submitting Issues; check for that first
+    Dim msgReturn As VbMsgBoxResult
+    
+    msgReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making " & PROGRAMNAME & " better")
+    
+    'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
+    If msgReturn = vbYes Then
+        'Shell a browser window with the GitHub issue report form
+        ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+    Else
+        'Shell a browser window with the tannerhelland.com PhotoDemon contact form
+        ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
+    End If
 
 End Sub
 
@@ -1217,7 +1228,7 @@ End Sub
 Private Sub MnuEmailAuthor_Click()
     
     'Shell a browser window with the tannerhelland.com contact form
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/contact/", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
 
 End Sub
 
