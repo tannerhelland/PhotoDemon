@@ -796,7 +796,7 @@ MainErrHandler:
         
     'Out of memory error
     If Err.Number = 480 Or Err.Number = 7 Then
-        AddInfo = "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again."
+        AddInfo = "There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again."
         Message "Out of memory.  Function cancelled."
         mType = vbCritical + vbOKOnly + vbApplicationModal
     
