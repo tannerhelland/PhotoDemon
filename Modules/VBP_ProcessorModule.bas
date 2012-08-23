@@ -253,7 +253,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     On Error GoTo MainErrHandler
     
     'If desired, this line can be used to artificially raise errors (to test the error handler)
-    Err.Raise 339
+    'Err.Raise 339
     
     'Mark the software processor as busy
     Processing = True
