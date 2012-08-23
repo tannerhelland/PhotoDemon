@@ -253,7 +253,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     On Error GoTo MainErrHandler
     
     'If desired, this line can be used to artificially raise errors (to test the error handler)
-    'Err.Raise 339
+    Err.Raise 339
     
     'Mark the software processor as busy
     Processing = True
@@ -786,7 +786,7 @@ MainErrHandler:
     Dim mType As VbMsgBoxStyle
     
     'Tracks the user input from the message box
-    Dim MsgReturn As VbMsgBoxResult
+    Dim msgReturn As VbMsgBoxResult
     
     'Ignore errors that aren't actually errors
     If Err.Number = 0 Then Exit Sub
@@ -798,36 +798,60 @@ MainErrHandler:
     If Err.Number = 480 Or Err.Number = 7 Then
         AddInfo = "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again."
         Message "Out of memory.  Function cancelled."
-        mType = vbCritical + vbOKOnly
+        mType = vbCritical + vbOKOnly + vbApplicationModal
     
     'Invalid picture error
     ElseIf Err.Number = 481 Then
         AddInfo = "You have attempted to load an invalid picture.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it."
         Message "Invalid picture.  Image load cancelled."
-        mType = vbCritical + vbOKOnly
+        mType = vbCritical + vbOKOnly + vbApplicationModal
     
     'File not found error
     ElseIf Err.Number = 53 Then
         AddInfo = "The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & "2) the file location provided to " & PROGRAMNAME & " is correct."
         Message "File not found."
-        mType = vbCritical + vbOKOnly
+        mType = vbCritical + vbOKOnly + vbApplicationModal
         
     'Unknown error
     Else
-        AddInfo = PROGRAMNAME & " cannot locate additional information for this error.  If it persists, please contact the e-mail address below."
-        mType = vbCritical + vbOKOnly
+        AddInfo = PROGRAMNAME & " cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!" & vbCrLf & vbCrLf & "Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses " & PROGRAMNAME & ".)"
+        mType = vbCritical + vbYesNo + vbApplicationModal
         Message "Unknown error."
     End If
     
     'Create the message box to return the error information
-    MsgReturn = MsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
+    msgReturn = MsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
     "Error number " & Err.Number & vbCrLf & _
     "Description: " & Err.Description & vbCrLf & vbCrLf & _
-    AddInfo & vbCrLf & vbCrLf & _
-    "Sorry for the inconvenience!" & vbCrLf & vbCrLf & _
-    "- Tanner Helland, " & PROGRAMNAME & " Developer" & vbCrLf & _
-    "www.tannerhelland.com/contact", mType, PROGRAMNAME & " Error Handler: #" & Err.Number)
+    AddInfo, mType, PROGRAMNAME & " Error Handler: #" & Err.Number)
     
+    'If the message box return value is "Yes", the user has opted to file a bug report.
+    If msgReturn = vbYes Then
+    
+        'GitHub requires a login for submitting Issues; check for that first
+        Dim secondaryReturn As VbMsgBoxResult
+    
+        secondaryReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making " & PROGRAMNAME & " better")
+    
+        'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
+        If secondaryReturn = vbYes Then
+            'Shell a browser window with the GitHub issue report form
+            ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+            
+            'Display one final message box with additional instructions
+            MsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the ""Title"" box, please enter the following error number with a short description of the problem: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the ""Submit new issue"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions"
+            
+        Else
+            'Shell a browser window with the tannerhelland.com PhotoDemon contact form
+            ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
+            
+            'Display one final message box with additional instructions
+            MsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the ""Additional details"" box, please describe the steps that led up to this error." & vbCrLf & vbCrLf & "In the bottom box of that page, please enter the following error number: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "When finished, click the ""Submit"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions"
+            
+        End If
+    
+    End If
+        
     'If an invalid picture was loaded, unload the active form (since it will just be empty and pictureless)
     If Err.Number = 481 Then Unload FormMain.ActiveForm
 
