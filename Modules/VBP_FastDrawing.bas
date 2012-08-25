@@ -32,7 +32,7 @@ End Type
 
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 Type RGBQUAD
         rgbBlue As Byte
@@ -69,6 +69,11 @@ Private AllowPreview As Boolean
 '(including all resizing, rotating, flipping, etc.)
 Public ImageData() As Byte
 Public ImageData2() As Byte
+
+'In the future, these variables could be used to tell calling routines which section of a picture to apply a filter to.
+' Right now, they are initialized to default values (0,0-imageWidth,imageHeight)
+Public imgStartX As Long, imgStartY As Long
+Public imgFinalX As Long, imgFinalY As Long
 
 'Use GetObject to determine an image's width
 Public Function GetImageWidth()
@@ -122,15 +127,22 @@ Public Sub GetImageData(Optional ByVal CorrectOrientation As Boolean = False)
     'If the calling routine wants us to orient the data in a top-left fashion, assign the image data to a temporary array
     ' (so it can be processed below).  Otherwise, stick it right into ImageData()
     If CorrectOrientation = False Then
-        GetDIBits FormMain.ActiveForm.BackBuffer.hdc, FormMain.ActiveForm.BackBuffer.Image, 0, PicHeightL, ImageData(0, 0), bmi, 0
+        GetDIBits FormMain.ActiveForm.BackBuffer.hDC, FormMain.ActiveForm.BackBuffer.Image, 0, PicHeightL, ImageData(0, 0), bmi, 0
     Else
         ReDim TempArray(0 To ArrayWidth, 0 To ArrayHeight) As Byte
-        GetDIBits FormMain.ActiveForm.BackBuffer.hdc, FormMain.ActiveForm.BackBuffer.Image, 0, PicHeightL, TempArray(0, 0), bmi, 0
+        GetDIBits FormMain.ActiveForm.BackBuffer.hDC, FormMain.ActiveForm.BackBuffer.Image, 0, PicHeightL, TempArray(0, 0), bmi, 0
     End If
 
     'Because the image processing functions run from 0 to .Width/.Height - 1, adjust the width and height here
     PicWidthL = PicWidthL - 1
     PicHeightL = PicHeightL - 1
+    
+    'In the future, these values could be used to have calling functions run on a subset of the image (for example, only
+    ' the selected area).  Right now, however, they are simply initialized to the full size of the image
+    imgStartX = 0
+    imgStartY = 0
+    imgFinalX = PicWidthL
+    imgFinalY = PicHeightL
 
     'If the user has requested reorientation of the image data (i.e. (0,0) as top-left, (max,max) as bottom right), process that now.
     ' If this option is enabled, we must set the DIB height to negative in the SetImageData routine below
@@ -177,7 +189,7 @@ Public Sub SetImageData(Optional ByVal CorrectOrientation As Boolean = False)
     bmi.bmiHeader.biBitCount = 24
     bmi.bmiHeader.biCompression = 0
     
-    StretchDIBits FormMain.ActiveForm.BackBuffer.hdc, 0, 0, PicWidthL, PicHeightL, 0, 0, PicWidthL, PicHeightL, ImageData(0, 0), bmi, 0, vbSrcCopy
+    StretchDIBits FormMain.ActiveForm.BackBuffer.hDC, 0, 0, PicWidthL, PicHeightL, 0, 0, PicWidthL, PicHeightL, ImageData(0, 0), bmi, 0, vbSrcCopy
     FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
     FormMain.ActiveForm.BackBuffer.Refresh
     
@@ -220,10 +232,10 @@ Public Sub GetPreviewData(ByRef SrcPic As PictureBox, Optional ByVal CorrectOrie
     ReDim ImageData(0 To ArrayWidth, 0 To ArrayHeight) As Byte
     
     If CorrectOrientation = False Then
-        GetDIBits SrcPic.hdc, SrcPic.Image, 0, bm.bmHeight, ImageData(0, 0), bmi, 0
+        GetDIBits SrcPic.hDC, SrcPic.Image, 0, bm.bmHeight, ImageData(0, 0), bmi, 0
     Else
         ReDim TempArray(0 To ArrayWidth, 0 To ArrayHeight) As Byte
-        GetDIBits SrcPic.hdc, SrcPic.Image, 0, bm.bmHeight, TempArray(0, 0), bmi, 0
+        GetDIBits SrcPic.hDC, SrcPic.Image, 0, bm.bmHeight, TempArray(0, 0), bmi, 0
     End If
 
     If CorrectOrientation = True Then
@@ -261,7 +273,7 @@ Public Sub SetPreviewData(ByRef dstPic As PictureBox, Optional ByVal CorrectOrie
     bmi.bmiHeader.biBitCount = 24
     bmi.bmiHeader.biCompression = 0
     
-    StretchDIBits dstPic.hdc, 0, 0, bm.bmWidth, bm.bmHeight, 0, 0, bm.bmWidth, bm.bmHeight, ImageData(0, 0), bmi, 0, vbSrcCopy
+    StretchDIBits dstPic.hDC, 0, 0, bm.bmWidth, bm.bmHeight, 0, 0, bm.bmWidth, bm.bmHeight, ImageData(0, 0), bmi, 0, vbSrcCopy
     'dstPic.Picture = dstPic.Image
     dstPic.Refresh
     
@@ -294,10 +306,10 @@ Public Sub GetImageData2(Optional ByVal CorrectOrientation As Boolean = False)
     ReDim ImageData2(0 To ArrayWidth, 0 To ArrayHeight) As Byte
     
     If CorrectOrientation = False Then
-        GetDIBits FormMain.ActiveForm.BackBuffer2.hdc, FormMain.ActiveForm.BackBuffer2.Image, 0, PicHeightL, ImageData2(0, 0), bmi, 0
+        GetDIBits FormMain.ActiveForm.BackBuffer2.hDC, FormMain.ActiveForm.BackBuffer2.Image, 0, PicHeightL, ImageData2(0, 0), bmi, 0
     Else
         ReDim TempArray(0 To (PicWidthL * 3) - 1, 0 To PicHeightL) As Byte
-        GetDIBits FormMain.ActiveForm.BackBuffer2.hdc, FormMain.ActiveForm.BackBuffer2.Image, 0, PicHeightL, TempArray(0, 0), bmi, 0
+        GetDIBits FormMain.ActiveForm.BackBuffer2.hDC, FormMain.ActiveForm.BackBuffer2.Image, 0, PicHeightL, TempArray(0, 0), bmi, 0
     End If
     
     PicWidthL = PicWidthL - 1
@@ -335,7 +347,7 @@ Public Sub SetImageData2(Optional ByVal CorrectOrientation As Boolean = False)
     bmi.bmiHeader.biPlanes = 1
     bmi.bmiHeader.biBitCount = 24
     bmi.bmiHeader.biCompression = 0
-    StretchDIBits FormMain.ActiveForm.BackBuffer2.hdc, 0, 0, PicWidthL, PicHeightL, 0, 0, PicWidthL, PicHeightL, ImageData2(0, 0), bmi, 0, vbSrcCopy
+    StretchDIBits FormMain.ActiveForm.BackBuffer2.hDC, 0, 0, PicWidthL, PicHeightL, 0, 0, PicWidthL, PicHeightL, ImageData2(0, 0), bmi, 0, vbSrcCopy
     FormMain.ActiveForm.BackBuffer2.Picture = FormMain.ActiveForm.BackBuffer2.Image
     FormMain.ActiveForm.BackBuffer2.Refresh
     SetProgBarVal 0
