@@ -1063,14 +1063,14 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     
     'Now run a loop through the knots, calculating spline values as we go
     Call SetPandU
-    Dim Xpos As Long, Ypos As Single
+    Dim xPos As Long, yPos As Single
     For i = 1 To nPoints - 1
-        For Xpos = iX(i) To iX(i + 1)
-            Ypos = getCurvePoint(i, Xpos)
+        For xPos = iX(i) To iX(i + 1)
+            yPos = getCurvePoint(i, xPos)
             'If yPos > 255 Then yPos = 254       'Force values to be in the 1-254 range (0-255 also
             'If yPos < 0 Then yPos = 1           ' works, but is harder to see on the picture box)
-            results(Xpos) = Ypos
-        Next Xpos
+            results(xPos) = yPos
+        Next xPos
     Next i
     
     'Draw the finished spline

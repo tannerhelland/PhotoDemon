@@ -241,7 +241,7 @@ End Sub
 Public Sub MosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As Byte)
     
     'Used for the for..next loops
-    Dim XLoop As Long, YLoop As Long
+    Dim xLoop As Long, yLoop As Long
     Dim DstXLoop As Long, DstYLoop As Long
     Dim InitXLoop As Long, InitYLoop As Long
     
@@ -254,8 +254,8 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As Byte)
     GetImageData True
     
     'Calculate how many mosaic tiles will fit on the current image's size
-    XLoop = Int(PicWidthL \ BlockSizeX) + 1
-    YLoop = Int(PicHeightL \ BlockSizeY) + 1
+    xLoop = Int(PicWidthL \ BlockSizeX) + 1
+    yLoop = Int(PicHeightL \ BlockSizeY) + 1
     
     'Store the pixel data into an array for faster accessing
     Dim PicArray() As Byte
@@ -275,11 +275,11 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As Byte)
     Next x
     
     Message "Generating mosaic image..."
-    SetProgBarMax XLoop
+    SetProgBarMax xLoop
     
     'Begin the main mosaic loop
-    For x = 0 To XLoop
-    For y = 0 To YLoop
+    For x = 0 To xLoop
+    For y = 0 To yLoop
     
         'This sub loop is to gather all of the data for the current mosaic tile
         InitXLoop = x * BlockSizeX
@@ -371,7 +371,7 @@ Private Sub PreviewMosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As By
     GetPreviewData PicPreview
     
     'Used for the for..next loops
-    Dim XLoop As Long, YLoop As Long
+    Dim xLoop As Long, yLoop As Long
     Dim DstXLoop As Long, DstYLoop As Long
     Dim InitXLoop As Long, InitYLoop As Long
     'How many pixels must be averaged
@@ -384,8 +384,8 @@ Private Sub PreviewMosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As By
     If BlockSizeY < 1 Then BlockSizeY = 1
     
     'Calculate how many mosaic tiles will fit on the current image's size
-    XLoop = Int(PreviewWidth \ BlockSizeX) + 1
-    YLoop = Int(PreviewHeight \ BlockSizeY) + 1
+    xLoop = Int(PreviewWidth \ BlockSizeX) + 1
+    yLoop = Int(PreviewHeight \ BlockSizeY) + 1
     'Store the pixel data into an array for faster accessing
     Dim PicArray() As Byte
     ReDim PicArray(0 To UBound(ImageData, 1), 0 To UBound(ImageData, 2)) As Byte
@@ -400,8 +400,8 @@ Private Sub PreviewMosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As By
     Next y
     Next x
     'Begin the main mosaic loop
-    For x = 0 To XLoop
-    For y = 0 To YLoop
+    For x = 0 To xLoop
+    For y = 0 To yLoop
         'This sub loop is to gather all of the data for the current mosaic tile
         InitXLoop = PreviewX + x * BlockSizeX
         InitYLoop = PreviewY + y * BlockSizeY
