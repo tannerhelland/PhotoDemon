@@ -9,6 +9,7 @@ Begin VB.MDIForm FormMain
    ClientWidth     =   13845
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
+   OLEDropMode     =   1  'Manual
    ScrollBars      =   0   'False
    StartUpPosition =   3  'Windows Default
    Begin VB.PictureBox picProgBar 
@@ -1005,6 +1006,53 @@ Private Sub MDIForm_Load()
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
+End Sub
+
+'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+
+    'Verify that the object being dragged is some sort of file or file list
+    If Data.GetFormat(vbCFFiles) Then
+        
+        'Copy the filenames into an array
+        Dim sFile() As String
+        ReDim sFile(0 To Data.Files.Count) As String
+        
+        Dim oleFilename
+        Dim tmpString As String
+        
+        Dim countFiles As Long
+        countFiles = 0
+        
+        For Each oleFilename In Data.Files
+            tmpString = CStr(oleFilename)
+            If tmpString <> "" Then
+                sFile(countFiles) = tmpString
+                countFiles = countFiles + 1
+            End If
+        Next oleFilename
+        
+        'Because the OLE drop may include blank strings, verify the size of the array against countFiles
+        ReDim Preserve sFile(0 To countFiles - 1) As String
+        
+        'Pass the list of filenames to PreLoadImage, which will load the images one-at-a-time
+        PreLoadImage sFile
+        
+    End If
+    
+End Sub
+
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+
+    'Check to make sure the type of OLE object is files
+    If Data.GetFormat(vbCFFiles) Then
+        'Inform the source (Explorer, in this case) that the files will be treated as "copied"
+        Effect = vbDropEffectCopy And Effect
+    Else
+        'If it's not files, don't allow a drop
+        Effect = vbDropEffectNone
+    End If
+
 End Sub
 
 'If the user is attempting to close the program, run some checks

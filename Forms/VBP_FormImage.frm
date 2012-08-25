@@ -21,6 +21,7 @@ Begin VB.Form FormImage
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   154
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   370
@@ -198,9 +199,9 @@ Option Explicit
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
     
-Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     'Draw the current coordinates to the status bar
-    SetBitmapCoordinates x, y
+    SetBitmapCoordinates X, Y
 End Sub
 
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
@@ -270,6 +271,54 @@ End Sub
 
 Private Sub Form_LostFocus()
     'MsgBox "Lost focus" & Me.Tag
+End Sub
+
+'(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+
+    'Verify that the object being dragged is some sort of file or file list
+    If Data.GetFormat(vbCFFiles) Then
+        
+        'Copy the filenames into an array
+        Dim sFile() As String
+        ReDim sFile(0 To Data.Files.Count) As String
+        
+        Dim oleFilename
+        Dim tmpString As String
+        
+        Dim countFiles As Long
+        countFiles = 0
+        
+        For Each oleFilename In Data.Files
+            tmpString = CStr(oleFilename)
+            If tmpString <> "" Then
+                sFile(countFiles) = tmpString
+                countFiles = countFiles + 1
+            End If
+        Next oleFilename
+        
+        'Because the OLE drop may include blank strings, verify the size of the array against countFiles
+        ReDim Preserve sFile(0 To countFiles - 1) As String
+        
+        'Pass the list of filenames to PreLoadImage, which will load the images one-at-a-time
+        PreLoadImage sFile
+        
+    End If
+    
+End Sub
+
+'(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+
+    'Check to make sure the type of OLE object is files
+    If Data.GetFormat(vbCFFiles) Then
+        'Inform the source (Explorer, in this case) that the files will be treated as "copied"
+        Effect = vbDropEffectCopy And Effect
+    Else
+        'If it's not files, don't allow a drop
+        Effect = vbDropEffectNone
+    End If
+
 End Sub
 
 'In VB6, _QueryUnload fires before _Unload.  We check for unsaved images here.
