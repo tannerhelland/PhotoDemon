@@ -1,7 +1,7 @@
 PhotoDemon v4.4 - Copyright (c) 2012 by Tanner Helland
 =====================================================================================
 A free, open-source image processing tool.
-http://tannerhelland.com
+http://tannerhelland.com/photodemon
 
 
 What makes PhotoDemon preferable to other image editing tools?
@@ -155,12 +155,14 @@ please visit:
 http://www.tannerhelland.com/donate/
 
 While I can't make any promises, I have been known to give extra attention to feature
-requests from individuals who donate.  :)
+requests from individuals who donate.
 
 If you can't contribute monetarily to the project, here are other ways to help:
 
 * Let me know if you find any bugs.  Issues can be submitted via PhotoDemon's github page:
   https://github.com/tannerhelland/PhotoDemon
+  ...or this dedication PhotoDemon feedback form:
+  http://www.tannerhelland.com/photodemon-contact/
 * Are you a VB6 fiend?  I'm always open to outside bug fixes and feature implementations
   from fellow VB6 programmers.
 * Tell friends, family, and other websites about PhotoDemon.  If you know a site that
