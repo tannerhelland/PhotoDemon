@@ -26,6 +26,7 @@ Begin VB.Form FormResize
    Begin VB.VScrollBar VSHeight 
       Height          =   420
       Left            =   2430
+      Max             =   32766
       Min             =   1
       TabIndex        =   12
       TabStop         =   0   'False
@@ -36,6 +37,7 @@ Begin VB.Form FormResize
    Begin VB.VScrollBar VSWidth 
       Height          =   420
       Left            =   2430
+      Max             =   32766
       Min             =   1
       TabIndex        =   11
       TabStop         =   0   'False
@@ -453,11 +455,11 @@ End Sub
 Private Sub CmdResize_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
-    If Not (NumberValid(txtWidth.Text) And RangeValid(val(txtWidth.Text), 1, 32767)) Then
+    If Not EntryValid(txtWidth, 1, 32767, True, True) Then
         AutoSelectText txtWidth
         Exit Sub
     End If
-    If Not (NumberValid(txtHeight.Text) And RangeValid(val(txtHeight.Text), 1, 32767)) Then
+    If Not EntryValid(txtHeight, 1, 32767, True, True) Then
         AutoSelectText txtHeight
         Exit Sub
     End If
