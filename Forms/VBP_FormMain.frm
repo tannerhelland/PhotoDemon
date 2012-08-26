@@ -847,26 +847,26 @@ Begin VB.MDIForm FormMain
    Begin VB.Menu MnuWindow 
       Caption         =   "&Window"
       WindowList      =   -1  'True
-      Begin VB.Menu MnuFitWindowToImage 
-         Caption         =   "Fit Window to &Image"
-      End
       Begin VB.Menu MnuFitOnScreen 
          Caption         =   "&Fit Image On Screen"
       End
+      Begin VB.Menu MnuFitWindowToImage 
+         Caption         =   "Fit Window to &Image"
+      End
       Begin VB.Menu MnuWindowSepBar1 
          Caption         =   "-"
+      End
+      Begin VB.Menu MnuArrangeIcons 
+         Caption         =   "&Arrange Icons"
+      End
+      Begin VB.Menu MnuCascadeWindows 
+         Caption         =   "&Cascade"
       End
       Begin VB.Menu MnuTileHorizontally 
          Caption         =   "Tile &Horizontally"
       End
       Begin VB.Menu MnuTileVertically 
          Caption         =   "Tile &Vertically"
-      End
-      Begin VB.Menu MnuCascadeWindows 
-         Caption         =   "&Cascade"
-      End
-      Begin VB.Menu MnuArrangeIcons 
-         Caption         =   "&Arrange Icons"
       End
       Begin VB.Menu MnuWindowSepBar3 
          Caption         =   "-"

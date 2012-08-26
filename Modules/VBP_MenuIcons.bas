@@ -194,12 +194,12 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 38, 3, 5     'Stop Recording
         
         'Window Menu
-        .PutImageToVBMenu 28, 0, 6     'Fit Window to Image
-        .PutImageToVBMenu 29, 1, 6     'Fit on Screen
-        .PutImageToVBMenu 30, 3, 6     'Tile Horizontally
-        .PutImageToVBMenu 31, 4, 6     'Tile Vertically
-        .PutImageToVBMenu 32, 5, 6     'Cascade
-        .PutImageToVBMenu 33, 6, 6     'Arrange Icons
+        .PutImageToVBMenu 29, 0, 6     'Fit on Screen
+        .PutImageToVBMenu 28, 1, 6     'Fit Window to Image
+        .PutImageToVBMenu 33, 3, 6     'Arrange Icons
+        .PutImageToVBMenu 32, 4, 6     'Cascade
+        .PutImageToVBMenu 30, 5, 6     'Tile Horizontally
+        .PutImageToVBMenu 31, 6, 6     'Tile Vertically
         .PutImageToVBMenu 34, 8, 6     'Minimize All
         .PutImageToVBMenu 35, 9, 6     'Restore All
         
