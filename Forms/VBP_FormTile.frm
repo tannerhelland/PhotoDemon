@@ -389,8 +389,8 @@ Private Sub cboTarget_Click()
             'If the user was previously measuring in tiles, convert that value to pixels
             If (lastTargetMode = 2) And (NumberValid(TxtWidth)) And (NumberValid(TxtHeight)) Then
                 GetImageData
-                TxtWidth = (val(TxtWidth) * (PicWidthL + 1)) - 1
-                TxtHeight = (val(TxtHeight) * (PicHeightL + 1)) - 1
+                TxtWidth = CLng(TxtWidth) * (PicWidthL + 1)
+                TxtHeight = CLng(TxtHeight) * (PicHeightL + 1)
             End If
             
         'Custom size (as number of tiles)
@@ -404,8 +404,13 @@ Private Sub cboTarget_Click()
             
             'Since the user will have previously been measuring in pixels, convert that value to tiles
             If NumberValid(TxtWidth) And NumberValid(TxtHeight) Then
-                TxtWidth = CLng(CSng(TxtWidth) / (PicWidthL + 1))
-                TxtHeight = CLng(CSng(TxtHeight) / (PicHeightL + 1))
+                Dim xTiles As Long, yTiles As Long
+                xTiles = CLng(CSng(TxtWidth) / CSng(PicWidthL + 1))
+                yTiles = CLng(CSng(TxtHeight) / CSng(PicHeightL + 1))
+                If xTiles < 1 Then xTiles = 1
+                If yTiles < 1 Then yTiles = 1
+                TxtWidth = xTiles
+                TxtHeight = yTiles
             End If
     End Select
     
