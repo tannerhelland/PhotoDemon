@@ -361,11 +361,15 @@ End Sub
 
 Public Sub MenuTest()
     
+    'You can use this section of code to test out your own filters.  I've left some sample code below.
+    
+    MsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test out your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Pro Tip"
+    
     'Currently testing plugin downloading
-    zLibEnabled = False
-    ScanEnabled = False
-    FreeImageEnabled = False
-    FormPluginDownloader.Show 1, FormMain
+    'zLibEnabled = False
+    'ScanEnabled = False
+    'FreeImageEnabled = False
+    'FormPluginDownloader.Show 1, FormMain
     
     Exit Sub
     
