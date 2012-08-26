@@ -492,47 +492,38 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuSepBarColor2 
          Caption         =   "-"
       End
-      Begin VB.Menu MnuHistogram 
-         Caption         =   "Display Histogram"
-         Shortcut        =   ^H
-      End
       Begin VB.Menu MnuHistogramTop 
-         Caption         =   "&Histogram Functions"
+         Caption         =   "Histogram Functions"
+         Begin VB.Menu MnuHistogram 
+            Caption         =   "Display Histogram"
+            Shortcut        =   ^H
+         End
+         Begin VB.Menu MnuHistogramEqualize 
+            Caption         =   "Equalize"
+            Begin VB.Menu MnuEqualizeLuminance 
+               Caption         =   "Equalize Luminance"
+            End
+            Begin VB.Menu MnuHistogramSepBar1 
+               Caption         =   "-"
+            End
+            Begin VB.Menu MnuEqualizeRed 
+               Caption         =   "Equalize Red"
+            End
+            Begin VB.Menu MnuEqualizeGreen 
+               Caption         =   "Equalize Green"
+            End
+            Begin VB.Menu MnuEqualizeBlue 
+               Caption         =   "Equalize Blue"
+            End
+            Begin VB.Menu MnuEqualizeAll 
+               Caption         =   "Equalize RGB"
+            End
+         End
          Begin VB.Menu MnuHistogramStretch 
-            Caption         =   "Stretch Contrast"
-         End
-         Begin VB.Menu MnuHistogramSepBar1 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuEqualizeRed 
-            Caption         =   "Equalize Red"
-         End
-         Begin VB.Menu MnuEqualizeGreen 
-            Caption         =   "Equalize Green"
-         End
-         Begin VB.Menu MnuEqualizeBlue 
-            Caption         =   "Equalize Blue"
-         End
-         Begin VB.Menu MnuEqualizeAll 
-            Caption         =   "Equalize RGB"
-         End
-         Begin VB.Menu MnuEqualizeLuminance 
-            Caption         =   "Equalize Luminance"
+            Caption         =   "Stretch Histogram"
          End
       End
       Begin VB.Menu MnuColorSepBar1 
-         Caption         =   "-"
-      End
-      Begin VB.Menu MnuInvert 
-         Caption         =   "Invert"
-      End
-      Begin VB.Menu MnuInvertHue 
-         Caption         =   "Invert Hue"
-      End
-      Begin VB.Menu MnuNegative 
-         Caption         =   "Negative"
-      End
-      Begin VB.Menu MnuImageColorSepBar1 
          Caption         =   "-"
       End
       Begin VB.Menu MnuColorShift 
@@ -562,11 +553,23 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuBlackAndWhite 
          Caption         =   "Black and White..."
       End
+      Begin VB.Menu MnuColorize 
+         Caption         =   "Colorize..."
+      End
       Begin VB.Menu MnuGrayscale 
          Caption         =   "Grayscale..."
       End
-      Begin VB.Menu MnuColorize 
-         Caption         =   "Colorize..."
+      Begin VB.Menu MnuInvertTop 
+         Caption         =   "Invert"
+         Begin VB.Menu MnuNegative 
+            Caption         =   "Invert CMYK (Film Negative)"
+         End
+         Begin VB.Menu MnuInvertHue 
+            Caption         =   "Invert Hue"
+         End
+         Begin VB.Menu MnuInvert 
+            Caption         =   "Invert RGB"
+         End
       End
       Begin VB.Menu MnuPosterize 
          Caption         =   "Posterize..."
