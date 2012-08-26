@@ -166,7 +166,7 @@ Private Sub CmdOK_Click()
     Message "Processing 1-bit conversion..."
     Select Case LstConvert.ListIndex
         Case 0
-            Process BWNearestColor2
+            Process BWComponent
         Case 1
             Process BWImpressionist
         Case 2

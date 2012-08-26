@@ -75,7 +75,7 @@ End Sub
 
 'This is a strange method I found on the net somewhere.  It's white-weighted, setting the
 'pixel to black only if every component is less than 128.
-Public Sub MenuBWNearestColor2()
+Public Sub MenuBWComponent()
     Dim r As Integer, g As Integer, b As Integer
     Dim QuickVal As Long
     Message "Converting to black and white..."

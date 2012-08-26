@@ -34,7 +34,7 @@ Option Explicit
     Public Const FileSave As Long = 2
     Public Const FileSaveAs As Long = 3
     '-Screen Capture
-    Public Const cScreen As Long = 10
+    Public Const capScreen As Long = 10
     'Clipboard constants:
     Public Const cCopy As Long = 20
     Public Const cPaste As Long = 21
@@ -60,7 +60,7 @@ Option Explicit
     'Black/White conversion; numbers 200-299
     Public Const BWImpressionist As Long = 200
     Public Const BWNearestColor As Long = 201
-    Public Const BWNearestColor2 As Long = 202
+    Public Const BWComponent As Long = 202
     Public Const BWOrderedDither As Long = 203
     Public Const BWDiffusionDither As Long = 204
     Public Const Threshold As Long = 205
@@ -323,7 +323,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuSave CurrentImage
             Case FileSaveAs
                 MenuSaveAs CurrentImage
-            Case cScreen
+            Case capScreen
                 CaptureScreen
             Case cCopy
                 ClipboardCopy
@@ -416,8 +416,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 End If
             Case BWNearestColor
                 MenuBWNearestColor
-            Case BWNearestColor2
-                MenuBWNearestColor2
+            Case BWComponent
+                MenuBWComponent
             Case BWOrderedDither
                 MenuBWOrderedDither
             Case BWDiffusionDither
@@ -873,274 +873,274 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
     Select Case processID
     
         'Main functions (not used for image editing); numbers 1-99
-        Case 1
+        Case FileOpen
             GetNameOfProcess = "Open"
-        Case 2
+        Case FileSave
             GetNameOfProcess = "Save"
-        Case 3
+        Case FileSaveAs
             GetNameOfProcess = "Save As"
-        Case 10
+        Case capScreen
             GetNameOfProcess = "Screen Capture"
-        Case 20
+        Case cCopy
             GetNameOfProcess = "Copy"
-        Case 21
+        Case cPaste
             GetNameOfProcess = "Paste"
-        Case 22
+        Case cEmpty
             GetNameOfProcess = "Empty Clipboard"
-        Case 30
+        Case Undo
             GetNameOfProcess = "Undo"
-        Case 31
+        Case Redo
             GetNameOfProcess = "Redo"
-        Case 40
+        Case MacroStartRecording
             GetNameOfProcess = "Start Macro Recording"
-        Case 41
+        Case MacroStopRecording
             GetNameOfProcess = "Stop Macro Recording"
-        Case 42
+        Case MacroPlayRecording
             GetNameOfProcess = "Play Macro"
-        Case 50
+        Case SelectScanner
             GetNameOfProcess = "Select Scanner or Camera"
-        Case 51
+        Case ScanImage
             GetNameOfProcess = "Scan Image"
             
         'Histogram functions; numbers 100-199
-        Case 100
+        Case ViewHistogram
             GetNameOfProcess = "Display Histogram"
-        Case 101
+        Case StretchHistogram
             GetNameOfProcess = "Stretch Histogram"
-        Case 102
+        Case Equalize
             GetNameOfProcess = "Equalize"
-        Case 103
+        Case EqualizeLuminance
             GetNameOfProcess = "Equalize Luminance"
-        Case 104
+        Case WhiteBalance
             GetNameOfProcess = "White Balance"
             
         'Black/White conversion; numbers 200-299
-        Case 200
+        Case BWImpressionist
             GetNameOfProcess = "Black and White (Impressionist)"
-        Case 201
+        Case BWNearestColor
             GetNameOfProcess = "Black and White (Nearest Color)"
-        Case 202
+        Case BWComponent
             GetNameOfProcess = "Black and White (Component Color)"
-        Case 203
+        Case BWOrderedDither
             GetNameOfProcess = "Black and White (Ordered Dither)"
-        Case 204
+        Case BWDiffusionDither
             GetNameOfProcess = "Black and White (Diffusion Dither)"
-        Case 205
+        Case Threshold
             GetNameOfProcess = "Black and White (Threshold)"
-        Case 206
+        Case ComicBook
             GetNameOfProcess = "Comic Book"
-        Case 207
+        Case BWEnhancedDither
             GetNameOfProcess = "Black and White (Santos Enhanced)"
-        Case 208
+        Case BWFloydSteinberg
             GetNameOfProcess = "Black and White (Floyd-Steinberg)"
             
         'Grayscale conversion; numbers 300-399
-        Case 300
+        Case Desaturate
             GetNameOfProcess = "Desaturate"
-        Case 301
+        Case GrayScale
             GetNameOfProcess = "Grayscale (ITU Standard)"
-        Case 302
+        Case GrayscaleAverage
             GetNameOfProcess = "Grayscale (Average)"
-        Case 303
+        Case GrayscaleCustom
             GetNameOfProcess = "Grayscale (Custom # of Colors)"
-        Case 304
+        Case GrayscaleCustomDither
             GetNameOfProcess = "Grayscale (Custom Dither)"
-        Case 305
+        Case GrayscaleDecompose
             GetNameOfProcess = "Grayscale (Decomposition)"
-        Case 306
+        Case GrayscaleSingleChannel
             GetNameOfProcess = "Grayscale (Single Channel)"
         
         'Area filters; numbers 400-499
-        Case 400
+        Case Blur
             GetNameOfProcess = "Blur"
-        Case 401
+        Case BlurMore
             GetNameOfProcess = "Blur More"
-        Case 402
+        Case Soften
             GetNameOfProcess = "Soften"
-        Case 403
+        Case SoftenMore
             GetNameOfProcess = "Soften More"
-        Case 404
+        Case Sharpen
             GetNameOfProcess = "Sharpen"
-        Case 405
+        Case SharpenMore
             GetNameOfProcess = "Sharpen More"
-        Case 406
+        Case Unsharp
             GetNameOfProcess = "Unsharp"
-        Case 407
+        Case Diffuse
             GetNameOfProcess = "Diffuse"
-        Case 408
+        Case DiffuseMore
             GetNameOfProcess = "Diffuse More"
-        Case 409
+        Case CustomDiffuse
             GetNameOfProcess = "Custom Diffuse"
-        Case 410
+        Case Mosaic
             GetNameOfProcess = "Mosaic"
-        Case 411
+        Case RankMaximum
             GetNameOfProcess = "Dilate"
-        Case 412
+        Case RankMinimum
             GetNameOfProcess = "Erode"
-        Case 413
+        Case RankExtreme
             GetNameOfProcess = "Extreme Rank"
-        Case 414
+        Case CustomRank
             GetNameOfProcess = "Custom Rank"
-        Case 415
+        Case GridBlur
             GetNameOfProcess = "Grid Blur"
-        Case 416
+        Case GaussianBlur
             GetNameOfProcess = "Gaussian Blur"
-        Case 417
+        Case GaussianBlurMore
             GetNameOfProcess = "Gaussian Blur More"
-        Case 418
+        Case Antialias
             GetNameOfProcess = "Antialias"
     
         'Edge filters; numbers 500-599
-        Case 500
+        Case EmbossToColor
             GetNameOfProcess = "Emboss"
-        Case 501
+        Case EngraveToColor
             GetNameOfProcess = "Engrave"
-        Case 504
+        Case Pencil
             GetNameOfProcess = "Pencil Drawing"
-        Case 505
+        Case Relief
             GetNameOfProcess = "Relief"
-        Case 506
+        Case PrewittHorizontal
             GetNameOfProcess = "Find Edges (Prewitt Horizontal)"
-        Case 507
+        Case PrewittVertical
             GetNameOfProcess = "Find Edges (Prewitt Vertical)"
-        Case 508
+        Case SobelHorizontal
             GetNameOfProcess = "Find Edges (Sobel Horizontal)"
-        Case 509
+        Case SobelVertical
             GetNameOfProcess = "Find Edges (Sobel Vertical)"
-        Case 510
+        Case Laplacian
             GetNameOfProcess = "Find Edges (Laplacian)"
-        Case 511
+        Case SmoothContour
             GetNameOfProcess = "Artistic Contour"
-        Case 512
+        Case HiliteEdge
             GetNameOfProcess = "Find Edges (Hilite)"
-        Case 513
+        Case PhotoDemonEdgeLinear
             GetNameOfProcess = "Find Edges (PhotoDemon Linear)"
-        Case 514
+        Case PhotoDemonEdgeCubic
             GetNameOfProcess = "Find Edges (PhotoDemon Cubic)"
-        Case 515
+        Case EdgeEnhance
             GetNameOfProcess = "Edge Enhance"
             
         'Color operations; numbers 600-699
-        Case 600
+        Case RechannelBlue
             GetNameOfProcess = "Rechannel (Blue)"
-        Case 601
+        Case RechannelGreen
             GetNameOfProcess = "Rechannel (Green)"
-        Case 602
+        Case RechannelRed
             GetNameOfProcess = "Rechannel (Red)"
-        Case 603
+        Case ColorShiftLeft
             GetNameOfProcess = "Shift Colors (Left)"
-        Case 604
+        Case ColorShiftRight
             GetNameOfProcess = "Shift Colors (Right)"
-        Case 605
+        Case BrightnessAndContrast
             GetNameOfProcess = "Brightness/Contrast"
-        Case 606
+        Case GammaCorrection
             GetNameOfProcess = "Gamma Correction"
-        Case 607
+        Case Invert
             GetNameOfProcess = "Invert Colors"
-        Case 608
+        Case InvertHue
             GetNameOfProcess = "Invert Hue"
-        Case 609
+        Case Negative
             GetNameOfProcess = "Film Negative"
-        Case 610
+        Case AutoEnhance
             GetNameOfProcess = "Auto-Enhance Contrast"
-        Case 611
+        Case AutoHighlights
             GetNameOfProcess = "Auto-Enhance Highlights"
-        Case 612
+        Case AutoMidtones
             GetNameOfProcess = "Auto-Enhance Midtones"
-        Case 613
+        Case AutoShadows
             GetNameOfProcess = "Auto-Enhance Shadows"
-        Case 614
+        Case ImageLevels
             GetNameOfProcess = "Image Levels"
-        Case 615
+        Case Colorize
             GetNameOfProcess = "Colorize"
-        Case 616
+        Case ReduceColors
             GetNameOfProcess = "Reduce Colors"
             
         'Coordinate filters/transformations; numbers 700-799
-        Case 700
+        Case ImageSize
             GetNameOfProcess = "Resize"
-        Case 701
+        Case Flip
             GetNameOfProcess = "Flip"
-        Case 702
+        Case Mirror
             GetNameOfProcess = "Mirror"
-        Case 703
+        Case Rotate90Clockwise
             GetNameOfProcess = "Rotate 90 Clockwise"
-        Case 704
+        Case Rotate180
             GetNameOfProcess = "Rotate 180"
-        Case 705
+        Case Rotate270Clockwise
             GetNameOfProcess = "Rotate 90 Counter-Clockwise"
-        Case 706
+        Case FreeRotate
             GetNameOfProcess = "Free Rotation"
-        Case 707
+        Case Isometric
             GetNameOfProcess = "Isometric Conversion"
-        Case 708
+        Case Tile
             GetNameOfProcess = "Tile Image"
             
         'Miscellaneous filters; numbers 800-899
-        Case 800
+        Case DarkCompoundInvert
             GetNameOfProcess = "Compound Invert (Dark)"
-        Case 801
+        Case LightCompoundInvert
             GetNameOfProcess = "Compound Invert (Light)"
-        Case 802
+        Case MediumCompoundInvert
             GetNameOfProcess = "Compound Invert (Moderate)"
-        Case 803
+        Case Fade
             GetNameOfProcess = "Fade"
-        Case 807
+        Case Unfade
             GetNameOfProcess = "Unfade"
-        Case 808
+        Case Atmospheric
             GetNameOfProcess = "Atmosphere"
-        Case 809
+        Case Frozen
             GetNameOfProcess = "Freeze"
-        Case 810
+        Case Lava
             GetNameOfProcess = "Lava"
-        Case 811
+        Case Burn
             GetNameOfProcess = "Burn"
-        Case 812
+        Case Ocean
             GetNameOfProcess = "Ocean"
-        Case 813
+        Case Water
             GetNameOfProcess = "Water"
-        Case 814
+        Case Steel
             GetNameOfProcess = "Steel"
-        Case 815
+        Case Dream
             GetNameOfProcess = "Dream"
-        Case 816
+        Case Alien
             GetNameOfProcess = "Alien"
-        Case 817
+        Case CustomFilter
             GetNameOfProcess = "Custom Filter"
-        Case 818
+        Case Antique
             GetNameOfProcess = "Sepia/Antique"
-        Case 819
+        Case BlackLight
             GetNameOfProcess = "Blacklight"
-        Case 820
+        Case Posterize
             GetNameOfProcess = "Posterize"
-        Case 821
+        Case Radioactive
             GetNameOfProcess = "Radioactive"
-        Case 822
+        Case Solarize
             GetNameOfProcess = "Solarize"
-        Case 823
+        Case Twins
             GetNameOfProcess = "Generate Twins"
-        Case 824
+        Case Synthesize
             GetNameOfProcess = "Synthesize"
-        Case 825
+        Case Noise
             GetNameOfProcess = "Add Noise"
-        Case 827
+        Case CountColors
             GetNameOfProcess = "Count Image Colors"
-        Case 828
+        Case FogEffect
             GetNameOfProcess = "Fog"
-        Case 829
+        Case Rainbow
             GetNameOfProcess = "Rainbow"
-        Case 830
+        Case Vibrate
             GetNameOfProcess = "Vibrate"
-        Case 831
+        Case Despeckle
             GetNameOfProcess = "Despeckle"
-        Case 832
+        Case CustomDespeckle
             GetNameOfProcess = "Custom Despeckle"
-        Case 840
+        Case Animate
             GetNameOfProcess = "Animate"
         
-        Case 900
+        Case LastCommand
             GetNameOfProcess = "Repeat Last Action"
-        Case 901
+        Case FadeLastEffect
             GetNameOfProcess = "Fade last effect"
             
         'This "Else" statement should never trigger, but if it does, return an empty string

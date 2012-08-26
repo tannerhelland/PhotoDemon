@@ -261,16 +261,16 @@ Private Sub cboTarget_Click()
         Case 0
             
             'Determine the current screen size, in pixels; this is used to provide a "render to screen size" option
-            Dim cScreenWidth As Long, cScreenHeight As Long
-            cScreenWidth = Screen.Width / Screen.TwipsPerPixelX
-            cScreenHeight = Screen.Height / Screen.TwipsPerPixelY
+            Dim capScreenWidth As Long, capScreenHeight As Long
+            capScreenWidth = Screen.Width / Screen.TwipsPerPixelX
+            capScreenHeight = Screen.Height / Screen.TwipsPerPixelY
             
             'Add one to the displayed width and height, since we store them -1 for loops
-            txtWidth.Text = cScreenWidth
-            txtHeight.Text = cScreenHeight
+            TxtWidth.Text = capScreenWidth
+            TxtHeight.Text = capScreenHeight
             
-            txtWidth.Enabled = False
-            txtHeight.Enabled = False
+            TxtWidth.Enabled = False
+            TxtHeight.Enabled = False
             VSWidth.Enabled = False
             VSHeight.Enabled = False
             lblWidthType = "pixels"
@@ -278,33 +278,33 @@ Private Sub cboTarget_Click()
         
         'Custom size (in pixels)
         Case 1
-            txtWidth.Enabled = True
-            txtHeight.Enabled = True
+            TxtWidth.Enabled = True
+            TxtHeight.Enabled = True
             VSWidth.Enabled = True
             VSHeight.Enabled = True
             lblWidthType = "pixels"
             lblHeightType = "pixels"
             
             'If the user was previously measuring in tiles, convert that value to pixels
-            If (lastTargetMode = 2) And (NumberValid(txtWidth)) And (NumberValid(txtHeight)) Then
+            If (lastTargetMode = 2) And (NumberValid(TxtWidth)) And (NumberValid(TxtHeight)) Then
                 GetImageData
-                txtWidth = (val(txtWidth) * (PicWidthL + 1)) - 1
-                txtHeight = (val(txtHeight) * (PicHeightL + 1)) - 1
+                TxtWidth = (val(TxtWidth) * (PicWidthL + 1)) - 1
+                TxtHeight = (val(TxtHeight) * (PicHeightL + 1)) - 1
             End If
             
         'Custom size (as number of tiles)
         Case 2
-            txtWidth.Enabled = True
-            txtHeight.Enabled = True
+            TxtWidth.Enabled = True
+            TxtHeight.Enabled = True
             VSWidth.Enabled = True
             VSHeight.Enabled = True
             lblWidthType = "tiles"
             lblHeightType = "tiles"
             
             'Since the user will have previously been measuring in pixels, convert that value to tiles
-            If NumberValid(txtWidth) And NumberValid(txtHeight) Then
-                txtWidth = CLng(CSng(txtWidth) / (PicWidthL + 1))
-                txtHeight = CLng(CSng(txtHeight) / (PicHeightL + 1))
+            If NumberValid(TxtWidth) And NumberValid(TxtHeight) Then
+                TxtWidth = CLng(CSng(TxtWidth) / (PicWidthL + 1))
+                TxtHeight = CLng(CSng(TxtHeight) / (PicHeightL + 1))
             End If
     End Select
     
@@ -322,19 +322,19 @@ End Sub
 Private Sub CmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(txtWidth, 1, 32767, True, True) Then
-        AutoSelectText txtWidth
+    If Not EntryValid(TxtWidth, 1, 32767, True, True) Then
+        AutoSelectText TxtWidth
         Exit Sub
     End If
-    If Not EntryValid(txtHeight, 1, 32767, True, True) Then
-        AutoSelectText txtHeight
+    If Not EntryValid(TxtHeight, 1, 32767, True, True) Then
+        AutoSelectText TxtHeight
         Exit Sub
     End If
 
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    Process Tile, cboTarget.ListIndex, txtWidth, txtHeight
+    Process Tile, cboTarget.ListIndex, TxtWidth, TxtHeight
     
     Unload Me
     
@@ -443,38 +443,38 @@ End Sub
 
 'When the text boxes are changed, keep the scroll bar values in sync
 Private Sub txtHeight_Change()
-    If EntryValid(txtHeight, 1, 32767, False, True) Then
+    If EntryValid(TxtHeight, 1, 32767, False, True) Then
         updateHeightBar = False
-        VSHeight.Value = Abs(32767 - CInt(txtHeight))
+        VSHeight.Value = Abs(32767 - CInt(TxtHeight))
         updateHeightBar = True
     Else
-        AutoSelectText txtHeight
+        AutoSelectText TxtHeight
     End If
 End Sub
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText txtHeight
+    AutoSelectText TxtHeight
 End Sub
 
 Private Sub txtWidth_Change()
-    If EntryValid(txtWidth, 1, 32767, False, True) Then
+    If EntryValid(TxtWidth, 1, 32767, False, True) Then
         updateWidthBar = False
-        VSWidth.Value = Abs(32767 - CInt(txtWidth))
+        VSWidth.Value = Abs(32767 - CInt(TxtWidth))
         updateWidthBar = True
     Else
-        AutoSelectText txtWidth
+        AutoSelectText TxtWidth
     End If
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText txtWidth
+    AutoSelectText TxtWidth
 End Sub
 
 'When the scroll bars are changed, keep the text box values in sync
 Private Sub VSHeight_Change()
-    If updateHeightBar = True Then txtHeight = Abs(32767 - CStr(VSHeight.Value))
+    If updateHeightBar = True Then TxtHeight = Abs(32767 - CStr(VSHeight.Value))
 End Sub
 
 Private Sub VSWidth_Change()
-    If updateWidthBar = True Then txtWidth = Abs(32767 - CStr(VSWidth.Value))
+    If updateWidthBar = True Then TxtWidth = Abs(32767 - CStr(VSWidth.Value))
 End Sub

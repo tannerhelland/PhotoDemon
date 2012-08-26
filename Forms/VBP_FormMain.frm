@@ -1609,7 +1609,7 @@ Private Sub MnuScanImage_Click()
 End Sub
 
 Public Sub MnuScreenCapture_Click()
-    Process cScreen
+    Process capScreen
 End Sub
 
 Public Sub MnuSelectScanner_Click()
