@@ -277,6 +277,9 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
         
     End If
     
+    'Clear out the current picture box
+    imgForm.picIcon.Picture = LoadPicture("")
+    
     'Resize the picture box that will receive the first draft of the icon
     imgForm.picIcon.Width = icoSize
     imgForm.picIcon.Height = icoSize
