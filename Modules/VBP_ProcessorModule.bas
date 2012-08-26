@@ -79,7 +79,6 @@ Option Explicit
     
     'Area filters; numbers 400-499
     '-Blur
-    Public Const Antialias As Long = 416
     Public Const Blur As Long = 400
     Public Const BlurMore As Long = 401
     Public Const Soften As Long = 402
@@ -104,6 +103,8 @@ Option Explicit
     '-Gaussian Blur
     Public Const GaussianBlur As Long = 416
     Public Const GaussianBlurMore As Long = 417
+    '-Antialias
+    Public Const Antialias As Long = 418
     
     'Edge filters; numbers 500-599
     '-Emboss
@@ -167,6 +168,8 @@ Option Explicit
     Public Const FreeRotate As Long = 706
     '-Isometric
     Public Const Isometric As Long = 707
+    'Tiling
+    Public Const Tile As Long = 708
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -175,6 +178,7 @@ Option Explicit
     Public Const MediumCompoundInvert As Long = 802
     '-Fade
     Public Const Fade As Long = 803
+    '804-806 used to be specific Fade values; these have been superceded by passing the values to Fade
     Public Const Unfade As Long = 807
     '-Natural
     Public Const Atmospheric As Long = 808
@@ -194,7 +198,7 @@ Option Explicit
     Public Const Posterize As Long = 820
     Public Const Radioactive As Long = 821
     Public Const Solarize As Long = 822
-    Public Const Tile As Long = 823
+    Public Const Twins As Long = 823
     Public Const Synthesize As Long = 824
     Public Const Noise As Long = 825
     'Public Const ??? As Long = 826   'This value is free for use - the filter originally here has been removed
@@ -642,6 +646,14 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormResize.ResizeImage CLng(pOPCODE), CLng(pOPCODE2), CByte(pOPCODE3)
                 End If
+            Case Twins
+                If LoadForm = True Then
+                    FormTwins.Show 1, FormMain
+                Else
+                    FormTwins.GenerateTwins CByte(pOPCODE)
+                End If
+                Public Const Tile As Long = 708
+                
         End Select
     End If
     
@@ -680,11 +692,11 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormSolarize.SolarizeImage CByte(pOPCODE)
                 End If
-            Case Tile
+            Case Twins
                 If LoadForm = True Then
-                    FormTile.Show 1, FormMain
+                    FormTwins.Show 1, FormMain
                 Else
-                    FormTile.GenerateTwins CByte(pOPCODE)
+                    FormTwins.GenerateTwins CByte(pOPCODE)
                 End If
             Case Fade
                 If LoadForm = True Then
@@ -941,8 +953,6 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Grayscale (Single Channel)"
         
         'Area filters; numbers 400-499
-        Case 416
-            GetNameOfProcess = "Antialias"
         Case 400
             GetNameOfProcess = "Blur"
         Case 401
@@ -979,6 +989,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Gaussian Blur"
         Case 417
             GetNameOfProcess = "Gaussian Blur More"
+        Case 418
+            GetNameOfProcess = "Antialias"
     
         'Edge filters; numbers 500-599
         Case 500
@@ -1063,6 +1075,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Free Rotation"
         Case 707
             GetNameOfProcess = "Isometric Conversion"
+        Case 708
+            GetNameOfProcess = "Tile"
             
         'Miscellaneous filters; numbers 800-899
         Case 800
@@ -1089,10 +1103,10 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Water"
         Case 814
             GetNameOfProcess = "Steel"
-        Case 828
-            GetNameOfProcess = "Fog"
-        Case 829
-            GetNameOfProcess = "Rainbow"
+        Case 815
+            GetNameOfProcess = "Dream"
+        Case 816
+            GetNameOfProcess = "Alien"
         Case 817
             GetNameOfProcess = "Custom Filter"
         Case 818
@@ -1113,10 +1127,10 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Add Noise"
         Case 827
             GetNameOfProcess = "Count Image Colors"
-        Case 815
-            GetNameOfProcess = "Dream"
-        Case 816
-            GetNameOfProcess = "Alien"
+        Case 828
+            GetNameOfProcess = "Fog"
+        Case 829
+            GetNameOfProcess = "Rainbow"
         Case 830
             GetNameOfProcess = "Vibrate"
         Case 831
