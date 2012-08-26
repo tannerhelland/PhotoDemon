@@ -99,34 +99,37 @@ End Sub
 
 'Fit the active window tightly around the image
 Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
-    
-    'Disable AutoScroll, because that messes with our calculations
-    FixScrolling = False
-    
-    'Gotta change the scalemode to twips to match the MDI form
-    FormMain.ActiveForm.ScaleMode = 1
-    
+        
     'Make sure the window isn't minimized or maximized
-    FormMain.ActiveForm.WindowState = 0
+    If FormMain.ActiveForm.WindowState = 0 Then
     
-    'Now let's get some dimensions for our calculations
-    Dim wDif As Long, hDif As Long
-    'This variable determines the difference between scalewidth and width...
-    wDif = FormMain.ActiveForm.Width - FormMain.ActiveForm.ScaleWidth
-    '...while this variable does the same thing for scaleheight and height
-    hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
+        'Disable AutoScroll, because that messes with our calculations
+        FixScrolling = False
     
-    'Now we set the form dimensions to match the image's
-    FormMain.ActiveForm.Width = wDif + (FormMain.ActiveForm.BackBuffer.Width * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
-    FormMain.ActiveForm.Height = hDif + (FormMain.ActiveForm.BackBuffer.Height * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        'Change the scalemode to twips to match the MDI form
+        FormMain.ActiveForm.ScaleMode = 1
     
-    'Set the scalemode back to a decent pixels
-    FormMain.ActiveForm.ScaleMode = 3
+        'Now let's get some dimensions for our calculations
+        Dim wDif As Long, hDif As Long
+        'This variable determines the difference between scalewidth and width...
+        wDif = FormMain.ActiveForm.Width - FormMain.ActiveForm.ScaleWidth
+        '...while this variable does the same thing for scaleheight and height
+        hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
+        
+        'Now we set the form dimensions to match the image's
+        FormMain.ActiveForm.Width = wDif + (FormMain.ActiveForm.BackBuffer.Width * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        FormMain.ActiveForm.Height = hDif + (FormMain.ActiveForm.BackBuffer.Height * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        
+        'Set the scalemode back to a decent pixels
+        FormMain.ActiveForm.ScaleMode = 3
     
-    'Re-enable scrolling
-    FixScrolling = True
+        'Re-enable scrolling
+        FixScrolling = True
+        
+    End If
     
-    'Now fix scrollbars and everything
+    'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
+    ' the window was actually fit to the image (unless suppressRendering is specifically specified, obviously)
     If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitWindowToImage"
     
 End Sub
