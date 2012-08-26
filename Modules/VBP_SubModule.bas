@@ -99,13 +99,13 @@ End Sub
 'A pleasant combination of RangeValid and NumberValid
 Public Function EntryValid(ByVal check As Variant, ByVal Min As Long, ByVal Max As Long, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
     If Not IsNumeric(check) Then
-        If displayNumError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME
+        If displayNumError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbCritical + vbOKOnly + vbApplicationModal, "Invalid entry"
         EntryValid = False
     Else
         If (check >= Min) And (check <= Max) Then
             EntryValid = True
         Else
-            If displayRangeError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Value must be between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME
+            If displayRangeError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Value must be between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, "Invalid entry"
             EntryValid = False
         End If
     End If
@@ -183,6 +183,7 @@ End Function
 
 'Pass this a text box and it will select all text currently in the text box
 Public Function AutoSelectText(ByRef tBox As TextBox)
+    tBox.SetFocus
     tBox.SelStart = 0
     tBox.SelLength = Len(tBox.Text)
 End Function
