@@ -129,7 +129,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
     End If
     
     'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
-    ' the window was actually fit to the image (unless suppressRendering is specifically specified, obviously)
+    ' the window was actually fit to the image (unless suppressRendering is specified, obviously)
     If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitWindowToImage"
     
 End Sub
