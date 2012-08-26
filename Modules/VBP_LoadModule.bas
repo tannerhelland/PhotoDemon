@@ -443,7 +443,7 @@ FreeImageError:
     Dim mType As VbMsgBoxStyle
     
     'Tracks the user input from the message box
-    Dim MsgReturn As VbMsgBoxResult
+    Dim msgReturn As VbMsgBoxResult
 
     'FreeImage throws Error #5 if an invalid image is loaded
     If Err.Number = 5 Then
@@ -453,7 +453,7 @@ FreeImageError:
     End If
     
     'Create the message box to return the error information
-    MsgReturn = MsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
+    msgReturn = MsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
     "Error number " & Err.Number & vbCrLf & _
     "Description: " & Err.Description & vbCrLf & vbCrLf & _
     AddInfo & vbCrLf & vbCrLf & _

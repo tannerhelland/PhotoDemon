@@ -84,6 +84,7 @@ Begin VB.MDIForm FormMain
          List            =   "VBP_FormMain.frx":058C
          Style           =   2  'Dropdown List
          TabIndex        =   5
+         ToolTipText     =   "Click to adjust image zoom"
          Top             =   2610
          Width           =   1215
       End

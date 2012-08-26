@@ -178,7 +178,7 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
     Else
         lblThanks(curCredit).FontUnderline = True
         lblThanks(curCredit).ForeColor = vbBlue
-        lblThanks(curCredit).ToolTipText = creditURL
+        lblThanks(curCredit).ToolTipText = "Click to open " & creditURL
     End If
     lblThanks(curCredit).Visible = True
     

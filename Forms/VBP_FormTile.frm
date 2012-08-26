@@ -261,13 +261,13 @@ Private Sub cboTarget_Click()
         Case 0
             
             'Determine the current screen size, in pixels; this is used to provide a "render to screen size" option
-            Dim capScreenWidth As Long, capScreenHeight As Long
-            capScreenWidth = Screen.Width / Screen.TwipsPerPixelX
-            capScreenHeight = Screen.Height / Screen.TwipsPerPixelY
+            Dim cScreenWidth As Long, cScreenHeight As Long
+            cScreenWidth = Screen.Width / Screen.TwipsPerPixelX
+            cScreenHeight = Screen.Height / Screen.TwipsPerPixelY
             
             'Add one to the displayed width and height, since we store them -1 for loops
-            TxtWidth.Text = capScreenWidth
-            TxtHeight.Text = capScreenHeight
+            TxtWidth.Text = cScreenWidth
+            TxtHeight.Text = cScreenHeight
             
             TxtWidth.Enabled = False
             TxtHeight.Enabled = False
