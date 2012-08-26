@@ -1064,11 +1064,11 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
         Case Mirror
             GetNameOfProcess = "Mirror"
         Case Rotate90Clockwise
-            GetNameOfProcess = "Rotate 90 Clockwise"
+            GetNameOfProcess = "Rotate 90° Clockwise"
         Case Rotate180
-            GetNameOfProcess = "Rotate 180"
+            GetNameOfProcess = "Rotate 180°"
         Case Rotate270Clockwise
-            GetNameOfProcess = "Rotate 90 Counter-Clockwise"
+            GetNameOfProcess = "Rotate 90° Counter-Clockwise"
         Case FreeRotate
             GetNameOfProcess = "Free Rotation"
         Case Isometric

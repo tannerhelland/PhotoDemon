@@ -3,19 +3,18 @@ Attribute VB_Name = "Filters_Rotate"
 'Filter (Rotation) Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 1/25/03
-'Last updated: 4/November/07
-'Last update: Conversion to DIB section broke some things I didn't previously notice... o_O
-'             Now it's all better.  Phew!
+'Last updated: 26/August/12
+'Last update: Automatically fit the MDI child window to the newly rotated image
 '
 'Runs all rotation-style filters.  Includes flip and mirror as well.
-'It now uses DIB sections for 90 and 270 rotation, so this is some fast s*. :)
 '
 '***************************************************************************
 
 Option Explicit
 
-'Flip an image horizontally
+'Flip an image vertically
 Public Sub MenuFlip()
+
     Message "Flipping image..."
     GetImageData
     PicWidthL = PicWidthL + 1
@@ -27,9 +26,12 @@ Public Sub MenuFlip()
     Message "Finished. "
     
     ScrollViewport FormMain.ActiveForm
+    
 End Sub
 
+'Flip an image horizontally
 Public Sub MenuMirror()
+
     Message "Mirroring image..."
     GetImageData
     PicWidthL = PicWidthL + 1
@@ -41,12 +43,18 @@ Public Sub MenuMirror()
     Message "Finished. "
     
     ScrollViewport FormMain.ActiveForm
+    
 End Sub
 
+'Rotate an image 90° clockwise
 Public Sub MenuRotate90Clockwise()
+
     Message "Rotating image clockwise..."
-    'ImageData() will store the original image data
+    
+    'ImageData() will store the original image data - but make sure to specify "correct orientation"; otherwise Windows
+    ' will return the data upside-down
     GetImageData True
+    
     'Clear out the current picture box and prepare the 2nd buffer
     FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
     FormMain.ActiveForm.BackBuffer.Cls
@@ -57,9 +65,11 @@ Public Sub MenuRotate90Clockwise()
     FormMain.ActiveForm.BackBuffer2.Height = FormMain.ActiveForm.BackBuffer.Height
     FormMain.ActiveForm.BackBuffer2.Picture = FormMain.ActiveForm.BackBuffer2.Image
     DoEvents
+    
     'ImageData2() will store the new (translated) data
     GetImageData2 True
     SetProgBarMax PicWidthL
+    
     'Perform the translation
     Dim QuickVal As Long
     For x = 0 To PicWidthL
@@ -71,14 +81,18 @@ Public Sub MenuRotate90Clockwise()
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
+    
     SetImageData2 True
+    
     'Transfer the picture from the 2nd buffer to the main buffer
     FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer2.Picture
+    
     'Save some memory by shrinking the 2nd buffer
     FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
     FormMain.ActiveForm.BackBuffer2.Height = 1
     FormMain.ActiveForm.BackBuffer2.Width = 1
     SetProgBarVal cProgBar.Max
+    
     'Manually verify the values of PicWidthL and PicHeightL
     PicWidthL = FormMain.ActiveForm.BackBuffer.ScaleWidth - 1
     PicHeightL = FormMain.ActiveForm.BackBuffer.ScaleHeight - 1
@@ -86,11 +100,14 @@ Public Sub MenuRotate90Clockwise()
     
     Message "Finished. "
     
-    PrepareViewport FormMain.ActiveForm, "Rotate90Clockwise"
+    FitWindowToImage
     SetProgBarVal 0
+    
 End Sub
 
+'Rotate an image 180°
 Public Sub MenuRotate180()
+
     'Rotating 180 degrees can be accomplished by flipping and then mirroring
     'an image.  So instead of writing up code to do this, I just cheat and combine
     'those two routines into one.
@@ -102,10 +119,15 @@ Public Sub MenuRotate180()
     
 End Sub
 
+'Rotate an image 90° counter-clockwise
 Public Sub MenuRotate270Clockwise()
+
     Message "Rotating image counter-clockwise..."
-    'ImageData() will store the original image data
+    
+    'ImageData() will store the original image data - but make sure to specify "correct orientation"; otherwise Windows
+    ' will return the data upside-down
     GetImageData True
+    
     'Clear out the current picture box and prepare the 2nd buffer
     FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
     FormMain.ActiveForm.BackBuffer.Cls
@@ -116,9 +138,11 @@ Public Sub MenuRotate270Clockwise()
     FormMain.ActiveForm.BackBuffer2.Height = FormMain.ActiveForm.BackBuffer.Height
     FormMain.ActiveForm.BackBuffer2.Picture = FormMain.ActiveForm.BackBuffer2.Image
     DoEvents
+    
     'ImageData2() will store the new (translated) data
     GetImageData2 True
     SetProgBarMax PicWidthL
+    
     'Perform the translation
     Dim QuickVal As Long
     For x = 0 To PicWidthL
@@ -130,14 +154,18 @@ Public Sub MenuRotate270Clockwise()
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
+    
     SetImageData2 True
+    
     'Transfer the picture from the 2nd buffer to the main buffer
     FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer2.Picture
+    
     'Save some memory by shrinking the 2nd buffer
     FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
     FormMain.ActiveForm.BackBuffer2.Height = 1
     FormMain.ActiveForm.BackBuffer2.Width = 1
     SetProgBarVal cProgBar.Max
+    
     'Manually verify the values of PicWidthL and PicHeightL
     PicWidthL = FormMain.ActiveForm.BackBuffer.ScaleWidth - 1
     PicHeightL = FormMain.ActiveForm.BackBuffer.ScaleHeight - 1
@@ -145,6 +173,7 @@ Public Sub MenuRotate270Clockwise()
     
     Message "Finished. "
     
-    PrepareViewport FormMain.ActiveForm, "Rotate270Clockwise"
+    FitWindowToImage
     SetProgBarVal 0
+    
 End Sub
