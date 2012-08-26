@@ -181,11 +181,12 @@ Public Sub LoadMenuIcons()
         
         'Image Menu
         .PutImageToVBMenu 19, 0, 2      'Resize
-        .PutImageToVBMenu 20, 0, 2, 3     'Rotate Clockwise (rotate submenu)
-        .PutImageToVBMenu 21, 1, 2, 3     'Rotate Counter-clockwise (rotate submenu)
-        .PutImageToVBMenu 22, 2, 2, 3     'Rotate 180 (rotate submenu)
-        .PutImageToVBMenu 23, 4, 2      'Flip
-        .PutImageToVBMenu 24, 5, 2      'Mirror
+        .PutImageToVBMenu 23, 2, 2      'Flip
+        .PutImageToVBMenu 24, 3, 2      'Mirror
+        .PutImageToVBMenu 20, 0, 2, 4     'Rotate Clockwise (rotate submenu)
+        .PutImageToVBMenu 21, 1, 2, 4     'Rotate Counter-clockwise (rotate submenu)
+        .PutImageToVBMenu 22, 2, 2, 4     'Rotate 180 (rotate submenu)
+
         
         'Macro Menu
         .PutImageToVBMenu 36, 0, 5     'Open Macro

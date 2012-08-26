@@ -428,6 +428,12 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuImageSepBar0 
          Caption         =   "-"
       End
+      Begin VB.Menu MnuFlip 
+         Caption         =   "Flip (Vertical)"
+      End
+      Begin VB.Menu MnuMirror 
+         Caption         =   "Mirror (Horizontal)"
+      End
       Begin VB.Menu MnuRotate 
          Caption         =   "Rotate"
          Begin VB.Menu MnuRotateClockwise 
@@ -443,12 +449,6 @@ Begin VB.MDIForm FormMain
             Caption         =   "Arbitrary..."
             Visible         =   0   'False
          End
-      End
-      Begin VB.Menu MnuFlip 
-         Caption         =   "Flip (Vertical)"
-      End
-      Begin VB.Menu MnuMirror 
-         Caption         =   "Mirror (Horizontal)"
       End
       Begin VB.Menu MnuImageSepBar1 
          Caption         =   "-"
