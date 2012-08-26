@@ -601,6 +601,9 @@ Begin VB.MDIForm FormMain
          Begin VB.Menu MnuComicBook 
             Caption         =   "Comic Book"
          End
+         Begin VB.Menu MnuMosaic 
+            Caption         =   "Mosaic..."
+         End
          Begin VB.Menu MnuPencil 
             Caption         =   "Pencil Drawing"
          End
@@ -649,42 +652,57 @@ Begin VB.MDIForm FormMain
          Begin VB.Menu MnuDiffuseMore 
             Caption         =   "Diffuse More"
          End
+         Begin VB.Menu MnuDiffuseSepBar0 
+            Caption         =   "-"
+         End
          Begin VB.Menu MnuCustomDiffuse 
             Caption         =   "Custom Diffuse..."
          End
       End
-      Begin VB.Menu MnuMosaic 
-         Caption         =   "Mosaic..."
-      End
-      Begin VB.Menu MnuRank 
-         Caption         =   "Rank Filters"
-         Begin VB.Menu MnuMaximum 
-            Caption         =   "Maximum (Dilate)"
-         End
-         Begin VB.Menu MnuMinimum 
-            Caption         =   "Minimum (Erode)"
-         End
-         Begin VB.Menu MnuExtreme 
-            Caption         =   "Extreme (Furthest value)"
-         End
-         Begin VB.Menu MnuCustomRank 
-            Caption         =   "Custom Rank..."
-         End
-      End
       Begin VB.Menu MnuEdge 
-         Caption         =   "Edge Filters"
-         Begin VB.Menu MnuEdgeEnhance 
-            Caption         =   "Edge Enhance"
-         End
+         Caption         =   "Edge"
          Begin VB.Menu MnuEmbossEngrave 
             Caption         =   "Emboss/Engrave..."
+         End
+         Begin VB.Menu MnuEdgeEnhance 
+            Caption         =   "Enhance Edges"
          End
          Begin VB.Menu MnuFindEdges 
             Caption         =   "Find Edges..."
          End
       End
+      Begin VB.Menu MnuNaturalFilters 
+         Caption         =   "Natural"
+         Begin VB.Menu MnuAtmosperic 
+            Caption         =   "Atmosphere"
+         End
+         Begin VB.Menu MnuBurn 
+            Caption         =   "Burn"
+         End
+         Begin VB.Menu MnuFogEffect 
+            Caption         =   "Fog"
+         End
+         Begin VB.Menu MnuFrozen 
+            Caption         =   "Freeze"
+         End
+         Begin VB.Menu MnuLava 
+            Caption         =   "Lava"
+         End
+         Begin VB.Menu MnuOcean 
+            Caption         =   "Ocean"
+         End
+         Begin VB.Menu MnuRainbow 
+            Caption         =   "Rainbow"
+         End
+         Begin VB.Menu MnuSteel 
+            Caption         =   "Steel"
+         End
+         Begin VB.Menu MnuWater 
+            Caption         =   "Water"
+         End
+      End
       Begin VB.Menu MnuNoiseFilters 
-         Caption         =   "Noise Filters"
+         Caption         =   "Noise"
          Begin VB.Menu MnuNoise 
             Caption         =   "Add Noise..."
          End
@@ -761,34 +779,22 @@ Begin VB.MDIForm FormMain
             Caption         =   "Vibrate"
          End
       End
-      Begin VB.Menu MnuNaturalFilters 
-         Caption         =   "Natural Filters"
-         Begin VB.Menu MnuAtmosperic 
-            Caption         =   "Atmosphere"
+      Begin VB.Menu MnuRank 
+         Caption         =   "Rank"
+         Begin VB.Menu MnuMaximum 
+            Caption         =   "Dilate (Maximum)"
          End
-         Begin VB.Menu MnuBurn 
-            Caption         =   "Burn"
+         Begin VB.Menu MnuMinimum 
+            Caption         =   "Erode (Minimum)"
          End
-         Begin VB.Menu MnuFogEffect 
-            Caption         =   "Fog"
+         Begin VB.Menu MnuExtreme 
+            Caption         =   "Extreme (Furthest value)"
          End
-         Begin VB.Menu MnuFrozen 
-            Caption         =   "Freeze"
+         Begin VB.Menu MnuRankSepBar0 
+            Caption         =   "-"
          End
-         Begin VB.Menu MnuLava 
-            Caption         =   "Lava"
-         End
-         Begin VB.Menu MnuOcean 
-            Caption         =   "Ocean"
-         End
-         Begin VB.Menu MnuRainbow 
-            Caption         =   "Rainbow"
-         End
-         Begin VB.Menu MnuSteel 
-            Caption         =   "Steel"
-         End
-         Begin VB.Menu MnuWater 
-            Caption         =   "Water"
+         Begin VB.Menu MnuCustomRank 
+            Caption         =   "Custom Rank..."
          End
       End
       Begin VB.Menu MnuSharpenUpper 
@@ -798,6 +804,9 @@ Begin VB.MDIForm FormMain
          End
          Begin VB.Menu MnuSharpenMore 
             Caption         =   "Sharpen More"
+         End
+         Begin VB.Menu MnuSharpenSepBar0 
+            Caption         =   "-"
          End
          Begin VB.Menu MnuUnsharp 
             Caption         =   "Unsharp"
