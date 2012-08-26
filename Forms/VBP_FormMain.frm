@@ -752,6 +752,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Synthesize"
          End
          Begin VB.Menu MnuTile 
+            Caption         =   "Tile..."
+         End
+         Begin VB.Menu MnuTwins 
             Caption         =   "Twins..."
          End
          Begin VB.Menu MnuVibrate 
@@ -1009,7 +1012,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) Then
@@ -1042,7 +1045,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Check to make sure the type of OLE object is files
     If Data.GetFormat(vbCFFiles) Then
@@ -1679,6 +1682,10 @@ Private Sub MnuTileVertically_Click()
         If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
     Next i
     
+End Sub
+
+Private Sub MnuTwins_Click()
+    Process Twins, , , , , , , , , , True
 End Sub
 
 Private Sub MnuUndo_Click()

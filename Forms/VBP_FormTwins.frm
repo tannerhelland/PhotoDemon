@@ -169,9 +169,9 @@ End Sub
 Private Sub CmdOK_Click()
     Me.Visible = False
     If OptVertical.Value = True Then
-        Process Tile, 0
+        Process Twins, 0
     Else
-        Process Tile, 1
+        Process Twins, 1
     End If
     Unload Me
 End Sub
@@ -185,12 +185,12 @@ Public Sub GenerateTwins(ByVal tType As Byte)
     Dim Color1 As Long, Color2 As Long
     
     'Temporary array to store the image information (preventing bad overlaps)
-    Dim Ta() As Byte
+    Dim tA() As Byte
     Dim tWidth As Long
     tWidth = (PicWidthL * 3) - 1
     tWidth = tWidth + (PicWidthL Mod 4)
     
-    ReDim Ta(0 To tWidth, 0 To PicHeightL) As Byte
+    ReDim tA(0 To tWidth, 0 To PicHeightL) As Byte
     
     Message "Creating twin image..."
     
@@ -199,9 +199,9 @@ Public Sub GenerateTwins(ByVal tType As Byte)
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        Ta(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
-        Ta(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
-        Ta(QuickVal, y) = ImageData(QuickVal, y)
+        tA(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
+        tA(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
+        tA(QuickVal, y) = ImageData(QuickVal, y)
     Next y
     Next x
     
@@ -218,12 +218,12 @@ Public Sub GenerateTwins(ByVal tType As Byte)
     For y = 0 To PicHeightL
     For z = 0 To 2
         'Get the value of the "first" pixel
-        Color1 = Ta(QuickVal + z, y)
+        Color1 = tA(QuickVal + z, y)
         'Get the value of the "second" pixel, depending on the method
         If tType = 0 Then
-            Color2 = Ta(QuickVal + z, PicHeightL - y)
+            Color2 = tA(QuickVal + z, PicHeightL - y)
         Else
-            Color2 = Ta(PicBitsX - QuickVal + z, y)
+            Color2 = tA(PicBitsX - QuickVal + z, y)
         End If
         'Simple alpha-blend, kids
         NewColor = (Color1 + Color2) \ 2
@@ -261,20 +261,20 @@ End Sub
 Private Sub PreviewTwins(ByVal tType As Byte)
     GetPreviewData PicPreview
     Dim Color1 As Long, Color2 As Long
-    Dim Ta() As Byte
+    Dim tA() As Byte
     Dim tWidth As Long
     PicWidthL = PicPreview.ScaleWidth
     PicHeightL = PicPreview.ScaleHeight
     tWidth = (PicWidthL * 3) + 2
     tWidth = tWidth + (PicWidthL Mod 4)
-    ReDim Ta(0 To tWidth, 0 To PicHeightL + 1) As Byte
+    ReDim tA(0 To tWidth, 0 To PicHeightL + 1) As Byte
     Dim QuickVal As Long
     For x = 0 To PicWidthL
         QuickVal = x * 3
     For y = 0 To PicHeightL
-        Ta(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
-        Ta(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
-        Ta(QuickVal, y) = ImageData(QuickVal, y)
+        tA(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
+        tA(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
+        tA(QuickVal, y) = ImageData(QuickVal, y)
     Next y
     Next x
     Dim PicBitsX As Long
@@ -284,11 +284,11 @@ Private Sub PreviewTwins(ByVal tType As Byte)
         QuickVal = x * 3
     For y = PreviewY To PreviewY + PreviewHeight
     For z = 0 To 2
-        Color1 = Ta(QuickVal + z, y)
+        Color1 = tA(QuickVal + z, y)
         If tType = 0 Then
-            Color2 = Ta(QuickVal + z, PicHeightL - y)
+            Color2 = tA(QuickVal + z, PicHeightL - y)
         Else
-            Color2 = Ta(PicBitsX - QuickVal + z, y)
+            Color2 = tA(PicBitsX - QuickVal + z, y)
         End If
         NewColor = (Color1 + Color2) \ 2
         ImageData(QuickVal + z, y) = NewColor

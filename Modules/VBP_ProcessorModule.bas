@@ -646,14 +646,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormResize.ResizeImage CLng(pOPCODE), CLng(pOPCODE2), CByte(pOPCODE3)
                 End If
-            Case Twins
+            Case Tile
                 If LoadForm = True Then
-                    FormTwins.Show 1, FormMain
+                    FormTile.Show 1, FormMain
                 Else
-                    FormTwins.GenerateTwins CByte(pOPCODE)
+                    FormTile.GenerateTile CByte(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
                 End If
-                Public Const Tile As Long = 708
-                
         End Select
     End If
     
@@ -1076,7 +1074,7 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
         Case 707
             GetNameOfProcess = "Isometric Conversion"
         Case 708
-            GetNameOfProcess = "Tile"
+            GetNameOfProcess = "Tile Image"
             
         'Miscellaneous filters; numbers 800-899
         Case 800

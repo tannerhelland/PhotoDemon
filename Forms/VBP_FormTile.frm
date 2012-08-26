@@ -2,85 +2,95 @@ VERSION 5.00
 Begin VB.Form FormTile 
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Generate Twins"
-   ClientHeight    =   3855
+   Caption         =   " Tile Image"
+   ClientHeight    =   2310
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   5055
+   ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   257
+   ScaleHeight     =   154
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   337
+   ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   5
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   4
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.OptionButton OptVertical 
-      Appearance      =   0  'Flat
-      Caption         =   "Vertical"
+   Begin VB.TextBox TxtWidth 
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   2640
-      TabIndex        =   1
-      Top             =   2760
-      Width           =   2175
-   End
-   Begin VB.OptionButton OptHorizontal 
-      Appearance      =   0  'Flat
-      Caption         =   "Horizontal"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
+      ForeColor       =   &H00800000&
+      Height          =   315
       Left            =   1200
-      TabIndex        =   0
-      Top             =   2760
-      Value           =   -1  'True
-      Width           =   1215
+      TabIndex        =   7
+      Text            =   "N/A"
+      Top             =   1020
+      Width           =   855
+   End
+   Begin VB.TextBox TxtHeight 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   4080
+      TabIndex        =   6
+      Text            =   "N/A"
+      Top             =   1020
+      Width           =   855
+   End
+   Begin VB.VScrollBar VSWidth 
+      Height          =   420
+      Left            =   2070
+      Max             =   32766
+      Min             =   1
+      TabIndex        =   5
+      TabStop         =   0   'False
+      Top             =   960
+      Value           =   15000
+      Width           =   270
+   End
+   Begin VB.VScrollBar VSHeight 
+      Height          =   420
+      Left            =   4950
+      Max             =   32766
+      Min             =   1
+      TabIndex        =   4
+      TabStop         =   0   'False
+      Top             =   960
+      Value           =   15000
+      Width           =   270
+   End
+   Begin VB.ComboBox cboTarget 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   330
+      Left            =   2520
+      Style           =   2  'Dropdown List
+      TabIndex        =   3
+      Top             =   360
+      Width           =   3375
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
@@ -95,9 +105,9 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   3720
-      TabIndex        =   3
-      Top             =   3360
+      Left            =   4800
+      TabIndex        =   1
+      Top             =   1800
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -113,31 +123,108 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   2520
-      TabIndex        =   2
-      Top             =   3360
+      Left            =   3600
+      TabIndex        =   0
+      Top             =   1800
       Width           =   1125
    End
-   Begin VB.Label lblPreview 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblWidth 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "Width:"
       BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
+         Name            =   "Tahoma"
+         Size            =   9
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
-         Italic          =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   210
+      Left            =   480
+      TabIndex        =   11
+      Top             =   1065
+      Width           =   555
+   End
+   Begin VB.Label lblHeight 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Height:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   210
+      Left            =   3360
+      TabIndex        =   10
+      Top             =   1065
+      Width           =   600
+   End
+   Begin VB.Label lblWidthType 
+      BackStyle       =   0  'Transparent
+      Caption         =   "pixels"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
-      TabIndex        =   6
-      Top             =   2310
-      Width           =   4575
+      Left            =   2490
+      TabIndex        =   9
+      Top             =   1065
+      Width           =   855
+   End
+   Begin VB.Label lblHeightType 
+      BackStyle       =   0  'Transparent
+      Caption         =   "pixels"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   255
+      Left            =   5370
+      TabIndex        =   8
+      Top             =   1065
+      Width           =   855
+   End
+   Begin VB.Label lblAmount 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Render tiled image using:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   210
+      Left            =   360
+      TabIndex        =   2
+      Top             =   405
+      Width           =   2070
    End
 End
 Attribute VB_Name = "FormTile"
@@ -146,19 +233,85 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'"Twin" Filter Interface
+'Tile Rendering Interface
 'Copyright ©2000-2012 by Tanner Helland
-'Created: 6/12/01
-'Last updated: 13/June/12
-'Last update: fixed RGB misalignment when performing vertical flipping
-'Need to update: Needs optimization. Only run the loop through half the image,
-'                and double-store values (they are mirrored, after all - duh!!)
+'Created: 25/August/12
+'Last updated: 25/August/12
+'Last update: Initial build
 '
-'Unoptimized "twin" generator.  Simple 50% alpha blending combined with a flip.
+'Render tiled images.  Options are provided for rendering to current wallpaper size, or to a custom size.
+' The interface options for custom size are derived from the Image Size form; ideally, any changes to that
+' should be mirrored here.
 '
 '***************************************************************************
 
 Option Explicit
+
+'Used to prevent the scroll bars from getting stuck in update loops
+Dim updateWidthBar As Boolean, updateHeightBar As Boolean
+
+'Track the last type of option used; we use this to convert the text box values intelligently
+Dim lastTargetMode As Long
+
+'When the combo box is changed, make the appropriate controls visible
+Private Sub cboTarget_Click()
+
+    Select Case cboTarget.ListIndex
+        'Wallpaper size
+        Case 0
+            
+            'Determine the current screen size, in pixels; this is used to provide a "render to screen size" option
+            Dim cScreenWidth As Long, cScreenHeight As Long
+            cScreenWidth = Screen.Width / Screen.TwipsPerPixelX
+            cScreenHeight = Screen.Height / Screen.TwipsPerPixelY
+            
+            'Add one to the displayed width and height, since we store them -1 for loops
+            txtWidth.Text = cScreenWidth
+            txtHeight.Text = cScreenHeight
+            
+            txtWidth.Enabled = False
+            txtHeight.Enabled = False
+            VSWidth.Enabled = False
+            VSHeight.Enabled = False
+            lblWidthType = "pixels"
+            lblHeightType = "pixels"
+        
+        'Custom size (in pixels)
+        Case 1
+            txtWidth.Enabled = True
+            txtHeight.Enabled = True
+            VSWidth.Enabled = True
+            VSHeight.Enabled = True
+            lblWidthType = "pixels"
+            lblHeightType = "pixels"
+            
+            'If the user was previously measuring in tiles, convert that value to pixels
+            If (lastTargetMode = 2) And (NumberValid(txtWidth)) And (NumberValid(txtHeight)) Then
+                GetImageData
+                txtWidth = (val(txtWidth) * (PicWidthL + 1)) - 1
+                txtHeight = (val(txtHeight) * (PicHeightL + 1)) - 1
+            End If
+            
+        'Custom size (as number of tiles)
+        Case 2
+            txtWidth.Enabled = True
+            txtHeight.Enabled = True
+            VSWidth.Enabled = True
+            VSHeight.Enabled = True
+            lblWidthType = "tiles"
+            lblHeightType = "tiles"
+            
+            'Since the user will have previously been measuring in pixels, convert that value to tiles
+            If NumberValid(txtWidth) And NumberValid(txtHeight) Then
+                txtWidth = CLng(CSng(txtWidth) / (PicWidthL + 1))
+                txtHeight = CLng(CSng(txtHeight) / (PicHeightL + 1))
+            End If
+    End Select
+    
+    'Remember this value for future conversions
+    lastTargetMode = cboTarget.ListIndex
+
+End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -167,133 +320,161 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-    Me.Visible = False
-    If OptVertical.Value = True Then
-        Process Tile, 0
-    Else
-        Process Tile, 1
+
+    'Before rendering anything, check to make sure the text boxes have valid input
+    If Not EntryValid(txtWidth, 1, 32767, True, True) Then
+        AutoSelectText txtWidth
+        Exit Sub
     End If
+    If Not EntryValid(txtHeight, 1, 32767, True, True) Then
+        AutoSelectText txtHeight
+        Exit Sub
+    End If
+
+    Me.Visible = False
+    
+    'Based on the user's selection, submit the proper processor request
+    Process Tile, cboTarget.ListIndex, txtWidth, txtHeight
+    
     Unload Me
+    
 End Sub
 
-'This routine mirrors and alphablends an image, making it "tilable" or symmetrical
-Public Sub GenerateTwins(ByVal TType As Byte)
+'This routine renders the current image to a new, tiled image (larger than the present image)
+' tType is the parameter used for determining how many tiles to draw:
+' 0 - current wallpaper size
+' 1 - custom size, in pixels
+' 2 - custom size, as number of tiles
+' The other two parameters are width and height, or tiles in x and y direction
+Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional yTarget As Long)
+    
+    Message "Rendering tiled image..."
     
     GetImageData
     
-    'Temporary colors
-    Dim Color1 As Long, Color2 As Long
+    'We need to determine a target width and height based on the input parameters
+    Dim targetWidth As Long, targetHeight As Long
     
-    'Temporary array to store the image information (preventing bad overlaps)
-    Dim Ta() As Byte
-    Dim tWidth As Long
-    tWidth = (PicWidthL * 3) - 1
-    tWidth = tWidth + (PicWidthL Mod 4)
+    PicWidthL = PicWidthL + 1
+    PicHeightL = PicHeightL + 1
     
-    ReDim Ta(0 To tWidth, 0 To PicHeightL) As Byte
+    Select Case tType
+        Case 0
+            'Current wallpaper size
+            targetWidth = Screen.Width / Screen.TwipsPerPixelX
+            targetHeight = Screen.Height / Screen.TwipsPerPixelY
+        Case 1
+            'Custom size
+            targetWidth = xTarget
+            targetHeight = yTarget
+        Case 2
+            'Specific number of tiles; determine the target size in pixels, accordingly
+            targetWidth = (PicWidthL * xTarget)
+            targetHeight = (PicHeightL * yTarget)
+    End Select
     
-    Message "Creating twin image..."
+    'Make sure the target width/height isn't too large
+    If targetWidth > 32768 Then targetWidth = 32768
+    If targetHeight > 32768 Then targetHeight = 32768
     
-    'First, copy our array into TA()
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        Ta(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
-        Ta(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
-        Ta(QuickVal, y) = ImageData(QuickVal, y)
+    'Resize the target picture box to this new size
+    FormMain.ActiveForm.BackBuffer2.Width = targetWidth + 2
+    FormMain.ActiveForm.BackBuffer2.Height = targetHeight + 2
+    
+    'Figure out how many loop intervals we'll need in the x and y direction to fill the target size
+    Dim xLoop As Long, yLoop As Long
+    xLoop = CLng(CSng(targetWidth) / CSng(PicWidthL))
+    yLoop = CLng(CSng(targetHeight) / CSng(PicHeightL))
+    
+    SetProgBarMax xLoop
+    
+    'Using that loop variable, render the original image to the target picture box that many times
+    For x = 0 To xLoop
+    For y = 0 To yLoop
+        BitBlt FormMain.ActiveForm.BackBuffer2.hDC, x * PicWidthL, y * PicHeightL, PicWidthL, PicHeightL, FormMain.ActiveForm.BackBuffer.hDC, 0, 0, vbSrcCopy
     Next y
+        SetProgBarVal x
     Next x
     
-    SetProgBarMax PicWidthL
+    SetProgBarVal xLoop
     
-    Dim PicBitsX As Long
-    Dim NewColor As Long
+    'With that complete, copy the target back into the original picture box
+    FormMain.ActiveForm.BackBuffer.Width = FormMain.ActiveForm.BackBuffer2.Width
+    FormMain.ActiveForm.BackBuffer.Height = FormMain.ActiveForm.BackBuffer2.Height
+    FormMain.ActiveForm.Picture = LoadPicture("")
+    BitBlt FormMain.ActiveForm.BackBuffer.hDC, 0, 0, FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight, FormMain.ActiveForm.BackBuffer2.hDC, 0, 0, vbSrcCopy
+    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
     
-    PicBitsX = PicWidthL * 3
+    'Clear out the secondary picture box to save on memory
+    FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
+    FormMain.ActiveForm.BackBuffer2.Width = 1
+    FormMain.ActiveForm.BackBuffer2.Height = 1
     
-    'This loop will actually generate the twins
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    For z = 0 To 2
-        'Get the value of the "first" pixel
-        Color1 = Ta(QuickVal + z, y)
-        'Get the value of the "second" pixel, depending on the method
-        If TType = 0 Then
-            Color2 = Ta(QuickVal + z, PicHeightL - y)
-        Else
-            Color2 = Ta(PicBitsX - QuickVal + z, y)
-        End If
-        'Simple alpha-blend, kids
-        NewColor = (Color1 + Color2) \ 2
-        'Remember this value and continue
-        ImageData(QuickVal + z, y) = NewColor
-    Next z
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    SetImageData
+    'Display the new size
+    DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
+    
+    SetProgBarVal 0
+    
+    'Render it on-screen at an automatically set zoom
+    FitOnScreen
+    
+    Message "Finished."
+
 End Sub
 
 'LOAD form
 Private Sub Form_Load()
+        
+    cboTarget.AddItem "Current screen size", 0
+    cboTarget.AddItem "Custom size (in pixels)", 1
+    cboTarget.AddItem "Specific number of tiles", 2
+    cboTarget.ListIndex = 0
+    DoEvents
     
     'Create the image previews
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-    PreviewTwins 1
+    'DrawPreviewImage PicPreview
+    'DrawPreviewImage PicEffect
+    'PreviewTile 1
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-Private Sub OptHorizontal_Click()
-    PreviewTwins 1
+'When the text boxes are changed, keep the scroll bar values in sync
+Private Sub txtHeight_Change()
+    If EntryValid(txtHeight, 1, 32767, False, True) Then
+        updateHeightBar = False
+        VSHeight.Value = Abs(32767 - CInt(txtHeight))
+        updateHeightBar = True
+    Else
+        AutoSelectText txtHeight
+    End If
 End Sub
 
-Private Sub OptVertical_Click()
-    PreviewTwins 0
+Private Sub txtHeight_GotFocus()
+    AutoSelectText txtHeight
 End Sub
 
-'Same routine as above, but only for previewing
-Private Sub PreviewTwins(ByVal TType As Byte)
-    GetPreviewData PicPreview
-    Dim Color1 As Long, Color2 As Long
-    Dim Ta() As Byte
-    Dim tWidth As Long
-    PicWidthL = PicPreview.ScaleWidth
-    PicHeightL = PicPreview.ScaleHeight
-    tWidth = (PicWidthL * 3) + 2
-    tWidth = tWidth + (PicWidthL Mod 4)
-    ReDim Ta(0 To tWidth, 0 To PicHeightL + 1) As Byte
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        Ta(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
-        Ta(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
-        Ta(QuickVal, y) = ImageData(QuickVal, y)
-    Next y
-    Next x
-    Dim PicBitsX As Long
-    Dim NewColor As Long
-    PicBitsX = PicWidthL * 3
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-    For z = 0 To 2
-        Color1 = Ta(QuickVal + z, y)
-        If TType = 0 Then
-            Color2 = Ta(QuickVal + z, PicHeightL - y)
-        Else
-            Color2 = Ta(PicBitsX - QuickVal + z, y)
-        End If
-        NewColor = (Color1 + Color2) \ 2
-        ImageData(QuickVal + z, y) = NewColor
-    Next z
-    Next y
-    Next x
-    SetPreviewData PicEffect
+Private Sub txtWidth_Change()
+    If EntryValid(txtWidth, 1, 32767, False, True) Then
+        updateWidthBar = False
+        VSWidth.Value = Abs(32767 - CInt(txtWidth))
+        updateWidthBar = True
+    Else
+        AutoSelectText txtWidth
+    End If
+End Sub
+
+Private Sub txtWidth_GotFocus()
+    AutoSelectText txtWidth
+End Sub
+
+'When the scroll bars are changed, keep the text box values in sync
+Private Sub VSHeight_Change()
+    If updateHeightBar = True Then txtHeight = Abs(32767 - CStr(VSHeight.Value))
+End Sub
+
+Private Sub VSWidth_Change()
+    If updateWidthBar = True Then txtWidth = Abs(32767 - CStr(VSWidth.Value))
 End Sub
