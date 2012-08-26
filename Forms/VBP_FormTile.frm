@@ -3,18 +3,90 @@ Begin VB.Form FormTile
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tile Image"
-   ClientHeight    =   2310
+   ClientHeight    =   8070
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   154
+   ScaleHeight     =   538
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   5100
+      Left            =   240
+      ScaleHeight     =   338
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   382
+      TabIndex        =   14
+      Top             =   240
+      Width           =   5760
+   End
+   Begin VB.PictureBox picBackBuffer2 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   255
+      Left            =   480
+      ScaleHeight     =   15
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   15
+      TabIndex        =   13
+      Top             =   7320
+      Visible         =   0   'False
+      Width           =   255
+   End
+   Begin VB.PictureBox picBackBuffer 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   255
+      Left            =   120
+      ScaleHeight     =   15
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   15
+      TabIndex        =   12
+      Top             =   7320
+      Visible         =   0   'False
+      Width           =   255
+   End
    Begin VB.TextBox TxtWidth 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -30,7 +102,7 @@ Begin VB.Form FormTile
       Left            =   1200
       TabIndex        =   7
       Text            =   "N/A"
-      Top             =   1020
+      Top             =   6420
       Width           =   855
    End
    Begin VB.TextBox TxtHeight 
@@ -48,7 +120,7 @@ Begin VB.Form FormTile
       Left            =   4080
       TabIndex        =   6
       Text            =   "N/A"
-      Top             =   1020
+      Top             =   6420
       Width           =   855
    End
    Begin VB.VScrollBar VSWidth 
@@ -58,7 +130,7 @@ Begin VB.Form FormTile
       Min             =   1
       TabIndex        =   5
       TabStop         =   0   'False
-      Top             =   960
+      Top             =   6360
       Value           =   15000
       Width           =   270
    End
@@ -69,7 +141,7 @@ Begin VB.Form FormTile
       Min             =   1
       TabIndex        =   4
       TabStop         =   0   'False
-      Top             =   960
+      Top             =   6360
       Value           =   15000
       Width           =   270
    End
@@ -89,7 +161,7 @@ Begin VB.Form FormTile
       Left            =   2520
       Style           =   2  'Dropdown List
       TabIndex        =   3
-      Top             =   360
+      Top             =   5760
       Width           =   3375
    End
    Begin VB.CommandButton CmdCancel 
@@ -105,9 +177,9 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   4800
+      Left            =   4920
       TabIndex        =   1
-      Top             =   1800
+      Top             =   7560
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -123,10 +195,30 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   3600
+      Left            =   3720
       TabIndex        =   0
-      Top             =   1800
+      Top             =   7560
       Width           =   1125
+   End
+   Begin VB.Label lblDescription 
+      Alignment       =   2  'Center
+      BackStyle       =   0  'Transparent
+      Caption         =   "The tiled image will be 0 tiles wide by 0 tiles tall"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   210
+      Left            =   120
+      TabIndex        =   15
+      Top             =   7020
+      Width           =   5955
    End
    Begin VB.Label lblWidth 
       AutoSize        =   -1  'True
@@ -145,7 +237,7 @@ Begin VB.Form FormTile
       Height          =   210
       Left            =   480
       TabIndex        =   11
-      Top             =   1065
+      Top             =   6465
       Width           =   555
    End
    Begin VB.Label lblHeight 
@@ -165,7 +257,7 @@ Begin VB.Form FormTile
       Height          =   210
       Left            =   3360
       TabIndex        =   10
-      Top             =   1065
+      Top             =   6465
       Width           =   600
    End
    Begin VB.Label lblWidthType 
@@ -184,7 +276,7 @@ Begin VB.Form FormTile
       Height          =   255
       Left            =   2490
       TabIndex        =   9
-      Top             =   1065
+      Top             =   6465
       Width           =   855
    End
    Begin VB.Label lblHeightType 
@@ -203,7 +295,7 @@ Begin VB.Form FormTile
       Height          =   255
       Left            =   5370
       TabIndex        =   8
-      Top             =   1065
+      Top             =   6465
       Width           =   855
    End
    Begin VB.Label lblAmount 
@@ -223,7 +315,7 @@ Begin VB.Form FormTile
       Height          =   210
       Left            =   360
       TabIndex        =   2
-      Top             =   405
+      Top             =   5805
       Width           =   2070
    End
 End
@@ -253,8 +345,17 @@ Dim updateWidthBar As Boolean, updateHeightBar As Boolean
 'Track the last type of option used; we use this to convert the text box values intelligently
 Dim lastTargetMode As Long
 
+'We only want the preview redrawn at certain times; this is used to limit it
+Dim redrawPreview As Boolean
+
 'When the combo box is changed, make the appropriate controls visible
 Private Sub cboTarget_Click()
+
+    'Suppress previewing while all the variables get set to their proper values
+    redrawPreview = False
+
+    'We need to call GetImageData to make sure the proper PicWidth and PicHeight values are set
+    GetImageData
 
     Select Case cboTarget.ListIndex
         'Wallpaper size
@@ -311,6 +412,15 @@ Private Sub cboTarget_Click()
     'Remember this value for future conversions
     lastTargetMode = cboTarget.ListIndex
 
+    'Re-enable previewing
+    redrawPreview = True
+
+    'Finally, draw a preview
+    If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) Then
+        updateDescription
+        GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
+    End If
+
 End Sub
 
 'CANCEL button
@@ -346,9 +456,9 @@ End Sub
 ' 1 - custom size, in pixels
 ' 2 - custom size, as number of tiles
 ' The other two parameters are width and height, or tiles in x and y direction
-Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional yTarget As Long)
+Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional yTarget As Long, Optional ByVal isPreview As Boolean = False)
     
-    Message "Rendering tiled image..."
+    If isPreview = False Then Message "Rendering tiled image..."
     
     GetImageData
     
@@ -378,63 +488,75 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If targetHeight > 32768 Then targetHeight = 32768
     
     'Resize the target picture box to this new size
-    FormMain.ActiveForm.BackBuffer2.Width = targetWidth + 2
-    FormMain.ActiveForm.BackBuffer2.Height = targetHeight + 2
+    picBackBuffer2.Width = targetWidth + 2
+    picBackBuffer2.Height = targetHeight + 2
     
     'Figure out how many loop intervals we'll need in the x and y direction to fill the target size
     Dim xLoop As Long, yLoop As Long
     xLoop = CLng(CSng(targetWidth) / CSng(PicWidthL))
     yLoop = CLng(CSng(targetHeight) / CSng(PicHeightL))
     
-    SetProgBarMax xLoop
+    If isPreview = False Then SetProgBarMax xLoop
     
     'Using that loop variable, render the original image to the target picture box that many times
     For x = 0 To xLoop
     For y = 0 To yLoop
-        BitBlt FormMain.ActiveForm.BackBuffer2.hDC, x * PicWidthL, y * PicHeightL, PicWidthL, PicHeightL, FormMain.ActiveForm.BackBuffer.hDC, 0, 0, vbSrcCopy
+        BitBlt picBackBuffer2.hDC, x * PicWidthL, y * PicHeightL, PicWidthL, PicHeightL, picBackBuffer.hDC, 0, 0, vbSrcCopy
     Next y
-        SetProgBarVal x
+        If isPreview = False Then SetProgBarVal x
     Next x
     
-    SetProgBarVal xLoop
+    If isPreview = False Then
     
-    'With that complete, copy the target back into the original picture box
-    FormMain.ActiveForm.BackBuffer.Width = FormMain.ActiveForm.BackBuffer2.Width
-    FormMain.ActiveForm.BackBuffer.Height = FormMain.ActiveForm.BackBuffer2.Height
-    FormMain.ActiveForm.Picture = LoadPicture("")
-    BitBlt FormMain.ActiveForm.BackBuffer.hDC, 0, 0, FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight, FormMain.ActiveForm.BackBuffer2.hDC, 0, 0, vbSrcCopy
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
+        SetProgBarVal xLoop
     
-    'Clear out the secondary picture box to save on memory
-    FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer2.Width = 1
-    FormMain.ActiveForm.BackBuffer2.Height = 1
+        'With that complete, copy the target back into the original picture box
+        FormMain.ActiveForm.BackBuffer.Width = picBackBuffer2.Width
+        FormMain.ActiveForm.BackBuffer.Height = picBackBuffer2.Height
+        FormMain.ActiveForm.Picture = LoadPicture("")
+        BitBlt FormMain.ActiveForm.BackBuffer.hDC, 0, 0, FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight, picBackBuffer2.hDC, 0, 0, vbSrcCopy
+        FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
+        
+        'Clear out the secondary picture box to save on memory
+        picBackBuffer2.Picture = LoadPicture("")
+        picBackBuffer2.Width = 1
+        picBackBuffer2.Height = 1
+        
+        'Display the new size
+        DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
+        
+        SetProgBarVal 0
+        
+        'Render the image on-screen at an automatically corrected zoom
+        FitOnScreen
     
-    'Display the new size
-    DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
+        Message "Finished."
+        
+    Else
     
-    SetProgBarVal 0
-    
-    'Render it on-screen at an automatically set zoom
-    FitOnScreen
-    
-    Message "Finished."
+        picPreview.Picture = LoadPicture("")
+        DrawPreviewImage picPreview, True, picBackBuffer2
+        
+    End If
 
 End Sub
 
 'LOAD form
 Private Sub Form_Load()
         
+    'Populate the combo box
     cboTarget.AddItem "Current screen size", 0
-    cboTarget.AddItem "Custom size (in pixels)", 1
+    cboTarget.AddItem "Custom image size (in pixels)", 1
     cboTarget.AddItem "Specific number of tiles", 2
     cboTarget.ListIndex = 0
     DoEvents
     
-    'Create the image previews
-    'DrawPreviewImage PicPreview
-    'DrawPreviewImage PicEffect
-    'PreviewTile 1
+    'Copy the current image to a local picture box
+    picBackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Picture
+    
+    'Render a preview
+    redrawPreview = True
+    GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -447,6 +569,10 @@ Private Sub txtHeight_Change()
         updateHeightBar = False
         VSHeight.Value = Abs(32767 - CInt(TxtHeight))
         updateHeightBar = True
+        If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) And redrawPreview Then
+            updateDescription
+            GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
+        End If
     Else
         AutoSelectText TxtHeight
     End If
@@ -461,6 +587,10 @@ Private Sub txtWidth_Change()
         updateWidthBar = False
         VSWidth.Value = Abs(32767 - CInt(TxtWidth))
         updateWidthBar = True
+        If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) And redrawPreview Then
+            updateDescription
+            GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
+        End If
     Else
         AutoSelectText TxtWidth
     End If
@@ -477,4 +607,45 @@ End Sub
 
 Private Sub VSWidth_Change()
     If updateWidthBar = True Then TxtWidth = Abs(32767 - CStr(VSWidth.Value))
+End Sub
+
+'Show the user a description of how large the new, tiled image will be
+Private Sub updateDescription()
+
+    'Call GetImageData so that PicWidthL and PicHeightL will be set correctly
+    GetImageData
+    PicWidthL = PicWidthL + 1
+    PicHeightL = PicHeightL + 1
+
+    Dim xVal As Single, yVal As Single
+    Dim xText As String, yText As String
+
+    'Generate a descriptive string based on which tiling method will be used
+    Select Case cboTarget.ListIndex
+        
+        'Wallpaper size
+        Case 0
+            xVal = TxtWidth / PicWidthL
+            yVal = TxtHeight / PicHeightL
+            xText = Format(xVal, "#####.0")
+            yText = Format(yVal, "#####.0")
+            lblDescription = "The final image will be " & xText & " tiles wide by " & yText & " tiles tall."
+        
+        'Custom size (in pixels)
+        Case 1
+            xVal = TxtWidth / PicWidthL
+            yVal = TxtHeight / PicHeightL
+            xText = Format(xVal, "#####.0")
+            yText = Format(yVal, "#####.0")
+            lblDescription = "The final image will be " & xText & " tiles wide by " & yText & " tiles tall."
+        
+        'Custom size (in tiles)
+        Case 2
+            xVal = TxtWidth * PicWidthL
+            yVal = TxtHeight * PicHeightL
+            xText = Format(xVal, "#####")
+            yText = Format(yVal, "#####")
+            lblDescription = "The final image will be " & xText & " pixels wide by " & yText & " pixels tall."
+    End Select
+
 End Sub

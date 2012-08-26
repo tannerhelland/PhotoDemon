@@ -18,8 +18,20 @@ Public PreviewWidth As Long, PreviewHeight As Long, PreviewX As Long, PreviewY A
 
 
 'Used to draw the main image onto a preview picture box
-Public Sub DrawPreviewImage(ByRef DstPicture As PictureBox)
-    GetImageData
+Public Sub DrawPreviewImage(ByRef DstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As PictureBox)
+    
+    'Normally this will draw a preview of FormMain.ActiveForm.BackBuffer.  However, another picture source can be specified.
+    Dim srcDC As Long
+    
+    If useOtherPictureSrc = False Then
+        srcDC = FormMain.ActiveForm.BackBuffer.hDC
+        GetImageData
+    Else
+        PicWidthL = otherPictureSrc.ScaleWidth
+        PicHeightL = otherPictureSrc.ScaleHeight
+        srcDC = otherPictureSrc.hDC
+    End If
+    
     'Dim DWidth As Single, DHeight As Single
     Dim DWidth As Long, DHeight As Long
     
@@ -36,15 +48,15 @@ Public Sub DrawPreviewImage(ByRef DstPicture As PictureBox)
         DHeight = CSng(PicHeightL / PicWidthL) * DWidth + 0.5
         PreviewY = CInt((DstPicture.ScaleHeight - DHeight) / 2)
         PreviewX = 0
-        SetStretchBltMode DstPicture.hdc, STRETCHBLT_HALFTONE
-        StretchBlt DstPicture.hdc, 0, PreviewY, DWidth, DHeight, FormMain.ActiveForm.BackBuffer.hdc, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
+        SetStretchBltMode DstPicture.hDC, STRETCHBLT_HALFTONE
+        StretchBlt DstPicture.hDC, 0, PreviewY, DWidth, DHeight, srcDC, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
     Else
         DHeight = DstPicture.ScaleHeight
         DWidth = CSng(PicWidthL / PicHeightL) * DHeight + 0.5
         PreviewX = CInt((DstPicture.ScaleWidth - DWidth) / 2)
         PreviewY = 0
-        SetStretchBltMode DstPicture.hdc, STRETCHBLT_HALFTONE
-        StretchBlt DstPicture.hdc, PreviewX, 0, DWidth, DHeight, FormMain.ActiveForm.BackBuffer.hdc, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
+        SetStretchBltMode DstPicture.hDC, STRETCHBLT_HALFTONE
+        StretchBlt DstPicture.hDC, PreviewX, 0, DWidth, DHeight, srcDC, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
     End If
     
     PreviewWidth = DWidth - 1
@@ -68,7 +80,7 @@ Public Sub DrawSpecificCanvas(ByRef dstForm As Form)
         If dstForm.ScaleMode = 3 Then
             For x = 0 To dstForm.FrontBuffer.ScaleWidth Step stepIntervalX
             For y = 0 To dstForm.FrontBuffer.ScaleHeight Step stepIntervalY
-                BitBlt dstForm.FrontBuffer.hdc, x, y, stepIntervalX, stepIntervalY, dstForm.PicCH.hdc, 0, 0, vbSrcCopy
+                BitBlt dstForm.FrontBuffer.hDC, x, y, stepIntervalX, stepIntervalY, dstForm.PicCH.hDC, 0, 0, vbSrcCopy
             Next y
             Next x
             dstForm.FrontBuffer.Picture = dstForm.FrontBuffer.Image
