@@ -425,10 +425,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "Resize Image..."
          Shortcut        =   ^R
       End
-      Begin VB.Menu MnuIsometric 
-         Caption         =   "Isometric Conversion"
-      End
-      Begin VB.Menu MnuImageSepBar3 
+      Begin VB.Menu MnuImageSepBar0 
          Caption         =   "-"
       End
       Begin VB.Menu MnuRotate 
@@ -452,6 +449,12 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuMirror 
          Caption         =   "Mirror (Horizontal)"
+      End
+      Begin VB.Menu MnuImageSepBar1 
+         Caption         =   "-"
+      End
+      Begin VB.Menu MnuIsometric 
+         Caption         =   "Isometric Conversion"
       End
    End
    Begin VB.Menu MnuColor 
