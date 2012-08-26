@@ -28,6 +28,7 @@ Begin VB.Form FormPreferences
       Height          =   255
       Left            =   3270
       TabIndex        =   4
+      ToolTipText     =   "Click to learn more about how PhotoDemon may access the Internet"
       Top             =   2250
       Width           =   255
    End
@@ -38,6 +39,7 @@ Begin VB.Form FormPreferences
       Height          =   255
       Left            =   240
       TabIndex        =   5
+      ToolTipText     =   "If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon"
       Top             =   2640
       Width           =   4575
    End
@@ -48,6 +50,7 @@ Begin VB.Form FormPreferences
       Height          =   255
       Left            =   240
       TabIndex        =   7
+      ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
       Top             =   3840
       Width           =   3375
    End
@@ -79,7 +82,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   319
       TabIndex        =   15
-      ToolTipText     =   "Click to change color"
+      ToolTipText     =   "Click to change the image window background color"
       Top             =   840
       Width           =   4815
    End
@@ -126,7 +129,7 @@ Begin VB.Form FormPreferences
       Height          =   315
       Left            =   4560
       TabIndex        =   10
-      ToolTipText     =   "Click to open a browser-folder dialog"
+      ToolTipText     =   "Click to open a browse-for-folder dialog"
       Top             =   5040
       Width           =   255
    End
@@ -166,6 +169,7 @@ Begin VB.Form FormPreferences
       Height          =   255
       Left            =   240
       TabIndex        =   6
+      ToolTipText     =   $"VBP_FormPreferences.frx":017C
       Top             =   3000
       Width           =   4575
    End
@@ -243,13 +247,13 @@ Begin VB.Form FormPreferences
    Begin VB.Label lblImgOpen 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "When large images are opened: "
+      Caption         =   "When images are opened: "
       ForeColor       =   &H00400000&
       Height          =   195
       Left            =   240
       TabIndex        =   12
       Top             =   1440
-      Width           =   2340
+      Width           =   1935
    End
    Begin VB.Label lblTempFolder 
       BackStyle       =   0  'Transparent
