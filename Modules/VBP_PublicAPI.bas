@@ -25,6 +25,7 @@ Public Declare Function ShellExecute Lib "shell32" Alias "ShellExecuteA" (ByVal 
 Public Const SW_SHOWNORMAL = 1
 
 'Various API calls for manually downloading files from the Internet
+Public Declare Function InternetGetLastResponseInfo Lib "wininet.dll" Alias "InternetGetLastResponseInfoA" (ByRef lpdwError As Long, ByRef lpszBuffer As String, ByRef lpdwBufferLength As Long) As Boolean
 Public Declare Function InternetOpen Lib "wininet.dll" Alias "InternetOpenA" (ByVal lpszAgent As String, ByVal dwAccessType As Long, ByVal lpszProxyName As String, ByVal lpszProxyBypass As String, ByVal dwFlags As Long) As Long
 Public Declare Function InternetOpenUrl Lib "wininet.dll" Alias "InternetOpenUrlA" (ByVal hInternetSession As Long, ByVal lpszUrl As String, ByVal lpszHeaders As String, ByVal dwHeadersLength As Long, ByVal dwFlags As Long, ByVal dwContext As Long) As Long
 Public Declare Function InternetCloseHandle Lib "wininet.dll" (ByVal hInet As Long) As Integer
@@ -34,8 +35,9 @@ Public Declare Function HttpQueryInfo Lib "wininet.dll" Alias "HttpQueryInfoA" (
 'Constants used by the Windows Internet APIs
 Public Const INTERNET_OPEN_TYPE_PRECONFIG As Long = 0
 Public Const INTERNET_FLAG_RELOAD = &H80000000
-Public Const INTERNET_FLAG_ASYNC = &H10000000
 Public Const HTTP_QUERY_CONTENT_LENGTH As Long = 5
+'I've experimented with this constant with no luck; VB simply doesn't like asynchronous connections :(
+'Public Const INTERNET_FLAG_ASYNC = &H10000000
 
 'Some PhotoDemon functions are capable of timing themselves.  GetTickCount is used to do this.
 Public Declare Function GetTickCount Lib "kernel32" () As Long

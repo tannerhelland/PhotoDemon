@@ -438,7 +438,7 @@ Private Sub Form_Load()
     'This string will be used to hold the locations of the files to be downloaded
     Dim URL As String
     
-    Message "Missing plugins detected.  Generating automatic update information..."
+    Message "Missing plugins detected.  Generating automatic update information (this feature can be disabled from the Edit -> Preferences menu)..."
     
     txtPlugins.Text = ""
     totalDownloadSize = 0
