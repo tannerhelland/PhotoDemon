@@ -621,6 +621,7 @@ Public Sub LoadMenuShortcuts()
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
     
 End Sub
+
 'This subroutine handles the detection of the three core plugins strongly recommended for an optimal PhotoDemon
 ' experience: zLib, EZTwain32, and FreeImage.
 Public Sub LoadPlugins()
@@ -667,4 +668,92 @@ Public Sub LoadPlugins()
     Else
         FreeImageEnabled = True
     End If
+End Sub
+
+'Make a copy of the current image.  Thanks to PSC user "Achmad Junus" for this suggestion.
+Public Sub DuplicateCurrentImage()
+    
+    Message "Duplicating current image..."
+    
+    'First, make a note of the currently active form
+    Dim imageToBeDuplicated As Long
+    imageToBeDuplicated = CurrentImage
+    
+    CreateNewImageForm
+        
+    FixScrolling = False
+        
+    FormMain.ActiveForm.HScroll.Value = 0
+    FormMain.ActiveForm.VScroll.Value = 0
+        
+    'Prepare the user interface for a new image
+    tInit tSaveAs, True
+    tInit tCopy, True
+    tInit tPaste, True
+    tInit tUndo, False
+    tInit tRedo, False
+    tInit tImageOps, True
+    tInit tFilter, True
+    tInit tHistogram, True
+        
+    'Copy the picture from the previous form to this new one
+    pdImages(CurrentImage).containingForm.BackBuffer.AutoSize = True
+    pdImages(CurrentImage).containingForm.BackBuffer.Picture = pdImages(imageToBeDuplicated).containingForm.BackBuffer.Picture
+                
+    'Fit the window to the newly duplicated image
+    Message "Resizing image to fit screen..."
+    
+    'If the user wants us to resize the image to fit on-screen, do that now
+    If AutosizeLargeImages = 0 Then FitImageToWindow True
+                
+    'If the window is not maximized or minimized, fit the form around the picture box
+    If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
+        
+    'Store important data about the image to the pdImages array
+    pdImages(CurrentImage).PicWidth = GetImageWidth()
+    pdImages(CurrentImage).PicHeight = GetImageHeight()
+    pdImages(CurrentImage).OriginalFileSize = pdImages(imageToBeDuplicated).OriginalFileSize
+    pdImages(CurrentImage).LocationOnDisk = ""
+            
+    'Get the original file's extension and filename, then append " - Copy" to it
+    Dim originalExtension As String
+    originalExtension = GetExtension(pdImages(imageToBeDuplicated).OriginalFileNameAndExtension)
+            
+    Dim newFilename As String
+    newFilename = pdImages(imageToBeDuplicated).OriginalFileName & " - Copy"
+    pdImages(CurrentImage).OriginalFileName = newFilename
+    pdImages(CurrentImage).OriginalFileNameAndExtension = newFilename & "." & originalExtension
+            
+    'Because this image hasn't been saved to disk, mark its save state as "false"
+    pdImages(CurrentImage).UpdateSaveState False
+        
+    FormMain.ActiveForm.Caption = pdImages(CurrentImage).OriginalFileNameAndExtension
+        
+    'Note the image dimensions and display them on the left-hand pane
+    GetImageData
+    DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
+        
+    'FixScrolling may have been reset by this point (by the FitImageToWindow sub, among others), so MAKE SURE it's false
+    FixScrolling = False
+    FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
+        
+    Message "Image duplication complete."
+    
+    'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
+    FixScrolling = True
+    
+    PrepareViewport FormMain.ActiveForm, "PreLoadImage"
+        
+    'Render an icon-sized version of this image as the MDI child form's icon
+    CreateCustomFormIcon FormMain.ActiveForm
+        
+    'Note the window state, as it may be important in the future
+    pdImages(CurrentImage).WindowState = FormMain.ActiveForm.WindowState
+        
+    'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
+    If FormMain.ActiveForm.WindowState = 0 Then
+        FormMain.ActiveForm.Left = pdImages(CurrentImage).WindowLeft
+        FormMain.ActiveForm.Top = pdImages(CurrentImage).WindowTop
+    End If
+        
 End Sub

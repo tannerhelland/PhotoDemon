@@ -422,11 +422,18 @@ Begin VB.MDIForm FormMain
    End
    Begin VB.Menu MnuImage 
       Caption         =   "&Image"
-      Begin VB.Menu MnuResample 
-         Caption         =   "Resize Image..."
-         Shortcut        =   ^R
+      Begin VB.Menu MnuDuplicate 
+         Caption         =   "&Duplicate"
+         Shortcut        =   ^D
       End
       Begin VB.Menu MnuImageSepBar0 
+         Caption         =   "-"
+      End
+      Begin VB.Menu MnuResample 
+         Caption         =   "Resize..."
+         Shortcut        =   ^R
+      End
+      Begin VB.Menu MnuImageSepBar1 
          Caption         =   "-"
       End
       Begin VB.Menu MnuFlip 
@@ -451,7 +458,7 @@ Begin VB.MDIForm FormMain
             Visible         =   0   'False
          End
       End
-      Begin VB.Menu MnuImageSepBar1 
+      Begin VB.Menu MnuImageSepBar2 
          Caption         =   "-"
       End
       Begin VB.Menu MnuIsometric 
@@ -589,7 +596,7 @@ Begin VB.MDIForm FormMain
       End
    End
    Begin VB.Menu MnuFilter 
-      Caption         =   "&Filter"
+      Caption         =   "Filte&rs"
       Begin VB.Menu MnuFadeLastEffect 
          Caption         =   "Fade last effect"
          Enabled         =   0   'False
@@ -1286,6 +1293,14 @@ End Sub
 
 Private Sub MnuDream_Click()
     Process Dream
+End Sub
+
+'Duplicate the current image
+Private Sub MnuDuplicate_Click()
+    
+    'This sub can be found in the "Loading" module
+    DuplicateCurrentImage
+    
 End Sub
 
 Private Sub MnuEdgeEnhance_Click()

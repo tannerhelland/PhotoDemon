@@ -145,6 +145,7 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("BUG", "CUSTOM") '39
         .AddImageFromStream LoadResData("FAVORITE", "CUSTOM") '40
         .AddImageFromStream LoadResData("UPDATES", "CUSTOM") '41
+        .AddImageFromStream LoadResData("DUPLICATE", "CUSTOM") '42
         
         
         'File Menu
@@ -180,13 +181,13 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 18, 8, 1      'Program Preferences
         
         'Image Menu
-        .PutImageToVBMenu 19, 0, 2      'Resize
-        .PutImageToVBMenu 23, 2, 2      'Flip
-        .PutImageToVBMenu 24, 3, 2      'Mirror
-        .PutImageToVBMenu 20, 0, 2, 4     'Rotate Clockwise (rotate submenu)
-        .PutImageToVBMenu 21, 1, 2, 4     'Rotate Counter-clockwise (rotate submenu)
-        .PutImageToVBMenu 22, 2, 2, 4     'Rotate 180 (rotate submenu)
-
+        .PutImageToVBMenu 42, 0, 2
+        .PutImageToVBMenu 19, 2, 2      'Resize
+        .PutImageToVBMenu 23, 4, 2      'Flip
+        .PutImageToVBMenu 24, 5, 2      'Mirror
+        .PutImageToVBMenu 20, 0, 2, 6     'Rotate Clockwise (rotate submenu)
+        .PutImageToVBMenu 21, 1, 2, 6     'Rotate Counter-clockwise (rotate submenu)
+        .PutImageToVBMenu 22, 2, 2, 6     'Rotate 180 (rotate submenu)
         
         'Macro Menu
         .PutImageToVBMenu 36, 0, 5     'Open Macro

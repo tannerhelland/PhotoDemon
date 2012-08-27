@@ -85,8 +85,8 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     
     'Track how many windows we currently have open
     NumOfWindows = NumOfWindows + 1
-    'Run a separate subroutine (see bottom of this page) to enable/disable
-    'menus and stuff if no more windows are open
+    
+    'Run a separate subroutine (see bottom of this page) to enable/disable menus and such if this is the first image to be loaded
     UpdateMDIStatus
     
     'Re-enable viewport adjustments
