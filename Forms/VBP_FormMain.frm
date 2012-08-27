@@ -985,7 +985,7 @@ Private Sub MDIForm_Load()
     'If updates are allowed, now is the time to check
     If allowedToUpdate = True Then
     
-        Message "Checking for software updates..."
+        Message "Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)..."
     
         Dim updateNeeded As Boolean
         updateNeeded = CheckForSoftwareUpdate

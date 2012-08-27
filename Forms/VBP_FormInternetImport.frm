@@ -131,7 +131,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     Message "Verifying image URL (this may take a moment)..."
     
     Dim hUrl As Long
-    hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_EXISTING_CONNECT, 0)
+    hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If hUrl = 0 Then
         MsgBox PROGRAMNAME & " could not locate a valid image at that URL.  Please double-check the path.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbCritical + vbApplicationModal + vbOKOnly, "Online Image Not Found"

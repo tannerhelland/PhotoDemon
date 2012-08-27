@@ -406,6 +406,146 @@ End Sub
 'Yes, the user wants us to download the plugins.  Go for it!
 Private Sub cmdYesDownload_Click()
 
+    Dim pluginSuccess As Boolean
+    
+    pluginSuccess = downloadAllPlugins()
+    
+    'downloadAllPlugins() provides all its own error-checking
+    If pluginSuccess = False Then Message "Plugins could not be downloaded at this time.  Carry on!"
+    
+    Unload Me
+    
+End Sub
+
+'LOAD form
+Private Sub Form_Load()
+
+    'First things first - if the user isn't connected to the Internet, the wording of this page must be adjusted
+
+    'So attempt to open an Internet session and assign it a handle
+    Message "Checking for Internet connection..."
+    hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
+    
+    'If the user is NOT connected, adjust the text accordingly
+    If hInternetSession = 0 Then
+        isInternetConnected = False
+        txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please connect to the Internet and restart this program. Then, when prompted, please allow it to download the following free, open-source plugin(s):"
+    Else
+        isInternetConnected = True
+        txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):"
+    End If
+    
+    'This string will be used to hold the locations of the files to be downloaded
+    Dim URL As String
+    
+    Message "Missing plugins detected.  Generating automatic update information..."
+    
+    txtPlugins.Text = ""
+    totalDownloadSize = 0
+    numOfFiles = 0
+    
+    'Upon program load, populate the list of files to be downloaded based on which turned up missing
+    If zLibEnabled = False Then
+        If isInternetConnected = True Then
+            URL = "http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc"
+            zLibSize = getPluginSize(hInternetSession, URL)
+            
+            'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
+            If zLibSize = -1 Then zLibSize = 139000
+            totalDownloadSize = zLibSize
+            
+            txtPlugins.Text = ">> zLib: a compression library used to save PhotoDemon Image (PDI) files, and decompress the other plugins after they've been downloaded.  Size: " & Int(zLibSize \ 1000) & " kB" & vbCrLf
+        Else
+            totalDownloadSize = 139000
+            txtPlugins.Text = ">> zLib: a compression library used to save PhotoDemon Image (PDI) files, and decompress the other plugins after they've been downloaded.  Size: ~138 kB" & vbCrLf
+        End If
+        
+        numOfFiles = numOfFiles + 1
+        
+    End If
+    
+    If ScanEnabled = False Then
+        If isInternetConnected = True Then
+            URL = "http://www.tannerhelland.com/photodemon_files/eztw32.pdc"
+            ezTW32Size = getPluginSize(hInternetSession, URL)
+            
+            'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
+            If ezTW32Size = -1 Then ezTW32Size = 28000
+            totalDownloadSize = totalDownloadSize + ezTW32Size
+            
+            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> EZTW32: enables scanner and digital camera access via the TWAIN32 protocol.  Size: " & Int(ezTW32Size \ 1000) & " kB" & vbCrLf
+        Else
+            totalDownloadSize = totalDownloadSize + 28000
+            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> EZTW32: enables scanner and digital camera access via the TWAIN32 protocol.  Size: ~27 kB" & vbCrLf
+        End If
+        
+        numOfFiles = numOfFiles + 1
+        
+    End If
+    
+    If FreeImageEnabled = False Then
+        If isInternetConnected = True Then
+            URL = "http://www.tannerhelland.com/photodemon_files/freeimage.pdc"
+            freeImageSize = getPluginSize(hInternetSession, URL)
+            
+            'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
+            If freeImageSize = -1 Then freeImageSize = 977000
+            totalDownloadSize = totalDownloadSize + freeImageSize
+            
+            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PNG, TIFF, PSD, PICT, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: " & Int(freeImageSize \ 1000) & " kB"
+        Else
+            totalDownloadSize = totalDownloadSize + 977000
+            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PNG, TIFF, PSD, PICT, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: ~976 kB"
+        End If
+        
+        numOfFiles = numOfFiles + 1
+        
+    End If
+
+    txtPlugins.Text = txtPlugins.Text & vbCrLf & vbCrLf & "Total download size: " & Int(totalDownloadSize \ 1000) & " kB"
+
+    Message "Ready to update. Awaiting user permission..."
+    
+    'Assign the system hand cursor to all relevant objects
+    setHandCursorForAll Me
+
+End Sub
+
+'Simple routine to check the file size of a provided file URL
+Private Function getPluginSize(ByVal hInternet As Long, ByVal pluginURL As String) As Long
+    
+    'Check the size of the file to be downloaded...
+    Dim tmpStrBuffer As String
+    tmpStrBuffer = String$(1024, 0)
+    Dim hUrl As Long
+    hUrl = InternetOpenUrl(hInternet, pluginURL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
+    Call HttpQueryInfo(ByVal hUrl, HTTP_QUERY_CONTENT_LENGTH, ByVal tmpStrBuffer, Len(tmpStrBuffer), 0)
+    If hUrl <> 0 Then
+        getPluginSize = CLng(tmpStrBuffer)
+    Else
+        getPluginSize = -1
+    End If
+    InternetCloseHandle hUrl
+    
+End Function
+
+'Launch the website for downloading the EZTW32 DLL
+Private Sub lblEZTW32_Click()
+    ShellExecute FormMain.HWnd, "Open", "http://eztwain.com/eztwain1.htm", "", 0, SW_SHOWNORMAL
+End Sub
+
+'Launch the website for downloading the FreeImage DLL
+Private Sub lblFreeImage_Click()
+    ShellExecute FormMain.HWnd, "Open", "http://freeimage.sourceforge.net/download.html", "", 0, SW_SHOWNORMAL
+End Sub
+
+'Launch the website for downloading the zLibwapi DLL
+Private Sub lblzLib_Click()
+    ShellExecute FormMain.HWnd, "Open", "http://www.winimage.com/zLibDll/index.html", "", 0, SW_SHOWNORMAL
+End Sub
+
+Private Function downloadAllPlugins() As Boolean
+
     If isInternetConnected = False Then
         'Hopefully the user established an internet connection before clicking this button.  If not, prompt them to do so.
         Message "Checking again for Internet connection..."
@@ -414,7 +554,8 @@ Private Sub cmdYesDownload_Click()
         If hInternetSession = 0 Then
             Message "No Internet connection found."
             MsgBox "Unfortunately, " & PROGRAMNAME & " could not connect to the Internet.  Please connect to the Internet and try again.", vbApplicationModal + vbOKOnly + vbCritical, "No Internet Connection"
-            Exit Sub
+            downloadAllPlugins = False
+            Exit Function
         End If
         
     End If
@@ -453,10 +594,11 @@ Private Sub cmdYesDownload_Click()
     
     'Time to get the files.  Start with zLib.
     If zLibEnabled = False Then
-        downloadSuccessful = DownloadPlugin("http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc", curNumOfFiles, numOfFiles, zLibSize, False)
+        downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc", curNumOfFiles, numOfFiles, zLibSize, False)
         If downloadSuccessful = False Then
             MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
-            Unload Me
+            downloadAllPlugins = False
+            Exit Function
         Else
             zLibEnabled = True
         End If
@@ -467,10 +609,11 @@ Private Sub cmdYesDownload_Click()
     
     'Next comes EZTW32
     If ScanEnabled = False Then
-        downloadSuccessful = DownloadPlugin("http://www.tannerhelland.com/photodemon_files/eztw32.pdc", curNumOfFiles, numOfFiles, ezTW32Size, True)
+        downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/eztw32.pdc", curNumOfFiles, numOfFiles, ezTW32Size, True)
         If downloadSuccessful = False Then
             MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
-            Unload Me
+            downloadAllPlugins = False
+            Exit Function
         Else
             ScanEnabled = True
         End If
@@ -481,10 +624,11 @@ Private Sub cmdYesDownload_Click()
             
     'Last is FreeImage
     If FreeImageEnabled = False Then
-        downloadSuccessful = DownloadPlugin("http://www.tannerhelland.com/photodemon_files/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
+        downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
         If downloadSuccessful = False Then
             MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
-            Unload Me
+            downloadAllPlugins = False
+            Exit Function
         Else
             FreeImageEnabled = True
         End If
@@ -507,132 +651,22 @@ Private Sub cmdYesDownload_Click()
     Message "Plugins downloaded successfully.  PhotoDemon is ready to go!  Please load an image (File -> Open)"
     
     Unload Me
-    
-End Sub
 
-'LOAD form
-Private Sub Form_Load()
-
-    'First things first - if the user isn't connected to the Internet, the wording of this page must be adjusted
-
-    'So attempt to open an Internet session and assign it a handle
-    Message "Checking for Internet connection..."
-    hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
-    
-    'If the user is NOT connected, adjust the text accordingly
-    If hInternetSession = 0 Then
-        isInternetConnected = False
-        txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please connect to the Internet and restart this program. Then, when prompted, please allow it to download the following free, open-source plugin(s):"
-    Else
-        isInternetConnected = True
-        txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):"
-    End If
-    
-    'This string will be used to hold the locations of the files to be downloaded
-    Dim URL As String
-    
-    Message "Missing plugins detected.  Generating automatic update information..."
-    
-    txtPlugins.Text = ""
-    totalDownloadSize = 0
-    numOfFiles = 0
-    
-    'Upon program load, populate the list of files to be downloaded based on which turned up missing
-    If zLibEnabled = False Then
-        If isInternetConnected = True Then
-            URL = "http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc"
-            zLibSize = getPluginSize(hInternetSession, URL)
-            totalDownloadSize = zLibSize
-            txtPlugins.Text = ">> zLib: a compression library used to save PhotoDemon Image (PDI) files, and decompress the other plugins after they've been downloaded.  Size: " & Int(zLibSize \ 1000) & " kB" & vbCrLf
-        Else
-            totalDownloadSize = 139000
-            txtPlugins.Text = ">> zLib: a compression library used to save PhotoDemon Image (PDI) files, and decompress the other plugins after they've been downloaded.  Size: ~138 kB" & vbCrLf
-        End If
-        
-        numOfFiles = numOfFiles + 1
-        
-    End If
-    
-    If ScanEnabled = False Then
-        If isInternetConnected = True Then
-            URL = "http://www.tannerhelland.com/photodemon_files/eztw32.pdc"
-            ezTW32Size = getPluginSize(hInternetSession, URL)
-            totalDownloadSize = totalDownloadSize + ezTW32Size
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> EZTW32: enables scanner and digital camera access via the TWAIN32 protocol.  Size: " & Int(ezTW32Size \ 1000) & " kB" & vbCrLf
-        Else
-            totalDownloadSize = totalDownloadSize + 28000
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> EZTW32: enables scanner and digital camera access via the TWAIN32 protocol.  Size: ~27 kB" & vbCrLf
-        End If
-        
-        numOfFiles = numOfFiles + 1
-        
-    End If
-    
-    If FreeImageEnabled = False Then
-        If isInternetConnected = True Then
-            URL = "http://www.tannerhelland.com/photodemon_files/freeimage.pdc"
-            freeImageSize = getPluginSize(hInternetSession, URL)
-            totalDownloadSize = totalDownloadSize + freeImageSize
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PNG, TIFF, PSD, PICT, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: " & Int(freeImageSize \ 1000) & " kB"
-        Else
-            totalDownloadSize = totalDownloadSize + 977000
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PNG, TIFF, PSD, PICT, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: ~976 kB"
-        End If
-        
-        numOfFiles = numOfFiles + 1
-        
-    End If
-
-    txtPlugins.Text = txtPlugins.Text & vbCrLf & vbCrLf & "Total download size: " & Int(totalDownloadSize \ 1000) & " kB"
-
-    Message "Ready to update. Awaiting user permission..."
-    
-    'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
-
-End Sub
-
-'Simple routine to check the file size of a provided file URL
-Private Function getPluginSize(ByVal hInternet As Long, ByVal pluginURL As String) As Long
-    
-    'Check the size of the file to be downloaded...
-    Dim tmpStrBuffer As String
-    tmpStrBuffer = String$(1024, 0)
-    Dim hUrl As Long
-    hUrl = InternetOpenUrl(hInternet, pluginURL, vbNullString, 0, INTERNET_FLAG_EXISTING_CONNECT, 0)
-    Call HttpQueryInfo(ByVal hUrl, HTTP_QUERY_CONTENT_LENGTH, ByVal tmpStrBuffer, Len(tmpStrBuffer), 0)
-    InternetCloseHandle hUrl
-    getPluginSize = CLng(tmpStrBuffer)
 
 End Function
 
-'Launch the website for downloading the EZTW32 DLL
-Private Sub lblEZTW32_Click()
-    ShellExecute FormMain.HWnd, "Open", "http://eztwain.com/eztwain1.htm", "", 0, SW_SHOWNORMAL
-End Sub
-
-'Launch the website for downloading the FreeImage DLL
-Private Sub lblFreeImage_Click()
-    ShellExecute FormMain.HWnd, "Open", "http://freeimage.sourceforge.net/download.html", "", 0, SW_SHOWNORMAL
-End Sub
-
-'Launch the website for downloading the zLibwapi DLL
-Private Sub lblzLib_Click()
-    ShellExecute FormMain.HWnd, "Open", "http://www.winimage.com/zLibDll/index.html", "", 0, SW_SHOWNORMAL
-End Sub
-
-Private Function DownloadPlugin(ByVal pluginURL As String, ByVal curNumFile As Long, ByVal maxNumFile As Long, ByVal downloadSize As Long, ByVal toDecompress As Boolean)
+Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As Long, ByVal maxNumFile As Long, ByVal downloadSize As Long, ByVal toDecompress As Boolean)
 
     'First, attempt to find the plugin URL; if found, assign it a handle
     lblDownloadInfo.Caption = "Verifying plugin URL..."
     
     Dim hUrl As Long
-    hUrl = InternetOpenUrl(hInternetSession, pluginURL, vbNullString, 0, INTERNET_FLAG_EXISTING_CONNECT, 0)
+    hUrl = InternetOpenUrl(hInternetSession, pluginURL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If hUrl = 0 Then
         MsgBox PROGRAMNAME & " could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.", vbCritical + vbApplicationModal + vbOKOnly, "Plugin Server Not Responding"
         If hInternetSession Then InternetCloseHandle hInternetSession
-        DownloadPlugin = False
+        downloadPlugin = False
         Message "Plugin download postponed."
         Exit Function
     End If
@@ -688,7 +722,7 @@ Private Function DownloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
                 End If
                 If hUrl Then InternetCloseHandle hUrl
                 If hInternetSession Then InternetCloseHandle hInternetSession
-                DownloadPlugin = False
+                downloadPlugin = False
                 Exit Function
             End If
    
@@ -724,15 +758,15 @@ Private Function DownloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
     
     'If requested, decompress the file
     If toDecompress = False Then
-        DownloadPlugin = True
+        downloadPlugin = True
     Else
         Dim verifyDecompression As Boolean
         verifyDecompression = DecompressFile(tmpFile, False)
         
         If verifyDecompression = False Then
-            DownloadPlugin = False
+            downloadPlugin = False
         Else
-            DownloadPlugin = True
+            downloadPlugin = True
         End If
         
     End If

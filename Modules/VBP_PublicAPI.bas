@@ -33,8 +33,8 @@ Public Declare Function HttpQueryInfo Lib "wininet.dll" Alias "HttpQueryInfoA" (
 
 'Constants used by the Windows Internet APIs
 Public Const INTERNET_OPEN_TYPE_PRECONFIG As Long = 0
-Public Const INTERNET_FLAG_EXISTING_CONNECT As Long = &H20000000
 Public Const INTERNET_FLAG_RELOAD = &H80000000
+Public Const INTERNET_FLAG_ASYNC = &H10000000
 Public Const HTTP_QUERY_CONTENT_LENGTH As Long = 5
 
 'Some PhotoDemon functions are capable of timing themselves.  GetTickCount is used to do this.
