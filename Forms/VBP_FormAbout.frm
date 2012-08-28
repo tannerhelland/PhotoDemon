@@ -147,13 +147,14 @@ Private Sub Form_Load()
     GenerateThankyou "Jean-Loup Gailly and Mark Adler (zLib compression library)", "http://www.winimage.com/zLibDll/index.html"
     GenerateThankyou "Gilles Vollant (zLib WAPI wrapper)", "http://www.winimage.com/zLibDll/index.html"
     GenerateThankyou "Waty Thierry (printer interfacing in VB)", "http://www.ppreview.net/"
+    GenerateThankyou "Dosadi (EZTW32 scanner/digital camera library)", "http://eztwain.com/eztwain1.htm"
     GenerateThankyou "Manuel Augusto Santos ('Enhanced 2-bit Color Reduction', 'Artistic Contour')", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
     GenerateThankyou "Juned Chhipa ('jcButton 1.7' customizable command button replacement control)", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
     GenerateThankyou "Steve McMahon (CommonDialog interface, accelerator key handler, progress bar)", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateThankyou "chrfb of deviantart.com (PhotoDemon's icon, 'Ecqlipse 2', CC-BY-NC-SA-3.0)", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateThankyou "Everaldo and The Crystal Project (Crystal icons, LGPL-licensed, click for details)", "http://www.everaldo.com/crystal/"
-    GenerateThankyou "Dosadi (EZTW32 scanner/digital camera library)", "http://eztwain.com/eztwain1.htm"
     GenerateThankyou "Brad Martinez (VB binary file extraction)", "http://btmtz.mvps.org/gfxfromfrx/"
+    GenerateThankyou "Paul Turcksin (dynamic MDI child icons)", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1"
     GenerateThankyou "Johannes B ('Fog')", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42642&lngWId=1"
     GenerateThankyou "LaVolpe (automated VB6 Manifest Creator tool)", "http://www.vbforums.com/showthread.php?t=606736"
     GenerateThankyou "Leandro Ascierto (embedding PNGs as menu icons)", "http://leandroascierto.com/blog/clsmenuimage/"
@@ -174,14 +175,18 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
     'Generate a new label
     Load lblThanks(curCredit)
     
+    'Because I now have too many people to thank, it's necessary to split the list into two columns
+    Dim columnLimit As Long
+    columnLimit = 17
+    
     If curCredit = 1 Then
         lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12
         lblThanks(curCredit).Left = lblThanks(0).Left + 2
-    ElseIf curCredit < 16 Then
+    ElseIf curCredit < columnLimit Then
         lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
         lblThanks(curCredit).Left = lblThanks(0).Left + 2
-    ElseIf curCredit = 16 Then
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12 - (lblThanks(15).Top - lblThanks(0).Top)
+    ElseIf curCredit = columnLimit Then
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12 - (lblThanks(columnLimit - 1).Top - lblThanks(0).Top)
         lblThanks(curCredit).Left = lblThanks(0).Left + 325
     Else
         lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
