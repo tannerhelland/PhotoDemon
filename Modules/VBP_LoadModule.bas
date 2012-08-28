@@ -603,6 +603,9 @@ Public Sub LoadMenuShortcuts()
         .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
         .AddAccelerator vbKeyPageDown, 0, "Next_Image"
         
+        'Brightness/Contrast
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
+        
         .Enabled = True
     End With
 
@@ -617,6 +620,9 @@ Public Sub LoadMenuShortcuts()
     FormMain.MnuRedo.Caption = FormMain.MnuRedo.Caption & vbTab & "Ctrl+Alt+Z"
     FormMain.MnuRepeatLast.Caption = FormMain.MnuRepeatLast.Caption & vbTab & "Ctrl+Shift+Z"
     FormMain.MnuEmptyClipboard.Caption = FormMain.MnuEmptyClipboard.Caption & vbTab & "Ctrl+Shift+X"
+    
+    'Color menu
+    FormMain.MnuBrightness.Caption = FormMain.MnuBrightness.Caption & vbTab & "Ctrl+Shift+C"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
     

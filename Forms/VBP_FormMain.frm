@@ -462,35 +462,17 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuIsometric 
-         Caption         =   "Isometric Conversion"
+         Caption         =   "Convert to Isometric"
       End
    End
    Begin VB.Menu MnuColor 
       Caption         =   "&Color"
-      Begin VB.Menu MnuAutoEnhanceTop 
-         Caption         =   "Auto Enhance"
-         Begin VB.Menu MnuAutoEnhance 
-            Caption         =   "Contrast"
-            Shortcut        =   +{F1}
-         End
-         Begin VB.Menu MnuAutoEnhanceHighlights 
-            Caption         =   "Highlights"
-            Shortcut        =   +{F2}
-         End
-         Begin VB.Menu MnuAutoEnhanceMidtones 
-            Caption         =   "Midtones"
-            Shortcut        =   +{F3}
-         End
-         Begin VB.Menu MnuAutoEnhanceShadows 
-            Caption         =   "Shadows"
-            Shortcut        =   +{F4}
-         End
-      End
       Begin VB.Menu MnuBrightness 
          Caption         =   "Brightness/Contrast..."
       End
       Begin VB.Menu MnuGamma 
          Caption         =   "Gamma Correction..."
+         Shortcut        =   ^G
       End
       Begin VB.Menu MnuImageLevels 
          Caption         =   "Image Levels..."
@@ -566,6 +548,25 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuColorize 
          Caption         =   "Colorize..."
+      End
+      Begin VB.Menu MnuAutoEnhanceTop 
+         Caption         =   "Enhance"
+         Begin VB.Menu MnuAutoEnhance 
+            Caption         =   "Contrast"
+            Shortcut        =   +{F1}
+         End
+         Begin VB.Menu MnuAutoEnhanceHighlights 
+            Caption         =   "Highlights"
+            Shortcut        =   +{F2}
+         End
+         Begin VB.Menu MnuAutoEnhanceMidtones 
+            Caption         =   "Midtones"
+            Shortcut        =   +{F3}
+         End
+         Begin VB.Menu MnuAutoEnhanceShadows 
+            Caption         =   "Shadows"
+            Shortcut        =   +{F4}
+         End
       End
       Begin VB.Menu MnuGrayscale 
          Caption         =   "Grayscale..."
@@ -1167,7 +1168,7 @@ Private Sub MnuBlurMore_Click()
     Process BlurMore
 End Sub
 
-Private Sub MnuBrightness_Click()
+Public Sub MnuBrightness_Click()
     Process BrightnessAndContrast, , , , , , , , , , True
 End Sub
 
@@ -1484,7 +1485,7 @@ Private Sub MnuCopy_Click()
     Process cCopy
 End Sub
 
-Public Sub MnuEmptyClipboard_Click()
+Private Sub MnuEmptyClipboard_Click()
     Process cEmpty
 End Sub
 
@@ -1574,7 +1575,7 @@ Public Sub MnuRedo_Click()
     Process Redo
 End Sub
 
-Public Sub MnuRepeatLast_Click()
+Private Sub MnuRepeatLast_Click()
     Process LastCommand
 End Sub
 
@@ -1782,11 +1783,11 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Repeat last action
     If ctlAccelerator.Key(nIndex) = "Repeat_Last" Then
-        If FormMain.MnuRepeatLast.Enabled = True Then FormMain.MnuRepeatLast_Click
+        If FormMain.MnuRepeatLast.Enabled = True Then Process LastCommand
     End If
     
     'Empty clipboard
-    If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then FormMain.MnuEmptyClipboard_Click
+    If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then Process cEmpty
     
     'Zoom in
     If ctlAccelerator.Key(nIndex) = "Zoom_In" Then
@@ -1801,6 +1802,11 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Escape - right now it's only used to cancel batch conversions, but it could be applied elsewhere
     If ctlAccelerator.Key(nIndex) = "Escape" Then
         If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
+    End If
+    
+    'Brightness/Contrast
+    If ctlAccelerator.Key(nIndex) = "Bright_Contrast" Then
+        Process BrightnessAndContrast, , , , , , , , , , True
     End If
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
