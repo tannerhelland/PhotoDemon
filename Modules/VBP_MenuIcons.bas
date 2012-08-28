@@ -161,6 +161,21 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("RECHANNELR", "CUSTOM") '55
         .AddImageFromStream LoadResData("RECHANNELG", "CUSTOM") '56
         .AddImageFromStream LoadResData("RECHANNELB", "CUSTOM") '57
+        .AddImageFromStream LoadResData("BLACKWHITE", "CUSTOM") '58
+        .AddImageFromStream LoadResData("COLORIZE", "CUSTOM")   '59
+        .AddImageFromStream LoadResData("ENHANCE", "CUSTOM")    '60
+        .AddImageFromStream LoadResData("ENCONTRAST", "CUSTOM") '61
+        .AddImageFromStream LoadResData("ENHIGHLIGHT", "CUSTOM") '62
+        .AddImageFromStream LoadResData("ENMIDTONE", "CUSTOM")  '63
+        .AddImageFromStream LoadResData("ENSHADOW", "CUSTOM")   '64
+        .AddImageFromStream LoadResData("GRAYSCALE", "CUSTOM")  '65
+        .AddImageFromStream LoadResData("INVERT", "CUSTOM")     '66
+        .AddImageFromStream LoadResData("INVCMYK", "CUSTOM")    '67
+        .AddImageFromStream LoadResData("INVHUE", "CUSTOM")     '68
+        .AddImageFromStream LoadResData("INVRGB", "CUSTOM")     '69
+        .AddImageFromStream LoadResData("POSTERIZE", "CUSTOM")  '70
+        .AddImageFromStream LoadResData("REDUCECOLORS", "CUSTOM") '71
+        .AddImageFromStream LoadResData("COUNTCOLORS", "CUSTOM") '72
         
         
         'File Menu
@@ -214,24 +229,41 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 49, 3, 3      'White Balance
         
         .PutImageToVBMenu 50, 5, 3      'Histogram
-        
             '--> Histogram sub-menu
             .PutImageToVBMenu 50, 0, 3, 5   'Display Histogram
             .PutImageToVBMenu 51, 1, 3, 5   'Equalize
             .PutImageToVBMenu 52, 2, 3, 5   'Stretch
             
         .PutImageToVBMenu 53, 7, 3      'Color Shift
-            
             '--> Color-Shift sub-menu
             .PutImageToVBMenu 53, 0, 3, 7   'Shift Right
             .PutImageToVBMenu 54, 1, 3, 7   'Shift Left
             
         .PutImageToVBMenu 57, 8, 3      'Rechannel
-        
             '--> Rechannel sub-menu
             .PutImageToVBMenu 55, 0, 3, 8   'Red
             .PutImageToVBMenu 56, 1, 3, 8   'Green
             .PutImageToVBMenu 57, 2, 3, 8   'Blue
+            
+        .PutImageToVBMenu 58, 10, 3      'Black and White
+        .PutImageToVBMenu 59, 11, 3      'Colorize
+        .PutImageToVBMenu 60, 12, 3      'Enhance
+            '--> Enhance sub-menu
+            .PutImageToVBMenu 61, 0, 3, 12   'Contrast
+            .PutImageToVBMenu 62, 1, 3, 12   'Highlights
+            .PutImageToVBMenu 63, 2, 3, 12   'Midtones
+            .PutImageToVBMenu 64, 3, 3, 12   'Shadows
+            
+        .PutImageToVBMenu 65, 13, 3      'Grayscale
+        .PutImageToVBMenu 66, 14, 3      'Invert
+            '--> Invert sub-menu
+            .PutImageToVBMenu 67, 0, 3, 14   'Invert CMYK
+            .PutImageToVBMenu 68, 1, 3, 14   'Invert Hue
+            .PutImageToVBMenu 69, 2, 3, 14   'Invert RGB
+            
+        .PutImageToVBMenu 70, 15, 3      'Posterize
+        .PutImageToVBMenu 71, 16, 3      'Reduce Colors
+        .PutImageToVBMenu 72, 18, 3      'Count Colors
         
         'Macro Menu
         .PutImageToVBMenu 36, 0, 5     'Open Macro

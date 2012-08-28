@@ -462,7 +462,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuIsometric 
-         Caption         =   "Convert to Isometric"
+         Caption         =   "Convert to Isometric View"
       End
    End
    Begin VB.Menu MnuColor 
@@ -486,7 +486,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuHistogramTop 
-         Caption         =   "Histogram Functions"
+         Caption         =   "Histogram"
          Begin VB.Menu MnuHistogram 
             Caption         =   "Display Histogram"
             Shortcut        =   ^H
@@ -494,26 +494,26 @@ Begin VB.MDIForm FormMain
          Begin VB.Menu MnuHistogramEqualize 
             Caption         =   "Equalize"
             Begin VB.Menu MnuEqualizeLuminance 
-               Caption         =   "Equalize Luminance"
+               Caption         =   "Luminance"
             End
             Begin VB.Menu MnuHistogramSepBar1 
                Caption         =   "-"
             End
             Begin VB.Menu MnuEqualizeRed 
-               Caption         =   "Equalize Red"
+               Caption         =   "Red"
             End
             Begin VB.Menu MnuEqualizeGreen 
-               Caption         =   "Equalize Green"
+               Caption         =   "Green"
             End
             Begin VB.Menu MnuEqualizeBlue 
-               Caption         =   "Equalize Blue"
+               Caption         =   "Blue"
             End
             Begin VB.Menu MnuEqualizeAll 
-               Caption         =   "Equalize RGB"
+               Caption         =   "All Channels"
             End
          End
          Begin VB.Menu MnuHistogramStretch 
-            Caption         =   "Stretch Histogram"
+            Caption         =   "Stretch"
          End
       End
       Begin VB.Menu MnuColorSepBar1 
