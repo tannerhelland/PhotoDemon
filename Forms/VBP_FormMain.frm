@@ -1412,11 +1412,11 @@ Private Sub MnuImageLevels_Click()
 End Sub
 
 'Attempt to import an image from the Internet
-Public Sub MnuImportFromInternet_Click()
+Private Sub MnuImportFromInternet_Click()
     If FormInternetImport.Visible = False Then FormInternetImport.Show 1, FormMain
 End Sub
 
-Public Sub MnuImportFrx_Click()
+Private Sub MnuImportFrx_Click()
     On Error Resume Next
     If FormImportFrx.Visible = False Then FormImportFrx.Show 1, FormMain
 End Sub
@@ -1526,7 +1526,7 @@ Private Sub MnuPosterize_Click()
     Process Posterize, , , , , , , , , , True
 End Sub
 
-Public Sub MnuPreferences_Click()
+Private Sub MnuPreferences_Click()
     If FormPreferences.Visible = False Then FormPreferences.Show 1, FormMain
 End Sub
 
@@ -1571,7 +1571,7 @@ Public Sub mnuRecDocs_Click(Index As Integer)
     
 End Sub
 
-Public Sub MnuRedo_Click()
+Private Sub MnuRedo_Click()
     Process Redo
 End Sub
 
@@ -1632,7 +1632,7 @@ Private Sub MnuSave_Click()
     Process FileSave
 End Sub
 
-Public Sub MnuSaveAs_Click()
+Private Sub MnuSaveAs_Click()
     Process FileSaveAs
 End Sub
 
@@ -1640,11 +1640,11 @@ Private Sub MnuScanImage_Click()
     Process ScanImage
 End Sub
 
-Public Sub MnuScreenCapture_Click()
+Private Sub MnuScreenCapture_Click()
     Process capScreen
 End Sub
 
-Public Sub MnuSelectScanner_Click()
+Private Sub MnuSelectScanner_Click()
     Process SelectScanner
 End Sub
 
@@ -1760,25 +1760,32 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     If Timer - lastAccelerator < 0.25 Then Exit Sub
 
     'Import from Internet
-    If ctlAccelerator.Key(nIndex) = "Internet_Import" Then FormMain.MnuImportFromInternet_Click
+    If ctlAccelerator.Key(nIndex) = "Internet_Import" Then
+        If FormInternetImport.Visible = False Then FormInternetImport.Show 1, FormMain
+    End If
     
     'Save As...
     If ctlAccelerator.Key(nIndex) = "Save_As" Then
-        If FormMain.MnuSaveAs.Enabled = True Then FormMain.MnuSaveAs_Click
+        If FormMain.MnuSaveAs.Enabled = True Then Process FileSaveAs
     End If
     
     'Capture the screen
-    If ctlAccelerator.Key(nIndex) = "Screen_Capture" Then FormMain.MnuScreenCapture_Click
+    If ctlAccelerator.Key(nIndex) = "Screen_Capture" Then Process capScreen
     
     'Import from FRX
-    If ctlAccelerator.Key(nIndex) = "Import_FRX" Then FormMain.MnuImportFrx_Click
+    If ctlAccelerator.Key(nIndex) = "Import_FRX" Then
+        On Error Resume Next
+        If FormImportFrx.Visible = False Then FormImportFrx.Show 1, FormMain
+    End If
 
     'Open program preferences
-    If ctlAccelerator.Key(nIndex) = "Preferences" Then FormMain.MnuPreferences_Click
+    If ctlAccelerator.Key(nIndex) = "Preferences" Then
+        If FormPreferences.Visible = False Then FormPreferences.Show 1, FormMain
+    End If
     
     'Redo
     If ctlAccelerator.Key(nIndex) = "Redo" Then
-        If FormMain.MnuRedo.Enabled = True Then FormMain.MnuRedo_Click
+        If FormMain.MnuRedo.Enabled = True Then Process Redo
     End If
     
     'Repeat last action
