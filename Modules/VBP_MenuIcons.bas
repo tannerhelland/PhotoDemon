@@ -103,79 +103,90 @@ Public Sub LoadMenuIcons()
         
         .Init FormMain.HWnd, 16, 16
         
-        .AddImageFromStream LoadResData("OPENIMG", "CUSTOM")    '0
-        .AddImageFromStream LoadResData("OPENREC", "CUSTOM")    '1
-        .AddImageFromStream LoadResData("IMPORT", "CUSTOM")     '2
-        .AddImageFromStream LoadResData("SAVE", "CUSTOM")       '3
-        .AddImageFromStream LoadResData("SAVEAS", "CUSTOM")     '4
-        .AddImageFromStream LoadResData("CLOSE", "CUSTOM")      '5
-        .AddImageFromStream LoadResData("BCONVERT", "CUSTOM")   '6
-        .AddImageFromStream LoadResData("PRINT", "CUSTOM")      '7
-        .AddImageFromStream LoadResData("SCANNER", "CUSTOM")    '8
-        .AddImageFromStream LoadResData("DOWNLOAD", "CUSTOM")   '9
-        .AddImageFromStream LoadResData("SCREENCAP", "CUSTOM")  '10
-        .AddImageFromStream LoadResData("FRXIMPORT", "CUSTOM")  '11
-        .AddImageFromStream LoadResData("UNDO", "CUSTOM")       '12
-        .AddImageFromStream LoadResData("REDO", "CUSTOM")       '13
-        .AddImageFromStream LoadResData("REPEAT", "CUSTOM")     '14
-        .AddImageFromStream LoadResData("COPY", "CUSTOM")       '15
-        .AddImageFromStream LoadResData("PASTE", "CUSTOM")      '16
-        .AddImageFromStream LoadResData("CLEAR", "CUSTOM")      '17
+        .AddImageFromStream LoadResData("OPENIMG", "CUSTOM")     '0
+        .AddImageFromStream LoadResData("OPENREC", "CUSTOM")     '1
+        .AddImageFromStream LoadResData("IMPORT", "CUSTOM")      '2
+        .AddImageFromStream LoadResData("SAVE", "CUSTOM")        '3
+        .AddImageFromStream LoadResData("SAVEAS", "CUSTOM")      '4
+        .AddImageFromStream LoadResData("CLOSE", "CUSTOM")       '5
+        .AddImageFromStream LoadResData("BCONVERT", "CUSTOM")    '6
+        .AddImageFromStream LoadResData("PRINT", "CUSTOM")       '7
+        .AddImageFromStream LoadResData("SCANNER", "CUSTOM")     '8
+        .AddImageFromStream LoadResData("DOWNLOAD", "CUSTOM")    '9
+        .AddImageFromStream LoadResData("SCREENCAP", "CUSTOM")   '10
+        .AddImageFromStream LoadResData("FRXIMPORT", "CUSTOM")   '11
+        .AddImageFromStream LoadResData("UNDO", "CUSTOM")        '12
+        .AddImageFromStream LoadResData("REDO", "CUSTOM")        '13
+        .AddImageFromStream LoadResData("REPEAT", "CUSTOM")      '14
+        .AddImageFromStream LoadResData("COPY", "CUSTOM")        '15
+        .AddImageFromStream LoadResData("PASTE", "CUSTOM")       '16
+        .AddImageFromStream LoadResData("CLEAR", "CUSTOM")       '17
         .AddImageFromStream LoadResData("PREFERENCES", "CUSTOM") '18
-        .AddImageFromStream LoadResData("RESIZE", "CUSTOM")     '19
-        .AddImageFromStream LoadResData("ROTATECW", "CUSTOM")   '20
-        .AddImageFromStream LoadResData("ROTATECCW", "CUSTOM")  '21
-        .AddImageFromStream LoadResData("ROTATE180", "CUSTOM")  '22
-        .AddImageFromStream LoadResData("FLIP", "CUSTOM")       '23
-        .AddImageFromStream LoadResData("MIRROR", "CUSTOM")     '24
-        .AddImageFromStream LoadResData("PDWEBSITE", "CUSTOM")  '25
-        .AddImageFromStream LoadResData("FEEDBACK", "CUSTOM")   '26
-        .AddImageFromStream LoadResData("ABOUT", "CUSTOM")      '27
-        .AddImageFromStream LoadResData("FITWINIMG", "CUSTOM")  '28
+        .AddImageFromStream LoadResData("RESIZE", "CUSTOM")      '19
+        .AddImageFromStream LoadResData("ROTATECW", "CUSTOM")    '20
+        .AddImageFromStream LoadResData("ROTATECCW", "CUSTOM")   '21
+        .AddImageFromStream LoadResData("ROTATE180", "CUSTOM")   '22
+        .AddImageFromStream LoadResData("FLIP", "CUSTOM")        '23
+        .AddImageFromStream LoadResData("MIRROR", "CUSTOM")      '24
+        .AddImageFromStream LoadResData("PDWEBSITE", "CUSTOM")   '25
+        .AddImageFromStream LoadResData("FEEDBACK", "CUSTOM")    '26
+        .AddImageFromStream LoadResData("ABOUT", "CUSTOM")       '27
+        .AddImageFromStream LoadResData("FITWINIMG", "CUSTOM")   '28
         .AddImageFromStream LoadResData("FITONSCREEN", "CUSTOM") '29
-        .AddImageFromStream LoadResData("TILEHOR", "CUSTOM")    '30
-        .AddImageFromStream LoadResData("TILEVER", "CUSTOM")    '31
-        .AddImageFromStream LoadResData("CASCADE", "CUSTOM")    '32
-        .AddImageFromStream LoadResData("ARNGICONS", "CUSTOM")  '33
-        .AddImageFromStream LoadResData("MINALL", "CUSTOM")     '34
-        .AddImageFromStream LoadResData("RESTOREALL", "CUSTOM") '35
-        .AddImageFromStream LoadResData("OPENMACRO", "CUSTOM")  '36
-        .AddImageFromStream LoadResData("RECORD", "CUSTOM")     '37
-        .AddImageFromStream LoadResData("RECORDSTOP", "CUSTOM") '38
-        .AddImageFromStream LoadResData("BUG", "CUSTOM")        '39
-        .AddImageFromStream LoadResData("FAVORITE", "CUSTOM")   '40
-        .AddImageFromStream LoadResData("UPDATES", "CUSTOM")    '41
-        .AddImageFromStream LoadResData("DUPLICATE", "CUSTOM")  '42
-        .AddImageFromStream LoadResData("EXIT", "CUSTOM")       '43
+        .AddImageFromStream LoadResData("TILEHOR", "CUSTOM")     '30
+        .AddImageFromStream LoadResData("TILEVER", "CUSTOM")     '31
+        .AddImageFromStream LoadResData("CASCADE", "CUSTOM")     '32
+        .AddImageFromStream LoadResData("ARNGICONS", "CUSTOM")   '33
+        .AddImageFromStream LoadResData("MINALL", "CUSTOM")      '34
+        .AddImageFromStream LoadResData("RESTOREALL", "CUSTOM")  '35
+        .AddImageFromStream LoadResData("OPENMACRO", "CUSTOM")   '36
+        .AddImageFromStream LoadResData("RECORD", "CUSTOM")      '37
+        .AddImageFromStream LoadResData("RECORDSTOP", "CUSTOM")  '38
+        .AddImageFromStream LoadResData("BUG", "CUSTOM")         '39
+        .AddImageFromStream LoadResData("FAVORITE", "CUSTOM")    '40
+        .AddImageFromStream LoadResData("UPDATES", "CUSTOM")     '41
+        .AddImageFromStream LoadResData("DUPLICATE", "CUSTOM")   '42
+        .AddImageFromStream LoadResData("EXIT", "CUSTOM")        '43
         .AddImageFromStream LoadResData("CLEARRECENT", "CUSTOM") '44
-        .AddImageFromStream LoadResData("SCANNERSEL", "CUSTOM") '45
-        .AddImageFromStream LoadResData("BRIGHT", "CUSTOM")     '46
-        .AddImageFromStream LoadResData("GAMMA", "CUSTOM")      '47
-        .AddImageFromStream LoadResData("LEVELS", "CUSTOM")     '48
-        .AddImageFromStream LoadResData("WHITEBAL", "CUSTOM")   '49
-        .AddImageFromStream LoadResData("HISTOGRAM", "CUSTOM")  '50
-        .AddImageFromStream LoadResData("EQUALIZE", "CUSTOM")   '51
-        .AddImageFromStream LoadResData("STRETCH", "CUSTOM")    '52
+        .AddImageFromStream LoadResData("SCANNERSEL", "CUSTOM")  '45
+        .AddImageFromStream LoadResData("BRIGHT", "CUSTOM")      '46
+        .AddImageFromStream LoadResData("GAMMA", "CUSTOM")       '47
+        .AddImageFromStream LoadResData("LEVELS", "CUSTOM")      '48
+        .AddImageFromStream LoadResData("WHITEBAL", "CUSTOM")    '49
+        .AddImageFromStream LoadResData("HISTOGRAM", "CUSTOM")   '50
+        .AddImageFromStream LoadResData("EQUALIZE", "CUSTOM")    '51
+        .AddImageFromStream LoadResData("STRETCH", "CUSTOM")     '52
         .AddImageFromStream LoadResData("COLORSHIFTR", "CUSTOM") '53
         .AddImageFromStream LoadResData("COLORSHIFTL", "CUSTOM") '54
-        .AddImageFromStream LoadResData("RECHANNELR", "CUSTOM") '55
-        .AddImageFromStream LoadResData("RECHANNELG", "CUSTOM") '56
-        .AddImageFromStream LoadResData("RECHANNELB", "CUSTOM") '57
-        .AddImageFromStream LoadResData("BLACKWHITE", "CUSTOM") '58
-        .AddImageFromStream LoadResData("COLORIZE", "CUSTOM")   '59
-        .AddImageFromStream LoadResData("ENHANCE", "CUSTOM")    '60
-        .AddImageFromStream LoadResData("ENCONTRAST", "CUSTOM") '61
+        .AddImageFromStream LoadResData("RECHANNELR", "CUSTOM")  '55
+        .AddImageFromStream LoadResData("RECHANNELG", "CUSTOM")  '56
+        .AddImageFromStream LoadResData("RECHANNELB", "CUSTOM")  '57
+        .AddImageFromStream LoadResData("BLACKWHITE", "CUSTOM")  '58
+        .AddImageFromStream LoadResData("COLORIZE", "CUSTOM")    '59
+        .AddImageFromStream LoadResData("ENHANCE", "CUSTOM")     '60
+        .AddImageFromStream LoadResData("ENCONTRAST", "CUSTOM")  '61
         .AddImageFromStream LoadResData("ENHIGHLIGHT", "CUSTOM") '62
-        .AddImageFromStream LoadResData("ENMIDTONE", "CUSTOM")  '63
-        .AddImageFromStream LoadResData("ENSHADOW", "CUSTOM")   '64
-        .AddImageFromStream LoadResData("GRAYSCALE", "CUSTOM")  '65
-        .AddImageFromStream LoadResData("INVERT", "CUSTOM")     '66
-        .AddImageFromStream LoadResData("INVCMYK", "CUSTOM")    '67
-        .AddImageFromStream LoadResData("INVHUE", "CUSTOM")     '68
-        .AddImageFromStream LoadResData("INVRGB", "CUSTOM")     '69
-        .AddImageFromStream LoadResData("POSTERIZE", "CUSTOM")  '70
+        .AddImageFromStream LoadResData("ENMIDTONE", "CUSTOM")   '63
+        .AddImageFromStream LoadResData("ENSHADOW", "CUSTOM")    '64
+        .AddImageFromStream LoadResData("GRAYSCALE", "CUSTOM")   '65
+        .AddImageFromStream LoadResData("INVERT", "CUSTOM")      '66
+        .AddImageFromStream LoadResData("INVCMYK", "CUSTOM")     '67
+        .AddImageFromStream LoadResData("INVHUE", "CUSTOM")      '68
+        .AddImageFromStream LoadResData("INVRGB", "CUSTOM")      '69
+        .AddImageFromStream LoadResData("POSTERIZE", "CUSTOM")   '70
         .AddImageFromStream LoadResData("REDUCECOLORS", "CUSTOM") '71
         .AddImageFromStream LoadResData("COUNTCOLORS", "CUSTOM") '72
+        .AddImageFromStream LoadResData("FADELAST", "CUSTOM")    '73
+        .AddImageFromStream LoadResData("ARTISTIC", "CUSTOM")    '74
+        .AddImageFromStream LoadResData("BLUR", "CUSTOM")        '75
+        .AddImageFromStream LoadResData("DIFFUSE", "CUSTOM")     '76
+        .AddImageFromStream LoadResData("EDGES", "CUSTOM")       '77
+        .AddImageFromStream LoadResData("NATURAL", "CUSTOM")     '78
+        .AddImageFromStream LoadResData("NOISE", "CUSTOM")       '79
+        .AddImageFromStream LoadResData("OTHER", "CUSTOM")       '80
+        .AddImageFromStream LoadResData("RANK", "CUSTOM")        '81
+        .AddImageFromStream LoadResData("SHARPEN", "CUSTOM")     '82
+        .AddImageFromStream LoadResData("CUSTFILTER", "CUSTOM")  '83
         
         
         'File Menu
@@ -264,6 +275,19 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 70, 15, 3      'Posterize
         .PutImageToVBMenu 71, 16, 3      'Reduce Colors
         .PutImageToVBMenu 72, 18, 3      'Count Colors
+        
+        'Filters Menu
+        .PutImageToVBMenu 73, 0, 4       'Fade Last
+        .PutImageToVBMenu 74, 2, 4       'Artistic
+        .PutImageToVBMenu 75, 3, 4       'Blur
+        .PutImageToVBMenu 76, 4, 4       'Diffuse
+        .PutImageToVBMenu 77, 5, 4       'Edges
+        .PutImageToVBMenu 78, 6, 4       'Natural
+        .PutImageToVBMenu 79, 7, 4       'Noise
+        .PutImageToVBMenu 80, 8, 4       'Other
+        .PutImageToVBMenu 81, 9, 4       'Rank
+        .PutImageToVBMenu 82, 10, 4      'Sharpen
+        .PutImageToVBMenu 83, 12, 4       'Custom Filter
         
         'Macro Menu
         .PutImageToVBMenu 36, 0, 5     'Open Macro
