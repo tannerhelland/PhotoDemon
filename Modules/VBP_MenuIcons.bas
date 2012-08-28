@@ -148,6 +148,11 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("DUPLICATE", "CUSTOM")  '42
         .AddImageFromStream LoadResData("EXIT", "CUSTOM")       '43
         .AddImageFromStream LoadResData("CLEARRECENT", "CUSTOM") '44
+        .AddImageFromStream LoadResData("SCANNERSEL", "CUSTOM") '45
+        .AddImageFromStream LoadResData("BRIGHT", "CUSTOM")     '46
+        .AddImageFromStream LoadResData("GAMMA", "CUSTOM")      '47
+        .AddImageFromStream LoadResData("LEVELS", "CUSTOM")     '48
+        .AddImageFromStream LoadResData("WHITEBAL", "CUSTOM")   '49
         
         
         'File Menu
@@ -165,6 +170,7 @@ Public Sub LoadMenuIcons()
         'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
         If ScanEnabled = True Then
             .PutImageToVBMenu 8, 0, 0, 2       'Scan Image
+            .PutImageToVBMenu 45, 1, 0, 2      'Select Scanner
             .PutImageToVBMenu 9, 3, 0, 2       'Download Image
             .PutImageToVBMenu 10, 5, 0, 2      'Capture Screen
             .PutImageToVBMenu 11, 7, 0, 2      'Import from FRX
@@ -188,9 +194,16 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 19, 2, 2      'Resize
         .PutImageToVBMenu 23, 4, 2      'Flip
         .PutImageToVBMenu 24, 5, 2      'Mirror
+        .PutImageToVBMenu 22, 6, 2      'Top Rotate menu
         .PutImageToVBMenu 20, 0, 2, 6     'Rotate Clockwise (rotate submenu)
         .PutImageToVBMenu 21, 1, 2, 6     'Rotate Counter-clockwise (rotate submenu)
         .PutImageToVBMenu 22, 2, 2, 6     'Rotate 180 (rotate submenu)
+        
+        'Color Menu
+        .PutImageToVBMenu 46, 0, 3      'Brightness/Contrast
+        .PutImageToVBMenu 47, 1, 3      'Gamma Correction
+        .PutImageToVBMenu 48, 2, 3      'Levels
+        .PutImageToVBMenu 49, 3, 3      'White Balance
         
         'Macro Menu
         .PutImageToVBMenu 36, 0, 5     'Open Macro
