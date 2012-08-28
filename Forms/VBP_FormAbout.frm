@@ -137,25 +137,29 @@ Private Sub Form_Load()
     curCredit = 1
     
     'Shout-outs to other programmers who provided various resources
-    GenerateThankyou "Kroc of camendesign.com for many suggestions regarding UI design and organization", "http://camendesign.com"
-    GenerateThankyou "chrfb of deviantart.com for PhotoDemon's icon ('Ecqlipse 2,' CC-BY-NC-SA-3.0)", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
-    GenerateThankyou "Juned Chhipa for the 'jcButton 1.7' customizable command button replacement control used on the left-hand toolbar", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
-    GenerateThankyou "Steve McMahon for an excellent CommonDialog interface, accelerator key handler, and progress bar replacement", "http://www.vbaccelerator.com/home/VB/index.asp"
-    GenerateThankyou "Floris van de Berg and Hervé Drolon for the FreeImage library, and Carsten Klein for the VB interface", "http://freeimage.sourceforge.net/"
-    GenerateThankyou "Alfred Koppold for native-VB PCX import/export and PNG import interfaces", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1"
-    GenerateThankyou "John Korejwa for his native-VB JPEG encoding class", "http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=50065&lngWId=1"
-    GenerateThankyou "Brad Martinez for the original implementation of VB binary file extraction", "http://btmtz.mvps.org/gfxfromfrx/"
-    GenerateThankyou "Ron van Tilburg for a native-VB implementation of Xiaolin Wu's line antialiasing routine", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
-    GenerateThankyou "Jason Bullen for a native-VB implementation of knot-based cubic spline interpolation", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
-    GenerateThankyou "Dosadi for the EZTW32 scanner/digital camera library", "http://eztwain.com/eztwain1.htm"
-    GenerateThankyou "Jean-Loup Gailly and Mark Adler for the zLib compression library, and Gilles Vollant for the WAPI wrapper", "http://www.winimage.com/zLibDll/index.html"
-    GenerateThankyou "Waty Thierry for many insights regarding printer interfacing in VB", "http://www.ppreview.net/"
-    GenerateThankyou "Manuel Augusto Santos for original versions of the 'Enhanced 2-bit Color Reduction' and 'Artistic Contour' algorithms", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
-    GenerateThankyou "Johannes B for the original version of the 'Fog' algorithm", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42642&lngWId=1"
-    GenerateThankyou "LaVolpe for his automated VB6 Manifest Creator tool", "http://www.vbforums.com/showthread.php?t=606736"
-    GenerateThankyou "Leandro Ascierto for a clean, lightweight class that adds PNGs to menu items", "http://leandroascierto.com/blog/clsmenuimage/"
-    GenerateThankyou "Everaldo and The Crystal Project for menu and button icons (LGPL-licensed, click for details)", "http://www.everaldo.com/crystal/"
-    GenerateThankyou "The public-domain Tango Icon Library for menu and button icons", "http://tango.freedesktop.org/Tango_Icon_Library"
+    GenerateThankyou "Kroc of camendesign.com (UI design and organization)", "http://camendesign.com"
+    GenerateThankyou "Floris van de Berg and Hervé Drolon (FreeImage library)", "http://freeimage.sourceforge.net/"
+    GenerateThankyou "Carsten Klein (FreeImage VB interface)", "http://freeimage.sourceforge.net/"
+    GenerateThankyou "Alfred Koppold (PCX import/export and PNG import interfaces)", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1"
+    GenerateThankyou "John Korejwa (JPEG encoding class)", "http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=50065&lngWId=1"
+    GenerateThankyou "Ron van Tilburg (implementation of Xiaolin Wu line antialiasing)", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
+    GenerateThankyou "Jason Bullen (knot-based cubic spline interpolation)", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
+    GenerateThankyou "Jean-Loup Gailly and Mark Adler (zLib compression library)", "http://www.winimage.com/zLibDll/index.html"
+    GenerateThankyou "Gilles Vollant (zLib WAPI wrapper)", "http://www.winimage.com/zLibDll/index.html"
+    GenerateThankyou "Waty Thierry (printer interfacing in VB)", "http://www.ppreview.net/"
+    GenerateThankyou "Manuel Augusto Santos ('Enhanced 2-bit Color Reduction', 'Artistic Contour')", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
+    GenerateThankyou "Juned Chhipa ('jcButton 1.7' customizable command button replacement control)", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
+    GenerateThankyou "Steve McMahon (CommonDialog interface, accelerator key handler, progress bar)", "http://www.vbaccelerator.com/home/VB/index.asp"
+    GenerateThankyou "chrfb of deviantart.com (PhotoDemon's icon, 'Ecqlipse 2', CC-BY-NC-SA-3.0)", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
+    GenerateThankyou "Everaldo and The Crystal Project (Crystal icons, LGPL-licensed, click for details)", "http://www.everaldo.com/crystal/"
+    GenerateThankyou "Dosadi (EZTW32 scanner/digital camera library)", "http://eztwain.com/eztwain1.htm"
+    GenerateThankyou "Brad Martinez (VB binary file extraction)", "http://btmtz.mvps.org/gfxfromfrx/"
+    GenerateThankyou "Johannes B ('Fog')", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42642&lngWId=1"
+    GenerateThankyou "LaVolpe (automated VB6 Manifest Creator tool)", "http://www.vbforums.com/showthread.php?t=606736"
+    GenerateThankyou "Leandro Ascierto (embedding PNGs as menu icons)", "http://leandroascierto.com/blog/clsmenuimage/"
+    GenerateThankyou "Mark James (Silk icon set, CC-BY-2.5)", "http://www.famfamfam.com/lab/icons/silk/"
+    GenerateThankyou "Yusuke Kamiyamane (Fugue icon set, CC-BY-3.0)", "http://p.yusukekamiyamane.com/"
+    GenerateThankyou "The Tango Icon Library (public-domain)", "http://tango.freedesktop.org/"
     
     lblThanks(0).MousePointer = vbDefault
     
@@ -170,8 +174,20 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
     'Generate a new label
     Load lblThanks(curCredit)
     
-    lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
-    lblThanks(curCredit).Left = lblThanks(0).Left + 2
+    If curCredit = 1 Then
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12
+        lblThanks(curCredit).Left = lblThanks(0).Left + 2
+    ElseIf curCredit < 16 Then
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
+        lblThanks(curCredit).Left = lblThanks(0).Left + 2
+    ElseIf curCredit = 16 Then
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12 - (lblThanks(15).Top - lblThanks(0).Top)
+        lblThanks(curCredit).Left = lblThanks(0).Left + 325
+    Else
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
+        lblThanks(curCredit).Left = lblThanks(0).Left + 325
+    End If
+    
     lblThanks(curCredit).Caption = thxText
     If creditURL = "" Then
         lblThanks(curCredit).MousePointer = vbDefault
