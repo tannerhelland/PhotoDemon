@@ -99,6 +99,9 @@ Public Sub LoadTheProgram()
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
     LoadMenuShortcuts
     
+    'Load the most-recently-used file list (MRU)
+    MRU_LoadFromINI
+    
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
     SetIcon FormMain.HWnd, "AAA", True
@@ -134,9 +137,6 @@ Public Sub LoadTheProgram()
     
     'Set up the program's title bar
     FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
-    
-    'Load the most-recently-used file list (MRU)
-    MRU_LoadFromINI
     
     'Initialize the custom MDI child form icon handler
     initializeIconHandler

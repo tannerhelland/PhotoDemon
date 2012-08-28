@@ -15,14 +15,15 @@ Attribute VB_Name = "MRU_List"
 Option Explicit
 
 'MRUlist will contain string entries of all the most recently used files
-Dim MRUlist() As String
+Private MRUlist() As String
 
 'Current number of entries in the MRU list
-Dim numEntries As Long
+Private numEntries As Long
 
 'Number of recent files to be tracked
 Public Const RECENT_FILE_COUNT = 9
 
+'Load the MRU list from the program's INI file
 Public Sub MRU_LoadFromINI()
 
     'Get the number of MRU entries from the INI file
@@ -51,6 +52,7 @@ Public Sub MRU_LoadFromINI()
     
 End Sub
 
+'Save the current MRU list to file (currently done at program close)
 Public Sub MRU_SaveToINI()
 
     'Save the number of current entries
@@ -65,6 +67,7 @@ Public Sub MRU_SaveToINI()
     
 End Sub
 
+'Add another file to the MRU list
 Public Sub MRU_AddNewFile(ByVal newFile As String)
 
     'Locators
@@ -133,6 +136,9 @@ MRUEntryFound:
             FormMain.mnuRecDocs(x).Caption = MRUlist(x) & vbTab & "Ctrl+" & x
         Next x
     End If
+    
+    'The icons in the MRU sub-menu need to be reset after this action
+    ResetMenuIcons
 
 End Sub
 
@@ -159,5 +165,13 @@ Public Sub MRU_ClearList()
     
     'Tell the INI that no files are left
     WriteToIni "MRU", "NumberOfEntries", 0
+    
+    'The icons in the MRU sub-menu need to be reset after this action
+    ResetMenuIcons
 
 End Sub
+
+'Return how many MRU entries are currently in the menu
+Public Function MRU_ReturnCount() As Long
+    MRU_ReturnCount = numEntries
+End Function

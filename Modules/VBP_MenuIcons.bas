@@ -138,14 +138,16 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("CASCADE", "CUSTOM")    '32
         .AddImageFromStream LoadResData("ARNGICONS", "CUSTOM")  '33
         .AddImageFromStream LoadResData("MINALL", "CUSTOM")     '34
-        .AddImageFromStream LoadResData("RESTOREALL", "CUSTOM")     '35
+        .AddImageFromStream LoadResData("RESTOREALL", "CUSTOM") '35
         .AddImageFromStream LoadResData("OPENMACRO", "CUSTOM")  '36
         .AddImageFromStream LoadResData("RECORD", "CUSTOM")     '37
         .AddImageFromStream LoadResData("RECORDSTOP", "CUSTOM") '38
-        .AddImageFromStream LoadResData("BUG", "CUSTOM") '39
-        .AddImageFromStream LoadResData("FAVORITE", "CUSTOM") '40
-        .AddImageFromStream LoadResData("UPDATES", "CUSTOM") '41
-        .AddImageFromStream LoadResData("DUPLICATE", "CUSTOM") '42
+        .AddImageFromStream LoadResData("BUG", "CUSTOM")        '39
+        .AddImageFromStream LoadResData("FAVORITE", "CUSTOM")   '40
+        .AddImageFromStream LoadResData("UPDATES", "CUSTOM")    '41
+        .AddImageFromStream LoadResData("DUPLICATE", "CUSTOM")  '42
+        .AddImageFromStream LoadResData("EXIT", "CUSTOM")       '43
+        .AddImageFromStream LoadResData("CLEARRECENT", "CUSTOM") '44
         
         
         'File Menu
@@ -157,6 +159,7 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 5, 7, 0       'Close...
         .PutImageToVBMenu 6, 9, 0       'Batch conversion
         .PutImageToVBMenu 7, 11, 0      'Print
+        .PutImageToVBMenu 43, 13, 0     'Exit
         
         '--> Import Sub-Menu
         'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
@@ -213,7 +216,12 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 27, 7, 7     'About PD
     
     End With
-
+    
+    'Finally, calculate where to place the "Clear MRU" menu item
+    Dim numOfMRUFiles As Long
+    numOfMRUFiles = MRU_ReturnCount()
+    cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
+    
 End Sub
 
 'When menu captions are changed, the associated images are lost.  This forces a reset.
@@ -224,6 +232,11 @@ Public Sub ResetMenuIcons()
         .PutImageToVBMenu 12, 0, 1      'Undo
         .PutImageToVBMenu 13, 1, 1      'Redo
     End With
+    
+    'Dynamically calculate the position of the Clear Recent Files menu item
+    Dim numOfMRUFiles As Long
+    numOfMRUFiles = MRU_ReturnCount()
+    cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
     
 End Sub
 
