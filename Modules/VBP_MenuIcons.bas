@@ -153,6 +153,14 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("GAMMA", "CUSTOM")      '47
         .AddImageFromStream LoadResData("LEVELS", "CUSTOM")     '48
         .AddImageFromStream LoadResData("WHITEBAL", "CUSTOM")   '49
+        .AddImageFromStream LoadResData("HISTOGRAM", "CUSTOM")  '50
+        .AddImageFromStream LoadResData("EQUALIZE", "CUSTOM")   '51
+        .AddImageFromStream LoadResData("STRETCH", "CUSTOM")    '52
+        .AddImageFromStream LoadResData("COLORSHIFTR", "CUSTOM") '53
+        .AddImageFromStream LoadResData("COLORSHIFTL", "CUSTOM") '54
+        .AddImageFromStream LoadResData("RECHANNELR", "CUSTOM") '55
+        .AddImageFromStream LoadResData("RECHANNELG", "CUSTOM") '56
+        .AddImageFromStream LoadResData("RECHANNELB", "CUSTOM") '57
         
         
         'File Menu
@@ -204,6 +212,26 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 47, 1, 3      'Gamma Correction
         .PutImageToVBMenu 48, 2, 3      'Levels
         .PutImageToVBMenu 49, 3, 3      'White Balance
+        
+        .PutImageToVBMenu 50, 5, 3      'Histogram
+        
+            '--> Histogram sub-menu
+            .PutImageToVBMenu 50, 0, 3, 5   'Display Histogram
+            .PutImageToVBMenu 51, 1, 3, 5   'Equalize
+            .PutImageToVBMenu 52, 2, 3, 5   'Stretch
+            
+        .PutImageToVBMenu 53, 7, 3      'Color Shift
+            
+            '--> Color-Shift sub-menu
+            .PutImageToVBMenu 53, 0, 3, 7   'Shift Right
+            .PutImageToVBMenu 54, 1, 3, 7   'Shift Left
+            
+        .PutImageToVBMenu 57, 8, 3      'Rechannel
+        
+            '--> Rechannel sub-menu
+            .PutImageToVBMenu 55, 0, 3, 8   'Red
+            .PutImageToVBMenu 56, 1, 3, 8   'Green
+            .PutImageToVBMenu 57, 2, 3, 8   'Blue
         
         'Macro Menu
         .PutImageToVBMenu 36, 0, 5     'Open Macro
