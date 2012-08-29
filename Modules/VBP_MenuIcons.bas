@@ -202,6 +202,8 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("DIFFUSEMORE", "CUSTOM") '96
         .AddImageFromStream LoadResData("DIFFUSECUST", "CUSTOM") '97
         .AddImageFromStream LoadResData("CUSTFILTER", "CUSTOM")  '98
+        .AddImageFromStream LoadResData("EDGEENHANCE", "CUSTOM") '99
+        .AddImageFromStream LoadResData("EMBOSS", "CUSTOM")      '100
         
         
         'File Menu
@@ -310,6 +312,10 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 96, 1, 4, 4   'Diffuse More
             .PutImageToVBMenu 97, 3, 4, 4   'Diffuse (Custom)
         .PutImageToVBMenu 77, 5, 4       'Edges
+            '--> Edges sub-menu
+            .PutImageToVBMenu 100, 0, 4, 5  'Emboss / Engrave
+            .PutImageToVBMenu 99, 1, 4, 5  'Enhance Edges
+            .PutImageToVBMenu 77, 2, 4, 5   'Find Edges
         .PutImageToVBMenu 78, 6, 4       'Natural
         .PutImageToVBMenu 79, 7, 4       'Noise
         .PutImageToVBMenu 80, 8, 4       'Other
