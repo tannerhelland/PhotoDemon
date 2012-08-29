@@ -143,6 +143,7 @@ Option Explicit
     Public Const Invert As Long = 607
     Public Const InvertHue As Long = 608
     Public Const Negative As Long = 609
+    Public Const CompoundInvert As Long = 617
     '-AutoEnhance
     Public Const AutoEnhance As Long = 610
     Public Const AutoHighlights As Long = 611
@@ -154,6 +155,7 @@ Option Explicit
     Public Const Colorize As Long = 615
     'Reduce image colors
     Public Const ReduceColors As Long = 616
+    'NOTE: 617 is the max value for this section (CompoundInvert)
     
     'Coordinate filters/transformations; numbers 700-799
     '-Resize
@@ -173,9 +175,7 @@ Option Explicit
     
     'Other filters; numbers 800-899
     '-Compound invert
-    Public Const DarkCompoundInvert As Long = 800
-    Public Const LightCompoundInvert As Long = 801
-    Public Const MediumCompoundInvert As Long = 802
+    '800-802 used to be specific CompoundInvert values; this is superceded by passing the values to CompoundInvert, which has been moved with the other Inverts
     '-Fade
     Public Const Fade As Long = 803
     '804-806 used to be specific Fade values; these have been superceded by passing the values to Fade
@@ -582,6 +582,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 End If
             Case Invert
                 MenuInvert
+            Case CompoundInvert
+                MenuCompoundInvert pOPCODE
+            Case Negative
+                MenuNegative
+            Case InvertHue
+                MenuInvertHue
             Case AutoEnhance
                 MenuAutoEnhanceContrast
             Case AutoHighlights
@@ -590,10 +596,6 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuAutoEnhanceMidtones
             Case AutoShadows
                 MenuAutoEnhanceShadows
-            Case Negative
-                MenuNegative
-            Case InvertHue
-                MenuInvertHue
             Case ImageLevels
                 If LoadForm = True Then
                     FormImageLevels.Show 1, FormMain
@@ -668,14 +670,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormBlackLight.fxBlackLight pOPCODE
                 End If
-            Case DarkCompoundInvert
-                MenuCompoundInvert pOPCODE
             Case Dream
                 MenuDream
-            Case LightCompoundInvert
-                MenuCompoundInvert pOPCODE
-            Case MediumCompoundInvert
-                MenuCompoundInvert pOPCODE
             Case Posterize
                 If LoadForm = True Then
                     FormPosterize.Show 1, FormMain
@@ -1041,6 +1037,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Invert Hue"
         Case Negative
             GetNameOfProcess = "Film Negative"
+        Case CompoundInvert
+            GetNameOfProcess = "Compound Invert"
         Case AutoEnhance
             GetNameOfProcess = "Auto-Enhance Contrast"
         Case AutoHighlights
@@ -1077,12 +1075,6 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Tile Image"
             
         'Miscellaneous filters; numbers 800-899
-        Case DarkCompoundInvert
-            GetNameOfProcess = "Compound Invert (Dark)"
-        Case LightCompoundInvert
-            GetNameOfProcess = "Compound Invert (Light)"
-        Case MediumCompoundInvert
-            GetNameOfProcess = "Compound Invert (Moderate)"
         Case Fade
             GetNameOfProcess = "Fade"
         Case Unfade

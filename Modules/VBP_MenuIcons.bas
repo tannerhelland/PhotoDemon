@@ -204,6 +204,40 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("CUSTFILTER", "CUSTOM")  '98
         .AddImageFromStream LoadResData("EDGEENHANCE", "CUSTOM") '99
         .AddImageFromStream LoadResData("EMBOSS", "CUSTOM")      '100
+        .AddImageFromStream LoadResData("INVCOMPOUND", "CUSTOM") '101
+        .AddImageFromStream LoadResData("FADE", "CUSTOM")        '102
+        .AddImageFromStream LoadResData("FADELOW", "CUSTOM")     '103
+        .AddImageFromStream LoadResData("FADEHIGH", "CUSTOM")    '104
+        .AddImageFromStream LoadResData("CUSTOMFADE", "CUSTOM")  '105
+        .AddImageFromStream LoadResData("UNFADE", "CUSTOM")      '106
+        .AddImageFromStream LoadResData("ATMOSPHERE", "CUSTOM")  '107
+        .AddImageFromStream LoadResData("BURN", "CUSTOM")        '108
+        .AddImageFromStream LoadResData("FOG", "CUSTOM")         '109
+        .AddImageFromStream LoadResData("FREEZE", "CUSTOM")      '110
+        .AddImageFromStream LoadResData("LAVA", "CUSTOM")        '111
+        .AddImageFromStream LoadResData("OCEAN", "CUSTOM")       '112
+        .AddImageFromStream LoadResData("RAINBOW", "CUSTOM")     '113
+        .AddImageFromStream LoadResData("STEEL", "CUSTOM")       '114
+        .AddImageFromStream LoadResData("WATER", "CUSTOM")       '115
+        .AddImageFromStream LoadResData("ADDNOISE", "CUSTOM")    '116
+        .AddImageFromStream LoadResData("DESPECKLE", "CUSTOM")   '117
+        .AddImageFromStream LoadResData("REMOVEORPHAN", "CUSTOM") '118
+        .AddImageFromStream LoadResData("DILATE", "CUSTOM")      '119
+        .AddImageFromStream LoadResData("ERODE", "CUSTOM")       '120
+        .AddImageFromStream LoadResData("EXTREME", "CUSTOM")     '121
+        .AddImageFromStream LoadResData("CUSTRANK", "CUSTOM")    '122
+        .AddImageFromStream LoadResData("SHARPENMORE", "CUSTOM") '123
+        .AddImageFromStream LoadResData("UNSHARP", "CUSTOM")     '124
+        .AddImageFromStream LoadResData("ISOMETRIC", "CUSTOM")   '125
+        .AddImageFromStream LoadResData("ALIEN", "CUSTOM")       '126
+        .AddImageFromStream LoadResData("BLACKLIGHT", "CUSTOM")  '127
+        .AddImageFromStream LoadResData("DREAM", "CUSTOM")       '128
+        .AddImageFromStream LoadResData("RADIOACTIVE", "CUSTOM") '129
+        .AddImageFromStream LoadResData("SOLARIZE", "CUSTOM")    '130
+        .AddImageFromStream LoadResData("SYNTHESIZE", "CUSTOM")  '131
+        .AddImageFromStream LoadResData("TILE", "CUSTOM")        '132
+        .AddImageFromStream LoadResData("TWINS", "CUSTOM")       '133
+        .AddImageFromStream LoadResData("VIBRATE", "CUSTOM")     '134
         
         
         'File Menu
@@ -249,6 +283,7 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 20, 0, 2, 6     'Rotate Clockwise (rotate submenu)
         .PutImageToVBMenu 21, 1, 2, 6     'Rotate Counter-clockwise (rotate submenu)
         .PutImageToVBMenu 22, 2, 2, 6     'Rotate 180 (rotate submenu)
+        .PutImageToVBMenu 125, 8, 2     'Isometric
         
         'Color Menu
         .PutImageToVBMenu 46, 0, 3      'Brightness/Contrast
@@ -277,15 +312,23 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 62, 1, 3, 12   'Highlights
             .PutImageToVBMenu 63, 2, 3, 12   'Midtones
             .PutImageToVBMenu 64, 3, 3, 12   'Shadows
-        .PutImageToVBMenu 65, 13, 3      'Grayscale
-        .PutImageToVBMenu 66, 14, 3      'Invert
+        .PutImageToVBMenu 102, 13, 3     'Fade
+            '--> Fade sub-menu
+            .PutImageToVBMenu 103, 0, 3, 13  'Low Fade
+            .PutImageToVBMenu 102, 1, 3, 13  'Medium Fade
+            .PutImageToVBMenu 104, 2, 3, 13  'High Fade
+            .PutImageToVBMenu 105, 3, 3, 13  'Custom Fade
+            .PutImageToVBMenu 106, 5, 3, 13  'Unfade
+        .PutImageToVBMenu 65, 14, 3      'Grayscale
+        .PutImageToVBMenu 66, 15, 3      'Invert
             '--> Invert sub-menu
-            .PutImageToVBMenu 67, 0, 3, 14   'Invert CMYK
-            .PutImageToVBMenu 68, 1, 3, 14   'Invert Hue
-            .PutImageToVBMenu 69, 2, 3, 14   'Invert RGB
-        .PutImageToVBMenu 70, 15, 3      'Posterize
-        .PutImageToVBMenu 71, 16, 3      'Reduce Colors
-        .PutImageToVBMenu 72, 18, 3      'Count Colors
+            .PutImageToVBMenu 101, 0, 3, 15  'Compound Invert
+            .PutImageToVBMenu 67, 1, 3, 15   'Invert CMYK
+            .PutImageToVBMenu 68, 2, 3, 15   'Invert Hue
+            .PutImageToVBMenu 69, 3, 3, 15   'Invert RGB
+        .PutImageToVBMenu 70, 16, 3      'Posterize
+        .PutImageToVBMenu 71, 17, 3      'Reduce Colors
+        .PutImageToVBMenu 72, 19, 3      'Count Colors
         
         'Filters Menu
         .PutImageToVBMenu 73, 0, 4       'Fade Last
@@ -314,13 +357,46 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 77, 5, 4       'Edges
             '--> Edges sub-menu
             .PutImageToVBMenu 100, 0, 4, 5  'Emboss / Engrave
-            .PutImageToVBMenu 99, 1, 4, 5  'Enhance Edges
+            .PutImageToVBMenu 99, 1, 4, 5   'Enhance Edges
             .PutImageToVBMenu 77, 2, 4, 5   'Find Edges
         .PutImageToVBMenu 78, 6, 4       'Natural
+            '--> Natural sub-menu
+            .PutImageToVBMenu 107, 0, 4, 6  'Atmosphere
+            .PutImageToVBMenu 108, 1, 4, 6  'Burn
+            .PutImageToVBMenu 109, 2, 4, 6  'Fog
+            .PutImageToVBMenu 110, 3, 4, 6  'Freeze
+            .PutImageToVBMenu 111, 4, 4, 6  'Lava
+            .PutImageToVBMenu 112, 5, 4, 6  'Ocean
+            .PutImageToVBMenu 113, 6, 4, 6  'Rainbow
+            .PutImageToVBMenu 114, 7, 4, 6  'Steel
+            .PutImageToVBMenu 115, 8, 4, 6  'Water
         .PutImageToVBMenu 79, 7, 4       'Noise
+            '--> Noise sub-menu
+            .PutImageToVBMenu 116, 0, 4, 7  'Add Noise
+            .PutImageToVBMenu 117, 2, 4, 7  'Despeckle
+            .PutImageToVBMenu 118, 3, 4, 7  'Remove Orphan
         .PutImageToVBMenu 80, 8, 4       'Other
+            '--> Other sub-menu
+            .PutImageToVBMenu 126, 0, 4, 8  'Alien
+            .PutImageToVBMenu 127, 1, 4, 8  'Blacklight
+            .PutImageToVBMenu 128, 2, 4, 8  'Dream
+            .PutImageToVBMenu 129, 3, 4, 8  'Radioactive
+            .PutImageToVBMenu 130, 4, 4, 8  'Solarize
+            .PutImageToVBMenu 131, 5, 4, 8  'Synthesize
+            .PutImageToVBMenu 132, 6, 4, 8  'Tile
+            .PutImageToVBMenu 133, 7, 4, 8  'Twins
+            .PutImageToVBMenu 134, 8, 4, 8  'Vibrate
         .PutImageToVBMenu 81, 9, 4       'Rank
+            '--> Rank sub-menu
+            .PutImageToVBMenu 119, 0, 4, 9  'Dilate
+            .PutImageToVBMenu 120, 1, 4, 9  'Erode
+            .PutImageToVBMenu 121, 2, 4, 9  'Extreme
+            .PutImageToVBMenu 122, 4, 4, 9  'Custom Rank
         .PutImageToVBMenu 82, 10, 4      'Sharpen
+            '--> Sharpen sub-menu
+            .PutImageToVBMenu 124, 0, 4, 10 'Unsharp
+            .PutImageToVBMenu 82, 2, 4, 10  'Sharpen
+            .PutImageToVBMenu 123, 3, 4, 10 'Sharpen More
         .PutImageToVBMenu 98, 12, 4      'Custom Filter
         
         'Macro Menu

@@ -568,11 +568,35 @@ Begin VB.MDIForm FormMain
             Shortcut        =   +{F4}
          End
       End
+      Begin VB.Menu MnuFade 
+         Caption         =   "Fade"
+         Begin VB.Menu MnuFadeLow 
+            Caption         =   "Low Fade"
+         End
+         Begin VB.Menu MnuFadeMedium 
+            Caption         =   "Medium Fade"
+         End
+         Begin VB.Menu MnuFadeHigh 
+            Caption         =   "High Fade"
+         End
+         Begin VB.Menu MnuCustomFade 
+            Caption         =   "Custom Fade..."
+         End
+         Begin VB.Menu MnuFadeSepBar1 
+            Caption         =   "-"
+         End
+         Begin VB.Menu MnuUnfade 
+            Caption         =   "Unfade"
+         End
+      End
       Begin VB.Menu MnuGrayscale 
          Caption         =   "Grayscale..."
       End
       Begin VB.Menu MnuInvertTop 
          Caption         =   "Invert"
+         Begin VB.Menu MnuCompoundInvert 
+            Caption         =   "Compound Invert"
+         End
          Begin VB.Menu MnuNegative 
             Caption         =   "Invert CMYK (Film Negative)"
          End
@@ -736,41 +760,8 @@ Begin VB.MDIForm FormMain
          Begin VB.Menu MnuBlackLight 
             Caption         =   "Black Light..."
          End
-         Begin VB.Menu MnuCompoundInvert 
-            Caption         =   "Compound Invert"
-            Begin VB.Menu MnuLCInvert 
-               Caption         =   "Light Invert"
-            End
-            Begin VB.Menu MnuMCInvert 
-               Caption         =   "Medium Invert"
-            End
-            Begin VB.Menu MnuDCInvert 
-               Caption         =   "Dark Invert"
-            End
-         End
          Begin VB.Menu MnuDream 
             Caption         =   "Dream"
-         End
-         Begin VB.Menu MnuFade 
-            Caption         =   "Fade"
-            Begin VB.Menu MnuFadeLow 
-               Caption         =   "Low Fade"
-            End
-            Begin VB.Menu MnuFadeMedium 
-               Caption         =   "Medium Fade"
-            End
-            Begin VB.Menu MnuFadeHigh 
-               Caption         =   "High Fade"
-            End
-            Begin VB.Menu MnuCustomFade 
-               Caption         =   "Custom Fade..."
-            End
-            Begin VB.Menu MnuFadeSepBar1 
-               Caption         =   "-"
-            End
-            Begin VB.Menu MnuUnfade 
-               Caption         =   "Unfade"
-            End
          End
          Begin VB.Menu MnuRadioactive 
             Caption         =   "Radioactive"
@@ -811,17 +802,17 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuSharpenUpper 
          Caption         =   "Sharpen"
+         Begin VB.Menu MnuUnsharp 
+            Caption         =   "Remove Blur (Unsharp)"
+         End
+         Begin VB.Menu MnuSharpenSepBar0 
+            Caption         =   "-"
+         End
          Begin VB.Menu MnuSharpen 
             Caption         =   "Sharpen"
          End
          Begin VB.Menu MnuSharpenMore 
             Caption         =   "Sharpen More"
-         End
-         Begin VB.Menu MnuSharpenSepBar0 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuUnsharp 
-            Caption         =   "Unsharp"
          End
       End
       Begin VB.Menu MnuFilterSepBar1 
@@ -1236,6 +1227,10 @@ Private Sub MnuComicBook_Click()
     Process ComicBook
 End Sub
 
+Private Sub MnuCompoundInvert_Click()
+    Process CompoundInvert, 128
+End Sub
+
 Private Sub MnuCountColors_Click()
     Process CountColors
 End Sub
@@ -1266,10 +1261,6 @@ End Sub
 
 Private Sub MnuCustomRank_Click()
     Process CustomRank, , , , , , , , , , True
-End Sub
-
-Private Sub MnuDCInvert_Click()
-    Process DarkCompoundInvert, 192
 End Sub
 
 Private Sub MnuDespeckle_Click()
@@ -1434,16 +1425,8 @@ Private Sub MnuLava_Click()
     Process Lava
 End Sub
 
-Private Sub MnuLCInvert_Click()
-    Process LightCompoundInvert, 64
-End Sub
-
 Private Sub MnuMaximum_Click()
     Process RankMaximum
-End Sub
-
-Private Sub MnuMCInvert_Click()
-    Process MediumCompoundInvert, 128
 End Sub
 
 Private Sub MnuMinimizeAllWindows_Click()
