@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Area"
 'Filter (Area) Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 20/Apr/12
-'Last update: copied over optimizations and comments from my standalone Custom Filter project (on tannerhelland.com)
+'Last updated: 28/August/12
+'Last update: fixed potential out-of-range error on Grid Blur
 'Still needs: -removal of goto numbers (text labels are preferable)
 '             -interpolation for isometric conversion
 '
@@ -520,6 +520,9 @@ Public Sub FilterGridBlur()
         tR = (rax(x) + ray(y)) \ xCalc
         tG = (gax(x) + gay(y)) \ xCalc
         tB = (bax(x) + bay(y)) \ xCalc
+        If tR > 255 Then tR = 255
+        If tG > 255 Then tG = 255
+        If tB > 255 Then tB = 255
         ImageData(QuickVal + 2, y) = tR
         ImageData(QuickVal + 1, y) = tG
         ImageData(QuickVal, y) = tB
