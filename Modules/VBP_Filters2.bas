@@ -545,10 +545,7 @@ Public Sub TempHolderForUnplacedFilters()
         b = (b - TC) * 5
 End Sub
 
-
-
-
-'HSL conversion crap
+'HSL <-> RGB conversion routines
 Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, s As Single, l As Single)
 Dim Max As Single
 Dim Min As Single
@@ -593,8 +590,8 @@ Dim rR As Single, rG As Single, rB As Single
         'end {Chromatic Case}
       End If
 
-'Tanner's hack: transfer the values into ones I can use, dangit; this gives me
-'hue on [0,240], saturation on [0,255], and luminance on [0,255]
+'Tanner's hack: if byte values are preferred to floating-point, this code will return hue on [0,240],
+' saturation on [0,255], and luminance on [0,255]
     'H = Int(H * 40 + 40)
     'S = Int(S * 255)
     'L = Int(L * 255)
@@ -656,6 +653,13 @@ Dim Min As Single, Max As Single
             
    End If
    r = rR * 255: g = rG * 255: b = rB * 255
+   
+   'Failsafe added 29 August '12
+   'This should never return RGB values > 255, but it doesn't hurt to make sure:
+   If r > 255 Then r = 255
+   If g > 255 Then g = 255
+   If b > 255 Then b = 255
+   
 End Sub
 
 'Return the maximum of three variables
