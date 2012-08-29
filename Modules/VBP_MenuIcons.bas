@@ -186,7 +186,22 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("OTHER", "CUSTOM")       '80
         .AddImageFromStream LoadResData("RANK", "CUSTOM")        '81
         .AddImageFromStream LoadResData("SHARPEN", "CUSTOM")     '82
-        .AddImageFromStream LoadResData("CUSTFILTER", "CUSTOM")  '83
+        .AddImageFromStream LoadResData("ANTIQUE", "CUSTOM")     '83
+        .AddImageFromStream LoadResData("COMICBOOK", "CUSTOM")   '84
+        .AddImageFromStream LoadResData("MOSAIC", "CUSTOM")      '85
+        .AddImageFromStream LoadResData("PENCIL", "CUSTOM")      '86
+        .AddImageFromStream LoadResData("RELIEF", "CUSTOM")      '87
+        .AddImageFromStream LoadResData("ANTIALIAS", "CUSTOM")   '88
+        .AddImageFromStream LoadResData("SOFTEN", "CUSTOM")      '89
+        .AddImageFromStream LoadResData("SOFTENMORE", "CUSTOM")  '90
+        .AddImageFromStream LoadResData("BLUR2", "CUSTOM")       '91
+        .AddImageFromStream LoadResData("BLURMORE", "CUSTOM")    '92
+        .AddImageFromStream LoadResData("GAUSSBLUR", "CUSTOM")   '93
+        .AddImageFromStream LoadResData("GAUSSBLURMOR", "CUSTOM") '94
+        .AddImageFromStream LoadResData("GRIDBLUR", "CUSTOM")    '95
+        .AddImageFromStream LoadResData("DIFFUSEMORE", "CUSTOM") '96
+        .AddImageFromStream LoadResData("DIFFUSECUST", "CUSTOM") '97
+        .AddImageFromStream LoadResData("CUSTFILTER", "CUSTOM")  '98
         
         
         'File Menu
@@ -238,24 +253,20 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 47, 1, 3      'Gamma Correction
         .PutImageToVBMenu 48, 2, 3      'Levels
         .PutImageToVBMenu 49, 3, 3      'White Balance
-        
         .PutImageToVBMenu 50, 5, 3      'Histogram
             '--> Histogram sub-menu
             .PutImageToVBMenu 50, 0, 3, 5   'Display Histogram
             .PutImageToVBMenu 51, 1, 3, 5   'Equalize
             .PutImageToVBMenu 52, 2, 3, 5   'Stretch
-            
         .PutImageToVBMenu 53, 7, 3      'Color Shift
             '--> Color-Shift sub-menu
             .PutImageToVBMenu 53, 0, 3, 7   'Shift Right
             .PutImageToVBMenu 54, 1, 3, 7   'Shift Left
-            
         .PutImageToVBMenu 57, 8, 3      'Rechannel
             '--> Rechannel sub-menu
             .PutImageToVBMenu 55, 0, 3, 8   'Red
             .PutImageToVBMenu 56, 1, 3, 8   'Green
             .PutImageToVBMenu 57, 2, 3, 8   'Blue
-            
         .PutImageToVBMenu 58, 10, 3      'Black and White
         .PutImageToVBMenu 59, 11, 3      'Colorize
         .PutImageToVBMenu 60, 12, 3      'Enhance
@@ -264,14 +275,12 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 62, 1, 3, 12   'Highlights
             .PutImageToVBMenu 63, 2, 3, 12   'Midtones
             .PutImageToVBMenu 64, 3, 3, 12   'Shadows
-            
         .PutImageToVBMenu 65, 13, 3      'Grayscale
         .PutImageToVBMenu 66, 14, 3      'Invert
             '--> Invert sub-menu
             .PutImageToVBMenu 67, 0, 3, 14   'Invert CMYK
             .PutImageToVBMenu 68, 1, 3, 14   'Invert Hue
             .PutImageToVBMenu 69, 2, 3, 14   'Invert RGB
-            
         .PutImageToVBMenu 70, 15, 3      'Posterize
         .PutImageToVBMenu 71, 16, 3      'Reduce Colors
         .PutImageToVBMenu 72, 18, 3      'Count Colors
@@ -279,15 +288,34 @@ Public Sub LoadMenuIcons()
         'Filters Menu
         .PutImageToVBMenu 73, 0, 4       'Fade Last
         .PutImageToVBMenu 74, 2, 4       'Artistic
+            '--> Artistic sub-menu
+            .PutImageToVBMenu 83, 0, 4, 2   'Antique (Sepia)
+            .PutImageToVBMenu 84, 1, 4, 2   'Comic Book
+            .PutImageToVBMenu 85, 2, 4, 2   'Mosaic
+            .PutImageToVBMenu 86, 3, 4, 2   'Pencil
+            .PutImageToVBMenu 87, 4, 4, 2   'Relief
         .PutImageToVBMenu 75, 3, 4       'Blur
+            '--> Blur sub-menu
+            .PutImageToVBMenu 88, 0, 4, 3   'Antialias
+            .PutImageToVBMenu 89, 2, 4, 3   'Soften
+            .PutImageToVBMenu 90, 3, 4, 3   'Soften More
+            .PutImageToVBMenu 91, 4, 4, 3   'Blur
+            .PutImageToVBMenu 92, 5, 4, 3   'Blur More
+            .PutImageToVBMenu 93, 6, 4, 3   'Gaussian Blur
+            .PutImageToVBMenu 94, 7, 4, 3   'Gaussian Blur More
+            .PutImageToVBMenu 95, 9, 4, 3   'Grid Blur
         .PutImageToVBMenu 76, 4, 4       'Diffuse
+            '--> Diffuse sub-menu
+            .PutImageToVBMenu 76, 0, 4, 4   'Diffuse
+            .PutImageToVBMenu 96, 1, 4, 4   'Diffuse More
+            .PutImageToVBMenu 97, 3, 4, 4   'Diffuse (Custom)
         .PutImageToVBMenu 77, 5, 4       'Edges
         .PutImageToVBMenu 78, 6, 4       'Natural
         .PutImageToVBMenu 79, 7, 4       'Noise
         .PutImageToVBMenu 80, 8, 4       'Other
         .PutImageToVBMenu 81, 9, 4       'Rank
         .PutImageToVBMenu 82, 10, 4      'Sharpen
-        .PutImageToVBMenu 83, 12, 4       'Custom Filter
+        .PutImageToVBMenu 98, 12, 4      'Custom Filter
         
         'Macro Menu
         .PutImageToVBMenu 36, 0, 5     'Open Macro
