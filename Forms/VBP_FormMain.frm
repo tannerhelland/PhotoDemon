@@ -607,11 +607,8 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuArtisticUpper 
          Caption         =   "Artistic"
-         Begin VB.Menu MnuAnimate 
-            Caption         =   "Animate"
-         End
          Begin VB.Menu MnuAntique 
-            Caption         =   "Antique"
+            Caption         =   "Antique (Sepia)"
          End
          Begin VB.Menu MnuComicBook 
             Caption         =   "Comic Book"
@@ -1116,9 +1113,9 @@ Private Sub MnuAbout_Click()
     FormAbout.Show 1, FormMain
 End Sub
 
-Private Sub MnuAnimate_Click()
-    Process Animate
-End Sub
+'Private Sub MnuAnimate_Click()
+'    Process Animate
+'End Sub
 
 Private Sub MnuAntialias_Click()
     Process Antialias
