@@ -53,8 +53,7 @@ Option Explicit
 'Current zoom level
 'Two save flags (e.g. which format the image was saved in, and any attached parameters - such as JPEG quality)
 
-'Eventually, it might be nice to add the following information:
-' Full image data (instead of storing it in a picture box, as we do now)
+'Layer's image data (stored as a DIB inside this layer class)
 
     Public ImageID As Long
 
@@ -119,6 +118,9 @@ Option Explicit
     
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user
     Public forInternalUseOnly As Boolean
+    
+    'Layer's image data (stored as a DIB inside this layer class)
+    Public mainLayer As pdLayer
     
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface
@@ -317,5 +319,8 @@ Private Sub Class_Initialize()
     
     'Set up the process ID array
     ReDim UndoIDs(0 To 0) As Long
+    
+    'Initialize the main layer (currently, just the image data - layers aren't actually implemented)
+    Set mainLayer = New pdLayer
     
 End Sub

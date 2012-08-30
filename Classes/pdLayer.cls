@@ -102,12 +102,14 @@ Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long,
 
 'DIB API functions
 ' (Note that these are currently declared in FastDrawing as well)
+Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BitmapInfoHeader, ByVal wUsage As Long, lpBits As Long, ByVal handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BitmapInfo, ByVal wUsage As Long) As Long
 Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BitmapInfo, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 
 'Object API functions
@@ -118,7 +120,7 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 
 'Rectangle objects to be used with brushes
 Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT2, ByVal hBrush As Long) As Long
+Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 
 'Brush creation
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
@@ -157,7 +159,41 @@ End Function
 
 'Return this layer's height
 Public Function getLayerHeight() As Long
-    getLayerWidth = layerHeight
+    getLayerHeight = layerHeight
+End Function
+
+'Return whether or not this layer has image data associated with it
+Public Function hasImage() As Boolean
+    hasImage = (layerDIB <> 0)
+End Function
+
+Public Function getLayerDC() As Long
+    getLayerDC = layerDC
+End Function
+
+'Make a copy of an existing layer
+Public Function createFromExistingLayer(ByRef srcLayer As pdLayer) As Boolean
+
+    'Make sure the layer we're passed isn't empty
+    If srcLayer.getLayerDC <> 0 Then
+    
+        'Create a new, blank DIB the same size as the source layer
+        If createBlank(srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerColorDepth) Then
+    
+            'Copy the image data from that DC to this one
+            BitBlt layerDC, 0, 0, layerWidth, layerHeight, srcLayer.getLayerDC(), 0, 0, vbSrcCopy
+    
+            createFromExistingLayer = True
+            Exit Function
+                    
+        End If
+            
+        createFromExistingLayer = False
+    
+    End If
+    
+    createFromExistingLayer = False
+
 End Function
 
 'Give this layer a picture from a standard VB picture object
@@ -171,7 +207,7 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
         
             'Select the picture's attributes into a bitmap object
             Dim tmpBitmap As Bitmap
-            GetObject srcPicture.Handle, Len(tmpBitmap), tmpBitmap
+            GetObject srcPicture.handle, Len(tmpBitmap), tmpBitmap
             
             'Use that bitmap object to create a new, blank DIB of the same size
             If createBlank(tmpBitmap.Width, tmpBitmap.Height) Then
@@ -185,13 +221,13 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
                 
                     'Temporary holder for the object selection
                     Dim oldBitmap As Long
-                    oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
+                    oldBitmap = SelectObject(tmpDC, srcPicture.handle)
                     
                     'Use BitBlt to copy the pixel data to this layer
                     BitBlt layerDC, 0, 0, layerWidth, layerHeight, tmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
-                    SelectObject tmpDC, tmpBitmap
+                    SelectObject tmpDC, oldBitmap
                     DeleteDC tmpDC
                 
                     'Success!
@@ -214,11 +250,6 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
     
     createFromPicture = False
 
-End Function
-
-'Return a reference to the StdPicture object associated with this layer
-Public Function getLayerPicture() As StdPicture
-    getLayerPicture = layerPicture
 End Function
 
 'Take a given array and fill it with the image's pixel data (DIB-style)
@@ -278,7 +309,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
             
             Dim hBrush As Long
             hBrush = CreateSolidBrush(backColor)
-            FillRect layerDC, tRECT, hBrush
+            FillRect layerDC, layerRect, hBrush
             DeleteObject hBrush
         
         'If DIB creation failed, clear out the work we've done so far
@@ -289,7 +320,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     End If
     
     'Return success contingent on whether we have a DIB pointer or not
-    createLayer = (layerDIB <> 0)
+    createBlank = (layerDIB <> 0)
     
 End Function
 
