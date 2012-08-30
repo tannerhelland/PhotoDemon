@@ -44,4 +44,129 @@ Attribute VB_Exposed = False
 '
 'Let the fun begin.
 '
+'Note: this work is based off a DIB class written by Herman Liu, and his help was invaluable in testing this.  Many thanks.
+'
 '***************************************************************************
+
+Option Explicit
+
+'DIB API functions
+' (Note that these are currently declared in FastDrawing as well)
+Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
+Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BitmapInfo, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BitmapInfo, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+
+'Clean-up API functions
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
+
+'DIB Types
+Private Type RGBQuad
+    Blue As Byte
+    Green As Byte
+    Red As Byte
+    Alpha As Byte
+End Type
+
+Private Type Bitmap
+    Type As Long
+    Width As Long
+    Height As Long
+    WidthBytes As Long
+    Planes As Integer
+    BitsPerPixel As Integer
+    Bits As Long
+End Type
+
+Private Type BitmapInfoHeader
+    Size As Long
+    Width As Long
+    Height As Long
+    Planes As Integer
+    BitCount As Integer
+    Compression As Long
+    ImageSize As Long
+    XPelsPerMeter As Long
+    YPelsPerMeter As Long
+    ColorUsed As Long
+    ColorImportant As Long
+End Type
+
+Private Type BitmapInfo
+    Header As BitmapInfoHeader
+    Colors(0 To 255) As RGBQuad
+End Type
+
+'Variables related to the DIB
+'Public layerDC As Long
+
+'An StdPicture associated with this layer
+Private layerPicture As StdPicture
+
+'The image's width and height
+Private lWidth As Long, lHeight As Long
+
+'Return this layer's width
+Public Function getLayerWidth() As Long
+    getLayerWidth = lWidth
+End Function
+
+'Return this layer's height
+Public Function getLayerheight() As Long
+    getLayerWidth = lHeight
+End Function
+
+
+'Give this layer a picture from a standard VB picture object
+Public Function setLayerPicture(ByRef srcPicture As StdPicture) As Boolean
+
+    'Erase the current picture object
+    If layerPicture <> Nothing Then Set layerPicture = Nothing
+    
+    'Re-initialize the picture object and copy the image data
+    Set layerPicture = New StdPicture
+    Set layerPicture = srcPicture
+
+    
+
+    'If we reached this point, the set was successful
+    setLayerPicture = True
+
+End Function
+
+'Return a reference to the StdPicture object associated with this layer
+Public Function getLayerPicture() As StdPicture
+    getLayerPicture = layerPicture
+End Function
+
+'Take a given array and fill it with the image's pixel data (DIB-style)
+Public Function getLayerArray(ByRef arrayToFill() As Byte) As Boolean
+
+End Function
+
+
+' Simplified and for 24 or 32-BPP only
+Public Function initializeLayer(ByVal iWidth As Long, ByVal iHeight As Long, Optional colorDepth As Long = 24) As Boolean
+    
+End Function
+
+'This will effectively reset everything related to this layer, including image data.  Use cautiously!
+Public Function eraseLayer()
+
+    'If we have image data, clear it out
+    If layerDC <> -1 Then
+    
+    End If
+
+    'Return the associated DIB section DC to zero
+    layerDC = -1
+
+End Function
+
+'INITIALIZE class
+Private Sub Class_Initialize()
+
+    'Set the layer's DC to -1; this lets us know that it has not been initialized yet
+    layerDC = -1
+
+End Sub

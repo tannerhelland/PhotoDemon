@@ -92,6 +92,7 @@ Form=Forms\VBP_FormSoftwareUpdates.frm
 Module=SoftwareUpdater; Modules\VBP_SoftwareUpdater.bas
 Form=Forms\VBP_FormTile.frm
 ResFile32="Resources\PD_icons.RES"
+Class=pdLayer; Classes\pdLayer.cls
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""

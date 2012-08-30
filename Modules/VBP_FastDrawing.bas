@@ -31,17 +31,17 @@ Public Type Bitmap
 End Type
 
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
-Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BitmapInfo, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BitmapInfo, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
-Type RGBQUAD
-        rgbBlue As Byte
-        rgbGreen As Byte
-        rgbRed As Byte
-        rgbReserved As Byte
+Private Type RGBQuad
+    Blue As Byte
+    Green As Byte
+    Red As Byte
+    Alpha As Byte
 End Type
 
-Type BITMAPINFOHEADER
+Private Type BitmapInfoHeader
         biSize As Long
         biWidth As Long
         biHeight As Long
@@ -55,9 +55,9 @@ Type BITMAPINFOHEADER
         biClrImportant As Long
 End Type
 
-Type BITMAPINFO
-        bmiHeader As BITMAPINFOHEADER
-        bmiColors(0 To 255) As RGBQUAD
+Private Type BitmapInfo
+        bmiHeader As BitmapInfoHeader
+        bmiColors(0 To 255) As RGBQuad
 End Type
 'END DIB DECLARATIONS
 
@@ -96,7 +96,7 @@ Public Sub GetImageData(Optional ByVal CorrectOrientation As Boolean = False)
     
     'Bitmap data types required by the DIB section API calls
     Dim bm As Bitmap
-    Dim bmi As BITMAPINFO
+    Dim bmi As BitmapInfo
     
     'The size of the image array - we need to use some specialized math to ensure the API will work with it
     Dim ArrayWidth As Long, ArrayHeight As Long
@@ -178,7 +178,7 @@ Public Sub SetImageData(Optional ByVal CorrectOrientation As Boolean = False)
     PicHeightL = PicHeightL + 1
     
     'Just like GetImageData, we need to populate a bitmap-type variable with values corresponding to the current image data
-    Dim bmi As BITMAPINFO
+    Dim bmi As BitmapInfo
     bmi.bmiHeader.biSize = 40
     bmi.bmiHeader.biWidth = PicWidthL
     
@@ -214,7 +214,7 @@ End Sub
 Public Sub GetPreviewData(ByRef SrcPic As PictureBox, Optional ByVal CorrectOrientation As Boolean = False)
 
     Dim bm As Bitmap
-    Dim bmi As BITMAPINFO
+    Dim bmi As BitmapInfo
     Dim ArrayWidth As Long, ArrayHeight As Long
 
     GetObject SrcPic.Image, Len(bm), bm
@@ -260,7 +260,7 @@ End Sub
 Public Sub SetPreviewData(ByRef dstPic As PictureBox, Optional ByVal CorrectOrientation As Boolean = False)
     
     Dim bm As Bitmap
-    Dim bmi As BITMAPINFO
+    Dim bmi As BitmapInfo
 
     GetObject dstPic.Image, Len(bm), bm
 
@@ -285,7 +285,7 @@ End Sub
 Public Sub GetImageData2(Optional ByVal CorrectOrientation As Boolean = False)
     
     Dim bm As Bitmap
-    Dim bmi As BITMAPINFO
+    Dim bmi As BitmapInfo
     Dim ArrayWidth As Long, ArrayHeight As Long
 
     GetObject FormMain.ActiveForm.BackBuffer2.Image, Len(bm), bm
@@ -337,7 +337,7 @@ Public Sub SetImageData2(Optional ByVal CorrectOrientation As Boolean = False)
     
     Message "Rendering image to screen..."
     
-    Dim bmi As BITMAPINFO
+    Dim bmi As BitmapInfo
 
     PicWidthL = PicWidthL + 1
     PicHeightL = PicHeightL + 1
