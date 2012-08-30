@@ -444,7 +444,7 @@ Dim Byte2 As Byte
 Dim Byte3 As Byte
 Dim Byte4 As Byte
 Dim Größe As Long
-On Error Resume Next
+On Error GoTo allesfertig
 Dim Bytefertig() As Byte
 ReDim Bytefertig(3)
 If Bildbreite Mod 2 <> 0 Then
