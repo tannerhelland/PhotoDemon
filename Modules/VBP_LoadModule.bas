@@ -104,7 +104,7 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.HWnd, "AAA", True
+    SetIcon FormMain.hWnd, "AAA", True
     
     'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
@@ -307,6 +307,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 Exit Sub
             End If
         End If
+        
+        'DOHL: Attempt to load this image data into the pdImage object
+        Dim testSuccess As Boolean
+        testSuccess = pdImages(CurrentImage).mainLayer.createFromPicture(FormMain.ActiveForm.BackBuffer.Picture)
+        If testSuccess = False Then MsgBox "WTF"
+        '/DOHL
         
         'If the form isn't maximized or minimized then set its dimensions to just slightly bigger than the image size
         Message "Resizing image to fit screen..."
@@ -539,7 +545,7 @@ Public Sub LoadBMP(ByVal BMPFile As String)
     FormMain.ActiveForm.BackBuffer.Picture = LoadPicture(BMPFile)
     FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
     FormMain.ActiveForm.BackBuffer.Refresh
-
+    
 End Sub
 
 'UNDO loading

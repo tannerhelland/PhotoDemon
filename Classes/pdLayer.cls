@@ -70,7 +70,7 @@ Private Type Bitmap
     Bits As Long
 End Type
 
-Private Type BitmapInfoHeader
+Private Type BITMAPINFOHEADER
     Size As Long
     Width As Long
     Height As Long
@@ -80,12 +80,12 @@ Private Type BitmapInfoHeader
     ImageSize As Long
     XPelsPerMeter As Long
     YPelsPerMeter As Long
-    ColorUsed As Long
+    Colorused As Long
     ColorImportant As Long
 End Type
 
-Private Type BitmapInfo
-    Header As BitmapInfoHeader
+Private Type BITMAPINFO
+    Header As BITMAPINFOHEADER
     Colors(0 To 255) As RGBQuad
 End Type
 
@@ -97,25 +97,43 @@ Private Type RECT
     y2 As Long
 End Type
 
+'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
+Private Type SAFEARRAYBOUND
+    cElements As Long
+    lBound   As Long
+End Type
+
+Private Type SAFEARRAY2D
+    cDims      As Integer
+    fFeatures  As Integer
+    cbElements As Long
+    cLocks     As Long
+    pvData     As Long
+    Bounds(1)  As SAFEARRAYBOUND
+End Type
+
+
 'API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 
 'DIB API functions
 ' (Note that these are currently declared in FastDrawing as well)
-Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BitmapInfoHeader, ByVal wUsage As Long, lpBits As Long, ByVal handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
-Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BitmapInfo, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BitmapInfo, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
 
 'Object API functions
 Private Const OBJ_BITMAP As Long = 7
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GetObjectType Lib "gdi32" (ByVal hGDIObj As Long) As Long
+Private Declare Function GetObjectType Lib "gdi32" (ByVal hgdiobj As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Rectangle objects to be used with brushes
@@ -136,7 +154,7 @@ Private layerDIBOriginal As Long
 'Pointer to the actual DIB bits
 Private layerDIBits As Long
 'Persistent DIB header; this will be used to create the DIB associated with this layer
-Private layerDIBHeader As BitmapInfoHeader
+Private layerDIBHeader As BITMAPINFOHEADER
 
 'An StdPicture associated with this layer (may or may not be used)
 'Private layerPicture As StdPicture
@@ -144,12 +162,20 @@ Private layerDIBHeader As BitmapInfoHeader
 'The layer's width and height
 Private layerWidth As Long, layerHeight As Long
 
+'The layer's array width (layerWidth * 4 for 32-bit, varies for 24-bit due to DWORD-alignment)
+Private layerArrayWidth As Long
+
 'The layer's color depth (should only ever be 24 or 32)
 Private layerColorDepth As Long
 
 'Return this layer's color depth
 Public Function getLayerColorDepth() As Long
     getLayerColorDepth = layerColorDepth
+End Function
+
+'Return this layer's array width
+Public Function getLayerArrayWidth() As Long
+    getLayerArrayWidth = layerArrayWidth
 End Function
 
 'Return this layer's width
@@ -169,6 +195,10 @@ End Function
 
 Public Function getLayerDC() As Long
     getLayerDC = layerDC
+End Function
+
+Public Function getLayerDIBits() As Long
+    getLayerDIBits = layerDIBits
 End Function
 
 'Make a copy of an existing layer
@@ -197,7 +227,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer) As Boolean
 End Function
 
 'Give this layer a picture from a standard VB picture object
-Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
+Public Function CreateFromPicture(ByRef srcPicture As StdPicture) As Boolean
 
     'Make sure the picture we're passed isn't empty
     If (Not srcPicture Is Nothing) Then
@@ -207,65 +237,60 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
         
             'Select the picture's attributes into a bitmap object
             Dim tmpBitmap As Bitmap
-            GetObject srcPicture.handle, Len(tmpBitmap), tmpBitmap
+            GetObject srcPicture.Handle, Len(tmpBitmap), tmpBitmap
             
             'Use that bitmap object to create a new, blank DIB of the same size
             If createBlank(tmpBitmap.Width, tmpBitmap.Height) Then
             
                 'Create a new DC
-                Dim tmpDC As Long
-                tmpDC = CreateCompatibleDC(0)
+                Dim TmpDC As Long
+                TmpDC = CreateCompatibleDC(0)
                 
                 'If successful, select the object into that DC
-                If tmpDC <> 0 Then
+                If TmpDC <> 0 Then
                 
                     'Temporary holder for the object selection
                     Dim oldBitmap As Long
-                    oldBitmap = SelectObject(tmpDC, srcPicture.handle)
+                    oldBitmap = SelectObject(TmpDC, srcPicture.Handle)
                     
                     'Use BitBlt to copy the pixel data to this layer
-                    BitBlt layerDC, 0, 0, layerWidth, layerHeight, tmpDC, 0, 0, vbSrcCopy
+                    BitBlt layerDC, 0, 0, layerWidth, layerHeight, TmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
-                    SelectObject tmpDC, oldBitmap
-                    DeleteDC tmpDC
+                    SelectObject TmpDC, oldBitmap
+                    DeleteDC TmpDC
                 
                     'Success!
-                    createFromPicture = True
+                    CreateFromPicture = True
                     Exit Function
                     
                 End If
             
-                createFromPicture = False
+                CreateFromPicture = False
             
             End If
             
-            createFromPicture = False
+            CreateFromPicture = False
         
         End If
         
-        createFromPicture = False
+        CreateFromPicture = False
     
     End If
     
-    createFromPicture = False
-
-End Function
-
-'Take a given array and fill it with the image's pixel data (DIB-style)
-Public Function getLayerArray(ByRef arrayToFill() As Byte) As Boolean
+    CreateFromPicture = False
 
 End Function
 
 ' Simplified and for 24 or 32-BPP only
-Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 32, Optional ByVal backColor As Long = vbWhite) As Boolean
+Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite) As Boolean
     
     'Erase any existing layer data
     eraseLayer
     
     'PhotoDemon only supports 24 and 32 BPP at present
     If colorDepth <> 32 And colorDepth <> 24 Then
-        colorDepth = 32
+        colorDepth = 24
     End If
     
     'Remember this color depth, width, and height
@@ -278,15 +303,16 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         .Size = Len(layerDIBHeader)
         .Planes = 1
         'This could be 24; for now, I'm using only 32 as part of the test implementation
-        .BitCount = 32
+        .BitCount = colorDepth
         .Width = iWidth
         .Height = -iHeight
         'As always, this value needs to be a multiple of four; with 32bpp that's automatic, with 24bpp it is not
         If colorDepth = 32 Then
-            .ImageSize = 4 * iWidth * iHeight
+            layerArrayWidth = 4 * iWidth
         Else
-            .ImageSize = ((iWidth * 3 + 3) And &HFFFFFFFC) * iHeight
+            layerArrayWidth = (iWidth * 3 + 3) And &HFFFFFFFC
         End If
+        .ImageSize = layerArrayWidth * iHeight
     End With
     
     'Create a new DC for use with this layer
@@ -308,7 +334,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
             SetRect layerRect, 0, 0, iWidth, iHeight
             
             Dim hBrush As Long
-            hBrush = CreateSolidBrush(backColor)
+            hBrush = CreateSolidBrush(BackColor)
             FillRect layerDC, layerRect, hBrush
             DeleteObject hBrush
         

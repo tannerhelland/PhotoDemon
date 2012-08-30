@@ -46,14 +46,16 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 
     'When zoomed out, specify halftone mode (for limited resampling).  Otherwise, nearest-neighbor sampling is fine.
     If FormMain.CmbZoom.ListIndex >= 15 Then
-        SetStretchBltMode formToBuffer.FrontBuffer.hdc, STRETCHBLT_COLORONCOLOR
+        SetStretchBltMode formToBuffer.FrontBuffer.hDC, STRETCHBLT_COLORONCOLOR
     Else
-        SetStretchBltMode formToBuffer.FrontBuffer.hdc, STRETCHBLT_HALFTONE
+        SetStretchBltMode formToBuffer.FrontBuffer.hDC, STRETCHBLT_HALFTONE
     End If
     
     'Paint the image from the back buffer to the front buffer
     If ZoomVal <= 1 Then
-        StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, formToBuffer.BackBuffer.hdc, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
+        'StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, formToBuffer.BackBuffer.hDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
+        'DOHC: Attempt to perform the StretchBlt call from the in-memory object
+        StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
     Else
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
@@ -62,7 +64,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         SrcWidth = bltWidth / ZoomVal
         bltHeight = pdImages(formToBuffer.Tag).targetHeight + (Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue)) - (pdImages(formToBuffer.Tag).targetHeight Mod Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue))))
         SrcHeight = bltHeight / ZoomVal
-        StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, formToBuffer.BackBuffer.hdc, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
+        'StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, formToBuffer.BackBuffer.hDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
+        'DOHC: Attempt to perform the StretchBlt call from the in-memory object
+        StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
     End If
     formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
     

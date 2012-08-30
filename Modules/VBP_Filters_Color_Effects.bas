@@ -15,14 +15,27 @@ Option Explicit
 'Invert an image
 Public Sub MenuInvert()
         
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+
+    prepSafeArray tmpSA
+    
+    '"Copy" the bits data over (in reality, simply copy over the array reference)
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
     Message "Inverting the image..."
     SetProgBarMax PicWidthL
     
-    GetImageData
-    Dim QuickVal As Long
+    'GetImageData
+    
+    PicWidthL = pdImages(CurrentImage).mainLayer.getLayerWidth - 1
+    PicHeightL = pdImages(CurrentImage).mainLayer.getLayerHeight - 1
+            
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = pdImages(CurrentImage).mainLayer.getLayerColorDepth \ 8
 
     For x = 0 To PicWidthL
-        QuickVal = x * 3
+        QuickVal = x * qvDepth
     For y = 0 To PicHeightL
         ImageData(QuickVal, y) = 255 Xor ImageData(QuickVal, y)
         ImageData(QuickVal + 1, y) = 255 Xor ImageData(QuickVal + 1, y)
@@ -31,7 +44,16 @@ Public Sub MenuInvert()
         If x Mod 10 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    'SetImageData
+    
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
+    SetProgBarVal 0
+        
+    'Pass control to the viewport renderer, which will make the new image actually appear on-screen
+    ScrollViewport FormMain.ActiveForm
 
 End Sub
 

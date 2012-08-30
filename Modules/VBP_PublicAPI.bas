@@ -7,6 +7,25 @@ Attribute VB_Name = "Public_API"
 
 Option Explicit
 
+'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
+Public Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
+
+Public Type SAFEARRAYBOUND
+    cElements As Long
+    lBound   As Long
+End Type
+
+Public Type SAFEARRAY2D
+    cDims      As Integer
+    fFeatures  As Integer
+    cbElements As Long
+    cLocks     As Long
+    pvData     As Long
+    Bounds(1)  As SAFEARRAYBOUND
+End Type
+
+
 'Drawing calls
 Public Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal rastOp As Long) As Boolean
 Public Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long

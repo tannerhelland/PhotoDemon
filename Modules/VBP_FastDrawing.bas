@@ -31,8 +31,8 @@ Private Type Bitmap
 End Type
 
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
-Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BitmapInfo, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BitmapInfo, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 Private Type RGBQuad
     Blue As Byte
@@ -41,7 +41,7 @@ Private Type RGBQuad
     Alpha As Byte
 End Type
 
-Private Type BitmapInfoHeader
+Private Type BITMAPINFOHEADER
         biSize As Long
         biWidth As Long
         biHeight As Long
@@ -55,11 +55,15 @@ Private Type BitmapInfoHeader
         biClrImportant As Long
 End Type
 
-Private Type BitmapInfo
-        bmiHeader As BitmapInfoHeader
+Private Type BITMAPINFO
+        bmiHeader As BITMAPINFOHEADER
         bmiColors(0 To 255) As RGBQuad
 End Type
 'END DIB DECLARATIONS
+
+'DOHL TEST DECLARATIONS
+Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 
 'To prevent double-image loading errors
 Private AllowPreview As Boolean
@@ -93,10 +97,10 @@ End Function
 ' It works any color mode, but it will always force image data into a 24-bit color array.
 ' If you want to work with data of another color depth, PhotoDemon is not the project for you.  ;)
 Public Sub GetImageData(Optional ByVal CorrectOrientation As Boolean = False)
-    
+   
     'Bitmap data types required by the DIB section API calls
     Dim bm As Bitmap
-    Dim bmi As BitmapInfo
+    Dim bmi As BITMAPINFO
     
     'The size of the image array - we need to use some specialized math to ensure the API will work with it
     Dim ArrayWidth As Long, ArrayHeight As Long
@@ -178,7 +182,7 @@ Public Sub SetImageData(Optional ByVal CorrectOrientation As Boolean = False)
     PicHeightL = PicHeightL + 1
     
     'Just like GetImageData, we need to populate a bitmap-type variable with values corresponding to the current image data
-    Dim bmi As BitmapInfo
+    Dim bmi As BITMAPINFO
     bmi.bmiHeader.biSize = 40
     bmi.bmiHeader.biWidth = PicWidthL
     
@@ -211,13 +215,13 @@ Public Sub SetImageData(Optional ByVal CorrectOrientation As Boolean = False)
 End Sub
 
 'Used to draw preview images (for example, on filter forms).  See above GetImageData for comments
-Public Sub GetPreviewData(ByRef SrcPic As PictureBox, Optional ByVal CorrectOrientation As Boolean = False)
+Public Sub GetPreviewData(ByRef srcPic As PictureBox, Optional ByVal CorrectOrientation As Boolean = False)
 
     Dim bm As Bitmap
-    Dim bmi As BitmapInfo
+    Dim bmi As BITMAPINFO
     Dim ArrayWidth As Long, ArrayHeight As Long
 
-    GetObject SrcPic.Image, Len(bm), bm
+    GetObject srcPic.Image, Len(bm), bm
     bmi.bmiHeader.biSize = 40
     bmi.bmiHeader.biWidth = bm.bmWidth
     bmi.bmiHeader.biHeight = bm.bmHeight
@@ -232,10 +236,10 @@ Public Sub GetPreviewData(ByRef SrcPic As PictureBox, Optional ByVal CorrectOrie
     ReDim ImageData(0 To ArrayWidth, 0 To ArrayHeight) As Byte
     
     If CorrectOrientation = False Then
-        GetDIBits SrcPic.hDC, SrcPic.Image, 0, bm.bmHeight, ImageData(0, 0), bmi, 0
+        GetDIBits srcPic.hDC, srcPic.Image, 0, bm.bmHeight, ImageData(0, 0), bmi, 0
     Else
         ReDim TempArray(0 To ArrayWidth, 0 To ArrayHeight) As Byte
-        GetDIBits SrcPic.hDC, SrcPic.Image, 0, bm.bmHeight, TempArray(0, 0), bmi, 0
+        GetDIBits srcPic.hDC, srcPic.Image, 0, bm.bmHeight, TempArray(0, 0), bmi, 0
     End If
 
     If CorrectOrientation = True Then
@@ -260,7 +264,7 @@ End Sub
 Public Sub SetPreviewData(ByRef dstPic As PictureBox, Optional ByVal CorrectOrientation As Boolean = False)
     
     Dim bm As Bitmap
-    Dim bmi As BitmapInfo
+    Dim bmi As BITMAPINFO
 
     GetObject dstPic.Image, Len(bm), bm
 
@@ -285,7 +289,7 @@ End Sub
 Public Sub GetImageData2(Optional ByVal CorrectOrientation As Boolean = False)
     
     Dim bm As Bitmap
-    Dim bmi As BitmapInfo
+    Dim bmi As BITMAPINFO
     Dim ArrayWidth As Long, ArrayHeight As Long
 
     GetObject FormMain.ActiveForm.BackBuffer2.Image, Len(bm), bm
@@ -337,7 +341,7 @@ Public Sub SetImageData2(Optional ByVal CorrectOrientation As Boolean = False)
     
     Message "Rendering image to screen..."
     
-    Dim bmi As BitmapInfo
+    Dim bmi As BITMAPINFO
 
     PicWidthL = PicWidthL + 1
     PicHeightL = PicHeightL + 1
@@ -361,4 +365,21 @@ Public Sub SetImageData2(Optional ByVal CorrectOrientation As Boolean = False)
     
     Message "Finished. "
 
+End Sub
+
+
+'Take a given array and fill it with this layer's pixel data (DIB-style)
+Public Sub prepSafeArray(ByRef tmpSA As SAFEARRAY2D)
+    
+    'Populate the SafeArray variable with appropriate values
+    With tmpSA
+        .cbElements = 1
+        .cDims = 2
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = pdImages(CurrentImage).mainLayer.getLayerHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = pdImages(CurrentImage).mainLayer.getLayerArrayWidth
+        .pvData = pdImages(CurrentImage).mainLayer.getLayerDIBits()
+    End With
+        
 End Sub
