@@ -879,27 +879,27 @@ Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" ( _
 
 'USER32
 Private Declare Function ReleaseDC Lib "user32.dll" ( _
-    ByVal HWnd As Long, _
+    ByVal hWnd As Long, _
     ByVal hDC As Long) As Long
 
 Private Declare Function GetDC Lib "user32.dll" ( _
-    ByVal HWnd As Long) As Long
+    ByVal hWnd As Long) As Long
     
 Private Declare Function GetDesktopWindow Lib "user32.dll" () As Long
     
 Private Declare Function GetDCEx Lib "user32.dll" ( _
-    ByVal HWnd As Long, _
+    ByVal hWnd As Long, _
     ByVal hrgnclip As Long, _
     ByVal fdwOptions As Long) As Long
 
 Private Const DCX_WINDOW As Long = &H1&
    
 Private Declare Function GetWindowRect Lib "user32.dll" ( _
-    ByVal HWnd As Long, _
+    ByVal hWnd As Long, _
     ByRef lpRect As RECT) As Long
 
 Private Declare Function GetClientRect Lib "user32.dll" ( _
-    ByVal HWnd As Long, _
+    ByVal hWnd As Long, _
     ByRef lpRect As RECT) As Long
 
 
@@ -1926,7 +1926,7 @@ Private Const ITOF_USE_COLOR_BITMASK As Long = ITOF_USE_COLOR_TOP_RIGHT_PIXEL Or
                                                ITOF_USE_COLOR_SPECIFIED
 
 
-Public Type RGBQUAD
+Private Type RGBQuad
    rgbBlue As Byte
    rgbGreen As Byte
    rgbRed As Byte
@@ -1940,7 +1940,7 @@ End Type
 '   rgbtRed As Byte
 'End Type
 
-Public Type BITMAPINFOHEADER
+Private Type BitmapInfoHeader
    biSize As Long
    biWidth As Long
    biHeight As Long
@@ -1954,9 +1954,9 @@ Public Type BITMAPINFOHEADER
    biClrImportant As Long
 End Type
 
-Public Type BITMAPINFO
-   bmiHeader As BITMAPINFOHEADER
-   bmiColors(0) As RGBQUAD
+Private Type BitmapInfo
+   bmiHeader As BitmapInfoHeader
+   bmiColors(0) As RGBQuad
 End Type
 
 Public Const BI_RGB As Long = 0
@@ -2028,7 +2028,7 @@ Public Type FREE_IMAGE_TAG
    Count As Long
    Length As Long
    StringValue As String
-   Palette() As RGBQUAD
+   Palette() As RGBQuad
    RationalValue() As FIRATIONAL
    Value As Variant
 End Type
@@ -2247,19 +2247,19 @@ Private Declare Function FreeImage_HasBackgroundColorInt Lib "FreeImage.dll" Ali
            
 Private Declare Function FreeImage_GetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As RGBQUAD) As Long
+           ByRef backColor As RGBQuad) As Long
 
 Private Declare Function FreeImage_GetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As Long) As Long
+           ByRef backColor As Long) As Long
 
 Private Declare Function FreeImage_SetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As RGBQUAD) As Long
+           ByRef backColor As RGBQuad) As Long
            
 Private Declare Function FreeImage_SetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As Long) As Long
+           ByRef backColor As Long) As Long
 
 Public Declare Function FreeImage_GetThumbnail Lib "FreeImage.dll" Alias "_FreeImage_GetThumbnail@4" ( _
            ByVal Bitmap As Long) As Long
@@ -2305,7 +2305,7 @@ Private Declare Function FreeImage_GetPixelColorInt Lib "FreeImage.dll" Alias "_
            ByVal Bitmap As Long, _
            ByVal x As Long, _
            ByVal y As Long, _
-           ByRef Value As RGBQUAD) As Long
+           ByRef Value As RGBQuad) As Long
            
 Private Declare Function FreeImage_GetPixelColorByLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetPixelColor@16" ( _
            ByVal Bitmap As Long, _
@@ -2323,7 +2323,7 @@ Private Declare Function FreeImage_SetPixelColorInt Lib "FreeImage.dll" Alias "_
            ByVal Bitmap As Long, _
            ByVal x As Long, _
            ByVal y As Long, _
-           ByRef Value As RGBQUAD) As Long
+           ByRef Value As RGBQuad) As Long
            
 Private Declare Function FreeImage_SetPixelColorByLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetPixelColor@16" ( _
            ByVal Bitmap As Long, _
@@ -2858,8 +2858,8 @@ Private Declare Function FreeImage_ApplyColorMappingInt Lib "FreeImage.dll" Alia
   
 Private Declare Function FreeImage_SwapColorsInt Lib "FreeImage.dll" Alias "_FreeImage_SwapColors@16" ( _
            ByVal Bitmap As Long, _
-           ByRef ColorA As RGBQUAD, _
-           ByRef ColorB As RGBQUAD, _
+           ByRef ColorA As RGBQuad, _
+           ByRef ColorB As RGBQuad, _
            ByVal IgnoreAlpha As Long) As Long
   
 Private Declare Function FreeImage_SwapColorsByLongInt Lib "FreeImage.dll" Alias "_FreeImage_SwapColors@16" ( _
@@ -3495,21 +3495,21 @@ Public Function FreeImage_HasBackgroundColor(ByVal Bitmap As Long) As Boolean
 End Function
 
 Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef BackColor As RGBQUAD) As Boolean
+                                             ByRef backColor As RGBQuad) As Boolean
    
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, BackColor) = 1)
+   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, backColor) = 1)
    
 End Function
 
 Public Function FreeImage_GetBackgroundColorAsLong(ByVal Bitmap As Long, _
-                                                   ByRef BackColor As Long) As Boolean
+                                                   ByRef backColor As Long) As Boolean
    
    ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
    ' provides it's result as a Long value.
 
-   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
+   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, backColor) = 1)
    
 End Function
 
@@ -3519,7 +3519,7 @@ Public Function FreeImage_GetBackgroundColorEx(ByVal Bitmap As Long, _
                                                ByRef Green As Byte, _
                                                ByRef Blue As Byte) As Boolean
                                               
-Dim bkcolor As RGBQUAD
+Dim bkcolor As RGBQuad
 
    ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
    ' provides it's result as four different byte values, one for each color component.
@@ -3535,21 +3535,21 @@ Dim bkcolor As RGBQUAD
 End Function
 
 Public Function FreeImage_SetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef BackColor As RGBQUAD) As Boolean
+                                             ByRef backColor As RGBQuad) As Boolean
                                              
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(Bitmap, BackColor) = 1)
+   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(Bitmap, backColor) = 1)
                                              
 End Function
 
 Public Function FreeImage_SetBackgroundColorAsLong(ByVal Bitmap As Long, _
-                                                   ByVal BackColor As Long) As Boolean
+                                                   ByVal backColor As Long) As Boolean
                                              
    ' This function sets the background color of an image as FreeImage_SetBackgroundColor() does but
    ' the color value to set must be provided as a Long value.
 
-   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
+   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(Bitmap, backColor) = 1)
                                              
 End Function
 
@@ -3559,7 +3559,7 @@ Public Function FreeImage_SetBackgroundColorEx(ByVal Bitmap As Long, _
                                                ByVal Green As Byte, _
                                                ByVal Blue As Byte) As Boolean
                                               
-Dim tColor As RGBQUAD
+Dim tColor As RGBQuad
 
    ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
    ' the color value to set must be provided four different byte values, one for each
@@ -3589,7 +3589,7 @@ End Function
 Public Function FreeImage_GetPixelColor(ByVal Bitmap As Long, _
                                         ByVal x As Long, _
                                         ByVal y As Long, _
-                                        ByRef Value As RGBQUAD) As Boolean
+                                        ByRef Value As RGBQuad) As Boolean
                                         
    ' Thin wrapper function returning a real VB Boolean value
 
@@ -3617,7 +3617,7 @@ Public Function FreeImage_GetPixelColorEx(ByVal Bitmap As Long, _
                                           ByRef Green As Byte, _
                                           ByRef Blue As Byte) As Boolean
                                               
-Dim Value As RGBQUAD
+Dim Value As RGBQuad
 
    ' This function gets the color at position (x|y) as FreeImage_GetPixelColor() does but
    ' provides it's result as four different byte values, one for each color component.
@@ -3646,7 +3646,7 @@ End Function
 Public Function FreeImage_SetPixelColor(ByVal Bitmap As Long, _
                                         ByVal x As Long, _
                                         ByVal y As Long, _
-                                        ByRef Value As RGBQUAD) As Boolean
+                                        ByRef Value As RGBQuad) As Boolean
                                         
    ' Thin wrapper function returning a real VB Boolean value
                                         
@@ -3674,7 +3674,7 @@ Public Function FreeImage_SetPixelColorEx(ByVal Bitmap As Long, _
                                           ByVal Green As Byte, _
                                           ByVal Blue As Byte) As Boolean
                                               
-Dim Value As RGBQUAD
+Dim Value As RGBQuad
 
    ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
    ' the color value to set must be provided four different byte values, one for each
@@ -4027,7 +4027,7 @@ Public Function FreeImage_JPEGCrop(ByVal SourceFile As String, _
 End Function
 
 Public Function FreeImage_FillBackgroundEx(ByVal Bitmap As Long, _
-                                           ByRef Color As RGBQUAD, _
+                                           ByRef Color As RGBQuad, _
                                   Optional ByVal Options As FREE_IMAGE_COLOR_OPTIONS) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
@@ -4146,8 +4146,8 @@ Dim lSwap As Long
 End Function
 
 Public Function FreeImage_SwapColors(ByVal Bitmap As Long, _
-                                     ByRef ColorA As RGBQUAD, _
-                                     ByRef ColorB As RGBQUAD, _
+                                     ByRef ColorA As RGBQuad, _
+                                     ByRef ColorB As RGBQuad, _
                             Optional ByVal IgnoreAlpha As Boolean = True) As Long
                          
 Dim lIgnoreAlpha As Long
@@ -4312,7 +4312,7 @@ Public Sub FreeImage_UnloadEx(ByRef Bitmap As Long)
 
 End Sub
 
-Public Function FreeImage_GetPaletteEx(ByVal Bitmap As Long) As RGBQUAD()
+Public Function FreeImage_GetPaletteEx(ByVal Bitmap As Long) As RGBQuad()
 
 Dim tSA As SAVEARRAY1D
 Dim lpSA As Long
@@ -4399,10 +4399,10 @@ Dim lpSA As Long
 
 End Function
 
-Public Function FreeImage_GetPaletteExClone(ByVal Bitmap As Long) As RGBQUAD()
+Public Function FreeImage_GetPaletteExClone(ByVal Bitmap As Long) As RGBQuad()
 
 Dim lColors As Long
-Dim atPal() As RGBQUAD
+Dim atPal() As RGBQuad
 
    ' This function returns a redundant clone of a Bitmap's palette as a
    ' VB style array of type RGBQUAD.
@@ -4531,7 +4531,7 @@ Dim alPal() As Long
 
 End Function
 
-Public Function FreeImage_SetPalette(ByVal Bitmap As Long, ByRef Palette() As RGBQUAD) As Long
+Public Function FreeImage_SetPalette(ByVal Bitmap As Long, ByRef Palette() As RGBQuad) As Long
 
    ' This function sets the palette of a palletised bitmap using a RGBQUAD array. Does
    ' nothing on high color bitmaps.
@@ -4746,8 +4746,8 @@ Public Function FreeImage_GetAdjustColorsLookupTableEx(ByRef LookupTable() As By
 End Function
 
 Public Function FreeImage_ApplyColorMappingEx(ByVal Bitmap As Long, _
-                                              ByRef SourceColors() As RGBQUAD, _
-                                              ByRef DestinationColors() As RGBQUAD, _
+                                              ByRef SourceColors() As RGBQuad, _
+                                              ByRef DestinationColors() As RGBQuad, _
                                      Optional ByRef Count As Long = -1, _
                                      Optional ByVal IgnoreAlpha As Boolean = True, _
                                      Optional ByVal Swap As Boolean) As Long
@@ -6401,7 +6401,7 @@ End Function
 
 Public Function FreeImage_IsGreyscaleImage(ByVal Bitmap As Long) As Boolean
 
-Dim atRGB() As RGBQUAD
+Dim atRGB() As RGBQuad
 Dim i As Long
 
    ' This function returns a boolean value that is true, if the DIB is actually
@@ -6555,7 +6555,7 @@ End Function
 
 ' Bitmap Info functions
 
-Public Function FreeImage_GetInfoHeaderEx(ByVal Bitmap As Long) As BITMAPINFOHEADER
+Public Function FreeImage_GetInfoHeaderEx(ByVal Bitmap As Long) As BitmapInfoHeader
 
 Dim lpInfoHeader As Long
 
@@ -6777,7 +6777,7 @@ Dim lElementSize As Long
 
 End Function
 
-Public Function FreeImage_GetPalettePtr(ByRef Palette() As RGBQUAD) As Long
+Public Function FreeImage_GetPalettePtr(ByRef Palette() As RGBQuad) As Long
 
    ' Returns a pointer to an array of RGBQUAD. This is sometimes referred to as
    ' a palette.
@@ -7422,7 +7422,7 @@ Dim lpSA As Long
 
 End Function
 
-Public Function FreeImage_GetBitsExRGBQUAD(ByVal Bitmap As Long) As RGBQUAD()
+Public Function FreeImage_GetBitsExRGBQUAD(ByVal Bitmap As Long) As RGBQuad()
 
 Dim tSA As SAVEARRAY2D
 Dim lpSA As Long
@@ -7701,7 +7701,7 @@ Dim lpSA As Long
 End Function
 
 Public Function FreeImage_GetScanLineBITMAP32(ByVal Bitmap As Long, _
-                                              ByVal Scanline As Long) As RGBQUAD()
+                                              ByVal Scanline As Long) As RGBQuad()
 
 Dim tSA As SAVEARRAY1D
 Dim lpSA As Long
@@ -8584,7 +8584,7 @@ Public Function FreeImage_CreateFromImageContainer(ByRef Container As Object, _
 
 End Function
 
-Public Function FreeImage_CreateFromScreen(Optional ByVal HWnd As Long, _
+Public Function FreeImage_CreateFromScreen(Optional ByVal hWnd As Long, _
                                            Optional ByVal ClientAreaOnly As Boolean) As Long
 
 Dim hDC As Long
@@ -8600,24 +8600,24 @@ Dim tR As RECT
    ' by it's window handle through the 'hWnd' parameter. By omitting this
    ' parameter, the whole screen/desktop window will be captured.
 
-   If (HWnd = 0) Then
-      HWnd = GetDesktopWindow()
-      hDC = GetDCEx(HWnd, 0, 0)
+   If (hWnd = 0) Then
+      hWnd = GetDesktopWindow()
+      hDC = GetDCEx(hWnd, 0, 0)
       ' get desktop's width and height
       lWidth = GetDeviceCaps(hDC, HORZRES)
       lHeight = GetDeviceCaps(hDC, VERTRES)
    
    ElseIf (ClientAreaOnly) Then
       ' get window's client area DC
-      hDC = GetDCEx(HWnd, 0, 0)
-      Call GetClientRect(HWnd, tR)
+      hDC = GetDCEx(hWnd, 0, 0)
+      Call GetClientRect(hWnd, tR)
       lWidth = tR.Right
       lHeight = tR.Bottom
       
    Else
       ' get window DC
-      hDC = GetDCEx(HWnd, 0, DCX_WINDOW)
-      Call GetWindowRect(HWnd, tR)
+      hDC = GetDCEx(hWnd, 0, DCX_WINDOW)
+      Call GetWindowRect(hWnd, tR)
       lWidth = tR.Right - tR.Left
       lHeight = tR.Bottom - tR.Top
 
@@ -8638,7 +8638,7 @@ Dim tR As RECT
    Call SelectObject(hMemDC, hMemOldBMP)
    Call DeleteObject(hMemBMP)
    Call DeleteDC(hMemDC)
-   Call ReleaseDC(HWnd, hDC)
+   Call ReleaseDC(hWnd, hDC)
 
 End Function
 
@@ -8708,7 +8708,7 @@ End Function
 
 Public Function FreeImage_CreateFromPictureData(ByRef PictureData() As Byte) As Long
 
-Dim tBMIH As BITMAPINFOHEADER
+Dim tBMIH As BitmapInfoHeader
 Dim lLength As Long
 Dim hDIB As Long
 Dim lPaletteSize As Long
@@ -8813,15 +8813,15 @@ Dim alPaletteSrc() As Long
 Dim abTransparencyTableSrc() As Byte
 Dim abBitsBSrc() As Byte
 Dim atBitsTSrc As ScanLinesRGBTRIBLE
-Dim atBitsQSrc() As RGBQUAD
+Dim atBitsQSrc() As RGBQuad
 Dim abBitValues(7) As Byte
 Dim abBitMasks(7) As Byte
 Dim abBitShifts(7) As Byte
 
-Dim atPaletteDst() As RGBQUAD
+Dim atPaletteDst() As RGBQuad
 Dim abBitsBDst() As Byte
 Dim atBitsTDst As ScanLinesRGBTRIBLE
-Dim atBitsQDst() As RGBQUAD
+Dim atBitsQDst() As RGBQuad
 
 Dim bMaskPixel As Boolean
 Dim x As Long
@@ -9598,7 +9598,7 @@ Dim lcColorA As Long
 
 End Function
 
-Public Function FreeImage_CompareColorsRGBQUADLong(ByRef ColorA As RGBQUAD, _
+Public Function FreeImage_CompareColorsRGBQUADLong(ByRef ColorA As RGBQuad, _
                                                    ByVal ColorB As Long, _
                                           Optional ByVal Tolerance As Long, _
                                           Optional ByVal ColorTypeB As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_ARGB) As Long
@@ -9950,7 +9950,7 @@ Const vbObjectOrWithBlockVariableNotSet As Long = 91
    
 
    If (Not Control Is Nothing) Then
-      Call GetClientRect(Control.HWnd, tR)
+      Call GetClientRect(Control.hWnd, tR)
       If ((tR.Right <> Control.Picture.Width) Or _
           (tR.Bottom <> Control.Picture.Height)) Then
          hDIB = FreeImage_CreateFromOlePicture(Control.Picture)
@@ -10090,7 +10090,7 @@ Public Function FreeImage_SaveEx(ByVal Bitmap As Long, _
                                  ByVal FileName As String, _
                         Optional ByVal Format As FREE_IMAGE_FORMAT = FIF_UNKNOWN, _
                         Optional ByVal Options As FREE_IMAGE_SAVE_OPTIONS, _
-                        Optional ByVal ColorDepth As FREE_IMAGE_COLOR_DEPTH, _
+                        Optional ByVal colorDepth As FREE_IMAGE_COLOR_DEPTH, _
                         Optional ByVal Width As Variant, _
                         Optional ByVal Height As Variant, _
                         Optional ByVal InPercent As Boolean, _
@@ -10180,20 +10180,20 @@ Dim strExtension As String
             End If
             
             ' check color depth
-            If (ColorDepth <> FICD_AUTO) Then
+            If (colorDepth <> FICD_AUTO) Then
                ' mask out bit 1 (0x02) for the case ColorDepth is FICD_MONOCHROME_DITHER (0x03)
                ' FREE_IMAGE_COLOR_DEPTH values are true bit depths in general expect FICD_MONOCHROME_DITHER
                ' by masking out bit 1, 'FreeImage_FIFSupportsExportBPP()' tests for bitdepth 1
                ' what is correct again for dithered images.
-               ColorDepth = (ColorDepth And (Not &H2))
-               If (Not FreeImage_FIFSupportsExportBPP(Format, ColorDepth)) Then
+               colorDepth = (colorDepth And (Not &H2))
+               If (Not FreeImage_FIFSupportsExportBPP(Format, colorDepth)) Then
                   Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                                  "FreeImage Library plugin '" & FreeImage_GetFormatFromFIF(Format) & "' " & _
                                  "is unable to write images with a color depth " & _
-                                 "of " & ColorDepth & " bpp.")
+                                 "of " & colorDepth & " bpp.")
                
-               ElseIf (FreeImage_GetBPP(Bitmap) <> ColorDepth) Then
-                  Bitmap = FreeImage_ConvertColorDepth(Bitmap, ColorDepth, (UnloadSource Or bIsNewDIB))
+               ElseIf (FreeImage_GetBPP(Bitmap) <> colorDepth) Then
+                  Bitmap = FreeImage_ConvertColorDepth(Bitmap, colorDepth, (UnloadSource Or bIsNewDIB))
                   bIsNewDIB = True
                
                End If
@@ -10254,7 +10254,7 @@ Public Function SavePictureEx(ByRef Picture As IPicture, _
                               ByRef FileName As String, _
                      Optional ByRef Format As FREE_IMAGE_FORMAT, _
                      Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
-                     Optional ByRef ColorDepth As FREE_IMAGE_COLOR_DEPTH, _
+                     Optional ByRef colorDepth As FREE_IMAGE_COLOR_DEPTH, _
                      Optional ByRef Width As Variant, _
                      Optional ByRef Height As Variant, _
                      Optional ByRef InPercent As Boolean, _
@@ -10278,7 +10278,7 @@ Const vbInvalidPictureError As Long = 481
       hDIB = FreeImage_CreateFromOlePicture(Picture)
       If (hDIB) Then
          SavePictureEx = FreeImage_SaveEx(hDIB, FileName, Format, Options, _
-                                          ColorDepth, Width, Height, InPercent, _
+                                          colorDepth, Width, Height, InPercent, _
                                           FILTER_BICUBIC, True)
       Else
          Call Err.Raise(vbInvalidPictureError)
@@ -10294,7 +10294,7 @@ Public Function SaveImageContainerEx(ByRef Container As Object, _
                             Optional ByVal IncludeDrawings As Boolean, _
                             Optional ByRef Format As FREE_IMAGE_FORMAT, _
                             Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
-                            Optional ByRef ColorDepth As FREE_IMAGE_COLOR_DEPTH, _
+                            Optional ByRef colorDepth As FREE_IMAGE_COLOR_DEPTH, _
                             Optional ByRef Width As Variant, _
                             Optional ByRef Height As Variant, _
                             Optional ByRef InPercent As Boolean, _
@@ -10313,7 +10313,7 @@ Public Function SaveImageContainerEx(ByRef Container As Object, _
    ' more detailed description.
                             
    Call SavePictureEx(pGetIOlePictureFromContainer(Container, IncludeDrawings), _
-            FileName, Format, Options, ColorDepth, Width, Height, InPercent, Filter)
+            FileName, Format, Options, colorDepth, Width, Height, InPercent, Filter)
 
 End Function
 
@@ -10540,7 +10540,7 @@ Dim hDIBNew As Long
    ' The optional ColorPtr parameter takes a pointer to (e.g. the address of) an
    ' RGB color value. So, all these assignments are valid for ColorPtr:
    '
-   Dim tColor As RGBQUAD
+   Dim tColor As RGBQuad
    tColor.rgbRed = 255
    tColor.rgbGreen = 255
    tColor.rgbBlue = 255
@@ -10846,9 +10846,9 @@ End Function
 '--------------------------------------------------------------------------------
 
 Public Function FreeImage_GetColorizedPalette(ByVal Color As OLE_COLOR, _
-                                     Optional ByVal SplitValue As Variant = 0.5) As RGBQUAD()
+                                     Optional ByVal SplitValue As Variant = 0.5) As RGBQuad()
 
-Dim atPalette(255) As RGBQUAD
+Dim atPalette(255) As RGBQuad
 Dim lSplitIndex As Long
 Dim lSplitIndexInv As Long
 Dim lRed As Long
@@ -11578,7 +11578,7 @@ Public Function FreeImage_DestroyLockedArrayRGBTRIPLE(ByRef Data() As RGBTRIPLE)
 
 End Function
 
-Public Function FreeImage_DestroyLockedArrayRGBQUAD(ByRef Data() As RGBQUAD) As Long
+Public Function FreeImage_DestroyLockedArrayRGBQUAD(ByRef Data() As RGBQuad) As Long
 
    ' This function is a thin wrapper for 'FreeImage_DestroyLockedArrayByPtr'
    ' for destroying arrays of type 'RGBQUAD'.

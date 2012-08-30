@@ -20,7 +20,7 @@ Attribute VB_Name = "FastDrawing"
 Option Explicit
 
 'BEGIN DIB-RELATED DECLARATIONS
-Public Type Bitmap
+Private Type Bitmap
     bmType As Long
     bmWidth As Long
     bmHeight As Long
