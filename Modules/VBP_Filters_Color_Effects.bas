@@ -15,46 +15,51 @@ Option Explicit
 'Invert an image
 Public Sub MenuInvert()
         
+    Message "Inverting the image..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-
-    prepSafeArray tmpSA
-    
-    '"Copy" the bits data over (in reality, simply copy over the array reference)
+    prepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
-    Message "Inverting the image..."
-    SetProgBarMax PicWidthL
-    
-    'GetImageData
-    
-    PicWidthL = pdImages(CurrentImage).mainLayer.getLayerWidth - 1
-    PicHeightL = pdImages(CurrentImage).mainLayer.getLayerHeight - 1
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
             
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = pdImages(CurrentImage).mainLayer.getLayerColorDepth \ 8
-
-    For x = 0 To PicWidthL
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'After all that work, the Invert code itself is very small and unexciting!
+    For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = 0 To PicHeightL
+    For y = initY To finalY
         ImageData(QuickVal, y) = 255 Xor ImageData(QuickVal, y)
         ImageData(QuickVal + 1, y) = 255 Xor ImageData(QuickVal + 1, y)
         ImageData(QuickVal + 2, y) = 255 Xor ImageData(QuickVal + 2, y)
     Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
     
-    'SetImageData
+    SetProgBarVal finalX
     
+    'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
-    SetProgBarVal 0
-        
-    'Pass control to the viewport renderer, which will make the new image actually appear on-screen
-    ScrollViewport FormMain.ActiveForm
-
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+    
 End Sub
 
 'Rechannel an image (red, green, or blue)
@@ -86,7 +91,7 @@ Public Sub MenuRechannel(ByVal RType As Byte)
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -124,7 +129,7 @@ Public Sub MenuCShift(ByVal SType As Byte)
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -164,7 +169,7 @@ Public Sub MenuNegative()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -206,7 +211,7 @@ Public Sub MenuInvertHue()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -250,7 +255,7 @@ Public Sub MenuAutoEnhanceContrast()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -294,7 +299,7 @@ Public Sub MenuAutoEnhanceHighlights()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -338,7 +343,7 @@ Public Sub MenuAutoEnhanceMidtones()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -383,7 +388,7 @@ Public Sub MenuAutoEnhanceShadows()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 

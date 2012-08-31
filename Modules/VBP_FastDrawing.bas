@@ -34,7 +34,7 @@ Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
 Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
-Private Type RGBQuad
+Private Type RGBQUAD
     Blue As Byte
     Green As Byte
     Red As Byte
@@ -57,13 +57,38 @@ End Type
 
 Private Type BITMAPINFO
         bmiHeader As BITMAPINFOHEADER
-        bmiColors(0 To 255) As RGBQuad
+        bmiColors(0 To 255) As RGBQUAD
 End Type
 'END DIB DECLARATIONS
 
 'DOHL TEST DECLARATIONS
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Long, lpSrc As Long, ByVal byteLength As Long)
+
+Public workingLayer As pdLayer
+
+'prepImageData will fill a variable of this type with everything a filter or effect could possibly want to know
+' about the layer it's operating on.  Filters are free to ignore this data, but it is always made available.
+Public Type FilterInfo
+    Left As Long            'Coordinates of the top-left location the filter is supposed to operate on
+    Top As Long
+    Right As Long           'Right and Bottom could be inferred, but we do it here to minimize effort on the calling routine's part
+    Bottom As Long
+    Width As Long           'Dimensions of the area the filter is supposed to operate on
+    Height As Long
+    MinX As Long            'The lowest coordinate the filter is allowed to check.  This is almost always (0, 0)
+    MinY As Long
+    MaxX As Long            'The highest coordinate the filter is allowed to check.  This is almost always (width, height)
+    MaxY As Long
+    colorDepth As Long      'The colorDepth of the current layer; right now, this should always be 24 or 32
+    BytesPerPixel As Long   'BPP is colorDepth / 8.  It is provided for convenience.
+    LayerX As Long          'Filters shouldn't have to worry about where the layer is physically located, but when it comes
+    LayerY As Long          ' time to set the layer back in place, these may be useful (as when previewing, for example)
+End Type
+
+Public curLayerValues As FilterInfo
+
+'/DOHC
 
 'To prevent double-image loading errors
 Private AllowPreview As Boolean
@@ -78,6 +103,97 @@ Public ImageData2() As Byte
 ' Right now, they are initialized to default values (0,0-imageWidth,imageHeight)
 Public imgStartX As Long, imgStartY As Long
 Public imgFinalX As Long, imgFinalY As Long
+
+'The new replacement for GetImageData
+' prepPixelData's job is to copy the relevant layer into a temporary object, which is what individual filters and effects
+' will operate on.  prepPixelData() also populates the relevant SafeArray object and a host of other variables, which
+' filters and effects can then copy locally to ensure the fastest possible runtime speed.
+'
+'If the filter will be rendering a preview only, it can specify the picture box that will receive the preview effect.
+' This function will automatically adjust its parameters accordingly, and the filter routine will not have to make any
+' modifications to its code.
+'
+'Finally, the calling routine can optionally specify a different progress bar maximum value.  By default, this is the current
+' layer's width, but some routines run vertically and the progress bar needs to be changed accordingly.
+Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewPictureBox As PictureBox, Optional newProgBarMax As Long = -1)
+
+    'Prepare our temporary layer
+    Set workingLayer = New pdLayer
+    
+    'If this is not a preview, simply copy the layer without modification
+    If isPreview = False Then
+        workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    Else
+        'Figure out new dimensions based on the destination picture box
+    End If
+    
+    'With our temporary layer successfully created, populate the relevant SafeArray variable
+    With tmpSA
+        .cbElements = 1
+        .cDims = 2
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = workingLayer.getLayerHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = workingLayer.getLayerArrayWidth
+        .pvData = workingLayer.getLayerDIBits
+    End With
+
+    'Finally, populate the ubiquitous curLayerValues variable with everything a filter might want to know
+    With curLayerValues
+        .Left = 0
+        .Top = 0
+        .Right = workingLayer.getLayerWidth - 1
+        .Bottom = workingLayer.getLayerHeight - 1
+        .Width = workingLayer.getLayerWidth
+        .Height = workingLayer.getLayerHeight
+        .MinX = 0
+        .MinY = 0
+        .MaxX = workingLayer.getLayerWidth - 1
+        .MaxY = workingLayer.getLayerHeight - 1
+        .colorDepth = workingLayer.getLayerColorDepth
+        .BytesPerPixel = (workingLayer.getLayerColorDepth \ 8)
+        .LayerX = 0
+        .LayerY = 0
+    End With
+
+    'Set up the progress bar
+    If newProgBarMax = -1 Then
+        SetProgBarMax (curLayerValues.Left + curLayerValues.Width)
+    Else
+        SetProgBarMax newProgBarMax
+    End If
+    
+    'MsgBox "prepImageData worked: " & workingLayer.getLayerHeight & ", " & workingLayer.getLayerWidth & " (" & workingLayer.getLayerArrayWidth & ")" & ", " & workingLayer.getLayerDIBits
+
+End Sub
+
+'The counterpart to prepImageData, finalizeImageData copies the working layer back into its source then renders it
+' to the screen.  Like prepImageData(), a preview target can also be named.  In this case, finalizeImageData will rely on
+' the values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS be called before this routine.
+Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewPictureBox As PictureBox)
+
+    Message "Rendering image to screen..."
+
+    'If this is not a preview, our job is simple - get the newly processed DIB rendered to the screen.
+    If isPreview = False Then
+        
+        'Paint the working layer over the original layer
+        BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, curLayerValues.LayerX, curLayerValues.LayerY, curLayerValues.Width, curLayerValues.Height, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+                
+        'workingLayer has served its purpose, so erase it from memory
+        Set workingLayer = Nothing
+                
+        'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
+        SetProgBarVal 0
+        
+        'Pass control to the viewport renderer, which will perform the actual rendering
+        ScrollViewport FormMain.ActiveForm
+        
+    End If
+    
+    Message "Finished."
+
+End Sub
 
 'Use GetObject to determine an image's width
 Public Function GetImageWidth()
@@ -97,6 +213,7 @@ End Function
 ' It works any color mode, but it will always force image data into a 24-bit color array.
 ' If you want to work with data of another color depth, PhotoDemon is not the project for you.  ;)
 Public Sub GetImageData(Optional ByVal CorrectOrientation As Boolean = False)
+   
    
     'Bitmap data types required by the DIB section API calls
     Dim bm As Bitmap
@@ -173,7 +290,7 @@ Public Sub GetImageData(Optional ByVal CorrectOrientation As Boolean = False)
 End Sub
 
 'Take an array created by GetImageData (and probably modified by some sort of filter), and draw it to the active buffer
-Public Sub SetImageData(Optional ByVal CorrectOrientation As Boolean = False)
+Public Sub setImageData(Optional ByVal CorrectOrientation As Boolean = False)
     
     Message "Rendering image to screen..."
 
@@ -215,13 +332,13 @@ Public Sub SetImageData(Optional ByVal CorrectOrientation As Boolean = False)
 End Sub
 
 'Used to draw preview images (for example, on filter forms).  See above GetImageData for comments
-Public Sub GetPreviewData(ByRef srcPic As PictureBox, Optional ByVal CorrectOrientation As Boolean = False)
+Public Sub GetPreviewData(ByRef SrcPic As PictureBox, Optional ByVal CorrectOrientation As Boolean = False)
 
     Dim bm As Bitmap
     Dim bmi As BITMAPINFO
     Dim ArrayWidth As Long, ArrayHeight As Long
 
-    GetObject srcPic.Image, Len(bm), bm
+    GetObject SrcPic.Image, Len(bm), bm
     bmi.bmiHeader.biSize = 40
     bmi.bmiHeader.biWidth = bm.bmWidth
     bmi.bmiHeader.biHeight = bm.bmHeight
@@ -236,10 +353,10 @@ Public Sub GetPreviewData(ByRef srcPic As PictureBox, Optional ByVal CorrectOrie
     ReDim ImageData(0 To ArrayWidth, 0 To ArrayHeight) As Byte
     
     If CorrectOrientation = False Then
-        GetDIBits srcPic.hDC, srcPic.Image, 0, bm.bmHeight, ImageData(0, 0), bmi, 0
+        GetDIBits SrcPic.hDC, SrcPic.Image, 0, bm.bmHeight, ImageData(0, 0), bmi, 0
     Else
         ReDim TempArray(0 To ArrayWidth, 0 To ArrayHeight) As Byte
-        GetDIBits srcPic.hDC, srcPic.Image, 0, bm.bmHeight, TempArray(0, 0), bmi, 0
+        GetDIBits SrcPic.hDC, SrcPic.Image, 0, bm.bmHeight, TempArray(0, 0), bmi, 0
     End If
 
     If CorrectOrientation = True Then
@@ -367,19 +484,22 @@ Public Sub SetImageData2(Optional ByVal CorrectOrientation As Boolean = False)
 
 End Sub
 
+'We only want the progress bar updating when necessary, so this function finds a power of 2 closest to
+Public Function findBestProgBarValue() As Long
 
-'Take a given array and fill it with this layer's pixel data (DIB-style)
-Public Sub prepSafeArray(ByRef tmpSA As SAFEARRAY2D)
+    'First, figure out what the range of this operation will be using the values in curLayerValues
+    Dim progBarRange As Single
+    progBarRange = curLayerValues.Right - curLayerValues.Left
     
-    'Populate the SafeArray variable with appropriate values
-    With tmpSA
-        .cbElements = 1
-        .cDims = 2
-        .Bounds(0).lBound = 0
-        .Bounds(0).cElements = pdImages(CurrentImage).mainLayer.getLayerHeight
-        .Bounds(1).lBound = 0
-        .Bounds(1).cElements = pdImages(CurrentImage).mainLayer.getLayerArrayWidth
-        .pvData = pdImages(CurrentImage).mainLayer.getLayerDIBits()
-    End With
-        
-End Sub
+    'Divide that value by 20.  20 is an arbitrary selection; the value can be set to any value X, where X is the number
+    ' of times we want the progress bar to update during a given filter or effect.
+    progBarRange = progBarRange / 20
+    
+    'Find the nearest power of two to that value, rounded down
+    Dim nearestP2 As Long
+    
+    nearestP2 = Log(progBarRange) / Log(2#)
+    
+    findBestProgBarValue = (2 ^ nearestP2) - 1
+    
+End Function

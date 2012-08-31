@@ -53,7 +53,7 @@ Option Explicit
 
 
 'DIB Types
-Private Type RGBQuad
+Private Type RGBQUAD
     Blue As Byte
     Green As Byte
     Red As Byte
@@ -86,7 +86,7 @@ End Type
 
 Private Type BITMAPINFO
     Header As BITMAPINFOHEADER
-    Colors(0 To 255) As RGBQuad
+    Colors(0 To 255) As RGBQUAD
 End Type
 
 'Rectangle type for use with SetRect/FillRect API calls
@@ -98,23 +98,29 @@ Private Type RECT
 End Type
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
-Private Type SAFEARRAYBOUND
-    cElements As Long
-    lBound   As Long
-End Type
+'Public Type SAFEARRAYBOUND
+'    cElements As Long
+'    lBound   As Long
+'End Type
+'
+'Public Type SAFEARRAY2D
+'    cDims      As Integer
+'    fFeatures  As Integer
+'    cbElements As Long
+'    cLocks     As Long
+'    pvData     As Long
+'    Bounds(1)  As SAFEARRAYBOUND
+'End Type
 
-Private Type SAFEARRAY2D
-    cDims      As Integer
-    fFeatures  As Integer
-    cbElements As Long
-    cLocks     As Long
-    pvData     As Long
-    Bounds(1)  As SAFEARRAYBOUND
-End Type
 
-
-'API functions
+'Drawing API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
+Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
+Private Const STRETCHBLT_COLORONCOLOR As Long = 3
+Private Const STRETCHBLT_HALFTONE As Long = 4
+
+'SafeArray API functions
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 
@@ -202,20 +208,46 @@ Public Function getLayerDIBits() As Long
 End Function
 
 'Make a copy of an existing layer
-Public Function createFromExistingLayer(ByRef srcLayer As pdLayer) As Boolean
+Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1) As Boolean
 
     'Make sure the layer we're passed isn't empty
     If srcLayer.getLayerDC <> 0 Then
     
-        'Create a new, blank DIB the same size as the source layer
-        If createBlank(srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerColorDepth) Then
-    
-            'Copy the image data from that DC to this one
-            BitBlt layerDC, 0, 0, layerWidth, layerHeight, srcLayer.getLayerDC(), 0, 0, vbSrcCopy
-    
-            createFromExistingLayer = True
-            Exit Function
-                    
+        'Prepare new width and height values as requested by the user
+        If newWidth = -1 Then newWidth = srcLayer.getLayerWidth
+        If newHeight = -1 Then newHeight = srcLayer.getLayerHeight
+        
+        'If the width and height values are not being changed, the transfer is simple
+        If (newWidth = srcLayer.getLayerWidth) And (newHeight = srcLayer.getLayerHeight) Then
+        
+            'Create a new, blank DIB the same size as the source layer
+            If createBlank(srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerColorDepth) Then
+                'Copy the image data without modification
+                BitBlt layerDC, 0, 0, layerWidth, layerHeight, srcLayer.getLayerDC, 0, 0, vbSrcCopy
+                createFromExistingLayer = True
+                Exit Function
+            End If
+        
+        'If new width and height values are being specified, the transfer is a bit more complex
+        Else
+        
+            'Create a new, blank DIB at the requested size
+            If createBlank(newWidth, newHeight, srcLayer.getLayerColorDepth) Then
+
+                'If either dimension of the new image will be smaller than the source, request halftoning
+                If (newWidth < srcLayer.getLayerWidth) Or (newHeight < srcLayer.getLayerHeight) Then
+                    SetStretchBltMode layerDC, STRETCHBLT_HALFTONE
+                Else
+                    SetStretchBltMode layerDC, STRETCHBLT_COLORONCOLOR
+                End If
+
+                'Resize and copy the image data
+                StretchBlt layerDC, 0, 0, newWidth, newHeight, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, vbSrcCopy
+                createFromExistingLayer = True
+                Exit Function
+                        
+            End If
+        
         End If
             
         createFromExistingLayer = False
@@ -387,4 +419,9 @@ Private Sub Class_Initialize()
     layerWidth = 0
     layerHeight = 0
     
+End Sub
+
+'TERMINATE class
+Private Sub Class_Terminate()
+    eraseLayer
 End Sub
