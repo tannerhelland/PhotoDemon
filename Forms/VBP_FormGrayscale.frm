@@ -329,11 +329,8 @@ Attribute VB_Exposed = False
 'Grayscale Conversion Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 1/12/02
-'Last updated: 18/August/09
-'Last update: homebrew methods now use the simpler (R+G+B)\3 method
-'
-'NOTE: this code still needs to be optimized and cleaned up - look to the
-' grayscale project on THDC for specifics.
+'Last updated: 18/August/12
+'Last update: All optimizations from THDC now ported.  Also, previewing!
 '
 'Updated version of the grayscale handler; utilizes five different methods
 '(average, ISU, desaturate, X # of shades, X # of shades dithered).
@@ -350,29 +347,29 @@ Private Sub drawGrayscalePreview()
         
         Select Case cboMethod.ListIndex
             Case 0
-                MenuGrayscaleAverage True, PicPreview, PicEffect
+                MenuGrayscaleAverage True, picEffect
             Case 1
-                MenuGrayscale True, PicPreview, PicEffect
+                MenuGrayscale True, picPreview, picEffect
             Case 2
-                MenuDesaturate True, PicPreview, PicEffect
+                MenuDesaturate True, picPreview, picEffect
             Case 3
                 If optDecompose(0).Value = True Then
-                    MenuDecompose 0, True, PicPreview, PicEffect
+                    MenuDecompose 0, True, picPreview, picEffect
                 Else
-                    MenuDecompose 1, True, PicPreview, PicEffect
+                    MenuDecompose 1, True, picPreview, picEffect
                 End If
             Case 4
                 If optChannel(0).Value = True Then
-                    MenuGrayscaleSingleChannel 0, True, PicPreview, PicEffect
+                    MenuGrayscaleSingleChannel 0, True, picPreview, picEffect
                 ElseIf optChannel(1).Value = True Then
-                    MenuGrayscaleSingleChannel 1, True, PicPreview, PicEffect
+                    MenuGrayscaleSingleChannel 1, True, picPreview, picEffect
                 Else
-                    MenuGrayscaleSingleChannel 2, True, PicPreview, PicEffect
+                    MenuGrayscaleSingleChannel 2, True, picPreview, picEffect
                 End If
             Case 5
-                fGrayscaleCustom hsShades.Value, True, PicPreview, PicEffect
+                fGrayscaleCustom hsShades.Value, True, picPreview, picEffect
             Case 6
-                fGrayscaleCustomDither hsShades.Value, True, PicPreview, PicEffect
+                fGrayscaleCustomDither hsShades.Value, True, picPreview, picEffect
         End Select
         
     End If
@@ -491,8 +488,7 @@ Private Sub Form_Load()
     UpdateVisibleControls
     
     'Render the preview images
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
+    DrawPreviewImage picPreview
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -503,11 +499,11 @@ Private Sub Form_Load()
 End Sub
 
 'Reduce to X # gray shades
-Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData srcPic
+        GetPreviewData SrcPic
     Else
         Message "Converting to " & numOfShades & " shades of gray..."
         GetImageData
@@ -578,18 +574,18 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     If toPreview = True Then
         SetPreviewData dstPic
     Else
-        SetImageData
+        setImageData
         Message "Finished."
     End If
     
 End Sub
 
 'Reduce to X # gray shades (dithered)
-Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData srcPic
+        GetPreviewData SrcPic
     Else
         Message "Converting to " & numOfShades & " shades of gray, with dithering..."
         GetImageData
@@ -680,23 +676,40 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     If toPreview = True Then
         SetPreviewData dstPic
     Else
-        SetImageData
+        setImageData
         Message "Finished."
     End If
     
 End Sub
 
 'Reduce to gray via (r+g+b)/3
-Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
-    'Get the appropriate set of image data contingent on whether this is a preview or not
-    If toPreview = True Then
-        GetPreviewData srcPic
-    Else
-        Message "Converting image to grayscale..."
-        GetImageData
-        SetProgBarMax PicWidthL
-    End If
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    If toPreview = False Then Message "Converting image to grayscale..."
+
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
     
     'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
@@ -708,25 +721,10 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
         grayLookUp(x) = x \ 3
     Next x
     
-    'Calculate loop values based on previewing/not-previewing
-    Dim initX As Long, initY As Long, finX As Long, finY As Long
-    If toPreview = True Then
-        initX = PreviewX
-        finX = PreviewX + PreviewWidth
-        initY = PreviewY
-        finY = PreviewY + PreviewHeight
-    Else
-        initX = 0
-        finX = PicWidthL
-        initY = 0
-        finY = PicHeightL
-    End If
-    
     'Loop through each pixel in the image, converting values as we go
-    Dim QuickVal As Long
-    For x = initX To finX
-        QuickVal = x * 3
-    For y = initY To finY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
@@ -743,26 +741,25 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
         
     Next y
         If toPreview = False Then
-            If (x Mod 20 = 0) Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
     Next x
     
-    'Render the finished output to the appropriate image container
-    If toPreview = True Then
-        SetPreviewData dstPic
-    Else
-        SetImageData
-        Message "Finished."
-    End If
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
 'Reduce to gray in a more human-eye friendly manner
-Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
 
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData srcPic
+        GetPreviewData SrcPic
     Else
         Message "Generating ITU-R compatible grayscale image..."
         GetImageData
@@ -817,18 +814,18 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional B
     If toPreview = True Then
         SetPreviewData dstPic
     Else
-        SetImageData
+        setImageData
         Message "Finished."
     End If
     
 End Sub
 
 'Reduce to gray via HSL -> convert S to 0
-Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData srcPic
+        GetPreviewData SrcPic
     Else
         Message "Desaturating image..."
         GetImageData
@@ -891,18 +888,18 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional 
     If toPreview = True Then
         SetPreviewData dstPic
     Else
-        SetImageData
+        setImageData
         Message "Finished."
     End If
     
 End Sub
 
 'Reduce to gray by selecting the minimum (maxOrMin = 0) or maximum (maxOrMin = 1) color in each pixel
-Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData srcPic
+        GetPreviewData SrcPic
     Else
         Message "Decomposing image..."
         GetImageData
@@ -957,18 +954,18 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
     If toPreview = True Then
         SetPreviewData dstPic
     Else
-        SetImageData
+        setImageData
         Message "Finished."
     End If
     
 End Sub
 
 'Reduce to gray by selecting a single color channel (represeted by cChannel: 0 = Red, 1 = Green, 2 = Blue)
-Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef srcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
     
     'Get the appropriate set of image data contingent on whether this is a preview or not
     If toPreview = True Then
-        GetPreviewData srcPic
+        GetPreviewData SrcPic
     Else
         Message "Converting to grayscale by isolating single color channel..."
         GetImageData
@@ -1030,7 +1027,7 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
     If toPreview = True Then
         SetPreviewData dstPic
     Else
-        SetImageData
+        setImageData
         Message "Finished."
     End If
     
