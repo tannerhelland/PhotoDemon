@@ -117,8 +117,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
         hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
         
         'Now we set the form dimensions to match the image's
-        FormMain.ActiveForm.Width = wDif + (FormMain.ActiveForm.BackBuffer.Width * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
-        FormMain.ActiveForm.Height = hDif + (FormMain.ActiveForm.BackBuffer.Height * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        FormMain.ActiveForm.Width = wDif + ((Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        FormMain.ActiveForm.Height = hDif + ((Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
         
         'Set the scalemode back to a decent pixels
         FormMain.ActiveForm.ScaleMode = 3
@@ -134,6 +134,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
     
 End Sub
 
+'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
 Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
     
     'Disable AutoScroll, because that messes with our calculations
@@ -157,11 +158,11 @@ Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
     zVal = 15
     
     'First, let's check to see if we need to adjust zoom because the width is too big
-    If (FormMain.ActiveForm.BackBuffer.Width > FormMain.ScaleWidth - tDif) Then
+    If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) > (FormMain.ScaleWidth - tDif) Then
         'If it is too big, run a loop backwards through the possible zoom values to see
         'if one will make it fit
         For x = 15 To 0 Step -1
-            If (FormMain.ActiveForm.BackBuffer.Width * Zoom.ZoomArray(x)) < (FormMain.ScaleWidth - tDif) Then
+            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * Zoom.ZoomArray(x)) < (FormMain.ScaleWidth - tDif) Then
                 zVal = x
                 Exit For
             End If
@@ -170,11 +171,11 @@ Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
     End If
     
     'Now we do the same thing for the height
-    If (FormMain.ActiveForm.BackBuffer.Height > FormMain.ScaleHeight - hDif) Then
+    If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) > (FormMain.ScaleHeight - hDif) Then
         'If the image's height is too big for the form, run a loop backwards through all
         ' possible zoom values to see if one will make it fit
         For x = zVal To 0 Step -1
-            If (FormMain.ActiveForm.BackBuffer.Height * Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
+            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
                 zVal = x
                 Exit For
             End If
@@ -197,7 +198,7 @@ Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
     
 End Sub
 
-'Fit the current image onscreen at as large a size as possible
+'Fit the current image onscreen at as large a size as possible (including possibility of zoomed-in)
 Public Sub FitOnScreen()
     'Current plan: this needs to be an individual task.
     
@@ -227,7 +228,7 @@ Public Sub FitOnScreen()
     'Run a loop backwards through the possible zoom values to see
     'if one will make it fit at the maximum possible size
     For x = FormMain.CmbZoom.ListCount - 1 To 0 Step -1
-        If (FormMain.ActiveForm.BackBuffer.Width * Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
+        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
             zVal = x
             Exit For
         End If
@@ -235,7 +236,7 @@ Public Sub FitOnScreen()
     
     'Now we do the same thing for the height
     For x = zVal To 0 Step -1
-        If (FormMain.ActiveForm.BackBuffer.Height * Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
+        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
             zVal = x
             Exit For
         End If
