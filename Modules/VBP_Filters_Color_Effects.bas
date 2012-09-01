@@ -50,9 +50,7 @@ Public Sub MenuInvert()
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    
-    SetProgBarVal finalX
-    
+        
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
