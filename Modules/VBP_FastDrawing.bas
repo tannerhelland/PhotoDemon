@@ -3,10 +3,14 @@ Attribute VB_Name = "FastDrawing"
 'Fast API Graphics Routines Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 13/January/07
-'Last update: Merged the separate Get/SetImageData routines into a single one.  Now a parameter can
-'              be passed to specify using a second array for caching the DIB data.
-'
+'Last updated: 31/August/12
+'Last update: Completed work on prepImageData and finalizeImageData, which are the much-improved successors to
+'             Get/SetImageData.  These routines rely on SafeArrays instead of Get/SetDIBits, so they are quite a bit
+'             faster.  They are also image independent; passing a "preview" flag will result in the ability to paint the
+'             results of a filter to any picture box, and it's all managed internally - meaning the filter/effect routine
+'             doesn't have to worry about a thing.  A public "curLayerValues" variable contains everything a filter could
+'             ever want to know about the data it's working on.  Most of the values it provides are unused at present, but
+'             could be useful once selections/layers are implemented.
 '
 'This interface provides API support for the main image interaction routines. It assigns memory data
 ' into a useable array, and later transfers that array back into memory.  Very fast, very compact, can't
@@ -90,9 +94,6 @@ Public curLayerValues As FilterInfo
 
 '/DOHC
 
-'To prevent double-image loading errors
-Private AllowPreview As Boolean
-
 'I have since implemented two sections of code, one each for two arrays
 'This is necessary for implementing certain problematic double-layered effects
 '(including all resizing, rotating, flipping, etc.)
@@ -132,12 +133,12 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         dstWidth = previewPictureBox.ScaleWidth
         dstHeight = previewPictureBox.ScaleHeight
     
-        Dim srcWidth As Single, srcHeight As Single
-        srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
-        srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+        Dim SrcWidth As Single, SrcHeight As Single
+        SrcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+        SrcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
     
         Dim srcAspect As Single, dstAspect As Single
-        srcAspect = srcWidth / srcHeight
+        srcAspect = SrcWidth / SrcHeight
         dstAspect = dstWidth / dstHeight
         
         'Now, use that aspect ratio to determine a proper size for our temporary layer
@@ -145,10 +146,10 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     
         If srcAspect > dstAspect Then
             newWidth = dstWidth
-            newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
+            newHeight = CSng(SrcHeight / SrcWidth) * newWidth + 0.5
         Else
             newHeight = dstHeight
-            newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
+            newWidth = CSng(SrcWidth / SrcHeight) * newHeight + 0.5
         End If
         
         'And finally, create our workingLayer using these values
@@ -322,10 +323,7 @@ Public Sub GetImageData(Optional ByVal CorrectOrientation As Boolean = False)
         Erase TempArray
         
     End If
-    
-    'Now that we have valid image data, allow previewing functions to trigger
-    AllowPreview = True
-    
+        
 End Sub
 
 'Take an array created by GetImageData (and probably modified by some sort of filter), and draw it to the active buffer
