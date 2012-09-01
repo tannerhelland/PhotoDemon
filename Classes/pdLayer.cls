@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 31/August/12
-'Last update: built Render function
+'Last update: completed first working draft of the class.  Core functionality is now COMPLETE!
 '
 'The time has come to break PhotoDemon's reliance on picture boxes.  The new plan is to implement an honest-to-God
 ' DIB class that will manage all image data in memory.  If built correctly, this thing will provide a whole host of
@@ -543,16 +543,16 @@ Public Sub createFromFile(ByRef SrcFilename As String)
 End Sub
 
 'Write this layer's DIB information to file.
-Public Sub writeToFile(ByRef dstFilename As String)
+Public Sub writeToFile(ByRef DstFilename As String)
 
     'Delete any existing file (overwrite)
-    If FileExist(dstFilename) = True Then Kill dstFilename
+    If FileExist(DstFilename) = True Then Kill DstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open dstFilename For Binary As #fileNum
+    Open DstFilename For Binary As #fileNum
     
         'Identifiers
         Put #fileNum, 1, LAYER_IDENTIFIER
