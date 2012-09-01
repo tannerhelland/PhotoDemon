@@ -44,7 +44,13 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     If zLibEnabled = True Then cdfStr = cdfStr & ";*.pdi"
     
     'Only allow FreeImage file loading if the FreeImage dll was detected
-    If FreeImageEnabled = True Then cdfStr = cdfStr & ";*.png;*.lbm;*.pbm;*.iff;*.jif;*.jfif;*.psd;*.tif;*.tiff;*.wbmp;*.wbm;*.pgm;*.ppm;*.jng;*.mng;*.koa;*.pcd;*.ras;*.dds;*.pict;*.pct;*.pic;*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
+    If FreeImageEnabled = True Then
+        cdfStr = cdfStr & ";*.png;*.lbm;*.pbm;*.iff;*.jif;*.jfif;*.psd;*.tif;*.tiff;*.wbmp;*.wbm;*.pgm;*.ppm;*.jng;*.mng;*.koa;*.pcd;*.ras;*.dds;*.pict;*.pct;*.pic;*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
+    'If FreeImage wasn't found but GDI+ was, enable a subset of those image formats
+    ElseIf GDIPlusEnabled = True Then
+        cdfStr = cdfStr & ";*.png;*.tif;*.tiff;"
+    End If
+    
     cdfStr = cdfStr & "|"
     cdfStr = cdfStr & "BMP - OS/2 or Windows Bitmap|*.bmp"
     
@@ -56,22 +62,25 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
     cdfStr = cdfStr & "|JPG/JPEG - Joint Photographic Experts Group|*.jpg;*.jpeg;*.jif;*.jfif"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|KOA/KOALA - Commodore 64|*.koa;*.koala|LBM - Deluxe Paint|*.lbm|MNG - Multiple Network Graphics|*.mng|PBM - Portable Bitmap|*.pbm|PCD - Kodak PhotoCD|*.pcd"
-    
-    cdfStr = cdfStr & "|PCX - Zsoft Paintbrush|*.pcx"
+    If FreeImageEnabled = True Then cdfStr = cdfStr & "|KOA/KOALA - Commodore 64|*.koa;*.koala|LBM - Deluxe Paint|*.lbm|MNG - Multiple Network Graphics|*.mng|PBM - Portable Bitmap|*.pbm|PCD - Kodak PhotoCD|*.pcd|PCX - Zsoft Paintbrush|*.pcx"
     
     'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
     If zLibEnabled = True Then cdfStr = cdfStr & "|PDI - PhotoDemon Image|*.pdi"
     
     If FreeImageEnabled = True Then cdfStr = cdfStr & "|PGM - Portable Greymap|*.pgm|PIC/PICT - Macintosh Picture|*.pict;*.pct;*.pic"
     
-    cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
+    'FreeImage or GDIPlus is sufficient for loading PNGs
+    If (FreeImageEnabled = True) Or (GDIPlusEnabled = True) Then cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
     
     If FreeImageEnabled = True Then cdfStr = cdfStr & "|PPM - Portable Pixmap|*.ppm|PSD - Adobe Photoshop|*.psd|RAS - Sun Raster File|*.ras"
     
     cdfStr = cdfStr & "|RLE - Compuserve or Windows|*.rle"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|SGI/RGB/BW - Silicon Graphics Image|*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta|TGA - Truevision Targa|*.tga|TIF/TIFF - Tagged Image File Format|*.tif;*.tiff|WBMP - Wireless Bitmap|*.wbmp;*.wbm"
+    If FreeImageEnabled = True Then cdfStr = cdfStr & "|SGI/RGB/BW - Silicon Graphics Image|*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta|TGA - Truevision Targa|*.tga"
+    
+    If (FreeImageEnabled = True) Or (GDIPlusEnabled = True) Then cdfStr = cdfStr & "|TIF/TIFF - Tagged Image File Format|*.tif;*.tiff"
+    
+    If (FreeImageEnabled = True) Then cdfStr = cdfStr & "|WBMP - Wireless Bitmap|*.wbmp;*.wbm"
     
     cdfStr = cdfStr & "|WMF - Windows Metafile|*.wmf|All files|*.*"
     
@@ -295,16 +304,17 @@ Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As Str
     ElseIf FileExtension = "TIF" Then
         SaveTIFImage ImageID, dstPath
         updateMRU = True
-    ElseIf FileExtension = "PCX" Then
-        If loadRelevantForm = True Then
-            FormPCX.Show 1, FormMain
-        Else
-            'Remember the PCX settings so we don't have to pester the user for it if they save again
-            pdImages(ImageID).saveFlag0 = optionalSaveParameter0
-            pdImages(ImageID).saveFlag1 = optionalSaveParameter1
-            SavePCXImage ImageID, dstPath, optionalSaveParameter0, optionalSaveParameter1
-            updateMRU = True
-        End If
+    'PCX exporting is temporarily disabled.  It's such a rare use-case that I don't want to invest energy in it right now.
+    'ElseIf FileExtension = "PCX" Then
+    '    If loadRelevantForm = True Then
+    '        FormPCX.Show 1, FormMain
+    '    Else
+    '        'Remember the PCX settings so we don't have to pester the user for it if they save again
+    '        pdImages(ImageID).saveFlag0 = optionalSaveParameter0
+    '        pdImages(ImageID).saveFlag1 = optionalSaveParameter1
+    '        SavePCXImage ImageID, dstPath, optionalSaveParameter0, optionalSaveParameter1
+    '        updateMRU = True
+    '    End If
     Else
         SaveBMP ImageID, dstPath
         updateMRU = True
