@@ -120,11 +120,40 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     'Prepare our temporary layer
     Set workingLayer = New pdLayer
     
-    'If this is not a preview, simply copy the layer without modification
+    'If this is not a preview, simply copy the current layer without modification
     If isPreview = False Then
         workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    
+    'If this IS a preview, more work is involved.
     Else
-        'Figure out new dimensions based on the destination picture box
+    
+        'Start by calculating the aspect ratio of both the current image and the previewing picture box
+        Dim dstWidth As Single, dstHeight As Single
+        dstWidth = previewPictureBox.ScaleWidth
+        dstHeight = previewPictureBox.ScaleHeight
+    
+        Dim srcWidth As Single, srcHeight As Single
+        srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+        srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+    
+        Dim srcAspect As Single, dstAspect As Single
+        srcAspect = srcWidth / srcHeight
+        dstAspect = dstWidth / dstHeight
+        
+        'Now, use that aspect ratio to determine a proper size for our temporary layer
+        Dim newWidth As Long, newHeight As Long
+    
+        If srcAspect > dstAspect Then
+            newWidth = dstWidth
+            newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
+        Else
+            newHeight = dstHeight
+            newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
+        End If
+        
+        'And finally, create our workingLayer using these values
+        workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight
+        
     End If
     
     'With our temporary layer successfully created, populate the relevant SafeArray variable
@@ -156,11 +185,13 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .LayerY = 0
     End With
 
-    'Set up the progress bar
-    If newProgBarMax = -1 Then
-        SetProgBarMax (curLayerValues.Left + curLayerValues.Width)
-    Else
-        SetProgBarMax newProgBarMax
+    'Set up the progress bar (only if this is not a preview, mind you)
+    If isPreview = False Then
+        If newProgBarMax = -1 Then
+            SetProgBarMax (curLayerValues.Left + curLayerValues.Width)
+        Else
+            SetProgBarMax newProgBarMax
+        End If
     End If
     
     'MsgBox "prepImageData worked: " & workingLayer.getLayerHeight & ", " & workingLayer.getLayerWidth & " (" & workingLayer.getLayerArrayWidth & ")" & ", " & workingLayer.getLayerDIBits
@@ -172,10 +203,10 @@ End Sub
 ' the values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS be called before this routine.
 Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewPictureBox As PictureBox)
 
-    Message "Rendering image to screen..."
-
     'If this is not a preview, our job is simple - get the newly processed DIB rendered to the screen.
     If isPreview = False Then
+        
+        Message "Rendering image to screen..."
         
         'Paint the working layer over the original layer
         BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, curLayerValues.LayerX, curLayerValues.LayerY, curLayerValues.Width, curLayerValues.Height, workingLayer.getLayerDC, 0, 0, vbSrcCopy
@@ -189,10 +220,18 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'Pass control to the viewport renderer, which will perform the actual rendering
         ScrollViewport FormMain.ActiveForm
         
+        Message "Finished."
+        
+    Else
+    
+        'Allow workingLayer to paint itself to the target picture box
+        workingLayer.renderToPictureBox previewPictureBox
+        
+        'workingLayer has served its purpose, so erase it from memory
+        Set workingLayer = Nothing
+        
     End If
     
-    Message "Finished."
-
 End Sub
 
 'Use GetObject to determine an image's width
