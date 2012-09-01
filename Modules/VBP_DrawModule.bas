@@ -18,52 +18,15 @@ Public PreviewWidth As Long, PreviewHeight As Long, PreviewX As Long, PreviewY A
 
 
 'Used to draw the main image onto a preview picture box
-Public Sub DrawPreviewImage(ByRef DstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As PictureBox)
+Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdLayer)
     
     'Normally this will draw a preview of FormMain.ActiveForm.BackBuffer.  However, another picture source can be specified.
-    Dim srcDC As Long
-    
     If useOtherPictureSrc = False Then
-        srcDC = FormMain.ActiveForm.BackBuffer.hDC
-        GetImageData
+        pdImages(CurrentImage).mainLayer.renderToPictureBox dstPicture
     Else
-        PicWidthL = otherPictureSrc.ScaleWidth
-        PicHeightL = otherPictureSrc.ScaleHeight
-        srcDC = otherPictureSrc.hDC
+        otherPictureSrc.renderToPictureBox dstPicture
     End If
     
-    'Dim DWidth As Single, DHeight As Single
-    Dim DWidth As Long, DHeight As Long
-    
-    Dim dstWidth As Single, dstHeight As Single
-    dstWidth = DstPicture.ScaleWidth
-    dstHeight = DstPicture.ScaleHeight
-    
-    Dim srcAspect As Single, dstAspect As Single
-    srcAspect = PicWidthL / PicHeightL
-    dstAspect = dstWidth / dstHeight
-    
-    If srcAspect > dstAspect Then
-        DWidth = DstPicture.ScaleWidth
-        DHeight = CSng(PicHeightL / PicWidthL) * DWidth + 0.5
-        PreviewY = CInt((DstPicture.ScaleHeight - DHeight) / 2)
-        PreviewX = 0
-        SetStretchBltMode DstPicture.hDC, STRETCHBLT_HALFTONE
-        StretchBlt DstPicture.hDC, 0, PreviewY, DWidth, DHeight, srcDC, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
-    Else
-        DHeight = DstPicture.ScaleHeight
-        DWidth = CSng(PicWidthL / PicHeightL) * DHeight + 0.5
-        PreviewX = CInt((DstPicture.ScaleWidth - DWidth) / 2)
-        PreviewY = 0
-        SetStretchBltMode DstPicture.hDC, STRETCHBLT_HALFTONE
-        StretchBlt DstPicture.hDC, PreviewX, 0, DWidth, DHeight, srcDC, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
-    End If
-    
-    PreviewWidth = DWidth - 1
-    PreviewHeight = DHeight - 1
-    
-    DstPicture.Picture = DstPicture.Image
-    DstPicture.Refresh
 End Sub
 
 'A simple routine to draw the canvas background; the public CanvasBackground variable is used to determine
