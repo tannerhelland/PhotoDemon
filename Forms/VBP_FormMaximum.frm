@@ -327,7 +327,7 @@ Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte)
     Next x
     SetProgBarVal cProgBar.Max
     Message "Custom rank filter finished.  Creating correct image array..."
-    SetImageData
+    setImageData
     Unload Me
 End Sub
 
@@ -387,7 +387,7 @@ Public Sub rMaximize()
     Next x
     SetProgBarVal cProgBar.Max
     Message "Image dilated successfully.  Generating final data..."
-    SetImageData
+    setImageData
 End Sub
 
 'Minimum Rank/Erode/Low Pass
@@ -447,7 +447,7 @@ Public Sub rMinimize()
     Next x
     SetProgBarVal cProgBar.Max
     Message "Image eroded successfully.  Generating final data..."
-    SetImageData
+    setImageData
 End Sub
 
 'My own original combination of maximum and minimum: extreme!  :)
@@ -507,7 +507,7 @@ Public Sub rExtreme()
     Next x
     SetProgBarVal cProgBar.Max
     Message "Extreme rank function applied successfully.  Generating final data..."
-    SetImageData
+    setImageData
 End Sub
 
 'LOAD form
@@ -641,9 +641,9 @@ Private Sub UpdatePreview()
     GetPreviewData PicPreview
     Dim maxSide As Long
     If PicWidthL > PicHeightL Then
-        maxSide = hsRadius.Value * (PicWidthL / pdImages(CurrentImage).PicWidth)
+        maxSide = hsRadius.Value * (PicWidthL / pdImages(CurrentImage).Width)
     Else
-        maxSide = hsRadius.Value * (PicHeightL / pdImages(CurrentImage).PicHeight)
+        maxSide = hsRadius.Value * (PicHeightL / pdImages(CurrentImage).Height)
     End If
     PreviewRank maxSide, cboRank.ListIndex
 End Sub

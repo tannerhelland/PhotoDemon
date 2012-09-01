@@ -288,8 +288,8 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
         FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
         PicWidthL = iWidth
         PicHeightL = iHeight
-        pdImages(CurrentImage).PicWidth = PicWidthL
-        pdImages(CurrentImage).PicHeight = PicHeightL
+        pdImages(CurrentImage).Width = PicWidthL
+        pdImages(CurrentImage).Height = PicHeightL
         DisplaySize PicWidthL, PicHeightL
         FormMain.ActiveForm.BackBuffer.Width = iWidth + 2
         FormMain.ActiveForm.BackBuffer.Height = iHeight + 2
@@ -320,8 +320,8 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
         If FileExist(tmpImagePath) Then Kill tmpImagePath
         PicWidthL = iWidth
         PicHeightL = iHeight
-        pdImages(CurrentImage).PicWidth = PicWidthL
-        pdImages(CurrentImage).PicHeight = PicHeightL
+        pdImages(CurrentImage).Width = PicWidthL
+        pdImages(CurrentImage).Height = PicHeightL
         DisplaySize PicWidthL, PicHeightL
         PrepareViewport FormMain.ActiveForm, "Image resized"
         
@@ -423,8 +423,8 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
         FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
         PicWidthL = iWidth
         PicHeightL = iHeight
-        pdImages(CurrentImage).PicWidth = PicWidthL
-        pdImages(CurrentImage).PicHeight = PicHeightL
+        pdImages(CurrentImage).Width = PicWidthL
+        pdImages(CurrentImage).Height = PicHeightL
         DisplaySize PicWidthL, PicHeightL
         FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
         PrepareViewport FormMain.ActiveForm, "Image resized"
@@ -455,12 +455,12 @@ End Sub
 Private Sub CmdResize_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
-    If Not EntryValid(txtWidth, 1, 32767, True, True) Then
-        AutoSelectText txtWidth
+    If Not EntryValid(TxtWidth, 1, 32767, True, True) Then
+        AutoSelectText TxtWidth
         Exit Sub
     End If
-    If Not EntryValid(txtHeight, 1, 32767, True, True) Then
-        AutoSelectText txtHeight
+    If Not EntryValid(TxtHeight, 1, 32767, True, True) Then
+        AutoSelectText TxtHeight
         Exit Sub
     End If
     
@@ -469,19 +469,19 @@ Private Sub CmdResize_Click()
     'Resample based on the combo box entry...
     Select Case cboResample.ListIndex
         Case 0
-            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_NORMAL
+            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_NORMAL
         Case 1
-            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_HALFTONE
+            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_HALFTONE
         Case 2
-            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_BILINEAR
+            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BILINEAR
         Case 3
-            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_BSPLINE
+            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BSPLINE
         Case 4
-            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_BICUBIC_MITCHELL
+            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BICUBIC_MITCHELL
         Case 5
-            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_BICUBIC_CATMULL
+            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BICUBIC_CATMULL
         Case 6
-            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_LANCZOS
+            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_LANCZOS
     End Select
     
     Unload Me
@@ -496,14 +496,14 @@ End Sub
 Private Sub Form_Load()
     
     'Add one to the displayed width and height, since we store them -1 for loops
-    txtWidth.Text = PicWidthL + 1
-    txtHeight.Text = PicHeightL + 1
+    TxtWidth.Text = PicWidthL + 1
+    TxtHeight.Text = PicHeightL + 1
     
     'Make the scroll bars match the text boxes
     updateWidthBar = False
     updateHeightBar = False
-    VSWidth.Value = Abs(32767 - CInt(txtWidth))
-    VSHeight.Value = Abs(32767 - CInt(txtHeight))
+    VSWidth.Value = Abs(32767 - CInt(TxtWidth))
+    VSHeight.Value = Abs(32767 - CInt(TxtHeight))
     updateWidthBar = True
     updateHeightBar = True
     
@@ -534,7 +534,7 @@ End Sub
 'If "Preserve Size Ratio" is selected, this set of routines handles the preservation
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText txtHeight
+    AutoSelectText TxtHeight
 End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
@@ -546,7 +546,7 @@ Private Sub TxtHeight_LostFocus()
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText txtWidth
+    AutoSelectText TxtWidth
 End Sub
 
 Private Sub TxtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
@@ -559,15 +559,15 @@ End Sub
 
 Private Sub UpdateHeightBox()
     updateHeightBar = False
-    txtHeight = Int((CDbl(val(txtWidth)) * HRatio) + 0.5)
-    VSHeight.Value = Abs(32767 - val(txtHeight))
+    TxtHeight = Int((CDbl(val(TxtWidth)) * HRatio) + 0.5)
+    VSHeight.Value = Abs(32767 - val(TxtHeight))
     updateHeightBar = True
 End Sub
 
 Private Sub UpdateWidthBox()
     updateWidthBar = False
-    txtWidth = Int((CDbl(val(txtHeight)) * WRatio) + 0.5)
-    VSWidth.Value = Abs(32767 - val(txtWidth))
+    TxtWidth = Int((CDbl(val(TxtHeight)) * WRatio) + 0.5)
+    VSWidth.Value = Abs(32767 - val(TxtWidth))
     updateWidthBar = True
 End Sub
 '*************************************************************************************
@@ -605,8 +605,8 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
         FormMain.ActiveForm.BackBuffer.Refresh
         PicWidthL = iWidth
         PicHeightL = iHeight
-        pdImages(CurrentImage).PicWidth = PicWidthL
-        pdImages(CurrentImage).PicHeight = PicHeightL
+        pdImages(CurrentImage).Width = PicWidthL
+        pdImages(CurrentImage).Height = PicHeightL
         DisplaySize PicWidthL, PicHeightL
         
         PrepareViewport FormMain.ActiveForm, "Image resized (via FreeImage)"
@@ -628,22 +628,22 @@ End Sub
 ' relative to the associated text box
 Private Sub VSHeight_Change()
     If updateHeightBar = True Then
-        txtHeight = Abs(32767 - CStr(VSHeight.Value))
+        TxtHeight = Abs(32767 - CStr(VSHeight.Value))
         ChangeToHeight
     End If
 End Sub
 
 Private Sub VSWidth_Change()
     If updateWidthBar = True Then
-        txtWidth = Abs(32767 - CStr(VSWidth.Value))
+        TxtWidth = Abs(32767 - CStr(VSWidth.Value))
         ChangeToWidth
     End If
 End Sub
 
 Private Sub ChangeToWidth()
-    If EntryValid(txtWidth, 1, 32767, False, True) Then
+    If EntryValid(TxtWidth, 1, 32767, False, True) Then
         updateWidthBar = False
-        VSWidth.Value = Abs(32767 - CInt(txtWidth))
+        VSWidth.Value = Abs(32767 - CInt(TxtWidth))
         updateWidthBar = True
         If ChkRatio.Value = vbChecked Then
             UpdateHeightBox
@@ -652,9 +652,9 @@ Private Sub ChangeToWidth()
 End Sub
 
 Private Sub ChangeToHeight()
-    If EntryValid(txtHeight, 1, 32767, False, True) Then
+    If EntryValid(TxtHeight, 1, 32767, False, True) Then
         updateHeightBar = False
-        VSHeight.Value = Abs(32767 - CInt(txtHeight))
+        VSHeight.Value = Abs(32767 - CInt(TxtHeight))
         updateHeightBar = True
         If ChkRatio.Value = vbChecked Then
             UpdateWidthBox
