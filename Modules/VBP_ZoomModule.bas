@@ -1,4 +1,4 @@
-Attribute VB_Name = "ZoomHandler"
+Attribute VB_Name = "Zoom_Handler"
 '***************************************************************************
 'Zoom Handler - builds and draws the image viewport and associated scroll bars
 'Copyright ©2000-2012 by Tanner Helland

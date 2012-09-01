@@ -1,4 +1,4 @@
-Attribute VB_Name = "UndoFunctions"
+Attribute VB_Name = "Undo_Handler"
 '***************************************************************************
 'Undo/Redo Handler
 'Copyright ©2000-2012 by Tanner Helland

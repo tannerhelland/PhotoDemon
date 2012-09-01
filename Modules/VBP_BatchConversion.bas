@@ -1,4 +1,4 @@
-Attribute VB_Name = "MacroAndBatchConversion"
+Attribute VB_Name = "Macro_and_Batch_Handler"
 '***************************************************************************
 'Macro and Batch Handler
 'Copyright ©2000-2012 by Tanner Helland

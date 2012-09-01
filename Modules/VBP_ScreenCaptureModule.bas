@@ -1,4 +1,4 @@
-Attribute VB_Name = "ScreenCapture"
+Attribute VB_Name = "Screen_Capture"
 '***************************************************************************
 'Screen Capture Interface
 'Copyright ©2000-2012 by Tanner Helland
@@ -16,10 +16,10 @@ Option Explicit
 'Various API calls required for screen capturing
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function GetDC Lib "user32" (ByVal HWnd As Long) As Long
-Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function BitBlt Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hdc As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
 
 'Simple routine for capturing the screen and loading it as an image
 Public Sub CaptureScreen()
@@ -67,7 +67,7 @@ Public Sub CaptureScreen()
     CreateCompatibleBitmap scrhDC, screenWidth, screenHeight
     
     'BitBlt from the new bitmap-compatible hDC to the form
-    BitBlt FormMain.ActiveForm.BackBuffer.hdc, 0, 0, screenWidth, screenHeight, scrhDC, 0, 0, vbSrcCopy
+    BitBlt FormMain.ActiveForm.BackBuffer.hDC, 0, 0, screenWidth, screenHeight, scrhDC, 0, 0, vbSrcCopy
     FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
     DoEvents  'Random fact - without DoEvents right here, this method fails.  Go figure.
     

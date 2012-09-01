@@ -1,4 +1,4 @@
-Attribute VB_Name = "ClipboardFunctions"
+Attribute VB_Name = "Clipboard_Handler"
 '***************************************************************************
 'Clipboard Interface
 'Copyright ©2000-2012 by Tanner Helland

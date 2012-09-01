@@ -1,4 +1,4 @@
-Attribute VB_Name = "IniProcessor"
+Attribute VB_Name = "Ini_Handler"
 '***************************************************************************
 'Program INI Handler
 'Copyright ©2000-2012 by Tanner Helland

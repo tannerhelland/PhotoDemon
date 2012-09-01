@@ -1,4 +1,4 @@
-Attribute VB_Name = "MRU_List"
+Attribute VB_Name = "MRU_List_Handler"
 '***************************************************************************
 'MRU (Most Recently Used) List Handler
 'Copyright ©2005-2012 by Tanner Helland

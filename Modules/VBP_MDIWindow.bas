@@ -1,4 +1,4 @@
-Attribute VB_Name = "MDIWindow"
+Attribute VB_Name = "MDI_Handler"
 '***************************************************************************
 'MDI Window Handler
 'Copyright ©2000-2012 by Tanner Helland

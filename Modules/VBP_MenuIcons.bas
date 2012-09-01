@@ -1,4 +1,4 @@
-Attribute VB_Name = "Menu_Icons"
+Attribute VB_Name = "Menu_Icon_Handler"
 '***************************************************************************
 'Specialized Icon Handler
 'Copyright ©2011-2012 by Tanner Helland

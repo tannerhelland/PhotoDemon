@@ -1,4 +1,4 @@
-Attribute VB_Name = "SoftwareUpdater"
+Attribute VB_Name = "Software_Updater"
 '***************************************************************************
 'Automatic Software Updater (note: at present this doesn't techincally DO the updating (e.g. overwriting program files), it just CHECKS for updates)
 'Copyright ©2000-2012 by Tanner Helland
