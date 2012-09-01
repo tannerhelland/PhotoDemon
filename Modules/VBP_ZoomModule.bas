@@ -112,10 +112,8 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     ZoomVal = Zoom.ZoomArray(pdImages(formToBuffer.Tag).CurrentZoomValue)
     
     'Calculate the width and height of the full-size viewport based on the current zoom value
-    PicWidthL = formToBuffer.BackBuffer.ScaleWidth
-    PicHeightL = formToBuffer.BackBuffer.ScaleHeight
-    zWidth = (PicWidthL * ZoomVal)
-    zHeight = (PicHeightL * ZoomVal)
+    zWidth = (pdImages(CurrentImage).Width * ZoomVal)
+    zHeight = (pdImages(CurrentImage).Height * ZoomVal)
     
     'Grab the form dimensions; these are necessary for rendering the scroll bars
     Dim FormWidth As Long, FormHeight As Long
@@ -210,10 +208,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
-            formToBuffer.HScroll.Max = PicWidthL - Int(viewportWidth * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            formToBuffer.HScroll.Max = pdImages(CurrentImage).Width - Int(viewportWidth * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            formToBuffer.HScroll.Max = PicWidthL - Int(viewportWidth / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            formToBuffer.HScroll.Max = pdImages(CurrentImage).Width - Int(viewportWidth / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         End If
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
@@ -226,10 +224,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
-            formToBuffer.VScroll.Max = PicHeightL - Int(viewportHeight * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            formToBuffer.VScroll.Max = pdImages(CurrentImage).Height - Int(viewportHeight * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            formToBuffer.VScroll.Max = PicHeightL - Int(viewportHeight / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            formToBuffer.VScroll.Max = pdImages(CurrentImage).Height - Int(viewportHeight / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         End If
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
