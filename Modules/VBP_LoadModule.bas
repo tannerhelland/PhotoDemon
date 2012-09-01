@@ -104,7 +104,7 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.hWnd, "AAA", True
+    SetIcon FormMain.HWnd, "AAA", True
     
     'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
@@ -550,19 +550,22 @@ End Sub
 
 'UNDO loading
 Public Sub LoadUndo(ByVal UndoFile As String)
+
     Message "Loading undo/redo data from file..."
        
     'Continue with loading the image...
-    FormMain.ActiveForm.BackBuffer.AutoSize = True
-    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture(UndoFile)
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer.Refresh
+    'FormMain.ActiveForm.BackBuffer.AutoSize = True
+    'FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
+    'FormMain.ActiveForm.BackBuffer.Picture = LoadPicture(UndoFile)
+    'FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
+    'FormMain.ActiveForm.BackBuffer.Refresh
+    
+    pdImages(CurrentImage).mainLayer.createFromFile UndoFile
     
     'This will autopopulate things like width, height, etc
-    GetImageData
+    'GetImageData
     
-    DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
+    DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
     
     PrepareViewport FormMain.ActiveForm, "Undo"
     
