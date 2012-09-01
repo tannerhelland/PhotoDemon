@@ -272,23 +272,21 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If ToUpdateMRU = True Then MRU_AddNewFile sFile(thisImage)
         
         'Dependent on the file's extension, load the appropriate image decoding routine
-        If FileExtension = "PCX" Then
-            LoadPCXImage (sFile(thisImage))
-        ElseIf FileExtension = "PDI" Then
+        If FileExtension = "PDI" Then
             LoadPhotoDemonImage (sFile(thisImage))
         ElseIf FileExtension = "PNG" Then
-            'FreeImage has a more robust .png implementation than our VB-only solution, so use it if available
-            'If FreeImageEnabled = True Then
-            '    LoadFreeImageV3 (sFile(thisImage))
-            'Else
-                LoadPNGImage (sFile(thisImage))
-            'End If
-        ElseIf FileExtension = "ICO" Then
-            'FreeImage has a more robust .ico implementation than VB's LoadPicture, so use it if available
+            'FreeImage has a more robust .png implementation than GDI+, so use it if available
             If FreeImageEnabled = True Then
                 LoadFreeImageV3 sFile(thisImage)
             Else
-                LoadBMP sFile(thisImage)
+                LoadGDIPlusImage sFile(thisImage)
+            End If
+        ElseIf FileExtension = "ICO" Then
+            'FreeImage has a more robust .ico implementation than GDI+, so use it if available
+            If FreeImageEnabled = True Then
+                LoadFreeImageV3 sFile(thisImage)
+            Else
+                LoadGDIPlusImage sFile(thisImage)
             End If
         ElseIf FileExtension = "JIF" Or FileExtension = "JPG" Or FileExtension = "JPEG" Or FileExtension = "JPE" Then
             'FreeImage has a more robust .jpeg implementation than VB's LoadPicture, so use it if available
@@ -298,7 +296,20 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 LoadBMP sFile(thisImage)
             End If
         ElseIf FileExtension = "GIF" Or FileExtension = "WMF" Or FileExtension = "EMF" Or FileExtension = "BMP" Or FileExtension = "RLE" Or FileExtension = "TMP" Then
-            LoadBMP sFile(thisImage)
+            'These file formats are preferentially loaded by GDI+ if available (for things like 32-bit bmps), but if all else
+            ' fails, let VB try and load them.
+            If GDIPlusEnabled = True Then
+                LoadGDIPlusImage sFile(thisImage)
+            Else
+                LoadBMP sFile(thisImage)
+            End If
+        ElseIf FileExtension = "TIF" Or FileExtension = "TIFF" Then
+            'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
+            If FreeImageEnabled = True Then
+                LoadFreeImageV3 sFile(thisImage)
+            Else
+                LoadGDIPlusImage sFile(thisImage)
+            End If
         'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
         Else
             If FreeImageEnabled = True Then
@@ -482,64 +493,13 @@ Public Sub LoadPhotoDemonImage(ByVal PDIPath As String)
 
 End Sub
 
-'PNG loading (NOTE: NEEDS TO BE REWRITTEN AGAINST GDI+)
-Public Sub LoadPNGImage(ByVal PNGPath As String)
-    
-    Dim pngFile As New LoadPNG
-
-    Dim tmpPictureBox As PictureBox
-    Set tmpPictureBox = FormMain.Controls.Add("vb.picturebox", "tmpPictureBox")
-    
-    tmpPictureBox.Visible = False
-    tmpPictureBox.AutoSize = True
-    tmpPictureBox.ScaleMode = 3
-
-    'FormMain.ActiveForm.BackBuffer.AutoSize = False
-    'FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-    'FormMain.ActiveForm.ScaleMode = 1
-    pngFile.PicBox = tmpPictureBox
-    pngFile.SetToBkgrnd False, 0, 0
-    pngFile.BackgroundPicture = tmpPictureBox
-    pngFile.SetAlpha = True
-    pngFile.SetTrans = True
-    pngFile.OpenPNG PNGPath
-    'FormMain.ActiveForm.ScaleMode = 3
-    'FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    'FormMain.ActiveForm.Refresh
-    tmpPictureBox.Picture = tmpPictureBox.Image
-    pdImages(CurrentImage).mainLayer.CreateFromPicture tmpPictureBox.Picture
-    
-    Unload tmpPictureBox
-    'We can't be guaranteed that the PNG loading code will resize the main picture box properly, so do it manually
-    'FormMain.ActiveForm.BackBuffer.Width = pngFile.Width + 2
-    'FormMain.ActiveForm.BackBuffer.Height = pngFile.Height + 2
-    'FormMain.ActiveForm.BackBuffer.AutoSize = True
-    'DoEvents
-
-End Sub
-
-'PCX loading
-Public Sub LoadPCXImage(ByVal PCXPath As String)
-    
-    Dim pcxFile As New LoadPCX
-
-    pcxFile.Autoscale = True
-    pcxFile.LoadPCX PCXPath
-    If pcxFile.IsPCX = True Then
-        pcxFile.ScaleMode = 1
-        FormMain.ActiveForm.BackBuffer.AutoSize = False
-        FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-        FormMain.ActiveForm.BackBuffer.AutoSize = True
-        FormMain.ActiveForm.ScaleMode = 1
-        DoEvents
-        pcxFile.DrawPCX FormMain.ActiveForm.BackBuffer
-        FormMain.ActiveForm.ScaleMode = 3
-        FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-        FormMain.ActiveForm.Refresh
-    Else
-        Message "PCX data corrupted.  Image load aborted."
-        Unload FormMain.ActiveForm
-    End If
+'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
+' fallback when FreeImage can't be found, I'm postponing further debugging for now.
+'Used for PNG and TIFF files if FreeImage cannot be located.
+Public Sub LoadGDIPlusImage(ByVal imagePath As String)
+        
+    'Copy the image returned by GDI+ into the current pdImage object
+    pdImages(CurrentImage).mainLayer.CreateFromPicture GDIPlusLoadPicture(imagePath)
     
 End Sub
 
