@@ -24,7 +24,7 @@ Option Explicit
 Public Sub CreateUndoFile(ByVal processID As Long)
     
     'All undo work is handled internally in the pdImage class
-    Message "Creating Undo data..."
+    Message "Saving Undo data..."
     pdImages(CurrentImage).BuildUndo processID
     
     'Since an undo exists, enable the Undo button and disable the Redo button
