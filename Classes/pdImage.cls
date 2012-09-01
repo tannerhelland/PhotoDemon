@@ -64,8 +64,8 @@ Option Explicit
     Public containingForm As Form
     
     'Image dimensions
-    Public PicWidth As Long
-    Public PicHeight As Long
+    Public Width As Long
+    Public Height As Long
     
     'Which Undo number this image is currently on
     Public UndoNum As Integer
@@ -112,9 +112,9 @@ Option Explicit
     
     'Variables related to drawing the buffer on-screen; these are set by PrepareViewport and read by ScrollViewport
     Public targetWidth As Long
-    Public targetHeight As Long       'Formerly the width and height of the .FrontBuffer picture box
+    Public targetHeight As Long     'Formerly the width and height of the .FrontBuffer picture box
     Public targetTop As Long
-    Public targetLeft As Long               'Formerly the left and top of the .FrontBuffer picture box
+    Public targetLeft As Long       'Formerly the left and top of the .FrontBuffer picture box
     
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user
     Public forInternalUseOnly As Boolean
@@ -301,6 +301,13 @@ End Function
 'Public routine for getting the filename of the current Undo file
 Public Function GetUndoFile()
     GetUndoFile = TempPath & "~cPDU" & ImageID & "_" & UndoNum & ".tmp"
+End Function
+
+'If the class's size has somehow changed, this can be called to update it.  At present, it simply copies over the size of
+' the main layer, but in the future it may need to take into account multiple layers.
+Public Function updateSize()
+    Me.Width = mainLayer.getLayerWidth
+    Me.Height = mainLayer.getLayerHeight
 End Function
 
 'See if a file exists or not
