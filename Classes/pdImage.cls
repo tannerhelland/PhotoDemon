@@ -147,7 +147,8 @@ End Sub
 Public Sub BuildUndo(ByVal processID As Long)
     
     'Easy enough - just store a 24-bit bitmap of the current image
-    SavePicture FormMain.ActiveForm.BackBuffer.Picture, GenerateUndoFile(UndoNum)
+    'SavePicture FormMain.ActiveForm.BackBuffer.Picture, GenerateUndoFile(UndoNum)
+    mainLayer.writeToFile GenerateUndoFile(UndoNum)
     Debug.Print "Saved " & GenerateUndoFile(UndoNum) & " as Undo file #" & UndoNum & "."
     
     'Remember this processID for future use
@@ -185,7 +186,8 @@ Public Sub Undo()
     
     'If we're at the end of actions, save this image for Redo potential
     If UndoNum = UndoMax Then
-        SavePicture FormMain.ActiveForm.BackBuffer.Picture, GenerateUndoFile(UndoNum)
+        'SavePicture FormMain.ActiveForm.BackBuffer.Picture, GenerateUndoFile(UndoNum)
+        mainLayer.writeToFile GenerateUndoFile(UndoNum)
         Debug.Print "Undo initiated by user. Saved " & GenerateUndoFile(UndoNum) & " for Redo purposes."
         'Mirror the current processID
         ReDim Preserve UndoIDs(0 To UndoNum) As Long
