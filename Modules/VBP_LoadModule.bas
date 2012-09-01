@@ -277,11 +277,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             LoadPhotoDemonImage (sFile(thisImage))
         ElseIf FileExtension = "PNG" Then
             'FreeImage has a more robust .png implementation than our VB-only solution, so use it if available
-            If FreeImageEnabled = True Then
-                LoadFreeImageV3 (sFile(thisImage))
-            Else
+            'If FreeImageEnabled = True Then
+            '    LoadFreeImageV3 (sFile(thisImage))
+            'Else
                 LoadPNGImage (sFile(thisImage))
-            End If
+            'End If
         ElseIf FileExtension = "ICO" Then
             'FreeImage has a more robust .ico implementation than VB's LoadPicture, so use it if available
             If FreeImageEnabled = True Then
@@ -464,11 +464,10 @@ End Sub
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
 Public Sub LoadPhotoDemonImage(ByVal PDIPath As String)
     
-    'Continue with loading the image...
-    'FormMain.ActiveForm.BackBuffer.AutoSize = True
+    'Decompress the current PDI file
     DecompressFile PDIPath
     
-    'Load the picture into a temporary StdPicture object
+    'Load the decompressed bitmap into a temporary StdPicture object
     Dim tmpPicture As StdPicture
     Set tmpPicture = New StdPicture
     Set tmpPicture = LoadPicture(PDIPath)
@@ -482,29 +481,39 @@ Public Sub LoadPhotoDemonImage(ByVal PDIPath As String)
 
 End Sub
 
-'PNG loading
+'PNG loading (NOTE: NEEDS TO BE REWRITTEN AGAINST GDI+)
 Public Sub LoadPNGImage(ByVal PNGPath As String)
     
     Dim pngFile As New LoadPNG
 
-    FormMain.ActiveForm.BackBuffer.AutoSize = False
-    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-    FormMain.ActiveForm.ScaleMode = 1
-    pngFile.PicBox = FormMain.ActiveForm.BackBuffer
+    Dim tmpPictureBox As PictureBox
+    Set tmpPictureBox = FormMain.Controls.Add("vb.picturebox", "tmpPictureBox")
+    
+    tmpPictureBox.Visible = False
+    tmpPictureBox.AutoSize = True
+    tmpPictureBox.ScaleMode = 3
+
+    'FormMain.ActiveForm.BackBuffer.AutoSize = False
+    'FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
+    'FormMain.ActiveForm.ScaleMode = 1
+    pngFile.PicBox = tmpPictureBox
     pngFile.SetToBkgrnd False, 0, 0
-    pngFile.BackgroundPicture = FormMain.ActiveForm.BackBuffer
+    pngFile.BackgroundPicture = tmpPictureBox
     pngFile.SetAlpha = True
     pngFile.SetTrans = True
     pngFile.OpenPNG PNGPath
-    FormMain.ActiveForm.ScaleMode = 3
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.Refresh
+    'FormMain.ActiveForm.ScaleMode = 3
+    'FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
+    'FormMain.ActiveForm.Refresh
+    tmpPictureBox.Picture = tmpPictureBox.Image
+    pdImages(CurrentImage).mainLayer.CreateFromPicture tmpPictureBox.Picture
     
+    Unload tmpPictureBox
     'We can't be guaranteed that the PNG loading code will resize the main picture box properly, so do it manually
-    FormMain.ActiveForm.BackBuffer.Width = pngFile.Width + 2
-    FormMain.ActiveForm.BackBuffer.Height = pngFile.Height + 2
-    FormMain.ActiveForm.BackBuffer.AutoSize = True
-    DoEvents
+    'FormMain.ActiveForm.BackBuffer.Width = pngFile.Width + 2
+    'FormMain.ActiveForm.BackBuffer.Height = pngFile.Height + 2
+    'FormMain.ActiveForm.BackBuffer.AutoSize = True
+    'DoEvents
 
 End Sub
 
@@ -536,11 +545,13 @@ End Sub
 'BITMAP loading
 Public Sub LoadBMP(ByVal BMPFile As String)
     
-    'Continue with loading the image...
-    FormMain.ActiveForm.BackBuffer.AutoSize = True
-    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture(BMPFile)
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer.Refresh
+    'Create a temporary StdPicture object that will be used to load the image
+    Dim tmpPicture As StdPicture
+    Set tmpPicture = New StdPicture
+    Set tmpPicture = LoadPicture(BMPFile)
+    
+    'Copy the image into the current pdImage object
+    pdImages(CurrentImage).mainLayer.CreateFromPicture tmpPicture
     
 End Sub
 
@@ -701,20 +712,10 @@ Public Sub DuplicateCurrentImage()
         
     'Copy the picture from the previous form to this new one
     pdImages(CurrentImage).containingForm.BackBuffer.AutoSize = True
-    pdImages(CurrentImage).containingForm.BackBuffer.Picture = pdImages(imageToBeDuplicated).containingForm.BackBuffer.Picture
-                
-    'Fit the window to the newly duplicated image
-    Message "Resizing image to fit screen..."
-    
-    'If the user wants us to resize the image to fit on-screen, do that now
-    If AutosizeLargeImages = 0 Then FitImageToWindow True
-                
-    'If the window is not maximized or minimized, fit the form around the picture box
-    If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
-        
+    pdImages(CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer
+
     'Store important data about the image to the pdImages array
-    pdImages(CurrentImage).Width = GetImageWidth()
-    pdImages(CurrentImage).Height = GetImageHeight()
+    pdImages(CurrentImage).updateSize
     pdImages(CurrentImage).OriginalFileSize = pdImages(imageToBeDuplicated).OriginalFileSize
     pdImages(CurrentImage).LocationOnDisk = ""
             
@@ -729,12 +730,21 @@ Public Sub DuplicateCurrentImage()
             
     'Because this image hasn't been saved to disk, mark its save state as "false"
     pdImages(CurrentImage).UpdateSaveState False
-        
-    FormMain.ActiveForm.Caption = pdImages(CurrentImage).OriginalFileNameAndExtension
+    
+    'Fit the window to the newly duplicated image
+    Message "Resizing image to fit screen..."
+    
+    'If the user wants us to resize the image to fit on-screen, do that now
+    If AutosizeLargeImages = 0 Then FitImageToWindow True
+                
+    'If the window is not maximized or minimized, fit the form around the picture box
+    If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
         
     'Note the image dimensions and display them on the left-hand pane
-    GetImageData
-    DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
+    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    
+    'Update the current caption to match
+    FormMain.ActiveForm.Caption = pdImages(CurrentImage).OriginalFileNameAndExtension
         
     'FixScrolling may have been reset by this point (by the FitImageToWindow sub, among others), so MAKE SURE it's false
     FixScrolling = False
@@ -745,7 +755,7 @@ Public Sub DuplicateCurrentImage()
     'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
     FixScrolling = True
     
-    PrepareViewport FormMain.ActiveForm, "PreLoadImage"
+    PrepareViewport FormMain.ActiveForm, "DuplicateImage"
         
     'Render an icon-sized version of this image as the MDI child form's icon
     CreateCustomFormIcon FormMain.ActiveForm
