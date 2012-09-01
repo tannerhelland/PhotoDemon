@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Layer class
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2011-2012 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 31/August/12
 'Last update: completed first working draft of the class.  Core functionality is now COMPLETE!
@@ -31,12 +31,12 @@ Attribute VB_Exposed = False
 'Those are serious benefits.
 '
 'Implementation will be slow and steady at first.  A rough roadmap is as follows:
-'- Get image loading working.  This will require a lot of plumbing to already be in place, but I can't do anything else
+'- (IN PROGRESS) Get image loading working.  This will require a lot of plumbing to already be in place, but I can't do anything else
 ' until I can get image data into the class.
-'- Get viewport rendering working.  If I can't see the image, I can't work on it.
-'- Experiment with tying the class's data into GetImageData, which is already well-implemented throughout PD.
-'- Replace PicWidthL and PicHeightL with width/height values provided by this class.
-'- Remove all direct intervention with ActiveForm.BackBuffer and force it through this class.  That means no unmanaged
+'- (DONE) Get viewport rendering working.  If I can't see the image, I can't work on it.
+'- (DONE) Experiment with tying the class's data into GetImageData, which is already well-implemented throughout PD.
+'- (IN PROGRESS) Replace PicWidthL and PicHeightL with width/height values provided by this class.
+'- (IN PROGRESS) Remove all direct intervention with ActiveForm.BackBuffer and force it through this class.  That means no unmanaged
 ' changing of width, height, etc - it has to come through here.
 '
 'This class will be a subset of pdImage().  Initially there will only be one layer (the image's data), but in the future,
@@ -44,7 +44,10 @@ Attribute VB_Exposed = False
 '
 'Let the fun begin.
 '
-'Note: this work is based off a DIB class written by Herman Liu, which was in turn based off work by Carles PV.
+'Note: in building this, I utilized a number of other DIB classes for reference and testing.  Special thanks to:
+' Herman Liu (personal correspondence)
+' Carles PV's iBMP project: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
+' Steve McMahon's DIB/SafeArray analysis: http://www.vbaccelerator.com/home/VB/Code/vbMedia/DIB_Sections/True_Colour_DIBSection/article.asp
 ' Many thanks to both these individuals for their outstanding work on graphics in VB.
 '
 '***************************************************************************

@@ -1086,6 +1086,9 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     ' Just in case, however, prompt a final cleaning.
     ClearALLUndo
     
+    'Release GDIPlus (if applicable)
+    If GDIPlusEnabled Then releaseGDIPlus
+    
     'Destroy all custom-created form icons
     destroyAllIcons
     

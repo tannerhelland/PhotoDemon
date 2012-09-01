@@ -69,14 +69,17 @@ Public z As Long
 'Name of file to save (necessary because forms may take control and we need something to track the file in question)
 Public SaveFileName As String
 
-'Whether or not scanning is enabled
+'Is scanner/digital camera support enabled?
 Public ScanEnabled As Boolean
 
-'Whether or not zLib is enabled
+'Is compression via zLib enabled?
 Public zLibEnabled As Boolean
 
-'Whether or not FreeImage is enabled
+'Is FreeImage.dll enabled?
 Public FreeImageEnabled As Boolean
+
+'Is GDI+ available?
+Public GDIPlusEnabled As Boolean
 
 'Whether or not the user has created a custom filter
 Public HasCreatedFilter As Boolean

@@ -30,6 +30,7 @@ Public Sub LoadTheProgram()
     LoadINI
     
     'Check for plug-ins (we do this early, because other routines rely on this knowledge)
+    ' (Note that this is also the routine that checks GDI+ availability, despite it not really being a "plugin")
     LoadMessage "Loading plugins..."
     LoadPlugins
     
@@ -637,7 +638,7 @@ Public Sub LoadMenuShortcuts()
 End Sub
 
 'This subroutine handles the detection of the three core plugins strongly recommended for an optimal PhotoDemon
-' experience: zLib, EZTwain32, and FreeImage.
+' experience: zLib, EZTwain32, and FreeImage.  For convenience' sake, it also checks for GDI+ availability.
 Public Sub LoadPlugins()
     
     'Use the path the program was launched from to determine plug-in folder
@@ -682,6 +683,14 @@ Public Sub LoadPlugins()
     Else
         FreeImageEnabled = True
     End If
+    
+    'Finally, check GDI+ availability
+    If isGDIPlusAvailable() Then
+        GDIPlusEnabled = True
+    Else
+        GDIPlusEnabled = False
+    End If
+    
 End Sub
 
 'Make a copy of the current image.  Thanks to PSC user "Achmad Junus" for this suggestion.
