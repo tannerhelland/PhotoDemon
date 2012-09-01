@@ -199,9 +199,9 @@ Option Explicit
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
     
-Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     'Draw the current coordinates to the status bar
-    SetBitmapCoordinates X, Y
+    SetBitmapCoordinates x, y
 End Sub
 
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
@@ -215,7 +215,7 @@ Private Sub Form_Activate()
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
     ' unless the actually exist.)
-    If pdImages(CurrentImage).PicWidth <> 0 Then DisplaySize pdImages(CurrentImage).PicWidth, pdImages(CurrentImage).PicHeight
+    If pdImages(CurrentImage).Width <> 0 Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
 
     'If this MDI child is maximized, double-check that it's been drawn correctly.
     ' (This is necessary because VB doesn't handle _Resize() properly when switching between maximized MDI child forms)
@@ -236,7 +236,7 @@ Private Sub Form_Activate()
     tInit tSave, Not pdImages(CurrentImage).HasBeenSaved
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
-    If pdImages(CurrentImage).PicWidth <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
+    If pdImages(CurrentImage).Width <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
     
     'Finally, if the histogram window is open, redraw it
     If FormHistogram.Visible = True Then
@@ -274,7 +274,7 @@ Private Sub Form_LostFocus()
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) Then
@@ -308,7 +308,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Check to make sure the type of OLE object is files
     If Data.GetFormat(vbCFFiles) Then
