@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 29/August/12
-'Last update: initial build
+'Last updated: 31/August/12
+'Last update: built Render function
 '
 'The time has come to break PhotoDemon's reliance on picture boxes.  The new plan is to implement an honest-to-God
 ' DIB class that will manage all image data in memory.  If built correctly, this thing will provide a whole host of
@@ -115,7 +115,7 @@ End Type
 
 'Drawing API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
@@ -424,4 +424,48 @@ End Sub
 'TERMINATE class
 Private Sub Class_Terminate()
     eraseLayer
+End Sub
+
+'Draw this layer to a picture box.  The image will be automatically resized and centered.
+Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
+
+    'If the target picture box is smaller than this layer, request halftoning
+    If (dstPicture.ScaleWidth < layerWidth) Or (dstPicture.ScaleHeight < layerHeight) Then
+        SetStretchBltMode dstPicture.hDC, STRETCHBLT_HALFTONE
+    Else
+        SetStretchBltMode dstPicture.hDC, STRETCHBLT_COLORONCOLOR
+    End If
+    
+    Dim dstWidth As Single, dstHeight As Single
+    dstWidth = dstPicture.ScaleWidth
+    dstHeight = dstPicture.ScaleHeight
+    
+    Dim srcWidth As Single, srcHeight As Single
+    srcWidth = layerWidth
+    srcHeight = layerHeight
+    
+    'Calculate the aspect ratio of this layer and the target picture box
+    Dim srcAspect As Single, dstAspect As Single
+    srcAspect = srcWidth / srcHeight
+    dstAspect = dstWidth / dstHeight
+    
+    Dim dWidth As Long, dHeight As Long
+    
+    If srcAspect > dstAspect Then
+        dWidth = dstWidth
+        dHeight = CSng(srcHeight / srcWidth) * dWidth + 0.5
+        PreviewY = CInt((dstHeight - dHeight) / 2)
+        PreviewX = 0
+        StretchBlt dstPicture.hDC, 0, PreviewY, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
+    Else
+        dHeight = dstHeight
+        dWidth = CSng(srcWidth / srcHeight) * dHeight + 0.5
+        PreviewX = CInt((dstWidth - dWidth) / 2)
+        PreviewY = 0
+        StretchBlt dstPicture.hDC, PreviewX, 0, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
+    End If
+    
+    dstPicture.Picture = dstPicture.Image
+    dstPicture.Refresh
+
 End Sub
