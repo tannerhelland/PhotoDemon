@@ -15,7 +15,7 @@ Public EmbossEngraveColor As Long 'last used emboss/engrave color
 'Rotation variables
 Public Type TDPoint
     x As Integer
-    Y As Integer
+    y As Integer
     z As Integer
 End Type
 Public rm(0 To 3, 0 To 3) As Double 'rotation matrix
@@ -63,11 +63,8 @@ Public CommandLine As String
 
 'Commonly used loop variables
 Public x As Long
-Public Y As Long
+Public y As Long
 Public z As Long
-
-'The file size of the image
-Public BitmapSize As Single
 
 'Name of file to save (necessary because forms may take control and we need something to track the file in question)
 Public SaveFileName As String
