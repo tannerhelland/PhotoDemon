@@ -308,11 +308,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
         End If
         
-        'DOHL: Attempt to load this image data into the pdImage object
-        Dim testSuccess As Boolean
-        testSuccess = pdImages(CurrentImage).mainLayer.createFromPicture(FormMain.ActiveForm.BackBuffer.Picture)
-        If testSuccess = False Then MsgBox "WTF"
-        '/DOHL
+        'Store important data about the image to the pdImages array
+        pdImages(CurrentImage).updateSize
+        pdImages(CurrentImage).OriginalFileSize = FileLen(sFile(thisImage))
         
         'If the form isn't maximized or minimized then set its dimensions to just slightly bigger than the image size
         Message "Resizing image to fit screen..."
@@ -322,11 +320,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
         'If the window is not maximized or minimized, fit the form around the picture box
         If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
-        
-        'Store important data about the image to the pdImages array
-        pdImages(CurrentImage).PicWidth = GetImageWidth()
-        pdImages(CurrentImage).PicHeight = GetImageHeight()
-        pdImages(CurrentImage).OriginalFileSize = FileLen(sFile(thisImage))
         
         'If a different image name has been specified, we can assume the calling routine is NOT loading a file
         ' from disk (e.g. it's a scan, or Internet download, or screen capture, etc.).  Therefore, set the
@@ -363,11 +356,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
         End If
             
+        'Update relevant user interface controls
+        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
         If imgFormTitle = "" Then FormMain.ActiveForm.Caption = sFile(thisImage) Else FormMain.ActiveForm.Caption = imgFormTitle
-        
-        'Finally, remember the image dimensions and display them on the left-hand pane
-        GetImageData
-        DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
         
         'FixScrolling may have been reset by this point (by the FitImageToWindow sub, among others), so MAKE SURE it's false
         FixScrolling = False
@@ -394,9 +385,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
     'If we have more images to process, now's the time to do it!
     Next thisImage
-    
-    Exit Sub
-    
+        
 End Sub
 
 'Load any file that hasn't explicitly been sent elsewhere.  FreeImage will automatically determine filetype.
@@ -476,12 +465,19 @@ End Sub
 Public Sub LoadPhotoDemonImage(ByVal PDIPath As String)
     
     'Continue with loading the image...
-    FormMain.ActiveForm.BackBuffer.AutoSize = True
+    'FormMain.ActiveForm.BackBuffer.AutoSize = True
     DecompressFile PDIPath
-    BitmapSize = FileLen(PDIPath)
-    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture(PDIPath)
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer.Refresh
+    
+    'Load the picture into a temporary StdPicture object
+    Dim tmpPicture As StdPicture
+    Set tmpPicture = New StdPicture
+    Set tmpPicture = LoadPicture(PDIPath)
+    
+    'Copy the image into the current pdImage object
+    pdImages(CurrentImage).mainLayer.CreateFromPicture tmpPicture
+    
+    'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
+    ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
     CompressFile PDIPath
 
 End Sub
@@ -550,24 +546,16 @@ End Sub
 
 'UNDO loading
 Public Sub LoadUndo(ByVal UndoFile As String)
-
-    Message "Loading undo/redo data from file..."
-       
-    'Continue with loading the image...
-    'FormMain.ActiveForm.BackBuffer.AutoSize = True
-    'FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-    'FormMain.ActiveForm.BackBuffer.Picture = LoadPicture(UndoFile)
-    'FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    'FormMain.ActiveForm.BackBuffer.Refresh
     
+    'The layer handles the actual loading of the undo data
     pdImages(CurrentImage).mainLayer.createFromFile UndoFile
     
-    'This will autopopulate things like width, height, etc
-    'GetImageData
-    
+    'Update the displayed size
+    pdImages(CurrentImage).updateSize
     DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
     
-    PrepareViewport FormMain.ActiveForm, "Undo"
+    'Render the image to the screen
+    PrepareViewport FormMain.ActiveForm, "LoadUndo"
     
     Message "Undo restored successfully."
     
@@ -725,8 +713,8 @@ Public Sub DuplicateCurrentImage()
     If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
         
     'Store important data about the image to the pdImages array
-    pdImages(CurrentImage).PicWidth = GetImageWidth()
-    pdImages(CurrentImage).PicHeight = GetImageHeight()
+    pdImages(CurrentImage).Width = GetImageWidth()
+    pdImages(CurrentImage).Height = GetImageHeight()
     pdImages(CurrentImage).OriginalFileSize = pdImages(imageToBeDuplicated).OriginalFileSize
     pdImages(CurrentImage).LocationOnDisk = ""
             
