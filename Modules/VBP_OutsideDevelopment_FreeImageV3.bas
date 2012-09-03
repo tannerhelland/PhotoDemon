@@ -823,7 +823,7 @@ Private Declare Function lstrlen Lib "kernel32.dll" Alias "lstrlenA" ( _
 'OLEAUT32
 Private Declare Function OleCreatePictureIndirect Lib "oleaut32.dll" ( _
     ByRef lpPictDesc As PictDesc, _
-    ByRef rIid As Guid, _
+    ByRef riid As Guid, _
     ByVal fOwn As Long, _
     ByRef lplpvObj As IPicture) As Long
     
@@ -1926,7 +1926,7 @@ Private Const ITOF_USE_COLOR_BITMASK As Long = ITOF_USE_COLOR_TOP_RIGHT_PIXEL Or
                                                ITOF_USE_COLOR_SPECIFIED
 
 
-Private Type RGBQUAD
+Public Type RGBQUAD
    rgbBlue As Byte
    rgbGreen As Byte
    rgbRed As Byte
