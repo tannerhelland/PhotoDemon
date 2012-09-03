@@ -34,9 +34,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     SrcHeight = pdImages(formToBuffer.Tag).targetHeight / ZoomVal
     
     'These variables are the offset, as determined by the scroll bar values
-    Dim SrcX As Long, SrcY As Long
-    SrcX = formToBuffer.HScroll.Value
-    SrcY = formToBuffer.VScroll.Value
+    Dim srcX As Long, srcY As Long
+    srcX = formToBuffer.HScroll.Value
+    srcY = formToBuffer.VScroll.Value
 
     'Clear out the buffer
     formToBuffer.FrontBuffer.Picture = LoadPicture("")
@@ -55,7 +55,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     If ZoomVal <= 1 Then
         'StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, formToBuffer.BackBuffer.hDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
         'DOHC: Attempt to perform the StretchBlt call from the in-memory object
-        StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
+        StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
     Else
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
@@ -66,7 +66,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         SrcHeight = bltHeight / ZoomVal
         'StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, formToBuffer.BackBuffer.hDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
         'DOHC: Attempt to perform the StretchBlt call from the in-memory object
-        StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
+        StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
     End If
     formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
     
@@ -127,13 +127,13 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     vScrollEnabled = False
     
     'Step 1: compare viewport width to zoomed image width
-    If zWidth > FormWidth Then hScrollEnabled = True
+    If Int(zWidth) > FormWidth Then hScrollEnabled = True
     
     'Step 2: compare viewport height to zoomed image height.  If the horizontal scrollbar has been enabled, factor that into our calculations
-    If (zHeight > FormHeight) Or ((hScrollEnabled = True) And (zHeight > (FormHeight - formToBuffer.HScroll.Height))) Then vScrollEnabled = True
+    If (Int(zHeight) > FormHeight) Or ((hScrollEnabled = True) And (Int(zHeight) > (FormHeight - formToBuffer.HScroll.Height))) Then vScrollEnabled = True
     
     'Step 3: one last check on horizontal viewport width; if the vertical scrollbar was enabled, the horizontal viewport width has changed.
-    If (vScrollEnabled = True) And (hScrollEnabled = False) And (zWidth > (FormWidth - formToBuffer.VScroll.Width)) Then hScrollEnabled = True
+    If (vScrollEnabled = True) And (hScrollEnabled = False) And (Int(zWidth) > (FormWidth - formToBuffer.VScroll.Width)) Then hScrollEnabled = True
     
     'We now know which scroll bars need to be enabled.  Before calculating scroll bar stuff, however, let's figure out where our viewport will
     ' be located - on the edge if scroll bars are enabled, centered in the viewable area if scroll bars are not enabled.
@@ -204,6 +204,9 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'If we've reached this point, one or both scroll bars are enabled.  The time has come to calculate their values.
     'Horizontal scroll bar comes first.
+    
+    'MsgBox zWidth & ":" & FormMain.ActiveForm.ScaleWidth & vbCrLf & zHeight & ":" & FormMain.ActiveForm.ScaleHeight
+    
     If hScrollEnabled = True Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
