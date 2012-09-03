@@ -155,7 +155,7 @@ Begin VB.Form FormImage
       FillColor       =   &H00FFFFFF&
       FillStyle       =   0  'Solid
       BeginProperty Font 
-         Name            =   "MS Sans Serif"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
