@@ -808,9 +808,17 @@ MainErrHandler:
     
     'Invalid picture error
     ElseIf Err.Number = 481 Then
-        AddInfo = "You have attempted to load an invalid picture.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it."
-        Message "Invalid picture.  Image load cancelled."
+        AddInfo = "Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it."
+        Message "Invalid image.  Image load cancelled."
         mType = vbCritical + vbOKOnly + vbApplicationModal
+    
+        'Since we know about this error, there's no need to display the extended box.  Display a smaller one, then exit.
+        MsgBox AddInfo, mType, "Invalid image file"
+        
+        'On an invalid picture load, there will be a blank form that needs to be dealt with.
+        pdImages(CurrentImage).IsActive = False
+        Unload FormMain.ActiveForm
+        Exit Sub
     
     'File not found error
     ElseIf Err.Number = 53 Then
@@ -858,9 +866,6 @@ MainErrHandler:
     
     End If
         
-    'If an invalid picture was loaded, unload the active form (since it will just be empty and pictureless)
-    If Err.Number = 481 Then Unload FormMain.ActiveForm
-
 End Sub
 
 'Return a string with a human-readable name of a given process ID.
