@@ -140,7 +140,6 @@ Private Sub Form_Load()
     GenerateThankyou "Kroc of camendesign.com (UI design and organization)", "http://camendesign.com"
     GenerateThankyou "Floris van de Berg and Hervé Drolon (FreeImage library)", "http://freeimage.sourceforge.net/"
     GenerateThankyou "Carsten Klein (FreeImage VB interface)", "http://freeimage.sourceforge.net/"
-    GenerateThankyou "Alfred Koppold (PCX import/export and PNG import interfaces)", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=56537&lngWId=1"
     GenerateThankyou "John Korejwa (JPEG encoding class)", "http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=50065&lngWId=1"
     GenerateThankyou "Ron van Tilburg (implementation of Xiaolin Wu line antialiasing)", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
     GenerateThankyou "Jason Bullen (knot-based cubic spline interpolation)", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
