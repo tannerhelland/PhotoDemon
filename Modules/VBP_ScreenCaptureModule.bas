@@ -3,8 +3,8 @@ Attribute VB_Name = "Screen_Capture"
 'Screen Capture Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/99
-'Last updated: 15/June/12
-'Last update: append today's date to the default screen capture filename
+'Last updated: 04/September/12
+'Last update: use the Sleep API call to prevent the capture message box from being caught in the capture.
 '
 'Description: this module captures the screen.  The options are fairly minimal - it only captures
 '             the entire screen, but it does give the user the option to minimize the form first.
@@ -20,6 +20,8 @@ Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, 
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
+Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
+
 
 'Simple routine for capturing the screen and loading it as an image
 Public Sub CaptureScreen()
@@ -33,21 +35,16 @@ Public Sub CaptureScreen()
     'Check for cancel
     If CaptureMethod = vbCancel Then
         Message "Screen capture canceled. "
-        Unload FormMain.ActiveForm
         Exit Sub
     End If
     
     'If the user wants us to minimize the form, obey their orders
-    If CaptureMethod = vbYes Then
-        FormMain.WindowState = vbMinimized
-    End If
-    
-    'Temporarily disable scrolling (to prevent strange scroll bar effects)
-    FixScrolling = False
-    
-    'Create a new, blank form
-    CreateNewImageForm True
-    
+    If CaptureMethod = vbYes Then FormMain.WindowState = vbMinimized
+
+    'The capture happens so quickly that the message box prompting the capture will be caught in the snapshot.  Sleep for 1/4 of a second
+    ' to give the msgbox time to disappear
+    Sleep 250
+            
     'Get the window handle of the screen
     Dim scrHwnd As Long
     scrHwnd = GetDesktopWindow()
@@ -60,16 +57,15 @@ Public Sub CaptureScreen()
     Dim screenWidth As Long, screenHeight As Long
     screenWidth = Screen.Width \ Screen.TwipsPerPixelX
     screenHeight = Screen.Height \ Screen.TwipsPerPixelY
-    FormMain.ActiveForm.BackBuffer.Width = screenWidth + 2
-    FormMain.ActiveForm.BackBuffer.Height = screenHeight + 2
     
     'Convert the hDC into the appropriate bitmap format
     CreateCompatibleBitmap scrhDC, screenWidth, screenHeight
     
-    'BitBlt from the new bitmap-compatible hDC to the form
-    BitBlt FormMain.ActiveForm.BackBuffer.hDC, 0, 0, screenWidth, screenHeight, scrhDC, 0, 0, vbSrcCopy
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    DoEvents  'Random fact - without DoEvents right here, this method fails.  Go figure.
+    'BitBlt from the new bitmap-compatible hDC to a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createBlank screenWidth, screenHeight
+    BitBlt tmpLayer.getLayerDC, 0, 0, screenWidth, screenHeight, scrhDC, 0, 0, vbSrcCopy
     
     'Release the object and handle we generated for the capture
     ReleaseDC scrHwnd, scrhDC
@@ -84,19 +80,19 @@ Public Sub CaptureScreen()
     'Set the picture of the form to equal its image
     Dim tmpFileName As String
     tmpFileName = TempPath & PROGRAMNAME & " Screen Capture.tmp"
-    SavePicture FormMain.ActiveForm.BackBuffer.Picture, tmpFileName
     
-    'Kill the temporary form
-    Unload FormMain.ActiveForm
-    DoEvents
-    
+    'Ask the layer to write out its data to file in BMP format
+    tmpLayer.writeToBitmapFile tmpFileName
+        
+    'We are now done with the temporary layer, so free it up
+    tmpLayer.eraseLayer
+    Set tmpLayer = Nothing
+        
     'Once the capture is saved, load it up like any other bitmap
     ' NOTE: Because PreLoadImage requires an array of strings, create an array to send to it
     Dim sFile(0) As String
     sFile(0) = tmpFileName
-    
-    FixScrolling = True
-    
+        
     PreLoadImage sFile, False, "Screen Capture", "Screen capture (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     
     'Erase the temp file
