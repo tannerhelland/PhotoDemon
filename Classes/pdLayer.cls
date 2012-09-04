@@ -31,7 +31,7 @@ Attribute VB_Exposed = False
 'Those are serious benefits.
 '
 'Implementation will be slow and steady at first.  A rough roadmap is as follows:
-'- (IN PROGRESS) Get image loading working.  This will require a lot of plumbing to already be in place, but I can't do anything else
+'- (DONE) Get image loading working.  This will require a lot of plumbing to already be in place, but I can't do anything else
 ' until I can get image data into the class.
 '- (DONE) Get viewport rendering working.  If I can't see the image, I can't work on it.
 '- (DONE) Experiment with tying the class's data into GetImageData, which is already well-implemented throughout PD.
@@ -92,6 +92,14 @@ Private Type BITMAPINFO
     Colors(0 To 255) As RGBQUAD
 End Type
 
+Private Type BITMAPFILEHEADER
+    Type      As Integer
+    Size      As Long
+    Reserved1 As Integer
+    Reserved2 As Integer
+    OffBits   As Long
+End Type
+
 'Rectangle type for use with SetRect/FillRect API calls
 Private Type RECT
     x1 As Long
@@ -118,7 +126,7 @@ End Type
 
 'Drawing API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
@@ -132,7 +140,7 @@ Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As An
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -164,9 +172,6 @@ Private layerDIBOriginal As Long
 Private layerDIBits As Long
 'Persistent DIB header; this will be used to create the DIB associated with this layer
 Private layerDIBHeader As BITMAPINFOHEADER
-
-'An StdPicture associated with this layer (may or may not be used)
-'Private layerPicture As StdPicture
 
 'The layer's width and height
 Private layerWidth As Long, layerHeight As Long
@@ -478,13 +483,13 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
 End Sub
 
 'Load a layer's DIB information from file.
-Public Sub createFromFile(ByRef SrcFilename As String)
+Public Sub createFromFile(ByRef srcFilename As String)
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open SrcFilename For Binary As #fileNum
+    Open srcFilename For Binary As #fileNum
     
         'Check to make sure this is actually a layer file
         Dim LayerIDCheck As String * 4
@@ -588,6 +593,61 @@ Public Sub writeToFile(ByRef DstFilename As String)
     'With our work complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
 
+End Sub
+
+'Write this layer's DIB information to a valid BMP file.
+Public Sub writeToBitmapFile(ByRef DstFilename As String)
+
+    'First, make sure this layer actually contains image data
+    If Not Me.hasImage() Then Exit Sub
+
+    'Delete any existing file (overwrite)
+    If FileExist(DstFilename) = True Then Kill DstFilename
+        
+    'Calculate the size of the scanline
+    Dim slWidth As Long
+    slWidth = ((layerWidth * layerColorDepth + 31) \ 32) * 4
+    
+    'A valid bitmap header consists of two parts: a file header, and an image header.
+    Dim bmpFileHeader As BITMAPFILEHEADER
+    Dim bmpInfoHeader As BITMAPINFO
+    
+    'Build the file header first
+    With bmpFileHeader
+        .Type = &H4D42      'BMP identifier
+        .Size = Len(bmpFileHeader) + (slWidth * layerHeight)      'Length of the file
+        .OffBits = Len(bmpFileHeader) + Len(bmpInfoHeader)          'Length of the header area
+    End With
+    
+    '...then the image header
+    With bmpInfoHeader
+        .Header.Size = 40
+        .Header.Planes = 1
+        .Header.BitCount = layerColorDepth
+        .Header.Width = layerWidth
+        .Header.Height = layerHeight
+    End With
+    
+    'Finally, the image bytes
+    Dim iData() As Byte
+    ReDim iData(0 To slWidth - 1, 0 To layerHeight - 1) As Byte
+    GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
+        
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    'Open the file and dump the two headers and image data into it
+    Open DstFilename For Binary As #fileNum
+    
+        'Headers
+        Put #fileNum, 1, bmpFileHeader
+        Put #fileNum, , bmpInfoHeader
+        
+        'Image data
+        Put #fileNum, , iData()
+        
+    Close #fileNum
+    
 End Sub
 
 'Sometimes a layer needs to access its own bits.  Here's how.
