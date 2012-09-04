@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 03/July/12
-'Last update: Implemented bad file format error handling in the FreeImage load routine.
+'Last updated: 03/September/12
+'Last update: completely rewrote everything against the new layer class.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 'files, and anything else the program needs to take from the hard drive.
@@ -265,67 +265,84 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         Message "Determining filetype..."
         
-        Dim FileExtension As String
-        FileExtension = UCase(GetExtension(sFile(thisImage)))
+        Dim fileExtension As String
+        fileExtension = UCase(GetExtension(sFile(thisImage)))
         
         'Add this file to the MRU list (unless specifically told not to)
         If ToUpdateMRU = True Then MRU_AddNewFile sFile(thisImage)
         
         Dim loadSuccessful As Boolean
+        loadSuccessful = True
         
         'Dependent on the file's extension, load the appropriate image decoding routine
-        If FileExtension = "PDI" Then
-            LoadPhotoDemonImage (sFile(thisImage))
-        ElseIf FileExtension = "PNG" Then
-            'FreeImage has a more robust .png implementation than GDI+, so use it if available
-            If FreeImageEnabled = True Then
-                loadSuccessful = LoadFreeImageV3(sFile(thisImage))
-            Else
-                LoadGDIPlusImage sFile(thisImage)
-            End If
-        ElseIf FileExtension = "ICO" Then
-            'FreeImage has a more robust .ico implementation than GDI+, so use it if available
-            If FreeImageEnabled = True Then
-                loadSuccessful = LoadFreeImageV3(sFile(thisImage))
-            Else
-                LoadGDIPlusImage sFile(thisImage)
-            End If
-        ElseIf FileExtension = "JIF" Or FileExtension = "JPG" Or FileExtension = "JPEG" Or FileExtension = "JPE" Then
-            'FreeImage has a more robust .jpeg implementation than VB's LoadPicture, so use it if available
-            If FreeImageEnabled = True Then
-                loadSuccessful = LoadFreeImageV3(sFile(thisImage))
-            Else
+        Select Case fileExtension
+            Case "BMP", "GIF"
+                'These file formats are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
+                If FreeImageEnabled = True Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                ElseIf GDIPlusEnabled = True Then
+                    LoadGDIPlusImage sFile(thisImage)
+                Else
+                    LoadBMP sFile(thisImage)
+                End If
+            Case "EMF", "WMF"
+                'These file formats are preferentially loaded by GDI+ if available, then default VB.
+                If GDIPlusEnabled = True Then
+                    LoadGDIPlusImage sFile(thisImage)
+                Else
+                    LoadBMP sFile(thisImage)
+                End If
+            Case "ICO"
+                'FreeImage has a more robust .ico implementation than GDI+, so use it if available
+                If FreeImageEnabled = True Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                Else
+                    LoadGDIPlusImage sFile(thisImage)
+                End If
+            Case "JIF", "JPG", "JPEG", "JPE"
+                'FreeImage has a more robust .jpeg implementation than VB's LoadPicture, so use it if available
+                If FreeImageEnabled = True Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                Else
+                    LoadBMP sFile(thisImage)
+                End If
+            Case "PDI"
+                LoadPhotoDemonImage (sFile(thisImage))
+            Case "PNG"
+                'FreeImage has a more robust .png implementation than GDI+, so use it if available
+                If FreeImageEnabled = True Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                Else
+                    LoadGDIPlusImage sFile(thisImage)
+                End If
+            Case "TIF", "TIFF"
+                'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
+                If FreeImageEnabled = True Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                Else
+                    LoadGDIPlusImage sFile(thisImage)
+                End If
+            Case "TMP"
+                'TMP files are internal files used by PhotoDemon.  VB's internal LoadPicture is fine for these.
                 LoadBMP sFile(thisImage)
-            End If
-        ElseIf FileExtension = "GIF" Or FileExtension = "WMF" Or FileExtension = "EMF" Or FileExtension = "BMP" Or FileExtension = "RLE" Or FileExtension = "TMP" Then
-            'These file formats are preferentially loaded by GDI+ if available (for things like 32-bit bmps), but if all else
-            ' fails, let VB try and load them.
-            If GDIPlusEnabled = True Then
-                LoadGDIPlusImage sFile(thisImage)
-            Else
-                LoadBMP sFile(thisImage)
-            End If
-        ElseIf FileExtension = "TIF" Or FileExtension = "TIFF" Then
-            'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
-            If FreeImageEnabled = True Then
-                loadSuccessful = LoadFreeImageV3(sFile(thisImage))
-            Else
-                LoadGDIPlusImage sFile(thisImage)
-            End If
-        'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
-        Else
-            If FreeImageEnabled = True Then
-                loadSuccessful = LoadFreeImageV3(sFile(thisImage))
-            Else
-                MsgBox "Unfortunately. the FreeImage interface plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy this file into the plugin directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
-                Exit Sub
-            End If
-        End If
+            'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
+            Case Else
+                If FreeImageEnabled = True Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                Else
+                    MsgBox "Unfortunately. the FreeImage interface plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy this file into the plugin directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
+                    Exit Sub
+                End If
+        
+        End Select
         
         'Double-check to make sure the image was loaded successfully
         If loadSuccessful = False Then
+            MsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbCritical + vbOKOnly + vbApplicationModal, "PhotoDemon Import Failed"
             Message "Image load canceled."
-            Exit Sub
+            pdImages(CurrentImage).IsActive = False
+            Unload FormMain.ActiveForm
+            GoTo PreloadMoreImages
         End If
         
         'Store important data about the image to the pdImages array
@@ -403,6 +420,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             FormMain.ActiveForm.Top = pdImages(CurrentImage).WindowTop
         End If
         
+PreloadMoreImages:
+
     'If we have more images to process, now's the time to do it!
     Next thisImage
         
@@ -411,81 +430,8 @@ End Sub
 'Load any file that hasn't explicitly been sent elsewhere.  FreeImage will automatically determine filetype.
 Public Function LoadFreeImageV3(ByVal sFile As String) As Boolean
 
-    On Error GoTo FreeImageError
-
-    'Make sure we found the plug-in when we loaded the program
-    If FreeImageEnabled = False Then
-        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        pdImages(CurrentImage).IsActive = False
-        Unload FormMain.ActiveForm
-        Exit Function
-    End If
+    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile)
     
-    'Load the FreeImage library from the plugin directory
-    Dim hFreeImgLib As Long
-    hFreeImgLib = LoadLibrary(PluginPath & "FreeImage.dll")
-    
-    'Continue with loading the image...
-    FormMain.ActiveForm.BackBuffer.AutoSize = True
-    
-    'We'll use some customized load strings for certain filetypes, so we need to see what kind of file we're opening
-    Dim FileExtension As String
-    FileExtension = UCase(GetExtension(sFile))
-    
-    'When loading JPEGs, opt for accuracy and quality over load speed
-    If FileExtension = "JIF" Or FileExtension = "JPG" Or FileExtension = "JPEG" Or FileExtension = "JPE" Then
-        FormMain.ActiveForm.BackBuffer.Picture = LoadPictureEx(sFile, FILO_JPEG_ACCURATE)
-    Else
-        FormMain.ActiveForm.BackBuffer.Picture = LoadPictureEx(sFile)
-    End If
-    
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer.Refresh
-    
-    'Release the FreeImage library
-    FreeLibrary hFreeImgLib
-    
-    LoadFreeImageV3 = True
-    
-    Exit Function
-    
-FreeImageError:
-
-    'Reset the mouse pointer
-    FormMain.MousePointer = vbDefault
-
-    'We'll use this string to hold additional error data
-    Dim AddInfo As String
-    
-    'This variable stores the message box type
-    Dim mType As VbMsgBoxStyle
-    
-    'Tracks the user input from the message box
-    Dim msgReturn As VbMsgBoxResult
-
-    'FreeImage throws Error #5 if an invalid image is loaded
-    If Err.Number = 5 Then
-        AddInfo = "You have attempted to load an invalid picture.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it."
-        Message "Invalid picture.  Image load cancelled."
-        mType = vbCritical + vbOKOnly
-    End If
-    
-    'Create the message box to return the error information
-    msgReturn = MsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
-    "Error number " & Err.Number & vbCrLf & _
-    "Description: " & Err.Description & vbCrLf & vbCrLf & _
-    AddInfo & vbCrLf & vbCrLf & _
-    "Sorry for the inconvenience," & vbCrLf & _
-    "-Tanner Helland" & vbCrLf & PROGRAMNAME & " Developer" & vbCrLf & _
-    "www.tannerhelland.com/contact", mType, PROGRAMNAME & " Error Handler: #" & Err.Number)
-    
-    'If an error was thrown, unload the active form (since it will just be empty and pictureless)
-    pdImages(CurrentImage).IsActive = False
-    Unload FormMain.ActiveForm
-
-    'Mark this load as unsuccessful
-    LoadFreeImageV3 = False
-
 End Function
 
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
@@ -695,7 +641,6 @@ Public Sub DuplicateCurrentImage()
     tInit tHistogram, True
         
     'Copy the picture from the previous form to this new one
-    pdImages(CurrentImage).containingForm.BackBuffer.AutoSize = True
     pdImages(CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer
 
     'Store important data about the image to the pdImages array
