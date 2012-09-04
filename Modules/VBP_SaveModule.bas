@@ -177,18 +177,3 @@ Public Sub SaveTIFImage(ByVal ImageID As Long, ByVal TIFPath As String)
     
 End Sub
 
-'PCX exporting is temporarily disabled.  It's such a rare use-case that I don't want to invest energy in it right now.
-'Public Sub SavePCXImage(ByVal ImageID As Long, ByVal PCXPath As String, ByVal colorDepth As Long, ByVal useRLE As Long)
-    'Dim TempPCX As New SavePCX
-    'Set TempPCX = Nothing
-   '
-   ' Message "Saving image..."
-   ' If FileExist(PCXPath) Then Kill PCXPath
-   '
-   ' TempPCX.SavePCXinFile PCXPath, pdImages(ImageID).containingForm.BackBuffer, colorDepth, useRLE
-   '
-   ' Set TempPCX = Nothing
-   ' Message "Image saved."
-    
-'End Sub
-
