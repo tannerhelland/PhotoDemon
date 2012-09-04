@@ -72,11 +72,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     'FreeImage or GDIPlus is sufficient for loading PNGs
     If (FreeImageEnabled = True) Or (GDIPlusEnabled = True) Then cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|PPM - Portable Pixmap|*.ppm|PSD - Adobe Photoshop|*.psd|RAS - Sun Raster File|*.ras"
-    
-    cdfStr = cdfStr & "|RLE - Compuserve or Windows|*.rle"
-    
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|SGI/RGB/BW - Silicon Graphics Image|*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta|TGA - Truevision Targa|*.tga"
+    If FreeImageEnabled = True Then cdfStr = cdfStr & "|PPM - Portable Pixmap|*.ppm|PSD - Adobe Photoshop|*.psd|RAS - Sun Raster File|*.ras|SGI/RGB/BW - Silicon Graphics Image|*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta|TGA - Truevision Targa|*.tga"
     
     If (FreeImageEnabled = True) Or (GDIPlusEnabled = True) Then cdfStr = cdfStr & "|TIF/TIFF - Tagged Image File Format|*.tif;*.tiff"
     
@@ -190,7 +186,7 @@ Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
     
     If FreeImageEnabled = True Then cdfStr = cdfStr & "|GIF - Graphics Interchange Format|*.gif"
     
-    cdfStr = cdfStr & "|JPG - JPEG - JFIF Compliant|*.jpg|PCX - Zsoft Paintbrush|*.pcx"
+    cdfStr = cdfStr & "|JPG - JPEG - JFIF Compliant|*.jpg"
     
     If zLibEnabled = True Then cdfStr = cdfStr & "|PDI - PhotoDemon Image (Lossless)|*.pdi"
     
@@ -250,75 +246,66 @@ End Function
 Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal optionalSaveParameter0 As Long = -1, Optional ByVal optionalSaveParameter1 As Long = -1) As Boolean
 
     'Used to determine what kind of file the user is trying to open
-    Dim FileExtension As String
-    FileExtension = UCase(GetExtension(dstPath))
+    Dim fileExtension As String
+    fileExtension = UCase(GetExtension(dstPath))
     
     'Only update the MRU if 1) no form is shown (because the user may cancel it), and 2) no errors occured
     Dim updateMRU As Boolean
     updateMRU = False
 
-    If FileExtension = "JPG" Or FileExtension = "JPEG" Or FileExtension = "JPE" Then
-        If loadRelevantForm = True Then
-            FormJPEG.Show 1, FormMain
-            'If the dialog was canceled, note it
-            PhotoDemon_SaveImage = Not saveDialogCanceled
-        Else
-            'Remember the JPEG quality so we don't have to pester the user for it if they save again
-            pdImages(ImageID).saveFlag0 = optionalSaveParameter0
-            
-            'I implement two separate save functions for JPEG images.  While I greatly appreciate John Korejwa's native
-            ' VB JPEG encoder, it's not nearly as robust, or fast, or tested as the FreeImage implementation.  As such,
-            ' PhotoDemon will default to FreeImage if it's available; otherwise John's JPEG class will be used.
-            If FreeImageEnabled = True Then
-                SaveJPEGImageUsingFreeImage ImageID, dstPath, optionalSaveParameter0
+    Select Case fileExtension
+        Case "JPG", "JPEG", "JPE"
+            If loadRelevantForm = True Then
+                FormJPEG.Show 1, FormMain
+                'If the dialog was canceled, note it
+                PhotoDemon_SaveImage = Not saveDialogCanceled
             Else
-                SaveJPEGImageUsingVB ImageID, dstPath, optionalSaveParameter0
+                'Remember the JPEG quality so we don't have to pester the user for it if they save again
+                pdImages(ImageID).saveFlag0 = optionalSaveParameter0
+                
+                'I implement two separate save functions for JPEG images.  While I greatly appreciate John Korejwa's native
+                ' VB JPEG encoder, it's not nearly as robust, or fast, or tested as the FreeImage implementation.  As such,
+                ' PhotoDemon will default to FreeImage if it's available; otherwise John's JPEG class will be used.
+                If FreeImageEnabled = True Then
+                    SaveJPEGImageUsingFreeImage ImageID, dstPath, optionalSaveParameter0
+                Else
+                    SaveJPEGImageUsingVB ImageID, dstPath, optionalSaveParameter0
+                End If
+                updateMRU = True
+            End If
+        Case "PDI"
+            If zLibEnabled = True Then
+                SavePhotoDemonImage ImageID, dstPath
+                updateMRU = True
+            Else
+            'If zLib doesn't exist...
+                MsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
+                Message "PDI saving disabled."
+            End If
+        Case "GIF"
+            SaveGIFImage ImageID, dstPath
+            updateMRU = True
+        Case "PNG"
+            If optionalSaveParameter0 = -1 Then
+                SavePNGImage ImageID, dstPath
+            Else
+                SavePNGImage ImageID, dstPath, optionalSaveParameter0
             End If
             updateMRU = True
-        End If
-    ElseIf FileExtension = "PDI" Then
-        If zLibEnabled = True Then
-            SavePhotoDemonImage ImageID, dstPath
+        Case "PPM"
+            SavePPMImage ImageID, dstPath
             updateMRU = True
-        Else
-        'If zLib doesn't exist...
-            MsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
-            Message "PDI saving disabled."
-        End If
-    ElseIf FileExtension = "GIF" Then
-        SaveGIFImage ImageID, dstPath
-        updateMRU = True
-    ElseIf FileExtension = "PNG" Then
-        If optionalSaveParameter0 = -1 Then
-            SavePNGImage ImageID, dstPath
-        Else
-            SavePNGImage ImageID, dstPath, optionalSaveParameter0
-        End If
-        updateMRU = True
-    ElseIf FileExtension = "PPM" Then
-        SavePPMImage ImageID, dstPath
-        updateMRU = True
-    ElseIf FileExtension = "TGA" Then
-        SaveTGAImage ImageID, dstPath
-        updateMRU = True
-    ElseIf FileExtension = "TIF" Then
-        SaveTIFImage ImageID, dstPath
-        updateMRU = True
-    'PCX exporting is temporarily disabled.  It's such a rare use-case that I don't want to invest energy in it right now.
-    'ElseIf FileExtension = "PCX" Then
-    '    If loadRelevantForm = True Then
-    '        FormPCX.Show 1, FormMain
-    '    Else
-    '        'Remember the PCX settings so we don't have to pester the user for it if they save again
-    '        pdImages(ImageID).saveFlag0 = optionalSaveParameter0
-    '        pdImages(ImageID).saveFlag1 = optionalSaveParameter1
-    '        SavePCXImage ImageID, dstPath, optionalSaveParameter0, optionalSaveParameter1
-    '        updateMRU = True
-    '    End If
-    Else
-        SaveBMP ImageID, dstPath
-        updateMRU = True
-    End If
+        Case "TGA"
+            SaveTGAImage ImageID, dstPath
+            updateMRU = True
+        Case "TIF", "TIFF"
+            SaveTIFImage ImageID, dstPath
+            updateMRU = True
+        Case Else
+            SaveBMP ImageID, dstPath
+            updateMRU = True
+        
+    End Select
     
     'UpdateMRU should only be true if the save was successful
     If updateMRU = True Then
@@ -359,16 +346,14 @@ Private Function getExtensionFromFilterIndex(ByVal FilterIndex As Long) As Strin
         Case 3
             getExtensionFromFilterIndex = "jpg"
         Case 4
-            getExtensionFromFilterIndex = "pcx"
-        Case 5
             getExtensionFromFilterIndex = "pdi"
-        Case 6
+        Case 5
             getExtensionFromFilterIndex = "png"
-        Case 7
+        Case 6
             getExtensionFromFilterIndex = "ppm"
-        Case 8
+        Case 7
             getExtensionFromFilterIndex = "tga"
-        Case 9
+        Case 8
             getExtensionFromFilterIndex = "tif"
         Case Else
             getExtensionFromFilterIndex = "undefined"
