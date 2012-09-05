@@ -265,8 +265,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         Message "Determining filetype..."
         
-        Dim fileExtension As String
-        fileExtension = UCase(GetExtension(sFile(thisImage)))
+        Dim FileExtension As String
+        FileExtension = UCase(GetExtension(sFile(thisImage)))
         
         'Add this file to the MRU list (unless specifically told not to)
         If ToUpdateMRU = True Then MRU_AddNewFile sFile(thisImage)
@@ -275,38 +275,53 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         loadSuccessful = True
         
         'Dependent on the file's extension, load the appropriate image decoding routine
-        Select Case fileExtension
-            Case "BMP", "GIF"
-                'These file formats are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
-                If FreeImageEnabled = True Then
+        Select Case FileExtension
+            Case "BMP"
+                'Bitmaps are preferentially loaded by GDI+ if available (which can handle 32bpp), then FreeImage (which is
+                ' unpredictable with 32bpp), then default VB (which simply fails with 32bpp but will load other depths).
+                If GDIPlusEnabled Then
+                    LoadGDIPlusImage sFile(thisImage)
+                ElseIf FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage))
-                ElseIf GDIPlusEnabled = True Then
+                Else
+                    LoadBMP sFile(thisImage)
+                End If
+            Case "GIF"
+                'GIF is preferentially loaded by FreeImage, then GDI+ if available, then default VB.
+                If FreeImageEnabled Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                ElseIf GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage)
                 Else
                     LoadBMP sFile(thisImage)
                 End If
             Case "EMF", "WMF"
-                'These file formats are preferentially loaded by GDI+ if available, then default VB.
-                If GDIPlusEnabled = True Then
+                'Metafiles are preferentially loaded by GDI+ if available, then default VB.
+                If GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage)
                 Else
                     LoadBMP sFile(thisImage)
                 End If
             Case "ICO"
-                'FreeImage has a more robust .ico implementation than GDI+, so use it if available
-                If FreeImageEnabled = True Then
+                'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
+                If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage))
-                Else
+                ElseIf GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage)
+                Else
+                    LoadBMP sFile(thisImage)
                 End If
             Case "JIF", "JPG", "JPEG", "JPE"
-                'FreeImage has a more robust .jpeg implementation than VB's LoadPicture, so use it if available
-                If FreeImageEnabled = True Then
+                'JPEGs are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
+                If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                ElseIf GDIPlusEnabled Then
+                    LoadGDIPlusImage sFile(thisImage)
                 Else
                     LoadBMP sFile(thisImage)
                 End If
             Case "PDI"
+                'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
                 LoadPhotoDemonImage (sFile(thisImage))
             Case "PNG"
                 'FreeImage has a more robust .png implementation than GDI+, so use it if available
@@ -330,8 +345,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If FreeImageEnabled = True Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage))
                 Else
-                    MsgBox "Unfortunately. the FreeImage interface plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy this file into the plugin directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
-                    Exit Sub
+                    MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will proceed to download this plugin for you.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
+                    Message "Image load canceled."
+                    pdImages(CurrentImage).IsActive = False
+                    Unload FormMain.ActiveForm
+                    GoTo PreloadMoreImages
                 End If
         
         End Select
