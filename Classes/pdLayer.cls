@@ -551,16 +551,16 @@ Public Sub createFromFile(ByRef srcFilename As String)
 End Sub
 
 'Write this layer's DIB information to file.
-Public Sub writeToFile(ByRef DstFilename As String)
+Public Sub writeToFile(ByRef dstFilename As String)
 
     'Delete any existing file (overwrite)
-    If FileExist(DstFilename) = True Then Kill DstFilename
+    If FileExist(dstFilename) = True Then Kill dstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open DstFilename For Binary As #fileNum
+    Open dstFilename For Binary As #fileNum
     
         'Identifiers
         Put #fileNum, 1, LAYER_IDENTIFIER
@@ -596,15 +596,12 @@ Public Sub writeToFile(ByRef DstFilename As String)
 End Sub
 
 'Write this layer's DIB information to a valid BMP file.
-Public Sub writeToBitmapFile(ByRef DstFilename As String)
+Public Sub writeToBitmapFile(ByRef dstFilename As String)
 
     'First, make sure this layer actually contains image data
     If Not Me.hasImage() Then Exit Sub
-
-    'Delete any existing file (overwrite)
-    If FileExist(DstFilename) = True Then Kill DstFilename
         
-    'Calculate the size of the scanline
+    'Calculate the size of a scanline
     Dim slWidth As Long
     slWidth = ((layerWidth * layerColorDepth + 31) \ 32) * 4
     
@@ -620,12 +617,12 @@ Public Sub writeToBitmapFile(ByRef DstFilename As String)
     End With
     
     '...then the image header
-    With bmpInfoHeader
-        .Header.Size = 40
-        .Header.Planes = 1
-        .Header.BitCount = layerColorDepth
-        .Header.Width = layerWidth
-        .Header.Height = layerHeight
+    With bmpInfoHeader.Header
+        .Size = 40
+        .Planes = 1
+        .BitCount = layerColorDepth
+        .Width = layerWidth
+        .Height = layerHeight
     End With
     
     'Finally, the image bytes
@@ -633,11 +630,14 @@ Public Sub writeToBitmapFile(ByRef DstFilename As String)
     ReDim iData(0 To slWidth - 1, 0 To layerHeight - 1) As Byte
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
         
+    'With all our information in place, check to see if that file already exists.  Delete it if necessary.
+    If FileExist(dstFilename) = True Then Kill dstFilename
+        
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump the two headers and image data into it
-    Open DstFilename For Binary As #fileNum
+    Open dstFilename For Binary As #fileNum
     
         'Headers
         Put #fileNum, 1, bmpFileHeader
