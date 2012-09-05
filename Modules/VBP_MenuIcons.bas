@@ -509,7 +509,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     SetStretchBltMode imgForm.picIcon.hDC, STRETCHBLT_HALFTONE
     
     'Render the bitmap that will ultimately be converted into an icon
-    StretchBlt imgForm.picIcon.hDC, CLng(TX), CLng(TY), CLng(tIcoWidth), CLng(tIcoHeight), pdImages(imgForm.Tag).mainLayer.getLayerDC, 0, 0, imgForm.BackBuffer.ScaleWidth, imgForm.BackBuffer.ScaleHeight, vbSrcCopy
+    StretchBlt imgForm.picIcon.hDC, CLng(TX), CLng(TY), CLng(tIcoWidth), CLng(tIcoHeight), pdImages(imgForm.Tag).mainLayer.getLayerDC, 0, 0, pdImages(imgForm.Tag).Width, pdImages(imgForm.Tag).Height, vbSrcCopy
     imgForm.picIcon.Picture = imgForm.picIcon.Image
    
     'Now that we have a first draft to work from, start preparing the data types required by the icon API calls
