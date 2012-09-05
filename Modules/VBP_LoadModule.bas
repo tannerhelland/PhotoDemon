@@ -16,9 +16,22 @@ Option Explicit
 'IT ALL BEGINS HERE (after Sub Main, that is)
 Public Sub LoadTheProgram()
     
-    'Load the splash screen and display it; that form will determine whether
-    'we're running in the IDE or as a standalone EXE.  It will also determine
-    'the appropriate program path, and from that the plug-in path.
+    'Before we can display the splash screen, we need to paint the logo to it.  (This is done for several reasons; it allows
+    ' us to keep just one copy of the logo in the project, and it guarantees proper painting regardless of screen DPI.)
+    Dim logoWidth As Long, logoHeight As Long
+    Dim logoAspectRatio As Double
+    
+    logoWidth = FormMain.picLogo.ScaleWidth
+    logoHeight = FormMain.picLogo.ScaleHeight
+    logoAspectRatio = CDbl(logoWidth) / CDbl(logoHeight)
+    
+    FormSplash.Visible = False
+    SetStretchBltMode FormSplash.hDC, STRETCHBLT_HALFTONE
+    StretchBlt FormSplash.hDC, 0, 0, FormSplash.ScaleWidth, FormSplash.ScaleWidth / logoAspectRatio, FormMain.picLogo.hDC, 0, 0, logoWidth, logoHeight, vbSrcCopy
+    FormSplash.Picture = FormSplash.Image
+    
+    'With that done, we can now display the splash screen. That form will determine whether we're running in the IDE or as a
+    ' standalone EXE.  It will also determine the appropriate program path, and from that the plug-in path.
     FormSplash.Show 0
     DoEvents
     

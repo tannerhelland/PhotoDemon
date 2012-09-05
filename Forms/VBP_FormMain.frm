@@ -66,6 +66,33 @@ Begin VB.MDIForm FormMain
       TabStop         =   0   'False
       Top             =   0
       Width           =   2235
+      Begin VB.PictureBox picLogo 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   2250
+         Left            =   360
+         Picture         =   "VBP_FormMain.frx":058A
+         ScaleHeight     =   150
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   600
+         TabIndex        =   11
+         Top             =   12000
+         Visible         =   0   'False
+         Width           =   9000
+      End
       Begin VB.ComboBox CmbZoom 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
@@ -79,9 +106,9 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          Height          =   360
-         ItemData        =   "VBP_FormMain.frx":058A
+         ItemData        =   "VBP_FormMain.frx":A6C2
          Left            =   840
-         List            =   "VBP_FormMain.frx":058C
+         List            =   "VBP_FormMain.frx":A6C4
          Style           =   2  'Dropdown List
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
@@ -110,7 +137,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   "Open Image"
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":058E
+         PictureNormal   =   "VBP_FormMain.frx":A6C6
          DisabledPictureMode=   1
          CaptionEffects  =   0
       End
@@ -135,7 +162,7 @@ Begin VB.MDIForm FormMain
          EndProperty
          Caption         =   "Save Image"
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":15E0
+         PictureNormal   =   "VBP_FormMain.frx":B718
          DisabledPictureMode=   1
          CaptionEffects  =   0
       End
@@ -160,7 +187,7 @@ Begin VB.MDIForm FormMain
          EndProperty
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":2632
+         PictureNormal   =   "VBP_FormMain.frx":C76A
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipType     =   1
@@ -188,7 +215,7 @@ Begin VB.MDIForm FormMain
          EndProperty
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":3684
+         PictureNormal   =   "VBP_FormMain.frx":D7BC
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipType     =   1
@@ -1105,9 +1132,25 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     
 End Sub
 
+'Display the "About" form
 Private Sub MnuAbout_Click()
-    'Show the "about" form
+    
+    'Before we can display the "About" form, we need to paint the PhotoDemon logo to it.
+    Dim logoWidth As Long, logoHeight As Long
+    Dim logoAspectRatio As Double
+    
+    logoWidth = FormMain.picLogo.ScaleWidth
+    logoHeight = FormMain.picLogo.ScaleHeight
+    logoAspectRatio = CDbl(logoWidth) / CDbl(logoHeight)
+    
+    FormAbout.Visible = False
+    SetStretchBltMode FormAbout.hDC, STRETCHBLT_HALFTONE
+    StretchBlt FormAbout.hDC, 0, 0, FormAbout.ScaleWidth, FormAbout.ScaleWidth / logoAspectRatio, FormMain.picLogo.hDC, 0, 0, logoWidth, logoHeight, vbSrcCopy
+    FormAbout.Picture = FormAbout.Image
+    
+    'With the painting done, we can now display the form.
     FormAbout.Show 1, FormMain
+    
 End Sub
 
 'Private Sub MnuAnimate_Click()

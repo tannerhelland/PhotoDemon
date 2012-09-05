@@ -24,7 +24,6 @@ Begin VB.Form FormSplash
    MaxButton       =   0   'False
    MinButton       =   0   'False
    Moveable        =   0   'False
-   Picture         =   "VBP_FormSplash.frx":000C
    ScaleHeight     =   170
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   600
@@ -98,7 +97,9 @@ Option Explicit
 'We use this to ensure that the splash shows for at least 1 second
 Private Const LOADTIME As Single = 1#
 
-Private Sub Form_Load()
+'The form is loaded invisibly, so this code is placed in the _Activate event instead of the more common _Load event
+Private Sub Form_Activate()
+
     'Check to see if we're running in the IDE or as a compiled EXE (see below)
     CheckEnvironment
     
@@ -115,9 +116,10 @@ End Sub
 'Check for IDE or compiled EXE, and set program parameters accordingly
 Private Sub CheckEnvironment()
     
-    'Check to see if we're running compiled or not...
+    'Check the run-time environment.
+    
+    'App is compiled:
     If App.LogMode = 1 Then
-        'Compiled:
         
         IsProgramCompiled = True
         
@@ -127,13 +129,14 @@ Private Sub CheckEnvironment()
         'Disable the "Test" menu (that I use for debugging)
         FormMain.MnuTest.Visible = False
         
+    'App is not compiled:
     Else
-        'NotCompiled:
-
+    
         IsProgramCompiled = False
 
-        'Manually set the version
+        'Add a gentle reminder to compile the program
         lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision & " - please compile!"
+        
     End If
     
 End Sub
