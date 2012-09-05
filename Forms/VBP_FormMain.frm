@@ -1089,6 +1089,9 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     'Release GDIPlus (if applicable)
     If GDIPlusEnabled Then releaseGDIPlus
     
+    'Release the scanner (if applicable)
+    If ScanEnabled Then UnloadScanner
+    
     'Destroy all custom-created form icons
     destroyAllIcons
     
