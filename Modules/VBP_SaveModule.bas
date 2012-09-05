@@ -15,24 +15,24 @@ Attribute VB_Name = "Saving"
 Option Explicit
 
 'Save the current image to BMP format
-Public Sub SaveBMP(ByVal ImageID As Long, ByVal BMPPath As String)
+Public Sub SaveBMP(ByVal imageID As Long, ByVal BMPPath As String)
     
     Message "Saving image..."
     
     'The layer class is capable of doing this without any outside help.
-    pdImages(ImageID).mainLayer.writeToBitmapFile BMPPath
+    pdImages(imageID).mainLayer.writeToBitmapFile BMPPath
     
     Message "Save complete."
     
 End Sub
 
 'Save the current image to PhotoDemon's native PDI format
-Public Sub SavePhotoDemonImage(ByVal ImageID As Long, ByVal PDIPath As String)
+Public Sub SavePhotoDemonImage(ByVal imageID As Long, ByVal PDIPath As String)
     
     Message "Saving image..."
 
     'First, have the layer write itself to file in BMP format
-    pdImages(ImageID).mainLayer.writeToBitmapFile PDIPath
+    pdImages(imageID).mainLayer.writeToBitmapFile PDIPath
     
     'Then compress the file using zLib
     CompressFile PDIPath
@@ -41,7 +41,8 @@ Public Sub SavePhotoDemonImage(ByVal ImageID As Long, ByVal PDIPath As String)
     
 End Sub
 
-Public Sub SaveGIFImage(ByVal ImageID As Long, ByVal GIFPath As String)
+'Save a GIF (Graphics Interchange Format) image.  GDI+ can also do this.
+Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
 
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
@@ -58,7 +59,7 @@ Public Sub SaveGIFImage(ByVal ImageID As Long, ByVal GIFPath As String)
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(ImageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
     
     'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
     If fi_DIB <> 0 Then
@@ -78,7 +79,8 @@ Public Sub SaveGIFImage(ByVal ImageID As Long, ByVal GIFPath As String)
     
 End Sub
 
-Public Sub SavePNGImage(ByVal ImageID As Long, ByVal PNGPath As String, Optional ByVal PNGColorDepth As Long = &H18)
+'Save a PNG (Portable Network Graphic) file.  GDI+ can also do this.
+Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional ByVal PNGColorDepth As Long = &H18)
 
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
@@ -95,7 +97,7 @@ Public Sub SavePNGImage(ByVal ImageID As Long, ByVal PNGPath As String, Optional
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(ImageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
     
     'Use that handle to save the image to PNG format
     If fi_DIB <> 0 Then
@@ -116,7 +118,7 @@ Public Sub SavePNGImage(ByVal ImageID As Long, ByVal PNGPath As String, Optional
 End Sub
 
 'IMPORTANT NOTE: Only ASCII format PPM is currently enabled.  RAW IS NOT YET SUPPORTED!
-Public Sub SavePPMImage(ByVal ImageID As Long, ByVal PPMPath As String)
+Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
 
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
@@ -133,7 +135,7 @@ Public Sub SavePPMImage(ByVal ImageID As Long, ByVal PPMPath As String)
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(ImageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
     
     'Use that handle to save the image to PPM format (ASCII)
     If fi_DIB <> 0 Then
@@ -154,7 +156,7 @@ Public Sub SavePPMImage(ByVal ImageID As Long, ByVal PPMPath As String)
 End Sub
 
 'Save to Targa (TGA) format.
-Public Sub SaveTGAImage(ByVal ImageID As Long, ByVal TGAPath As String)
+Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
     
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
@@ -171,7 +173,7 @@ Public Sub SaveTGAImage(ByVal ImageID As Long, ByVal TGAPath As String)
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(ImageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
     
     'Use that handle to save the image to TGA format
     If fi_DIB <> 0 Then
@@ -192,7 +194,7 @@ Public Sub SaveTGAImage(ByVal ImageID As Long, ByVal TGAPath As String)
 End Sub
 
 'Save to JPEG using the FreeImage library.  This is faster and more reliable than using GDI+.
-Public Sub SaveJPEGImageUsingFreeImage(ByVal ImageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long)
+Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long)
     
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
@@ -209,7 +211,7 @@ Public Sub SaveJPEGImageUsingFreeImage(ByVal ImageID As Long, ByVal JPEGPath As 
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(ImageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
     
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
@@ -229,36 +231,8 @@ Public Sub SaveJPEGImageUsingFreeImage(ByVal ImageID As Long, ByVal JPEGPath As 
     
 End Sub
 
-Public Sub SaveJPEGImageUsingVB(ByVal ImageID As Long, ByVal JPEGPath As String, ByVal Quality As Long)
-    
-    'Use John's JPEG class
-    Dim m_Jpeg As cJpeg
-    Set m_Jpeg = New cJpeg
-    
-    m_Jpeg.Quality = Quality
-    
-    'The image can only be sampled AFTER the quality has been set
-    GetImageData
-    m_Jpeg.SampleHDC pdImages(ImageID).containingForm.BackBuffer.hDC, PicWidthL + 1, PicHeightL + 1
-    
-    'Delete file if it exists
-    If FileExist(JPEGPath) Then
-        Message "Deleting old file..."
-        Kill JPEGPath
-    End If
-    
-    'Save the JPG file
-    Message "Saving JPEG image..."
-    m_Jpeg.SaveFile JPEGPath
-
-    'Save memory (not really necessary, but I do it out of habit)
-    Set m_Jpeg = Nothing
-    
-    Message "Save complete."
-    
-End Sub
-
-Public Sub SaveTIFImage(ByVal ImageID As Long, ByVal TIFPath As String)
+'Save a TIFF (Tagged Image File Format) image via FreeImage.  GDI+ can also do this.
+Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
     
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
@@ -275,7 +249,7 @@ Public Sub SaveTIFImage(ByVal ImageID As Long, ByVal TIFPath As String)
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(ImageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
     
     'Use that handle to save the image to TIFF format
     If fi_DIB <> 0 Then

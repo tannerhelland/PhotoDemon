@@ -252,7 +252,8 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
     Dim FileExtension As String
     FileExtension = UCase(GetExtension(dstPath))
     
-    'Only update the MRU if 1) no form is shown (because the user may cancel it), and 2) no errors occured
+    'Only update the MRU if 1) no form is shown (because the user may cancel it), 2) a form was shown and the user
+    ' successfully navigated it, and 3) no errors occured during the export process.
     Dim updateMRU As Boolean
     updateMRU = False
 
@@ -269,7 +270,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 'I implement two separate save functions for JPEG images.  FreeImage's is preferred, as it's faster and more
                 ' reliable than the very clunky GDI+ system.  However, GDI+ is a good fallback if FreeImage isn't available.
                 If FreeImageEnabled Then
-                    SaveJPEGImageUsingFreeImage imageID, dstPath, optionalSaveParameter0
+                    SaveJPEGImage imageID, dstPath, optionalSaveParameter0
                 ElseIf GDIPlusEnabled Then
                     GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
                     'SaveJPEGImageUsingVB imageID, dstPath, optionalSaveParameter0
