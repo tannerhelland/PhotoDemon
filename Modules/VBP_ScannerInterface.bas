@@ -3,8 +3,8 @@ Attribute VB_Name = "Scanner_Interface"
 'Scanner Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 1/10/01
-'Last updated: 15/June/12
-'Last update: automatically populate the default filename with "Scanned Image " & today's date.
+'Last updated: 04/September/12
+'Last update: improved system for loading/unloading the scanner interface (now it's done only at program load and unload)
 '
 'Module for handling all TWAIN32 acquisition features.  This module relies heavily
 ' upon the EZTW32.dll file, which is required because VB does not have native scanner support.
@@ -24,13 +24,18 @@ Private Declare Function TWAIN_AcquireToFilename Lib "EZTW32.dll" (ByVal hwndApp
 Private Declare Function TWAIN_SelectImageSource Lib "EZTW32.dll" (ByVal hwndApp As Long) As Long
 Private Declare Function TWAIN_IsAvailable Lib "EZTW32.dll" () As Long
 
+'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the /Plugins subdirectory)
+Dim hLib_Scanner As Long
+
+'This must be run before the scanner is accessed
 Public Function EnableScanner() As Boolean
-    'Quick hack to let me load the dll from anywhere I want
-    Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "EZTW32.dll")
+    hLib_Scanner = LoadLibrary(PluginPath & "EZTW32.dll")
     If TWAIN_IsAvailable() = 0 Then EnableScanner = False Else EnableScanner = True
-    FreeLibrary hLib
 End Function
+
+Public Sub UnloadScanner()
+    FreeLibrary hLib_Scanner
+End Sub
 
 Public Sub Twain32SelectScanner()
     If ScanEnabled = True Then
