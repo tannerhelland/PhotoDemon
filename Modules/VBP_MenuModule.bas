@@ -38,45 +38,46 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
     Set CC = New cCommonDialog
     Dim cdfStr As String
-    cdfStr = "All Compatible Images|*.bmp;*.jpg;*.jpeg;*.gif;*.wmf;*.emf;*.ico;*.pcx;*.tga;*.rle"
+    cdfStr = "All Compatible Images|*.bmp;*.jpg;*.jpeg;*.gif;*.wmf;*.emf;*.ico"
     
     'Only allow PDI loading if the zLib dll was detected at program load
-    If zLibEnabled = True Then cdfStr = cdfStr & ";*.pdi"
+    If zLibEnabled Then cdfStr = cdfStr & ";*.pdi"
     
     'Only allow FreeImage file loading if the FreeImage dll was detected
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Then
         cdfStr = cdfStr & ";*.png;*.lbm;*.pbm;*.iff;*.jif;*.jfif;*.psd;*.tif;*.tiff;*.wbmp;*.wbm;*.pgm;*.ppm;*.jng;*.mng;*.koa;*.pcd;*.ras;*.dds;*.pict;*.pct;*.pic;*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
-    'If FreeImage wasn't found but GDI+ was, enable a subset of those image formats
-    ElseIf GDIPlusEnabled = True Then
+    
+    'If FreeImage wasn't found but GDI+ was, enable a subset of those image formats (PNG and TIFF, specifically)
+    ElseIf GDIPlusEnabled Then
         cdfStr = cdfStr & ";*.png;*.tif;*.tiff;"
     End If
     
     cdfStr = cdfStr & "|"
     cdfStr = cdfStr & "BMP - OS/2 or Windows Bitmap|*.bmp"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|DDS - DirectDraw Surface|*.dds"
+    If FreeImageEnabled Then cdfStr = cdfStr & "|DDS - DirectDraw Surface|*.dds"
     
     cdfStr = cdfStr & "|EMF - Windows Enhanced Meta File|*.emf|GIF - Compuserve|*.gif|ICO - Windows Icon|*.ico"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|IFF - Amiga Interchange Format|*.iff|JNG - JPEG Network Graphics|*.jng"
+    If FreeImageEnabled Then cdfStr = cdfStr & "|IFF - Amiga Interchange Format|*.iff|JNG - JPEG Network Graphics|*.jng"
     
     cdfStr = cdfStr & "|JPG/JPEG - Joint Photographic Experts Group|*.jpg;*.jpeg;*.jif;*.jfif"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|KOA/KOALA - Commodore 64|*.koa;*.koala|LBM - Deluxe Paint|*.lbm|MNG - Multiple Network Graphics|*.mng|PBM - Portable Bitmap|*.pbm|PCD - Kodak PhotoCD|*.pcd|PCX - Zsoft Paintbrush|*.pcx"
+    If FreeImageEnabled Then cdfStr = cdfStr & "|KOA/KOALA - Commodore 64|*.koa;*.koala|LBM - Deluxe Paint|*.lbm|MNG - Multiple Network Graphics|*.mng|PBM - Portable Bitmap|*.pbm|PCD - Kodak PhotoCD|*.pcd|PCX - Zsoft Paintbrush|*.pcx"
     
     'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
-    If zLibEnabled = True Then cdfStr = cdfStr & "|PDI - PhotoDemon Image|*.pdi"
+    If zLibEnabled Then cdfStr = cdfStr & "|PDI - PhotoDemon Image|*.pdi"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|PGM - Portable Greymap|*.pgm|PIC/PICT - Macintosh Picture|*.pict;*.pct;*.pic"
+    If FreeImageEnabled Then cdfStr = cdfStr & "|PGM - Portable Greymap|*.pgm|PIC/PICT - Macintosh Picture|*.pict;*.pct;*.pic"
     
     'FreeImage or GDIPlus is sufficient for loading PNGs
-    If (FreeImageEnabled = True) Or (GDIPlusEnabled = True) Then cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
+    If FreeImageEnabled Or GDIPlusEnabled Then cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|PPM - Portable Pixmap|*.ppm|PSD - Adobe Photoshop|*.psd|RAS - Sun Raster File|*.ras|SGI/RGB/BW - Silicon Graphics Image|*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta|TGA - Truevision Targa|*.tga"
+    If FreeImageEnabled Then cdfStr = cdfStr & "|PPM - Portable Pixmap|*.ppm|PSD - Adobe Photoshop|*.psd|RAS - Sun Raster File|*.ras|SGI/RGB/BW - Silicon Graphics Image|*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta|TGA - Truevision Targa|*.tga"
     
-    If (FreeImageEnabled = True) Or (GDIPlusEnabled = True) Then cdfStr = cdfStr & "|TIF/TIFF - Tagged Image File Format|*.tif;*.tiff"
+    If FreeImageEnabled Or GDIPlusEnabled Then cdfStr = cdfStr & "|TIF/TIFF - Tagged Image File Format|*.tif;*.tiff"
     
-    If (FreeImageEnabled = True) Then cdfStr = cdfStr & "|WBMP - Wireless Bitmap|*.wbmp;*.wbm"
+    If FreeImageEnabled Then cdfStr = cdfStr & "|WBMP - Wireless Bitmap|*.wbmp;*.wbm"
     
     cdfStr = cdfStr & "|WMF - Windows Metafile|*.wmf|All files|*.*"
     
@@ -158,20 +159,20 @@ End Function
 'Subroutine for saving an image to file.  This function assumes the image already exists on disk and is simply
 ' being replaced; if the file does not exist on disk, this routine will automatically transfer control to Save As...
 ' The imageToSave is a reference to an ID in the pdImages() array.  It can be grabbed from the form.Tag value as well.
-Public Function MenuSave(ByVal ImageID As Long) As Boolean
+Public Function MenuSave(ByVal imageID As Long) As Boolean
 
-    If pdImages(ImageID).LocationOnDisk = "" Then
+    If pdImages(imageID).LocationOnDisk = "" Then
         'This image hasn't been saved before.  Launch the Save As... dialog
-        MenuSave = MenuSaveAs(ImageID)
+        MenuSave = MenuSaveAs(imageID)
     Else
         'This image has been saved before.  Overwrite it.
-        MenuSave = PhotoDemon_SaveImage(ImageID, pdImages(ImageID).LocationOnDisk, False, pdImages(ImageID).saveFlag0, pdImages(ImageID).saveFlag1)
+        MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, False, pdImages(imageID).saveFlag0, pdImages(imageID).saveFlag1)
     End If
 
 End Function
 
 'Subroutine for displaying a commondialog save box, then saving an image to the specified file
-Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
+Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
 
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -184,18 +185,20 @@ Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
     
     cdfStr = "BMP - Windows Bitmap|*.bmp"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|GIF - Graphics Interchange Format|*.gif"
+    If FreeImageEnabled Or GDIPlusEnabled Then cdfStr = cdfStr & "|GIF - Graphics Interchange Format|*.gif|JPG - JPEG - JFIF Compliant|*.jpg"
     
-    cdfStr = cdfStr & "|JPG - JPEG - JFIF Compliant|*.jpg"
+    If zLibEnabled Then cdfStr = cdfStr & "|PDI - PhotoDemon Image (Lossless)|*.pdi"
     
-    If zLibEnabled = True Then cdfStr = cdfStr & "|PDI - PhotoDemon Image (Lossless)|*.pdi"
+    If FreeImageEnabled Or GDIPlusEnabled Then cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
     
-    If FreeImageEnabled = True Then cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png|PPM - Portable Pixel Map (ASCII)|*.ppm|TGA - Truevision Targa|*.tga|TIFF - Tagged Image File Format|*.tif"
+    If FreeImageEnabled Then cdfStr = cdfStr & "|PPM - Portable Pixel Map (ASCII)|*.ppm|TGA - Truevision Targa|*.tga"
+    
+    If FreeImageEnabled Or GDIPlusEnabled Then cdfStr = cdfStr & "|TIFF - Tagged Image File Format|*.tif"
     
     cdfStr = cdfStr & "|All files|*.*"
     
     Dim sFile As String
-    sFile = pdImages(ImageID).OriginalFileName
+    sFile = pdImages(imageID).OriginalFileName
     
     'This next chunk of code checks to see if an image with this filename appears in the download location.
     ' If it does, PhotoDemon will append ascending numbers (of the format "_(#)") to the filename until it
@@ -225,11 +228,11 @@ Public Function MenuSaveAs(ByVal ImageID As Long) As Boolean
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
         WriteToIni "File Formats", "LastSaveFilter", CStr(LastSaveFilter)
         
-        pdImages(ImageID).containingForm.Caption = sFile
+        pdImages(imageID).containingForm.Caption = sFile
         SaveFileName = sFile
         
         'Transfer control to the core SaveImage routine, which will handle file extension analysis and actual saving
-        MenuSaveAs = PhotoDemon_SaveImage(ImageID, sFile, True)
+        MenuSaveAs = PhotoDemon_SaveImage(imageID, sFile, True)
         
     Else
         MenuSaveAs = False
@@ -243,17 +246,17 @@ End Function
 'This routine will blindly save the image from the form containing pdImages(imageID) to dstPath.  It is up to
 ' the calling routine to make sure this is what is wanted. (Note: this routine will erase any existing image
 ' at dstPath, so BE VERY CAREFUL with what you send here!)
-Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal optionalSaveParameter0 As Long = -1, Optional ByVal optionalSaveParameter1 As Long = -1) As Boolean
+Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal optionalSaveParameter0 As Long = -1, Optional ByVal optionalSaveParameter1 As Long = -1) As Boolean
 
     'Used to determine what kind of file the user is trying to open
-    Dim fileExtension As String
-    fileExtension = UCase(GetExtension(dstPath))
+    Dim FileExtension As String
+    FileExtension = UCase(GetExtension(dstPath))
     
     'Only update the MRU if 1) no form is shown (because the user may cancel it), and 2) no errors occured
     Dim updateMRU As Boolean
     updateMRU = False
 
-    Select Case fileExtension
+    Select Case FileExtension
         Case "JPG", "JPEG", "JPE"
             If loadRelevantForm = True Then
                 FormJPEG.Show 1, FormMain
@@ -261,21 +264,25 @@ Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As Str
                 PhotoDemon_SaveImage = Not saveDialogCanceled
             Else
                 'Remember the JPEG quality so we don't have to pester the user for it if they save again
-                pdImages(ImageID).saveFlag0 = optionalSaveParameter0
+                pdImages(imageID).saveFlag0 = optionalSaveParameter0
                 
-                'I implement two separate save functions for JPEG images.  While I greatly appreciate John Korejwa's native
-                ' VB JPEG encoder, it's not nearly as robust, or fast, or tested as the FreeImage implementation.  As such,
-                ' PhotoDemon will default to FreeImage if it's available; otherwise John's JPEG class will be used.
-                If FreeImageEnabled = True Then
-                    SaveJPEGImageUsingFreeImage ImageID, dstPath, optionalSaveParameter0
+                'I implement two separate save functions for JPEG images.  FreeImage's is preferred, as it's faster and more
+                ' reliable than the very clunky GDI+ system.  However, GDI+ is a good fallback if FreeImage isn't available.
+                If FreeImageEnabled Then
+                    SaveJPEGImageUsingFreeImage imageID, dstPath, optionalSaveParameter0
+                ElseIf GDIPlusEnabled Then
+                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
+                    'SaveJPEGImageUsingVB imageID, dstPath, optionalSaveParameter0
                 Else
-                    SaveJPEGImageUsingVB ImageID, dstPath, optionalSaveParameter0
+                    Message "No JPEG encoder found. Save aborted."
+                    PhotoDemon_SaveImage = False
+                    Exit Function
                 End If
                 updateMRU = True
             End If
         Case "PDI"
-            If zLibEnabled = True Then
-                SavePhotoDemonImage ImageID, dstPath
+            If zLibEnabled Then
+                SavePhotoDemonImage imageID, dstPath
                 updateMRU = True
             Else
             'If zLib doesn't exist...
@@ -283,26 +290,53 @@ Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As Str
                 Message "PDI saving disabled."
             End If
         Case "GIF"
-            SaveGIFImage ImageID, dstPath
+            'GIFs are preferentially exported by FreeImage, then GDI+ (if available)
+            If FreeImageEnabled Then
+                SaveGIFImage imageID, dstPath
+            ElseIf GDIPlusEnabled Then
+                GDIPlusSavePicture imageID, dstPath, ImageGIF
+            Else
+                Message "No GIF encoder found. Save aborted."
+                PhotoDemon_SaveImage = False
+                Exit Function
+            End If
             updateMRU = True
         Case "PNG"
-            If optionalSaveParameter0 = -1 Then
-                SavePNGImage ImageID, dstPath
+            'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
+            If FreeImageEnabled Then
+                If optionalSaveParameter0 = -1 Then
+                    SavePNGImage imageID, dstPath
+                Else
+                    SavePNGImage imageID, dstPath, optionalSaveParameter0
+                End If
+            ElseIf GDIPlusEnabled Then
+                GDIPlusSavePicture imageID, dstPath, ImagePNG
             Else
-                SavePNGImage ImageID, dstPath, optionalSaveParameter0
+                Message "No GIF encoder found. Save aborted."
+                PhotoDemon_SaveImage = False
+                Exit Function
             End If
             updateMRU = True
         Case "PPM"
-            SavePPMImage ImageID, dstPath
+            SavePPMImage imageID, dstPath
             updateMRU = True
         Case "TGA"
-            SaveTGAImage ImageID, dstPath
+            SaveTGAImage imageID, dstPath
             updateMRU = True
         Case "TIF", "TIFF"
-            SaveTIFImage ImageID, dstPath
-            updateMRU = True
+            'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
+            If FreeImageEnabled Then
+                SaveTIFImage imageID, dstPath
+                updateMRU = True
+            ElseIf GDIPlusEnabled Then
+                GDIPlusSavePicture imageID, dstPath, ImageTIFF
+            Else
+                Message "No TIFF encoder found. Save aborted."
+                PhotoDemon_SaveImage = False
+                Exit Function
+            End If
         Case Else
-            SaveBMP ImageID, dstPath
+            SaveBMP imageID, dstPath
             updateMRU = True
         
     End Select
@@ -313,18 +347,18 @@ Public Function PhotoDemon_SaveImage(ByVal ImageID As Long, ByVal dstPath As Str
         MRU_AddNewFile dstPath
     
         'Remember the file's location for future saves
-        pdImages(ImageID).LocationOnDisk = dstPath
+        pdImages(imageID).LocationOnDisk = dstPath
         
         'Remember the file's filename
         Dim tmpFileName As String
         tmpFileName = dstPath
         StripFilename tmpFileName
-        pdImages(ImageID).OriginalFileNameAndExtension = tmpFileName
+        pdImages(imageID).OriginalFileNameAndExtension = tmpFileName
         StripOffExtension tmpFileName
-        pdImages(ImageID).OriginalFileName = tmpFileName
+        pdImages(imageID).OriginalFileName = tmpFileName
         
         'Mark this file as having been saved
-        pdImages(ImageID).UpdateSaveState True
+        pdImages(imageID).UpdateSaveState True
         
         PhotoDemon_SaveImage = True
     
