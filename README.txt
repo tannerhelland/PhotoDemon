@@ -141,8 +141,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.vbaccelerator.com/home/VB/index.asp)
 * Floris van de Berg and Hervé Drolon for the FreeImage library, and Carsten Klein for the VB interface
   (http://freeimage.sourceforge.net/)
-* John Korejwa for his native-VB JPEG encoding class
-  (http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=50065&lngWId=1)
 * Brad Martinez for the original implementation of VB binary file extraction
   (http://btmtz.mvps.org/gfxfromfrx/)
 * Ron van Tilburg for a native-VB implementation of Xiaolin Wu's line antialiasing routine
@@ -165,6 +163,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.vbforums.com/showthread.php?t=606736)
 * Leandro Ascierto for a clean, lightweight class that adds PNGs to menu items
   (http://leandroascierto.com/blog/clsmenuimage/)
+* Carles P.V., Avery, and Dana Seaman for their work on GDI+ usage in VB
+  (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1)
 * Mark James and famfamfam.com for the Silk icon set (CC-BY-2.5)
   (http://www.famfamfam.com/lab/icons/silk/)
 * Yusuke Kamiyamane for the Fugue icon set (CC-BY-3.0)
@@ -173,8 +173,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.everaldo.com/crystal/)
 * The Tango Icon Library for menu and button icons (public-domain)
   (http://tango.freedesktop.org/Tango_Icon_Library)
-* All those who have contributed patches and bug reports, but especially:
+* All those who have contributed patches, bug reports, and donations, with extra special thanks to:
   * Herman Liu
+  * Dave Jamison
   * Robert Rayment
   * Alfred Hellmueller
-  * Dave Jamison
