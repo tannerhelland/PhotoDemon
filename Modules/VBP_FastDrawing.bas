@@ -36,7 +36,7 @@ End Type
 
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 Private Type RGBQUAD
     Blue As Byte
@@ -158,15 +158,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     End If
     
     'With our temporary layer successfully created, populate the relevant SafeArray variable
-    With tmpSA
-        .cbElements = 1
-        .cDims = 2
-        .Bounds(0).lBound = 0
-        .Bounds(0).cElements = workingLayer.getLayerHeight
-        .Bounds(1).lBound = 0
-        .Bounds(1).cElements = workingLayer.getLayerArrayWidth
-        .pvData = workingLayer.getLayerDIBits
-    End With
+    prepSafeArray tmpSA, workingLayer
 
     'Finally, populate the ubiquitous curLayerValues variable with everything a filter might want to know
     With curLayerValues
@@ -197,6 +189,22 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     
     'MsgBox "prepImageData worked: " & workingLayer.getLayerHeight & ", " & workingLayer.getLayerWidth & " (" & workingLayer.getLayerArrayWidth & ")" & ", " & workingLayer.getLayerDIBits
 
+End Sub
+
+'This function can be used to populate a valid SAFEARRAY2D structure against any layer
+Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcLayer As pdLayer)
+    
+    'With our temporary layer successfully created, populate the relevant SafeArray variable
+    With srcSA
+        .cbElements = 1
+        .cDims = 2
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = srcLayer.getLayerHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = srcLayer.getLayerArrayWidth
+        .pvData = srcLayer.getLayerDIBits
+    End With
+    
 End Sub
 
 'The counterpart to prepImageData, finalizeImageData copies the working layer back into its source then renders it
@@ -525,8 +533,8 @@ End Sub
 Public Function findBestProgBarValue() As Long
 
     'First, figure out what the range of this operation will be using the values in curLayerValues
-    Dim progBarRange As Single
-    progBarRange = curLayerValues.Right - curLayerValues.Left
+    Dim progBarRange As Double
+    progBarRange = CDbl(getProgBarMax())
     
     'Divide that value by 20.  20 is an arbitrary selection; the value can be set to any value X, where X is the number
     ' of times we want the progress bar to update during a given filter or effect.
