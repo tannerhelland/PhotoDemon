@@ -2,11 +2,11 @@ Attribute VB_Name = "Filters_Rotate"
 '***************************************************************************
 'Filter (Rotation) Interface
 'Copyright ©2000-2012 by Tanner Helland
-'Created: 1/25/03
-'Last updated: 26/August/12
-'Last update: Automatically fit the MDI child window to the newly rotated image
+'Created: 25/January/03
+'Last updated: 05/September/12
+'Last update: Rewrote all rotation code against the new layer system.
 '
-'Runs all rotation-style filters.  Includes flip and mirror as well.
+'Runs all rotation-style transformations.  Includes flip and mirror as well.
 '
 '***************************************************************************
 
@@ -43,56 +43,79 @@ Public Sub MenuRotate90Clockwise()
 
     Message "Rotating image clockwise..."
     
-    'ImageData() will store the original image data - but make sure to specify "correct orientation"; otherwise Windows
-    ' will return the data upside-down
-    GetImageData True
+    'Create a local array and point it at the pixel data of the current image
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepImageData srcSA
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
-    'Clear out the current picture box and prepare the 2nd buffer
-    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer.Cls
-    FormMain.ActiveForm.BackBuffer.Width = PicHeightL + 3
-    FormMain.ActiveForm.BackBuffer.Height = PicWidthL + 3
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer2.Width = FormMain.ActiveForm.BackBuffer.Width
-    FormMain.ActiveForm.BackBuffer2.Height = FormMain.ActiveForm.BackBuffer.Height
-    FormMain.ActiveForm.BackBuffer2.Picture = FormMain.ActiveForm.BackBuffer2.Image
-    DoEvents
+    'Create a second local array.  This will contain the pixel data of the new, rotated image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
     
-    'ImageData2() will store the new (translated) data
-    GetImageData2 True
-    SetProgBarMax PicWidthL
+    Dim dstLayer As pdLayer
+    Set dstLayer = New pdLayer
+    dstLayer.createBlank pdImages(CurrentImage).mainLayer.getLayerHeight, pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerColorDepth
     
-    'Perform the translation
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        ImageData2((PicWidthL * 3) - QuickVal + 2, y) = ImageData(y * 3 + 2, x)
-        ImageData2((PicWidthL * 3) - QuickVal + 1, y) = ImageData(y * 3 + 1, x)
-        ImageData2((PicWidthL * 3) - QuickVal, y) = ImageData(y * 3, x)
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long, QuickValY
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    Dim iWidth As Long, iHeight As Long
+    iWidth = finalX * qvDepth
+    iHeight = finalY * qvDepth
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+        
+    'Rotate the source image into the destination image, using the arrays provided
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        QuickValY = y * qvDepth
+        dstImageData(iHeight - QuickValY + 2, finalX - x) = srcImageData(iWidth - QuickVal + 2, y)
+        dstImageData(iHeight - QuickValY + 1, finalX - x) = srcImageData(iWidth - QuickVal + 1, y)
+        dstImageData(iHeight - QuickValY, finalX - x) = srcImageData(iWidth - QuickVal, y)
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData2 True
+    'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
     
-    'Transfer the picture from the 2nd buffer to the main buffer
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer2.Picture
+    'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
+    pdImages(CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
-    'Save some memory by shrinking the 2nd buffer
-    FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer2.Height = 1
-    FormMain.ActiveForm.BackBuffer2.Width = 1
-    SetProgBarVal cProgBar.Max
+    'With that transfer complete, we can erase our temporary layer
+    dstLayer.eraseLayer
+    Set dstLayer = Nothing
     
-    'Manually verify the values of PicWidthL and PicHeightL
-    PicWidthL = FormMain.ActiveForm.BackBuffer.ScaleWidth - 1
-    PicHeightL = FormMain.ActiveForm.BackBuffer.ScaleHeight - 1
-    DisplaySize PicWidthL + 1, PicHeightL + 1
+    'Update the current image size
+    pdImages(CurrentImage).updateSize
+    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
     
     Message "Finished. "
     
+    'Redraw the image
     FitWindowToImage
+    
+    'Reset the progress bar to zero
     SetProgBarVal 0
     
 End Sub
@@ -100,14 +123,14 @@ End Sub
 'Rotate an image 180°
 Public Sub MenuRotate180()
 
-    'Rotating 180 degrees can be accomplished by flipping and then mirroring
-    'an image.  So instead of writing up code to do this, I just cheat and combine
-    'those two routines into one.
+    'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
     Message "Rotating image..."
-    Process Flip, , , , , , , , , , , False
-    Process Mirror, , , , , , , , , , , False
-    
+        
+    StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).Width - 1, pdImages(CurrentImage).Height - 1, -pdImages(CurrentImage).Width, -pdImages(CurrentImage).Height, vbSrcCopy
+        
     Message "Finished. "
+    
+    ScrollViewport FormMain.ActiveForm
     
 End Sub
 
@@ -116,56 +139,78 @@ Public Sub MenuRotate270Clockwise()
 
     Message "Rotating image counter-clockwise..."
     
-    'ImageData() will store the original image data - but make sure to specify "correct orientation"; otherwise Windows
-    ' will return the data upside-down
-    GetImageData True
+    'Create a local array and point it at the pixel data of the current image
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepImageData srcSA
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
-    'Clear out the current picture box and prepare the 2nd buffer
-    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer.Cls
-    FormMain.ActiveForm.BackBuffer.Width = PicHeightL + 3
-    FormMain.ActiveForm.BackBuffer.Height = PicWidthL + 3
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer2.Width = FormMain.ActiveForm.BackBuffer.Width
-    FormMain.ActiveForm.BackBuffer2.Height = FormMain.ActiveForm.BackBuffer.Height
-    FormMain.ActiveForm.BackBuffer2.Picture = FormMain.ActiveForm.BackBuffer2.Image
-    DoEvents
+    'Create a second local array.  This will contain the pixel data of the new, rotated image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
     
-    'ImageData2() will store the new (translated) data
-    GetImageData2 True
-    SetProgBarMax PicWidthL
+    Dim dstLayer As pdLayer
+    Set dstLayer = New pdLayer
+    dstLayer.createBlank pdImages(CurrentImage).mainLayer.getLayerHeight, pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerColorDepth
     
-    'Perform the translation
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        ImageData2(QuickVal + 2, y) = ImageData((PicHeightL - y) * 3 + 2, x)
-        ImageData2(QuickVal + 1, y) = ImageData((PicHeightL - y) * 3 + 1, x)
-        ImageData2(QuickVal, y) = ImageData((PicHeightL - y) * 3, x)
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long, QuickValY
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    Dim iWidth As Long
+    iWidth = finalX * qvDepth
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+        
+    'Rotate the source image into the destination image, using the arrays provided
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        QuickValY = y * qvDepth
+        dstImageData(QuickValY + 2, x) = srcImageData(iWidth - QuickVal + 2, y)
+        dstImageData(QuickValY + 1, x) = srcImageData(iWidth - QuickVal + 1, y)
+        dstImageData(QuickValY, x) = srcImageData(iWidth - QuickVal, y)
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData2 True
+    'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
     
-    'Transfer the picture from the 2nd buffer to the main buffer
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer2.Picture
+    'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
+    pdImages(CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
-    'Save some memory by shrinking the 2nd buffer
-    FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer2.Height = 1
-    FormMain.ActiveForm.BackBuffer2.Width = 1
-    SetProgBarVal cProgBar.Max
+    'With that transfer complete, we can erase our temporary layer
+    dstLayer.eraseLayer
+    Set dstLayer = Nothing
     
-    'Manually verify the values of PicWidthL and PicHeightL
-    PicWidthL = FormMain.ActiveForm.BackBuffer.ScaleWidth - 1
-    PicHeightL = FormMain.ActiveForm.BackBuffer.ScaleHeight - 1
-    DisplaySize PicWidthL + 1, PicHeightL + 1
+    'Update the current image size
+    pdImages(CurrentImage).updateSize
+    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
     
     Message "Finished. "
     
+    'Redraw the image
     FitWindowToImage
+    
+    'Reset the progress bar to zero
     SetProgBarVal 0
     
 End Sub
