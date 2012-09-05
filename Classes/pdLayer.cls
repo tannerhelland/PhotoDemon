@@ -35,6 +35,7 @@ Attribute VB_Exposed = False
 ' until I can get image data into the class.
 '- (DONE) Get viewport rendering working.  If I can't see the image, I can't work on it.
 '- (DONE) Experiment with tying the class's data into GetImageData, which is already well-implemented throughout PD.
+'- (DONE) Get image saving working.
 '- (IN PROGRESS) Replace PicWidthL and PicHeightL with width/height values provided by this class.
 '- (IN PROGRESS) Remove all direct intervention with ActiveForm.BackBuffer and force it through this class.  That means no unmanaged
 ' changing of width, height, etc - it has to come through here.
