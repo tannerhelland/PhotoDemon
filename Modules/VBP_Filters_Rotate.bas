@@ -16,13 +16,9 @@ Option Explicit
 Public Sub MenuFlip()
 
     Message "Flipping image..."
-    GetImageData
-    PicWidthL = PicWidthL + 1
-    PicHeightL = PicHeightL + 1
-    FormMain.ActiveForm.BackBuffer.PaintPicture FormMain.ActiveForm.BackBuffer.Picture, 0, 0, PicWidthL, PicHeightL, 0, PicHeightL, PicWidthL, -PicHeightL, vbSrcCopy
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer.Refresh
     
+    StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, 0, pdImages(CurrentImage).Height - 1, pdImages(CurrentImage).Width, -pdImages(CurrentImage).Height, vbSrcCopy
+        
     Message "Finished. "
     
     ScrollViewport FormMain.ActiveForm
@@ -33,12 +29,8 @@ End Sub
 Public Sub MenuMirror()
 
     Message "Mirroring image..."
-    GetImageData
-    PicWidthL = PicWidthL + 1
-    PicHeightL = PicHeightL + 1
-    FormMain.ActiveForm.BackBuffer.PaintPicture FormMain.ActiveForm.BackBuffer.Picture, 0, 0, PicWidthL, PicHeightL, PicWidthL, 0, -PicWidthL, PicHeightL, vbSrcCopy
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer.Refresh
+    
+    StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).Width - 1, 0, -pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, vbSrcCopy
     
     Message "Finished. "
     
