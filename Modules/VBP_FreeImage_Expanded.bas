@@ -23,17 +23,13 @@ Option Explicit
 'DIB declarations
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
-    
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String) As Boolean
+Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer) As Boolean
 
     On Error GoTo FreeImageV3_AdvancedError
     
     'Double-check that FreeImage.dll was located at start-up
     If FreeImageEnabled = False Then
-        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        pdImages(CurrentImage).IsActive = False
-        Unload FormMain.ActiveForm
         LoadFreeImageV3_Advanced = False
         Exit Function
     End If
@@ -146,7 +142,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String) As Boolean
     fi_Height = FreeImage_GetHeight(fi_hDIB)
     
     Dim creationSuccess As Boolean
-    creationSuccess = pdImages(CurrentImage).mainLayer.createBlank(fi_Width, fi_Height, fi_BPP)
+    creationSuccess = dstLayer.createBlank(fi_Width, fi_Height, fi_BPP)
     
     'Make sure the blank DIB creation worked
     If creationSuccess = False Then
@@ -156,7 +152,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String) As Boolean
     End If
     
     'Copy the bits from the FreeImage DIB to our DIB
-    SetDIBitsToDevice pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
+    SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
               
     'With the image bits now safely in our care, release the FreeImage DIB
     FreeImage_UnloadEx fi_hDIB
@@ -172,38 +168,15 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String) As Boolean
     
 FreeImageV3_AdvancedError:
 
-    'Reset the mouse pointer
-    FormMain.MousePointer = vbDefault
-
-    'We'll use this string to hold additional error data
-    Dim AddInfo As String
+    'Release the FreeImage DIB if available
+    If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
     
-    'This variable stores the message box type
-    Dim mType As VbMsgBoxStyle
+    'Release the FreeImage library
+    If hFreeImgLib <> 0 Then FreeLibrary hFreeImgLib
     
-    'Tracks the user input from the message box
-    Dim msgReturn As VbMsgBoxResult
-
-    'FreeImage throws Error #5 if an invalid image is loaded
-    If Err.Number = 5 Then
-        AddInfo = "You have attempted to load an invalid picture.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it."
-        Message "Invalid picture.  Image load cancelled."
-        mType = vbCritical + vbOKOnly
-    End If
+    'Display a relevant error message
+    Message "Import via FreeImage failed (Err#" & Err.Number & ")"
     
-    'Create the message box to return the error information
-    msgReturn = MsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
-    "Error number " & Err.Number & vbCrLf & _
-    "Description: " & Err.Description & vbCrLf & vbCrLf & _
-    AddInfo & vbCrLf & vbCrLf & _
-    "Sorry for the inconvenience," & vbCrLf & _
-    "-Tanner Helland" & vbCrLf & PROGRAMNAME & " Developer" & vbCrLf & _
-    "www.tannerhelland.com/contact", mType, PROGRAMNAME & " Error Handler: #" & Err.Number)
-    
-    'If an error was thrown, unload the active form (since it will just be empty and pictureless)
-    pdImages(CurrentImage).IsActive = False
-    Unload FormMain.ActiveForm
-
     'Mark this load as unsuccessful
     LoadFreeImageV3_Advanced = False
     

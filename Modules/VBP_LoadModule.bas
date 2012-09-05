@@ -240,7 +240,7 @@ Public Sub LoadTheProgram()
 End Sub
 
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
-Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "")
+Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetLayer As pdLayer)
     
     Dim thisImage As Long
     
@@ -257,25 +257,33 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Exit Sub
         End If
     
-        Message "Image found. Initializing blank form..."
+        'If this is a standard load (e.g. loading an image via File -> Open), prepare a blank form to receive the image.
+        If isThisPrimaryImage Then
+            
+            Message "Image found. Initializing blank form..."
 
-        CreateNewImageForm
+            CreateNewImageForm
         
-        FixScrolling = False
+            Set targetImage = pdImages(CurrentImage)
+            Set targetLayer = pdImages(CurrentImage).mainLayer
         
-        FormMain.ActiveForm.HScroll.Value = 0
-        FormMain.ActiveForm.VScroll.Value = 0
+            FixScrolling = False
         
-        'Prepare the user interface for a new image
-        tInit tSaveAs, True
-        tInit tCopy, True
-        tInit tPaste, True
-        tInit tUndo, False
-        tInit tRedo, False
-        tInit tImageOps, True
-        tInit tFilter, True
-        tInit tHistogram, True
+            FormMain.ActiveForm.HScroll.Value = 0
+            FormMain.ActiveForm.VScroll.Value = 0
         
+            'Prepare the user interface for a new image
+            tInit tSaveAs, True
+            tInit tCopy, True
+            tInit tPaste, True
+            tInit tUndo, False
+            tInit tRedo, False
+            tInit tImageOps, True
+            tInit tFilter, True
+            tInit tHistogram, True
+            
+        End If
+            
         Message "Determining filetype..."
         
         Dim FileExtension As String
@@ -293,70 +301,70 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 'Bitmaps are preferentially loaded by GDI+ if available (which can handle 32bpp), then FreeImage (which is
                 ' unpredictable with 32bpp), then default VB (which simply fails with 32bpp but will load other depths).
                 If GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage)
+                    LoadGDIPlusImage sFile(thisImage), targetLayer
                 ElseIf FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
                 Else
-                    LoadBMP sFile(thisImage)
+                    LoadBMP sFile(thisImage), targetLayer
                 End If
             Case "GIF"
                 'GIF is preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
                 ElseIf GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage)
+                    LoadGDIPlusImage sFile(thisImage), targetLayer
                 Else
-                    LoadBMP sFile(thisImage)
+                    LoadBMP sFile(thisImage), targetLayer
                 End If
             Case "EMF", "WMF"
                 'Metafiles are preferentially loaded by GDI+ if available, then default VB.
                 If GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage)
+                    LoadGDIPlusImage sFile(thisImage), targetLayer
                 Else
-                    LoadBMP sFile(thisImage)
+                    LoadBMP sFile(thisImage), targetLayer
                 End If
             Case "ICO"
                 'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
                 ElseIf GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage)
+                    LoadGDIPlusImage sFile(thisImage), targetLayer
                 Else
-                    LoadBMP sFile(thisImage)
+                    LoadBMP sFile(thisImage), targetLayer
                 End If
             Case "JIF", "JPG", "JPEG", "JPE"
                 'JPEGs are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
                 ElseIf GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage)
+                    LoadGDIPlusImage sFile(thisImage), targetLayer
                 Else
-                    LoadBMP sFile(thisImage)
+                    LoadBMP sFile(thisImage), targetLayer
                 End If
             Case "PDI"
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
-                LoadPhotoDemonImage (sFile(thisImage))
+                LoadPhotoDemonImage sFile(thisImage), targetLayer
             Case "PNG"
                 'FreeImage has a more robust .png implementation than GDI+, so use it if available
                 If FreeImageEnabled = True Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
                 Else
-                    LoadGDIPlusImage sFile(thisImage)
+                    LoadGDIPlusImage sFile(thisImage), targetLayer
                 End If
             Case "TIF", "TIFF"
                 'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
                 If FreeImageEnabled = True Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
                 Else
-                    LoadGDIPlusImage sFile(thisImage)
+                    LoadGDIPlusImage sFile(thisImage), targetLayer
                 End If
             Case "TMP"
                 'TMP files are internal files used by PhotoDemon.  VB's internal LoadPicture is fine for these.
-                LoadBMP sFile(thisImage)
+                LoadBMP sFile(thisImage), targetLayer
             'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
             Case Else
                 If FreeImageEnabled = True Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage))
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
                 Else
                     MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will proceed to download this plugin for you.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
                     Message "Image load canceled."
@@ -371,85 +379,95 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If loadSuccessful = False Then
             MsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbCritical + vbOKOnly + vbApplicationModal, "PhotoDemon Import Failed"
             Message "Image load canceled."
-            pdImages(CurrentImage).IsActive = False
-            Unload FormMain.ActiveForm
+            targetImage.IsActive = False
+            If isThisPrimaryImage Then Unload FormMain.ActiveForm
             GoTo PreloadMoreImages
         End If
         
         'Store important data about the image to the pdImages array
-        pdImages(CurrentImage).updateSize
-        pdImages(CurrentImage).OriginalFileSize = FileLen(sFile(thisImage))
+        targetImage.updateSize
+        targetImage.OriginalFileSize = FileLen(sFile(thisImage))
         
-        'If the form isn't maximized or minimized then set its dimensions to just slightly bigger than the image size
-        Message "Resizing image to fit screen..."
+        'If this is a primary image, it needs to be rendered to the screen
+        If isThisPrimaryImage Then
+            
+            'If the form isn't maximized or minimized then set its dimensions to just slightly bigger than the image size
+            Message "Resizing image to fit screen..."
     
-        'If the user wants us to resize the image to fit on-screen, do that now
-        If AutosizeLargeImages = 0 Then FitImageToWindow True
-                
-        'If the window is not maximized or minimized, fit the form around the picture box
-        If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
+            'If the user wants us to resize the image to fit on-screen, do that now
+            If AutosizeLargeImages = 0 Then FitImageToWindow True
+                    
+            'If the window is not maximized or minimized, fit the form around the picture box
+            If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
+            
+        End If
         
         'If a different image name has been specified, we can assume the calling routine is NOT loading a file
         ' from disk (e.g. it's a scan, or Internet download, or screen capture, etc.).  Therefore, set the
         ' file name as requested but leave the .LocationOnDisk blank so that a Save command will trigger
-        ' the Save As... dialog
+        ' the necessary Save As... dialog.
         Dim tmpFileName As String
         
         If imgName = "" Then
             'The calling routine hasn't specified an image name, so assume this is a normal load situation.
             ' That means pulling the filename from the file itself.
-            pdImages(CurrentImage).LocationOnDisk = sFile(thisImage)
+            targetImage.LocationOnDisk = sFile(thisImage)
             
             tmpFileName = sFile(thisImage)
             StripFilename tmpFileName
-            pdImages(CurrentImage).OriginalFileNameAndExtension = tmpFileName
+            targetImage.OriginalFileNameAndExtension = tmpFileName
             StripOffExtension tmpFileName
-            pdImages(CurrentImage).OriginalFileName = tmpFileName
+            targetImage.OriginalFileName = tmpFileName
             
             'Disable the save button, because this file exists on disk
-            pdImages(CurrentImage).UpdateSaveState True
+            targetImage.UpdateSaveState True
             
         Else
             'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
             ' dialog in the future by not specifying a location on disk
-            pdImages(CurrentImage).LocationOnDisk = ""
-            pdImages(CurrentImage).OriginalFileNameAndExtension = imgName
+            targetImage.LocationOnDisk = ""
+            targetImage.OriginalFileNameAndExtension = imgName
             
             tmpFileName = imgName
             StripOffExtension tmpFileName
-            pdImages(CurrentImage).OriginalFileName = tmpFileName
+            targetImage.OriginalFileName = tmpFileName
             
             'Similarly, enable the save button
-            pdImages(CurrentImage).UpdateSaveState False
+            targetImage.UpdateSaveState False
             
         End If
             
-        'Update relevant user interface controls
-        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
-        If imgFormTitle = "" Then FormMain.ActiveForm.Caption = sFile(thisImage) Else FormMain.ActiveForm.Caption = imgFormTitle
+        'More UI-related updates are necessary if this is a primary image
+        If isThisPrimaryImage Then
         
-        'FixScrolling may have been reset by this point (by the FitImageToWindow sub, among others), so MAKE SURE it's false
-        FixScrolling = False
-        FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
+            'Update relevant user interface controls
+            DisplaySize targetImage.Width, targetImage.Height
+            If imgFormTitle = "" Then FormMain.ActiveForm.Caption = sFile(thisImage) Else FormMain.ActiveForm.Caption = imgFormTitle
+            
+            'FixScrolling may have been reset by this point (by the FitImageToWindow sub, among others), so MAKE SURE it's false
+            FixScrolling = False
+            FormMain.CmbZoom.ListIndex = targetImage.CurrentZoomValue
+        
+            'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
+            FixScrolling = True
+        
+            PrepareViewport FormMain.ActiveForm, "PreLoadImage"
+            
+            'Render an icon-sized version of this image as the MDI child form's icon
+            CreateCustomFormIcon FormMain.ActiveForm
+            
+            'Note the window state, as it may be important in the future
+            targetImage.WindowState = FormMain.ActiveForm.WindowState
+            
+            'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
+            If FormMain.ActiveForm.WindowState = 0 Then
+                FormMain.ActiveForm.Left = targetImage.WindowLeft
+                FormMain.ActiveForm.Top = targetImage.WindowTop
+            End If
+        
+        End If
         
         Message "Image loaded successfully."
-    
-        'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
-        FixScrolling = True
-    
-        PrepareViewport FormMain.ActiveForm, "PreLoadImage"
-        
-        'Render an icon-sized version of this image as the MDI child form's icon
-        CreateCustomFormIcon FormMain.ActiveForm
-        
-        'Note the window state, as it may be important in the future
-        pdImages(CurrentImage).WindowState = FormMain.ActiveForm.WindowState
-        
-        'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
-        If FormMain.ActiveForm.WindowState = 0 Then
-            FormMain.ActiveForm.Left = pdImages(CurrentImage).WindowLeft
-            FormMain.ActiveForm.Top = pdImages(CurrentImage).WindowTop
-        End If
         
 PreloadMoreImages:
 
@@ -459,14 +477,14 @@ PreloadMoreImages:
 End Sub
 
 'Load any file that hasn't explicitly been sent elsewhere.  FreeImage will automatically determine filetype.
-Public Function LoadFreeImageV3(ByVal sFile As String) As Boolean
+Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer) As Boolean
 
-    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile)
+    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstLayer)
     
 End Function
 
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
-Public Sub LoadPhotoDemonImage(ByVal PDIPath As String)
+Public Sub LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLayer)
     
     'Decompress the current PDI file
     DecompressFile PDIPath
@@ -477,7 +495,7 @@ Public Sub LoadPhotoDemonImage(ByVal PDIPath As String)
     Set tmpPicture = LoadPicture(PDIPath)
     
     'Copy the image into the current pdImage object
-    pdImages(CurrentImage).mainLayer.CreateFromPicture tmpPicture
+    dstLayer.CreateFromPicture tmpPicture
     
     'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
     ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
@@ -488,15 +506,15 @@ End Sub
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
-Public Sub LoadGDIPlusImage(ByVal imagePath As String)
+Public Sub LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer)
         
     'Copy the image returned by GDI+ into the current pdImage object
-    pdImages(CurrentImage).mainLayer.CreateFromPicture GDIPlusLoadPicture(imagePath)
+    dstLayer.CreateFromPicture GDIPlusLoadPicture(imagePath)
     
 End Sub
 
 'BITMAP loading
-Public Sub LoadBMP(ByVal BMPFile As String)
+Public Sub LoadBMP(ByVal BMPFile As String, ByRef dstLayer As pdLayer)
     
     'Create a temporary StdPicture object that will be used to load the image
     Dim tmpPicture As StdPicture
@@ -504,7 +522,7 @@ Public Sub LoadBMP(ByVal BMPFile As String)
     Set tmpPicture = LoadPicture(BMPFile)
     
     'Copy the image into the current pdImage object
-    pdImages(CurrentImage).mainLayer.CreateFromPicture tmpPicture
+    dstLayer.CreateFromPicture tmpPicture
     
 End Sub
 
