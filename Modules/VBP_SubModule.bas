@@ -145,13 +145,6 @@ Public Function ExtractB(ByVal CurrentColor As Long) As Integer
     ExtractB = (CurrentColor \ 65536) And 255
 End Function
 
-Public Sub FinishUp()
-    SetProgBarVal 0
-    Message "Finished."
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    ScrollViewport FormMain.ActiveForm
-End Sub
-
 'Convert to absolute byte values (Integer-type)
 Public Sub ByteMe(ByRef TempVar As Integer)
     If TempVar > 255 Then TempVar = 255
@@ -164,16 +157,16 @@ Public Sub ByteMeL(ByRef TempVar As Long)
     If TempVar < 0 Then TempVar = 0
 End Sub
 
-'Returns a boolean as to whether or not fName exists
-Public Function FileExist(fName As String) As Boolean
+'Returns a boolean as to whether or not a given file exists
+Public Function FileExist(ByRef fName As String) As Boolean
     On Error Resume Next
     Dim Temp As Long
     Temp = GetAttr(fName)
     FileExist = Not CBool(Err)
 End Function
 
-'Returns a boolean as to whether or not dName exists
-Public Function DirectoryExist(dName As String) As Boolean
+'Returns a boolean as to whether or not a given directory exists
+Public Function DirectoryExist(ByRef dName As String) As Boolean
     On Error Resume Next
     Dim Temp As Long
     Temp = GetAttr(dName) And vbDirectory
