@@ -43,11 +43,15 @@ Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
     
 End Function
 
-'These two routines make it easier to interact with the progress bar; note that they are disabled while a batch
+'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
 Public Sub SetProgBarMax(ByVal val As Long)
     If MacroStatus <> MacroBATCH Then cProgBar.Max = val
 End Sub
+
+Public Function getProgBarMax() As Long
+    getProgBarMax = cProgBar.Max
+End Function
 
 Public Sub SetProgBarVal(ByVal val As Long)
     If MacroStatus <> MacroBATCH Then
