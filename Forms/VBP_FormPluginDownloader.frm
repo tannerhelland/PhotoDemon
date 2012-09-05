@@ -492,10 +492,10 @@ Private Sub Form_Load()
             If freeImageSize = -1 Then freeImageSize = 977000
             totalDownloadSize = totalDownloadSize + freeImageSize
             
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PNG, TIFF, PSD, PICT, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: " & Int(freeImageSize \ 1000) & " kB"
+            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PSD, PICT, TGA, HDR, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: " & Int(freeImageSize \ 1000) & " kB"
         Else
             totalDownloadSize = totalDownloadSize + 977000
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PNG, TIFF, PSD, PICT, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: ~976 kB"
+            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PSD, PICT, TGA, HDR, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: ~976 kB"
         End If
         
         numOfFiles = numOfFiles + 1
