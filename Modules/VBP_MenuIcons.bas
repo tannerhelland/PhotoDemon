@@ -467,14 +467,14 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     Dim maskClr As Long
     Dim icoInfo As ICONINFO
    
-    'The icon can be drawn at any size, but 16x16 is how it will (typically) end up on the form.  I use 32x32 here
+    'The icon can be drawn at any size, but 16x16 is how it will (typically) end up on the form. I use 32x32 here
     ' in order to get slightly higher quality stretching during the resampling phase.
     Dim icoSize As Long
     icoSize = 32
 
     'Draw the form's backbuffer image to an in-memory picture
     Dim aspectRatio As Single
-    aspectRatio = CSng(imgForm.BackBuffer.ScaleWidth) / CSng(imgForm.BackBuffer.ScaleHeight)
+    aspectRatio = CSng(pdImages(imgForm.Tag).Width) / CSng(pdImages(imgForm.Tag).Height)
     
     'The target icon's width and height, x and y positioning
     Dim tIcoWidth As Single, tIcoHeight As Single, TX As Single, TY As Single
@@ -509,7 +509,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     SetStretchBltMode imgForm.picIcon.hDC, STRETCHBLT_HALFTONE
     
     'Render the bitmap that will ultimately be converted into an icon
-    StretchBlt imgForm.picIcon.hDC, CLng(TX), CLng(TY), CLng(tIcoWidth), CLng(tIcoHeight), imgForm.BackBuffer.hDC, 0, 0, imgForm.BackBuffer.ScaleWidth, imgForm.BackBuffer.ScaleHeight, vbSrcCopy
+    StretchBlt imgForm.picIcon.hDC, CLng(TX), CLng(TY), CLng(tIcoWidth), CLng(tIcoHeight), pdImages(imgForm.Tag).mainLayer.getLayerDC, 0, 0, imgForm.BackBuffer.ScaleWidth, imgForm.BackBuffer.ScaleHeight, vbSrcCopy
     imgForm.picIcon.Picture = imgForm.picIcon.Image
    
     'Now that we have a first draft to work from, start preparing the data types required by the icon API calls
@@ -531,7 +531,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
         maskClr = 0
     End If
    
-    'Generate two masks.  First, a monochrome mask.
+    'Generate two masks. First, a monochrome mask.
     MonoDC = CreateCompatibleDC(0&)
     MonoBmp = CreateCompatibleBitmap(MonoDC, iWidth, iHeight)
     oldMonoObj = SelectObject(MonoDC, MonoBmp)
@@ -581,25 +581,25 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon
 
-    'When an MDI child form is maximized, the icon is not updated properly.  This requires further investigation to solve.
+    'When an MDI child form is maximized, the icon is not updated properly. This requires further investigation to solve.
     'If imgForm.WindowState = vbMaximized Then DoEvents
    
-    'The chunk of code below will generate an actual icon object for use within VB.  I don't use this mechanism because
-    ' VB will internally convert the icon to 256-colors before assigning it to the form. <sigh>  Rather than do that,
+    'The chunk of code below will generate an actual icon object for use within VB. I don't use this mechanism because
+    ' VB will internally convert the icon to 256-colors before assigning it to the form. <sigh> Rather than do that,
     ' I use an alternate API call above to assign the new icon in its transparent, full color glory.
     
     'Dim iGuid As Guid
     'With iGuid
-    '   .Data1 = &H20400
-    '   .Data4(0) = &HC0
-    '   .Data4(7) = &H46
+    ' .Data1 = &H20400
+    ' .Data4(0) = &HC0
+    ' .Data4(7) = &H46
     'End With
     
     'Dim pDesc As pictDesc
     'With pDesc
-    '   .cbSizeofStruct = Len(pDesc)
-    '   .picType = PICTYPE_ICON
-    '   .hImage = generatedIcon
+    ' .cbSizeofStruct = Len(pDesc)
+    ' .picType = PICTYPE_ICON
+    ' .hImage = generatedIcon
     'End With
     
     'Dim icoObject As IPicture
@@ -608,7 +608,6 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     'imgForm.Icon = icoObject
    
 End Sub
-
 'Needs to be run only once, at the start of the program
 Public Sub initializeIconHandler()
     numOfIcons = 0

@@ -211,10 +211,17 @@ Public Function hasImage() As Boolean
     hasImage = (layerDIB <> 0)
 End Function
 
+'Return this layer's hDC
 Public Function getLayerDC() As Long
     getLayerDC = layerDC
 End Function
 
+'Return a pointer to this layer's DIB
+Public Function getLayerDIB() As Long
+    getLayerDIB = layerDIB
+End Function
+
+'Return a pointer to this layer's pixel data
 Public Function getLayerDIBits() As Long
     getLayerDIBits = layerDIBits
 End Function
