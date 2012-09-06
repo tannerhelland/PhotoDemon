@@ -2,7 +2,7 @@ Attribute VB_Name = "Screen_Capture"
 '***************************************************************************
 'Screen Capture Interface
 'Copyright ©2000-2012 by Tanner Helland
-'Created: 6/12/99
+'Created: 12/June/99
 'Last updated: 04/September/12
 'Last update: use the Sleep API call to prevent the capture message box from being caught in the capture.
 '

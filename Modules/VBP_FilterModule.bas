@@ -140,7 +140,7 @@ NextCustomFilterPixel:  Next d
     TransferImageData
     
     'Draw the updated image to the screen
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -189,7 +189,7 @@ Public Sub FilterSoften()
     Next x
     SetProgBarVal cProgBar.Max
     TransferImageData
-    SetImageData
+    setImageData
 End Sub
 
 Public Sub FilterSoftenMore()
@@ -237,7 +237,7 @@ Public Sub FilterSoftenMore()
     Next x
     SetProgBarVal cProgBar.Max
     TransferImageData
-    SetImageData
+    setImageData
 End Sub
 
 Public Sub FilterBlur()
@@ -280,7 +280,7 @@ Public Sub FilterBlur()
     Next x
     SetProgBarVal cProgBar.Max
     TransferImageData
-    SetImageData
+    setImageData
 End Sub
 
 Public Sub FilterBlurMore()
@@ -323,7 +323,7 @@ Public Sub FilterBlurMore()
     Next x
     SetProgBarVal cProgBar.Max
     TransferImageData
-    SetImageData
+    setImageData
 End Sub
 
 Public Sub FilterSharpen()
@@ -369,7 +369,7 @@ Public Sub FilterSharpen()
     Next x
     SetProgBarVal cProgBar.Max
     TransferImageData
-    SetImageData
+    setImageData
 End Sub
 
 Public Sub FilterSharpenMore()
@@ -412,7 +412,7 @@ Public Sub FilterSharpenMore()
     Next x
     SetProgBarVal cProgBar.Max
     TransferImageData
-    SetImageData
+    setImageData
 End Sub
 
 Public Sub FilterUnsharp()
@@ -462,7 +462,7 @@ Public Sub FilterUnsharp()
     Next x
     SetProgBarVal cProgBar.Max
     TransferImageData
-    SetImageData
+    setImageData
 End Sub
 
 Public Sub FilterGridBlur()
@@ -529,7 +529,7 @@ Public Sub FilterGridBlur()
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+    setImageData
 End Sub
 
 'A very, very gentle softening effect
@@ -680,6 +680,7 @@ End Sub
 Private Function getIsometricX(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Long
     getIsometricX = (xc / 2) - yc + tWidth
 End Function
+
 Private Function getIsometricY(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Long
     getIsometricY = (xc / 2) + yc - tWidth
 End Function
