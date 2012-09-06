@@ -583,7 +583,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Invert
                 MenuInvert
             Case CompoundInvert
-                MenuCompoundInvert pOPCODE
+                MenuCompoundInvert CLng(pOPCODE)
             Case Negative
                 MenuNegative
             Case InvertHue

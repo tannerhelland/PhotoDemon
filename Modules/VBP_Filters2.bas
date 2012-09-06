@@ -2,8 +2,9 @@ Attribute VB_Name = "Filters_Miscellaneous"
 '***************************************************************************
 'Filter Module
 'Copyright ©2000-2012 by Tanner Helland
-'Created: 10/13/00
-'Last updated: 11/January/07
+'Created: 13/October/00
+'Last updated: 05/September/12
+'Last update: rewrote all code against the new pdLayer class.
 '
 'The general image filter module; contains unorganized routines at present.
 '
@@ -11,53 +12,87 @@ Attribute VB_Name = "Filters_Miscellaneous"
 
 Option Explicit
 
-'Loads the last Undo file and alpha-blends it with the current image
+'Load the last Undo file and alpha-blend it with the current image
 Public Sub MenuFadeLastEffect()
+
     Message "Fading last effect..."
-    'Load the last undo file into the temporary picture box
-    FormMain.ActiveForm.BackBuffer2.AutoSize = True
-    FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture(GetLastUndoFile())
-    FormMain.ActiveForm.BackBuffer2.Picture = FormMain.ActiveForm.BackBuffer2.Image
-    FormMain.ActiveForm.BackBuffer2.Refresh
-    'Get that picture's information
-    GetImageData2
     
-    'Use these to determine minimum image sizes
-    Dim minWidth As Long, minHeight As Long
-    minWidth = PicWidthL
-    minHeight = PicHeightL
+    'Create a temporary layer and use it to load the last Undo file's pixel data
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromFile GetLastUndoFile()
+    
+    'Create a local array and point it at the pixel data of that undo file
+    Dim uImageData() As Byte
+    Dim uSA As SAFEARRAY2D
+    prepSafeArray uSA, tmpLayer
+    CopyMemory ByVal VarPtrArray(uImageData()), VarPtr(uSA), 4
         
-    'Get the current picture's information
-    GetImageData
+    'Create another array, but point it at the pixel data of the current image
+    Dim cImageData() As Byte
+    Dim cSA As SAFEARRAY2D
+    prepImageData cSA
+    CopyMemory ByVal VarPtrArray(cImageData()), VarPtr(cSA), 4
     
-    'Find the smallest dimensions (in case the picture has been at all resized -
-    ' this prevents grievous 'out of subscript' errors)
-    If minWidth > PicWidthL Then minWidth = PicWidthL
-    If minHeight > PicHeightL Then minHeight = PicHeightL
+    'Because the undo file and current image may be different sizes (if the last action was a resize, for example), we need to
+    ' find the minimum width and height to make sure there are no out-of-bound errors.
+    Dim minWidth As Long, minHeight As Long
+    If tmpLayer.getLayerWidth < pdImages(CurrentImage).Width Then minWidth = tmpLayer.getLayerWidth Else minWidth = pdImages(CurrentImage).Width
+    If tmpLayer.getLayerHeight < pdImages(CurrentImage).Height Then minHeight = tmpLayer.getLayerHeight Else minHeight = pdImages(CurrentImage).Height
+        
+    'Set the progress bar maximum value to that minimum width value
+    SetProgBarMax minWidth
     
-    SetProgBarMax PicWidthL
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValUndo As Long, qvDepth As Long, qvDepthUndo As Long
+    qvDepth = pdImages(CurrentImage).mainLayer.getLayerColorDepth \ 8
+    qvDepthUndo = tmpLayer.getLayerColorDepth \ 8
+        
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
     
-    'Run a loop through the two arrays, blending each byte individually
-    Dim QuickVal As Long
-    For x = 0 To minWidth
-        QuickVal = x * 3
-    For y = 0 To minHeight
-     For z = 0 To 2
-        ImageData(QuickVal + z, y) = MixColors(ImageData(QuickVal + z, y), ImageData2(QuickVal + z, y), 50)
-     Next z
+    'Local loop variables can be more efficiently cached by VB's compiler
+    Dim x As Long, y As Long
+    
+    'Finally, prepare a look-up table for the alpha-blend
+    Dim aLookUp(0 To 255, 0 To 255) As Byte
+    Dim tmpCalc As Long
+    
+    For x = 0 To 255
+    For y = 0 To 255
+        tmpCalc = (x + y) \ 2
+        aLookUp(x, y) = CByte(tmpCalc)
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetProgBarVal PicWidthL
+    'Loop through both images, alpha-blending pixels as we go
+    For x = 0 To minWidth - 1
+        QuickVal = x * qvDepth
+        QuickValUndo = x * qvDepthUndo
+    For y = 0 To minHeight - 1
+        cImageData(QuickVal, y) = aLookUp(cImageData(QuickVal, y), uImageData(QuickValUndo, y))
+        cImageData(QuickVal + 1, y) = aLookUp(cImageData(QuickVal + 1, y), uImageData(QuickValUndo + 1, y))
+        cImageData(QuickVal + 2, y) = aLookUp(cImageData(QuickVal + 2, y), uImageData(QuickValUndo + 2, y))
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+        
+    'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(cImageData), 0&, 4
+    Erase cImageData
     
-    'Clear out the temporary buffer & picture array (try to conserve SOME memory, heh)
-    FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
-    Erase ImageData2()
+    CopyMemory ByVal VarPtrArray(uImageData), 0&, 4
+    Erase uImageData
     
-    'Post the new data
-    SetImageData
+    'Erase our temporary layer as well
+    tmpLayer.eraseLayer
+    Set tmpLayer = Nothing
+    
+    'Finally, pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
     
 End Sub
 
@@ -72,113 +107,254 @@ Public Sub MenuAnimate()
 
 End Sub
 
+'Wacky filter discovered by trial-and-error.  I named it "synthesize".
 Public Sub MenuSynthesize()
-    Dim r As Long, g As Long, b As Long
-    Dim TC As Long
-    Message "Synthesizing image..."
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long
+
+    Message "Synthesizing new image..."
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    Dim grayVal As Long
+    
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
-        TC = ((222 * r + 707 * g + 71 * b) \ 1000)
-        r = g + b - TC
-        g = r + b - TC
-        b = r + g - TC
-        ByteMeL r
-        ByteMeL g
-        ByteMeL b
+        
+        grayVal = gLookup(r + g + b)
+        
+        r = g + b - grayVal
+        g = r + b - grayVal
+        b = r + g - grayVal
+        
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
+        If g > 255 Then g = 255
+        If g < 0 Then g = 0
+        If b > 255 Then b = 255
+        If b < 0 Then b = 0
+        
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    Message "Image synthesized.  Redrawing new image..."
-    SetImageData
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
 End Sub
 
+'Another random filter discovered by trial-and-error.  "Alien" effect.
 Public Sub MenuAlien()
+
+    Message "Abducting image and probing it for weaknesses..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim tR As Integer, tB As Integer, tG As Integer
-    Message "Generating alien colors..."
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    Dim newR As Long, newG As Long, newB As Long
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
-        tR = b + g - r
-        tG = r + b - g
-        tB = r + g - b
-        ByteMe tR
-        ByteMe tG
-        ByteMe tB
-        ImageData(x * 3 + 2, y) = tR
-        ImageData(x * 3 + 1, y) = tG
-        ImageData(x * 3, y) = tB
+        
+        newR = b + g - r
+        newG = r + b - g
+        newB = r + g - b
+        
+        If newR > 255 Then newR = 255
+        If newR < 0 Then newR = 0
+        If newG > 255 Then newG = 255
+        If newG < 0 Then newG = 0
+        If newB > 255 Then newB = 255
+        If newB < 0 Then newB = 0
+        
+        ImageData(QuickVal + 2, y) = newR
+        ImageData(QuickVal + 1, y) = newG
+        ImageData(QuickVal, y) = newB
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+  
 End Sub
 
+'Very improved version of "sepia".  This is more involved than a typical "change to brown" effect - the white balance and
+' shading is also adjusted to give the image a more "antique" look.
 Public Sub MenuAntique()
-    Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tB As Long, tG As Long
-    Message "Running antique filter..."
-    SetProgBarMax PicWidthL
     
-    'Build a basic gamma conversion table (otherwise, the image is really
-    'dim and hard to see)
-    Dim LookUp(0 To 255) As Integer
-    Dim TempVal As Single
-    For x = 0 To 255
-        TempVal = x / 255
-        TempVal = TempVal ^ (1 / 1.6)
-        TempVal = TempVal * 255
-        If TempVal > 255 Then TempVal = 255
-        If TempVal < 0 Then TempVal = 0
-        LookUp(x) = TempVal
+    Message "Accelerating to 88mph in order to antique-ify this image..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'We're going to need grayscale values as part of the effect; grayscale is easily optimized via a look-up table
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
     Next x
     
-    'Run a loop through the entire image, converting to sepia as we go
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'We're going to use gamma conversion as part of the effect; gamma is easily optimized via a look-up table
+    Dim gammaLookUp(0 To 255) As Byte
+    Dim tmpVal As Single
+    For x = 0 To 255
+        tmpVal = x / 255
+        tmpVal = tmpVal ^ (1 / 1.6)
+        tmpVal = tmpVal * 255
+        If tmpVal > 255 Then tmpVal = 255
+        If tmpVal < 0 Then tmpVal = 0
+        gammaLookUp(x) = CByte(tmpVal)
+    Next x
+    
+    'Finally, we also need to adjust brightness.  A look-up table is once again invaluable
+    Dim bLookup(0 To 255) As Byte
+    For x = 0 To 255
+        tmpVal = x * 1.75
+        If tmpVal > 255 Then tmpVal = 255
+        bLookup(x) = CByte(tmpVal)
+    Next x
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    Dim newR As Long, newG As Long, newB As Long
+    Dim gray As Long
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
-        tR = (r + g + b) / 3
-        r = (r + tR) / 2
-        g = (g + tR) / 2
-        b = (b + tR) / 2
+        
+        gray = gLookup(r + g + b)
+        
+        r = (r + gray) \ 2
+        g = (g + gray) \ 2
+        b = (b + gray) \ 2
+        
         r = (g * b) \ 256
         g = (b * r) \ 256
         b = (r * g) \ 256
-        tR = r * 1.75
-        tG = g * 1.75
-        tB = b * 1.75
-        If tR > 255 Then tR = 255
-        If tG > 255 Then tG = 255
-        If tB > 255 Then tB = 255
-        tR = LookUp(tR)
-        tG = LookUp(tG)
-        tB = LookUp(tB)
-        ImageData(QuickVal + 2, y) = tR
-        ImageData(QuickVal + 1, y) = tG
-        ImageData(QuickVal, y) = tB
+        
+        newR = bLookup(r)
+        newG = bLookup(g)
+        newB = bLookup(b)
+        
+        newR = gammaLookUp(newR)
+        newG = gammaLookUp(newG)
+        newB = gammaLookUp(newB)
+        
+        ImageData(QuickVal + 2, y) = newR
+        ImageData(QuickVal + 1, y) = newG
+        ImageData(QuickVal, y) = newB
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+    
 End Sub
 
 'Makes the picture appear like it has been shaken
@@ -199,169 +375,307 @@ Public Sub MenuVibrate()
     DoFilter "Vibrate"
 End Sub
 
+'Another filter found by trial-and-error.  "Dream" effect.
 Public Sub MenuDream()
-    Dim r As Integer, g As Integer, b As Integer
-    Dim tR As Long, tB As Long, tG As Long, TC As Long
-    Message "Applying dream filter..."
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
-        TC = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
-        r = Abs(tR - TC) + Abs(tR - tG) + Abs(tR - tB) + (tR \ 2)
-        g = Abs(tG - TC) + Abs(tG - tB) + Abs(tG - tR) + (tG \ 2)
-        b = Abs(tB - TC) + Abs(tB - tR) + Abs(tB - tG) + (tB \ 2)
-        ByteMe r
-        ByteMe g
-        ByteMe b
+
+    Message "Putting image to sleep, then measuring its REM cycles..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    Dim newR As Long, newG As Long, newB As Long
+    Dim grayVal As Long
+    
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        newR = ImageData(QuickVal + 2, y)
+        newG = ImageData(QuickVal + 1, y)
+        newB = ImageData(QuickVal, y)
+        
+        grayVal = gLookup(newR + newG + newB)
+        
+        r = Abs(newR - grayVal) + Abs(newR - newG) + Abs(newR - newB) + (newR \ 2)
+        g = Abs(newG - grayVal) + Abs(newG - newB) + Abs(newG - newR) + (newG \ 2)
+        b = Abs(newB - grayVal) + Abs(newB - newR) + Abs(newB - newG) + (newB \ 2)
+        
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
+        If g > 255 Then g = 255
+        If g < 0 Then g = 0
+        If b > 255 Then b = 255
+        If b < 0 Then b = 0
+        
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    SetImageData
-End Sub
-
-Public Sub MenuCompoundInvert(ByVal Divisor As Integer)
-    Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tB As Long, tG As Long
-    Message "Running compound inversion filter..."
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        If r = 0 Then r = 1
-        If g = 0 Then g = 1
-        If b = 0 Then b = 1
-        tR = (g * b) \ Divisor
-        tG = (r * b) \ Divisor
-        tB = (r * g) \ Divisor
-        If tR > 255 Then tR = 255
-        If tG > 255 Then tG = 255
-        If tB > 255 Then tB = 255
-        ImageData(QuickVal + 2, y) = tR
-        ImageData(QuickVal + 1, y) = tG
-        ImageData(QuickVal, y) = tB
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    SetImageData
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
 End Sub
 
+'A bright-green filter I've aptly named "radioactive".
 Public Sub MenuRadioactive()
+
+    Message "Injecting image with non-ionizing radiation..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tB As Long, tG As Long
-    Message "Running radioactive filter..."
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    Dim newR As Long, newG As Long, newB As Long
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
+        
         If r = 0 Then r = 1
         If g = 0 Then g = 1
         If b = 0 Then b = 1
-        tR = (g * b) \ r
-        tG = (r * b) \ g
-        tB = (r * g) \ b
-        If tR > 255 Then tR = 255
-        If tG > 255 Then tG = 255
-        If tB > 255 Then tB = 255
-        tG = 255 - tG
-        ImageData(QuickVal + 2, y) = tR
-        ImageData(QuickVal + 1, y) = tG
-        ImageData(QuickVal, y) = tB
+        
+        newR = (g * b) \ r
+        newG = (r * b) \ g
+        newB = (r * g) \ b
+        
+        If newR > 255 Then newR = 255
+        If newG > 255 Then newG = 255
+        If newB > 255 Then newB = 255
+        
+        newG = 255 - newG
+        
+        ImageData(QuickVal + 2, y) = newR
+        ImageData(QuickVal + 1, y) = newG
+        ImageData(QuickVal, y) = newB
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
 End Sub
 
+'Stretch out the contrast and convert the image to dramatic black and white.  "Comic book" filter.
 Public Sub MenuComicBook()
-    Dim r As Long, g As Long, b As Long
-    Dim TC As Long
-    Message "Running comic book filter..."
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long
+
+    Message "Embuing image with the essence of F. Miller..."
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    Dim grayVal As Long
+    
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
-        r = Abs(r * (g - b + g + r)) / 256
-        g = Abs(r * (b - g + b + r)) / 256
-        b = Abs(g * (b - g + b + r)) / 256
-        TC = (222 * r + 707 * g + 71 * b) \ 1000
-        ByteMeL TC
-        ImageData(QuickVal + 2, y) = TC
-        ImageData(QuickVal + 1, y) = TC
-        ImageData(QuickVal, y) = TC
+        
+        r = Abs(r * (g - b + g + r)) / 255
+        g = Abs(r * (b - g + b + r)) / 255
+        b = Abs(g * (b - g + b + r)) / 255
+        
+        If r > 255 Then r = 255
+        If g > 255 Then g = 255
+        If b > 255 Then b = 255
+        
+        grayVal = gLookup(r + g + b)
+        
+        ImageData(QuickVal + 2, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal, y) = grayVal
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
 End Sub
 
 'Subroutine for counting the number of unique colors in an image
 Public Sub MenuCountColors()
-    'No Undo necessary
-    GetImageData
-    Dim TC As Long, tR As Long, tB As Long, tG As Long
-    Dim totalVal As Long
     
-    Message "Counting image colors..."
+    Message "Counting the number of unique colors in this image..."
     
-    'Array for storing whether or not a color has been seen already
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'This array will track whether or not a given color has been detected in the image
     Dim UniqueColors() As Boolean
     ReDim UniqueColors(0 To 16777216) As Boolean
     
-    'Total number of unique colors
-    totalVal = 0
+    'Total number of unique colors counted so far
+    Dim totalCount As Long
+    totalCount = 0
     
-    Dim QuickVal As Long
-    
-    SetProgBarMax PicWidthL
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
-        TC = RGB(tR, tG, tB)
-        If UniqueColors(TC) = False Then
-            totalVal = totalVal + 1
-            UniqueColors(TC) = True
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    Dim chkValue As Long
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        chkValue = RGB(r, g, b)
+        If UniqueColors(chkValue) = False Then
+            totalCount = totalCount + 1
+            UniqueColors(chkValue) = True
         End If
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    SetProgBarVal PicWidthL
-    Message "Total number of unique colors: " & totalVal
-    MsgBox "Total number of unique colors: " & totalVal, vbOKOnly + vbApplicationModal + vbInformation, "Count Image Colors"
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    'Attempt to free up whatever memory our dynamic array used
+    'Also, erase the counting array
     Erase UniqueColors
     
+    'Reset the progress bar
     SetProgBarVal 0
+    
+    'Show the user our finaly tally
+    Message "Total number of unique colors: " & totalCount
+    MsgBox "This image contains " & totalCount & " unique colors.", vbOKOnly + vbApplicationModal + vbInformation, "Count Image Colors"
+    
 End Sub
 
+'You can use this section of code to test out your own filters.  I've left some sample code below.
 Public Sub MenuTest()
-    
-    'You can use this section of code to test out your own filters.  I've left some sample code below.
     
     MsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test out your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Pro Tip"
     
@@ -383,8 +697,8 @@ Public Sub MenuTest()
     Dim HH As Single, SS As Single, LL As Single
     Dim tH As Single, tS As Single, tL As Single
     Dim xCalc As Long, yCalc As Long
-    Dim totalVal As Long
-    totalVal = 0
+    Dim totalval As Long
+    totalval = 0
     
     SetProgBarMax PicWidthL
     
@@ -421,7 +735,7 @@ Public Sub MenuTest()
     
     SetProgBarVal 0
     
-    SetImageData
+    setImageData
     
     
     
@@ -471,7 +785,7 @@ Public Sub MenuTest()
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+    setImageData
 End Sub
 
 'Here's all the filters I haven't yet found a home for
@@ -547,115 +861,128 @@ End Sub
 
 'HSL <-> RGB conversion routines
 Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, s As Single, l As Single)
-Dim Max As Single
-Dim Min As Single
-Dim delta As Single
-Dim rR As Single, rG As Single, rB As Single
-   rR = r / 255: rG = g / 255: rB = b / 255
+    Dim Max As Single
+    Dim Min As Single
+    Dim delta As Single
+    Dim rR As Single, rG As Single, rB As Single
+    
+    rR = r / 255
+    rG = g / 255
+    rB = b / 255
 
-'{Given: rgb each in [0,1].
-' Desired: h in [0,360] and s in [0,1], except if s=0, then h=UNDEFINED.}
-'It actually gives h from [-1,5]
-        Max = Maximum(rR, rG, rB)
-        Min = Minimum(rR, rG, rB)
-        l = (Max + Min) / 2    '{This is the lightness}
-        '{Next calculate saturation}
-        If Max = Min Then
-            'begin {Acrhomatic case}
-            s = 0
-            h = 0
-           'end {Acrhomatic case}
+    'Note: HSL are calculated in the following ranges:
+    ' Hue: [-1,5]
+    ' Saturation: [0,1] (Note that if saturation = 0, hue is technically undefined)
+    ' Lightness: [0,1]
+
+    Max = Maximum(rR, rG, rB)
+    Min = Minimum(rR, rG, rB)
+        
+    'Calculate luminance
+    l = (Max + Min) / 2
+        
+    'If the maximum and minimum are identical, this image is gray, meaning it has no saturation and an undefined hue.
+    If Max = Min Then
+        s = 0
+        h = 0
+    Else
+        
+        'Calculate saturation
+        If l <= 0.5 Then
+            s = (Max - Min) / (Max + Min)
         Else
-           'begin {Chromatic case}
-                '{First calculate the saturation.}
-           If l <= 0.5 Then
-               s = (Max - Min) / (Max + Min)
-           Else
-               s = (Max - Min) / (2 - Max - Min)
-            End If
-            '{Next calculate the hue.}
-            delta = Max - Min
-           If rR = Max Then
-                h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
-           ElseIf rG = Max Then
-                h = 2 + (rB - rR) / delta '{Resulting color is between cyan and yellow}
-           ElseIf rB = Max Then
-                h = 4 + (rR - rG) / delta '{Resulting color is between magenta and cyan}
-           End If
-            'Debug.Print h
-            'h = h * 60
-           'If h < 0# Then
-           '     h = h + 360            '{Make degrees be nonnegative}
-           'End If
-        'end {Chromatic Case}
-      End If
+            s = (Max - Min) / (2 - Max - Min)
+        End If
+        
+        'Calculate hue
+        delta = Max - Min
 
-'Tanner's hack: if byte values are preferred to floating-point, this code will return hue on [0,240],
-' saturation on [0,255], and luminance on [0,255]
+        If rR = Max Then
+            h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
+        ElseIf rG = Max Then
+            h = 2 + (rB - rR) / delta '{Resulting color is between cyan and yellow}
+        ElseIf rB = Max Then
+            h = 4 + (rR - rG) / delta '{Resulting color is between magenta and cyan}
+        End If
+        
+        'If you prefer hue in the [0,360] range instead of [-1, 5] you can use this code
+        'h = h * 60
+        'If h < 0 Then h = h + 360
+
+    End If
+
+    'Tanner's final note: if byte values are preferred to floating-point, this code will return hue on [0,240],
+    ' saturation on [0,255], and luminance on [0,255]
     'H = Int(H * 40 + 40)
     'S = Int(S * 255)
     'L = Int(L * 255)
+    
 End Sub
 
+'Convert HSL values to RGB values
 Public Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long, b As Long)
-Dim rR As Single, rG As Single, rB As Single
-Dim Min As Single, Max As Single
-'This one requires the stupid values; such is life
 
-   If s = 0 Then
-      ' Achromatic case:
-      rR = l: rG = l: rB = l
-   Else
-      ' Chromatic case:
-      ' delta = Max-Min
-      If l <= 0.5 Then
-         's = (Max - Min) / (Max + Min)
-         ' Get Min value:
-         Min = l * (1 - s)
-      Else
-         's = (Max - Min) / (2 - Max - Min)
-         ' Get Min value:
-         Min = l - s * (1 - l)
-      End If
-      ' Get the Max value:
-      Max = 2 * l - Min
+    Dim rR As Single, rG As Single, rB As Single
+    Dim Min As Single, Max As Single
+
+    'Unsaturated pixels do not technically have hue - they only have luminance
+    If s = 0 Then
+        rR = l: rG = l: rB = l
+    Else
+        If l <= 0.5 Then
+             Min = l * (1 - s)
+        Else
+            Min = l - s * (1 - l)
+        End If
       
-      ' Now depending on sector we can evaluate the h,l,s:
-      If (h < 1) Then
-         rR = Max
-         If (h < 0) Then
-            rG = Min
-            rB = rG - h * (Max - Min)
-         Else
-            rB = Min
-            rG = h * (Max - Min) + rB
-         End If
-      ElseIf (h < 3) Then
-         rG = Max
-         If (h < 2) Then
-            rB = Min
-            rR = rB - (h - 2) * (Max - Min)
-         Else
-            rR = Min
-            rB = (h - 2) * (Max - Min) + rR
-         End If
-      Else
-         rB = Max
-         If (h < 4) Then
-            rR = Min
-            rG = rR - (h - 4) * (Max - Min)
-         Else
-            rG = Min
-            rR = (h - 4) * (Max - Min) + rG
-         End If
+        Max = 2 * l - Min
+      
+        If (h < 1) Then
+            
+            rR = Max
+            
+            If (h < 0) Then
+                rG = Min
+                rB = rG - h * (Max - Min)
+            Else
+                rB = Min
+                rG = h * (Max - Min) + rB
+            End If
+        
+        ElseIf (h < 3) Then
+            
+            rG = Max
          
-      End If
+            If (h < 2) Then
+                rB = Min
+                rR = rB - (h - 2) * (Max - Min)
+            Else
+                rR = Min
+                rB = (h - 2) * (Max - Min) + rR
+            End If
+        
+        Else
+        
+            rB = Max
+            
+            If (h < 4) Then
+                rR = Min
+                rG = rR - (h - 4) * (Max - Min)
+            Else
+                rG = Min
+                rR = (h - 4) * (Max - Min) + rG
+            End If
+         
+        End If
             
    End If
-   r = rR * 255: g = rG * 255: b = rB * 255
+   
+   r = rR * 255
+   g = rG * 255
+   b = rB * 255
    
    'Failsafe added 29 August '12
-   'This should never return RGB values > 255, but it doesn't hurt to make sure:
+   'This should never return RGB values > 255, but it doesn't hurt to make sure.
    If r > 255 Then r = 255
    If g > 255 Then g = 255
    If b > 255 Then b = 255

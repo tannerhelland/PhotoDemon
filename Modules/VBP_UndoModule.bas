@@ -8,8 +8,8 @@ Attribute VB_Name = "Undo_Handler"
 '             Undo generation.  This is used to generate text related to undos (e.g. "Undo Blur")
 '
 'Handles all "Undo"/"Redo" operations.  I currently have it programmed to use the hard
-'drive for all backups in order to free up RAM; this could be changed with in-memory images,
-'but the speed delay is so insignificant that I opted to use the hard drive.
+' drive for all backups in order to free up RAM; this could be changed with in-memory images,
+' but the speed delay is so insignificant that I opted to use the hard drive.
 '
 'IMPORTANT NOTE: the pdImages() array (of type pdImage) is declared in the
 '                MDIWindow module.
@@ -72,13 +72,13 @@ Public Sub ClearALLUndo()
 End Sub
 
 'Clear all undo images for a single image
-Public Sub ClearUndo(ByVal ImageID As Long)
+Public Sub ClearUndo(ByVal imageID As Long)
 
     'Tell this pdImage class to destroy all its Undo files
-    pdImages(ImageID).ClearUndos
+    pdImages(imageID).ClearUndos
     
     'If the active form is requesting the clear, adjust the Undo button/menu to match
-    If ImageID = CurrentImage Then
+    If imageID = CurrentImage Then
         tInit tUndo, pdImages(CurrentImage).UndoState
     
         'Also, disable fading any previous effects on this image (since there is no long an image to use for the function)
