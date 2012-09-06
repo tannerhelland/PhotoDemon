@@ -279,7 +279,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 End Function
 
 'Give this layer a picture from a standard VB picture object
-Public Function CreateFromPicture(ByRef srcPicture As StdPicture) As Boolean
+Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
 
     'Make sure the picture we're passed isn't empty
     If (Not srcPicture Is Nothing) Then
@@ -313,24 +313,24 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture) As Boolean
                     DeleteDC TmpDC
                 
                     'Success!
-                    CreateFromPicture = True
+                    createFromPicture = True
                     Exit Function
                     
                 End If
             
-                CreateFromPicture = False
+                createFromPicture = False
             
             End If
             
-            CreateFromPicture = False
+            createFromPicture = False
         
         End If
         
-        CreateFromPicture = False
+        createFromPicture = False
     
     End If
     
-    CreateFromPicture = False
+    createFromPicture = False
 
 End Function
 
@@ -543,15 +543,9 @@ Public Sub createFromFile(ByRef srcFilename As String)
     Dim tmpSA As SAFEARRAY2D
     prepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-        
-    'Now loop through the array, overwriting the DIB data with the file data.  (This could be done more quickly with CopyMemory
-    ' and an array of matching scope - perhaps in the future!)
-    Dim x As Long, y As Long
-    For x = 0 To fArrayWidth - 1
-    For y = 0 To fHeight - 1
-        iData(x, y) = fileData(x, y)
-    Next y
-    Next x
+    
+    'Bulk copy the contents of fileData() over to iData() - which is pointing at this layer's DIB, remember
+    CopyMemory iData(0, 0), fileData(0, 0), fArrayWidth * fHeight
     
     'With our work complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
