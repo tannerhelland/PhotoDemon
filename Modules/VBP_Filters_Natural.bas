@@ -16,7 +16,7 @@ Option Explicit
 'Apply a "Rainbow" effect to an image by assigning it an artificial hue gradient
 Public Sub MenuRainbow()
     
-    Message "Applying rainbow effect..."
+    Message "Dipping image in shimmering rainbows..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -595,7 +595,7 @@ Public Sub MenuOcean()
 'Give the image a metallic shimmer with this "steel" filter
 Public Sub MenuSteel()
 
-    Message "Dipping image into vat of smoldering steel..."
+    Message "Pouring smoldering steel onto image..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
