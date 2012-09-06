@@ -4,7 +4,7 @@ Attribute VB_Name = "Filters_Natural"
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 05/September/12
-'Last update: rewrote all effects against new layer class.  Also, heavily optimized each effect, so these
+'Last update: rewrote all effects against new layer class.  I also heavily optimized each effect, so these
 '              filters should all be extremely quick.
 '
 'Runs all nature-type filters.  Includes water, steel, burn, rainbow, etc.
@@ -16,7 +16,7 @@ Option Explicit
 'Apply a "Rainbow" effect to an image by assigning it an artificial hue gradient
 Public Sub MenuRainbow()
     
-    Message "Dipping image in shimmering rainbows..."
+    Message "Sprinkling image with shimmering rainbows..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
