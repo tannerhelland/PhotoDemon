@@ -12,15 +12,6 @@ Public cProgBar As cProgressBar
 'Color variables
 Public EmbossEngraveColor As Long 'last used emboss/engrave color
 
-'Rotation variables
-Public Type TDPoint
-    x As Integer
-    y As Integer
-    z As Integer
-End Type
-Public rm(0 To 3, 0 To 3) As Double 'rotation matrix
-
-
 'Filter variables
 'The array containing the filter data
 Public FM() As Long
