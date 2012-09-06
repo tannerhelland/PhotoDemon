@@ -133,20 +133,21 @@ Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
 
 'SafeArray API functions
-Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
+Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
 'DIB API functions
 ' (Note that these are currently declared in FastDrawing as well)
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
-Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 
 'Object API functions
 Private Const OBJ_BITMAP As Long = 7
@@ -155,12 +156,20 @@ Private Declare Function GetObjectType Lib "gdi32" (ByVal hgdiobj As Long) As Lo
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Rectangle objects to be used with brushes
-Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 
 'Brush creation
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 
+'Clipboard interaction
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function EmptyClipboard Lib "user32" () As Long
+Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function CloseClipboard Lib "user32" () As Long
+Private Declare Function SetClipboardData Lib "user32" (ByVal wFormat As Long, ByVal hMem As Long) As Long
+Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 
 'Variables related to the DIB
 'hDC for this layer
@@ -227,6 +236,63 @@ Public Function getLayerDIBits() As Long
     getLayerDIBits = layerDIBits
 End Function
 
+'Copy the current layer's contents to the clipboard
+Public Sub copyLayerToClipboard()
+    
+    'Make sure the current layer actually contains an image before copying it to the clipboard
+    If (layerDIB <> 0) Then
+    
+        'Make sure the clipboard is available and working
+        If (OpenClipboard(0) <> 0) Then
+                
+            'Get a handle to the current desktop, and create a compatible clipboard device context in it
+            Dim desktopHWnd As Long
+            desktopHWnd = GetDesktopWindow
+            
+            Dim desktopDC As Long, clipboardDC As Long
+            desktopDC = GetDC(desktopHWnd)
+            clipboardDC = CreateCompatibleDC(desktopDC)
+            
+            'Make sure the clipboard was able to receive a compatible device context
+            If (clipboardDC <> 0) Then
+            
+                'Create a bitmap compatible with the current desktop.  This will receive the actual pixel data of the current layer
+                Dim clipboardBMP As Long
+                clipboardBMP = CreateCompatibleBitmap(desktopDC, layerWidth, layerHeight)
+                
+                If (clipboardBMP <> 0) Then
+                    
+                    'Place the compatible bitmap within the clipboard device context
+                    Dim clipboardOldBMP As Long
+                    clipboardOldBMP = SelectObject(clipboardDC, clipboardBMP)
+                    
+                    'Use BitBlt to paint the current layer to that bitmap
+                    BitBlt clipboardDC, 0, 0, layerWidth, layerHeight, layerDC, 0, 0, vbSrcCopy
+                    
+                    'Remove that bitmap from the clipboard device context to leave room for the copy
+                    SelectObject clipboardDC, clipboardOldBMP
+        
+                    'Empty the current clipboard, copy this layer into it, then close the clipboard and delete the temporary
+                    ' DC we created.
+                    EmptyClipboard
+                    SetClipboardData CLIPBOARD_FORMAT_BMP, clipboardBMP
+                    CloseClipboard
+        
+                    DeleteDC clipboardDC
+                    
+                End If
+                
+            End If
+            
+            'Release (DON'T DELETE!) our control of the current desktop device context
+            ReleaseDC desktopHWnd, desktopDC
+            
+        End If
+        
+    End If
+
+End Sub
+
 'Make a copy of an existing layer
 Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1) As Boolean
 
@@ -279,7 +345,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 End Function
 
 'Give this layer a picture from a standard VB picture object
-Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
+Public Function CreateFromPicture(ByRef srcPicture As StdPicture) As Boolean
 
     'Make sure the picture we're passed isn't empty
     If (Not srcPicture Is Nothing) Then
@@ -313,24 +379,24 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
                     DeleteDC TmpDC
                 
                     'Success!
-                    createFromPicture = True
+                    CreateFromPicture = True
                     Exit Function
                     
                 End If
             
-                createFromPicture = False
+                CreateFromPicture = False
             
             End If
             
-            createFromPicture = False
+            CreateFromPicture = False
         
         End If
         
-        createFromPicture = False
+        CreateFromPicture = False
     
     End If
     
-    createFromPicture = False
+    CreateFromPicture = False
 
 End Function
 
