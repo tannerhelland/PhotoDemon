@@ -15,25 +15,68 @@ Attribute VB_Name = "Filters_Area"
 
 Option Explicit
 
+'These constants are related to saving/loading custom filters to/from a file
+Public Const CUSTOM_FILTER_ID As String * 4 = "DScf"
+Public Const CUSTOM_FILTER_VERSION_2003 = &H80000000
+Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
+
 'The omnipotent DoFilter routine - it takes whatever is in FM() - the "filter matrix" and applies it to the image
-Public Sub DoFilter(ByRef FilterType As String, Optional ByVal InvertResult As Boolean = False)
+Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByVal InvertResult As Boolean = False, Optional ByVal srcFilterFile As String = "", Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
-    GetImageData
+    'If requested, load the custom filter data from a file
+    If srcFilterFile <> "" Then
+        Message "Loading custom filter information..."
+        Dim FilterReturn As Boolean
+        FilterReturn = LoadCustomFilterData(srcFilterFile)
+        If FilterReturn = False Then
+            Err.Raise 1024, PROGRAMNAME, "Invalid custom filter file"
+            Exit Sub
+        End If
+    End If
     
     'Note that the only purpose of the FilterType string is to display this message
-    Message "Applying " & FilterType & " filter..."
+    If toPreview = False Then
+        Message "Applying " & FilterType & " filter..."
+    End If
     
-    'C and D are like X and Y - they are additional loop variables used for sub-loops
-    Dim c As Long, d As Long
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, x2 As Long, y2 As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    Dim checkXMin As Long, checkXMax As Long, checkYMin As Long, checkYMax As Long
+    checkXMin = curLayerValues.MinX
+    checkXMax = curLayerValues.MaxX
+    checkYMin = curLayerValues.MinY
+    checkYMax = curLayerValues.MaxY
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
     
     'CalcVar determines the size of each sub-loop (so that we don't waste time running a 5x5 matrix on 3x3 filters)
     Dim CalcVar As Long
     CalcVar = (FilterSize \ 2)
-    
-    'Temporary red, green, and blue values
-    Dim tR As Long, tG As Long, tB As Long
-    
-    'iFM() will hold the contents of FM() - the filter matrix; I don't use FM in case other events want to access it
+        
+    'iFM() will hold the contents of FM() - the filter matrix; we don't use FM directly in case other events want to access it
     Dim iFM() As Long
     
     'Resize iFM according to the size of the filter matrix, then copy over the contents of FM()
@@ -53,366 +96,462 @@ Public Sub DoFilter(ByRef FilterType As String, Optional ByVal InvertResult As B
     'Temporary calculation variables
     Dim CalcX As Long, CalcY As Long
     
-    'tData holds the processed image data; at the end of the filter processing it will get copied over the original image data
-    ReDim tData(0 To (PicWidthL * 3) + 3, 0 To PicHeightL + 1)
+    'Create a temporary layer and resize it to the same size as the current image
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
     
-    'TempRef is like QuickX below, but for sub-loops
-    Dim TempRef As Long
+    'Create a local array and point it at the pixel data of our temporary layer.  This will be used to access the current pixel data
+    ' without modifications, while the actual image data will be modified by the filter as it's processed.
+    Dim tmpData() As Byte
+    Dim tSA As SAFEARRAY2D
+    prepSafeArray tSA, tmpLayer
+    CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
     
-    SetProgBarMax PicWidthL
-    
-    Dim QuickVal As Long
-    
-    'Now that we're ready, loop through the image, calculating pixel values as we go
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'QuickValInner is like QuickVal below, but for sub-loops
+    Dim QuickValInner As Long
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
-        tR = 0
-        tG = 0
-        tB = 0
+        r = 0
+        g = 0
+        b = 0
         FilterWeightTemp = FilterWeightA
         
         'Run a sub-loop around the current pixel
-        For c = x - CalcVar To x + CalcVar
-            TempRef = c * 3
-        For d = y - CalcVar To y + CalcVar
+        For x2 = x - CalcVar To x + CalcVar
+            QuickValInner = x2 * 3
+        For y2 = y - CalcVar To y + CalcVar
         
-            CalcX = c - x
-            CalcY = d - y
+            CalcX = x2 - x
+            CalcY = y2 - y
             
-            'If no filter value is being applied to this pixel, ignore it (GoTo's aren't generally a part of good programming, but they ARE convenient :)
+            'If no filter value is being applied to this pixel, ignore it (GoTo's aren't generally a part of good programming,
+            ' but because VB does not provide a "continue next" type mechanism, GoTo's are all we've got.)
             If iFM(CalcX, CalcY) = 0 Then GoTo NextCustomFilterPixel
             
             'If this pixel lies outside the image perimeter, ignore it and adjust FilterWeight accordingly
-            If c < 0 Or d < 0 Or c > PicWidthL Or d > PicHeightL Then
+            If x2 < checkXMin Or y2 < checkYMin Or x2 > checkXMax Or y2 > checkYMax Then
                 FilterWeightTemp = FilterWeightTemp - iFM(CalcX, CalcY)
                 GoTo NextCustomFilterPixel
             End If
             
             'Adjust red, green, and blue according to the values in the filter matrix (FM)
-            tR = tR + (ImageData(TempRef + 2, d) * iFM(CalcX, CalcY))
-            tG = tG + (ImageData(TempRef + 1, d) * iFM(CalcX, CalcY))
-            tB = tB + (ImageData(TempRef, d) * iFM(CalcX, CalcY))
+            r = r + (tmpData(QuickValInner + 2, y2) * iFM(CalcX, CalcY))
+            g = g + (tmpData(QuickValInner + 1, y2) * iFM(CalcX, CalcY))
+            b = b + (tmpData(QuickValInner, y2) * iFM(CalcX, CalcY))
 
-NextCustomFilterPixel:  Next d
-        Next c
+NextCustomFilterPixel:  Next y2
+        Next x2
         
         'If a weight has been set, apply it now
         If (FilterWeightA <> 1) And (FilterWeightTemp <> 0) Then
-            tR = tR \ FilterWeightTemp
-            tG = tG \ FilterWeightTemp
-            tB = tB \ FilterWeightTemp
+            r = r \ FilterWeightTemp
+            g = g \ FilterWeightTemp
+            b = b \ FilterWeightTemp
         End If
         
         'If a bias has been specified, apply it now
         If FilterBiasA <> 0 Then
-            tR = tR + FilterBiasA
-            tG = tG + FilterBiasA
-            tB = tB + FilterBiasA
+            r = r + FilterBiasA
+            g = g + FilterBiasA
+            b = b + FilterBiasA
         End If
         
         'Make sure all values are between 0 and 255
-        ByteMeL tR
-        ByteMeL tG
-        ByteMeL tB
+        If r < 0 Then
+            r = 0
+        ElseIf r > 255 Then
+            r = 255
+        End If
+        
+        If g < 0 Then
+            g = 0
+        ElseIf g > 255 Then
+            g = 255
+        End If
+        
+        If b < 0 Then
+            b = 0
+        ElseIf b > 255 Then
+            b = 255
+        End If
         
         'If inversion is specified, apply it now
         If InvertResult = True Then
-            tR = 255 - tR
-            tG = 255 - tG
-            tB = 255 - tB
+            r = 255 - r
+            g = 255 - g
+            b = 255 - b
         End If
         
         'Finally, remember the new value in our tData array
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
     Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    SetProgBarVal cProgBar.Max
+    'With our work complete, point ImageData() and tmpData() away from their respective DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    'Copy tData over the original pixel data
-    TransferImageData
+    CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
+    Erase tmpData
     
-    'Draw the updated image to the screen
-    setImageData
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
+'This subroutine will load the data from a custom filter file straight into the FM() array
+Public Function LoadCustomFilterData(ByRef FilterPath As String) As Boolean
+    
+    'These are used to load values from the filter file; previously, they were integers, but in
+    ' 2012 I changed them to Longs.  PhotoDemon loads both types.
+    Dim tmpVal As Integer
+    Dim tmpValLong As Long
+    
+    'Open the specified path
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open FilterPath For Binary As #fileNum
+        
+        'Verify that the filter is actually a valid filter file
+        Dim VerifyID As String * 4
+        Get #fileNum, 1, VerifyID
+        If (VerifyID <> CUSTOM_FILTER_ID) Then
+            Close #fileNum
+            LoadCustomFilterData = False
+            Exit Function
+        End If
+        'End verification
+       
+        'Next get the version number (gotta have this for backwards compatibility)
+        Dim VersionNumber As Long
+        Get #fileNum, , VersionNumber
+        If (VersionNumber <> CUSTOM_FILTER_VERSION_2003) And (VersionNumber <> CUSTOM_FILTER_VERSION_2012) Then
+            Message "Unsupported custom filter version."
+            Close #fileNum
+            LoadCustomFilterData = False
+        End If
+        'End version check
+        
+        If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
+            Get #fileNum, , tmpVal
+            FilterWeight = tmpVal
+            Get #fileNum, , tmpVal
+            FilterBias = tmpVal
+        ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
+            Get #fileNum, , tmpValLong
+            FilterWeight = tmpValLong
+            Get #fileNum, , tmpValLong
+            FilterBias = tmpValLong
+        End If
+        
+        'Resize the filter array to fit the default filter size
+        FilterSize = 5
+        ReDim FM(-2 To 2, -2 To 2) As Long
+        'Dim a temporary array from which to load the array data
+        Dim tFilterArray(0 To 24) As Long
+        
+        If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
+            For x = 0 To 24
+                Get #fileNum, , tmpVal
+                tFilterArray(x) = tmpVal
+            Next x
+        ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
+            For x = 0 To 24
+                Get #fileNum, , tmpValLong
+                tFilterArray(x) = tmpValLong
+            Next x
+        End If
+        
+        'Now dump the temporary array into the filter array
+        For x = -2 To 2
+        For y = -2 To 2
+            FM(x, y) = tFilterArray((x + 2) + (y + 2) * 5)
+        Next y
+        Next x
+    'Close the file up
+    Close #fileNum
+    LoadCustomFilterData = True
+End Function
+
+'A very, very gentle softening effect
+Public Sub FilterAntialias()
+    FilterSize = 3
+    ReDim FM(-1 To 1, -1 To 1) As Long
+    FM(-1, 0) = 1
+    FM(1, 0) = 1
+    FM(0, -1) = 1
+    FM(0, 1) = 1
+    FM(0, 0) = 6
+    FilterWeight = 10
+    FilterBias = 0
+    DoFilter "Antialias"
+End Sub
+
+'"Soften an image" (aka, apply a gentle 3x3 blur)
 Public Sub FilterSoften()
-    Message "Softening image..."
-    Dim tR As Integer, tG As Integer, tB As Integer
-    Dim Divisor As Integer
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long, QuickVal2 As Long
-    Dim c As Long, d As Long
-    ReDim tData(0 To PicWidthL * 3 + 3, 0 To PicHeightL + 1)
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = 0
-        tG = 0
-        tB = 0
-        For c = x - 1 To x + 1
-            If c < 0 Or c > PicWidthL Then GoTo 400
-            QuickVal2 = c * 3
-        For d = y - 1 To y + 1
-            If d < 0 Or d > PicHeightL Then GoTo 300
-            If c = x And d = y Then GoTo 300
-            Divisor = Divisor + 1
-            tR = tR + ImageData(QuickVal2 + 2, d)
-            tG = tG + ImageData(QuickVal2 + 1, d)
-            tB = tB + ImageData(QuickVal2, d)
-300     Next d
-400     Next c
-        tR = tR + ImageData(QuickVal + 2, y) * Divisor
-        tG = tG + ImageData(QuickVal + 1, y) * Divisor
-        tB = tB + ImageData(QuickVal, y) * Divisor
-        Divisor = Divisor * 2
-        tR = tR \ Divisor
-        tG = tG \ Divisor
-        tB = tB \ Divisor
-        Divisor = 0
-        ByteMe tR
-        ByteMe tG
-        ByteMe tB
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    SetProgBarVal cProgBar.Max
-    TransferImageData
-    setImageData
+    
+    FilterSize = 3
+    ReDim FM(-1 To 1, -1 To 1) As Long
+    
+    FM(-1, -1) = 1
+    FM(-1, 0) = 1
+    FM(-1, 1) = 1
+    
+    FM(0, -1) = 1
+    FM(0, 0) = 8
+    FM(0, 1) = 1
+    
+    FM(1, -1) = 1
+    FM(1, 0) = 1
+    FM(1, 1) = 1
+    
+    FilterWeight = 16
+    FilterBias = 0
+    
+    DoFilter "Soften"
+    
 End Sub
 
+'"Soften an image more" (aka, apply a gentle 5x5 blur)
 Public Sub FilterSoftenMore()
-    Message "Softening image 2x..."
-    Dim tR As Integer, tG As Integer, tB As Integer
-    Dim Divisor As Integer
-    Dim c As Long, d As Long
-    SetProgBarMax PicWidthL
-    ReDim tData(0 To PicWidthL * 3 + 3, 0 To PicHeightL + 1)
-    Dim QuickVal As Long, QuickVal2 As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = 0
-        tG = 0
-        tB = 0
-        For c = x - 2 To x + 2
-            If c < 0 Or c > PicWidthL Then GoTo 401
-            QuickVal2 = x * 3
-        For d = y - 2 To y + 2
-            If d < 0 Or d > PicHeightL Then GoTo 301
-            If c = x And d = y Then GoTo 301
-            Divisor = Divisor + 1
-            tR = tR + ImageData(QuickVal2 + 2, d)
-            tG = tG + ImageData(QuickVal2 + 1, d)
-            tB = tB + ImageData(QuickVal2, d)
-301     Next d
-401     Next c
-        tR = tR + ImageData(QuickVal + 2, y) * Divisor
-        tG = tG + ImageData(QuickVal + 1, y) * Divisor
-        tB = tB + ImageData(QuickVal, y) * Divisor
-        Divisor = Divisor * 2
-        tR = tR \ Divisor
-        tG = tG \ Divisor
-        tB = tB \ Divisor
-        Divisor = 0
-        ByteMe tR
-        ByteMe tG
-        ByteMe tB
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    SetProgBarVal cProgBar.Max
-    TransferImageData
-    setImageData
+    
+    FilterSize = 5
+    ReDim FM(-2 To 2, -2 To 2) As Long
+    
+    FM(-2, -2) = 1
+    FM(-2, -1) = 1
+    FM(-2, 0) = 1
+    FM(-2, 1) = 1
+    FM(-2, 2) = 1
+    
+    FM(-1, -2) = 1
+    FM(-1, -1) = 1
+    FM(-1, 0) = 1
+    FM(-1, 1) = 1
+    FM(-1, 2) = 1
+    
+    FM(0, -2) = 1
+    FM(0, -1) = 1
+    FM(0, 0) = 24
+    FM(0, 1) = 1
+    FM(0, 2) = 1
+    
+    FM(1, -2) = 1
+    FM(1, -1) = 1
+    FM(1, 0) = 1
+    FM(1, 1) = 1
+    FM(1, 2) = 1
+    
+    FM(2, -2) = 1
+    FM(2, -1) = 1
+    FM(2, 0) = 1
+    FM(2, 1) = 1
+    FM(2, 2) = 1
+    
+    FilterWeight = 48
+    FilterBias = 0
+    
+    DoFilter "Strong Soften"
+    
 End Sub
 
+'Blur an image using a 3x3 convolution matrix
 Public Sub FilterBlur()
-    Message "Blurring image..."
-    Dim tR As Integer, tG As Integer, tB As Integer
-    Dim c As Long, d As Long
-    Dim Divisor As Byte
-    SetProgBarMax PicWidthL
-    ReDim tData(0 To PicWidthL * 3 + 3, 0 To PicHeightL + 1)
-    Dim QuickVal As Long, QuickVal2 As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = 0
-        tG = 0
-        tB = 0
-        For c = x - 1 To x + 1
-            If c < 0 Or c > PicWidthL Then GoTo 402
-            QuickVal2 = c * 3
-        For d = y - 1 To y + 1
-            If d < 0 Or d > PicHeightL Then GoTo 302
-            Divisor = Divisor + 1
-            tR = tR + ImageData(QuickVal2 + 2, d)
-            tG = tG + ImageData(QuickVal2 + 1, d)
-            tB = tB + ImageData(QuickVal2, d)
-302     Next d
-402     Next c
-        tR = tR \ Divisor
-        tG = tG \ Divisor
-        tB = tB \ Divisor
-        Divisor = 0
-        ByteMe tR
-        ByteMe tG
-        ByteMe tB
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    SetProgBarVal cProgBar.Max
-    TransferImageData
-    setImageData
+        
+    FilterSize = 3
+    ReDim FM(-1 To 1, -1 To 1) As Long
+    
+    FM(-1, -1) = 1
+    FM(-1, 0) = 1
+    FM(-1, 1) = 1
+    
+    FM(0, -1) = 1
+    FM(0, 0) = 1
+    FM(0, 1) = 1
+    
+    FM(1, -1) = 1
+    FM(1, 0) = 1
+    FM(1, 1) = 1
+    
+    FilterWeight = 9
+    FilterBias = 0
+    
+    DoFilter "Blur"
+    
 End Sub
 
+'Blur an image using a 5x5 convolution matrix
 Public Sub FilterBlurMore()
-    Message "Blurring image 2x..."
-    Dim tR As Integer, tG As Integer, tB As Integer
-    Dim Divisor As Byte
-    Dim c As Long, d As Long
-    SetProgBarMax PicWidthL
-    ReDim tData(0 To PicWidthL * 3 + 3, 0 To PicHeightL + 1)
-    Dim QuickVal As Long, QuickVal2 As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = 0
-        tG = 0
-        tB = 0
-        For c = x - 2 To x + 2
-            If c < 0 Or c > PicWidthL Then GoTo 403
-            QuickVal2 = c * 3
-        For d = y - 2 To y + 2
-            If d < 0 Or d > PicHeightL Then GoTo 303
-            Divisor = Divisor + 1
-            tR = tR + ImageData(QuickVal2 + 2, d)
-            tG = tG + ImageData(QuickVal2 + 1, d)
-            tB = tB + ImageData(QuickVal2, d)
-303     Next d
-403     Next c
-        tR = tR \ Divisor
-        tG = tG \ Divisor
-        tB = tB \ Divisor
-        Divisor = 0
-        ByteMe tR
-        ByteMe tG
-        ByteMe tB
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    SetProgBarVal cProgBar.Max
-    TransferImageData
-    setImageData
+    
+    FilterSize = 5
+    ReDim FM(-2 To 2, -2 To 2) As Long
+    
+    FM(-2, -2) = 1
+    FM(-2, -1) = 1
+    FM(-2, 0) = 1
+    FM(-2, 1) = 1
+    FM(-2, 2) = 1
+    
+    FM(-1, -2) = 1
+    FM(-1, -1) = 1
+    FM(-1, 0) = 1
+    FM(-1, 1) = 1
+    FM(-1, 2) = 1
+    
+    FM(0, -2) = 1
+    FM(0, -1) = 1
+    FM(0, 0) = 1
+    FM(0, 1) = 1
+    FM(0, 2) = 1
+    
+    FM(1, -2) = 1
+    FM(1, -1) = 1
+    FM(1, 0) = 1
+    FM(1, 1) = 1
+    FM(1, 2) = 1
+    
+    FM(2, -2) = 1
+    FM(2, -1) = 1
+    FM(2, 0) = 1
+    FM(2, 1) = 1
+    FM(2, 2) = 1
+    
+    FilterWeight = 25
+    FilterBias = 0
+    
+    DoFilter "Strong Blur"
+    
 End Sub
 
+'3x3 Gaussian blur
+Public Sub FilterGaussianBlur()
+
+    FilterSize = 3
+    ReDim FM(-1 To 1, -1 To 1) As Long
+    
+    FM(-1, -1) = 1
+    FM(0, -1) = 2
+    FM(1, -1) = 1
+    
+    FM(-1, 0) = 2
+    FM(0, 0) = 4
+    FM(1, 0) = 2
+    
+    FM(-1, 1) = 1
+    FM(0, 1) = 2
+    FM(1, 1) = 1
+    
+    FilterWeight = 16
+    FilterBias = 0
+    
+    DoFilter "Gaussian Blur"
+    
+End Sub
+
+'5x5 Gaussian blur
+Public Sub FilterGaussianBlurMore()
+
+    FilterSize = 5
+    ReDim FM(-2 To 2, -2 To 2) As Long
+    
+    FM(-2, -2) = 1
+    FM(-1, -2) = 4
+    FM(0, -2) = 7
+    FM(1, -2) = 4
+    FM(2, -2) = 1
+    
+    FM(-2, -1) = 4
+    FM(-1, -1) = 16
+    FM(0, -1) = 26
+    FM(1, -1) = 16
+    FM(2, -1) = 4
+    
+    FM(-2, 0) = 7
+    FM(-1, 0) = 26
+    FM(0, 0) = 41
+    FM(1, 0) = 26
+    FM(2, 0) = 7
+    
+    FM(-2, 1) = 4
+    FM(-1, 1) = 16
+    FM(0, 1) = 26
+    FM(1, 1) = 16
+    FM(2, 1) = 4
+    
+    FM(-2, 2) = 1
+    FM(-1, 2) = 4
+    FM(0, 2) = 7
+    FM(1, 2) = 4
+    FM(2, 2) = 1
+    
+    FilterWeight = 273
+    FilterBias = 0
+    
+    DoFilter "Strong Gaussian Blur"
+    
+End Sub
+
+'Sharpen an image via convolution filter
 Public Sub FilterSharpen()
-    Message "Sharpening image..."
-    Dim tR As Integer, tG As Integer, tB As Integer
-    Dim c As Long, d As Long
-    SetProgBarMax PicWidthL
-    ReDim tData(0 To PicWidthL * 3 + 3, 0 To PicHeightL + 1)
-    Dim QuickVal As Long, QuickVal2 As Long
-    For x = 1 To PicWidthL - 1
-        QuickVal = x * 3
-    For y = 1 To PicHeightL - 1
-        tR = 0
-        tG = 0
-        tB = 0
-        For c = x - 1 To x + 1
-            If c < 0 Or c > PicWidthL Then GoTo 405
-            QuickVal2 = c * 3
-        For d = y - 1 To y + 1
-            If d < 0 Or d > PicHeightL Then GoTo 305
-            If c = x And d = y Then
-                tR = tR + ImageData(QuickVal2 + 2, d) * 15
-                tG = tG + ImageData(QuickVal2 + 1, d) * 15
-                tB = tB + ImageData(QuickVal2, d) * 15
-            Else
-                tR = tR - ImageData(QuickVal2 + 2, d)
-                tG = tG - ImageData(QuickVal2 + 1, d)
-                tB = tB - ImageData(QuickVal2, d)
-            End If
-305     Next d
-405     Next c
-        tR = tR \ 7
-        tG = tG \ 7
-        tB = tB \ 7
-        ByteMe tR
-        ByteMe tG
-        ByteMe tB
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    SetProgBarVal cProgBar.Max
-    TransferImageData
-    setImageData
+    
+    FilterSize = 3
+    ReDim FM(-1 To 1, -1 To 1) As Long
+    
+    FM(-1, -1) = -1
+    FM(0, -1) = -1
+    FM(1, -1) = -1
+    
+    FM(-1, 0) = -1
+    FM(0, 0) = 15
+    FM(1, 0) = -1
+    
+    FM(-1, 1) = -1
+    FM(0, 1) = -1
+    FM(1, 1) = -1
+    
+    FilterWeight = 7
+    FilterBias = 0
+    
+    DoFilter "Sharpen"
+  
 End Sub
 
+'Strongly sharpen an image via convolution filter
 Public Sub FilterSharpenMore()
-    Message "2x sharpening image..."
-    Dim tR As Integer, tG As Integer, tB As Integer
-    SetProgBarMax PicWidthL
-    ReDim tData(0 To PicWidthL * 3 + 3, 0 To PicHeightL + 1)
-    Dim QuickVal As Long
-    For x = 1 To PicWidthL - 1
-        QuickVal = x * 3
-    For y = 1 To PicHeightL - 1
-        tR = 0
-        tG = 0
-        tB = 0
-            'Main pixel
-            tR = tR + ImageData(QuickVal + 2, y) * 5
-            tG = tG + ImageData(QuickVal + 1, y) * 5
-            tB = tB + ImageData(QuickVal, y) * 5
-            'Outer pixels
-            tR = tR - ImageData((x - 1) * 3 + 2, y)
-            tG = tG - ImageData((x - 1) * 3 + 1, y)
-            tB = tB - ImageData((x - 1) * 3, y)
-            tR = tR - ImageData(QuickVal + 2, y - 1)
-            tG = tG - ImageData(QuickVal + 1, y - 1)
-            tB = tB - ImageData(QuickVal, y - 1)
-            tR = tR - ImageData((x + 1) * 3 + 2, y)
-            tG = tG - ImageData((x + 1) * 3 + 1, y)
-            tB = tB - ImageData((x + 1) * 3, y)
-            tR = tR - ImageData(QuickVal + 2, y + 1)
-            tG = tG - ImageData(QuickVal + 1, y + 1)
-            tB = tB - ImageData(QuickVal, y + 1)
-        ByteMe tR
-        ByteMe tG
-        ByteMe tB
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    SetProgBarVal cProgBar.Max
-    TransferImageData
-    setImageData
+
+    FilterSize = 3
+    ReDim FM(-1 To 1, -1 To 1) As Long
+    
+    FM(-1, -1) = 0
+    FM(0, -1) = -1
+    FM(1, -1) = 0
+    
+    FM(-1, 0) = -1
+    FM(0, 0) = 5
+    FM(1, 0) = -1
+    
+    FM(-1, 1) = 0
+    FM(0, 1) = -1
+    FM(1, 1) = 0
+    
+    FilterWeight = 1
+    FilterBias = 0
+    
+    DoFilter "Strong Sharpen"
+  
 End Sub
 
 Public Sub FilterUnsharp()
@@ -530,78 +669,6 @@ Public Sub FilterGridBlur()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     setImageData
-End Sub
-
-'A very, very gentle softening effect
-Public Sub FilterAntialias()
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, 0) = 1
-    FM(1, 0) = 1
-    FM(0, -1) = 1
-    FM(0, 1) = 1
-    FM(0, 0) = 6
-    FilterWeight = 10
-    FilterBias = 0
-    DoFilter "Antialias"
-End Sub
-
-'3x3 Gaussian blur
-Public Sub FilterGaussianBlur()
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, -1) = 1
-    FM(0, -1) = 2
-    FM(1, -1) = 1
-    FM(-1, 0) = 2
-    FM(0, 0) = 4
-    FM(1, 0) = 2
-    FM(-1, 1) = 1
-    FM(0, 1) = 2
-    FM(1, 1) = 1
-    FilterWeight = 16
-    FilterBias = 0
-    DoFilter "Gaussian Blur "
-End Sub
-
-'5x5 Gaussian blur
-Public Sub FilterGaussianBlurMore()
-    FilterSize = 5
-    ReDim FM(-2 To 2, -2 To 2) As Long
-    
-    FM(-2, -2) = 1
-    FM(-1, -2) = 4
-    FM(0, -2) = 7
-    FM(1, -2) = 4
-    FM(2, -2) = 1
-    
-    FM(-2, -1) = 4
-    FM(-1, -1) = 16
-    FM(0, -1) = 26
-    FM(1, -1) = 16
-    FM(2, -1) = 4
-    
-    FM(-2, 0) = 7
-    FM(-1, 0) = 26
-    FM(0, 0) = 41
-    FM(1, 0) = 26
-    FM(2, 0) = 7
-    
-    FM(-2, 1) = 4
-    FM(-1, 1) = 16
-    FM(0, 1) = 26
-    FM(1, 1) = 16
-    FM(2, 1) = 4
-    
-    FM(-2, 2) = 1
-    FM(-1, 2) = 4
-    FM(0, 2) = 7
-    FM(1, 2) = 4
-    FM(2, 2) = 1
-    
-    FilterWeight = 273
-    FilterBias = 0
-    DoFilter "Strong Gaussian Blur "
 End Sub
 
 Public Sub FilterIsometric()

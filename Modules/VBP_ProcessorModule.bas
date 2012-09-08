@@ -720,7 +720,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm = True Then
                     FormCustomFilter.Show 1, FormMain
                 Else
-                    FormCustomFilter.DoCustomFilterFromFile pOPCODE
+                    DoFilter , , pOPCODE
                 End If
             Case Burn
                 MenuBurn

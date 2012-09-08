@@ -608,19 +608,14 @@ Attribute VB_Exposed = False
 'Custom Filter Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 05/June/12
-'Last update: FilterWeight and FilterBias are now Long-type.  A new filter version (2012)
-'             had to be created to accomodate the change.
+'Last updated: 08/September/12
+'Last update: several routines from this form have been moved to the Filters_Area module, which is a more sensible place for them.
 '
 'This form handles creation/loading/saving of user-defined filters.
 '
 '***************************************************************************
 
 Option Explicit
-
-Const CUSTOM_FILTER_ID As String * 4 = "DScf"
-Const CUSTOM_FILTER_VERSION_2003 = &H80000000
-Const CUSTOM_FILTER_VERSION_2012 = &H80000001
 
 'When the user clicks OK...
 Private Sub CmdOK_Click()
@@ -726,86 +721,11 @@ Private Sub MnuSave_Click()
     End If
 End Sub
 
-'This subroutine will load the data from a custom filter file straight into the array
-Public Function LoadCustomFilterData(ByRef FilterPath As String) As Boolean
-    
-    'These are used to load values from the filter file; previously, they were integers, but in
-    ' 2012 I changed them to Longs.  PhotoDemon loads both types.
-    Dim TmpVal As Integer
-    Dim TmpValLong As Long
-    
-    'Open the specified path
-    Dim fileNum As Integer
-    fileNum = FreeFile
-    
-    Open FilterPath For Binary As #fileNum
-        
-        'Verify that the filter is actually a valid filter file
-        Dim VerifyID As String * 4
-        Get #fileNum, 1, VerifyID
-        If (VerifyID <> CUSTOM_FILTER_ID) Then
-            Close #fileNum
-            LoadCustomFilterData = False
-            Exit Function
-        End If
-        'End verification
-       
-        'Next get the version number (gotta have this for backwards compatibility)
-        Dim VersionNumber As Long
-        Get #fileNum, , VersionNumber
-        If (VersionNumber <> CUSTOM_FILTER_VERSION_2003) And (VersionNumber <> CUSTOM_FILTER_VERSION_2012) Then
-            Message "Unsupported custom filter version."
-            Close #fileNum
-            LoadCustomFilterData = False
-        End If
-        'End version check
-        
-        If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
-            Get #fileNum, , TmpVal
-            FilterWeight = TmpVal
-            Get #fileNum, , TmpVal
-            FilterBias = TmpVal
-        ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
-            Get #fileNum, , TmpValLong
-            FilterWeight = TmpValLong
-            Get #fileNum, , TmpValLong
-            FilterBias = TmpValLong
-        End If
-        
-        'Resize the filter array to fit the default filter size
-        FilterSize = 5
-        ReDim FM(-2 To 2, -2 To 2) As Long
-        'Dim a temporary array from which to load the array data
-        Dim tFilterArray(0 To 24) As Long
-        
-        If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
-            For x = 0 To 24
-                Get #fileNum, , TmpVal
-                tFilterArray(x) = TmpVal
-            Next x
-        ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
-            For x = 0 To 24
-                Get #fileNum, , TmpValLong
-                tFilterArray(x) = TmpValLong
-            Next x
-        End If
-        
-        'Now dump the temporary array into the filter array
-        For x = -2 To 2
-        For y = -2 To 2
-            FM(x, y) = tFilterArray((x + 2) + (y + 2) * 5)
-        Next y
-        Next x
-    'Close the file up
-    Close #fileNum
-    LoadCustomFilterData = True
-End Function
-
 'Subroutine for loading a custom filter
 Private Function OpenCustomFilter(ByRef FilterPath As String) As Boolean
     
-    Dim TmpVal As Integer
-    Dim TmpValLong As Long
+    Dim tmpVal As Integer
+    Dim tmpValLong As Long
     
     'Open the specified path
     Dim fileNum As Integer
@@ -835,26 +755,26 @@ Private Function OpenCustomFilter(ByRef FilterPath As String) As Boolean
         'End version check
         
         If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
-            Get #fileNum, , TmpVal
-            TxtWeight = TmpVal
-            Get #fileNum, , TmpVal
-            TxtBias = TmpVal
+            Get #fileNum, , tmpVal
+            TxtWeight = tmpVal
+            Get #fileNum, , tmpVal
+            TxtBias = tmpVal
         ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
-            Get #fileNum, , TmpValLong
-            TxtWeight = TmpValLong
-            Get #fileNum, , TmpValLong
-            TxtBias = TmpValLong
+            Get #fileNum, , tmpValLong
+            TxtWeight = tmpValLong
+            Get #fileNum, , tmpValLong
+            TxtBias = tmpValLong
         End If
         
         If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
             For x = 0 To 24
-                Get #fileNum, , TmpVal
-                TxtF(x) = TmpVal
+                Get #fileNum, , tmpVal
+                TxtF(x) = tmpVal
             Next x
         ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
             For x = 0 To 24
-                Get #fileNum, , TmpValLong
-                TxtF(x) = TmpValLong
+                Get #fileNum, , tmpValLong
+                TxtF(x) = tmpValLong
             Next x
         End If
         
@@ -877,14 +797,14 @@ Private Function SaveCustomFilter(ByRef FilterPath As String) As Boolean
         'Place the current version number
         Put #fileNum, , CUSTOM_FILTER_VERSION_2012
         'Strip the information out of the text boxes and send it
-        Dim TmpVal As Long
-        TmpVal = val(TxtWeight.Text)
-        Put #fileNum, , TmpVal
-        TmpVal = val(TxtBias.Text)
-        Put #fileNum, , TmpVal
+        Dim tmpVal As Long
+        tmpVal = val(TxtWeight.Text)
+        Put #fileNum, , tmpVal
+        tmpVal = val(TxtBias.Text)
+        Put #fileNum, , tmpVal
         For x = 0 To 24
-            TmpVal = val(TxtF(x).Text)
-            Put #fileNum, , TmpVal
+            tmpVal = val(TxtF(x).Text)
+            Put #fileNum, , tmpVal
         Next x
     Close #fileNum
     SaveCustomFilter = True
@@ -897,133 +817,6 @@ End Sub
 
 Private Sub TxtF_GotFocus(Index As Integer)
     AutoSelectText TxtF(Index)
-End Sub
-
-'This powerful routine runs a filter straight from a custom filter file to the active picture box - note that it has a counterpart in the
-' FiltersArea module, which is used for running custom filters from within PhotoDemon (aka not from a file)
-Public Sub DoCustomFilterFromFile(ByVal FilterPath As String)
-    
-    GetImageData
-    
-    'Load the custom filter data from file
-    Message "Attempting to load custom filter file..."
-    Dim FilterReturn As Boolean
-    FilterReturn = LoadCustomFilterData(FilterPath)
-    If FilterReturn = False Then Err.Raise 1024, PROGRAMNAME, "Invalid custom filter file"
-    
-    Message "Applying custom filter..."
-    
-    'C and D are like X and Y - they are additional loop variables used for sub-loops
-    Dim c As Long, d As Long
-    
-    'CalcVar determines the size of each sub-loop (so that we don't waste time running a 5x5 matrix on 3x3 filters)
-    Dim CalcVar As Long
-    CalcVar = (FilterSize \ 2)
-    
-    'Temporary red, green, and blue values
-    Dim tR As Long, tG As Long, tB As Long
-    
-    'iFM() will hold the contents of FM() - the filter matrix; I don't use FM in case other events want to access it
-    Dim iFM() As Long
-    
-    'Resize iFM according to the size of the filter matrix, then copy over the contents of FM()
-    If FilterSize = 3 Then ReDim iFM(-1 To 1, -1 To 1) As Long Else ReDim iFM(-2 To 2, -2 To 2) As Long
-    iFM = FM
-    
-    'FilterWeightA and FilterBiasA are copies of the global FilterWeight and FilterBias variables; again, we don't use the originals in case other events
-    ' want to access them
-    Dim FilterWeightA As Long, FilterBiasA As Long
-    FilterWeightA = FilterWeight
-    FilterBiasA = FilterBias
-    
-    'FilterWeightTemp will be reset for every pixel, and decremented appropriately if
-    'attempting to calculate the value for a pixel outside the perimeter of the image
-    Dim FilterWeightTemp As Long
-    
-    'Temporary calculation variables
-    Dim CalcX As Long, CalcY As Long
-    
-    'tData holds the processed image data; at the end of the filter processing it will get copied over the original image data
-    ReDim tData(0 To (PicWidthL + 1) * 3 - 1, 0 To PicHeightL + 2) As Byte
-    
-    'TempRef is like QuickX below, but for sub-loops
-    Dim TempRef As Long
-    
-    SetProgBarMax PicWidthL
-    
-    Dim QuickVal As Long
-    
-    'Now that we're ready, loop through the image, calculating pixel values as we go
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    
-        'Reset our values upon beginning analysis on a new pixel
-        tR = 0
-        tG = 0
-        tB = 0
-        FilterWeightTemp = FilterWeightA
-        
-        'Run a sub-loop around the current pixel
-        For c = x - CalcVar To x + CalcVar
-            TempRef = c * 3
-        For d = y - CalcVar To y + CalcVar
-        
-            CalcX = c - x
-            CalcY = d - y
-            
-            'If no filter value is being applied to this pixel, ignore it (GoTo's aren't generally a part of good programming, but they ARE convenient :)
-            If iFM(CalcX, CalcY) = 0 Then GoTo NextCustomFilterFromFilePixel
-            
-            'If this pixel lies outside the image perimeter, ignore it and adjust FilterWeight accordingly
-            If c < 0 Or d < 0 Or c > PicWidthL Or d > PicHeightL Then
-                FilterWeightTemp = FilterWeightTemp - iFM(CalcX, CalcY)
-                GoTo NextCustomFilterFromFilePixel
-            End If
-            
-            'Adjust red, green, and blue according to the values in the filter matrix (FM)
-            tR = tR + (ImageData(TempRef + 2, d) * iFM(CalcX, CalcY))
-            tG = tG + (ImageData(TempRef + 1, d) * iFM(CalcX, CalcY))
-            tB = tB + (ImageData(TempRef, d) * iFM(CalcX, CalcY))
-
-NextCustomFilterFromFilePixel:  Next d
-        Next c
-        
-        'If a weight has been set, apply it now
-        If (FilterWeightA <> 1) And (FilterWeightTemp <> 0) Then
-            tR = tR \ FilterWeightTemp
-            tG = tG \ FilterWeightTemp
-            tB = tB \ FilterWeightTemp
-        End If
-        
-        'If a bias has been specified, apply it now
-        If FilterBiasA <> 0 Then
-            tR = tR + FilterBiasA
-            tG = tG + FilterBiasA
-            tB = tB + FilterBiasA
-        End If
-        
-        'Make sure all values are between 0 and 255
-        ByteMeL tR
-        ByteMeL tG
-        ByteMeL tB
-        'Finally, remember the new value in our tData array
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
-        
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    
-    SetProgBarVal cProgBar.Max
-    
-    'Copy tData over the original pixel data
-    TransferImageData
-    
-    'Draw the updated image to the screen
-    SetImageData
-    
 End Sub
 
 Private Sub TxtWeight_GotFocus()
