@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Color_Effects"
 'Filter (Color Effects) Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 25/January/03
-'Last updated: 14/August/12
-'Last update: improved comments and organization
+'Last updated: 06/September/12
+'Last update: new formulas for all AutoEnhance functions.  Now they are much faster AND they offer much better results.
 '
 'Runs all color-related filters (invert, negative, shifting, etc.).
 '
@@ -63,33 +63,70 @@ End Sub
 'Rechannel an image (red, green, or blue)
 Public Sub MenuRechannel(ByVal RType As Byte)
     
-    Message "Rechanneling colors..."
-    SetProgBarMax PicWidthL
+    'Based on the channel the user has selected, display a user-friendly description of this filter
+    Dim cName As String
+    Select Case RType
+        Case 0
+            cName = "red"
+        Case 1
+            cName = "green"
+        Case Else
+            cName = "blue"
+    End Select
     
-    GetImageData
-    Dim QuickVal As Long
+    Message "Isolating the " & cName & " channel..."
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        'Rechannel Red
-        If RType = 0 Then
-            ImageData(QuickVal, y) = 0
-            ImageData(QuickVal + 1, y) = 0
-        'Rechannel Green
-        ElseIf RType = 1 Then
-            ImageData(QuickVal, y) = 0
-            ImageData(QuickVal + 2, y) = 0
-        'Rechannel Blue
-        Else
-            ImageData(QuickVal + 1, y) = 0
-            ImageData(QuickVal + 2, y) = 0
-        End If
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'After all that work, the Invert code itself is very small and unexciting!
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        Select Case RType
+            'Rechannel red
+            Case 0
+                ImageData(QuickVal, y) = 0
+                ImageData(QuickVal + 1, y) = 0
+            'Rechannel green
+            Case 1
+                ImageData(QuickVal, y) = 0
+                ImageData(QuickVal + 2, y) = 0
+            'Rechannel blue
+            Case Else
+                ImageData(QuickVal + 1, y) = 0
+                ImageData(QuickVal + 2, y) = 0
+        End Select
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    setImageData
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
     
 End Sub
 
@@ -103,113 +140,193 @@ Public Sub MenuCShift(ByVal SType As Byte)
     End If
     SetProgBarMax PicWidthL
     
-    Dim tR As Byte, tB As Byte, tG As Byte
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
-    GetImageData
-    Dim QuickVal As Long
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    
+    'After all that work, the Invert code itself is very small and unexciting!
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         If SType = 0 Then
-            tR = ImageData(QuickVal, y)
-            tG = ImageData(QuickVal + 2, y)
-            tB = ImageData(QuickVal + 1, y)
+            r = ImageData(QuickVal, y)
+            g = ImageData(QuickVal + 2, y)
+            b = ImageData(QuickVal + 1, y)
         Else
-            tR = ImageData(QuickVal + 1, y)
-            tG = ImageData(QuickVal, y)
-            tB = ImageData(QuickVal + 2, y)
+            r = ImageData(QuickVal + 1, y)
+            g = ImageData(QuickVal, y)
+            b = ImageData(QuickVal + 2, y)
         End If
-        ImageData(QuickVal + 2, y) = tR
-        ImageData(QuickVal + 1, y) = tG
-        ImageData(QuickVal, y) = tB
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    setImageData
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
     
 End Sub
 
 'Generate a luminance-negative version of the image
 Public Sub MenuNegative()
 
-    Message "Generating film negative..."
-    SetProgBarMax PicWidthL
+    Message "Calculating film negative values..."
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
-    GetImageData
-    Dim QuickVal As Long
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
     
+    'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim HH As Single, SS As Single, LL As Single
+    Dim h As Single, s As Single, l As Single
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    
-        'Get the original RGB values
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        'Get red, green, and blue values from the array
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Use those to calculate hue and saturation
-        tRGBToHSL r, g, b, HH, SS, LL
+        tRGBToHSL r, g, b, h, s, l
         
-        'Convert back to RGB using inverted luminance
-        tHSLToRGB HH, SS, 1 - LL, r, g, b
+        'Convert those HSL values back to RGB, but substitute inverted luminance
+        tHSLToRGB h, s, 1 - l, r, g, b
         
-        'Assign those values into the array
+        'Assign the new RGB values back into the array
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    setImageData
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
     
 End Sub
 
 'Invert the hue of an image
 Public Sub MenuInvertHue()
-    
+
     Message "Inverting image hue..."
-    SetProgBarMax PicWidthL
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
-    GetImageData
-    Dim QuickVal As Long
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
     
+    'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tB As Long, tG As Long
-    Dim HH As Single, SS As Single, LL As Single
+    Dim h As Single, s As Single, l As Single
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    
-        'Get the original RGB values
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        'Get red, green, and blue values from the array
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Use those to calculate hue, saturation, and luminance
-        tRGBToHSL tR, tG, tB, HH, SS, LL
+        tRGBToHSL r, g, b, h, s, l
         
         'Invert hue
-        HH = 6 - (HH + 1) - 1
+        h = 6 - (h + 1) - 1
         
         'Convert the newly calculated HSL values back to RGB
-        tHSLToRGB HH, SS, LL, r, g, b
+        tHSLToRGB h, s, l, r, g, b
         
+        'Assign the new RGB values back into the array
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    setImageData
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
     
 End Sub
 
@@ -287,87 +404,180 @@ End Sub
 Public Sub MenuAutoEnhanceContrast()
 
     Message "Enhancing image contrast..."
-    SetProgBarMax PicWidthL
     
-    GetImageData
-    Dim QuickVal As Long
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tG As Long, tB As Long, TC As Long
-
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    Dim newR As Long, newG As Long, newB As Long
+    Dim grayVal As Long
     
-        'Get the original RGB values
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
-        
-        'Calculate grayscale
-        TC = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
-        
-        'Spread out the contrast
-        r = Abs(tR - TC) + tR
-        g = Abs(tG - TC) + tG
-        b = Abs(tB - TC) + tB
-        
-        ByteMeL r
-        ByteMeL g
-        ByteMeL b
-        
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
     Next x
     
-    setImageData
+    'We divide our results by 2 to prevent blowout of image colors.  A look-up table makes this faster.
+    Dim hLookup(-255 To 255) As Long
+    For x = -255 To 255
+        hLookup(x) = x \ 2
+    Next x
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        grayVal = gLookup(r + g + b)
+        
+        'Spread out the contrast
+        newR = hLookup(r - grayVal) + r
+        newG = hLookup(g - grayVal) + g
+        newB = hLookup(b - grayVal) + b
+        
+        If newR < 0 Then newR = 0
+        If newG < 0 Then newG = 0
+        If newB < 0 Then newB = 0
+        
+        If newR > 255 Then newR = 255
+        If newG > 255 Then newG = 255
+        If newB > 255 Then newB = 255
+        
+        ImageData(QuickVal + 2, y) = newR
+        ImageData(QuickVal + 1, y) = newG
+        ImageData(QuickVal, y) = newB
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
 End Sub
 
 'Enhance HIGHLIGHTS
 Public Sub MenuAutoEnhanceHighlights()
-    
+
     Message "Enhancing image highlights..."
-    SetProgBarMax PicWidthL
     
-    GetImageData
-    Dim QuickVal As Long
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tG As Long, tB As Long, TC As Long
+    Dim newR As Long, newG As Long, newB As Long
+    Dim grayVal As Long
+    Dim blendValue As Single
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
     
-        'Get the RGB values
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
+    'We use an exponential curve (^3) to apply the enhancement.  Look-up tables make this process much faster.
+    ' (Note that 16581375 is 255^3)
+    Dim eLookup(0 To 255) As Single
+    For x = 0 To 255
+        eLookup(x) = (x * x * x) / 16581375
+    Next x
         
-        'Calculate grayscale
-        TC = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
-        'Spread out highlights
-        r = Abs(tR - TC) + TC
-        g = Abs(tG - TC) + TC
-        b = Abs(tB - TC) + TC
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
-        ByteMeL r
-        ByteMeL g
-        ByteMeL b
+        grayVal = gLookup(r + g + b)
+        
+        'Calculate new RGB values with 2x the contrast of the original color
+        newR = Abs(r - grayVal) + r
+        newG = Abs(g - grayVal) + g
+        newB = Abs(b - grayVal) + b
+                
+        If newR < 0 Then newR = 0
+        If newG < 0 Then newG = 0
+        If newB < 0 Then newB = 0
+        
+        If newR > 255 Then newR = 255
+        If newG > 255 Then newG = 255
+        If newB > 255 Then newB = 255
+        
+        'Emphasize highlights by making bright colors emphasize the 2x contrast value, while dark colors stay the same.
+        blendValue = grayVal / 255
+        
+        r = blendColors(r, newR, blendValue)
+        g = blendColors(g, newG, blendValue)
+        b = blendColors(b, newB, blendValue)
         
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    setImageData
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
     
 End Sub
 
@@ -375,88 +585,195 @@ End Sub
 Public Sub MenuAutoEnhanceMidtones()
 
     Message "Enhancing image midtones..."
-    SetProgBarMax PicWidthL
     
-    GetImageData
-    Dim QuickVal As Long
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tG As Long, tB As Long, TC As Long
+    Dim newR As Long, newG As Long, newB As Long
+    Dim grayVal As Long
+    Dim blendValue As Single
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
+    
+    'We divide our results by 2 to prevent blowout of image colors.  A look-up table makes this faster.
+    Dim hLookup(-255 To 255) As Long
+    For x = -255 To 255
+        hLookup(x) = x \ 2
+    Next x
+    
+    'We use a sine function to apply the enhancement.  Look-up tables make this process much faster.
+    Dim sLookup(0 To 255) As Single
+    For x = 0 To 255
+        sLookup(x) = Sin((x * 3.1415927) / 255)
+    Next x
         
-        'Get RGB values
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
-        'Calculate grayscale
-        TC = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
-        'Spread out midtones
-        r = tR - (TC - tR)
-        g = tG - (TC - tG)
-        b = tB - (TC - tB)
+        grayVal = gLookup(r + g + b)
         
-        ByteMeL r
-        ByteMeL g
-        ByteMeL b
+        'Spread out the contrast
+        newR = hLookup(r - grayVal) + r
+        newG = hLookup(g - grayVal) + g
+        newB = hLookup(b - grayVal) + b
+        
+        If newR < 0 Then newR = 0
+        If newG < 0 Then newG = 0
+        If newB < 0 Then newB = 0
+        
+        If newR > 255 Then newR = 255
+        If newG > 255 Then newG = 255
+        If newB > 255 Then newB = 255
+        
+        'Emphasize midtones by blending the middle ranges with the 2x contrast value, while very dark and bright colors
+        ' receive minimal blending.
+        blendValue = sLookup(grayVal)
+        
+        r = blendColors(r, newR, blendValue)
+        g = blendColors(g, newG, blendValue)
+        b = blendColors(b, newB, blendValue)
         
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    setImageData
-    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
 End Sub
 
 'Enhance SHADOWS
 Public Sub MenuAutoEnhanceShadows()
 
     Message "Enhancing image shadows..."
-    SetProgBarMax PicWidthL
     
-    GetImageData
-    Dim QuickVal As Long
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tG As Long, tB As Long, TC As Long
-
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    Dim newR As Long, newG As Long, newB As Long
+    Dim grayVal As Long
+    Dim blendValue As Single
     
-        'Get RGB values
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
+    
+    'We use an exponential curve (^3) to apply the enhancement.  Look-up tables make this process much faster.
+    ' (Note that 16581375 is 255^3)
+    Dim eLookup(0 To 255) As Single
+    For x = 0 To 255
+        eLookup(x) = (x * x * x) / 16581375
+    Next x
         
-        'Calculate grayscale
-        TC = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
-        'Spread out shadows
-        r = tR
-        g = tG + Abs(r - TC)
-        b = tB + Abs(g - TC)
-        r = tR + Abs(b - TC)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
-        ByteMeL r
-        ByteMeL g
-        ByteMeL b
+        grayVal = gLookup(r + g + b)
+        
+        'Calculate new RGB values with 2x the contrast of the original color
+        newR = r - Abs(r - grayVal)
+        newG = g - Abs(g - grayVal)
+        newB = b - Abs(b - grayVal)
+                
+        If newR < 0 Then newR = 0
+        If newG < 0 Then newG = 0
+        If newB < 0 Then newB = 0
+        
+        If newR > 255 Then newR = 255
+        If newG > 255 Then newG = 255
+        If newB > 255 Then newB = 255
+        
+        'Emphasize shadows by making dark colors emphasize the 2x contrast value, while bright colors stay the same.
+        blendValue = 1 - eLookup(grayVal)
+        
+        r = blendColors(r, newR, blendValue)
+        g = blendColors(g, newG, blendValue)
+        b = blendColors(b, newB, blendValue)
         
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    setImageData
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
     
 End Sub
 
