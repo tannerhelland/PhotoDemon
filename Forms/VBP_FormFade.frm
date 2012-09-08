@@ -193,7 +193,8 @@ Private Sub CmdOK_Click()
 End Sub
 
 'Subroutine for fading an image to grayscale
-Public Sub FadeImage(ByVal PercentFade As Long)
+'NOTE!! fadeRatio has been changed from a Long to a Single.  Change the code accordingly when rewriting!
+Public Sub FadeImage(ByVal fadeRatio As Single)
     
     Message "Fading image to gray..."
     
@@ -218,9 +219,9 @@ Public Sub FadeImage(ByVal PercentFade As Long)
         tGray = Int((222 * r + 707 * g + 71 * b) \ 1000)
         
         'Alphablend the colors with grayscale based on the percent fade function
-        r = MixColors(r, tGray, PercentFade)
-        g = MixColors(g, tGray, PercentFade)
-        b = MixColors(b, tGray, PercentFade)
+        r = blendColors(r, tGray, fadeRatio)
+        g = blendColors(g, tGray, fadeRatio)
+        b = blendColors(b, tGray, fadeRatio)
         
         'Set the new colors
         ImageData(QuickX + 2, y) = r
@@ -231,7 +232,7 @@ Public Sub FadeImage(ByVal PercentFade As Long)
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -282,7 +283,7 @@ Public Sub UnfadeImage()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -300,7 +301,7 @@ Private Sub Form_Load()
 End Sub
 
 'Same routine as above, but meant for previewing only
-Private Sub PreviewFadeImage(ByVal PercentFade As Long)
+Private Sub PreviewFadeImage(ByVal PercentFade As Single)
     
     GetPreviewData PicPreview
     
@@ -315,9 +316,9 @@ Private Sub PreviewFadeImage(ByVal PercentFade As Long)
         g = ImageData(QuickX + 1, y)
         b = ImageData(QuickX, y)
         tGray = Int((222 * r + 707 * g + 71 * b) \ 1000)
-        r = MixColors(r, tGray, PercentFade)
-        g = MixColors(g, tGray, PercentFade)
-        b = MixColors(b, tGray, PercentFade)
+        r = blendColors(r, tGray, PercentFade)
+        g = blendColors(g, tGray, PercentFade)
+        b = blendColors(b, tGray, PercentFade)
         ImageData(QuickX + 2, y) = r
         ImageData(QuickX + 1, y) = g
         ImageData(QuickX, y) = b
