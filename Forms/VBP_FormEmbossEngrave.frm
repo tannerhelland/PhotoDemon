@@ -305,9 +305,10 @@ Public Sub FilterEmbossColor(ByVal cColor As Long)
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    TransferImageData
+    'DOHC: COMMENTED OUT LINE BELOW - STILL NEED TO ADDRESS!
+    'TransferImageData
     
-    SetImageData
+    setImageData
     
 End Sub
 
@@ -353,9 +354,10 @@ Public Sub FilterEngraveColor(ByVal cColor As Long)
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    TransferImageData
+    'DOHC: COMMENTED OUT LINE BELOW - STILL NEED TO ADDRESS!
+    'TransferImageData
     
-    SetImageData
+    setImageData
     
 End Sub
 

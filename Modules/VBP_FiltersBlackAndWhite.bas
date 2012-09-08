@@ -41,7 +41,7 @@ Public Sub MenuThreshold(ByVal Threshold As Long)
         Next y
             If x Mod 20 = 0 Then SetProgBarVal x
         Next x
-    SetImageData
+    setImageData
 End Sub
 
 'Nearest color conversion - about as simple as it gets.
@@ -70,7 +70,7 @@ Public Sub MenuBWNearestColor()
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+    setImageData
 End Sub
 
 'This is a strange method I found on the net somewhere.  It's white-weighted, setting the
@@ -98,7 +98,7 @@ Public Sub MenuBWComponent()
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+    setImageData
 End Sub
 
 'Standard ordered dither.  Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
@@ -153,7 +153,7 @@ Public Sub MenuBWOrderedDither()
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+    setImageData
 End Sub
 
 'Standard error diffusion using my self-written diffusion algorithm (hacked for 1-bit usage)
@@ -196,7 +196,7 @@ Public Sub MenuBWDiffusionDither()
         EV = 0
         If y Mod 20 = 0 Then SetProgBarVal y
     Next y
-    SetImageData
+    setImageData
 End Sub
 
 'A freakish converter that uses a nice every-other sampling routine.  I like it.
@@ -236,7 +236,7 @@ Public Sub MenuBWImpressionist()
     Next y
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
-    SetImageData
+    setImageData
 End Sub
 
 'This is based off Manuel Augusto Santos's "Enhanced Dither" algoritm; a link to his original code can be found on the
@@ -303,8 +303,9 @@ Public Sub MenuBWEnhancedDither()
     Next x
     If y Mod 20 = 0 Then SetProgBarVal y
   Next y
-  TransferImageData
-  SetImageData
+  'DOHC: COMMENTED OUT LINE BELOW - STILL NEED TO ADDRESS!
+  'TransferImageData
+  setImageData
   SetProgBarVal 0
 End Sub
 
@@ -395,5 +396,5 @@ Public Sub MenuBWFloydSteinberg()
     'Clear out the memory as best we can within VB
     Erase LookUps
     
-    SetImageData
+    setImageData
 End Sub
