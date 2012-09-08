@@ -601,8 +601,8 @@ Public Sub FilterGridBlur()
     iWidth = curLayerValues.Width
     iHeight = curLayerValues.Height
             
-    Dim numOfPixels As Long
-    numOfPixels = iWidth + iHeight
+    Dim NumOfPixels As Long
+    NumOfPixels = iWidth + iHeight
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -662,9 +662,9 @@ Public Sub FilterGridBlur()
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
-        r = (rax(x) + ray(y)) \ numOfPixels
-        g = (gax(x) + gay(y)) \ numOfPixels
-        b = (bax(x) + bay(y)) \ numOfPixels
+        r = (rax(x) + ray(y)) \ NumOfPixels
+        g = (gax(x) + gay(y)) \ NumOfPixels
+        b = (bax(x) + bay(y)) \ NumOfPixels
         
         'The colors shouldn't exceed 255, but it doesn't hurt to double-check
         If r > 255 Then r = 255
@@ -689,76 +689,110 @@ Public Sub FilterGridBlur()
 
 End Sub
 
+'Convert an image to its isometric equivalent.  This can be very useful for developers of isometric games.
 Public Sub FilterIsometric()
+
     Message "Preparing conversion tables..."
     
-    'Get the current image data and prepare all the picture boxes
-    GetImageData True
+    'Create a local array and point it at the pixel data of the current image
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepImageData srcSA
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    'Make note of the current image's width and height
     Dim hWidth As Long
     Dim oWidth As Long, oHeight As Long
-    oWidth = PicWidthL
-    oHeight = PicHeightL
-    hWidth = (PicWidthL \ 2)
+    oWidth = curLayerValues.Width - 1
+    oHeight = curLayerValues.Height - 1
+    hWidth = (oWidth \ 2)
     
-    PicWidthL = PicHeightL + PicWidthL + 1
-    PicHeightL = PicWidthL \ 2
+    Dim nWidth As Long, nHeight As Long
+    nWidth = oWidth + oHeight + 1
+    nHeight = nWidth \ 2
     
-    FormMain.ActiveForm.BackBuffer.AutoSize = False
-    FormMain.ActiveForm.BackBuffer.Width = PicWidthL + 3
-    FormMain.ActiveForm.BackBuffer.Height = PicHeightL + 3
-    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer2.Width = FormMain.ActiveForm.BackBuffer.Width
-    FormMain.ActiveForm.BackBuffer2.Height = FormMain.ActiveForm.BackBuffer.Height
-    FormMain.ActiveForm.BackBuffer2.Picture = FormMain.ActiveForm.BackBuffer.Picture
+    'Create a second local array.  This will contain the pixel data of the new isometric image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
     
-    DoEvents
+    Dim dstLayer As pdLayer
+    Set dstLayer = New pdLayer
+    dstLayer.createBlank nWidth + 1, nHeight + 1, pdImages(CurrentImage).mainLayer.getLayerColorDepth
     
-    GetImageData2 True
-    
-    'Display the new size
-    DisplaySize PicWidthL + 1, PicHeightL + 1
-    
-    'Perform the translation
-    Message "Generating isometric image..."
-    SetProgBarMax PicWidthL
-    
-    Dim TX As Long, TY As Long, QuickVal As Long, QuickVal2 As Long
-    
-    For x = 0 To PicWidthL
-    For y = 0 To PicHeightL
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
-        QuickVal2 = x * 3
-        TX = getIsometricX(x, y, hWidth)
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    Dim srcX As Long, srcY As Long
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, dstQuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
         
-        QuickVal = TX * 3
-        TY = getIsometricY(x, y, hWidth)
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    SetProgBarMax nWidth
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
         
-        If (TX >= 0 And TX <= oWidth And TY >= 0 And TY <= oHeight) Then
-            ImageData2(QuickVal2 + 2, y) = ImageData(QuickVal + 2, TY)
-            ImageData2(QuickVal2 + 1, y) = ImageData(QuickVal + 1, TY)
-            ImageData2(QuickVal2, y) = ImageData(QuickVal, TY)
+    Message "Converting image to isometric view..."
+        
+    'Run through the destination image pixels, converting to isometric as we go
+    For x = 0 To nWidth
+        dstQuickVal = x * qvDepth
+    For y = 0 To nHeight
+        
+        srcX = getIsometricX(x, y, hWidth)
+        
+        QuickVal = srcX * 3
+        srcY = getIsometricY(x, y, hWidth)
+        
+        If (srcX >= 0 And srcX <= oWidth And srcY >= 0 And srcY <= oHeight) Then
+            dstImageData(dstQuickVal + 2, y) = srcImageData(QuickVal + 2, srcY)
+            dstImageData(dstQuickVal + 1, y) = srcImageData(QuickVal + 1, srcY)
+            dstImageData(dstQuickVal, y) = srcImageData(QuickVal, srcY)
         Else
-            ImageData2(QuickVal2 + 2, y) = 255
-            ImageData2(QuickVal2 + 1, y) = 255
-            ImageData2(QuickVal2, y) = 255
+            dstImageData(dstQuickVal + 2, y) = 255
+            dstImageData(dstQuickVal + 1, y) = 255
+            dstImageData(dstQuickVal, y) = 255
         End If
     
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
     
-    SetProgBarVal cProgBar.Max
+    'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
     
-    SetImageData2 True
+    'dstImageData now contains the isometric image.  We need to transfer that back into the current image.
+    pdImages(CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer2.Picture
-    FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
-    FormMain.ActiveForm.BackBuffer2.Width = 1
-    FormMain.ActiveForm.BackBuffer2.Height = 1
+    'With that transfer complete, we can erase our temporary layer
+    dstLayer.eraseLayer
+    Set dstLayer = Nothing
     
-    SetProgBarVal 0
+    'Update the current image size
+    pdImages(CurrentImage).updateSize
+    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
     
+    Message "Finished. "
+    
+    'Redraw the image
     FitOnScreen
+    
+    'Reset the progress bar to zero
+    SetProgBarVal 0
+
 End Sub
 
 'These two functions translate a normal (x,y) coordinate to an isometric plane
@@ -769,20 +803,3 @@ End Function
 Private Function getIsometricY(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Long
     getIsometricY = (xc / 2) + yc - tWidth
 End Function
-
-'Temporary arrays are necessary for many area transformations - this handles the transfer between the temp array and ImageData()
-Public Sub TransferImageData()
-    Message "Transferring data..."
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        ImageData(QuickVal + 2, y) = tData(QuickVal + 2, y)
-        ImageData(QuickVal + 1, y) = tData(QuickVal + 1, y)
-        ImageData(QuickVal, y) = tData(QuickVal, y)
-    Next y
-    Next x
-    
-    Erase tData
-    
-End Sub
