@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 31/August/12
-'Last update: completed first working draft of the class.  Core functionality is now COMPLETE!
+'Last updated: 06/September/12
+'Last update: added clipboard functionality.
 '
 'The time has come to break PhotoDemon's reliance on picture boxes.  The new plan is to implement an honest-to-God
 ' DIB class that will manage all image data in memory.  If built correctly, this thing will provide a whole host of
@@ -146,8 +146,8 @@ Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x A
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal HWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
 
 'Object API functions
 Private Const OBJ_BITMAP As Long = 7
@@ -166,7 +166,7 @@ Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function EmptyClipboard Lib "user32" () As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
-Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function OpenClipboard Lib "user32" (ByVal HWnd As Long) As Long
 Private Declare Function CloseClipboard Lib "user32" () As Long
 Private Declare Function SetClipboardData Lib "user32" (ByVal wFormat As Long, ByVal hMem As Long) As Long
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
