@@ -579,71 +579,114 @@ Public Sub FilterUnsharp()
   
   End Sub
 
+'Apply a grid blur to an image; basically, blur every vertical line, then every horizontal line, then average the results
 Public Sub FilterGridBlur()
-    GetImageData
-    Dim tR As Long, tB As Long, tG As Long
-    Dim xCalc As Long
+
+    Message "Generating grids..."
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    Dim iWidth As Long, iHeight As Long
+    iWidth = curLayerValues.Width
+    iHeight = curLayerValues.Height
+            
+    Dim numOfPixels As Long
+    numOfPixels = iWidth + iHeight
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    Dim h As Single, s As Single, l As Single
     Dim rax() As Long, gax() As Long, bax() As Long
     Dim ray() As Long, gay() As Long, bay() As Long
-    ReDim rax(0 To PicWidthL) As Long, gax(0 To PicWidthL) As Long, bax(0 To PicWidthL) As Long
-    ReDim ray(0 To PicHeightL) As Long, gay(0 To PicHeightL), bay(0 To PicHeightL)
+    ReDim rax(0 To iWidth) As Long, gax(0 To iWidth) As Long, bax(0 To iWidth) As Long
+    ReDim ray(0 To iHeight) As Long, gay(0 To iHeight), bay(0 To iHeight)
     
-    Message "Generating grids..."
-    
-    Dim QuickVal As Long
-    
-    'Generate the x averaging variables
-    For x = 0 To PicWidthL
-        tR = 0
-        tG = 0
-        tB = 0
+    'Generate the averages for vertical lines
+    For x = initX To finalX
+        r = 0
+        g = 0
+        b = 0
         QuickVal = x * 3
-        For y = 0 To PicHeightL
-            tR = tR + ImageData(QuickVal + 2, y)
-            tG = tG + ImageData(QuickVal + 1, y)
-            tB = tB + ImageData(QuickVal, y)
+        For y = initY To finalY
+            r = r + ImageData(QuickVal + 2, y)
+            g = g + ImageData(QuickVal + 1, y)
+            b = b + ImageData(QuickVal, y)
         Next y
-        rax(x) = tR
-        gax(x) = tG
-        bax(x) = tB
+        rax(x) = r
+        gax(x) = g
+        bax(x) = b
     Next x
     
-    'Generate the y averaging variables
-    For y = 0 To PicHeightL
-        tR = 0
-        tG = 0
-        tB = 0
-        For x = 0 To PicWidthL
+    'Generate the averages for horizontal lines
+    For y = initY To finalY
+        r = 0
+        g = 0
+        b = 0
+        For x = initX To finalX
             QuickVal = x * 3
-            tR = tR + ImageData(QuickVal + 2, y)
-            tG = tG + ImageData(QuickVal + 1, y)
-            tB = tB + ImageData(QuickVal, y)
+            r = r + ImageData(QuickVal + 2, y)
+            g = g + ImageData(QuickVal + 1, y)
+            b = b + ImageData(QuickVal, y)
         Next x
-        ray(y) = tR
-        gay(y) = tG
-        bay(y) = tB
+        ray(y) = r
+        gay(y) = g
+        bay(y) = b
     Next y
-
-    'Apply grid data to the image
-    Message "Grid blurring image..."
-    SetProgBarMax PicWidthL
-    xCalc = PicWidthL + PicHeightL
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = (rax(x) + ray(y)) \ xCalc
-        tG = (gax(x) + gay(y)) \ xCalc
-        tB = (bax(x) + bay(y)) \ xCalc
-        If tR > 255 Then tR = 255
-        If tG > 255 Then tG = 255
-        If tB > 255 Then tB = 255
-        ImageData(QuickVal + 2, y) = tR
-        ImageData(QuickVal + 1, y) = tG
-        ImageData(QuickVal, y) = tB
+    
+    Message "Applying grid blur..."
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        'Average the horizontal and vertical values for each color component
+        r = (rax(x) + ray(y)) \ numOfPixels
+        g = (gax(x) + gay(y)) \ numOfPixels
+        b = (bax(x) + bay(y)) \ numOfPixels
+        
+        'The colors shouldn't exceed 255, but it doesn't hurt to double-check
+        If r > 255 Then r = 255
+        If g > 255 Then g = 255
+        If b > 255 Then b = 255
+        
+        'Assign the new RGB values back into the array
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-    setImageData
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
 End Sub
 
 Public Sub FilterIsometric()
