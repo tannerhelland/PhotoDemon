@@ -173,9 +173,9 @@ Public Function DirectoryExist(ByRef dName As String) As Boolean
     DirectoryExist = Not CBool(Err)
 End Function
 
-'Blend byte1 w/ byte2 based on Percent (integer)
-Public Function MixColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByVal Percent1 As Integer) As Integer
-    MixColors = (((100 - Percent1) * Color1) + (Percent1 * Color2)) * 0.01
+'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
+Public Function blendColors(ByVal color1 As Byte, ByVal color2 As Byte, ByRef mixRatio As Single) As Byte
+    blendColors = ((1 - mixRatio) * color1) + (mixRatio * color2)
 End Function
 
 'Pass this a text box and it will select all text currently in the text box
