@@ -554,55 +554,30 @@ Public Sub FilterSharpenMore()
   
 End Sub
 
+'"Unsharp" an image - it's a stupid name, but that's the industry standard.  Basically, blur the image, then subtract that from the original image.
 Public Sub FilterUnsharp()
-    Message "Unsharpening image..."
-    Dim tR As Integer, tG As Integer, tB As Integer
-    Dim iR As Integer, iG As Integer, iB As Integer
-    Dim c As Long, d As Long
-    Dim Divisor As Byte
-    SetProgBarMax PicWidthL
-    ReDim tData(0 To PicWidthL * 3 + 3, 0 To PicHeightL + 1)
-    Dim QuickVal As Long, QuickVal2 As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = 0
-        tG = 0
-        tB = 0
-        For c = x - 1 To x + 1
-            If c < 0 Or c > PicWidthL Then GoTo 405
-            QuickVal2 = c * 3
-        For d = y - 1 To y + 1
-            If d < 0 Or d > PicHeightL Then GoTo 305
-            Divisor = Divisor + 1
-            tR = tR + ImageData(QuickVal2 + 2, d)
-            tG = tG + ImageData(QuickVal2 + 1, d)
-            tB = tB + ImageData(QuickVal2, d)
-305     Next d
-405     Next c
-        iR = ImageData(QuickVal + 2, y) * 2
-        iG = ImageData(QuickVal + 1, y) * 2
-        iB = ImageData(QuickVal, y) * 2
-        tR = tR \ Divisor
-        tG = tG \ Divisor
-        tB = tB \ Divisor
-        Divisor = 0
-        tR = iR - tR
-        tG = iG - tG
-        tB = iB - tB
-        ByteMe tR
-        ByteMe tG
-        ByteMe tB
-        tData(QuickVal + 2, y) = tR
-        tData(QuickVal + 1, y) = tG
-        tData(QuickVal, y) = tB
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    SetProgBarVal cProgBar.Max
-    TransferImageData
-    setImageData
-End Sub
+
+    FilterSize = 3
+    ReDim FM(-1 To 1, -1 To 1) As Long
+    
+    FM(-1, -1) = -1
+    FM(0, -1) = -2
+    FM(1, -1) = -1
+    
+    FM(-1, 0) = -2
+    FM(0, 0) = 24
+    FM(1, 0) = -2
+    
+    FM(-1, 1) = -1
+    FM(0, 1) = -2
+    FM(1, 1) = -1
+    
+    FilterWeight = 12
+    FilterBias = 0
+    
+    DoFilter "Unsharp"
+  
+  End Sub
 
 Public Sub FilterGridBlur()
     GetImageData
