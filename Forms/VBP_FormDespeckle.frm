@@ -122,8 +122,8 @@ Attribute VB_Exposed = False
 'Advanced Despeckle Form
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 12/September/11
-'Last updated: 12/September/11
-'Last update: first build of the form and the custom routine
+'Last updated: 09/September/12
+'Last update: rewrote all functions against the new layer class
 '
 'This advanced despeckle form allows the user to attempt a more vigorous
 ' despeckling than that allowed by the default routine.  The default routine
@@ -151,31 +151,52 @@ Private Sub CmdOK_Click()
 End Sub
 
 'Subroutine for advanced removal of pixels that don't match their surroundings
-Public Sub Despeckle(ByVal dThreshold As Long)
+Public Sub Despeckle(ByVal dThreshold As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
 
-    Message "Despeckling image..."
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long
+    If toPreview = False Then Message "Despeckling image..."
     
-    Dim x2 As Long, y2 As Long
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'To prevent bleeding from the top-left, we need a second array to store our despeckled data
-    Dim tArray() As Byte
-    ReDim tArray(0 To PicWidthL * 3 + 2, 0 To PicHeightL) As Byte
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tArray(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
-        tArray(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
-        tArray(QuickVal, y) = ImageData(QuickVal, y)
-    Next y
-    Next x
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent bleeding from the top-left corner as we perform the despeckling.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, x2 As Long, y2 As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left + 1
+    initY = curLayerValues.Top + 1
+    finalX = curLayerValues.Right - 1
+    finalY = curLayerValues.Bottom - 1
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+        
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Reference RGB values will be used for comparison during the despeckling checks
     Dim refR As Byte, refG As Byte, refB As Byte
     Dim curR As Byte, curG As Byte, curB As Byte
     
     'Loop variable for the despeckle check
-    Dim dx As Long
+    Dim DX As Long
     
     'Whether or not we found this color in our despeckling array
     Dim dFoundColor As Boolean
@@ -193,37 +214,38 @@ Public Sub Despeckle(ByVal dThreshold As Long)
     'dMost is the count of the highest despeckle option, while dMostLoc is the array location for the max
     Dim dMost As Long, dMostLoc As Long
     
-    For x = 1 To PicWidthL - 1
-        QuickVal = x * 3
-        
-    For y = 1 To PicHeightL - 1
+    'Despeckle the image
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
         'These variables store the color of the current pixel
-        refR = ImageData(QuickVal + 2, y)
-        refG = ImageData(QuickVal + 1, y)
-        refB = ImageData(QuickVal, y)
+        refR = srcImageData(QuickVal + 2, y)
+        refG = srcImageData(QuickVal + 1, y)
+        refB = srcImageData(QuickVal, y)
         
         'Erase despeckle data from the last pixel
-        For dx = 0 To dArrayMax
-            dArrayR(dx) = 0
-            dArrayG(dx) = 0
-            dArrayB(dx) = 0
-            dArrayCount(dx) = 0
-        Next dx
+        For DX = 0 To dArrayMax
+            dArrayR(DX) = 0
+            dArrayG(DX) = 0
+            dArrayB(DX) = 0
+            dArrayCount(DX) = 0
+        Next DX
         
         dArrayMax = 0
         dMost = 0
         dMostLoc = 0
         
         For x2 = x - 1 To x + 1
+            QuickValInner = x * qvDepth
         For y2 = y - 1 To y + 1
             
             'Ignore the center pixel in the ring (obviously)
             If (x2 <> x) Or (y2 <> y) Then
             
-                curR = ImageData(x2 * 3 + 2, y2)
-                curG = ImageData(x2 * 3 + 1, y2)
-                curB = ImageData(x2 * 3, y2)
+                curR = srcImageData(QuickValInner + 2, y2)
+                curG = srcImageData(QuickValInner + 1, y2)
+                curB = srcImageData(QuickValInner, y2)
             
                 'If this pixel matches the center pixel, ignore it
                 If refR <> curR Or refG <> curG Or refB <> curB Then
@@ -244,19 +266,19 @@ Public Sub Despeckle(ByVal dThreshold As Long)
                                         
                         dFoundColor = False
                                         
-                        For dx = 0 To dArrayMax - 1
+                        For DX = 0 To dArrayMax - 1
                     
                             'If this color matches an existing color, increase the count and exit the loop
-                            If curR = dArrayR(dx) And curG = dArrayG(dx) And curB = dArrayB(dx) Then
-                                dArrayCount(dx) = dArrayCount(dx) + 1
-                                If dArrayCount(dx) > dMost Then
-                                    dMost = dArrayCount(dx)
-                                    dMostLoc = dx
+                            If curR = dArrayR(DX) And curG = dArrayG(DX) And curB = dArrayB(DX) Then
+                                dArrayCount(DX) = dArrayCount(DX) + 1
+                                If dArrayCount(DX) > dMost Then
+                                    dMost = dArrayCount(DX)
+                                    dMostLoc = DX
                                     dFoundColor = True
                                 End If
                             End If
                     
-                        Next dx
+                        Next DX
                         
                         'Check to see if this color was found in the array
                         If dFoundColor = False Then
@@ -280,62 +302,88 @@ Public Sub Despeckle(ByVal dThreshold As Long)
         Next x2
         
         If dMost >= dThreshold Then
-            tArray(QuickVal + 2, y) = dArrayR(dMostLoc)
-            tArray(QuickVal + 1, y) = dArrayG(dMostLoc)
-            tArray(QuickVal, y) = dArrayB(dMostLoc)
+            dstImageData(QuickVal + 2, y) = dArrayR(dMostLoc)
+            dstImageData(QuickVal + 1, y) = dArrayG(dMostLoc)
+            dstImageData(QuickVal, y) = dArrayB(dMostLoc)
         End If
         
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    'Transfer the temporary array back into the main array
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        ImageData(QuickVal + 2, y) = tArray(QuickVal + 2, y)
-        ImageData(QuickVal + 1, y) = tArray(QuickVal + 1, y)
-        ImageData(QuickVal, y) = tArray(QuickVal, y)
-    Next y
-    Next x
+    'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
     
-    SetImageData
+    'Now that despeckling is complete, we can erase our temporary layer
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
     
-    Message "Finished."
-
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+    
 End Sub
 
 'Subroutine for removing orphan pixels (otherwise known as "despeckling")
-Public Sub QuickDespeckle()
+Public Sub QuickDespeckle(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
 
-    Message "Despeckling image..."
-    SetProgBarMax PicWidthL
-    Dim QuickVal As Long
+    If toPreview = False Then Message "Removing orphaned pixels..."
     
-    Dim x2 As Long, y2 As Long
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
     
-    Dim refR As Byte, refB As Byte, refG As Byte
-    
-    Dim dChecker As Long
-    
-    For x = 1 To PicWidthL - 1
-        QuickVal = x * 3
-    For y = 1 To PicHeightL - 1
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left + 1
+    initY = curLayerValues.Top + 1
+    finalX = curLayerValues.Right - 1
+    finalY = curLayerValues.Bottom - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValTopLeft As Long, QuickValInner As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+        
+    'Additional despeckling variables
+    Dim x2 As Long, y2 As Long
+    Dim refR As Byte, refB As Byte, refG As Byte
+    Dim dChecker As Long
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+        QuickValTopLeft = (x - 1) * qvDepth
+    For y = initY To finalY
+    
         dChecker = 0
         
-        refR = ImageData((x - 1) * 3 + 2, y - 1)
-        refG = ImageData((x - 1) * 3 + 1, y - 1)
-        refB = ImageData((x - 1) * 3, y - 1)
+        refR = ImageData(QuickValTopLeft + 2, y - 1)
+        refG = ImageData(QuickValTopLeft + 1, y - 1)
+        refB = ImageData(QuickValTopLeft, y - 1)
         
-        'Perform a quick check to see if the current pixel matches the one to the above-right; if it does, skip this one.
+        'Perform a quick check to see if the current pixel matches the one to the above-left; if it does, skip this one
+        ' (because orphaned pixels must differ in color from ALL their surrounding pixels)
         If ImageData(QuickVal + 2, y) <> refR Or ImageData(QuickVal + 1, y) <> refG Or ImageData(QuickVal, y) <> refB Then
         
             For x2 = x - 1 To x + 1
+                QuickValInner = x2 * 3
             For y2 = y - 1 To y + 1
                 If (x2 <> x - 1) Or (y2 <> y - 1) Then
                     If (x2 <> x) Or (y2 <> y) Then
-                        If refR = ImageData(x2 * 3 + 2, y2) And refG = ImageData(x2 * 3 + 1, y2) And refB = ImageData(x2 * 3, y2) Then dChecker = dChecker + 1
+                        If refR = ImageData(QuickValInner + 2, y2) And refG = ImageData(QuickValInner + 1, y2) And refB = ImageData(QuickValInner, y2) Then dChecker = dChecker + 1
                     End If
                 End If
             Next y2
@@ -348,14 +396,20 @@ Public Sub QuickDespeckle()
             End If
             
         End If
-            
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
-    SetImageData
     
-    Message "Finished."
-
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+    
 End Sub
 
 'LOAD form
