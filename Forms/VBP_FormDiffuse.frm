@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormDiffuse 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Diffuse"
-   ClientHeight    =   5955
+   ClientHeight    =   6030
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5040
+   ClientWidth     =   6255
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,28 +18,74 @@ Begin VB.Form FormDiffuse
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   397
+   ScaleHeight     =   402
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   336
+   ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   10
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   9
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsY 
       Height          =   255
-      Left            =   240
+      Left            =   1200
       Max             =   10
       TabIndex        =   3
-      Top             =   4320
+      Top             =   4200
       Value           =   5
-      Width           =   4575
+      Width           =   4215
    End
    Begin VB.HScrollBar hsX 
       Height          =   255
-      Left            =   240
+      Left            =   1200
       Max             =   10
       TabIndex        =   1
-      Top             =   3240
+      Top             =   3600
       Value           =   5
-      Width           =   4575
+      Width           =   4215
    End
    Begin VB.TextBox txtX 
       BeginProperty Font 
@@ -53,10 +99,10 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2520
+      Left            =   5520
       TabIndex        =   0
       Text            =   "0"
-      Top             =   2730
+      Top             =   3570
       Width           =   495
    End
    Begin VB.TextBox txtY 
@@ -71,92 +117,42 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2520
+      Left            =   5520
       TabIndex        =   2
       Text            =   "0"
-      Top             =   3810
+      Top             =   4170
       Width           =   495
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   10
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   9
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2175
    End
    Begin VB.CheckBox ChkWrap 
       Appearance      =   0  'Flat
       Caption         =   " Wrap edge values"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   1680
+      Left            =   2400
       TabIndex        =   4
-      Top             =   4920
+      Top             =   4875
       Width           =   1935
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   3720
+      Left            =   5040
       TabIndex        =   6
-      Top             =   5400
+      Top             =   5520
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2520
+      Left            =   3840
       TabIndex        =   5
-      Top             =   5400
+      Top             =   5520
       Width           =   1125
    End
-   Begin VB.Label Label3 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "  Before                                                           After"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -168,15 +164,15 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
+      Left            =   120
       TabIndex        =   11
-      Top             =   2310
-      Width           =   4575
+      Top             =   2880
+      Width           =   3975
    End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Max Y Distance:"
+      Caption         =   "Y Strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -188,15 +184,15 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1080
+      Left            =   120
       TabIndex        =   8
-      Top             =   3840
-      Width           =   1305
+      Top             =   4215
+      Width           =   975
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Max X Distance:"
+      Caption         =   "X Strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -208,10 +204,10 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1080
+      Left            =   120
       TabIndex        =   7
-      Top             =   2760
-      Width           =   1290
+      Top             =   3615
+      Width           =   960
    End
 End
 Attribute VB_Name = "FormDiffuse"
@@ -223,9 +219,8 @@ Attribute VB_Exposed = False
 'Diffuse Filter Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 8/14/01
-'Last updated: 5/May/07
-'Last update: Fixed grabbing of off-image pixels when previewing and erroneous
-'             values of preview when the form is first loaded
+'Last updated: 09/September/12
+'Last update: rewrote all effects against new layer class
 '
 'Module for handling the diffusion-style filters.  Automates both saturated
 'and wrapped diffusion.
@@ -238,8 +233,12 @@ Option Explicit
 Dim TmpBitmapArray() As Long
 Dim CalcArray() As Long
 
+'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
+' original image width in order to establish the right ratio.
+Dim iWidth As Long, iHeight As Long
+
 Private Sub ChkWrap_Click()
-    DrawPreviewDiffuse (hsX.Value / PicWidthL) * PreviewWidth, (hsY.Value / PicHeightL) * PreviewHeight
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
 End Sub
 
 'CANCEL button
@@ -247,261 +246,75 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
-Public Sub Diffuse()
-    BuildTmpArray
-    Randomize Timer
-    Message "Diffusing image..."
-    SetProgBarMax PicWidthL
-    Dim DiffuseX As Integer, DiffuseY As Integer
-    For x = 0 To PicWidthL
-        For y = 0 To PicHeightL
-            DiffuseX = Rnd * 3 - 1.5
-            DiffuseY = Rnd * 3 - 1.5
-            If DiffuseX + x < 0 Then DiffuseX = 0
-            If DiffuseY + y < 0 Then DiffuseY = 0
-            If DiffuseX + x > PicWidthL - 1 Then DiffuseX = 0
-            If DiffuseY + y > PicHeightL - 1 Then DiffuseY = 0
-            TmpBitmapArray(x, y) = CalcArray(DiffuseX + x, DiffuseY + y)
-        Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    SetTmpArray
-    Message "Image diffused."
-End Sub
-
-Public Sub DiffuseMore()
-    BuildTmpArray
-    Randomize Timer
-    Message "Diffusing image..."
-    SetProgBarMax PicWidthL
-    Dim DiffuseX As Integer, DiffuseY As Integer
-    For x = 0 To PicWidthL
-        For y = 0 To PicHeightL
-            DiffuseX = Rnd * 6 - 3
-            DiffuseY = Rnd * 6 - 3
-            If DiffuseX + x < 0 Then DiffuseX = 0
-            If DiffuseY + y < 0 Then DiffuseY = 0
-            If DiffuseX + x > PicWidthL - 1 Then DiffuseX = 0
-            If DiffuseY + y > PicHeightL - 1 Then DiffuseY = 0
-            TmpBitmapArray(x, y) = CalcArray(DiffuseX + x, DiffuseY + y)
-        Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    SetTmpArray
-    Message "Image diffused."
-End Sub
-
 'OK button
 Private Sub CmdOK_Click()
-    'The max and min values of the scroll bars are used to validate the range of the text box
-    If EntryValid(txtX, hsX.Min, hsX.Max) And EntryValid(txtY, hsY.Min, hsY.Max) Then
-        FormDiffuse.Visible = False
-        Process CustomDiffuse, hsX.Value, hsY.Value, , , False
-        Unload Me
-    End If
-End Sub
-
-Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
-    GetImageData
-    BuildTmpArray
-    Randomize Timer
-    Message "Diffusing image..."
-    SetProgBarMax PicWidthL
-    Dim DiffuseX As Integer, DiffuseY As Integer
-    Dim dx As Long, dy As Long
-    Dim HDX As Single, HDY As Single
-    dx = xDiffuse
-    dy = yDiffuse
-    HDX = dx / 2
-    HDY = dy / 2
-    Dim dstX As Long, dstY As Long
-    Dim tPicWI As Long, tPicHi As Long
-    tPicWI = PicWidthL - 1
-    tPicHi = PicHeightL - 1
-    'Diffusion for unwrapped data
-    If ChkWrap.Value = vbUnchecked Then
-        For x = 0 To PicWidthL
-            For y = 0 To PicHeightL
-                DiffuseX = Rnd * dx - HDX
-                DiffuseY = Rnd * dy - HDY
-                dstX = DiffuseX + x
-                dstY = DiffuseY + y
-                If dstX < 0 Then dstX = 0
-                If dstY < 0 Then dstY = 0
-                If dstX > tPicWI Then dstX = tPicWI
-                If dstY > tPicHi Then dstY = tPicHi
-                TmpBitmapArray(x, y) = CalcArray(dstX, dstY)
-            Next y
-            If x Mod 20 = 0 Then SetProgBarVal x
-        Next x
-    Else
     
-    'Diffusion for wrapped data
-        For x = 0 To PicWidthL
-            For y = 0 To PicHeightL
-                DiffuseX = Rnd * dx - HDX
-                DiffuseY = Rnd * dy - HDY
-                dstX = DiffuseX + x
-                dstY = DiffuseY + y
-                If dstX < 0 Then dstX = PicWidthL + dstX
-                If dstY < 0 Then dstY = PicHeightL + dstY
-                If dstX > tPicWI Then dstX = dstX - PicWidthL
-                If dstY > tPicHi Then dstY = dstY - PicHeightL
-                TmpBitmapArray(x, y) = CalcArray(dstX, dstY)
-            Next y
-            If x Mod 20 = 0 Then SetProgBarVal x
-        Next x
+    'The max and min values of the scroll bars are used to validate the range of the text box
+    If EntryValid(txtX, hsX.Min, hsX.Max) Then
+        If EntryValid(txtY, hsY.Min, hsY.Max) Then
+            
+            FormDiffuse.Visible = False
+            
+            If ChkWrap.Value = vbChecked Then
+                Process CustomDiffuse, hsX.Value, hsY.Value, True
+            Else
+                Process CustomDiffuse, hsX.Value, hsY.Value, False
+            End If
+            
+            Unload Me
+            
+        Else
+            AutoSelectText txtY
+        End If
+    Else
+        AutoSelectText txtX
     End If
-    SetTmpArray
-    Message "Image diffused."
+    
 End Sub
 
-Private Sub BuildTmpArray()
-    'Copy the data into an easier format
-    Message "Gathering image information..."
-    ReDim CalcArray(0 To PicWidthL, 0 To PicHeightL) As Long
-    ReDim TmpBitmapArray(0 To PicWidthL, 0 To PicHeightL) As Long
-    Dim tX As Long
-    For x = 0 To PicWidthL
-        tX = x * 3
-    For y = 0 To PicHeightL
-        TmpBitmapArray(x, y) = RGB(ImageData(tX + 2, y), ImageData(tX + 1, y), ImageData(tX, y))
-        CalcArray(x, y) = TmpBitmapArray(x, y)
-    Next y
-    Next x
-End Sub
-
-Public Sub SetTmpArray()
-    'Copy the information from the temporary arrays back into the main one
-    SetProgBarVal cProgBar.Max
-    Dim tX As Long
-    Dim TV As Long
-    For x = 0 To PicWidthL
-        tX = x * 3
-    For y = 0 To PicHeightL
-        TV = TmpBitmapArray(x, y)
-        ImageData(tX + 2, y) = CByte(ExtractR(TV))
-        ImageData(tX + 1, y) = CByte(ExtractG(TV))
-        ImageData(tX, y) = CByte(ExtractB(TV))
-    Next y
-    Next x
-    SetImageData
-End Sub
-
+'LOAD form
 Private Sub Form_Load()
     
-    GetImageData
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-    hsX.Max = PicWidthL
-    hsY.Max = PicHeightL
-    hsX.Value = PicWidthL \ 2
-    hsY.Value = PicHeightL \ 2
-    DoEvents
+    'Note the current image's width and height, which will be needed to adjust the preview effect
+    iWidth = pdImages(CurrentImage).Width
+    iHeight = pdImages(CurrentImage).Height
     
-    'Draw preview effect
-    DrawPreviewDiffuse (hsX.Value / PicWidthL) * PreviewWidth, (hsY.Value / PicHeightL) * PreviewHeight
+    'Adjust the scroll bar dimensions to match the current image's width and height
+    hsX.Max = pdImages(CurrentImage).Width - 1
+    hsY.Max = pdImages(CurrentImage).Height - 1
+    hsX.Value = hsX.Max \ 2
+    hsY.Value = hsY.Max \ 2
+    
+    'Draw the left preview box (the original image)
+    DrawPreviewImage picPreview
+    
+    'Draw the right preview box (the diffused effect)
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-'Diffuse preview
-Private Sub DrawPreviewDiffuse(ByVal xDiffuse As Long, ByVal yDiffuse As Long)
-    GetPreviewData PicPreview
-
-    ReDim CalcArray(0 To PreviewWidth + PreviewX * 2, 0 To PreviewHeight + PreviewY * 2) As Long
-    ReDim TmpBitmapArray(0 To PreviewWidth + PreviewX * 2, 0 To PreviewHeight + PreviewY * 2) As Long
-    Dim tX As Long
-    For x = PreviewX To PreviewX + PreviewWidth
-        tX = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        TmpBitmapArray(x, y) = RGB(ImageData(tX + 2, y), ImageData(tX + 1, y), ImageData(tX, y))
-        CalcArray(x, y) = TmpBitmapArray(x, y)
-    Next y
-    Next x
-
-    Randomize Timer
-    
-    Dim DiffuseX As Integer, DiffuseY As Integer
-    Dim dx As Long, dy As Long
-    Dim HDX As Single, HDY As Single
-    dx = xDiffuse
-    dy = yDiffuse
-    HDX = dx / 2
-    HDY = dy / 2
-    Dim dstX As Long, dstY As Long
-    Dim tPicWI As Long, tPicHi As Long
-    tPicWI = PreviewX + PreviewWidth
-    tPicHi = PreviewY + PreviewHeight
-    'Diffusion for unwrapped data
-    If ChkWrap.Value = vbUnchecked Then
-        For x = PreviewX To PreviewX + PreviewWidth
-            For y = PreviewY To PreviewY + PreviewHeight
-                DiffuseX = Rnd * dx - HDX
-                DiffuseY = Rnd * dy - HDY
-                dstX = DiffuseX + x
-                dstY = DiffuseY + y
-                If dstX < PreviewX Then dstX = PreviewX
-                If dstY < PreviewY Then dstY = PreviewY
-                If dstX > tPicWI Then dstX = PreviewX + PreviewWidth
-                If dstY > tPicHi Then dstY = PreviewY + PreviewHeight
-                TmpBitmapArray(x, y) = CalcArray(dstX, dstY)
-            Next y
-        Next x
-    Else
-    
-    'Diffusion for wrapped data
-        For x = PreviewX To PreviewX + PreviewWidth
-            For y = PreviewY To PreviewY + PreviewHeight
-                DiffuseX = Rnd * dx - HDX
-                DiffuseY = Rnd * dy - HDY
-                dstX = DiffuseX + x
-                dstY = DiffuseY + y
-                If dstX < PreviewX Then dstX = PreviewWidth + PreviewX + dstX
-                If dstY < PreviewY Then dstY = PreviewHeight + PreviewY + dstY
-                If dstX > tPicWI Then dstX = dstX - PreviewX - PreviewWidth
-                If dstY > tPicHi Then dstY = dstY - PreviewY - PreviewHeight
-                TmpBitmapArray(x, y) = CalcArray(dstX, dstY)
-            Next y
-        Next x
-    End If
-    
-    Dim TV As Long
-    
-    For x = PreviewX To PreviewX + PreviewWidth
-        tX = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        TV = TmpBitmapArray(x, y)
-        ImageData(tX + 2, y) = (TV And 255)
-        ImageData(tX + 1, y) = (TV \ 256) And 255
-        ImageData(tX, y) = (TV \ 65536) And 255
-    Next y
-    Next x
-    SetPreviewData PicEffect
-    
-End Sub
-
 'Everything below this line relates to mirroring the input of the textboxes across the scrollbars (and vice versa)
 Private Sub hsX_Change()
     txtX.Text = hsX.Value
-    DrawPreviewDiffuse (hsX.Value / PicWidthL) * PreviewWidth, (hsY.Value / PicHeightL) * PreviewHeight
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
 End Sub
 
 Private Sub hsX_Scroll()
     txtX.Text = hsX.Value
-    DrawPreviewDiffuse (hsX.Value / PicWidthL) * PreviewWidth, (hsY.Value / PicHeightL) * PreviewHeight
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
 End Sub
 
 Private Sub hsY_Change()
     txtY.Text = hsY.Value
-    DrawPreviewDiffuse (hsX.Value / PicWidthL) * PreviewWidth, (hsY.Value / PicHeightL) * PreviewHeight
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
 End Sub
 
 Private Sub hsY_Scroll()
     txtY.Text = hsY.Value
-    DrawPreviewDiffuse (hsX.Value / PicWidthL) * PreviewWidth, (hsY.Value / PicHeightL) * PreviewHeight
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
 End Sub
 
 Private Sub txtX_Change()
@@ -519,3 +332,294 @@ End Sub
 Private Sub txtY_GotFocus()
     AutoSelectText txtY
 End Sub
+
+'Custom diffuse effect
+' Inputs: diameter in x direction, diameter in y direction, whether or not to wrap edge pixels, and optional preview settings
+Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal wrapPixels As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+
+    If toPreview = False Then Message "Simulating large image explosion..."
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    If toPreview Then
+        srcLayer.createFromExistingLayer workingLayer
+    Else
+        srcLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    End If
+    
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    'If this is a preview, we need to adjust the xDiffuse and yDiffuse values to match the size of the preview box
+    If toPreview Then
+        xDiffuse = (xDiffuse / iWidth) * curLayerValues.Width
+        yDiffuse = (yDiffuse / iHeight) * curLayerValues.Height
+    End If
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    Dim MaxX As Long
+    MaxX = finalX * qvDepth
+        
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+
+    'Seed the random number generator with a pseudo-random value (the number of milliseconds elapsed since midnight)
+    Randomize Timer
+    
+    'hDX and hDY are the half-values (or radius) of the diffuse area.  Pre-calculating them is faster than recalculating
+    ' them every time we need to access a radius value.
+    Dim hDX As Single, hDY As Single
+    hDX = xDiffuse / 2
+    hDY = yDiffuse / 2
+    
+    'Finally, these two variables will be used to store the position of diffused pixels
+    Dim DiffuseX As Long, DiffuseY As Long
+    
+    'Loop through each pixel in the image, diffusing as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        DiffuseX = Rnd * xDiffuse - hDX
+        DiffuseY = Rnd * yDiffuse - hDY
+        
+        QuickValDiffuseX = (DiffuseX * qvDepth) + QuickVal
+        QuickValDiffuseY = DiffuseY + y
+            
+        'Make sure the diffused pixel is within image boundaries, and if not adjust it according to the user's
+        ' "wrapPixels" setting.
+        If wrapPixels Then
+            If QuickValDiffuseX < 0 Then QuickValDiffuseX = QuickValDiffuseX + MaxX
+            If QuickValDiffuseY < 0 Then QuickValDiffuseY = QuickValDiffuseY + finalY
+            
+            If QuickValDiffuseX > MaxX Then QuickValDiffuseX = QuickValDiffuseX - MaxX
+            If QuickValDiffuseY > finalY Then QuickValDiffuseY = QuickValDiffuseY - finalY
+        Else
+            If QuickValDiffuseX < 0 Then QuickValDiffuseX = 0
+            If QuickValDiffuseY < 0 Then QuickValDiffuseY = 0
+            
+            If QuickValDiffuseX > MaxX Then QuickValDiffuseX = MaxX
+            If QuickValDiffuseY > finalY Then QuickValDiffuseY = finalY
+        End If
+            
+        dstImageData(QuickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
+        dstImageData(QuickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
+        dstImageData(QuickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
+
+    Next y
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
+    Next x
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+     
+End Sub
+
+'Diffuse an image with a small radius (2)
+Public Sub Diffuse()
+
+    Message "Simulating small image explosion..."
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+        
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    Dim MaxX As Long
+    MaxX = finalX * qvDepth
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+
+    'Seed the random number generator with a pseudo-random value (the number of milliseconds elapsed since midnight)
+    Randomize Timer
+    
+    'Finally, these two variables will be used to store the position of diffused pixels
+    Dim DiffuseX As Long, DiffuseY As Long
+    
+    'Loop through each pixel in the image, diffusing as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        DiffuseX = Rnd * 4 - 2
+        DiffuseY = Rnd * 4 - 2
+        
+        QuickValDiffuseX = (DiffuseX * qvDepth) + QuickVal
+        QuickValDiffuseY = DiffuseY + y
+            
+        'Make sure the diffused pixel is within image boundaries
+        If QuickValDiffuseX < 0 Then QuickValDiffuseX = 0
+        If QuickValDiffuseY < 0 Then QuickValDiffuseY = 0
+        
+        If QuickValDiffuseX > MaxX Then QuickValDiffuseX = MaxX
+        If QuickValDiffuseY > finalY Then QuickValDiffuseY = finalY
+        
+        dstImageData(QuickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
+        dstImageData(QuickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
+        dstImageData(QuickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
+
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+    
+End Sub
+
+'Diffuse an image with a larger radius (6)
+Public Sub DiffuseMore()
+
+    Message "Simulating large image explosion..."
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    Dim MaxX As Long
+    MaxX = finalX * qvDepth
+        
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+
+    'Seed the random number generator with a pseudo-random value (the number of milliseconds elapsed since midnight)
+    Randomize Timer
+    
+    'Finally, these two variables will be used to store the position of diffused pixels
+    Dim DiffuseX As Long, DiffuseY As Long
+    
+    'Loop through each pixel in the image, diffusing as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        DiffuseX = Rnd * 12 - 6
+        DiffuseY = Rnd * 12 - 6
+        
+        QuickValDiffuseX = (DiffuseX * qvDepth) + QuickVal
+        QuickValDiffuseY = DiffuseY + y
+            
+        'Make sure the diffused pixel is within image boundaries
+        If QuickValDiffuseX < 0 Then QuickValDiffuseX = 0
+        If QuickValDiffuseY < 0 Then QuickValDiffuseY = 0
+        
+        If QuickValDiffuseX > MaxX Then QuickValDiffuseX = MaxX
+        If QuickValDiffuseY > finalY Then QuickValDiffuseY = finalY
+        
+        dstImageData(QuickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
+        dstImageData(QuickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
+        dstImageData(QuickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
+
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
+End Sub
+
+
