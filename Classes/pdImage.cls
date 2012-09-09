@@ -38,6 +38,7 @@ Option Explicit
 
 'Image ID (the value of NumOfImagesLoaded when the class was initialized - see the CreateNewImageForm routine)
 'Whether or not it is active (e.g., still tied to a form that has not been unloaded)
+'Did the image load successfully (this defaults to false, and must be set to True by the load function)
 'Containing form (e.g. upon which FormImage does this pdImage appear?)
 'Original file size
 'Original file name (e.g. the file name used when the image was first loaded)
@@ -55,10 +56,13 @@ Option Explicit
 
 'Layer's image data (stored as a DIB inside this layer class)
 
-    Public ImageID As Long
+    Public imageID As Long
 
     'Is the form associated with this image still loaded?
-    Public IsActive As Boolean
+    Public isActive As Boolean
+
+    'Was the image loaded successfully?
+    Public loadedSuccessfully As Boolean
 
     'The ID of the MDI child form containing this particular image
     Public containingForm As Form
@@ -295,12 +299,12 @@ End Function
 
 'Subroutine for generating an Undo/Redo filename
 Private Function GenerateUndoFile(ByVal uIndex As Integer) As String
-    GenerateUndoFile = TempPath & "~cPDU" & ImageID & "_" & uIndex & ".tmp"
+    GenerateUndoFile = TempPath & "~cPDU" & imageID & "_" & uIndex & ".tmp"
 End Function
 
 'Public routine for getting the filename of the current Undo file
 Public Function GetUndoFile()
-    GetUndoFile = TempPath & "~cPDU" & ImageID & "_" & UndoNum & ".tmp"
+    GetUndoFile = TempPath & "~cPDU" & imageID & "_" & UndoNum & ".tmp"
 End Function
 
 'If the class's size has somehow changed, this can be called to update it.  At present, it simply copies over the size of
@@ -322,6 +326,8 @@ End Function
 Private Sub Class_Initialize()
 
     'Initially, mark the image as *not* having been saved
+    isActive = False
+    loadedSuccessfully = False
     HasBeenSaved = False
     UndoNumAtLastSave = 0
     forInternalUseOnly = False
