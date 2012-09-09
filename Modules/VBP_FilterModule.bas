@@ -3,13 +3,13 @@ Attribute VB_Name = "Filters_Area"
 'Filter (Area) Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 28/August/12
-'Last update: fixed potential out-of-range error on Grid Blur
-'Still needs: -removal of goto numbers (text labels are preferable)
-'             -interpolation for isometric conversion
+'Last updated: 08/September/12
+'Last update: rewrote all filters against layers
+'Still needs: interpolation for isometric conversion
 '
-'Holder for generalized area filters.  Also contains the DoFilter routine, which is central to running
-' custom filters (as well as some of the intrinsic PhotoDemon ones).
+'Holder for generalized area filters, including most of the project's convolution filters.
+' Also contains the DoFilter routine, which is central to running custom filters
+' (as well as many of the intrinsic PhotoDemon ones, like blur/sharpen/etc).
 '
 '***************************************************************************
 
@@ -35,9 +35,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     End If
     
     'Note that the only purpose of the FilterType string is to display this message
-    If toPreview = False Then
-        Message "Applying " & FilterType & " filter..."
-    End If
+    If toPreview = False Then Message "Applying " & FilterType & " filter..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -601,8 +599,8 @@ Public Sub FilterGridBlur()
     iWidth = curLayerValues.Width
     iHeight = curLayerValues.Height
             
-    Dim NumOfPixels As Long
-    NumOfPixels = iWidth + iHeight
+    Dim numOfPixels As Long
+    numOfPixels = iWidth + iHeight
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -662,9 +660,9 @@ Public Sub FilterGridBlur()
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
-        r = (rax(x) + ray(y)) \ NumOfPixels
-        g = (gax(x) + gay(y)) \ NumOfPixels
-        b = (bax(x) + bay(y)) \ NumOfPixels
+        r = (rax(x) + ray(y)) \ numOfPixels
+        g = (gax(x) + gay(y)) \ numOfPixels
+        b = (bax(x) + bay(y)) \ numOfPixels
         
         'The colors shouldn't exceed 255, but it doesn't hurt to double-check
         If r > 255 Then r = 255
