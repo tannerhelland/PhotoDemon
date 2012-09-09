@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormBlackLight 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Blacklight Options"
-   ClientHeight    =   4335
+   ClientHeight    =   4965
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5055
+   ClientWidth     =   6285
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,22 +18,69 @@ Begin VB.Form FormBlackLight
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   289
+   ScaleHeight     =   331
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   337
+   ScaleWidth      =   419
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   6
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   5
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsIntensity 
       Height          =   255
-      Left            =   240
+      Left            =   1080
       Max             =   10
       Min             =   1
-      TabIndex        =   1
-      Top             =   3240
+      TabIndex        =   2
+      Top             =   3585
       Value           =   2
-      Width           =   4575
+      Width           =   4335
    End
    Begin VB.TextBox txtIntensity 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -45,81 +92,33 @@ Begin VB.Form FormBlackLight
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2520
-      TabIndex        =   0
+      Left            =   5520
+      TabIndex        =   3
       Text            =   "2"
-      Top             =   2850
+      Top             =   3555
       Width           =   495
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   5
-      Top             =   120
-      Width           =   2175
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   3720
-      TabIndex        =   3
-      Top             =   3840
+      Left            =   5040
+      TabIndex        =   1
+      Top             =   4440
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2520
-      TabIndex        =   2
-      Top             =   3840
+      Left            =   3840
+      TabIndex        =   0
+      Top             =   4440
       Width           =   1125
    End
-   Begin VB.Label Label2 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "  Before                                                           After"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -131,10 +130,10 @@ Begin VB.Form FormBlackLight
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
+      Left            =   120
       TabIndex        =   7
-      Top             =   2340
-      Width           =   4575
+      Top             =   2880
+      Width           =   3975
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -151,9 +150,9 @@ Begin VB.Form FormBlackLight
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1560
+      Left            =   240
       TabIndex        =   4
-      Top             =   2880
+      Top             =   3600
       Width           =   780
    End
 End
@@ -166,11 +165,11 @@ Attribute VB_Exposed = False
 'Blacklight Form
 'Copyright ©2001-2012 by Tanner Helland
 'Created: some time 2001
-'Last updated: 05/July/12
-'Last update: code clean-up and optimization
+'Last updated: 08/September/12
+'Last update: rewrote effect against new layer class, merged previewing into core effect
 '
-'I found this effect on accident, and it has turned out to be one of
-'my favorite effects.  On some images it looks very visually stunning.
+'I found this effect on accident, and it has gradually become one of my favorite effects.
+' Visually stunning on many photographs.
 '
 '***************************************************************************
 
@@ -188,107 +187,115 @@ Private Sub CmdOK_Click()
         Me.Visible = False
         Process BlackLight, hsIntensity.Value
         Unload Me
+    Else
+        AutoSelectText txtIntensity
     End If
     
 End Sub
 
 'Perform a blacklight filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
-Public Sub fxBlackLight(Optional ByVal Weight As Integer = 2)
-
-    Message "Running black light filter..."
+Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
-    Dim r As Long, g As Long, b As Long
-    Dim tGray As Long
+    If toPreview = False Then Message "Illuminating image with imaginary blacklight..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
-    GetImageData
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
-    SetProgBarMax PicWidthL
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
     
-    Dim QuickVal As Long
+    'Color and grayscale variables
+    Dim r As Long, g As Long, b As Long
+    Dim grayVal As Byte
     
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
+    Dim grayLookUp(0 To 765) As Byte
+    For x = 0 To 765
+        grayLookUp(x) = x \ 3
+    Next x
     
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        'Calculate an accurate grayscale value
-        tGray = Int((222 * r + 707 * g + 71 * b) \ 1000)
+        'Calculate the gray value using the look-up table
+        grayVal = grayLookUp(r + g + b)
         
         'Perform the blacklight conversion
-        r = Abs(r - tGray) * Weight
-        g = Abs(g - tGray) * Weight
-        b = Abs(b - tGray) * Weight
+        r = Abs(r - grayVal) * Weight
+        g = Abs(g - grayVal) * Weight
+        b = Abs(b - grayVal) * Weight
         
         If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        ImageData(QuickVal + 2, y) = r
+        'Assign that gray value to each color channel
+        ImageData(QuickVal, y) = r
         ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, y) = b
         
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
-    SetImageData
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+
 End Sub
 
 Private Sub Form_Load()
 
-    'Create a copy of the image on the preview window
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
+    'Create a copy of the original image to the preview picture box
+    DrawPreviewImage picPreview
     
-    'Actually do the effect
-    DrawPreview
+    'Draw a preview of the effect on the neighboring picture box
+    fxBlackLight hsIntensity.Value, True, PicEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-'Same as above, but operates on the preview window
-Private Sub DrawPreview()
-    Dim r As Long, g As Long, b As Long
-    Dim tR As Long
-    GetPreviewData PicPreview
-    Dim QuickVal As Long
-    Dim Weight As Long
-    Weight = hsIntensity.Value
-    
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        tR = Int((222 * r + 707 * g + 71 * b) \ 1000)
-        r = Abs(r - tR) * Weight
-        g = Abs(g - tR) * Weight
-        b = Abs(b - tR) * Weight
-        If r > 255 Then r = 255
-        If g > 255 Then g = 255
-        If b > 255 Then b = 255
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-    Next y
-    Next x
-    SetPreviewData PicEffect
-End Sub
-
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsIntensity_Change()
-    DrawPreview
+    fxBlackLight hsIntensity.Value, True, PicEffect
     txtIntensity.Text = hsIntensity.Value
 End Sub
 
 Private Sub hsIntensity_Scroll()
-    DrawPreview
+    fxBlackLight hsIntensity.Value, True, PicEffect
     txtIntensity.Text = hsIntensity.Value
 End Sub
 
