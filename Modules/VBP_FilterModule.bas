@@ -97,7 +97,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     'Create a temporary layer and resize it to the same size as the current image
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    tmpLayer.createFromExistingLayer workingLayer
     
     'Create a local array and point it at the pixel data of our temporary layer.  This will be used to access the current pixel data
     ' without modifications, while the actual image data will be modified by the filter as it's processed.
@@ -599,8 +599,8 @@ Public Sub FilterGridBlur()
     iWidth = curLayerValues.Width
     iHeight = curLayerValues.Height
             
-    Dim numOfPixels As Long
-    numOfPixels = iWidth + iHeight
+    Dim NumOfPixels As Long
+    NumOfPixels = iWidth + iHeight
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -660,9 +660,9 @@ Public Sub FilterGridBlur()
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
-        r = (rax(x) + ray(y)) \ numOfPixels
-        g = (gax(x) + gay(y)) \ numOfPixels
-        b = (bax(x) + bay(y)) \ numOfPixels
+        r = (rax(x) + ray(y)) \ NumOfPixels
+        g = (gax(x) + gay(y)) \ NumOfPixels
+        b = (bax(x) + bay(y)) \ NumOfPixels
         
         'The colors shouldn't exceed 255, but it doesn't hurt to double-check
         If r > 255 Then r = 255
