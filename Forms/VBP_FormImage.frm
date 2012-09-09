@@ -239,7 +239,7 @@ Private Sub Form_Activate()
     If pdImages(CurrentImage).Width <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
     
     'Finally, if the histogram window is open, redraw it
-    If FormHistogram.Visible = True Then
+    If (FormHistogram.Visible = True) And pdImages(Me.Tag).loadedSuccessfully Then
         FormHistogram.TallyHistogramValues
         FormHistogram.DrawHistogram
     End If
@@ -325,7 +325,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'If the user wants to be prompted about unsaved images, do it now
-    If (ConfirmClosingUnsaved = True) And (pdImages(Me.Tag).IsActive = True) And (pdImages(Me.Tag).forInternalUseOnly = False) Then
+    If (ConfirmClosingUnsaved = True) And (pdImages(Me.Tag).isActive = True) And (pdImages(Me.Tag).forInternalUseOnly = False) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
         If pdImages(Me.Tag).HasBeenSaved = False Then
@@ -337,7 +337,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             saveMsg = "This image (""" & pdImages(Me.Tag).OriginalFileNameAndExtension & """) has not been saved.  Would you like to save it now?"
             
             'If this file exists on disk, warn them that this will initiate a SAVE, not a SAVE AS
-            If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then use the Menu -> Save As command."
+            If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then click the File -> Save As menu entry."
             
             'Get the user's input
             Dim confirmReturn As VbMsgBoxResult
@@ -414,7 +414,7 @@ Private Sub Form_Resize()
         
             'Loop through every image, redrawing as we go
             For i = 1 To CurrentImage
-                If pdImages(i).IsActive = True Then
+                If pdImages(i).isActive = True Then
                     
                     'Remember this new window state and redraw the form containing this image
                     pdImages(i).WindowState = 0
@@ -443,7 +443,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Message "Closing image..."
     
     Me.Visible = False
-    pdImages(Me.Tag).IsActive = False
+    pdImages(Me.Tag).isActive = False
     ClearUndo Me.Tag
     NumOfWindows = NumOfWindows - 1
     
