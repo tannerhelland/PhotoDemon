@@ -368,7 +368,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 Else
                     MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will proceed to download this plugin for you.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
                     Message "Image load canceled."
-                    pdImages(CurrentImage).IsActive = False
+                    pdImages(CurrentImage).isActive = False
                     Unload FormMain.ActiveForm
                     GoTo PreloadMoreImages
                 End If
@@ -379,7 +379,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If loadSuccessful = False Then
             MsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbCritical + vbOKOnly + vbApplicationModal, "PhotoDemon Import Failed"
             Message "Image load canceled."
-            targetImage.IsActive = False
+            targetImage.isActive = False
             If isThisPrimaryImage Then Unload FormMain.ActiveForm
             GoTo PreloadMoreImages
         End If
@@ -466,6 +466,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
         
         End If
+        
+        'If we made it all the way here, the image loaded successfully.
+        targetImage.loadedSuccessfully = True
         
         Message "Image loaded successfully."
         
@@ -746,5 +749,8 @@ Public Sub DuplicateCurrentImage()
         FormMain.ActiveForm.Left = pdImages(CurrentImage).WindowLeft
         FormMain.ActiveForm.Top = pdImages(CurrentImage).WindowTop
     End If
+    
+    'If we made it all the way here, the image was successfully duplicated.
+    pdImages(CurrentImage).loadedSuccessfully = True
         
 End Sub
