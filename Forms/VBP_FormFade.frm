@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormFade 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Fade Image"
-   ClientHeight    =   4620
+   ClientHeight    =   4935
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5055
+   ClientWidth     =   6270
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,20 +18,66 @@ Begin VB.Form FormFade
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   308
+   ScaleHeight     =   329
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   337
+   ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   6
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   5
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsPercent 
       Height          =   255
-      Left            =   240
+      Left            =   1080
       Max             =   100
       Min             =   1
       TabIndex        =   1
-      Top             =   3360
+      Top             =   3600
       Value           =   50
-      Width           =   4575
+      Width           =   4335
    End
    Begin VB.TextBox txtPercent 
       BeginProperty Font 
@@ -45,104 +91,33 @@ Begin VB.Form FormFade
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2520
+      Left            =   5520
       TabIndex        =   0
       Text            =   "50"
-      Top             =   2850
+      Top             =   3570
       Width           =   495
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      Negotiate       =   -1  'True
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   5
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   4
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2175
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   3720
+      Left            =   5040
       TabIndex        =   3
-      Top             =   4080
+      Top             =   4440
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2520
+      Left            =   3840
       TabIndex        =   2
-      Top             =   4080
+      Top             =   4440
       Width           =   1125
    End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
+   Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
-      Caption         =   "Percent:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   1680
-      TabIndex        =   7
-      Top             =   2880
-      Width           =   705
-   End
-   Begin VB.Label Label2 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "  Before                                                           After"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -154,10 +129,30 @@ Begin VB.Form FormFade
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
+      Left            =   120
+      TabIndex        =   7
+      Top             =   2880
+      Width           =   3975
+   End
+   Begin VB.Label Label1 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Strength:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   210
       Left            =   240
-      TabIndex        =   6
-      Top             =   2310
-      Width           =   4575
+      TabIndex        =   4
+      Top             =   3615
+      Width           =   795
    End
 End
 Attribute VB_Name = "FormFade"
@@ -173,8 +168,8 @@ Attribute VB_Exposed = False
 'Last update: condensed all fade routines into a single, percentage-based one.  The speed increase provided by
 '             individual routines for various values was not proportionate to the extra code required.
 '
-'Module for handling the fade-style filter.  Basically, it's a quasi-contrast
-'mixer between the grayscale and color images.
+'Module for handling the fade-style filter.  All it does is alpha-blend a grayscale copy of the image at the
+' specified percentage.
 '
 '***************************************************************************
 
@@ -182,57 +177,86 @@ Option Explicit
 
 'OK button
 Private Sub CmdOK_Click()
-    'Error checking
+    
     If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max) Then
         Me.Visible = False
-        Process Fade, hsPercent.Value
+        Process Fade, CSng(hsPercent.Value / 100)
         Unload Me
     Else
         AutoSelectText txtPercent
     End If
+    
 End Sub
 
 'Subroutine for fading an image to grayscale
 'NOTE!! fadeRatio has been changed from a Long to a Single.  Change the code accordingly when rewriting!
-Public Sub FadeImage(ByVal fadeRatio As Single)
+Public Sub FadeImage(ByVal fadeRatio As Single, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
-    Message "Fading image to gray..."
+    If toPreview = False Then Message "Fading image..."
     
-    GetImageData
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
     
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim tGray As Long
+    Dim grayVal As Long
+        
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
-    SetProgBarMax PicWidthL
-    
-    Dim QuickX As Long
-    
-    For x = 0 To PicWidthL
-        QuickX = x * 3
-    For y = 0 To PicHeightL
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
-        
-        'Calculate grayscale equivalent
-        tGray = Int((222 * r + 707 * g + 71 * b) \ 1000)
-        
-        'Alphablend the colors with grayscale based on the percent fade function
-        r = blendColors(r, tGray, fadeRatio)
-        g = blendColors(g, tGray, fadeRatio)
-        b = blendColors(b, tGray, fadeRatio)
-        
-        'Set the new colors
-        ImageData(QuickX + 2, y) = r
-        ImageData(QuickX + 1, y) = g
-        ImageData(QuickX, y) = b
+        grayVal = gLookup(r + g + b)
+                
+        'Assign that blended value to each color channel
+        ImageData(QuickVal + 2, y) = BlendColors(r, grayVal, fadeRatio)
+        ImageData(QuickVal + 1, y) = BlendColors(g, grayVal, fadeRatio)
+        ImageData(QuickVal, y) = BlendColors(b, grayVal, fadeRatio)
         
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    setImageData
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -242,31 +266,61 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'Unfade is literally a reverse fade - rather than pushing values toward gray, we push them away from it
-Public Sub UnfadeImage()
+Public Sub UnfadeImage(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
+    If toPreview = False Then Message "Unfading image..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim tGray As Long
+    Dim grayVal As Long
+        
+    'Because gray values are constant, we can use a look-up table to calculate them.
+    ' Note that we divide each gray value by two to minimize the the effect of the unfade.
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 6)
+    Next x
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
-    Message "Unfading image..."
-    
-    SetProgBarMax PicWidthL
-    
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+        'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        'Grayscale calculation
-        tGray = Int((222 * r + 707 * g + 71 * b) \ 1000)
-        
-        'Use the contrast formula to move the colors AWAY from gray, rather
-        'than closer to it (as the above formulas do)
-        r = Abs(r - (tGray \ 2)) * 2
-        g = Abs(g - (tGray \ 2)) * 2
-        b = Abs(b - (tGray \ 2)) * 2
+        grayVal = gLookup(r + g + b)
+                
+        'Use a modified contrast formula to move each color AWAY from gray
+        r = (r - grayVal) * 2
+        g = (g - grayVal) * 2
+        b = (b - grayVal) * 2
         
         If r > 255 Then r = 255
         If r < 0 Then r = 0
@@ -275,15 +329,23 @@ Public Sub UnfadeImage()
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
+        'Assign that blended value to each color channel
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    setImageData
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -291,51 +353,22 @@ End Sub
 Private Sub Form_Load()
     
     'Create the previews
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-    PreviewFadeImage hsPercent.Value
+    DrawPreviewImage picPreview
+    FadeImage CSng(hsPercent.Value / 100), True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-'Same routine as above, but meant for previewing only
-Private Sub PreviewFadeImage(ByVal PercentFade As Single)
-    
-    GetPreviewData PicPreview
-    
-    Dim r As Long, g As Long, b As Long
-    Dim tGray As Long
-    
-    Dim QuickX As Long
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickX = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
-        tGray = Int((222 * r + 707 * g + 71 * b) \ 1000)
-        r = blendColors(r, tGray, PercentFade)
-        g = blendColors(g, tGray, PercentFade)
-        b = blendColors(b, tGray, PercentFade)
-        ImageData(QuickX + 2, y) = r
-        ImageData(QuickX + 1, y) = g
-        ImageData(QuickX, y) = b
-    Next y
-    Next x
-    SetPreviewData PicEffect
-    
-End Sub
-
 Private Sub hsPercent_Change()
     txtPercent.Text = hsPercent.Value
-    PreviewFadeImage hsPercent.Value
+    FadeImage CSng(hsPercent.Value / 100), True, picEffect
 End Sub
 
 Private Sub hsPercent_Scroll()
     txtPercent.Text = hsPercent.Value
-    PreviewFadeImage hsPercent.Value
+    FadeImage CSng(hsPercent.Value / 100), True, picEffect
 End Sub
 
 Private Sub txtPercent_Change()

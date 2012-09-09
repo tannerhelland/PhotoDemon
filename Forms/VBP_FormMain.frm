@@ -1381,7 +1381,7 @@ Private Sub MnuExtreme_Click()
 End Sub
 
 Private Sub MnuFadeHigh_Click()
-    Process Fade, 75
+    Process Fade, 0.75
 End Sub
 
 Private Sub MnuFadeLastEffect_Click()
@@ -1389,11 +1389,11 @@ Private Sub MnuFadeLastEffect_Click()
 End Sub
 
 Private Sub MnuFadeLow_Click()
-    Process Fade, 25
+    Process Fade, 0.25
 End Sub
 
 Private Sub MnuFadeMedium_Click()
-    Process Fade, 50
+    Process Fade, 0.5
 End Sub
 
 Private Sub MnuFindEdges_Click()

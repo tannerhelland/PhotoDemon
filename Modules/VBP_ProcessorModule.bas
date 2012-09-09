@@ -696,7 +696,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm = True Then
                     FormFade.Show 1, FormMain
                 Else
-                    FormFade.FadeImage CInt(pOPCODE)
+                    FormFade.FadeImage CSng(pOPCODE)
                 End If
             Case Unfade
                 FormFade.UnfadeImage
