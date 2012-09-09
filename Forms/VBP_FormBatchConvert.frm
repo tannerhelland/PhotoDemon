@@ -512,8 +512,9 @@ Attribute VB_Exposed = False
 'Batch Conversion Form
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 3/Nov/07
-'Last updated: 11/August/12
-'Last update: implemented error-handling for an empty file list.
+'Last updated: 08/September/12
+'Last update: rewrote all batch conversion file format compatibility against the new hybrid FreeImage/GDI+ system.  This means additional
+'              file formats are available to non-FreeImage users (including PNG and TIFF!).
 '
 'Convert any number of files using any recorded macro.  Fast, impressive, bravo.
 '
@@ -623,6 +624,7 @@ Private Sub cmdLoadList_Click()
     
 End Sub
 
+'Remove an item from the batch conversion list
 Private Sub cmdRemove_Click()
     x = 0
     Do While x <= lstFiles.ListCount - 1
@@ -635,6 +637,7 @@ Private Sub cmdRemove_Click()
     Loop
 End Sub
 
+'Remove all items from the batch conversion list
 Private Sub cmdRemoveAll_Click()
     lstFiles.Clear
 End Sub
@@ -680,7 +683,9 @@ Private Sub cmdSaveList_Click()
     End If
 End Sub
 
+'Open a common-dialog box and allow the user to select a macro file to use in the batch conversion
 Private Sub cmdSelectMacro_Click()
+    
     'Automatically launch the load Macro data routine
     Dim CC As cCommonDialog
     Dim sFile As String
@@ -808,8 +813,6 @@ Private Sub CmdOK_Click()
             ' method a specialized string containing any extra information it may require
             If outputExtensions(cmbOutputFormat.ListIndex) = "jpg" Then
                 PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFileName, False, val(txtQuality)
-            ElseIf outputExtensions(cmbOutputFormat.ListIndex) = "pcx" Then
-                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFileName, False, 24, True
             Else
                 PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFileName
             End If
@@ -944,33 +947,36 @@ Private Sub Form_Load()
     Dim curFormatIndex As Long
     curFormatIndex = 0
     
-    'Possible output formats
+    'Prepare a list of possible output formats based on the plugins available to us
     ReDim outputExtensions(0 To 100) As String
+    
     cmbOutputFormat.AddItem "BMP - Windows Bitmap", curFormatIndex
     outputExtensions(curFormatIndex) = "bmp"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Or GDIPlusEnabled Then
         cmbOutputFormat.AddItem "GIF - Graphics Interchange Format", curFormatIndex
         outputExtensions(curFormatIndex) = "gif"
         curFormatIndex = curFormatIndex + 1
+
+        cmbOutputFormat.AddItem "JPG - Joint Photographic Experts Group", curFormatIndex
+        outputExtensions(curFormatIndex) = "jpg"
+        curFormatIndex = curFormatIndex + 1
     End If
     
-    cmbOutputFormat.AddItem "JPG - Joint Photographic Experts Group", curFormatIndex
-    outputExtensions(curFormatIndex) = "jpg"
-    curFormatIndex = curFormatIndex + 1
-    
-    If zLibEnabled = True Then
+    If zLibEnabled Then
         cmbOutputFormat.AddItem "PDI - PhotoDemon Image", curFormatIndex
         outputExtensions(curFormatIndex) = "pdi"
         curFormatIndex = curFormatIndex + 1
     End If
     
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Or GDIPlusEnabled Then
         cmbOutputFormat.AddItem "PNG - Portable Network Graphic", curFormatIndex
         outputExtensions(curFormatIndex) = "png"
         curFormatIndex = curFormatIndex + 1
-        
+    End If
+    
+    If FreeImageEnabled Then
         cmbOutputFormat.AddItem "PPM - Portable Pixel Map", curFormatIndex
         outputExtensions(curFormatIndex) = "ppm"
         curFormatIndex = curFormatIndex + 1
@@ -978,7 +984,9 @@ Private Sub Form_Load()
         cmbOutputFormat.AddItem "TGA - Truevision Targa", curFormatIndex
         outputExtensions(curFormatIndex) = "tga"
         curFormatIndex = curFormatIndex + 1
-        
+    End If
+    
+    If FreeImageEnabled Or GDIPlusEnabled Then
         cmbOutputFormat.AddItem "TIFF - Tagged Image File Format", curFormatIndex
         outputExtensions(curFormatIndex) = "tif"
         curFormatIndex = curFormatIndex + 1
@@ -1024,20 +1032,23 @@ Private Sub Form_Load()
     curFormatIndex = 0
     
     cmbPattern.AddItem "All Compatible Images", curFormatIndex
-    filePatterns(curFormatIndex) = "*.bmp;*.jpg;*.jpeg;*.gif;*.wmf;*.emf;*.ico;*.pcx;*.tga;*.rle"
+    filePatterns(curFormatIndex) = "*.bmp;*.jpg;*.jpeg;*.jpe;*.gif;*.wmf;*.emf;*.ico"
     curFormatIndex = curFormatIndex + 1
     
     'Only allow PDI loading if the zLib dll was detected at program load
-    If zLibEnabled = True Then filePatterns(0) = filePatterns(0) & ";*.pdi"
+    If zLibEnabled Then filePatterns(0) = filePatterns(0) & ";*.pdi"
     
-    'Only allow FreeImage file loading if the FreeImage dll was detected
-    If FreeImageEnabled = True Then filePatterns(0) = filePatterns(0) & ";*.png;*.lbm;*.pbm;*.iff;*.jif;*.jfif;*.psd;*.tif;*.tiff;*.wbmp;*.wbm;*.pgm;*.ppm;*.jng;*.mng;*.koa;*.pcd;*.ras;*.dds;*.pict;*.pct;*.pic;*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
+    'Only allow PNG and TIFF loading if either GDI+ or the FreeImage dll was detected
+    If FreeImageEnabled Or GDIPlusEnabled Then filePatterns(0) = filePatterns(0) & ";*.png;*.tif;*.tiff"
+    
+    'Only allow all other formats if the FreeImage dll was detected
+    If FreeImageEnabled Then filePatterns(0) = filePatterns(0) & "*.lbm;*.pbm;*.iff;*.jif;*.jfif;*.psd;*.wbmp;*.wbm;*.pgm;*.ppm;*.jng;*.mng;*.koa;*.pcd;*.ras;*.dds;*.pict;*.pct;*.pic;*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
     
     cmbPattern.AddItem "BMP - OS/2 or Windows Bitmap", curFormatIndex
     filePatterns(curFormatIndex) = "*.bmp"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Then
         cmbPattern.AddItem "DDS - DirectDraw Surface", curFormatIndex
         filePatterns(curFormatIndex) = "*.dds"
         curFormatIndex = curFormatIndex + 1
@@ -1055,7 +1066,7 @@ Private Sub Form_Load()
     filePatterns(curFormatIndex) = "*.ico"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Then
         cmbPattern.AddItem "IFF - Amiga Interchange Format", curFormatIndex
         filePatterns(curFormatIndex) = "*.iff"
         curFormatIndex = curFormatIndex + 1
@@ -1065,7 +1076,7 @@ Private Sub Form_Load()
     filePatterns(curFormatIndex) = "*.ico"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Then
         cmbPattern.AddItem "JNG - JPEG Network Graphics", curFormatIndex
         filePatterns(curFormatIndex) = "*.jng"
         curFormatIndex = curFormatIndex + 1
@@ -1075,7 +1086,7 @@ Private Sub Form_Load()
     filePatterns(curFormatIndex) = "*.jpg;*.jpeg;*.jif;*.jfif"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Then
         cmbPattern.AddItem "KOA/KOALA - Commodore 64", curFormatIndex
         filePatterns(curFormatIndex) = "*.koa;*.koala"
         curFormatIndex = curFormatIndex + 1
@@ -1095,20 +1106,20 @@ Private Sub Form_Load()
         cmbPattern.AddItem "PCD - Kodak PhotoCD", curFormatIndex
         filePatterns(curFormatIndex) = "*.pcd"
         curFormatIndex = curFormatIndex + 1
+    
+        cmbPattern.AddItem "PCX - Zsoft Paintbrush", curFormatIndex
+        filePatterns(curFormatIndex) = "*.pcx"
+        curFormatIndex = curFormatIndex + 1
     End If
     
-    cmbPattern.AddItem "PCX - Zsoft Paintbrush", curFormatIndex
-    filePatterns(curFormatIndex) = "*.pcx"
-    curFormatIndex = curFormatIndex + 1
-    
     'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
-    If zLibEnabled = True Then
+    If zLibEnabled Then
         cmbPattern.AddItem "PDI - PhotoDemon Image", curFormatIndex
         filePatterns(curFormatIndex) = "*.pdi"
         curFormatIndex = curFormatIndex + 1
     End If
     
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Then
         cmbPattern.AddItem "PGM - Portable Greymap", curFormatIndex
         filePatterns(curFormatIndex) = "*.pgm"
         curFormatIndex = curFormatIndex + 1
@@ -1118,11 +1129,14 @@ Private Sub Form_Load()
         curFormatIndex = curFormatIndex + 1
     End If
     
-    cmbPattern.AddItem "PNG - Portable Network Graphic", curFormatIndex
-    filePatterns(curFormatIndex) = "*.png"
-    curFormatIndex = curFormatIndex + 1
+    'FreeImage or GDI+ works for loading PNGs
+    If FreeImageEnabled Or GDIPlusEnabled Then
+        cmbPattern.AddItem "PNG - Portable Network Graphic", curFormatIndex
+        filePatterns(curFormatIndex) = "*.png"
+        curFormatIndex = curFormatIndex + 1
+    End If
     
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Then
         cmbPattern.AddItem "PPM - Portable Pixmap", curFormatIndex
         filePatterns(curFormatIndex) = "*.ppm"
         curFormatIndex = curFormatIndex + 1
@@ -1134,13 +1148,7 @@ Private Sub Form_Load()
         cmbPattern.AddItem "RAS - Sun Raster File", curFormatIndex
         filePatterns(curFormatIndex) = "*.ras"
         curFormatIndex = curFormatIndex + 1
-    End If
-    
-    cmbPattern.AddItem "RLE - Compuserve or Windows", curFormatIndex
-    filePatterns(curFormatIndex) = "*.rle"
-    curFormatIndex = curFormatIndex + 1
-    
-    If FreeImageEnabled = True Then
+
         cmbPattern.AddItem "SGI/RGB/BW - Silicon Graphics Image", curFormatIndex
         filePatterns(curFormatIndex) = "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
         curFormatIndex = curFormatIndex + 1
@@ -1148,11 +1156,16 @@ Private Sub Form_Load()
         cmbPattern.AddItem "TGA - Truevision Targa", curFormatIndex
         filePatterns(curFormatIndex) = "*.tga"
         curFormatIndex = curFormatIndex + 1
-        
+    End If
+    
+    'FreeImage or GDI+ works for loading TIFFs
+    If FreeImageEnabled Or GDIPlusEnabled Then
         cmbPattern.AddItem "TIF/TIFF - Tagged Image File Format", curFormatIndex
         filePatterns(curFormatIndex) = "*.tif;*.tiff"
         curFormatIndex = curFormatIndex + 1
-        
+    End If
+    
+    If FreeImageEnabled Then
         cmbPattern.AddItem "WBMP - Wireless Bitmap", curFormatIndex
         filePatterns(curFormatIndex) = "*.wbmp;*.wbm"
         curFormatIndex = curFormatIndex + 1
