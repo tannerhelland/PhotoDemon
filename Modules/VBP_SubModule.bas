@@ -109,7 +109,7 @@ Public Function EntryValid(ByVal check As Variant, ByVal Min As Long, ByVal Max 
         If (check >= Min) And (check <= Max) Then
             EntryValid = True
         Else
-            If displayRangeError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Value must be between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, "Invalid entry"
+            If displayRangeError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a value between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, "Invalid entry"
             EntryValid = False
         End If
     End If
@@ -119,7 +119,7 @@ Public Function RangeValid(ByVal check As Long, ByVal Min As Long, ByVal Max As 
     If (check >= Min) And (check <= Max) Then
         RangeValid = True
     Else
-        MsgBox check & " is not a valid entry.  Value must be between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME
+        MsgBox check & " is not a valid entry.  Please enter a value between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME
         RangeValid = False
     End If
 End Function
@@ -174,8 +174,8 @@ Public Function DirectoryExist(ByRef dName As String) As Boolean
 End Function
 
 'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
-Public Function blendColors(ByVal color1 As Byte, ByVal color2 As Byte, ByRef mixRatio As Single) As Byte
-    blendColors = ((1 - mixRatio) * color1) + (mixRatio * color2)
+Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Single) As Byte
+    BlendColors = ((1 - mixRatio) * Color1) + (mixRatio * Color2)
 End Function
 
 'Pass this a text box and it will select all text currently in the text box
