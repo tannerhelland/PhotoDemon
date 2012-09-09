@@ -434,6 +434,7 @@ Dim bDrawn As Boolean
    ' Draw bar:
    ' Get the bar rectangle:
    LSet tBR = tR
+   If m_lMax <= m_lMin Then m_lMax = m_lMin + 1
    fPercent = (m_lValue - m_lMin) / (m_lMax - m_lMin)
    If fPercent > 1# Then fPercent = 1#
    If fPercent < 0# Then fPercent = 0#
