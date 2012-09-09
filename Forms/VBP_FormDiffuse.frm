@@ -229,16 +229,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Arrays necessary for running diffusion filters properly
-Dim TmpBitmapArray() As Long
-Dim CalcArray() As Long
-
 'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
 ' original image width in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
 Private Sub ChkWrap_Click()
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
 End Sub
 
 'CANCEL button
@@ -289,7 +285,7 @@ Private Sub Form_Load()
     DrawPreviewImage picPreview
     
     'Draw the right preview box (the diffused effect)
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -299,22 +295,22 @@ End Sub
 'Everything below this line relates to mirroring the input of the textboxes across the scrollbars (and vice versa)
 Private Sub hsX_Change()
     txtX.Text = hsX.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
 End Sub
 
 Private Sub hsX_Scroll()
     txtX.Text = hsX.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
 End Sub
 
 Private Sub hsY_Change()
     txtY.Text = hsY.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
 End Sub
 
 Private Sub hsY_Scroll()
     txtY.Text = hsY.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, PicEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, PicEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
 End Sub
 
 Private Sub txtX_Change()
@@ -352,11 +348,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
-    If toPreview Then
-        srcLayer.createFromExistingLayer workingLayer
-    Else
-        srcLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
-    End If
+    srcLayer.createFromExistingLayer workingLayer
     
     prepSafeArray srcSA, srcLayer
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
