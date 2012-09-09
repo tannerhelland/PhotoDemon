@@ -133,6 +133,7 @@ Public Function NumberValid(ByVal check) As Boolean
     End If
 End Function
 
+'Extract the red, green, or blue value from an RGB() Long
 Public Function ExtractR(ByVal CurrentColor As Long) As Integer
     ExtractR = CurrentColor Mod 256
 End Function
