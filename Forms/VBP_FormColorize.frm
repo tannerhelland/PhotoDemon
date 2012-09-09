@@ -104,9 +104,9 @@ Begin VB.Form FormColorize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   255
+      Height          =   375
       Left            =   480
-      ScaleHeight     =   15
+      ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   352
       TabIndex        =   4
@@ -247,10 +247,10 @@ Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturati
             tHSLToRGB hToUse, 0.5, l, r, g, b
         End If
         
-        'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = r
+        'Assign the new values to each color channel
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal + 2, y) = b
+        ImageData(QuickVal, y) = b
         
     Next y
         If toPreview = False Then
