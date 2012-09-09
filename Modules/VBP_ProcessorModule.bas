@@ -482,7 +482,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm = True Then
                     FormDiffuse.Show 1, FormMain
                 Else
-                    FormDiffuse.DiffuseCustom pOPCODE, pOPCODE2
+                    FormDiffuse.DiffuseCustom pOPCODE, pOPCODE2, pOPCODE3
                 End If
             Case Mosaic
                 If LoadForm = True Then
@@ -606,7 +606,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm = True Then
                     FormColorize.Show 1, FormMain
                 Else
-                    FormColorize.ColorizeImage pOPCODE
+                    FormColorize.ColorizeImage pOPCODE, pOPCODE2
                 End If
             Case ReduceColors
                 If LoadForm = True Then
