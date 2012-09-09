@@ -441,7 +441,7 @@ Dim hDataLog(0 To 3, 0 To 255) As Single
 
 'Maximum histogram values (r/g/b/luminance)
 'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Dim HMax(0 To 3) As Single
-Dim HMax As Single, hMaxLog As Single
+Dim hMax As Single, hMaxLog As Single
 Dim channelMax(0 To 3) As Single
 Dim channelMaxLog(0 To 3) As Single
 Dim channelMaxPosition(0 To 3) As Byte
@@ -622,12 +622,12 @@ Public Sub DrawHistogram()
     DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
     
     'We now need to calculate a max histogram value based on which RGB channels are enabled
-    HMax = 0:    hMaxLog = 0:   maxChannel = 4  'Set maxChannel to an arbitrary value higher than 2
+    hMax = 0:    hMaxLog = 0:   maxChannel = 4  'Set maxChannel to an arbitrary value higher than 2
     
     For x = 0 To 2
         If hEnabled(x) = True Then
-            If channelMax(x) > HMax Then
-                HMax = channelMax(x)
+            If channelMax(x) > hMax Then
+                hMax = channelMax(x)
                 hMaxLog = channelMaxLog(x)
                 maxChannel = x
             End If
@@ -662,7 +662,7 @@ Public Sub DrawHistogram()
             
             'The luminance channel is a special case - it uses its own max values, so check for that here
             If hType = 3 Then
-                HMax = channelMax(hType)
+                hMax = channelMax(hType)
                 hMaxLog = channelMaxLog(hType)
             End If
     
@@ -679,7 +679,7 @@ Public Sub DrawHistogram()
                     If chkLog.Value = vbChecked Then
                         LastY = tHeight - (hDataLog(hType, 0) / hMaxLog) * tHeight
                     Else
-                        LastY = tHeight - (hData(hType, 0) / HMax) * tHeight
+                        LastY = tHeight - (hData(hType, 0) / hMax) * tHeight
                     End If
                         
                     Dim xCalc As Long
@@ -696,7 +696,7 @@ Public Sub DrawHistogram()
                         If chkLog.Value = vbChecked Then
                             y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
                         Else
-                            y = tHeight - (hData(hType, xCalc) / HMax) * tHeight
+                            y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
                         End If
                         
                         'For connecting lines...
@@ -739,8 +739,8 @@ Public Sub DrawHistogram()
     If hEnabled(0) = True Or hEnabled(1) = True Or hEnabled(2) = True Then
         
         'Reset hMax, which may have been changed if the luminance histogram was rendered
-        HMax = channelMax(maxChannel)
-        lblMaxCount.Caption = HMax
+        hMax = channelMax(maxChannel)
+        lblMaxCount.Caption = hMax
         
         'Also display the channel with that max value, if applicable
         Select Case maxChannel
@@ -894,7 +894,7 @@ Public Sub StretchHistogram()
         If x Mod 20 = 0 Then SetProgBarVal x
     Next x
     
-    SetImageData
+    setImageData
     
     Message "Finished."
 End Sub
@@ -969,7 +969,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
         If x Mod 20 = 0 Then SetProgBarVal PicWidthL + x
     Next x
     
-    SetImageData
+    setImageData
     Message "Finished."
 End Sub
 
@@ -1033,7 +1033,7 @@ Public Sub EqualizeLuminance()
         If x Mod 20 = 0 Then SetProgBarVal PicWidthL + x
     Next x
     
-    SetImageData
+    setImageData
     Message "Finished."
 End Sub
 
@@ -1054,7 +1054,7 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
         If chkLog.Value = vbChecked Then
             iY(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
         Else
-            iY(i) = tHeight - (hData(histogramChannel, i - 1) / HMax) * tHeight
+            iY(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight
         End If
     Next i
     
@@ -1063,14 +1063,14 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     
     'Now run a loop through the knots, calculating spline values as we go
     Call SetPandU
-    Dim xPos As Long, yPos As Single
+    Dim Xpos As Long, Ypos As Single
     For i = 1 To nPoints - 1
-        For xPos = iX(i) To iX(i + 1)
-            yPos = getCurvePoint(i, xPos)
+        For Xpos = iX(i) To iX(i + 1)
+            Ypos = getCurvePoint(i, Xpos)
             'If yPos > 255 Then yPos = 254       'Force values to be in the 1-254 range (0-255 also
             'If yPos < 0 Then yPos = 1           ' works, but is harder to see on the picture box)
-            results(xPos) = yPos
-        Next xPos
+            results(Xpos) = Ypos
+        Next Xpos
     Next i
     
     'Draw the finished spline
@@ -1144,15 +1144,31 @@ Public Sub TallyHistogramValues()
     lblCountBlue = ""
     lblCountLuminance = ""
     
-    'Grab image information
-    GetImageData
+    'Create a local array and point it at the pixel data we want to scan
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
     'These variables will hold temporary histogram values
     Dim r As Long, g As Long, b As Long, l As Long
     
     'If the histogram has already been used, we need to clear out all the
     'maximum values and histogram values
-    HMax = 0:    hMaxLog = 0
+    hMax = 0:    hMaxLog = 0
     
     For x = 0 To 3
         channelMax(x) = 0
@@ -1169,23 +1185,24 @@ Public Sub TallyHistogramValues()
         lumLookup(x) = x \ 3
     Next x
     
-    'Run a quick loop through the image, gathering what we need to
-    'calculate our histogram
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    'Run a quick loop through the image, gathering what we need to calculate our histogram
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
         'We have to gather the red, green, and blue in order to calculate luminance
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
-        'Rather than generate authentic luminance (which requires an HSL
-        ' conversion routine), we'll use an average value.  It's accurate
-        ' enough for a project like this.
+        
+        'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we'll use
+        ' a simpler average value.
+        
         l = lumLookup(r + g + b)
-        'Increment each value in the array, depending on its present value;
-        'this will let us see how many of each color value (and luminance
-        'value) there is in the image
+        
+        'Increment each value in the array, depending on its present value; this will let us see how many pixels of
+        ' each color value (and luminance value) there are in the image
+        
         'Red
         hData(0, r) = hData(0, r) + 1
         'Green
@@ -1194,8 +1211,13 @@ Public Sub TallyHistogramValues()
         hData(2, b) = hData(2, b) + 1
         'Luminance
         hData(3, l) = hData(3, l) + 1
+        
     Next y
     Next x
+    
+    'With our dataset successfully collected, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
     'Run a quick loop through the completed array to find maximum values
     For x = 0 To 3
@@ -1227,145 +1249,3 @@ Public Sub TallyHistogramValues()
     Message "Finished."
 
 End Sub
-
-'The next four functions are required for converting between the HSL and RGB color spaces
-Private Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, s As Single, l As Single)
-Dim Max As Single
-Dim Min As Single
-Dim delta As Single
-Dim rR As Single, rG As Single, rB As Single
-   rR = r / 255: rG = g / 255: rB = b / 255
-
-'{Given: rgb each in [0,1].
-' Desired: h in [0,360] and s in [0,1], except if s=0, then h=UNDEFINED.}
-        Max = Maximum(rR, rG, rB)
-        Min = Minimum(rR, rG, rB)
-        l = (Max + Min) / 2    '{This is the lightness}
-        '{Next calculate saturation}
-        If Max = Min Then
-            'begin {Achromatic case}
-            s = 0
-            h = 0
-           'end {Achromatic case}
-        Else
-           'begin {Chromatic case}
-                '{First calculate the saturation.}
-           If l <= 0.5 Then
-               s = (Max - Min) / (Max + Min)
-           Else
-               s = (Max - Min) / (2 - Max - Min)
-            End If
-            '{Next calculate the hue.}
-            delta = Max - Min
-           If rR = Max Then
-                h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
-           ElseIf rG = Max Then
-                h = 2 + (rB - rR) / delta '{Resulting color is between cyan and yellow}
-           ElseIf rB = Max Then
-                h = 4 + (rR - rG) / delta '{Resulting color is between magenta and cyan}
-           End If
-            'Debug.Print h
-            'h = h * 60
-           'If h < 0# Then
-           '     h = h + 360            '{Make degrees be nonnegative}
-           'End If
-        'end {Chromatic Case}
-      End If
-
-'Tanner's hack: transfer the values into ones I can use; this yields
-' hue on [0,240], saturation on [0,255], and luminance on [0,255]
-    'H = Int(H * 40 + 40)
-    'S = Int(S * 255)
-    l = Int(l * 255)
-End Sub
-
-Private Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long, b As Long)
-Dim rR As Single, rG As Single, rB As Single
-Dim Min As Single, Max As Single
-'This one requires the stupid values; such is life
-
-   If s = 0 Then
-      ' Achromatic case:
-      rR = l: rG = l: rB = l
-   Else
-      ' Chromatic case:
-      ' delta = Max-Min
-      If l <= 0.5 Then
-         's = (Max - Min) / (Max + Min)
-         ' Get Min value:
-         Min = l * (1 - s)
-      Else
-         's = (Max - Min) / (2 - Max - Min)
-         ' Get Min value:
-         Min = l - s * (1 - l)
-      End If
-      ' Get the Max value:
-      Max = 2 * l - Min
-      
-      ' Now depending on sector we can evaluate the h,l,s:
-      If (h < 1) Then
-         rR = Max
-         If (h < 0) Then
-            rG = Min
-            rB = rG - h * (Max - Min)
-         Else
-            rB = Min
-            rG = h * (Max - Min) + rB
-         End If
-      ElseIf (h < 3) Then
-         rG = Max
-         If (h < 2) Then
-            rB = Min
-            rR = rB - (h - 2) * (Max - Min)
-         Else
-            rR = Min
-            rB = (h - 2) * (Max - Min) + rR
-         End If
-      Else
-         rB = Max
-         If (h < 4) Then
-            rR = Min
-            rG = rR - (h - 4) * (Max - Min)
-         Else
-            rG = Min
-            rR = (h - 4) * (Max - Min) + rG
-         End If
-         
-      End If
-            
-   End If
-   r = rR * 255: g = rG * 255: b = rB * 255
-End Sub
-
-Private Function Maximum(rR As Single, rG As Single, rB As Single) As Single
-   If (rR > rG) Then
-      If (rR > rB) Then
-         Maximum = rR
-      Else
-         Maximum = rB
-      End If
-   Else
-      If (rB > rG) Then
-         Maximum = rB
-      Else
-         Maximum = rG
-      End If
-   End If
-End Function
-
-Private Function Minimum(rR As Single, rG As Single, rB As Single) As Single
-   If (rR < rG) Then
-      If (rR < rB) Then
-         Minimum = rR
-      Else
-         Minimum = rB
-      End If
-   Else
-      If (rB < rG) Then
-         Minimum = rB
-      Else
-         Minimum = rG
-      End If
-   End If
-End Function
-
