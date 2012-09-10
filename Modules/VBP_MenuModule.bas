@@ -313,7 +313,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             ElseIf GDIPlusEnabled Then
                 GDIPlusSavePicture imageID, dstPath, ImagePNG
             Else
-                Message "No GIF encoder found. Save aborted."
+                Message "No PNG encoder found. Save aborted."
                 PhotoDemon_SaveImage = False
                 Exit Function
             End If
