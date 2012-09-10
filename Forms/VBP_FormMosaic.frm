@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormMosaic 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Mosaic Options"
-   ClientHeight    =   5535
+   ClientHeight    =   6300
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5100
+   ClientWidth     =   6270
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,33 +18,80 @@ Begin VB.Form FormMosaic
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   369
+   ScaleHeight     =   420
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   340
+   ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   9
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   8
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsHeight 
       Height          =   255
       Left            =   240
       Max             =   64
-      Min             =   2
+      Min             =   1
       TabIndex        =   3
-      Top             =   4320
+      Top             =   4800
       Value           =   2
-      Width           =   4575
+      Width           =   5055
    End
    Begin VB.HScrollBar hsWidth 
       Height          =   255
       Left            =   240
       Max             =   64
-      Min             =   2
+      Min             =   1
       TabIndex        =   1
-      Top             =   3240
+      Top             =   3840
       Value           =   2
-      Width           =   4575
+      Width           =   5055
    End
    Begin VB.TextBox txtHeight 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -56,13 +103,14 @@ Begin VB.Form FormMosaic
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2520
+      Left            =   5400
       TabIndex        =   2
       Text            =   "2"
-      Top             =   3840
-      Width           =   495
+      Top             =   4770
+      Width           =   615
    End
    Begin VB.TextBox txtWidth 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -74,75 +122,48 @@ Begin VB.Form FormMosaic
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2520
+      Left            =   5400
       TabIndex        =   0
       Text            =   "2"
-      Top             =   2760
-      Width           =   495
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   7
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2175
+      Top             =   3810
+      Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   435
-      Left            =   3720
+      Left            =   4920
       TabIndex        =   5
-      Top             =   4920
+      Top             =   5760
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   435
-      Left            =   2520
+      Left            =   3720
       TabIndex        =   4
-      Top             =   4920
+      Top             =   5760
       Width           =   1125
+   End
+   Begin VB.Label lblBeforeandAfter 
+      BackStyle       =   0  'Transparent
+      Caption         =   "  Before                                                           After"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   255
+      Left            =   120
+      TabIndex        =   10
+      Top             =   2880
+      Width           =   3975
    End
    Begin VB.Label lblWidth 
       AutoSize        =   -1  'True
@@ -159,9 +180,9 @@ Begin VB.Form FormMosaic
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1320
-      TabIndex        =   10
-      Top             =   2790
+      Left            =   240
+      TabIndex        =   7
+      Top             =   3480
       Width           =   1035
    End
    Begin VB.Label lblHeight 
@@ -179,31 +200,10 @@ Begin VB.Form FormMosaic
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1320
-      TabIndex        =   9
-      Top             =   3870
-      Width           =   1080
-   End
-   Begin VB.Label Label3 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
       Left            =   240
-      TabIndex        =   8
-      Top             =   2310
-      Width           =   4575
+      TabIndex        =   6
+      Top             =   4440
+      Width           =   1080
    End
 End
 Attribute VB_Name = "FormMosaic"
@@ -215,14 +215,19 @@ Attribute VB_Exposed = False
 'Mosaic filter interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 8/5/00
-'Last updated: 4/November/07
-'Last update: preview no longer gets "Divide by 0" errors for small images
+'Last updated: 10/September/12
+'Last update: fixed many problems; rewrote code against new layer class, fixed code to work with mosaic sizes of 1,
+'              changed BlockSize to be as large as the image if desired (previous limit was 255).
 '
 'Form for handling all the mosaic image transform code.
 '
 '***************************************************************************
 
 Option Explicit
+
+'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
+' original image width in order to establish the right ratio.
+Dim iWidth As Long, iHeight As Long
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -231,245 +236,207 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max) And EntryValid(txtHeight, hsHeight.Min, hsHeight.Max) Then
-        Me.Visible = False
-        Process Mosaic, hsWidth.Value, hsHeight.Value
-        Unload Me
+    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max) Then
+        If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max) Then
+            Me.Visible = False
+            Process Mosaic, hsWidth.Value, hsHeight.Value
+            Unload Me
+        Else
+            AutoSelectText txtHeight
+        End If
+    Else
+        AutoSelectText txtWidth
     End If
 End Sub
 
-Public Sub MosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As Byte)
+'Apply a mosaic effect (sometimes called "pixelize") to an image
+' Inputs: width and height of the desired mosaic tiles (in pixels), optional preview settings
+Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
-    'Used for the for..next loops
-    Dim xLoop As Long, yLoop As Long
-    Dim DstXLoop As Long, DstYLoop As Long
-    Dim InitXLoop As Long, InitYLoop As Long
+    If toPreview = False Then Message "Repainting image in mosaic style..."
     
-    'How many pixels must be averaged
-    Dim NumOfPixels As Long
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Holds the RGB data for the mosaic
-    Dim tR As Long, tG As Long, tB As Long
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent already-mosaic'ed pixels from affecting the results of later pixels.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
     
-    GetImageData True
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer workingLayer
+    
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    'If this is a preview, we need to adjust the xDiffuse and yDiffuse values to match the size of the preview box
+    If toPreview Then
+        BlockSizeX = (BlockSizeX / iWidth) * curLayerValues.Width
+        BlockSizeY = (BlockSizeY / iHeight) * curLayerValues.Height
+        If BlockSizeX = 0 Then BlockSizeX = 1
+        If BlockSizeY = 0 Then BlockSizeY = 1
+    End If
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
     'Calculate how many mosaic tiles will fit on the current image's size
-    xLoop = Int(PicWidthL \ BlockSizeX) + 1
-    yLoop = Int(PicHeightL \ BlockSizeY) + 1
+    Dim xLoop As Long, yLoop As Long
+    xLoop = initX + Int(workingLayer.getLayerWidth \ BlockSizeX) + 1
+    yLoop = initY + Int(workingLayer.getLayerHeight \ BlockSizeY) + 1
     
-    'Store the pixel data into an array for faster accessing
-    Dim PicArray() As Byte
-    ReDim PicArray(0 To (PicWidthL + 1) * 3, 0 To PicHeightL + 1) As Byte
-    
-    Dim a As Long, b As Long
-    
-    Message "Preparing transfer array..."
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    For z = 0 To 2
-        PicArray(QuickVal + z, y) = ImageData(QuickVal + z, y)
-    Next z
-    Next y
-    Next x
-    
-    Message "Generating mosaic image..."
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
     SetProgBarMax xLoop
+    progBarCheck = findBestProgBarValue()
     
-    'Begin the main mosaic loop
-    For x = 0 To xLoop
-    For y = 0 To yLoop
+    'A number of other variables are required for the nested For..Next loops
+    Dim dstXLoop As Long, dstYLoop As Long
+    Dim initXLoop As Long, initYLoop As Long
+    Dim i As Long, j As Long
     
+    'We also need to count how many pixels must be averaged in each mosaic tile
+    Dim NumOfPixels As Long
+    
+    'Finally, individual colors also need to be tracked
+    Dim r As Long, g As Long, b As Long
+    
+    'Loop through each pixel in the image, diffusing as we go
+    For x = initX To xLoop
+        QuickVal = x * qvDepth
+    For y = initY To yLoop
+        
         'This sub loop is to gather all of the data for the current mosaic tile
-        InitXLoop = x * BlockSizeX
-        InitYLoop = y * BlockSizeY
-        DstXLoop = (x + 1) * BlockSizeX - 1
-        DstYLoop = (y + 1) * BlockSizeY - 1
-        For a = InitXLoop To DstXLoop
-            QuickVal = a * 3
-        For b = InitYLoop To DstYLoop
+        initXLoop = x * BlockSizeX
+        initYLoop = y * BlockSizeY
+        dstXLoop = (x + 1) * BlockSizeX - 1
+        dstYLoop = (y + 1) * BlockSizeY - 1
+        
+        For i = initXLoop To dstXLoop
+            QuickVal = i * 3
+        For j = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
-            If a > PicWidthL Or b > PicHeightL Then GoTo NextMosiacPixel1
+            If i > finalX Or j > finalY Then GoTo NextMosiacPixel1
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            tR = tR + PicArray(QuickVal + 2, b)
-            tG = tG + PicArray(QuickVal + 1, b)
-            tB = tB + PicArray(QuickVal, b)
+            r = r + srcImageData(QuickVal + 2, j)
+            g = g + srcImageData(QuickVal + 1, j)
+            b = b + srcImageData(QuickVal, j)
             
             'Count this as a valid pixel
             NumOfPixels = NumOfPixels + 1
             
 NextMosiacPixel1:
         
-        Next b
-        Next a
+        Next j
+        Next i
         
         'If this tile is completely off of the image, don't worry about it and go to the next one
         If NumOfPixels = 0 Then GoTo NextMosaicPixel3
         
         'Take the average red, green, and blue values of all the pixles within this tile
-        tR = tR \ NumOfPixels
-        tG = tG \ NumOfPixels
-        tB = tB \ NumOfPixels
+        r = r \ NumOfPixels
+        g = g \ NumOfPixels
+        b = b \ NumOfPixels
         
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
-        For a = InitXLoop To DstXLoop
-            QuickVal = a * 3
-        For b = InitYLoop To DstYLoop
+        For i = initXLoop To dstXLoop
+            QuickVal = i * 3
+        For j = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
-            If a > PicWidthL Or b > PicHeightL Then GoTo NextMosiacPixel2
+            If i > finalX Or j > finalY Then GoTo NextMosiacPixel2
             
             'Set the pixel
-            ImageData(QuickVal + 2, b) = tR
-            ImageData(QuickVal + 1, b) = tG
-            ImageData(QuickVal, b) = tB
+            dstImageData(QuickVal + 2, j) = r
+            dstImageData(QuickVal + 1, j) = g
+            dstImageData(QuickVal, j) = b
             
 NextMosiacPixel2:
 
-        Next b
-        Next a
+        Next j
+        Next i
 
 NextMosaicPixel3:
 
         'Clear all the variables and go to the next pixel
-        tR = 0
-        tG = 0
-        tB = 0
+        r = 0
+        g = 0
+        b = 0
         NumOfPixels = 0
+        
     Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    SetImageData True
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
 'LOAD form
 Private Sub Form_Load()
     
-    'Create the previews
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
+    'Note the current image's width and height, which will be needed to adjust the preview effect
+    iWidth = pdImages(CurrentImage).Width
+    iHeight = pdImages(CurrentImage).Height
     
-    hsWidth.Max = PicWidthL
-    hsHeight.Max = PicHeightL
-    PreviewMosaicFilter (CSng(hsWidth.Value) / hsWidth.Max) * PreviewWidth, (CSng(hsHeight.Value) / hsHeight.Max) * PreviewHeight
+    'Draw a preview of the current image in the left picture box
+    DrawPreviewImage picPreview
+    
+    hsWidth.Max = pdImages(CurrentImage).Width
+    hsHeight.Max = pdImages(CurrentImage).Height
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-Private Sub PreviewMosaicFilter(ByVal BlockSizeX As Byte, ByVal BlockSizeY As Byte)
-    
-    'Preview only
-    GetPreviewData PicPreview
-    
-    'Used for the for..next loops
-    Dim xLoop As Long, yLoop As Long
-    Dim DstXLoop As Long, DstYLoop As Long
-    Dim InitXLoop As Long, InitYLoop As Long
-    'How many pixels must be averaged
-    Dim NumOfPixels As Long
-    'Holds the RGB data for the mosaic
-    Dim tR As Long, tG As Long, tB As Long
-    
-    'Fix the BlockSizeX & Y variables to never be less than 1
-    If BlockSizeX < 1 Then BlockSizeX = 1
-    If BlockSizeY < 1 Then BlockSizeY = 1
-    
-    'Calculate how many mosaic tiles will fit on the current image's size
-    xLoop = Int(PreviewWidth \ BlockSizeX) + 1
-    yLoop = Int(PreviewHeight \ BlockSizeY) + 1
-    'Store the pixel data into an array for faster accessing
-    Dim PicArray() As Byte
-    ReDim PicArray(0 To UBound(ImageData, 1), 0 To UBound(ImageData, 2)) As Byte
-    Dim a As Long, b As Long
-    Dim QuickVal As Long
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-    For z = 0 To 2
-        PicArray(QuickVal + z, y) = ImageData(QuickVal + z, y)
-    Next z
-    Next y
-    Next x
-    'Begin the main mosaic loop
-    For x = 0 To xLoop
-    For y = 0 To yLoop
-        'This sub loop is to gather all of the data for the current mosaic tile
-        InitXLoop = PreviewX + x * BlockSizeX
-        InitYLoop = PreviewY + y * BlockSizeY
-        DstXLoop = PreviewX + (x + 1) * BlockSizeX - 1
-        DstYLoop = PreviewY + (y + 1) * BlockSizeY - 1
-        For a = InitXLoop To DstXLoop
-            QuickVal = a * 3
-        For b = InitYLoop To DstYLoop
-            'If this particular pixel is off of the image, don't bother counting it
-            If a > (PreviewX + PreviewWidth) Or b > (PreviewY + PreviewHeight) Then GoTo 10011
-            'total up all of the red, green, and blue values for the pixels within this
-            'mosiac tile
-            tR = tR + PicArray(QuickVal + 2, b)
-            tG = tG + PicArray(QuickVal + 1, b)
-            tB = tB + PicArray(QuickVal, b)
-            'Count this as a valid pixel
-            NumOfPixels = NumOfPixels + 1
-10011   Next b
-        Next a
-        'If this tile is completely off of the image, don't worry about it and go to the next one
-        If NumOfPixels = 0 Then GoTo 30011
-        'Take the average red, green, and blue values of all the pixles within this tile
-        tR = tR \ NumOfPixels
-        tG = tG \ NumOfPixels
-        tB = tB \ NumOfPixels
-        'Now run a loop through the same pixels you just analyzed, only this time you're gonna
-        'draw the averaged color over the top of them
-        For a = InitXLoop To DstXLoop
-            QuickVal = a * 3
-        For b = InitYLoop To DstYLoop
-            'Same thing as above - if it's off the image, ignore it
-            If a > (PreviewX + PreviewWidth) Or b > (PreviewY + PreviewHeight) Then GoTo 20031
-            'Set the pixel
-            ImageData(QuickVal + 2, b) = tR
-            ImageData(QuickVal + 1, b) = tG
-            ImageData(QuickVal, b) = tB
-20031   Next b
-        Next a
-        'Clear all the variables and go to the next pixel
-30011   tR = 0
-        tG = 0
-        tB = 0
-        NumOfPixels = 0
-    Next y
-    Next x
-    
-    SetPreviewData PicEffect
-
-End Sub
-
 Private Sub hsHeight_Change()
     txtHeight.Text = hsHeight.Value
-    PreviewMosaicFilter (CSng(hsWidth.Value) / hsWidth.Max) * PreviewWidth, (CSng(hsHeight.Value) / hsHeight.Max) * PreviewHeight
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsWidth_Change()
     txtWidth.Text = hsWidth.Value
-    PreviewMosaicFilter (CSng(hsWidth.Value) / hsWidth.Max) * PreviewWidth, (CSng(hsHeight.Value) / hsHeight.Max) * PreviewHeight
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsHeight_Scroll()
     txtHeight.Text = hsHeight.Value
-    PreviewMosaicFilter (CSng(hsWidth.Value) / hsWidth.Max) * PreviewWidth, (CSng(hsHeight.Value) / hsHeight.Max) * PreviewHeight
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsWidth_Scroll()
     txtWidth.Text = hsWidth.Value
-    PreviewMosaicFilter (CSng(hsWidth.Value) / hsWidth.Max) * PreviewWidth, (CSng(hsHeight.Value) / hsHeight.Max) * PreviewHeight
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub txtHeight_Change()
