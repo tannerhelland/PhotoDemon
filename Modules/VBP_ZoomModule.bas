@@ -3,8 +3,8 @@ Attribute VB_Name = "Zoom_Handler"
 'Zoom Handler - builds and draws the image viewport and associated scroll bars
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 05/July/12
-'Last update: Fixed a stretching bug when zoomed-in to an image and resizing the window.
+'Last updated: 10/September/12
+'Last update: Fixed a scrollbar reset problem when switching between an extremely zoomed-in view and 100% zoom.
 'Still needs: option to draw borders around the image
 '
 'Module for handling the "zoom" feature on the main form.  There are two routines - 'PrepareViewport' for rebuilding all related objects
@@ -246,7 +246,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         formToBuffer.HScroll.Move 0, FormHeight - formToBuffer.HScroll.Height, viewportWidth, formToBuffer.HScroll.Height
         If formToBuffer.HScroll.Visible = False Then formToBuffer.HScroll.Visible = True
     Else
-        If formToBuffer.HScroll.Visible = True Then formToBuffer.HScroll.Visible = False
+        If formToBuffer.HScroll.Visible = True Then
+            formToBuffer.HScroll.Value = 0
+            formToBuffer.HScroll.Visible = False
+        End If
     End If
     
     'Then vertical scroll bar...
@@ -254,7 +257,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         formToBuffer.VScroll.Move FormWidth - formToBuffer.VScroll.Width, 0, formToBuffer.VScroll.Width, viewportHeight
         If formToBuffer.VScroll.Visible = False Then formToBuffer.VScroll.Visible = True
     Else
-        If formToBuffer.VScroll.Visible = True Then formToBuffer.VScroll.Visible = False
+        If formToBuffer.VScroll.Visible = True Then
+            formToBuffer.VScroll.Value = False
+            formToBuffer.VScroll.Visible = False
+        End If
     End If
     
     'We don't actually render the image here; instead, we prepare the front buffer (.FrontBuffer) and store the relevant
