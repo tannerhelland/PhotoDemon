@@ -398,8 +398,8 @@ Attribute VB_Exposed = False
 'Histogram Handler
 'Copyright ©2001-2012 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 15/August/12
-'Last update: per-channel rendering and mad optimizations
+'Last updated: 09/September/12
+'Last update: rewrote the histogram against the new layer class, and greatly improved its export mechanism
 '
 'This form runs the basic code for calculating and displaying an image's histogram. Throughout the code, the
 ' following array locations refer to a type of histogram:
@@ -431,9 +431,6 @@ Option Explicit
 
 'Have we generated a histogram yet?
 Dim histogramGenerated As Boolean
-
-'Old functions use these:
-Dim rData(0 To 255) As Long, gData(0 To 255) As Long, bData(0 To 255) As Long
 
 'Histogram data for each particular type (r/g/b/luminance)
 Dim hData(0 To 3, 0 To 255) As Single
@@ -481,7 +478,7 @@ Private Sub chkSmooth_Click()
     DrawHistogram
 End Sub
 
-'Export the histogram image to file
+'Export the histogram image to file (at 8bpp resolution)
 Private Sub cmdExportHistogram_Click()
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -495,7 +492,7 @@ Private Sub cmdExportHistogram_Click()
     cdfStr = "BMP - Windows Bitmap|*.bmp"
     
     'FreeImage allows us to save more filetypes
-    If FreeImageEnabled = True Then
+    If FreeImageEnabled Or GDIPlusEnabled Then
         cdfStr = cdfStr & "|GIF - Graphics Interchange Format|*.gif"
         cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
     End If
@@ -505,9 +502,10 @@ Private Sub cmdExportHistogram_Click()
     
     'If FreeImage is enabled, suggest PNG as the default format; otherwise, bitmaps is all they get
     Dim defFormat As Long
+    If (FreeImageEnabled = False) And (GDIPlusEnabled = False) Then defFormat = 1 Else defFormat = 3
+    
     Dim defExtension As String
-    If FreeImageEnabled = False Then defFormat = 1 Else defFormat = 3
-    If FreeImageEnabled = False Then defExtension = ".bmp" Else defExtension = ".png"
+    If (FreeImageEnabled = False) And (GDIPlusEnabled = False) Then defExtension = ".bmp" Else defExtension = ".png"
     
     'Display the save dialog
     If CC.VBGetSaveFileName(sFile, , True, cdfStr, defFormat, tempPathString, "Save histogram to file", defExtension, FormHistogram.HWnd, 0) Then
@@ -519,30 +517,22 @@ Private Sub cmdExportHistogram_Click()
         
         Message "Saving histogram to file..."
         
-        'Now we do a bit of hackery to fool PhotoDemon into saving the histogram image using the stock SaveImage routine.
-        ' First, create an object to hold a copy of the active form's image
-        Dim tmppic As StdPicture
-        Set tmppic = FormMain.ActiveForm.BackBuffer.Picture
+        'Create a temporary form to hold the image we'll be saving
+        CreateNewImageForm True
         
-        Dim oWidth As Long, oHeight As Long
-        oWidth = FormMain.ActiveForm.BackBuffer.Width
-        oHeight = FormMain.ActiveForm.BackBuffer.Height
-        
-        'Now copy the histogram image over that image.  Hackish, isn't it?  Don't say I didn't warn you. ;)
-        FormMain.ActiveForm.BackBuffer.Width = FormHistogram.picH.Width
-        FormMain.ActiveForm.BackBuffer.Height = FormHistogram.picH.Height
-        FormMain.ActiveForm.BackBuffer.Picture = FormHistogram.picH.Image
-        
-        'With our hackery complete, use the core PhotoDemon save function to save the histogram image to file
+        'Copy the current histogram image into the temporary form's main layer
+        pdImages(CurrentImage).mainLayer.CreateFromPicture FormHistogram.picH.Picture
+                
+        'Use the core PhotoDemon save function to save the histogram image to file
         PhotoDemon_SaveImage CurrentImage, sFile, False, &H8
         
-        'Replace the main image and exit out
-        FormMain.ActiveForm.BackBuffer.Width = oWidth
-        FormMain.ActiveForm.BackBuffer.Height = oHeight
-        FormMain.ActiveForm.BackBuffer.Picture = tmppic
+        'Unload the temporary form
+        Unload FormMain.ActiveForm
         
-        Message "Save complete."
+        Message "Histogram save complete."
+        
     End If
+    
 End Sub
 
 'OK button
@@ -609,9 +599,8 @@ Public Sub DrawHistogram()
     'picH.Cls
     picH.Picture = LoadPicture("")
     
-    'tHeight is used to determine the height of the maximum value in the
-    'histogram.  We want it to be slightly shorter than the height of the
-    'picture box; this way the tallest histogram value fills the entire box
+    'tHeight is used to determine the height of the maximum value in the histogram.  We want it to be slightly
+    ' shorter than the height of the picture box; this way the tallest histogram value fills the entire box
     Dim tHeight As Long
     tHeight = picH.ScaleHeight - 2
     
@@ -732,8 +721,7 @@ Public Sub DrawHistogram()
     'Last but not least, generate the statistics at the bottom of the form
     
     'Total number of pixels
-    GetImageData
-    lblTotalPixels.Caption = "Total pixels: " & (PicWidthL * PicHeightL)
+    lblTotalPixels.Caption = "Total pixels: " & (pdImages(CurrentImage).Width * pdImages(CurrentImage).Height)
     
     'Maximum value; if a color channel is enabled, use that
     If hEnabled(0) = True Or hEnabled(1) = True Or hEnabled(2) = True Then
@@ -792,13 +780,14 @@ Private Sub picH_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     lblCountLuminance.Caption = hData(3, xCalc)
 End Sub
 
+'UNLOAD form
 Private Sub Form_Unload(Cancel As Integer)
     Message "Finished."
 End Sub
 
 'We'll use this routine only to draw the gradient below the histogram window
 '(like Photoshop does).  This code is old, but it works ;)
-Public Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As Long, ByVal Color2 As Long)
+Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As Long, ByVal Color2 As Long)
     'RGB() variables for each color
     Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
@@ -837,204 +826,6 @@ Public Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As 
         b2 = b + VB * x
         DstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
     Next x
-End Sub
-
-'Stretch the histogram to reach from 0 to 255 (white balance correction is a better method, FYI)
-Public Sub StretchHistogram()
-    
-    Dim RMax As Byte, GMax As Byte, BMax As Byte
-    
-    Dim RMin As Byte, GMin As Byte, BMin As Byte
-    RMin = 255
-    GMin = 255
-    BMin = 255
-
-    Dim r As Long, g As Long, b As Long
-
-    Message "Gathering histogram data..."
-    GetImageData
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        If r < RMin Then RMin = r
-        If r > RMax Then RMax = r
-        If g < GMin Then GMin = g
-        If g > GMax Then GMax = g
-        If b < BMin Then BMin = b
-        If b > BMax Then BMax = b
-    Next y
-    Next x
-    
-    Message "Stretching histogram..."
-    SetProgBarMax PicWidthL
-    
-    Dim Rdif As Integer, Gdif As Integer, Bdif As Integer
-    
-    Rdif = RMax - RMin
-    Gdif = GMax - GMin
-    Bdif = BMax - BMin
-    
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        If Rdif <> 0 Then r = 255 * ((r - RMin) / Rdif)
-        If Gdif <> 0 Then g = 255 * ((g - GMin) / Gdif)
-        If Bdif <> 0 Then b = 255 * ((b - BMin) / Bdif)
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    
-    setImageData
-    
-    Message "Finished."
-End Sub
-
-'Equalize the red, green, and/or blue channels of an image
-Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean, ByVal HandleB As Boolean)
-    GetImageData
-    Dim r As Integer, g As Integer, b As Integer
-    Message "Gathering histogram data..."
-    SetProgBarMax (PicWidthL * 2)
-    SetProgBarVal 0
-    
-    Dim QuickVal As Long
-    
-    'First, tally the amount of each color (i.e. build the histogram)
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        rData(r) = rData(r) + 1
-        gData(g) = gData(g) + 1
-        bData(b) = bData(b) + 1
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    'Compute our scaling factor
-    Dim scalefactor As Double
-    scalefactor = 255 / (PicWidthL * PicHeightL)
-    'Handle red as necessary
-    If HandleR = True Then
-        rData(0) = rData(0) * scalefactor
-        For x = 1 To 255
-            rData(x) = rData(x - 1) + (scalefactor * rData(x))
-        Next x
-    End If
-    'Handle green as necessary
-    If HandleG = True Then
-        gData(0) = gData(0) * scalefactor
-        For x = 1 To 255
-            gData(x) = gData(x - 1) + (scalefactor * gData(x))
-        Next x
-    End If
-    'Handle blue as necessary
-    If HandleB = True Then
-        bData(0) = bData(0) * scalefactor
-        For x = 1 To 255
-            bData(x) = bData(x - 1) + (scalefactor * bData(x))
-        Next x
-    End If
-    'Integerize all the look-up values
-    For x = 0 To 255
-        rData(x) = Int(rData(x))
-        If rData(x) > 255 Then rData(x) = 255
-        gData(x) = Int(gData(x))
-        If gData(x) > 255 Then gData(x) = 255
-        bData(x) = Int(bData(x))
-        If bData(x) > 255 Then bData(x) = 255
-    Next x
-    
-    'Apply the equalized values
-    Message "Equalizing image..."
-
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        If HandleR = True Then ImageData(QuickVal + 2, y) = rData(ImageData(QuickVal + 2, y))
-        If HandleG = True Then ImageData(QuickVal + 1, y) = gData(ImageData(QuickVal + 1, y))
-        If HandleB = True Then ImageData(QuickVal, y) = bData(ImageData(QuickVal, y))
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal PicWidthL + x
-    Next x
-    
-    setImageData
-    Message "Finished."
-End Sub
-
-'Equalize an image using only luminance values
-Public Sub EqualizeLuminance()
-    GetImageData
-    Dim Lum(0 To 255) As Single
-    Dim r As Long, g As Long, b As Long
-    Dim HH As Single, SS As Single, LL As Single
-    Message "Gathering histogram data..."
-    SetProgBarMax (PicWidthL * 2)
-    SetProgBarVal 0
-    
-    Dim QuickVal As Long
-    
-    'First, tally the luminance amounts (i.e. build the histogram)
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        tRGBToHSL r, g, b, HH, SS, LL
-        Lum(LL) = Lum(LL) + 1
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    'Compute our scaling factor
-    Dim scalefactor As Double
-    scalefactor = 255 / (PicWidthL * PicHeightL)
-    'Equalize the luminance
-    Lum(0) = Lum(0) * scalefactor
-    For x = 1 To 255
-        Lum(x) = Lum(x - 1) + (scalefactor * Lum(x))
-    Next x
-   'Integerize all the look-up values
-    For x = 0 To 255
-        Lum(x) = Int(Lum(x))
-        If Lum(x) > 255 Then Lum(x) = 255
-    Next x
-    
-    'Apply the equalized values
-    Message "Equalizing image..."
-
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        'Get the temporary values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        'Get the hue and saturation
-        tRGBToHSL r, g, b, HH, SS, LL
-        'Convert back to RGB using our artificial luminance values
-        tHSLToRGB HH, SS, Lum(LL) / 255, r, g, b
-        'Assign those values into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal PicWidthL + x
-    Next x
-    
-    setImageData
-    Message "Finished."
 End Sub
 
 'This routine draws the histogram using cubic splines to smooth the output
@@ -1249,3 +1040,372 @@ Public Sub TallyHistogramValues()
     Message "Finished."
 
 End Sub
+
+'Stretch the histogram to reach from 0 to 255 (white balance correction is a far better method, FYI)
+Public Sub StretchHistogram()
+   
+    Message "Analyzing image histogram for maximum and minimum values..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long
+    
+    'Max and min values
+    Dim RMax As Long, GMax As Long, BMax As Long
+    Dim RMin As Long, GMin As Long, BMin As Long
+    RMin = 255
+    GMin = 255
+    BMin = 255
+        
+    'Loop through each pixel in the image, checking max/min values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        If r < RMin Then RMin = r
+        If r > RMax Then RMax = r
+        If g < GMin Then GMin = g
+        If g > GMax Then GMax = g
+        If b < BMin Then BMin = b
+        If b > BMax Then BMax = b
+        
+    Next y
+    Next x
+    
+    Message "Stretching histogram..."
+    Dim Rdif As Long, Gdif As Long, Bdif As Long
+    
+    Rdif = RMax - RMin
+    Gdif = GMax - GMin
+    Bdif = BMax - BMin
+    
+    'Lookup tables make the stretching go faster
+    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    
+    For x = 0 To 255
+        If Rdif <> 0 Then
+            r = 255 * ((x - RMin) / Rdif)
+            If r < 0 Then r = 0
+            If r > 255 Then r = 255
+            rLookup(x) = r
+        Else
+            rLookup(x) = x
+        End If
+        If Gdif <> 0 Then
+            g = 255 * ((x - GMin) / Gdif)
+            If g < 0 Then g = 0
+            If g > 255 Then g = 255
+            gLookup(x) = g
+        Else
+            gLookup(x) = x
+        End If
+        If Bdif <> 0 Then
+            b = 255 * ((x - BMin) / Bdif)
+            If b < 0 Then b = 0
+            If b > 255 Then b = 255
+            bLookup(x) = b
+        Else
+            bLookup(x) = x
+        End If
+    Next x
+    
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+                
+        ImageData(QuickVal + 2, y) = rLookup(r)
+        ImageData(QuickVal + 1, y) = gLookup(g)
+        ImageData(QuickVal, y) = bLookup(b)
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+        
+End Sub
+
+'Equalize the red, green, and/or blue channels of an image
+Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean, ByVal HandleB As Boolean)
+    
+    Message "Analyzing image histogram..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    SetProgBarMax finalX * 2
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long
+        
+    'Histogram variables
+    Dim rData(0 To 255) As Single, gData(0 To 255) As Single, bData(0 To 255) As Single
+    Dim rDataInt(0 To 255) As Long, gDataInt(0 To 255) As Long, bDataInt(0 To 255) As Long
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Store those values in the histogram
+        rDataInt(r) = rDataInt(r) + 1
+        gDataInt(g) = gDataInt(g) + 1
+        bDataInt(b) = bDataInt(b) + 1
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+    
+    'Compute a scaling factor based on the number of pixels in the image
+    Dim scaleFactor As Single
+    scaleFactor = 255 / (curLayerValues.Width * curLayerValues.Height)
+    
+    'Compute red if requested
+    If HandleR = True Then
+        rData(0) = rDataInt(0) * scaleFactor
+        For x = 1 To 255
+            rData(x) = rData(x - 1) + (scaleFactor * rDataInt(x))
+        Next x
+    End If
+    
+    'Compute green if requested
+    If HandleG = True Then
+        gData(0) = gDataInt(0) * scaleFactor
+        For x = 1 To 255
+            gData(x) = gData(x - 1) + (scaleFactor * gDataInt(x))
+        Next x
+    End If
+    
+    'Compute blue if requested
+    If HandleB = True Then
+        bData(0) = bDataInt(0) * scaleFactor
+        For x = 1 To 255
+            bData(x) = bData(x - 1) + (scaleFactor * bDataInt(x))
+        Next x
+    End If
+    
+    'Make sure all look-up values are in valid byte range (e.g. [0,255])
+    For x = 0 To 255
+        
+        If rData(x) > 255 Then
+            rDataInt(x) = 255
+        Else
+            rDataInt(x) = Int(rData(x))
+        End If
+        
+        If gData(x) > 255 Then
+            gDataInt(x) = 255
+        Else
+            gDataInt(x) = Int(gData(x))
+        End If
+        
+        If bData(x) > 255 Then
+            bDataInt(x) = 255
+        Else
+            bDataInt(x) = Int(bData(x))
+        End If
+    Next x
+    
+    'Apply the equalized values
+    Message "Equalizing image..."
+    
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        If HandleR Then ImageData(QuickVal + 2, y) = rDataInt(ImageData(QuickVal + 2, y))
+        If HandleG Then ImageData(QuickVal + 1, y) = gDataInt(ImageData(QuickVal + 1, y))
+        If HandleB Then ImageData(QuickVal, y) = bDataInt(ImageData(QuickVal, y))
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x + finalX
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+    
+End Sub
+
+'Equalize an image using only luminance values
+Public Sub EqualizeLuminance()
+    
+    Message "Analyzing image histogram..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    SetProgBarMax finalX * 2
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long
+    Dim h As Single, s As Single, l As Single
+    Dim lInt As Long
+        
+    'Histogram variables
+    Dim lData(0 To 255) As Single
+    Dim lDataInt(0 To 255) As Long
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        lInt = getLuminance(r, g, b)
+        
+        'Store those values in the histogram
+        lDataInt(lInt) = lDataInt(lInt) + 1
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+    
+    'Compute a scaling factor based on the number of pixels in the image
+    Dim scaleFactor As Single
+    scaleFactor = 255 / (curLayerValues.Width * curLayerValues.Height)
+    
+    'Compute red if requested
+    lData(0) = lDataInt(0) * scaleFactor
+    For x = 1 To 255
+        lData(x) = lData(x - 1) + (scaleFactor * lDataInt(x))
+    Next x
+    
+    'Make sure all look-up values are in valid byte range (e.g. [0,255])
+    For x = 0 To 255
+        
+        If lData(x) > 255 Then
+            lDataInt(x) = 255
+        Else
+            lDataInt(x) = Int(lData(x))
+        End If
+        
+    Next x
+    
+    'Apply the equalized values
+    Message "Equalizing image..."
+    
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the RGB values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Convert those to HSL values
+        tRGBToHSL r, g, b, h, s, l
+        
+        'Convert those HSL values back to RGB using our adjusted luminance values
+        tHSLToRGB h, s, lDataInt(Int(l * 255)) / 255, r, g, b
+        
+        'Assign those values into the array
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x + finalX
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
+End Sub
+
