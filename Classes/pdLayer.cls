@@ -345,7 +345,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 End Function
 
 'Give this layer a picture from a standard VB picture object
-Public Function CreateFromPicture(ByRef srcPicture As StdPicture) As Boolean
+Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
 
     'Make sure the picture we're passed isn't empty
     If (Not srcPicture Is Nothing) Then
@@ -379,24 +379,24 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture) As Boolean
                     DeleteDC TmpDC
                 
                     'Success!
-                    CreateFromPicture = True
+                    createFromPicture = True
                     Exit Function
                     
                 End If
             
-                CreateFromPicture = False
+                createFromPicture = False
             
             End If
             
-            CreateFromPicture = False
+            createFromPicture = False
         
         End If
         
-        CreateFromPicture = False
+        createFromPicture = False
     
     End If
     
-    CreateFromPicture = False
+    createFromPicture = False
 
 End Function
 
