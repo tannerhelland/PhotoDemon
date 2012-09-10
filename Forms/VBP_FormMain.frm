@@ -961,9 +961,10 @@ Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd 
 Private Sub CmbZoom_Click()
     
     'Track the current zoom value
-    If NumOfWindows > 0 Then pdImages(FormMain.ActiveForm.Tag).CurrentZoomValue = FormMain.CmbZoom.ListIndex
-    
-    PrepareViewport FormMain.ActiveForm, "Zoom changed"
+    If NumOfWindows > 0 Then
+        pdImages(FormMain.ActiveForm.Tag).CurrentZoomValue = FormMain.CmbZoom.ListIndex
+        PrepareViewport FormMain.ActiveForm, "Zoom changed by user"
+    End If
     
 End Sub
 
