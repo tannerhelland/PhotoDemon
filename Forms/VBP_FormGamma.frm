@@ -2,29 +2,58 @@ VERSION 5.00
 Begin VB.Form FormGamma 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Gamma Correction"
-   ClientHeight    =   5265
+   ClientHeight    =   5430
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5070
+   ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   351
+   ScaleHeight     =   362
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   338
+   ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   8
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   7
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsGamma 
       Height          =   255
-      Left            =   240
+      Left            =   1080
       Max             =   200
       Min             =   1
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   4080
       Value           =   100
-      Width           =   4575
+      Width           =   4215
    End
    Begin VB.TextBox txtGamma 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -36,41 +65,11 @@ Begin VB.Form FormGamma
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2520
-      TabIndex        =   1
+      Left            =   5400
+      TabIndex        =   4
       Text            =   "1.00"
-      Top             =   3570
-      Width           =   495
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   8
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   7
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2175
+      Top             =   4050
+      Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
@@ -85,9 +84,9 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   3720
-      TabIndex        =   4
-      Top             =   4680
+      Left            =   4920
+      TabIndex        =   1
+      Top             =   4920
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -103,9 +102,9 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   2520
-      TabIndex        =   3
-      Top             =   4680
+      Left            =   3720
+      TabIndex        =   0
+      Top             =   4920
       Width           =   1125
    End
    Begin VB.ComboBox CboChannel 
@@ -121,17 +120,15 @@ Begin VB.Form FormGamma
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   330
-      Left            =   2520
+      Left            =   1050
       Style           =   2  'Dropdown List
-      TabIndex        =   0
-      Top             =   2880
+      TabIndex        =   2
+      Top             =   3480
       Width           =   1335
    End
-   Begin VB.Label Label3 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "  Before                                                           After"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -143,10 +140,10 @@ Begin VB.Form FormGamma
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
+      Left            =   120
       TabIndex        =   9
-      Top             =   2310
-      Width           =   4575
+      Top             =   2880
+      Width           =   3975
    End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
@@ -163,9 +160,9 @@ Begin VB.Form FormGamma
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1680
+      Left            =   240
       TabIndex        =   6
-      Top             =   3600
+      Top             =   4095
       Width           =   720
    End
    Begin VB.Label Label1 
@@ -183,9 +180,9 @@ Begin VB.Form FormGamma
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1680
+      Left            =   240
       TabIndex        =   5
-      Top             =   2940
+      Top             =   3540
       Width           =   705
    End
 End
@@ -198,11 +195,11 @@ Attribute VB_Exposed = False
 'Gamma Correction Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 12/May/01
-'Last updated: 3/March/07
-'Last update: preview!
+'Last updated: 09/September/12
+'Last update: rewrote all code against the new layer class
 '
 'Updated version of the gamma handler; fully optimized, it uses a look-up
-'table and can correct any color channel.
+' table and can correct any color channel.
 '
 '***************************************************************************
 
@@ -210,11 +207,7 @@ Option Explicit
 
 'Update the preview when the user changes the channel combo box
 Private Sub CboChannel_Click()
-    PreviewGamma CSng(val(txtGamma)), CByte(CboChannel.ListIndex)
-End Sub
-
-Private Sub CboChannel_KeyDown(KeyCode As Integer, Shift As Integer)
-    PreviewGamma CSng(val(txtGamma)), CByte(CboChannel.ListIndex)
+    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, PicEffect
 End Sub
 
 'CANCEL button
@@ -229,15 +222,17 @@ Private Sub CmdOK_Click()
         Me.Visible = False
         Process GammaCorrection, CSng(val(txtGamma)), CByte(CboChannel.ListIndex)
         Unload Me
+    Else
+        AutoSelectText txtGamma
     End If
 End Sub
 
 'Initialize the preview boxes and the gamma combo box
 Private Sub Form_Load()
     
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-
+    'Draw a preview of the current image to the left picture box
+    DrawPreviewImage picPreview
+    
     CboChannel.AddItem "RGB", 0
     CboChannel.AddItem "Red", 1
     CboChannel.AddItem "Green", 2
@@ -245,7 +240,8 @@ Private Sub Form_Load()
     CboChannel.ListIndex = 0
     DoEvents
     
-    PreviewGamma CSng(val(txtGamma)), CByte(CboChannel.ListIndex)
+    'Now, draw a preview of the gamma effect to the right picture box
+    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, PicEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -253,113 +249,105 @@ Private Sub Form_Load()
 End Sub
 
 'Basic gamma correction.  It's a simple function - use an exponent to adjust R/G/B values.
-Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte)
+' Inputs: new gamma level, which channels to adjust (r/g/b/all), and optional preview information
+Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+     
+    If toPreview = False Then Message "Colorizing image..."
     
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim LookUp(0 To 255) As Integer
     
-    Dim TempVal As Single
-    
-    GetImageData
-    
-    Message "Generating gamma table..."
+    'Gamma can be easily applied using a look-up table
+    Dim gLookUp(0 To 255) As Byte
+    Dim tmpVal As Single
     
     For x = 0 To 255
-        TempVal = x / 255
-        TempVal = TempVal ^ (1 / Gamma)
-        TempVal = TempVal * 255
+        tmpVal = x / 255
+        tmpVal = tmpVal ^ (1 / Gamma)
+        tmpVal = tmpVal * 255
         
-        If TempVal > 255 Then TempVal = 255
-        If TempVal < 0 Then TempVal = 0
+        If tmpVal > 255 Then tmpVal = 255
+        If tmpVal < 0 Then tmpVal = 0
         
-        LookUp(x) = TempVal
+        gLookUp(x) = tmpVal
     Next x
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
-    Message "Correcting gamma values..."
-    SetProgBarMax PicWidthL
-    
-    Dim QuickX As Long
-    For x = 0 To PicWidthL
-        QuickX = x * 3
-    For y = 0 To PicHeightL
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Correct the gamma values according to the channel requested by the user
         If Method = 0 Then
-            r = LookUp(r)
-            g = LookUp(g)
-            b = LookUp(b)
+            r = gLookUp(r)
+            g = gLookUp(g)
+            b = gLookUp(b)
         ElseIf Method = 1 Then
-            r = LookUp(r)
+            r = gLookUp(r)
         ElseIf Method = 2 Then
-            g = LookUp(g)
+            g = gLookUp(g)
         ElseIf Method = 3 Then
-            b = LookUp(b)
+            b = gLookUp(b)
         End If
-        ImageData(QuickX + 2, y) = r
-        ImageData(QuickX + 1, y) = g
-        ImageData(QuickX, y) = b
+        
+        'Assign the new values to each color channel
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    SetImageData
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+   
 End Sub
 
 'When the horizontal scroll bar is moved, change the text box to match
 Private Sub hsGamma_Change()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
-    PreviewGamma CSng(val(txtGamma)), CByte(CboChannel.ListIndex)
+    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, PicEffect
 End Sub
 
 Private Sub hsGamma_Scroll()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
-    PreviewGamma CSng(val(txtGamma)), CByte(CboChannel.ListIndex)
-End Sub
-
-'Render a gamma preview to the preview picture box
-Private Sub PreviewGamma(ByVal Gamma As Single, ByVal Method As Byte)
-    Dim r As Long, g As Long, b As Long
-    Dim LookUp(0 To 255) As Integer
-    Dim TempVal As Single
-    Dim TempLong As Long
-    GetPreviewData PicPreview
-    
-    For x = 0 To 255
-        TempVal = x / 255
-        TempVal = TempVal ^ (1 / Gamma)
-        TempVal = TempVal * 255
-        If TempVal > 255 Then TempVal = 255
-        If TempVal < 0 Then TempVal = 0
-        LookUp(x) = TempVal
-    Next x
-    
-    For x = PreviewX To PreviewX + PreviewWidth
-        TempLong = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        r = ImageData(TempLong + 2, y)
-        g = ImageData(TempLong + 1, y)
-        b = ImageData(TempLong, y)
-        If Method = 0 Then
-            r = LookUp(r)
-            g = LookUp(g)
-            b = LookUp(b)
-        ElseIf Method = 1 Then
-            r = LookUp(r)
-        ElseIf Method = 2 Then
-            g = LookUp(g)
-        ElseIf Method = 3 Then
-            b = LookUp(b)
-        End If
-        ImageData(TempLong + 2, y) = r
-        ImageData(TempLong + 1, y) = g
-        ImageData(TempLong, y) = b
-    Next y
-    Next x
-    
-    SetPreviewData PicEffect
-    
+    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, PicEffect
 End Sub
 
 Private Sub txtGamma_GotFocus()
