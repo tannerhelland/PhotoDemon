@@ -154,14 +154,13 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'VB Binary File Import Tool
 'Copyright ©2000-2012 by Tanner Helland
-'(Some segments adopted from the original version, which is ©1997-1999 by Brad Martinez, http://www.mvps.org - see Outside_ModFrx.bas for more details)
+' (Some segments adopted from the original version, which is ©1997-1999 by Brad Martinez, http://www.mvps.org - see Outside_ModFrx.bas for more details)
 'Created: 2/14/03
 'Last updated: 5/June/12
 'Last update: if binary import fails, allow the user to try another file
 '
-'Module for importing images from VB binary files.  Allows the user to browse through
-'all data within the resource file, and load any images (ico, jpeg, whatever) contained
-'therein.
+'Module for importing images from VB binary files.  Allows the user to browse through all data
+' within the resource file, and optionally load any images (ico, jpeg, whatever) contained therein.
 '
 '***************************************************************************
 
