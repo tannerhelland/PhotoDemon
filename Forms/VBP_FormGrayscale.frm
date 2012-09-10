@@ -72,7 +72,7 @@ Begin VB.Form FormGrayscale
    End
    Begin VB.HScrollBar hsShades 
       Height          =   255
-      Left            =   2760
+      Left            =   2160
       Max             =   254
       Min             =   2
       TabIndex        =   2
@@ -81,6 +81,7 @@ Begin VB.Form FormGrayscale
       Width           =   3345
    End
    Begin VB.TextBox txtShades 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -92,7 +93,7 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2160
+      Left            =   5640
       TabIndex        =   1
       Text            =   "3"
       Top             =   4170
@@ -329,8 +330,8 @@ Attribute VB_Exposed = False
 'Grayscale Conversion Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 1/12/02
-'Last updated: 18/August/12
-'Last update: All optimizations from THDC now ported.  Also, previewing!
+'Last updated: 09/September/12
+'Last update: improved accuracy of dithered conversion by using more Single-type variables.
 '
 'Updated version of the grayscale handler; utilizes five different methods
 '(average, ISU, desaturate, X # of shades, X # of shades dithered).
@@ -347,31 +348,31 @@ Private Sub drawGrayscalePreview()
         
         Select Case cboMethod.ListIndex
             Case 0
-                MenuGrayscaleAverage True, picEffect
+                MenuGrayscaleAverage True, PicEffect
             Case 1
-                MenuGrayscale True, picPreview, picEffect
+                MenuGrayscale True, PicEffect
             Case 2
-                MenuDesaturate True, picPreview, picEffect
+                MenuDesaturate True, PicEffect
             Case 3
                 If optDecompose(0).Value = True Then
-                    MenuDecompose 0, True, picPreview, picEffect
+                    MenuDecompose 0, True, PicEffect
                 Else
-                    MenuDecompose 1, True, picPreview, picEffect
+                    MenuDecompose 1, True, PicEffect
                 End If
             Case 4
                 If optChannel(0).Value = True Then
-                    MenuGrayscaleSingleChannel 0, True, picPreview, picEffect
+                    MenuGrayscaleSingleChannel 0, True, PicEffect
                 ElseIf optChannel(1).Value = True Then
-                    MenuGrayscaleSingleChannel 1, True, picPreview, picEffect
+                    MenuGrayscaleSingleChannel 1, True, PicEffect
                 Else
-                    MenuGrayscaleSingleChannel 2, True, picPreview, picEffect
+                    MenuGrayscaleSingleChannel 2, True, PicEffect
                 End If
             Case 5
-                fGrayscaleCustom hsShades.Value, True, picPreview, picEffect
+                fGrayscaleCustom hsShades.Value, True, PicEffect
             Case 6
-                fGrayscaleCustomDither hsShades.Value, True, picPreview, picEffect
+                fGrayscaleCustomDither hsShades.Value, True, PicEffect
         End Select
-        
+    
     End If
 
 End Sub
@@ -499,16 +500,36 @@ Private Sub Form_Load()
 End Sub
 
 'Reduce to X # gray shades
-Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+
+    If toPreview = False Then Message "Converting image to " & numOfShades & " shades of gray..."
     
-    'Get the appropriate set of image data contingent on whether this is a preview or not
-    If toPreview = True Then
-        GetPreviewData SrcPic
-    Else
-        Message "Converting to " & numOfShades & " shades of gray..."
-        GetImageData
-        SetProgBarMax PicHeightL
-    End If
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long, grayVal As Long
     
     'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
     Dim conversionFactor As Single
@@ -516,12 +537,11 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     
     'Build a look-up table for our custom grayscale conversion results
     Dim LookUp(0 To 255) As Byte
-    Dim grayTempCalc As Long
     
     For x = 0 To 255
-        grayTempCalc = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
-        ByteMeL grayTempCalc
-        LookUp(x) = CByte(grayTempCalc)
+        grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
+        If grayVal > 255 Then grayVal = 255
+        LookUp(x) = CByte(grayVal)
     Next x
     
     'Build another look-up table for our initial grayscale index calculation
@@ -529,68 +549,71 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     For x = 0 To 765
         grayLookUp(x) = x \ 3
     Next x
-    
-    Dim r As Long, g As Long, b As Long, gray As Long
-    
-    'Calculate loop values based on previewing/not-previewing
-    Dim initX As Long, initY As Long, finX As Long, finY As Long
-    If toPreview = True Then
-        initX = PreviewX
-        finX = PreviewX + PreviewWidth
-        initY = PreviewY
-        finY = PreviewY + PreviewHeight
-    Else
-        initX = 0
-        finX = PicWidthL
-        initY = 0
-        finY = PicHeightL
-    End If
-    
+        
     'Loop through each pixel in the image, converting values as we go
-    Dim QuickVal As Long
-    For y = initY To finY
-    For x = initX To finX
-        
-        QuickVal = x * 3
-        
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
-        gray = grayLookUp(r + g + b)
+        
+        grayVal = grayLookUp(r + g + b)
         
         'Assign all color channels the new gray value
-        ImageData(QuickVal + 2, y) = LookUp(gray)
-        ImageData(QuickVal + 1, y) = LookUp(gray)
-        ImageData(QuickVal, y) = LookUp(gray)
+        ImageData(QuickVal + 2, y) = LookUp(grayVal)
+        ImageData(QuickVal + 1, y) = LookUp(grayVal)
+        ImageData(QuickVal, y) = LookUp(grayVal)
         
-    Next x
-        If toPreview = False Then
-            If (y Mod 20 = 0) Then SetProgBarVal y
-        End If
     Next y
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
+    Next x
     
-    'Render the finished output to the appropriate image container
-    If toPreview = True Then
-        SetPreviewData dstPic
-    Else
-        setImageData
-        Message "Finished."
-    End If
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
 'Reduce to X # gray shades (dithered)
-Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+
+    If toPreview = False Then Message "Converting to " & numOfShades & " shades of gray, with dithering..."
     
-    'Get the appropriate set of image data contingent on whether this is a preview or not
-    If toPreview = True Then
-        GetPreviewData SrcPic
-    Else
-        Message "Converting to " & numOfShades & " shades of gray, with dithering..."
-        GetImageData
-        SetProgBarMax PicHeightL
-    End If
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    SetProgBarMax finalY
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long, grayVal As Long
     
     'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
     Dim conversionFactor As Single
@@ -602,95 +625,76 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
         grayLookUp(x) = x \ 3
     Next x
     
-    'Unfortunately, this algorithm (unlike its non-dithering counterpart) is not well-suited to using a look-up table, so all calculations have been moved into the loop
-    Dim grayTempCalc As Long
+    'Unfortunately, this algorithm (unlike its non-dithering counterpart) is not well-suited to using a look-up table,
+    ' so all calculations have been moved into the loop
+    Dim grayTempCalc As Single
     
     'This value tracks the drifting error of our conversions, which allows us to dither
-    Dim errorValue As Long
+    Dim errorValue As Single
     errorValue = 0
-    
-    'Color and grayscale variables
-    Dim r As Long, g As Long, b As Long
-    Dim gray As Byte
-
-    'Calculate loop values based on previewing/not-previewing
-    Dim initX As Long, initY As Long, finX As Long, finY As Long
-    If toPreview = True Then
-        initX = PreviewX
-        finX = PreviewX + PreviewWidth
-        initY = PreviewY
-        finY = PreviewY + PreviewHeight
-    Else
-        initX = 0
-        finX = PicWidthL
-        initY = 0
-        finY = PicHeightL
-    End If
-    
-    'Loop through each pixel in the image, converting values as we go
-    Dim QuickVal As Long
-    For y = initY To finY
-    For x = initX To finX
-    
-        QuickVal = x * 3
         
+    'Loop through each pixel in the image, converting values as we go
+    For y = initY To finalY
+    For x = initX To finalX
+    
+        QuickVal = x * qvDepth
+    
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Look up our initial grayscale value in the table
-        gray = grayLookUp(r + g + b)
-        grayTempCalc = gray
+        grayVal = grayLookUp(r + g + b)
         
         'Add the error value (a cumulative value of the difference between actual gray values and gray values we've selected) to the current gray value
-        grayTempCalc = grayTempCalc + errorValue
+        grayTempCalc = grayVal + errorValue
         
         'Rebuild our temporary calculation variable using the shade reduction formula
-        grayTempCalc = Int((CDbl(grayTempCalc) / conversionFactor) + 0.5) * conversionFactor
+        grayTempCalc = Int((CSng(grayTempCalc) / conversionFactor) + 0.5) * conversionFactor
         
         'Adjust our error value to include this latest calculation
-        errorValue = CLng(gray) + errorValue - grayTempCalc
+        errorValue = CLng(grayVal) + errorValue - grayTempCalc
         
-        ByteMeL grayTempCalc
-        gray = CByte(grayTempCalc)
+        If grayTempCalc < 0 Then grayTempCalc = 0
+        If grayTempCalc > 255 Then grayTempCalc = 255
+        
+        grayVal = CByte(grayTempCalc)
         
         'Assign all color channels the new gray value
-        ImageData(QuickVal + 2, y) = gray
-        ImageData(QuickVal + 1, y) = gray
-        ImageData(QuickVal, y) = gray
+        ImageData(QuickVal + 2, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal, y) = grayVal
         
     Next x
-    
+        
         'Reset the error value at the end of each line
         errorValue = 0
         
-        'If we aren't previewing, update the progress bar
         If toPreview = False Then
-            If (y Mod 20 = 0) Then SetProgBarVal y
+            If (y And progBarCheck) = 0 Then SetProgBarVal y
         End If
         
     Next y
     
-    'Render the finished output to the appropriate image container
-    If toPreview = True Then
-        SetPreviewData dstPic
-    Else
-        setImageData
-        Message "Finished."
-    End If
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
 'Reduce to gray via (r+g+b)/3
 Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
+    If toPreview = False Then Message "Converting image to grayscale..."
+    
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    If toPreview = False Then Message "Converting image to grayscale..."
-
     prepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
@@ -713,7 +717,7 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
     
     'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
-    Dim gray As Byte
+    Dim grayVal As Byte
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
     Dim grayLookUp(0 To 765) As Byte
@@ -732,12 +736,12 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
         b = ImageData(QuickVal, y)
         
         'Calculate the gray value using the look-up table
-        gray = grayLookUp(r + g + b)
+        grayVal = grayLookUp(r + g + b)
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = gray
-        ImageData(QuickVal + 1, y) = gray
-        ImageData(QuickVal + 2, y) = gray
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
         
     Next y
         If toPreview = False Then
@@ -755,40 +759,42 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
 End Sub
 
 'Reduce to gray in a more human-eye friendly manner
-Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
-
-    'Get the appropriate set of image data contingent on whether this is a preview or not
-    If toPreview = True Then
-        GetPreviewData SrcPic
-    Else
-        Message "Generating ITU-R compatible grayscale image..."
-        GetImageData
-        SetProgBarMax PicWidthL
-    End If
-
-    'Color and gray variables
+Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+    
+    If toPreview = False Then Message "Generating ITU-R compatible grayscale image..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
-    Dim gray As Long
-    
-    'Calculate loop values based on previewing/not-previewing
-    Dim initX As Long, initY As Long, finX As Long, finY As Long
-    If toPreview = True Then
-        initX = PreviewX
-        finX = PreviewX + PreviewWidth
-        initY = PreviewY
-        finY = PreviewY + PreviewHeight
-    Else
-        initX = 0
-        finX = PicWidthL
-        initY = 0
-        finY = PicHeightL
-    End If
-    
+    Dim grayVal As Long
+        
     'Loop through each pixel in the image, converting values as we go
-    Dim QuickVal As Long
-    For x = initX To finX
-        QuickVal = x * 3
-    For y = initY To finY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
@@ -796,141 +802,132 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional B
         b = ImageData(QuickVal, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        gray = (213 * r + 715 * g + 72 * b) \ 1000
-        ByteMeL gray
+        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+        If grayVal > 255 Then grayVal = 255
         
-        'Assign all color channels the new gray value
-        ImageData(QuickVal, y) = gray
-        ImageData(QuickVal + 1, y) = gray
-        ImageData(QuickVal + 2, y) = gray
+        'Assign that gray value to each color channel
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
         
     Next y
         If toPreview = False Then
-            If (x Mod 20 = 0) Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
     Next x
     
-    'Render the finished output to the appropriate image container
-    If toPreview = True Then
-        SetPreviewData dstPic
-    Else
-        setImageData
-        Message "Finished."
-    End If
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
 'Reduce to gray via HSL -> convert S to 0
-Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+        
+    If toPreview = False Then Message "Desaturating image..."
     
-    'Get the appropriate set of image data contingent on whether this is a preview or not
-    If toPreview = True Then
-        GetPreviewData SrcPic
-    Else
-        Message "Desaturating image..."
-        GetImageData
-        SetProgBarMax PicWidthL
-    End If
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
     
-    'These variables will hold temporary pixel color values (red, green, blue)
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
-    
-    'This value will hold the grayscale value of each pixel
-    Dim gray As Long
-    
-    'These variables will hold the maximum and minimum channel values for each pixel
-    Dim cMax As Long, cMin As Long
-    
-    'Calculate initial and terminal loop values based on previewing/not-previewing
-    Dim initX As Long, initY As Long, finX As Long, finY As Long
-    If toPreview = True Then
-        initX = PreviewX
-        finX = PreviewX + PreviewWidth
-        initY = PreviewY
-        finY = PreviewY + PreviewHeight
-    Else
-        initX = 0
-        finX = PicWidthL
-        initY = 0
-        finY = PicHeightL
-    End If
-    
+    Dim grayVal As Byte
+       
     'Loop through each pixel in the image, converting values as we go
-    Dim QuickVal As Long
-    For x = initX To finX
-        QuickVal = x * 3
-    For y = initY To finY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        'Find the highest and lowest of the RGB values
-        cMax = Maximum(r, g, b)
-        cMin = Minimum(r, g, b)
+        'Calculate a grayscale value by using a short-hand RGB <-> HSL conversion
+        grayVal = CByte(getLuminance(r, g, b))
         
-        'Calculate luminance and make sure it falls between 255 and 0 (it always should, but it doesn't hurt to check)
-        gray = (cMax + cMin) \ 2
-        ByteMeL gray
+        'Assign that gray value to each color channel
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
         
-        'Assign all color channels to the new gray value
-        ImageData(QuickVal + 2, y) = CByte(gray)
-        ImageData(QuickVal + 1, y) = CByte(gray)
-        ImageData(QuickVal, y) = CByte(gray)
     Next y
         If toPreview = False Then
-            If (x Mod 20 = 0) Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
     Next x
     
-    'Render the finished output to the appropriate image container
-    If toPreview = True Then
-        SetPreviewData dstPic
-    Else
-        setImageData
-        Message "Finished."
-    End If
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
 'Reduce to gray by selecting the minimum (maxOrMin = 0) or maximum (maxOrMin = 1) color in each pixel
-Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+
+    If toPreview = False Then Message "Decomposing image..."
     
-    'Get the appropriate set of image data contingent on whether this is a preview or not
-    If toPreview = True Then
-        GetPreviewData SrcPic
-    Else
-        Message "Decomposing image..."
-        GetImageData
-        SetProgBarMax PicWidthL
-    End If
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
     
-    'These variables will hold temporary pixel color values (red, green, blue)
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
-    
-    'This value will hold the grayscale value of each pixel
-    Dim gray As Long
-    
-    'Calculate initial and terminal loop values based on previewing/not-previewing
-    Dim initX As Long, initY As Long, finX As Long, finY As Long
-    If toPreview = True Then
-        initX = PreviewX
-        finX = PreviewX + PreviewWidth
-        initY = PreviewY
-        finY = PreviewY + PreviewHeight
-    Else
-        initX = 0
-        finX = PicWidthL
-        initY = 0
-        finY = PicHeightL
-    End If
-    
+    Dim grayVal As Byte
+        
     'Loop through each pixel in the image, converting values as we go
-    Dim QuickVal As Long
-    For x = initX To finX
-        QuickVal = x * 3
-    For y = initY To finY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
@@ -938,65 +935,76 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
         b = ImageData(QuickVal, y)
         
         'Find the highest or lowest of the RGB values
-        If maxOrMin = 0 Then gray = Minimum(r, g, b) Else gray = Maximum(r, g, b)
+        If maxOrMin = 0 Then grayVal = CByte(MinimumInt(r, g, b)) Else grayVal = CByte(MaximumInt(r, g, b))
         
-        'Assign all color channels to the new gray value
-        ImageData(QuickVal + 2, y) = CByte(gray)
-        ImageData(QuickVal + 1, y) = CByte(gray)
-        ImageData(QuickVal, y) = CByte(gray)
+        'Assign that gray value to each color channel
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
+        
     Next y
         If toPreview = False Then
-            If (x Mod 20 = 0) Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
     Next x
     
-    'Render the finished output to the appropriate image container
-    If toPreview = True Then
-        SetPreviewData dstPic
-    Else
-        setImageData
-        Message "Finished."
-    End If
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
 'Reduce to gray by selecting a single color channel (represeted by cChannel: 0 = Red, 1 = Green, 2 = Blue)
-Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef SrcPic As PictureBox, Optional ByRef dstPic As PictureBox)
+Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+
+    Dim cString As String
+     
+    Select Case cChannel
+        Case 0
+            cString = "red"
+        Case 1
+            cString = "green"
+        Case 2
+            cString = "blue"
+    End Select
+
+    If toPreview = False Then Message "Converting image to grayscale using " & cString & " values..."
     
-    'Get the appropriate set of image data contingent on whether this is a preview or not
-    If toPreview = True Then
-        GetPreviewData SrcPic
-    Else
-        Message "Converting to grayscale by isolating single color channel..."
-        GetImageData
-        SetProgBarMax PicWidthL
-    End If
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
     
-    'These variables will hold temporary pixel color values (red, green, blue)
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
-    
-    'This value will hold the grayscale value of each pixel
-    Dim gray As Byte
-    
-    'Calculate initial and terminal loop values based on previewing/not-previewing
-    Dim initX As Long, initY As Long, finX As Long, finY As Long
-    If toPreview = True Then
-        initX = PreviewX
-        finX = PreviewX + PreviewWidth
-        initY = PreviewY
-        finY = PreviewY + PreviewHeight
-    Else
-        initX = 0
-        finX = PicWidthL
-        initY = 0
-        finY = PicHeightL
-    End If
-    
+    Dim grayVal As Byte
+        
     'Loop through each pixel in the image, converting values as we go
-    Dim QuickVal As Long
-    For x = initX To finX
-        QuickVal = x * 3
-    For y = initY To finY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
@@ -1006,31 +1014,31 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
         'Assign the gray value to a single color channel based on the value of cChannel
         Select Case cChannel
             Case 0
-                gray = r
+                grayVal = r
             Case 1
-                gray = g
+                grayVal = g
             Case 2
-                gray = b
+                grayVal = b
         End Select
         
-        'Assign all color channels to the new gray value
-        ImageData(QuickVal + 2, y) = gray
-        ImageData(QuickVal + 1, y) = gray
-        ImageData(QuickVal, y) = gray
+        'Assign that gray value to each color channel
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
+        
     Next y
         If toPreview = False Then
-            If (x Mod 20 = 0) Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
     Next x
     
-    'Render the finished output to the appropriate image container
-    If toPreview = True Then
-        SetPreviewData dstPic
-    Else
-        setImageData
-        Message "Finished."
-    End If
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+        
 End Sub
 
 'When the "# of shades" horizontal scroll bar is changed, update the text box to match
@@ -1063,37 +1071,3 @@ End Sub
 Private Sub txtShades_GotFocus()
     AutoSelectText txtShades
 End Sub
-
-'Return the maximum of three Long-type variables
-Private Function Maximum(rR As Long, rG As Long, rB As Long) As Long
-   If (rR > rG) Then
-      If (rR > rB) Then
-         Maximum = rR
-      Else
-         Maximum = rB
-      End If
-   Else
-      If (rB > rG) Then
-         Maximum = rB
-      Else
-         Maximum = rG
-      End If
-   End If
-End Function
-
-'Return the minimum of three Long-type variables
-Private Function Minimum(rR As Long, rG As Long, rB As Long) As Long
-   If (rR < rG) Then
-      If (rR < rB) Then
-         Minimum = rR
-      Else
-         Minimum = rB
-      End If
-   Else
-      If (rB < rG) Then
-         Minimum = rB
-      Else
-         Minimum = rG
-      End If
-   End If
-End Function
