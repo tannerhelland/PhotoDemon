@@ -147,10 +147,16 @@ NextCustomFilterPixel:  Next y2
         Next x2
         
         'If a weight has been set, apply it now
-        If (FilterWeightA <> 1) And (FilterWeightTemp <> 0) Then
-            r = r \ FilterWeightTemp
-            g = g \ FilterWeightTemp
-            b = b \ FilterWeightTemp
+        If (FilterWeightTemp <> 1) Then
+            If (FilterWeightTemp <> 0) Then
+                r = r \ FilterWeightTemp
+                g = g \ FilterWeightTemp
+                b = b \ FilterWeightTemp
+            Else
+                r = 0
+                g = 0
+                b = 0
+            End If
         End If
         
         'If a bias has been specified, apply it now
