@@ -185,9 +185,8 @@ Attribute VB_Exposed = False
 'Image Form (Child MDI form)
 'Copyright ©2002-2012 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 20/April/12
-'Last update: added mousewheel support via subclassing. Note that this is
-'             only enabled WHEN THE PROGRAM IS COMPILED (to prevent IDE crashes).
+'Last updated: 09/September/12
+'Last update: manually unload this image's main layer when the attached form is unloaded (to conserve memory)
 '
 'Every time the user loads an image, one of these forms is spawned.  This form also interfaces with several
 ' specialized program components in the MDIWindow module.  Look there for more information.
@@ -214,7 +213,7 @@ Private Sub Form_Activate()
     
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
-    ' unless the actually exist.)
+    ' unless they actually exist.)
     If pdImages(CurrentImage).Width <> 0 Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
 
     'If this MDI child is maximized, double-check that it's been drawn correctly.
@@ -223,9 +222,6 @@ Private Sub Form_Activate()
         DoEvents
         PrepareViewport Me, "Maximized MDI child redraw"
     End If
-
-    'Grab the image data
-    GetImageData
     
     'Determine whether Undo, Redo, Fade-last are available
     tInit tUndo, pdImages(CurrentImage).UndoState
@@ -325,7 +321,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'If the user wants to be prompted about unsaved images, do it now
-    If (ConfirmClosingUnsaved = True) And (pdImages(Me.Tag).isActive = True) And (pdImages(Me.Tag).forInternalUseOnly = False) Then
+    If (ConfirmClosingUnsaved = True) And (pdImages(Me.Tag).IsActive = True) And (pdImages(Me.Tag).forInternalUseOnly = False) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
         If pdImages(Me.Tag).HasBeenSaved = False Then
@@ -337,7 +333,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             saveMsg = "This image (""" & pdImages(Me.Tag).OriginalFileNameAndExtension & """) has not been saved.  Would you like to save it now?"
             
             'If this file exists on disk, warn them that this will initiate a SAVE, not a SAVE AS
-            If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then click the File -> Save As menu entry."
+            If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then click the File -> Save As menu."
             
             'Get the user's input
             Dim confirmReturn As VbMsgBoxResult
@@ -414,7 +410,7 @@ Private Sub Form_Resize()
         
             'Loop through every image, redrawing as we go
             For i = 1 To CurrentImage
-                If pdImages(i).isActive = True Then
+                If pdImages(i).IsActive = True Then
                     
                     'Remember this new window state and redraw the form containing this image
                     pdImages(i).WindowState = 0
@@ -443,7 +439,8 @@ Private Sub Form_Unload(Cancel As Integer)
     Message "Closing image..."
     
     Me.Visible = False
-    pdImages(Me.Tag).isActive = False
+    pdImages(Me.Tag).IsActive = False
+    pdImages(Me.Tag).mainLayer.eraseLayer
     ClearUndo Me.Tag
     NumOfWindows = NumOfWindows - 1
     
