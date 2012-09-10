@@ -24,6 +24,22 @@ Begin VB.Form FormPrint
    ScaleWidth      =   505
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picOut 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   615
+      Left            =   360
+      ScaleHeight     =   41
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   57
+      TabIndex        =   23
+      Top             =   2760
+      Visible         =   0   'False
+      Width           =   855
+   End
    Begin VB.ComboBox cmbDPI 
       Height          =   315
       Left            =   4320
@@ -192,6 +208,26 @@ Begin VB.Form FormPrint
       Top             =   4680
       Width           =   1140
    End
+   Begin VB.Label lblBetaWarning 
+      Alignment       =   2  'Center
+      BackStyle       =   0  'Transparent
+      Caption         =   "Print Previewing is broken in this beta build.  It will be fixed in an upcoming beta release."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H000000FF&
+      Height          =   495
+      Left            =   240
+      TabIndex        =   24
+      Top             =   4680
+      Width           =   4335
+   End
    Begin VB.Line Line2 
       BorderColor     =   &H80000002&
       X1              =   496
@@ -268,13 +304,6 @@ Begin VB.Form FormPrint
       Top             =   1620
       Width           =   705
    End
-   Begin VB.Image iOut 
-      Height          =   615
-      Left            =   360
-      Top             =   2880
-      Visible         =   0   'False
-      Width           =   660
-   End
    Begin VB.Label lblSelect 
       BackStyle       =   0  'Transparent
       Caption         =   "Printer:"
@@ -307,19 +336,19 @@ Attribute VB_Exposed = False
 'Created: 4/April/03
 'Last updated: 26/June/12
 'Last update: redesign from the ground up.  Print previewing via FreeImage. Manual and automatic DPI calculation support.
-'             Paper size interface via PageSetupDlg.  All these calculations interact with each other, resulting in a true
-'             "print preview" - WYSIWYG when it comes to this form.
+'              Paper size interface via PageSetupDlg.  All these calculations interact with each other, resulting in a true
+'              "print preview" - WYSIWYG when it comes to this form.
 'Still needs: Internal paper size support via EnumForms.  At present, PageSetupDlg is used to handle paper size, but it's
-'             an inelegant solution at best.  One of its biggest problems is that it doesn't restrict page sizes to ones
-'             supported by a given printer.  Lame.  The best solution would be a custom-built page-select feature that
-'             doesn't require the user to spawn an additional window just to change paper sizes.
-'             Note that in XP+, Windows no longer allows the Printer object to set arbitrary width and height values.
-'             Programs must adhere to existing page sizes as specified by EnumForms, and if they *do* decide to add custom
-'             forms, they must add them to the registry so all applications can access them.  It's a mess.  That said, here
-'             are some resources that may help if I ever decide to implement paper size in the future:
-'             http://support.microsoft.com/kb/282474/t
-'             http://msdn.microsoft.com/en-us/library/microsoft.visualbasic.powerpacks.printing.compatibility.vb6.printer.papersize.aspx
-'             http://www.vbforums.com/showthread.php?t=451198
+'              an inelegant solution at best.  One of its biggest problems is that it doesn't restrict page sizes to ones
+'              supported by a given printer.  Lame.  The best solution would be a custom-built page-select feature that
+'              doesn't require the user to spawn an additional window just to change paper sizes.
+'              Note that in XP+, Windows no longer allows the Printer object to set arbitrary width and height values.
+'              Programs must adhere to existing page sizes as specified by EnumForms, and if they *do* decide to add custom
+'              forms, they must add them to the registry so all applications can access them.  It's a mess.  That said, here
+'              are some resources that may help if I ever decide to implement paper size in the future:
+'              http://support.microsoft.com/kb/282474/t
+'              http://msdn.microsoft.com/en-us/library/microsoft.visualbasic.powerpacks.printing.compatibility.vb6.printer.papersize.aspx
+'              http://www.vbforums.com/showthread.php?t=451198
 '
 'Module for interfacing with the printer.  For a program that's not designed around printing, PhotoDemon's interface is
 ' surprisingly robust.  All settings are handled through the default VB printer object.  A key feature of this routine
@@ -469,19 +498,25 @@ Private Sub Form_Load()
     UpdatePrintPreview
 
     'Temporarily copy the image into an image box
-    iOut.Picture = FormMain.ActiveForm.BackBuffer.Picture
-    iOut.Refresh
+    picOut.Width = pdImages(CurrentImage).Width
+    picOut.Height = pdImages(CurrentImage).Height
+    pdImages(CurrentImage).mainLayer.renderToPictureBox picOut
+    'iOut.Width = pdImages(CurrentImage).Width
+    'iOut.Height = pdImages(CurrentImage).Height
+    'iOut.Paint
+    'iOut.Picture = FormMain.ActiveForm.BackBuffer.Picture
+    'iOut.Refresh
     
     'Determine base DPI (should be screen DPI, but calculate it manually to be sure)
     Dim pic As StdPicture
-    Set pic = iOut
+    Set pic = picOut.Picture
     
     Dim tPrnPicWidth As Single, tPrnPicHeight As Single
     tPrnPicWidth = Printer.ScaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
     tPrnPicHeight = Printer.ScaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
     Dim dpiX As Double, dpiY As Double
-    dpiX = CSng(FormMain.ActiveForm.BackBuffer.ScaleWidth) / Printer.ScaleX(tPrnPicWidth, Printer.ScaleMode, vbInches)
-    dpiY = CSng(FormMain.ActiveForm.BackBuffer.ScaleHeight) / Printer.ScaleY(tPrnPicHeight, Printer.ScaleMode, vbInches)
+    dpiX = CSng(pdImages(CurrentImage).Width) / Printer.ScaleX(tPrnPicWidth, Printer.ScaleMode, vbInches)
+    dpiY = CSng(pdImages(CurrentImage).Height) / Printer.ScaleY(tPrnPicHeight, Printer.ScaleMode, vbInches)
     baseDPI = Int((dpiX + dpiY) / 2 + 0.5)
     desiredDPI = baseDPI
     
@@ -527,7 +562,7 @@ Private Sub CmdOK_Click()
         If (Err = 0) Then
           
             'Print the image
-            If (PrintPictureToFitPage(Printer, iOut, cbOrientation.ListIndex + 1, CBool(chkCenter), CBool(chkFit)) = 0) Then
+            If (PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1, CBool(chkCenter), CBool(chkFit)) = 0) Then
                 MsgBox PROGRAMNAME & " was unable to print the image.  Please make sure that the specified printer (" & Printer.DeviceName & ") is powered-on and ready for printing.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Printer Error"
                 Message "Print canceled."
             End If
@@ -647,11 +682,11 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         If cbOrientation.ListIndex = 0 Then
             iSrc.Picture = picThumb.Picture
             iSrc.Refresh
-            UpdateDPI CSng(FormMain.ActiveForm.BackBuffer.ScaleWidth) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
+            UpdateDPI CSng(pdImages(CurrentImage).Width) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
         Else
             iSrc.Picture = picThumbFinal.Picture
             iSrc.Refresh
-            UpdateDPI CSng(FormMain.ActiveForm.BackBuffer.ScaleHeight) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
+            UpdateDPI CSng(pdImages(CurrentImage).Height) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
         End If
         
         Exit Sub
@@ -680,7 +715,7 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
     PrnHeight = Printer.ScaleY(Printer.ScaleHeight, Printer.ScaleMode, vbHiMetric)
 
     Dim pic As StdPicture
-    Set pic = iOut
+    Set pic = picOut.Picture
 
     PrnPicWidth = Printer.ScaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
     PrnPicHeight = Printer.ScaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
@@ -689,8 +724,8 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
     Dim dpiRatio As Double
     If forceDPI = False Then
         Dim dpiX As Double, dpiY As Double
-        dpiX = CSng(FormMain.ActiveForm.BackBuffer.ScaleWidth) / Printer.ScaleX(PrnPicWidth, Printer.ScaleMode, vbInches)
-        dpiY = CSng(FormMain.ActiveForm.BackBuffer.ScaleHeight) / Printer.ScaleY(PrnPicHeight, Printer.ScaleMode, vbInches)
+        dpiX = CSng(pdImages(CurrentImage).Width) / Printer.ScaleX(PrnPicWidth, Printer.ScaleMode, vbInches)
+        dpiY = CSng(pdImages(CurrentImage).Height) / Printer.ScaleY(PrnPicHeight, Printer.ScaleMode, vbInches)
         UpdateDPI ((dpiX + dpiY) / 2)
         dpiRatio = 1
     Else
