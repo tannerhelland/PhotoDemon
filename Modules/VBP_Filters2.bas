@@ -140,9 +140,9 @@ Public Sub MenuSynthesize()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -154,7 +154,7 @@ Public Sub MenuSynthesize()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         
         r = g + b - grayVal
         g = r + b - grayVal
@@ -283,9 +283,9 @@ Public Sub MenuAntique()
     progBarCheck = findBestProgBarValue()
     
     'We're going to need grayscale values as part of the effect; grayscale is easily optimized via a look-up table
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
     
     'We're going to use gamma conversion as part of the effect; gamma is easily optimized via a look-up table
@@ -322,7 +322,7 @@ Public Sub MenuAntique()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        gray = gLookup(r + g + b)
+        gray = gLookUp(r + g + b)
         
         r = (r + gray) \ 2
         g = (g + gray) \ 2
@@ -409,9 +409,9 @@ Public Sub MenuDream()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -423,7 +423,7 @@ Public Sub MenuDream()
         newG = ImageData(QuickVal + 1, y)
         newB = ImageData(QuickVal, y)
         
-        grayVal = gLookup(newR + newG + newB)
+        grayVal = gLookUp(newR + newG + newB)
         
         r = Abs(newR - grayVal) + Abs(newR - newG) + Abs(newR - newB) + (newR \ 2)
         g = Abs(newG - grayVal) + Abs(newG - newB) + Abs(newG - newR) + (newG \ 2)
@@ -558,9 +558,9 @@ Public Sub MenuComicBook()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -580,7 +580,7 @@ Public Sub MenuComicBook()
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         
         ImageData(QuickVal + 2, y) = grayVal
         ImageData(QuickVal + 1, y) = grayVal
@@ -1033,7 +1033,7 @@ Private Function Minimum(rR As Single, rG As Single, rB As Single) As Single
 End Function
 
 'Return the maximum of three variables
-Private Function MaximumInt(rR As Long, rG As Long, rB As Long) As Long
+Public Function MaximumInt(rR As Long, rG As Long, rB As Long) As Long
    If (rR > rG) Then
       If (rR > rB) Then
          MaximumInt = rR
@@ -1050,7 +1050,7 @@ Private Function MaximumInt(rR As Long, rG As Long, rB As Long) As Long
 End Function
 
 'Return the minimum of three variables
-Private Function MinimumInt(rR As Long, rG As Long, rB As Long) As Long
+Public Function MinimumInt(rR As Long, rG As Long, rB As Long) As Long
    If (rR < rG) Then
       If (rR < rB) Then
          MinimumInt = rR
