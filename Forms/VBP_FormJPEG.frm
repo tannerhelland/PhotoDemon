@@ -118,17 +118,16 @@ Attribute VB_Exposed = False
 'JPEG Export interface
 'Copyright ©2001-2012 by Tanner Helland
 'Created: 5/8/00
-'Last updated: 12/June/12
-'Last update: added FreeImage option for saving JPEGs.  John's class is great, but it's largely untested.
-'             FreeImage also offers more advanced options for compression, and it's faster to boot.  So,
-'             if FreeImage is found it will be used, otherwise the job falls to John's class.
+'Last updated: 09/September/12
+'Last update: moved decision-making about which JPEG export method to use to the PhotoDemon_SaveImage function.
+'              It makes more sense there, because then ANY function that needs to save can benefit from the wisdom of
+'              the automatic JPEG export mechanism selection.
 '
 'Form for giving the user a couple options for exporting JPEGs.
 '
 '***************************************************************************
 
 Option Explicit
-
 
 'QUALITY combo box - when adjusted, enable or disable the custom slider
 Private Sub CmbSaveQuality_Click()
@@ -154,21 +153,21 @@ Private Sub CmdOK_Click()
     Message "Preparing image..."
 
     'Determine the compression quality for the quantization tables
-    Dim jpegQuality As Long
+    Dim JPEGQuality As Long
     Select Case CmbSaveQuality.ListIndex
         Case 0
-            jpegQuality = 99
+            JPEGQuality = 99
         Case 1
-            jpegQuality = 92
+            JPEGQuality = 92
         Case 2
-            jpegQuality = 80
+            JPEGQuality = 80
         Case 3
-            jpegQuality = 65
+            JPEGQuality = 65
         Case 4
-            jpegQuality = 40
+            JPEGQuality = 40
         Case 5
             If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max) Then
-                jpegQuality = hsQuality.Value
+                JPEGQuality = hsQuality.Value
             Else
                 AutoSelectText txtQuality
                 Exit Sub
@@ -176,13 +175,10 @@ Private Sub CmdOK_Click()
     End Select
     
     Me.Visible = False
-    
-    'I implement two separate save functions for JPEG images.  While I greatly appreciate John Korejwa's native
-    ' VB JPEG encoder, it's not nearly as robust, or fast, or tested as the FreeImage implementation.  As such,
-    ' PhotoDemon will default to FreeImage if it's available; otherwise John's JPEG class will be used.
-    
-    'Also, if the save function fails for some reason, return the save dialog as canceled (so the user can try again)
-    saveDialogCanceled = Not PhotoDemon_SaveImage(CurrentImage, SaveFileName, False, jpegQuality)
+        
+    'Pass control to PhotoDemon_SaveImage
+    ' (if the save function fails for some reason, return the save dialog as canceled so the user can try again)
+    saveDialogCanceled = Not PhotoDemon_SaveImage(CurrentImage, SaveFileName, False, JPEGQuality)
 
     Unload Me
     
