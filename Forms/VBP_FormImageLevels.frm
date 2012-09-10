@@ -340,21 +340,16 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright ©2006-2012 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 30/July/06
-'Last update: Adding the preview function.  This is somewhat useless without it.
+'Last updated: 09/September/12
+'Last update: rewrote everything against the new layer class
 '
 'This form is an exact model of how to adjust image levels (identical to
-'Photoshop's method).  Be forewarned - there are some fairly involved (i.e. incomprehensible)
-'math sections.  Don't feel bad if you don't understand all the parabolic
-'stuff, because I didn't understand it the day after I wrote it.  Argh.
+' Photoshop's method).  Be forewarned - there are some fairly involved (i.e. incomprehensible)
+' math sections.
 '
 '***************************************************************************
 
 Option Explicit
-
-'**************
-'  VARIABLES  '
-'**************
 
 'Constants required for creating a gamma curve from .1 to 10
 Private Const MAXGAMMA As Double = 1.8460498941512
@@ -370,51 +365,60 @@ Dim midRatio As Double
 '(so we only refresh if the user moved it - otherwise we get bad looping)
 Dim iRefresh As Boolean
 
-
-'Unload the form and exit
+'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
-'Process the new image levels
+'OK button
 Private Sub CmdOK_Click()
+    
+    Me.Visible = False
+    
     Process ImageLevels, hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    
+    Unload Me
+    
 End Sub
-
 
 'LOAD form
 Private Sub Form_Load()
     
     'Draw preview images to the top picture boxes
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
+    DrawPreviewImage picPreview
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
     
     'Set the default midtone scrollbar ratio to 1/2
     midRatio = 0.5
     
     '...and allow refreshing
     iRefresh = True
+    
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-
 'This will reset the scrollbars to default levels
 Private Sub cmdReset_Click()
+    
     'Allow refreshing
     iRefresh = True
+    
     'Set the output levels to (0-255)
     hsOutL.Value = 0
     hsOutR.Value = 255
+    
     'Set the input levels to (0-255)
     hsInL.Value = 0
     hsInR.Value = 255
     FixScrollBars
+    
     'Set the midtone level to default (127)
     midRatio = 0.5
     hsInM.Value = 127
     FixScrollBars
+    
 End Sub
 
 
@@ -424,19 +428,19 @@ End Sub
 '*********************************************************************************
 Private Sub hsInL_Change()
     FixScrollBars
-    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
 End Sub
 
 Private Sub hsInL_Scroll()
     FixScrollBars
-    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
 End Sub
 
 Private Sub hsInM_Change()
     If iRefresh = True Then
         midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
         FixScrollBars True
-        PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
     End If
 End Sub
 
@@ -444,58 +448,78 @@ Private Sub hsInM_Scroll()
     If iRefresh = True Then
         midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
         FixScrollBars True
-        PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
     End If
 End Sub
 
 Private Sub hsInR_Change()
     FixScrollBars
-    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
 End Sub
 
 Private Sub hsInR_Scroll()
     FixScrollBars
-    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
 End Sub
 
 Private Sub hsOutL_Change()
-    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
 End Sub
 
 Private Sub hsOutL_Scroll()
-    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
 End Sub
 
 Private Sub hsOutR_Change()
-    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
 End Sub
 
 Private Sub hsOutR_Scroll()
-    PreviewImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
 End Sub
 
 
 'Draw an image based on user-adjusted input and output levels
-Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long)
+Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+
+    If toPreview = False Then Message "Mapping new image levels..."
     
-    Me.Visible = False
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
     
-    Message "Mapping image levels..."
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
-    'Instantiate a FastDrawing class and gather the image's data (into ImageData())
-    GetImageData
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
     
-    'These variables will hold temporary pixel color values
+    'Color variables
     Dim r As Long, g As Long, b As Long
-    
+        
     'Look-up table for the midtone (gamma) leveled values
     Dim gValues(0 To 255) As Double
     
     'WARNING: This next chunk of code is a lot of messy math.  Don't worry too much
-    'if you can't make sense of it ;)
+    ' if you can't make sense of it ;)
     
     'Fill the gamma table with appropriate gamma values (from 10 to .1, ranged quadratically)
-    'NOTE: This table is constant, and could be loaded from file instead of generated mathematically every time we run this function
+    ' NOTE: This table is constant, and could theoretically be loaded from file instead of generated
+    ' every time we run this function.
     Dim gStep As Double
     gStep = (MAXGAMMA + MIDGAMMA) / 127
     For x = 0 To 127
@@ -509,10 +533,11 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     Next x
     
     'Because we've built our look-up tables on a 0-255 scale, correct the inMLimit
-    'value (from the midtones scroll bar) to simply represent a ratio on that scale
+    ' value (from the midtones scroll bar) to simply represent a ratio on that scale
     Dim tRatio As Double
     tRatio = (inMLimit - inLLimit) / (inRLimit - inLLimit)
     tRatio = tRatio * 255
+    
     'Then convert that ratio into a byte (so we can access a look-up table with it)
     Dim bRatio As Byte
     bRatio = CByte(tRatio)
@@ -560,141 +585,39 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
         newLevels(x) = ByteMe(CSng(outLLimit) + (CSng(newLevels(x)) * oStep))
     Next x
     
+    'Now we can finally loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
-    'Now run a quick loop through the image, adjusting pixel values with the look-up tables
-    SetProgBarMax PicWidthL
-    
-    Dim QuickX As Long
-    For x = 0 To PicWidthL
-        QuickX = x * 3
-    For y = 0 To PicHeightL
-        'Grab red, green, and blue
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
-        'Correct them all
-        ImageData(QuickX + 2, y) = newLevels(r)
-        ImageData(QuickX + 1, y) = newLevels(g)
-        ImageData(QuickX, y) = newLevels(b)
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Assign new values looking the lookup table
+        ImageData(QuickVal + 2, y) = newLevels(r)
+        ImageData(QuickVal + 1, y) = newLevels(g)
+        ImageData(QuickVal, y) = newLevels(b)
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    
-    'Draw the new image data to the screen
-    SetImageData
-    
-    SetProgBarVal 0
-    Message "Finished."
-    Unload Me
-
-End Sub
-
-'Preview an image based on user-adjusted input and output levels
-Public Sub PreviewImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long)
-    
-    'Instantiate a FastDrawing class and gather the image's data (into ImageData())
-    GetPreviewData PicPreview
-    
-    'These variables will hold temporary pixel color values
-    Dim r As Long, g As Long, b As Long
-    
-    'Look-up table for the midtone (gamma) leveled values
-    Dim gValues(0 To 255) As Double
-    
-    'WARNING: This next chunk of code is a lot of messy math.  Don't worry too much
-    'if you can't make sense of it ;)
-    
-    'Fill the gamma table with appropriate gamma values (from 10 to .1, ranged quadratically)
-    'NOTE: This table is constant, and could be loaded from file instead of generated mathematically every time we run this function
-    Dim gStep As Double
-    gStep = (MAXGAMMA + MIDGAMMA) / 127
-    For x = 0 To 127
-        gValues(x) = (CDbl(x) / 127) * MIDGAMMA
-    Next x
-    For x = 128 To 255
-        gValues(x) = MIDGAMMA + (CDbl(x - 127) * gStep)
-    Next x
-    For x = 0 To 255
-        gValues(x) = 1 / ((gValues(x) + 1 / ROOT10) ^ 2)
-    Next x
-    
-    'Because we've built our look-up tables on a 0-255 scale, correct the inMLimit
-    'value (from the midtones scroll bar) to simply represent a ratio on that scale
-    Dim tRatio As Double
-    tRatio = (inMLimit - inLLimit) / (inRLimit - inLLimit)
-    tRatio = tRatio * 255
-    'Then convert that ratio into a byte (so we can access a look-up table with it)
-    Dim bRatio As Byte
-    bRatio = CByte(tRatio)
-    
-    'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
-    Dim gLevels(0 To 255) As Byte
-    Dim tmpGamma As Double
-    For x = 0 To 255
-        tmpGamma = CDbl(x) / 255
-        tmpGamma = tmpGamma ^ (1 / gValues(bRatio))
-        tmpGamma = tmpGamma * 255
-        If tmpGamma > 255 Then
-            tmpGamma = 255
-        ElseIf tmpGamma < 0 Then
-            tmpGamma = 0
-        End If
-        gLevels(x) = tmpGamma
-    Next x
-    
-    'Look-up table for the input leveled values
-    Dim newLevels(0 To 255) As Byte
-    
-    'Fill the look-up table with appropriately mapped input limits
-    Dim pStep As Single
-    pStep = 255 / (CSng(inRLimit) - CSng(inLLimit))
-    For x = 0 To 255
-        If x < inLLimit Then
-            newLevels(x) = 0
-        ElseIf x > inRLimit Then
-            newLevels(x) = 255
-        Else
-            newLevels(x) = ByteMe(((CSng(x) - CSng(inLLimit)) * pStep))
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
     Next x
     
-    'Now run all input-mapped values through our midtone-correction look-up
-    For x = 0 To 255
-        newLevels(x) = gLevels(newLevels(x))
-    Next x
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
     
-    'Last of all, remap all image values to match the user-specified output limits
-    Dim oStep As Double
-    oStep = (CSng(outRLimit) - CSng(outLLimit)) / 255
-    For x = 0 To 255
-        newLevels(x) = ByteMe(CSng(outLLimit) + (CSng(newLevels(x)) * oStep))
-    Next x
-    
-    'Now run a quick loop through the image, adjusting pixel values with the look-up tables
-    Dim QuickX As Long
-    
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickX = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        'Grab red, green, and blue
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
-        'Correct them all
-        ImageData(QuickX + 2, y) = newLevels(r)
-        ImageData(QuickX + 1, y) = newLevels(g)
-        ImageData(QuickX, y) = newLevels(b)
-    Next y
-    Next x
-    
-    'Draw the new image data to the screen
-    SetPreviewData PicEffect
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
 
 End Sub
-
 
 'Used to make sure the scroll bars have appropriate limits
 Private Sub FixScrollBars(Optional midMoving As Boolean = False)
+
     'Make sure that the input scrollbar values don't overlap, and update the labels
     'to display such
     hsInM.Min = hsInL.Value + 1
@@ -705,6 +628,7 @@ Private Sub FixScrollBars(Optional midMoving As Boolean = False)
     lblLeftR.Caption = hsInR.Value - 2
     hsInM.Max = hsInR.Value - 1
     lblMiddleR.Caption = hsInR.Value - 1
+    
     'If the user hasn't moved the midtones scrollbar, attempt to preserve its ratio
     If midMoving = False Then
         iRefresh = False
@@ -719,10 +643,10 @@ Private Sub FixScrollBars(Optional midMoving As Boolean = False)
         DoEvents
         iRefresh = True
     End If
+    
 End Sub
 
-
-'Used to restrict values to the (0-255) range
+'Used to convert Long-type variables to bytes (with proper [0,255] range)
 Private Function ByteMe(ByVal val As Long) As Byte
     If val > 255 Then
         ByteMe = 255
