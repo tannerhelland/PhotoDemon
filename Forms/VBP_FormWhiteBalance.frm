@@ -2,29 +2,58 @@ VERSION 5.00
 Begin VB.Form FormWhiteBalance 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " White Balance"
-   ClientHeight    =   4695
+   ClientHeight    =   5415
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5070
+   ClientWidth     =   6270
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   313
+   ScaleHeight     =   361
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   338
+   ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   6
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   5
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsIgnore 
       Height          =   255
-      Left            =   240
+      Left            =   360
       Max             =   100
       Min             =   1
       TabIndex        =   1
-      Top             =   3360
+      Top             =   3840
       Value           =   5
-      Width           =   4575
+      Width           =   4815
    End
    Begin VB.TextBox txtIgnore 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -36,41 +65,11 @@ Begin VB.Form FormWhiteBalance
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2520
+      Left            =   5280
       TabIndex        =   0
       Text            =   "0.05"
-      Top             =   2850
-      Width           =   495
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   6
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   5
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2175
+      Top             =   3810
+      Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
@@ -85,9 +84,9 @@ Begin VB.Form FormWhiteBalance
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   3600
+      Left            =   4920
       TabIndex        =   3
-      Top             =   4080
+      Top             =   4920
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -103,16 +102,14 @@ Begin VB.Form FormWhiteBalance
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   2400
+      Left            =   3720
       TabIndex        =   2
-      Top             =   4080
+      Top             =   4920
       Width           =   1125
    End
-   Begin VB.Label lblPreview 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "  Before                                                           After"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -124,10 +121,10 @@ Begin VB.Form FormWhiteBalance
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
+      Left            =   120
       TabIndex        =   7
-      Top             =   2310
-      Width           =   4575
+      Top             =   2880
+      Width           =   3975
    End
    Begin VB.Label lblAmount 
       AutoSize        =   -1  'True
@@ -144,9 +141,9 @@ Begin VB.Form FormWhiteBalance
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1680
+      Left            =   240
       TabIndex        =   4
-      Top             =   2880
+      Top             =   3480
       Width           =   720
    End
 End
@@ -188,16 +185,16 @@ Private Sub CmdOK_Click()
         Me.Visible = False
         Process WhiteBalance, CSng(val(txtIgnore))
         Unload Me
+    Else
+        AutoSelectText txtIgnore
     End If
 End Sub
 
 'Initialize the preview boxes and the gamma combo box
 Private Sub Form_Load()
     
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-    
-    PreviewWhiteBalance CSng(val(txtIgnore))
+    DrawPreviewImage picPreview
+    AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -206,19 +203,49 @@ End Sub
 
 
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
-Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05)
+Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
 
+
+    If toPreview = False Then Message "Preparing histogram data..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    Dim iWidth As Long, iHeight As Long
+    iWidth = curLayerValues.Width
+    iHeight = curLayerValues.Height
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color values
     Dim r As Long, g As Long, b As Long
     
+    'Maximum and minimum values, which will be detected by our initial histogram run
     Dim RMax As Byte, GMax As Byte, BMax As Byte
     Dim RMin As Byte, GMin As Byte, BMin As Byte
     RMax = 0: GMax = 0: BMax = 0
     RMin = 255: GMin = 255: BMin = 255
     
-    Message "Preparing histogram data..."
-    
-    GetImageData
-    
+    'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
     percentIgnore = percentIgnore / 100
     
     'Prepare histogram arrays
@@ -230,10 +257,9 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05)
     Next x
     
     'Build the image histogram
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
@@ -243,14 +269,14 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05)
     Next y
     Next x
     
-    'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
+     'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
     ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
     
     Dim foundYet As Boolean
     foundYet = False
     
     Dim NumOfPixels As Long
-    NumOfPixels = PicWidthL * PicHeightL
+    NumOfPixels = iWidth * iHeight
     
     Dim wbThreshold As Long
     wbThreshold = NumOfPixels * percentIgnore
@@ -335,196 +361,66 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05)
         End If
     Loop While foundYet = False
     
-    Message "Automatically adjusting white balance..."
-    SetProgBarMax PicWidthL
-    Dim Rdif As Integer, Gdif As Integer, Bdif As Integer
-    Rdif = CInt(RMax) - CInt(RMin)
-    Gdif = CInt(GMax) - CInt(GMin)
-    Bdif = CInt(BMax) - CInt(BMin)
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        If Rdif <> 0 Then r = 255 * ((r - RMin) / Rdif)
-        If Gdif <> 0 Then g = 255 * ((g - GMin) / Gdif)
-        If Bdif <> 0 Then b = 255 * ((b - BMin) / Bdif)
-        ByteMeL r
-        ByteMeL g
-        ByteMeL b
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+    'Finally, calculate the difference between max and min for each color
+    Dim Rdif As Long, Gdif As Long, Bdif As Long
+    Rdif = CLng(RMax) - CLng(RMin)
+    Gdif = CLng(GMax) - CLng(GMin)
+    Bdif = CLng(BMax) - CLng(BMin)
+    
+    'We can now build a final set of look-up tables that contain the results of every possible color transformation
+    Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
+    
+    For x = 0 To 255
+        If Rdif <> 0 Then r = 255 * ((x - RMin) / Rdif) Else r = x
+        If Gdif <> 0 Then g = 255 * ((x - GMin) / Gdif) Else g = x
+        If Bdif <> 0 Then b = 255 * ((x - BMin) / Bdif) Else b = x
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
+        If g > 255 Then g = 255
+        If g < 0 Then g = 0
+        If b > 255 Then b = 255
+        If b < 0 Then b = 0
+        rFinal(x) = r
+        gFinal(x) = g
+        bFinal(x) = b
     Next x
-    SetImageData
-    Message "Finished."
+    
+    If toPreview = False Then Message "Adjusting image white balance..."
+    
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+            
+        'Adjust white balance in a single pass (thanks to the magic of look-up tables)
+        ImageData(QuickVal + 2, y) = rFinal(ImageData(QuickVal + 2, y))
+        ImageData(QuickVal + 1, y) = gFinal(ImageData(QuickVal + 1, y))
+        ImageData(QuickVal, y) = bFinal(ImageData(QuickVal, y))
+        
+    Next y
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+    
 End Sub
 
 'When the horizontal scroll bar is moved, change the text box to match
 Private Sub hsIgnore_Change()
     txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")
-    PreviewWhiteBalance CSng(val(txtIgnore))
+    AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
 End Sub
 
 Private Sub hsIgnore_Scroll()
     txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")
-    PreviewWhiteBalance CSng(val(txtIgnore))
-End Sub
-
-'Render a gamma preview to the preview picture box
-Private Sub PreviewWhiteBalance(ByVal percentIgnore As Single)
-   
-    Dim r As Long, g As Long, b As Long
-    
-    Dim RMax As Byte, GMax As Byte, BMax As Byte
-    Dim RMin As Byte, GMin As Byte, BMin As Byte
-    RMax = 0: GMax = 0: BMax = 0
-    RMin = 255: GMin = 255: BMin = 255
-        
-    GetPreviewData PicPreview
-    
-    percentIgnore = percentIgnore / 100
-    
-    'Prepare histogram arrays
-    Dim rCount(0 To 255) As Long, gCount(0 To 255) As Long, bCount(0 To 255) As Long
-    For x = 0 To 255
-        rCount(x) = 0
-        gCount(x) = 0
-        bCount(x) = 0
-    Next x
-    
-    'Build the image histogram
-    Dim QuickVal As Long
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        rCount(r) = rCount(r) + 1
-        gCount(g) = gCount(g) + 1
-        bCount(b) = bCount(b) + 1
-    Next y
-    Next x
-    
-    'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
-    ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
-    
-    Dim foundYet As Boolean
-    foundYet = False
-    
-    Dim NumOfPixels As Long
-    NumOfPixels = (PreviewWidth - PreviewX) * (PreviewHeight - PreviewY)
-    
-    Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
-    
-    r = 0: g = 0: b = 0
-    
-    Dim rTally As Long, gTally As Long, bTally As Long
-    rTally = 0: gTally = 0: bTally = 0
-    
-    'Find minimum values of red, green, and blue
-    Do
-        If rCount(r) + rTally < wbThreshold Then
-            r = r + 1
-            rTally = rTally + rCount(r)
-        Else
-            RMin = r
-            foundYet = True
-        End If
-    Loop While foundYet = False
-        
-    foundYet = False
-        
-    Do
-        If gCount(g) + gTally < wbThreshold Then
-            g = g + 1
-            gTally = gTally + gCount(g)
-        Else
-            GMin = g
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    foundYet = False
-    
-    Do
-        If bCount(b) + bTally < wbThreshold Then
-            b = b + 1
-            bTally = bTally + bCount(b)
-        Else
-            BMin = b
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    'Now, find maximum values of red, green, and blue
-    foundYet = False
-    
-    r = 255: g = 255: b = 255
-    rTally = 0: gTally = 0: bTally = 0
-    
-    Do
-        If rCount(r) + rTally < wbThreshold Then
-            r = r - 1
-            rTally = rTally + rCount(r)
-        Else
-            RMax = r
-            foundYet = True
-        End If
-    Loop While foundYet = False
-        
-    foundYet = False
-        
-    Do
-        If gCount(g) + gTally < wbThreshold Then
-            g = g - 1
-            gTally = gTally + gCount(g)
-        Else
-            GMax = g
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    foundYet = False
-    
-    Do
-        If bCount(b) + bTally < wbThreshold Then
-            b = b - 1
-            bTally = bTally + bCount(b)
-        Else
-            BMax = b
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    Dim Rdif As Integer, Gdif As Integer, Bdif As Integer
-    Rdif = CInt(RMax) - CInt(RMin)
-    Gdif = CInt(GMax) - CInt(GMin)
-    Bdif = CInt(BMax) - CInt(BMin)
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        If Rdif <> 0 Then r = 255 * ((r - RMin) / Rdif)
-        If Gdif <> 0 Then g = 255 * ((g - GMin) / Gdif)
-        If Bdif <> 0 Then b = 255 * ((b - BMin) / Bdif)
-        ByteMeL r
-        ByteMeL g
-        ByteMeL b
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-    Next y
-    Next x
-    SetPreviewData PicEffect
-    
+    AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
 End Sub
 
 Private Sub txtIgnore_GotFocus()
