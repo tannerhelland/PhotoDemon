@@ -294,7 +294,7 @@ Public Sub copyLayerToClipboard()
 End Sub
 
 'Make a copy of an existing layer
-Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1) As Boolean
+Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional useHalftoning As Boolean = True) As Boolean
 
     'Make sure the layer we're passed isn't empty
     If srcLayer.getLayerDC <> 0 Then
@@ -321,7 +321,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
             If createBlank(newWidth, newHeight, srcLayer.getLayerColorDepth) Then
 
                 'If either dimension of the new image will be smaller than the source, request halftoning
-                If (newWidth < srcLayer.getLayerWidth) Or (newHeight < srcLayer.getLayerHeight) Then
+                If useHalftoning Then
                     SetStretchBltMode layerDC, STRETCHBLT_HALFTONE
                 Else
                     SetStretchBltMode layerDC, STRETCHBLT_COLORONCOLOR
@@ -514,6 +514,9 @@ End Sub
 
 'Draw this layer to a picture box.  The image will be automatically resized and centered.
 Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
+
+    'Erase any existing picture
+    dstPicture.Picture = LoadPicture("")
 
     'If the target picture box is smaller than this layer, request halftoning
     If (dstPicture.ScaleWidth < layerWidth) Or (dstPicture.ScaleHeight < layerHeight) Then
