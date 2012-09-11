@@ -640,14 +640,14 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuPosterize 
          Caption         =   "Posterize..."
       End
-      Begin VB.Menu MnuR255 
-         Caption         =   "Reduce Image &Colors..."
-      End
       Begin VB.Menu MnuColorSepBarPreCountColors 
          Caption         =   "-"
       End
       Begin VB.Menu MnuCountColors 
-         Caption         =   "Count image colors"
+         Caption         =   "Count unique colors"
+      End
+      Begin VB.Menu MnuR255 
+         Caption         =   "Reduce unique colors..."
       End
    End
    Begin VB.Menu MnuFilter 
@@ -1378,7 +1378,7 @@ Private Sub MnuEqualizeRed_Click()
 End Sub
 
 Private Sub MnuExtreme_Click()
-    Process RankExtreme
+    Process CustomRank, 1, 2
 End Sub
 
 Private Sub MnuFadeHigh_Click()
@@ -1476,7 +1476,7 @@ Private Sub MnuLava_Click()
 End Sub
 
 Private Sub MnuMaximum_Click()
-    Process RankMaximum
+    Process CustomRank, 1, 0
 End Sub
 
 Private Sub MnuMinimizeAllWindows_Click()
@@ -1488,7 +1488,7 @@ Private Sub MnuMinimizeAllWindows_Click()
 End Sub
 
 Private Sub MnuMinimum_Click()
-    Process RankMinimum
+    Process CustomRank, 1, 1
 End Sub
 
 Private Sub MnuMosaic_Click()
