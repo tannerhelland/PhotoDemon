@@ -284,6 +284,7 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 21, 1, 2, 6     'Rotate Counter-clockwise (rotate submenu)
         .PutImageToVBMenu 22, 2, 2, 6     'Rotate 180 (rotate submenu)
         .PutImageToVBMenu 125, 8, 2     'Isometric
+        .PutImageToVBMenu 132, 9, 2     'Tile
         
         'Color Menu
         .PutImageToVBMenu 46, 0, 3      'Brightness/Contrast
@@ -383,9 +384,8 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 129, 3, 4, 8  'Radioactive
             .PutImageToVBMenu 130, 4, 4, 8  'Solarize
             .PutImageToVBMenu 131, 5, 4, 8  'Synthesize
-            .PutImageToVBMenu 132, 6, 4, 8  'Tile
-            .PutImageToVBMenu 133, 7, 4, 8  'Twins
-            .PutImageToVBMenu 134, 8, 4, 8  'Vibrate
+            .PutImageToVBMenu 133, 6, 4, 8  'Twins
+            .PutImageToVBMenu 134, 7, 4, 8  'Vibrate
         .PutImageToVBMenu 81, 9, 4       'Rank
             '--> Rank sub-menu
             .PutImageToVBMenu 119, 0, 4, 9  'Dilate

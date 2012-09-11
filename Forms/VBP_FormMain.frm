@@ -491,6 +491,9 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuIsometric 
          Caption         =   "Convert to Isometric View"
       End
+      Begin VB.Menu MnuTile 
+         Caption         =   "Tile..."
+      End
    End
    Begin VB.Menu MnuColor 
       Caption         =   "&Color"
@@ -798,9 +801,6 @@ Begin VB.MDIForm FormMain
          End
          Begin VB.Menu MnuSynthesize 
             Caption         =   "Synthesize"
-         End
-         Begin VB.Menu MnuTile 
-            Caption         =   "Tile..."
          End
          Begin VB.Menu MnuTwins 
             Caption         =   "Twins..."
