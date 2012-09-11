@@ -328,8 +328,8 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 68, 2, 3, 15   'Invert Hue
             .PutImageToVBMenu 69, 3, 3, 15   'Invert RGB
         .PutImageToVBMenu 70, 16, 3      'Posterize
-        .PutImageToVBMenu 71, 17, 3      'Reduce Colors
-        .PutImageToVBMenu 72, 19, 3      'Count Colors
+        .PutImageToVBMenu 72, 18, 3      'Count Colors
+        .PutImageToVBMenu 71, 19, 3      'Reduce Colors
         
         'Filters Menu
         .PutImageToVBMenu 73, 0, 4       'Fade Last
