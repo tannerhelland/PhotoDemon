@@ -94,9 +94,7 @@ Option Explicit
     '-Mosaic
     Public Const Mosaic As Long = 410
     '-Rank
-    Public Const RankMaximum As Long = 411
-    Public Const RankMinimum As Long = 412
-    Public Const RankExtreme As Long = 413
+    '411-413 have been moved into the CustomRank function.
     Public Const CustomRank As Long = 414
     '-Grid Blurring
     Public Const GridBlur As Long = 415
@@ -490,12 +488,6 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormMosaic.MosaicFilter CInt(pOPCODE), CInt(pOPCODE2)
                 End If
-            Case RankMaximum
-                FormRank.rMaximize
-            Case RankMinimum
-                FormRank.rMinimize
-            Case RankExtreme
-                FormRank.rExtreme
             Case CustomRank
                 If LoadForm = True Then
                     FormRank.Show 1, FormMain
@@ -974,12 +966,6 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Custom Diffuse"
         Case Mosaic
             GetNameOfProcess = "Mosaic"
-        Case RankMaximum
-            GetNameOfProcess = "Dilate"
-        Case RankMinimum
-            GetNameOfProcess = "Erode"
-        Case RankExtreme
-            GetNameOfProcess = "Extreme Rank"
         Case CustomRank
             GetNameOfProcess = "Custom Rank"
         Case GridBlur
