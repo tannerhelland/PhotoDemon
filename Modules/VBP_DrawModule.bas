@@ -13,10 +13,6 @@ Attribute VB_Name = "Drawing"
 
 Option Explicit
 
-'Variables for working with the image previews
-Public PreviewWidth As Long, PreviewHeight As Long, PreviewX As Long, PreviewY As Long
-
-
 'Used to draw the main image onto a preview picture box
 Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdLayer)
     

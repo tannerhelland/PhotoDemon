@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormPrint 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Print Image"
-   ClientHeight    =   5325
+   ClientHeight    =   5415
    ClientLeft      =   45
    ClientTop       =   270
    ClientWidth     =   7575
@@ -19,7 +19,7 @@ Begin VB.Form FormPrint
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   355
+   ScaleHeight     =   361
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   505
    ShowInTaskbar   =   0   'False
@@ -207,26 +207,6 @@ Begin VB.Form FormPrint
       TabIndex        =   1
       Top             =   4680
       Width           =   1140
-   End
-   Begin VB.Label lblBetaWarning 
-      Alignment       =   2  'Center
-      BackStyle       =   0  'Transparent
-      Caption         =   "Print Previewing is broken in this beta build.  It will be fixed in an upcoming beta release."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   495
-      Left            =   240
-      TabIndex        =   24
-      Top             =   4680
-      Width           =   4335
    End
    Begin VB.Line Line2 
       BorderColor     =   &H80000002&
@@ -486,7 +466,7 @@ Private Sub Form_Load()
 
     'Set image orientation based on its aspect ratio (as compared to an 8.5" x 11" sheet of paper)
     Dim imgAspect As Single, paperAspect As Single
-    imgAspect = PicWidthL / PicHeightL
+    imgAspect = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
     paperAspect = 8.5 / 11
     
     If imgAspect < paperAspect Then
@@ -500,7 +480,9 @@ Private Sub Form_Load()
     'Temporarily copy the image into an image box
     picOut.Width = pdImages(CurrentImage).Width
     picOut.Height = pdImages(CurrentImage).Height
+    picOut.ScaleMode = vbPixels
     pdImages(CurrentImage).mainLayer.renderToPictureBox picOut
+    picOut.ScaleMode = vbTwips
     'iOut.Width = pdImages(CurrentImage).Width
     'iOut.Height = pdImages(CurrentImage).Height
     'iOut.Paint
@@ -509,6 +491,7 @@ Private Sub Form_Load()
     
     'Determine base DPI (should be screen DPI, but calculate it manually to be sure)
     Dim pic As StdPicture
+    Set pic = New StdPicture
     Set pic = picOut.Picture
     
     Dim tPrnPicWidth As Single, tPrnPicHeight As Single
@@ -758,18 +741,17 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         PrnPicHeight = tmpHeight
     End If
     
-    
     'Draw a new preview
     If cbOrientation.ListIndex = 0 Then
         DrawPreviewImage picThumb
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, PreviewX, PreviewY, PreviewWidth, PreviewHeight, vbSrcCopy
+        StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewWidth, pdImages(CurrentImage).mainLayer.PreviewHeight, vbSrcCopy
     Else
         DrawPreviewImage picThumb90
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, PreviewY, PreviewX, PreviewHeight, PreviewWidth, vbSrcCopy
+        StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewHeight, pdImages(CurrentImage).mainLayer.PreviewWidth, vbSrcCopy
     End If
     
     iSrc.Picture = iSrc.Image
