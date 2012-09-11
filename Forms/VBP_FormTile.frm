@@ -34,58 +34,9 @@ Begin VB.Form FormTile
       ScaleHeight     =   338
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   382
-      TabIndex        =   14
+      TabIndex        =   12
       Top             =   240
       Width           =   5760
-   End
-   Begin VB.PictureBox picBackBuffer2 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   255
-      Left            =   480
-      ScaleHeight     =   15
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   15
-      TabIndex        =   13
-      Top             =   7320
-      Visible         =   0   'False
-      Width           =   255
-   End
-   Begin VB.PictureBox picBackBuffer 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   255
-      Left            =   120
-      ScaleHeight     =   15
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   15
-      TabIndex        =   12
-      Top             =   7320
-      Visible         =   0   'False
-      Width           =   255
    End
    Begin VB.TextBox TxtWidth 
       BeginProperty Font 
@@ -216,7 +167,7 @@ Begin VB.Form FormTile
       ForeColor       =   &H00400000&
       Height          =   210
       Left            =   120
-      TabIndex        =   15
+      TabIndex        =   13
       Top             =   7020
       Width           =   5955
    End
@@ -328,11 +279,12 @@ Attribute VB_Exposed = False
 'Tile Rendering Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 25/August/12
-'Last updated: 25/August/12
-'Last update: Initial build
+'Last updated: 09/September/12
+'Last update: rewrote against new layer class.  The tile generation is now much MUCH faster, especially for egregiously large
+'              tile sizes.
 '
 'Render tiled images.  Options are provided for rendering to current wallpaper size, or to a custom size.
-' The interface options for custom size are derived from the Image Size form; ideally, any changes to that
+' The interface for custom sizes is derived from the Image Size form; ideally, any changes to that
 ' should be mirrored here.
 '
 '***************************************************************************
@@ -354,8 +306,9 @@ Private Sub cboTarget_Click()
     'Suppress previewing while all the variables get set to their proper values
     redrawPreview = False
 
-    'We need to call GetImageData to make sure the proper PicWidth and PicHeight values are set
-    GetImageData
+    Dim iWidth As Long, iHeight As Long
+    iWidth = pdImages(CurrentImage).Width
+    iHeight = pdImages(CurrentImage).Height
 
     Select Case cboTarget.ListIndex
         'Wallpaper size
@@ -389,8 +342,8 @@ Private Sub cboTarget_Click()
             'If the user was previously measuring in tiles, convert that value to pixels
             If (lastTargetMode = 2) And (NumberValid(TxtWidth)) And (NumberValid(TxtHeight)) Then
                 GetImageData
-                TxtWidth = CLng(TxtWidth) * (PicWidthL + 1)
-                TxtHeight = CLng(TxtHeight) * (PicHeightL + 1)
+                TxtWidth = CLng(TxtWidth) * iWidth
+                TxtHeight = CLng(TxtHeight) * iHeight
             End If
             
         'Custom size (as number of tiles)
@@ -405,8 +358,8 @@ Private Sub cboTarget_Click()
             'Since the user will have previously been measuring in pixels, convert that value to tiles
             If NumberValid(TxtWidth) And NumberValid(TxtHeight) Then
                 Dim xTiles As Long, yTiles As Long
-                xTiles = CLng(CSng(TxtWidth) / CSng(PicWidthL + 1))
-                yTiles = CLng(CSng(TxtHeight) / CSng(PicHeightL + 1))
+                xTiles = CLng(CSng(TxtWidth) / CSng(iWidth))
+                yTiles = CLng(CSng(TxtHeight) / CSng(iHeight))
                 If xTiles < 1 Then xTiles = 1
                 If yTiles < 1 Then yTiles = 1
                 TxtWidth = xTiles
@@ -465,14 +418,17 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     
     If isPreview = False Then Message "Rendering tiled image..."
     
-    GetImageData
-    
+    'Create a temporary layer to generate the tile and/or tile preview
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+        
     'We need to determine a target width and height based on the input parameters
     Dim targetWidth As Long, targetHeight As Long
     
-    PicWidthL = PicWidthL + 1
-    PicHeightL = PicHeightL + 1
-    
+    Dim iWidth As Long, iHeight As Long
+    iWidth = pdImages(CurrentImage).Width
+    iHeight = pdImages(CurrentImage).Height
+        
     Select Case tType
         Case 0
             'Current wallpaper size
@@ -484,29 +440,32 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
             targetHeight = yTarget
         Case 2
             'Specific number of tiles; determine the target size in pixels, accordingly
-            targetWidth = (PicWidthL * xTarget)
-            targetHeight = (PicHeightL * yTarget)
+            targetWidth = (iWidth * xTarget)
+            targetHeight = (iHeight * yTarget)
     End Select
     
-    'Make sure the target width/height isn't too large
-    If targetWidth > 32768 Then targetWidth = 32768
-    If targetHeight > 32768 Then targetHeight = 32768
+    'Make sure the target width/height isn't too large.  (This limit could be set bigger... I haven't actually tested it to
+    ' find a max upper limit.  I'm fairly certain it's only limited by available memory.)
+    Dim maxSize As Long
+    maxSize = 32767
+    
+    If targetWidth > maxSize Then targetWidth = maxSize
+    If targetHeight > maxSize Then targetHeight = maxSize
     
     'Resize the target picture box to this new size
-    picBackBuffer2.Width = targetWidth + 2
-    picBackBuffer2.Height = targetHeight + 2
-    
+    tmpLayer.createBlank targetWidth, targetHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+        
     'Figure out how many loop intervals we'll need in the x and y direction to fill the target size
     Dim xLoop As Long, yLoop As Long
-    xLoop = CLng(CSng(targetWidth) / CSng(PicWidthL))
-    yLoop = CLng(CSng(targetHeight) / CSng(PicHeightL))
+    xLoop = CLng(CSng(targetWidth) / CSng(iWidth))
+    yLoop = CLng(CSng(targetHeight) / CSng(iHeight))
     
     If isPreview = False Then SetProgBarMax xLoop
     
     'Using that loop variable, render the original image to the target picture box that many times
     For x = 0 To xLoop
     For y = 0 To yLoop
-        BitBlt picBackBuffer2.hDC, x * PicWidthL, y * PicHeightL, PicWidthL, PicHeightL, picBackBuffer.hDC, 0, 0, vbSrcCopy
+        BitBlt tmpLayer.getLayerDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
     Next y
         If isPreview = False Then SetProgBarVal x
     Next x
@@ -515,20 +474,16 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     
         SetProgBarVal xLoop
     
-        'With that complete, copy the target back into the original picture box
-        FormMain.ActiveForm.BackBuffer.Width = picBackBuffer2.Width
-        FormMain.ActiveForm.BackBuffer.Height = picBackBuffer2.Height
-        FormMain.ActiveForm.Picture = LoadPicture("")
-        BitBlt FormMain.ActiveForm.BackBuffer.hDC, 0, 0, FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight, picBackBuffer2.hDC, 0, 0, vbSrcCopy
-        FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
+        'With the tiling complete, copy the temporary layer over the existing layer
+        pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
         
-        'Clear out the secondary picture box to save on memory
-        picBackBuffer2.Picture = LoadPicture("")
-        picBackBuffer2.Width = 1
-        picBackBuffer2.Height = 1
+        'Erase the temporary layer to save on memory
+        tmpLayer.eraseLayer
+        Set tmpLayer = Nothing
         
         'Display the new size
-        DisplaySize FormMain.ActiveForm.BackBuffer.ScaleWidth, FormMain.ActiveForm.BackBuffer.ScaleHeight
+        pdImages(CurrentImage).updateSize
+        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
         
         SetProgBarVal 0
         
@@ -539,8 +494,10 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         
     Else
     
-        picPreview.Picture = LoadPicture("")
-        DrawPreviewImage picPreview, True, picBackBuffer2
+        'Render the preview and erase the temporary layer to conserve memory
+        tmpLayer.renderToPictureBox picPreview
+        tmpLayer.eraseLayer
+        Set tmpLayer = Nothing
         
     End If
 
@@ -555,9 +512,6 @@ Private Sub Form_Load()
     cboTarget.AddItem "Specific number of tiles", 2
     cboTarget.ListIndex = 0
     DoEvents
-    
-    'Copy the current image to a local picture box
-    picBackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Picture
     
     'Render a preview
     redrawPreview = True
@@ -617,10 +571,10 @@ End Sub
 'Show the user a description of how large the new, tiled image will be
 Private Sub updateDescription()
 
-    'Call GetImageData so that PicWidthL and PicHeightL will be set correctly
-    GetImageData
-    PicWidthL = PicWidthL + 1
-    PicHeightL = PicHeightL + 1
+    Dim iWidth As Long, iHeight As Long
+    
+    iWidth = pdImages(CurrentImage).Width
+    iHeight = pdImages(CurrentImage).Height
 
     Dim xVal As Single, yVal As Single
     Dim xText As String, yText As String
@@ -630,24 +584,24 @@ Private Sub updateDescription()
         
         'Wallpaper size
         Case 0
-            xVal = TxtWidth / PicWidthL
-            yVal = TxtHeight / PicHeightL
+            xVal = TxtWidth / iWidth
+            yVal = TxtHeight / iHeight
             xText = Format(xVal, "#####.0")
             yText = Format(yVal, "#####.0")
             lblDescription = "The final image will be " & xText & " tiles wide by " & yText & " tiles tall."
         
         'Custom size (in pixels)
         Case 1
-            xVal = TxtWidth / PicWidthL
-            yVal = TxtHeight / PicHeightL
+            xVal = TxtWidth / iWidth
+            yVal = TxtHeight / iHeight
             xText = Format(xVal, "#####.0")
             yText = Format(yVal, "#####.0")
             lblDescription = "The final image will be " & xText & " tiles wide by " & yText & " tiles tall."
         
         'Custom size (in tiles)
         Case 2
-            xVal = TxtWidth * PicWidthL
-            yVal = TxtHeight * PicHeightL
+            xVal = TxtWidth * iWidth
+            yVal = TxtHeight * iHeight
             xText = Format(xVal, "#####")
             yText = Format(yVal, "#####")
             lblDescription = "The final image will be " & xText & " pixels wide by " & yText & " pixels tall."
