@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormNoise 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Add Noise"
-   ClientHeight    =   4890
+   ClientHeight    =   5550
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5070
+   ClientWidth     =   6270
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,22 +18,69 @@ Begin VB.Form FormNoise
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   326
+   ScaleHeight     =   370
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   338
+   ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   7
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   6
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsNoise 
       Height          =   255
-      Left            =   240
+      Left            =   360
       Max             =   500
       Min             =   1
       TabIndex        =   1
-      Top             =   3240
+      Top             =   3720
       Value           =   1
-      Width           =   4575
+      Width           =   4815
    End
    Begin VB.TextBox txtNoise 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -44,62 +91,16 @@ Begin VB.Form FormNoise
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
-      Left            =   2520
+      Height          =   315
+      Left            =   5280
       TabIndex        =   0
       Text            =   "1"
-      Top             =   2760
-      Width           =   495
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   7
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2175
+      Top             =   3690
+      Width           =   615
    End
    Begin VB.CheckBox ChkM 
       Appearance      =   0  'Flat
-      Caption         =   "Monochromatic"
+      Caption         =   "Monochromatic noise"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -111,33 +112,31 @@ Begin VB.Form FormNoise
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   1680
+      Left            =   360
       TabIndex        =   2
-      Top             =   3720
-      Width           =   1575
+      Top             =   4320
+      Width           =   2535
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   3720
+      Left            =   5040
       TabIndex        =   4
-      Top             =   4320
+      Top             =   5040
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2520
+      Left            =   3840
       TabIndex        =   3
-      Top             =   4320
+      Top             =   5040
       Width           =   1125
    End
-   Begin VB.Label Label3 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "  Before                                                           After"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -149,10 +148,10 @@ Begin VB.Form FormNoise
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
+      Left            =   120
       TabIndex        =   8
-      Top             =   2310
-      Width           =   4575
+      Top             =   2880
+      Width           =   3975
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -169,9 +168,9 @@ Begin VB.Form FormNoise
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1680
+      Left            =   240
       TabIndex        =   5
-      Top             =   2790
+      Top             =   3360
       Width           =   720
    End
 End
@@ -184,8 +183,8 @@ Attribute VB_Exposed = False
 'Image Noise Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 3/15/01
-'Last updated: 6/August/06
-'Last update: previewing, optimization, comments, variable type changes
+'Last updated: 10/September/12
+'Last update: rewrote against new layer class
 '
 'Form for adding noise to an image.
 '
@@ -194,7 +193,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub ChkM_Click()
-    PreviewNoise hsNoise.Value, ChkM.Value
+    AddNoise hsNoise.Value, ChkM.Value, True, PicEffect
 End Sub
 
 'CANCEL button
@@ -214,62 +213,99 @@ Private Sub CmdOK_Click()
 End Sub
 
 'Subroutine for adding noise to an image
-'Inputs: Amount of noise, monochromatic or not
-Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean)
-
-    'Although it's slow, we're stuck using random numbers for noise addition
-    Randomize Timer
+' Inputs: Amount of noise, monochromatic or not, preview settings
+Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
-    Message "Adding noise..."
+    If toPreview = False Then Message "Increasing image noise..."
     
-    SetProgBarMax PicWidthL
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
     
-    Dim Ncolor As Long
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long
+    
+    'Noise variables
+    Dim nColor As Long
     Dim dNoise As Long
     
-    'Double the amount of noise we plan on using (so we can add noise above or below 0)
+    'Double the amount of noise we plan on using (so we can add noise above or below the current color value)
     dNoise = Noise * 2
     
-    Dim r As Long, g As Long, b As Long
-    Dim QuickX As Long
+    'Although it's slow, we're stuck using random numbers for noise addition.  Seed the generator with a pseudo-random value.
+    Randomize Timer
     
-    For x = 0 To PicWidthL
-        QuickX = x * 3
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
-        For y = 0 To PicHeightL
+        If MC = True Then
             
-            r = ImageData(QuickX + 2, y)
-            g = ImageData(QuickX + 1, y)
-            b = ImageData(QuickX, y)
+            'Monochromatic noise - same amount for each color
+            nColor = (dNoise * Rnd) - Noise
+            r = r + nColor
+            g = g + nColor
+            b = b + nColor
             
-            If MC = True Then
-                'Monochromatic noise - same amount for each color
-                Ncolor = (dNoise * Rnd) - Noise
-                r = r + Ncolor
-                g = g + Ncolor
-                b = b + Ncolor
-            Else
-                'Colored noise - each color generated randomly
-                r = r + (dNoise * Rnd) - Noise
-                g = g + (dNoise * Rnd) - Noise
-                b = b + (dNoise * Rnd) - Noise
-            End If
+        Else
             
-            'Trim values
-            ByteMeL r
-            ByteMeL g
-            ByteMeL b
+            'Colored noise - each color generated randomly
+            r = r + (dNoise * Rnd) - Noise
+            g = g + (dNoise * Rnd) - Noise
+            b = b + (dNoise * Rnd) - Noise
             
-            'Replace pixel data
-            ImageData(QuickX + 2, y) = r
-            ImageData(QuickX + 1, y) = g
-            ImageData(QuickX, y) = b
-            
-        Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        End If
+        
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
+        If g > 255 Then g = 255
+        If g < 0 Then g = 0
+        If b > 255 Then b = 255
+        If b < 0 Then b = 0
+        
+        'Assign that blended value to each color channel
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
+        
+    Next y
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    SetImageData
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -277,61 +313,23 @@ End Sub
 Private Sub Form_Load()
     
     'Create the previews
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-    PreviewNoise hsNoise.Value, ChkM.Value
+    DrawPreviewImage picPreview
+    AddNoise hsNoise.Value, ChkM.Value, True, PicEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-
-'Same as above, but performs the effect only on the preview boxes
-Private Sub PreviewNoise(ByVal Noise As Long, ByVal MC As Boolean)
-    Randomize Timer
-    GetPreviewData PicPreview
-    Dim Ncolor As Long
-    Dim dNoise As Long
-    dNoise = Noise * 2
-    Dim r As Long, g As Long, b As Long
-    Dim QuickX As Long
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickX = x * 3
-        For y = PreviewY To PreviewY + PreviewHeight
-            r = ImageData(QuickX + 2, y)
-            g = ImageData(QuickX + 1, y)
-            b = ImageData(QuickX, y)
-            If MC = True Then
-                Ncolor = (dNoise * Rnd) - Noise
-                r = r + Ncolor
-                g = g + Ncolor
-                b = b + Ncolor
-            Else
-                r = r + (dNoise * Rnd) - Noise
-                g = g + (dNoise * Rnd) - Noise
-                b = b + (dNoise * Rnd) - Noise
-            End If
-            ByteMeL r
-            ByteMeL g
-            ByteMeL b
-            ImageData(QuickX + 2, y) = r
-            ImageData(QuickX + 1, y) = g
-            ImageData(QuickX, y) = b
-        Next y
-    Next x
-    SetPreviewData PicEffect
-End Sub
-
 'The following four routines keep the value of the textbox and scroll bar in lock-step
 Private Sub hsNoise_Change()
     txtNoise.Text = hsNoise.Value
-    PreviewNoise hsNoise.Value, ChkM.Value
+    AddNoise hsNoise.Value, ChkM.Value, True, PicEffect
 End Sub
 
 Private Sub hsNoise_Scroll()
     txtNoise.Text = hsNoise.Value
-    PreviewNoise hsNoise.Value, ChkM.Value
+    AddNoise hsNoise.Value, ChkM.Value, True, PicEffect
 End Sub
 
 Private Sub txtNoise_Change()
