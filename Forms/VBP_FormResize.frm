@@ -244,8 +244,8 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 5/July/11
-'Last update: added support for additional FreeImage resampling filters
+'Last updated: 10/September/12
+'Last update: rewrote all resize functions against the new layer class
 '
 'Handles all image-size related functions.  Currently supports standard resizing and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it in VB code) and bilinear resampling via pure VB)
@@ -255,12 +255,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Resampling declarations
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal un1 As Long, ByVal n1 As Long, ByVal n2 As Long, ByVal un2 As Long) As Long
-Private Buffer As Long, Buffer_hBitmap As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 
 'Used to prevent the scroll bars from getting stuck in update loops
 Dim updateWidthBar As Boolean, updateHeightBar As Boolean
@@ -276,164 +271,216 @@ End Sub
 'Resize an image using bicubic, bilinear, or nearest neighbor resampling
 Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMethod As Byte)
 
+    'Because most resize methods require a temporary layer, create one here
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+
     'Nearest neighbor...
     If iMethod = RESIZE_NORMAL Then
-        Message "Resizing image..."
-        SetProgBarMax PicHeightL
-        FormMain.ActiveForm.BackBuffer2.Width = iWidth + 2
-        FormMain.ActiveForm.BackBuffer2.Height = iHeight + 2
-        FormMain.ActiveForm.BackBuffer2.PaintPicture FormMain.ActiveForm.BackBuffer.Picture, 0, 0, iWidth, iHeight, 0, 0, PicWidthL, PicHeightL, vbSrcCopy
-        FormMain.ActiveForm.BackBuffer2.Picture = FormMain.ActiveForm.BackBuffer2.Image
-        FormMain.ActiveForm.BackBuffer.Cls
-        FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-        PicWidthL = iWidth
-        PicHeightL = iHeight
-        pdImages(CurrentImage).Width = PicWidthL
-        pdImages(CurrentImage).Height = PicHeightL
-        DisplaySize PicWidthL, PicHeightL
-        FormMain.ActiveForm.BackBuffer.Width = iWidth + 2
-        FormMain.ActiveForm.BackBuffer.Height = iHeight + 2
-        FormMain.ActiveForm.BackBuffer.PaintPicture FormMain.ActiveForm.BackBuffer2.Picture, 0, 0, iWidth, iHeight, 0, 0, iWidth, iHeight, vbSrcCopy
-        FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-        FormMain.ActiveForm.BackBuffer2.Cls
-        FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
-        PrepareViewport FormMain.ActiveForm, "Image resized"
     
+        Message "Resizing image..."
+        
+        'Copy the current layer into this temporary layer at the new size
+        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, iWidth, iHeight, False
+        
+        'Now copy the resized image back into the main layer
+        pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+        
+        'Update the size to match
+        pdImages(CurrentImage).updateSize
+        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+        
+        'Fit the new image on-screen and redraw it
+        FitOnScreen
+        
     'Halftone resampling... I'm not sure what to actually call it, but since it seems to be based off the
     ' StretchBlt mode Microsoft calls "halftone," I'm running with it
     ElseIf iMethod = RESIZE_HALFTONE Then
-        Message "Resampling image..."
-        Dim tmpImagePath As String
-        tmpImagePath = TempPath & "PDResample.tmp"
-        SavePicture FormMain.ActiveForm.BackBuffer.Image, tmpImagePath
-        Buffer = CreateCompatibleDC(0)
-        Buffer_hBitmap = LoadImage(ByVal 0&, tmpImagePath, 0, iWidth, iHeight, &H10)
-        SelectObject Buffer, Buffer_hBitmap
-        FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-        FormMain.ActiveForm.BackBuffer.Cls
-        FormMain.ActiveForm.BackBuffer.Width = iWidth + 2
-        FormMain.ActiveForm.BackBuffer.Height = iHeight + 2
-        StretchBlt FormMain.ActiveForm.BackBuffer.hDC, 0, 0, iWidth, iHeight, Buffer, 0, 0, iWidth, iHeight, vbSrcCopy
-        DeleteDC Buffer
-        DeleteObject Buffer_hBitmap
-        FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-        If FileExist(tmpImagePath) Then Kill tmpImagePath
-        PicWidthL = iWidth
-        PicHeightL = iHeight
-        pdImages(CurrentImage).Width = PicWidthL
-        pdImages(CurrentImage).Height = PicHeightL
-        DisplaySize PicWidthL, PicHeightL
-        PrepareViewport FormMain.ActiveForm, "Image resized"
+        
+        Message "Resizing image..."
+                
+        'Copy the current layer into this temporary layer at the new size
+        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, iWidth, iHeight, True
+        
+        'Now copy the resized image back into the main layer
+        pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+        
+        'Update the size to match
+        pdImages(CurrentImage).updateSize
+        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+        
+        'Fit the new image on-screen and redraw it
+        FitOnScreen
         
     'True bilinear sampling
     ElseIf iMethod = RESIZE_BILINEAR Then
-        Message "Resampling image..."
-        SetProgBarMax iHeight
-        FormMain.ActiveForm.BackBuffer2.Width = iWidth + 2
-        FormMain.ActiveForm.BackBuffer2.Height = iHeight + 2
+    
+        'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
+        If FreeImageEnabled Then
         
-        GetImageData True
+            FreeImageResize iWidth, iHeight, FILTER_BILINEAR
         
-        'Current width and height
-        Dim cWidth As Long, cHeight As Long
-        cWidth = PicWidthL
-        cHeight = PicHeightL
+        'If FreeImage is not enabled, we have to do the resample ourselves.
+        Else
         
-        GetImageData2 True
+            Message "Resampling image..."
         
-        'The scaled ratio between the old x and y values and the new ones
-        Dim xScale As Single, yScale As Single
-        'The destination x and y
-        Dim dstX As Single, dstY As Single
-        'The interpolated X and Y values
-        Dim IntrplX As Integer, IntrplY As Integer
-        'Calculation variables
-        Dim CalcX As Single, CalcY As Single
-        'The red and green values the we use to interpolate the new pixel
-        Dim r As Long, r1 As Single, r2 As Single, r3 As Single, r4 As Single
-        Dim g As Long, g1 As Single, g2 As Single, g3 As Single, g4 As Single
-        Dim b As Long, b1 As Single, b2 As Single, b3 As Single, b4 As Single
-        'The interpolated red, green, and blue
-        Dim ir1 As Long, ig1 As Long, ib1 As Long
-        Dim ir2 As Long, ig2 As Long, ib2 As Long
-        'Get the ratio between the old image and the new one
-        xScale = cWidth / iWidth
-        yScale = cHeight / iHeight
-
-        'Draw each pixel in the new image
-        For y = 0 To iHeight - 1
-            'Generate the y calculation variables
-            dstY = y * yScale
-            IntrplY = Int(dstY)
-            CalcY = dstY - IntrplY
+            'Create a local array and point it at the pixel data of the current image
+            Dim srcImageData() As Byte
+            Dim srcSA As SAFEARRAY2D
+            prepImageData srcSA
+            CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+            'Resize the temporary layer to the target size, and point a second local array at it
+            tmpLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            
+            Dim dstImageData() As Byte
+            Dim dstSA As SAFEARRAY2D
+            
+            prepSafeArray dstSA, tmpLayer
+            CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+            
+            'These values will help us access locations in the array more quickly.
+            ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+            Dim QuickVal As Long, qvDepth As Long
+            qvDepth = tmpLayer.getLayerColorDepth \ 8
+            
+            'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+            ' based on the size of the area to be processed.
+            Dim progBarCheck As Long
+            SetProgBarMax iWidth
+            progBarCheck = findBestProgBarValue()
+        
+            'Resampling requires a ton of variables
+        
+            'Scaled ratios between the old x and y values and the new ones
+            Dim xScale As Single, yScale As Single
+            
+            'Coordinate variables for source and destination
+            Dim x As Long, y As Long
+            Dim dstX As Single, dstY As Single
+            
+            'Interpolated X and Y values
+            Dim IntrplX As Integer, IntrplY As Integer
+            
+            'Calculation variables
+            Dim CalcX As Single, CalcY As Single, invCalcX As Single, invCalcY As Single
+            
+            'Red and green values we'll use to interpolate the new pixel
+            Dim r As Long, r1 As Single, r2 As Single, r3 As Single, r4 As Single
+            Dim g As Long, g1 As Single, g2 As Single, g3 As Single, g4 As Single
+            Dim b As Long, b1 As Single, b2 As Single, b3 As Single, b4 As Single
+            
+            'Interpolated red, green, and blue
+            Dim ir1 As Long, ig1 As Long, ib1 As Long
+            Dim ir2 As Long, ig2 As Long, ib2 As Long
+            
+            'Shortcut variables for x positions
+            Dim QuickX As Long, QuickXInt As Long, QuickXIntRight As Long
+            
+            'Get the ratio between the old image and the new one
+            xScale = (pdImages(CurrentImage).Width - 1) / iWidth
+            yScale = (pdImages(CurrentImage).Height - 1) / iHeight
+            
             For x = 0 To iWidth - 1
+                
                 'Generate the x calculation variables
                 dstX = x * xScale
                 IntrplX = Int(dstX)
                 CalcX = dstX - IntrplX
+                invCalcX = 1 - CalcX
                 
-                'Get the 4 pixels around the interpolated one
-                r1 = ImageData(IntrplX * 3 + 2, IntrplY)
-                g1 = ImageData(IntrplX * 3 + 1, IntrplY)
-                b1 = ImageData(IntrplX * 3, IntrplY)
-                
-                r2 = ImageData((IntrplX + 1) * 3 + 2, IntrplY)
-                g2 = ImageData((IntrplX + 1) * 3 + 1, IntrplY)
-                b2 = ImageData((IntrplX + 1) * 3, IntrplY)
-                
-                r3 = ImageData(IntrplX * 3 + 2, IntrplY + 1)
-                g3 = ImageData(IntrplX * 3 + 1, IntrplY + 1)
-                b3 = ImageData(IntrplX * 3, IntrplY + 1)
+                QuickX = x * qvDepth
+                QuickXInt = IntrplX * qvDepth
+                QuickXIntRight = (IntrplX + 1) * qvDepth
     
-                r4 = ImageData((IntrplX + 1) * 3 + 2, IntrplY + 1)
-                g4 = ImageData((IntrplX + 1) * 3 + 1, IntrplY + 1)
-                b4 = ImageData((IntrplX + 1) * 3, IntrplY + 1)
-    
-                'Interpolate the R,G,B values in the X direction
-                ir1 = r1 * (1 - CalcY) + r3 * CalcY
-                ig1 = g1 * (1 - CalcY) + g3 * CalcY
-                ib1 = b1 * (1 - CalcY) + b3 * CalcY
-                ir2 = r2 * (1 - CalcY) + r4 * CalcY
-                ig2 = g2 * (1 - CalcY) + g4 * CalcY
-                ib2 = b2 * (1 - CalcY) + b4 * CalcY
-                'Intepolate the R,G,B values in the Y direction
-                r = ir1 * (1 - CalcX) + ir2 * CalcX
-                g = ig1 * (1 - CalcX) + ig2 * CalcX
-                b = ib1 * (1 - CalcX) + ib2 * CalcX
+                'Draw each pixel in the new image
+                For y = 0 To iHeight - 1
+                    
+                    'Generate the y calculation variables
+                    dstY = y * yScale
+                    IntrplY = Int(dstY)
+                    CalcY = dstY - IntrplY
+                    invCalcY = 1 - CalcY
+                    
+                    'Get the 4 pixels around the interpolated one
+                    r1 = srcImageData(QuickXInt + 2, IntrplY)
+                    g1 = srcImageData(QuickXInt + 1, IntrplY)
+                    b1 = srcImageData(QuickXInt, IntrplY)
+                    
+                    r2 = srcImageData(QuickXIntRight + 2, IntrplY)
+                    g2 = srcImageData(QuickXIntRight + 1, IntrplY)
+                    b2 = srcImageData(QuickXIntRight, IntrplY)
+                    
+                    r3 = srcImageData(QuickXInt + 2, IntrplY + 1)
+                    g3 = srcImageData(QuickXInt + 1, IntrplY + 1)
+                    b3 = srcImageData(QuickXInt, IntrplY + 1)
+        
+                    r4 = srcImageData(QuickXIntRight + 2, IntrplY + 1)
+                    g4 = srcImageData(QuickXIntRight + 1, IntrplY + 1)
+                    b4 = srcImageData(QuickXIntRight, IntrplY + 1)
+        
+                    'Interpolate the R,G,B values in the Y direction
+                    ir1 = r1 * invCalcY + r3 * CalcY
+                    ig1 = g1 * invCalcY + g3 * CalcY
+                    ib1 = b1 * invCalcY + b3 * CalcY
+                    ir2 = r2 * invCalcY + r4 * CalcY
+                    ig2 = g2 * invCalcY + g4 * CalcY
+                    ib2 = b2 * invCalcY + b4 * CalcY
+                    
+                    'Intepolate the R,G,B values in the X direction
+                    r = ir1 * invCalcX + ir2 * CalcX
+                    g = ig1 * invCalcX + ig2 * CalcX
+                    b = ib1 * invCalcX + ib2 * CalcX
+                    
+                    'Make sure that the values are in the acceptable range
+                    If r > 255 Then
+                        r = 255
+                    ElseIf r < 0 Then
+                        r = 0
+                    End If
+                    If g > 255 Then
+                        g = 255
+                    ElseIf g < 0 Then
+                        g = 0
+                    End If
+                    If b > 255 Then
+                        b = 255
+                    ElseIf b < 0 Then
+                        b = 0
+                    End If
+                    
+                    'Set this pixel onto the destination image
+                    dstImageData(QuickX + 2, y) = r
+                    dstImageData(QuickX + 1, y) = g
+                    dstImageData(QuickX, y) = b
                 
-                'Make sure that the values are in the acceptable range
-                ByteMeL r
-                ByteMeL g
-                ByteMeL b
-                'Set this pixel onto the new picture box
-                ImageData2(x * 3 + 2, y) = r
-                ImageData2(x * 3 + 1, y) = g
-                ImageData2(x * 3, y) = b
+                Next y
+            
+                If (x And progBarCheck) = 0 Then SetProgBarVal x
+                
             Next x
-            If y Mod 5 = 0 Then SetProgBarVal y
-        Next y
         
-        SetImageData2 True
-        FormMain.ActiveForm.BackBuffer.Width = iWidth + 2
-        FormMain.ActiveForm.BackBuffer.Height = iHeight + 2
-        FormMain.ActiveForm.BackBuffer.Cls
-        FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-        FormMain.ActiveForm.BackBuffer.PaintPicture FormMain.ActiveForm.BackBuffer2.Picture, 0, 0, iWidth, iHeight, 0, 0, iWidth, iHeight, vbSrcCopy
-        FormMain.ActiveForm.BackBuffer2.Cls
-        FormMain.ActiveForm.BackBuffer2.Picture = LoadPicture("")
-        PicWidthL = iWidth
-        PicHeightL = iHeight
-        pdImages(CurrentImage).Width = PicWidthL
-        pdImages(CurrentImage).Height = PicHeightL
-        DisplaySize PicWidthL, PicHeightL
-        FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-        PrepareViewport FormMain.ActiveForm, "Image resized"
+            'Now copy the resized image back into the main layer
+            pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+            
+            'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+            Erase srcImageData
+            
+            CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+            Erase dstImageData
+            
+            'Update the size variables
+            pdImages(CurrentImage).updateSize
+            DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
         
-        SetProgBarVal 0
+            SetProgBarVal 0
         
-        'Attempt to save some memory (even though ImageData2 should already be deleted)
-        Erase ImageData
-        Erase ImageData2
+            'Fit the new image on-screen and redraw it
+            FitOnScreen
+            
+        End If
     
     ElseIf iMethod = RESIZE_BSPLINE Then
         FreeImageResize iWidth, iHeight, FILTER_BSPLINE
@@ -448,6 +495,11 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
         FreeImageResize iWidth, iHeight, FILTER_LANCZOS3
         
     End If
+    
+    'Release our temporary layer
+    Set tmpLayer = Nothing
+    
+    Message "Finished."
     
 End Sub
 
@@ -496,8 +548,8 @@ End Sub
 Private Sub Form_Load()
     
     'Add one to the displayed width and height, since we store them -1 for loops
-    TxtWidth.Text = PicWidthL + 1
-    TxtHeight.Text = PicHeightL + 1
+    TxtWidth.Text = pdImages(CurrentImage).Width
+    TxtHeight.Text = pdImages(CurrentImage).Height
     
     'Make the scroll bars match the text boxes
     updateWidthBar = False
@@ -508,14 +560,15 @@ Private Sub Form_Load()
     updateHeightBar = True
     
     'Establish ratios
-    WRatio = (PicWidthL + 1) / (PicHeightL + 1)
-    HRatio = (PicHeightL + 1) / (PicWidthL + 1)
+    WRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
+    HRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
 
     'Load up the combo box
     cboResample.AddItem "Nearest Neighbor", 0
     cboResample.AddItem "Halftone", 1
     cboResample.AddItem "Bilinear", 2
     cboResample.ListIndex = 2
+    
     'If the FreeImage library is available, add additional resize options to the combo box
     If FreeImageEnabled = True Then
         cboResample.AddItem "B-Spline", 3
@@ -572,56 +625,49 @@ Private Sub UpdateWidthBox()
 End Sub
 '*************************************************************************************
 
+'Resize an image using the FreeImage library.  Very fast.
 Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
+    
+    'Double-check that FreeImage exists
+    If FreeImageEnabled Then
+    
         'Load the FreeImage dll into memory
         Dim hLib As Long
         hLib = LoadLibrary(PluginPath & "FreeImage.dll")
-    
-        Message "Preparing image for resampling..."
-    
-        'Dump the image to a temporary file (a temporary work-around so we can capture
-        'the handle required by FreeImage)
-        Dim temporaryImg As String
-        temporaryImg = TempPath & "PDResample.tmp"
-        SavePicture FormMain.ActiveForm.BackBuffer.Picture, temporaryImg
-    
-        'These two variables will hold pointers to the bitmaps created by FreeImage calls
-        Dim resizedDib As Long
-
-        Message "Resampling image..."
-
-        'Load the temp image into FreeImage and tell it to resize accordingly
-        resizedDib = FreeImage_LoadEx(temporaryImg, , iWidth, iHeight, , interpolationMethod)
-    
-        'Paint the resized image to the current picture box
-        Message "Rendering..."
-        FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-        'FormMain.ActiveForm.BackBuffer.Cls
-        FormMain.ActiveForm.BackBuffer.Width = iWidth + 2
-        FormMain.ActiveForm.BackBuffer.Height = iHeight + 2
-        Dim PaintReturn As Long
-        PaintReturn = FreeImage_PaintDC(FormMain.ActiveForm.BackBuffer.hDC, resizedDib)
-        FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-        FormMain.ActiveForm.BackBuffer.Refresh
-        PicWidthL = iWidth
-        PicHeightL = iHeight
-        pdImages(CurrentImage).Width = PicWidthL
-        pdImages(CurrentImage).Height = PicHeightL
-        DisplaySize PicWidthL, PicHeightL
         
-        PrepareViewport FormMain.ActiveForm, "Image resized (via FreeImage)"
+        Message "Resampling image using the FreeImage library..."
+        
+        'Convert our current layer to a FreeImage-type DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+        
+        'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
+        If fi_DIB <> 0 Then
+            
+            Dim returnDIB As Long
+            returnDIB = FreeImage_RescaleByPixel(fi_DIB, iWidth, iHeight, True, interpolationMethod)
+            
+            'Resize our main layer in preparation for the transfer
+            pdImages(CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            
+            'Copy the bits from the FreeImage DIB to our DIB
+            SetDIBitsToDevice pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, iWidth, iHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+     
+            'With the transfer complete, release the FreeImage DIB and unload the library
+            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            FreeLibrary hLib
+     
+            'Update the size variables
+            pdImages(CurrentImage).updateSize
+            DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+        
+            'Fit the new image on-screen and redraw it
+            FitOnScreen
+            
+        End If
+        
+    End If
     
-        'Clear out the images generated by FreeImage
-        If resizedDib <> 0 Then FreeImage_UnloadEx resizedDib
-    
-        'Release the library
-        FreeLibrary hLib
-    
-        'Delete the temp file
-        If FileExist(temporaryImg) Then Kill temporaryImg
-    
-        SetProgBarVal 0
-        Message "Image resized successfully "
 End Sub
 
 'Because the scrollbars work backward (up means up and down means down) we have to reverse its input
