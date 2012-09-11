@@ -104,7 +104,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.CheckBox chkSmartColors 
       Appearance      =   0  'Flat
-      Caption         =   "Use intelligent coloring"
+      Caption         =   "Use realistic coloring"
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   3480
@@ -257,17 +257,19 @@ Attribute VB_Exposed = False
 'Color Reduction Form
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/October/00
-'Last updated: 20/June/12
-'Last update: Rewrote much of the code to align with the new UI.
+'Last updated: 11/September/12
+'Last update: Rewrote all reduction algorithms against the new layer class
 '
-'In the original incarnation of PhotoDemon, this was a central part of the
-'project. I have since not used it as much (since the project has become
-'almost entirely cenetered around 24-bit imaging), but the code is solid
-'and the feature set is large.
+'In the original incarnation of PhotoDemon, this was a central part of the project. I have since not used
+' it as much (since the project has become almost entirely centered around 24-bit imaging), but the code
+' is solid and the feature set is large.
 '
 '***************************************************************************
 
 Option Explicit
+
+'SetDIBitsToDevice is used to interact with the FreeImage DLL
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -457,70 +459,79 @@ End Sub
 'Automatic 8-bit color reduction via the FreeImage DLL.
 Public Sub ReduceImageColors_Auto(ByVal qMethod As Long)
 
-    'Make sure we found the plug-in when we loaded the program
-    If FreeImageEnabled = False Then
+    'Make sure we found the FreeImage plug-in when the program was loaded
+    If FreeImageEnabled Then
+    
+        'Load the FreeImage dll into memory
+        Dim hLib As Long
+        hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+        
+        Message "Quantizing image using the FreeImage library..."
+        
+        'Convert our current layer to a FreeImage-type DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+        
+        'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
+        If fi_DIB <> 0 Then
+            
+            Dim returnDIB As Long
+            returnDIB = FreeImage_ColorQuantizeEx(fi_DIB, qMethod, True)
+            
+            'Copy the bits from the FreeImage DIB to our DIB
+            SetDIBitsToDevice pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, 0, 0, 0, pdImages(CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+     
+            'With the transfer complete, release the FreeImage DIB and unload the library
+            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            FreeLibrary hLib
+     
+            'Draw the new image on-screen
+            ScrollViewport FormMain.ActiveForm
+            
+            Message "Image successfully quantized to 256 unique colors. "
+            
+        End If
+        
+    Else
         MsgBox "The FreeImage interface plug-ins (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy this file into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
-        Unload FormMain.ActiveForm
         Exit Sub
     End If
     
-    'Load the FreeImage dll into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
-    
-    Message "Preparing image..."
-    
-    'Dump the image to a temporary file (a temporary work-around so we can capture
-    'the handle required by FreeImage)
-    Dim temporaryImg As String
-    temporaryImg = TempPath & "PDQuantize.bmp"
-    SavePicture FormMain.ActiveForm.BackBuffer.Picture, temporaryImg
-    
-    'These two variables will hold pointers to the bitmaps created by FreeImage calls
-    Dim initDib As Long
-    Dim quantizeDib As Long
-
-    'Load the temp image into FreeImage
-    initDib = FreeImage_LoadEx(temporaryImg)
-
-    'Quantize the image
-    Message "Quantizing image..."
-    quantizeDib = FreeImage_ColorQuantizeEx(initDib, qMethod)
-    
-    'Paint the quantized image to the current picture box
-    Message "Rendering..."
-    Dim PaintReturn As Long
-    PaintReturn = FreeImage_PaintDC(FormMain.ActiveForm.BackBuffer.hDC, quantizeDib)
-    FormMain.ActiveForm.BackBuffer.Picture = FormMain.ActiveForm.BackBuffer.Image
-    FormMain.ActiveForm.BackBuffer.Refresh
-    ScrollViewport FormMain.ActiveForm
-    
-    'Clear out the images generated by FreeImage
-    If initDib <> 0 Then FreeImage_UnloadEx initDib
-    If quantizeDib <> 0 Then FreeImage_UnloadEx quantizeDib
-    
-    'Release the library
-    FreeLibrary hLib
-    
-    'Delete the temp file
-    If FileExist(temporaryImg) Then Kill temporaryImg
-    
-    SetProgBarVal 0
-    Message "Colors reduced successfully"
 End Sub
 
 'Bit RGB color reduction (no error diffusion)
-Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False)
+Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
 
+    If toPreview = False Then Message "Applying manual RGB modifications to image..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
     Dim r As Long, g As Long, b As Long
     Dim mR As Single, mG As Single, mB As Single
-
-    Message "Converting picture by manual RGB reduction..."
-    
-    Dim cR As Integer, cG As Integer, cB As Integer
-    
-    GetImageData
-    SetProgBarMax PicWidthL
+    Dim cR As Long, cG As Long, cB As Long
     
     'New code for so-called "Intelligent Coloring"
     Dim rLookup() As Long
@@ -533,21 +544,6 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     ReDim bLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
     ReDim countLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
     
-    'For safety, initialize our lookup tables to zero (because we'll possibly access them without first assigning values)
-    If smartColors = True Then
-        Message "Preparing look-up tables for Intelligent Coloring..."
-        For r = 0 To rValue
-        For g = 0 To gValue
-        For b = 0 To bValue
-            rLookup(r, g, b) = 0
-            gLookup(r, g, b) = 0
-            bLookup(r, g, b) = 0
-            countLookup(r, g, b) = 0
-        Next b
-        Next g
-        Next r
-    End If
-    
     'Prepare inputted variables for the requisite maths
     rValue = rValue - 1
     gValue = gValue - 1
@@ -556,23 +552,28 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     mG = (256 / gValue)
     mB = (256 / bValue)
     
-    'Faster loop indexing
-    Dim QuickX As Long
+    'Finally, prepare conversion look-up tables (which will make the actual color reduction much faster)
+    Dim rQuick(0 To 255) As Byte, gQuick(0 To 255) As Byte, bQuick(0 To 255) As Byte
+    For x = 0 To 255
+        rQuick(x) = Int((x / mR) + 0.5)
+        gQuick(x) = Int((x / mG) + 0.5)
+        bQuick(x) = Int((x / mB) + 0.5)
+    Next x
     
-    Message "Analyzing and converting image to specified RGB parameters..."
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
-    For x = 0 To PicWidthL
-        QuickX = x * 3
-    For y = 0 To PicHeightL
-
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Truncate R, G, and B values (posterize-style) into discreet increments.  0.5 is added for rounding purposes.
-        cR = Int((r / mR) + 0.5)
-        cG = Int((g / mG) + 0.5)
-        cB = Int((b / mB) + 0.5)
+        cR = rQuick(r)
+        cG = gQuick(g)
+        cB = bQuick(b)
         
         'If we're doing Intelligent Coloring, place color values into a look-up table
         If smartColors = True Then
@@ -587,33 +588,34 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         cR = cR * mR
         cG = cG * mG
         cB = cB * mB
-        ByteMe cR
-        ByteMe cG
-        ByteMe cB
+        
+        If cR > 255 Then cR = 255
+        If cR < 0 Then cR = 0
+        If cG > 255 Then cG = 255
+        If cG < 0 Then cG = 0
+        If cB > 255 Then cB = 255
+        If cB < 0 Then cB = 0
         
         'If we are not doing Intelligent Coloring, assign the colors now (to avoid having to do another loop at the end)
         If smartColors = False Then
-            ImageData(QuickX + 2, y) = cR
-            ImageData(QuickX + 1, y) = cG
-            ImageData(QuickX, y) = cB
+            ImageData(QuickVal + 2, y) = cR
+            ImageData(QuickVal + 1, y) = cG
+            ImageData(QuickVal, y) = cB
         End If
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    'If we are not doing Intelligent Coloring, draw the pixels and quit
-    If smartColors = False Then
-        SetImageData
+    'Intelligent Coloring requires extra work.  Perform a second loop through the image, replacing values with their
+    ' computed counterparts.
+    If smartColors Then
     
-        Message "Color reduction complete."
-        SetProgBarVal 0
-        Exit Sub
-    End If
+        SetProgBarVal getProgBarMax
     
-    'If we're still here at this point, asssme we are doing Intelligent Coloring
-    If smartColors = True Then
-    
-        Message "Assigning new values from calculated look-up tables..."
+        If toPreview = False Then Message "Applying intelligent coloring..."
         
         'Find average colors based on color counts
         For r = 0 To rValue
@@ -632,46 +634,72 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         Next r
         
         'Assign average colors back into the picture
-        For x = 0 To PicWidthL
-            QuickX = x * 3
-        For y = 0 To PicHeightL
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
         
-            r = ImageData(QuickX + 2, y)
-            g = ImageData(QuickX + 1, y)
-            b = ImageData(QuickX, y)
-            cR = Int((r / mR) + 0.5)
-            cG = Int((g / mG) + 0.5)
-            cB = Int((b / mB) + 0.5)
-            ImageData(QuickX + 2, y) = rLookup(cR, cG, cB)
-            ImageData(QuickX + 1, y) = gLookup(cR, cG, cB)
-            ImageData(QuickX, y) = bLookup(cR, cG, cB)
+            r = ImageData(QuickVal + 2, y)
+            g = ImageData(QuickVal + 1, y)
+            b = ImageData(QuickVal, y)
+            
+            cR = rQuick(r)
+            cG = gQuick(g)
+            cB = bQuick(b)
+            
+            ImageData(QuickVal + 2, y) = rLookup(cR, cG, cB)
+            ImageData(QuickVal + 1, y) = gLookup(cR, cG, cB)
+            ImageData(QuickVal, y) = bLookup(cR, cG, cB)
+            
         Next y
         Next x
         
-        SetImageData
-    
-        Message "Color reduction complete."
-        SetProgBarVal 0
-        Exit Sub
-    
     End If
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
 'Error Diffusion dithering to x# shades of color per component
-Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False)
+Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
+    If toPreview = False Then Message "Applying manual RGB modifications to image..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    SetProgBarMax finalY
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim mR As Single, mG As Single, mB As Single
-    
-    Message "Converting picture by dithered RGB reduction..."
-    
     Dim cR As Long, cG As Long, cB As Long
-    Dim eR As Long, eG As Long, eB As Long
-    Dim Offset As Long
-    
-    GetImageData
-    SetProgBarMax PicHeightL
+    Dim iR As Long, iG As Long, iB As Long
+    Dim mR As Single, mG As Single, mB As Single
+    Dim eR As Single, eG As Single, eB As Single
     
     'New code for so-called "Intelligent Coloring"
     Dim rLookup() As Long
@@ -684,21 +712,6 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     ReDim bLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
     ReDim countLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
     
-    'For safety, initialize our lookup tables to zero (because we'll possibly access them without first assigning values)
-    If smartColors = True Then
-        Message "Preparing look-up tables for Intelligent Coloring..."
-        For r = 0 To rValue
-        For g = 0 To gValue
-        For b = 0 To bValue
-            rLookup(r, g, b) = 0
-            gLookup(r, g, b) = 0
-            bLookup(r, g, b) = 0
-            countLookup(r, g, b) = 0
-        Next b
-        Next g
-        Next r
-    End If
-    
     'Prepare inputted variables for the requisite maths
     rValue = rValue - 1
     gValue = gValue - 1
@@ -707,31 +720,40 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     mG = (256 / gValue)
     mB = (256 / bValue)
     
-    Dim QuickX As Long
+    'Finally, prepare conversion look-up tables (which will make the actual color reduction much faster)
+    Dim rQuick(0 To 255) As Byte, gQuick(0 To 255) As Byte, bQuick(0 To 255) As Byte
+    For x = 0 To 255
+        rQuick(x) = Int((x / mR) + 0.5)
+        gQuick(x) = Int((x / mG) + 0.5)
+        bQuick(x) = Int((x / mB) + 0.5)
+    Next x
     
-    Message "Analyzing and converting image to specified RGB parameters..."
-    
-    For y = 0 To PicHeightL
-        Offset = y Mod 2
-    For x = Offset To PicWidthL
-    
-        QuickX = x * 3
+    'Loop through each pixel in the image, converting values as we go
+    For y = initY To finalY
+    For x = initX To finalX
         
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
-        r = r + eR
-        g = g + eG
-        b = b + eB
-        cR = Int((r / mR) + 0.5)
-        cG = Int((g / mG) + 0.5)
-        cB = Int((b / mB) + 0.5)
-        If cR < 0 Then cR = 0
-        If cG < 0 Then cG = 0
-        If cB < 0 Then cB = 0
-        If cR > 255 Then cR = 255
-        If cG > 255 Then cG = 255
-        If cB > 255 Then cB = 255
+        QuickVal = x * qvDepth
+    
+        'Get the source pixel color values
+        iR = ImageData(QuickVal + 2, y)
+        iG = ImageData(QuickVal + 1, y)
+        iB = ImageData(QuickVal, y)
+        
+        r = iR + eR
+        g = iG + eG
+        b = iB + eB
+        
+        If r > 255 Then r = 255
+        If g > 255 Then g = 255
+        If b > 255 Then b = 255
+        If r < 0 Then r = 0
+        If g < 0 Then g = 0
+        If b < 0 Then b = 0
+        
+        'Truncate R, G, and B values (posterize-style) into discreet increments.  0.5 is added for rounding purposes.
+        cR = rQuick(r)
+        cG = gQuick(g)
+        cB = bQuick(b)
         
         'If we're doing Intelligent Coloring, place color values into a look-up table
         If smartColors = True Then
@@ -747,45 +769,44 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         cG = cG * mG
         cB = cB * mB
         
-        eR = r - cR
-        eG = g - cG
-        eB = b - cB
+        'Calculate error
+        eR = iR - cR
+        eG = iG - cG
+        eB = iB - cB
         
-        ByteMeL cR
-        ByteMeL cG
-        ByteMeL cB
-        
-        'If ER < 0 Then ER = 0
-        'If EG < 0 Then EG = 0
-        'If EB < 0 Then EB = 0
+        If cR > 255 Then cR = 255
+        If cR < 0 Then cR = 0
+        If cG > 255 Then cG = 255
+        If cG < 0 Then cG = 0
+        If cB > 255 Then cB = 255
+        If cB < 0 Then cB = 0
         
         'If we are not doing Intelligent Coloring, assign the colors now (to avoid having to do another loop at the end)
         If smartColors = False Then
-            ImageData(QuickX + 2, y) = cR
-            ImageData(QuickX + 1, y) = cG
-            ImageData(QuickX, y) = cB
+            ImageData(QuickVal + 2, y) = cR
+            ImageData(QuickVal + 1, y) = cG
+            ImageData(QuickVal, y) = cB
         End If
         
     Next x
+        
+        'At the end of each line, reset our error-tracking values
         eR = 0
         eG = 0
         eB = 0
-        If y Mod 20 = 0 Then SetProgBarVal y
+        
+        If toPreview = False Then
+            If (y And progBarCheck) = 0 Then SetProgBarVal y
+        End If
     Next y
     
-    'If we are not doing Intelligent Coloring, draw the pixels and quit
-    If smartColors = False Then
-        SetImageData
+    'Intelligent Coloring requires extra work.  Perform a second loop through the image, replacing values with their
+    ' computed counterparts.
+    If smartColors Then
     
-        Message "Color reduction complete."
-        SetProgBarVal 0
-        Exit Sub
-    End If
+        SetProgBarVal getProgBarMax
     
-    'If we're still here at this point, assume we are doing Intelligent Coloring
-    If smartColors = True Then
-    
-        Message "Assigning new values from calculated look-up tables..."
+        If toPreview = False Then Message "Applying intelligent coloring..."
         
         'Find average colors based on color counts
         For r = 0 To rValue
@@ -798,52 +819,65 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
                 If rLookup(r, g, b) > 255 Then rLookup(r, g, b) = 255
                 If gLookup(r, g, b) > 255 Then gLookup(r, g, b) = 255
                 If bLookup(r, g, b) > 255 Then bLookup(r, g, b) = 255
-                If rLookup(r, g, b) < 0 Then rLookup(r, g, b) = 0
-                If gLookup(r, g, b) < 0 Then gLookup(r, g, b) = 0
-                If bLookup(r, g, b) < 0 Then bLookup(r, g, b) = 0
             End If
         Next b
         Next g
         Next r
         
         'Assign average colors back into the picture
-        For x = 0 To PicWidthL
-            QuickX = x * 3
-            eR = 0
-            eG = 0
-            eB = 0
-        For y = 0 To PicHeightL
-        
-            r = ImageData(QuickX + 2, y)
-            g = ImageData(QuickX + 1, y)
-            b = ImageData(QuickX, y)
-            r = r + eR
-            g = g + eG
-            b = b + eB
-            cR = Int((r / mR) + 0.5)
-            cG = Int((g / mG) + 0.5)
-            cB = Int((b / mB) + 0.5)
-            ImageData(QuickX + 2, y) = rLookup(cR, cG, cB)
-            ImageData(QuickX + 1, y) = gLookup(cR, cG, cB)
-            ImageData(QuickX, y) = bLookup(cR, cG, cB)
+        For y = initY To finalY
+        For x = initX To finalX
             
+            QuickVal = x * qvDepth
+        
+            iR = ImageData(QuickVal + 2, y)
+            iG = ImageData(QuickVal + 1, y)
+            iB = ImageData(QuickVal, y)
+            
+            r = iR + eR
+            g = iG + eG
+            b = iB + eB
+            
+            If r > 255 Then r = 255
+            If g > 255 Then g = 255
+            If b > 255 Then b = 255
+            If r < 0 Then r = 0
+            If g < 0 Then g = 0
+            If b < 0 Then b = 0
+            
+            cR = rQuick(r)
+            cG = gQuick(g)
+            cB = bQuick(b)
+            
+            ImageData(QuickVal + 2, y) = rLookup(cR, cG, cB)
+            ImageData(QuickVal + 1, y) = gLookup(cR, cG, cB)
+            ImageData(QuickVal, y) = bLookup(cR, cG, cB)
+            
+            'Calculate the error for this pixel
             cR = cR * mR
             cG = cG * mG
             cB = cB * mB
         
-            eR = r - cR
-            eG = g - cG
-            eB = b - cB
+            eR = iR - cR
+            eG = iG - cG
+            eB = iB - cB
             
-        Next y
         Next x
         
-        SetImageData
-    
-        Message "Color reduction complete."
-        SetProgBarVal 0
-        Exit Sub
-    
+            'At the end of each line, reset our error-tracking values
+            eR = 0
+            eG = 0
+            eB = 0
+        
+        Next y
+        
     End If
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
