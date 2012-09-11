@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormRank 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Rank Filter"
-   ClientHeight    =   5085
+   ClientHeight    =   6030
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5040
+   ClientWidth     =   6255
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,22 +18,69 @@ Begin VB.Form FormRank
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   339
+   ScaleHeight     =   402
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   336
+   ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   8
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   7
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsRadius 
       Height          =   255
-      Left            =   240
+      Left            =   360
       Max             =   25
       Min             =   1
       TabIndex        =   2
-      Top             =   3960
+      Top             =   4680
       Value           =   1
-      Width           =   4575
+      Width           =   4935
    End
    Begin VB.TextBox txtRadius 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -44,58 +91,12 @@ Begin VB.Form FormRank
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
-      Left            =   2520
+      Height          =   330
+      Left            =   5400
       TabIndex        =   1
       Text            =   "1"
-      Top             =   3480
+      Top             =   4650
       Width           =   495
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   7
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2175
    End
    Begin VB.ComboBox cboRank 
       Appearance      =   0  'Flat
@@ -110,29 +111,48 @@ Begin VB.Form FormRank
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   330
-      Left            =   1560
+      Left            =   360
       Style           =   2  'Dropdown List
       TabIndex        =   0
-      Top             =   2760
+      Top             =   3720
       Width           =   3135
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   3600
+      Left            =   4920
       TabIndex        =   4
-      Top             =   4560
+      Top             =   5520
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2400
+      Left            =   3720
       TabIndex        =   3
-      Top             =   4560
+      Top             =   5520
       Width           =   1125
+   End
+   Begin VB.Label lblBeforeandAfter 
+      BackStyle       =   0  'Transparent
+      Caption         =   "  Before                                                           After"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00400000&
+      Height          =   255
+      Left            =   120
+      TabIndex        =   9
+      Top             =   2880
+      Width           =   3975
    End
    Begin VB.Label Label2 
       Appearance      =   0  'Flat
@@ -151,31 +171,10 @@ Begin VB.Form FormRank
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   360
-      TabIndex        =   9
-      Top             =   2820
-      Width           =   1140
-   End
-   Begin VB.Label Label3 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
       Left            =   240
-      TabIndex        =   8
-      Top             =   2310
-      Width           =   4575
+      TabIndex        =   6
+      Top             =   3360
+      Width           =   1140
    End
    Begin VB.Label lblRadius 
       AutoSize        =   -1  'True
@@ -192,9 +191,9 @@ Begin VB.Form FormRank
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1800
+      Left            =   240
       TabIndex        =   5
-      Top             =   3495
+      Top             =   4320
       Width           =   570
    End
 End
@@ -219,19 +218,23 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
+' original image width in order to establish the right ratio.
+Dim iWidth As Long, iHeight As Long
+
 Private Sub cboRank_Click()
-    UpdatePreview
+    CustomRankFilter hsRadius.Value, cboRank.ListIndex, True, picEffect
 End Sub
 
 Private Sub cboRank_KeyDown(KeyCode As Integer, Shift As Integer)
-    UpdatePreview
+    CustomRankFilter hsRadius.Value, cboRank.ListIndex, True, picEffect
 End Sub
 
 'OK Button
 Private Sub CmdOK_Click()
     If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max) Then
         Me.Visible = False
-        Process CustomRank, val(hsRadius.Value), cboRank.ListIndex
+        Process CustomRank, hsRadius.Value, cboRank.ListIndex
         Unload Me
     Else
         AutoSelectText txtRadius
@@ -244,274 +247,167 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'A powerful routine for any kind of rank filter at any radius
-Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte)
-    Dim tR As Long, tG As Long, tB As Long
+Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+        
+    If toPreview = False Then
+        Select Case RankType
+            Case 0
+                Message "Dilating image via maximum (high-pass) rank filter..."
+            Case 1
+                Message "Eroding image via minimum (low-pass) rank filter..."
+            Case 2
+                Message "Redrawing image via extreme rank filter..."
+        End Select
+    End If
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent already-mosaic'ed pixels from affecting the results of later pixels.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer workingLayer
+    
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, c As Long, d As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+    
+    'If this is a preview, we need to adjust the xDiffuse and yDiffuse values to match the size of the preview box
+    If toPreview Then
+        Radius = (Radius / iWidth) * curLayerValues.Width
+        If Radius = 0 Then Radius = 1
+    End If
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValInner As Long, QuickValDst As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Rank calculations require a lot of variables
+    Dim r As Long, g As Long, b As Long
+    Dim grayVal As Long, grayValOriginal As Long
     Dim MaxX As Long, MaxY As Long
     Dim MaxTotal As Long
-    Dim c As Long, d As Long
-    SetProgBarMax PicWidthL
-    Dim FTransfer() As Byte
-    Dim tTransfer() As Integer
-    Dim TempColor As Long
-    Dim tWidth As Long
-    tWidth = ((PicWidthL + 1) * 3) - 1
-    tWidth = tWidth + ((PicWidthL + 1) Mod 4)
-    ReDim FTransfer(0 To tWidth, 0 To PicHeightL) As Byte
-    ReDim tTransfer(0 To tWidth, 0 To PicHeightL) As Integer
-    Dim QuickVal As Long
-    Dim QuickVal2 As Long
-    Message "Preparing rank data..."
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
-        TempColor = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
-        tTransfer(x, y) = TempColor
-    Next y
+        
+    'Because gray values are constant, we can use a look-up table to calculate them.
+    ' Note that we divide each gray value by two to minimize the the effect of the unfade.
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
     Next x
-    Message "Running custom rank filter..."
-    For x = 0 To PicWidthL
-        QuickVal2 = x * 3
-    For y = 0 To PicHeightL
-        If RankType = 0 Then
-            MaxTotal = -1
-        ElseIf RankType = 1 Then
-            MaxTotal = 256
-        Else
-            MaxTotal = -1
-        End If
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'The total number needs to be set based on the type of rank analysis we're performing
+        Select Case RankType
+            Case 0
+                MaxTotal = -1
+            Case 1
+                MaxTotal = 256
+            Case 2
+                MaxTotal = -1
+        End Select
+        
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
+            
+        grayValOriginal = gLookup(r + g + b)
+        
         For c = x - Radius To x + Radius
+            QuickValInner = c * qvDepth
         For d = y - Radius To y + Radius
-            If c < 0 Then GoTo 303
-            If c > (PicWidthL - 1) Then GoTo 303
-            If d < 0 Then GoTo 303
-            If d > (PicHeightL - 1) Then GoTo 303
-            If RankType = 0 Then
-                If tTransfer(c, d) > MaxTotal Then
-                    MaxTotal = tTransfer(c, d)
-                    MaxX = c
-                    MaxY = d
-                End If
-            ElseIf RankType = 1 Then
-                If tTransfer(c, d) < MaxTotal Then
-                    MaxTotal = tTransfer(c, d)
-                    MaxX = c
-                    MaxY = d
-                End If
-            Else
-                TempColor = Abs(tTransfer(x, y) - tTransfer(c, d))
-                If TempColor > MaxTotal Then
-                    MaxTotal = TempColor
-                    MaxX = c
-                    MaxY = d
-                End If
-            End If
-303     Next d
-        Next c
-        QuickVal = MaxX * 3
-        FTransfer(QuickVal2 + 2, y) = ImageData(QuickVal + 2, MaxY)
-        FTransfer(QuickVal2 + 1, y) = ImageData(QuickVal + 1, MaxY)
-        FTransfer(QuickVal2, y) = ImageData(QuickVal, MaxY)
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    For x = 0 To PicWidthL
-    QuickVal = x * 3
-    For y = 0 To PicHeightL
-    For z = 0 To 2
-        ImageData(QuickVal + z, y) = FTransfer(QuickVal + z, y)
-    Next z
-    Next y
-    Next x
-    SetProgBarVal cProgBar.Max
-    Message "Custom rank filter finished.  Creating correct image array..."
-    setImageData
-    Unload Me
-End Sub
+        
+            If c < 0 Then GoTo NextRankPixel
+            If c > finalX Then GoTo NextRankPixel
+            If d < 0 Then GoTo NextRankPixel
+            If d > finalY Then GoTo NextRankPixel
+        
+            r = srcImageData(QuickValInner + 2, d)
+            g = srcImageData(QuickValInner + 1, d)
+            b = srcImageData(QuickValInner, d)
+            
+            grayVal = gLookup(r + g + b)
+            
+            Select Case RankType
+                Case 0
+                    If grayVal > MaxTotal Then
+                        MaxTotal = grayVal
+                        MaxX = c
+                        MaxY = d
+                    End If
+                Case 1
+                    If grayVal < MaxTotal Then
+                        MaxTotal = grayVal
+                        MaxX = c
+                        MaxY = d
+                    End If
+                Case 2
+                    grayVal = Abs(grayValOriginal - grayVal)
+                    If grayVal > MaxTotal Then
+                        MaxTotal = grayVal
+                        MaxX = c
+                        MaxY = d
+                    End If
+            End Select
 
-'Maximum rank/Dilate/High Pass
-Public Sub rMaximize()
-    Dim tR As Long, tG As Long, tB As Long
-    Dim MaxX As Integer, MaxY As Integer
-    Dim MaxTotal As Integer
-    Dim c As Integer, d As Integer
-    SetProgBarMax PicWidthL
-    Dim FTransfer() As Byte
-    Dim tTransfer() As Byte
-    Dim TempColor As Long
-    ReDim FTransfer(0 To (PicWidthL + 1) * 3, 0 To PicHeightL) As Byte
-    ReDim tTransfer(0 To PicWidthL, 0 To PicHeightL) As Byte
-    Message "Preparing rank data..."
-    GetImageData
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
-        TempColor = Int((tR + tG + tB) \ 3)
-        tTransfer(x, y) = TempColor
-    Next y
-    Next x
-    Message "Dilating image..."
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        MaxTotal = -1
-        For c = x - 1 To x + 1
-        For d = y - 1 To y + 1
-            If (c < 0) Or (c > PicWidthL) Or (d < 0) Or (d > PicHeightL) Then GoTo 3030
-            If tTransfer(c, d) > MaxTotal Then
-                MaxTotal = tTransfer(c, d)
-                MaxX = c
-                MaxY = d
-            End If
-3030     Next d
+NextRankPixel:
+        Next d
         Next c
-        FTransfer(QuickVal + 2, y) = ImageData(MaxX * 3 + 2, MaxY)
-        FTransfer(QuickVal + 1, y) = ImageData(MaxX * 3 + 1, MaxY)
-        FTransfer(QuickVal, y) = ImageData(MaxX * 3, MaxY)
+    
+        QuickValDst = MaxX * qvDepth
+        
+        'Assign that ranked value to each color channel
+        dstImageData(QuickVal + 2, y) = srcImageData(QuickValDst + 2, MaxY)
+        dstImageData(QuickVal + 1, y) = srcImageData(QuickValDst + 1, MaxY)
+        dstImageData(QuickVal, y) = srcImageData(QuickValDst, MaxY)
+        
     Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    For z = 0 To 2
-        ImageData(QuickVal + z, y) = FTransfer(QuickVal + z, y)
-    Next z
-    Next y
-    Next x
-    SetProgBarVal cProgBar.Max
-    Message "Image dilated successfully.  Generating final data..."
-    setImageData
-End Sub
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
 
-'Minimum Rank/Erode/Low Pass
-Public Sub rMinimize()
-    Dim tR As Long, tG As Long, tB As Long
-    Dim MaxX As Integer, MaxY As Integer
-    Dim MaxTotal As Integer
-    Dim c As Integer, d As Integer
-    SetProgBarMax PicWidthL
-    Dim FTransfer() As Byte
-    Dim tTransfer() As Byte
-    Dim TempColor As Long
-    ReDim FTransfer(0 To (PicWidthL + 1) * 3, 0 To PicHeightL) As Byte
-    ReDim tTransfer(0 To PicWidthL, 0 To PicHeightL) As Byte
-    Message "Preparing rank data..."
-    GetImageData
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
-        TempColor = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
-        'TempColor = Int((TR + TG + TB) \ 3)
-        tTransfer(x, y) = TempColor
-    Next y
-    Next x
-    Message "Eroding image..."
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        MaxTotal = 256
-        For c = x - 1 To x + 1
-        For d = y - 1 To y + 1
-            If (c < 0) Or (c > PicWidthL) Or (d < 0) Or (d > PicHeightL) Then GoTo 3031
-            If tTransfer(c, d) < MaxTotal Then
-                MaxTotal = tTransfer(c, d)
-                MaxX = c
-                MaxY = d
-            End If
-3031     Next d
-        Next c
-        FTransfer(QuickVal + 2, y) = ImageData(MaxX * 3 + 2, MaxY)
-        FTransfer(QuickVal + 1, y) = ImageData(MaxX * 3 + 1, MaxY)
-        FTransfer(QuickVal, y) = ImageData(MaxX * 3, MaxY)
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    For z = 0 To 2
-        ImageData(QuickVal + z, y) = FTransfer(QuickVal + z, y)
-    Next z
-    Next y
-    Next x
-    SetProgBarVal cProgBar.Max
-    Message "Image eroded successfully.  Generating final data..."
-    setImageData
-End Sub
-
-'My own original combination of maximum and minimum: extreme!  :)
-Public Sub rExtreme()
-    Dim tR As Long, tG As Long, tB As Long
-    Dim MaxX As Integer, MaxY As Integer
-    Dim MaxTotal As Integer
-    Dim c As Integer, d As Integer
-    SetProgBarMax PicWidthL
-    Dim FTransfer() As Byte
-    Dim tTransfer() As Integer
-    Dim TempColor As Long
-    ReDim FTransfer(0 To (PicWidthL + 1) * 3, 0 To PicHeightL) As Byte
-    ReDim tTransfer(0 To PicWidthL, 0 To PicHeightL) As Integer
-    Message "Preparing rank data..."
-    GetImageData
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
-        TempColor = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
-        tTransfer(x, y) = TempColor
-    Next y
-    Next x
-    Message "Applying extreme rank function..."
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        MaxTotal = -1
-        For c = x - 1 To x + 1
-        For d = y - 1 To y + 1
-            If c < 0 Or c > PicWidthL Or d < 0 Or d > PicHeightL Then GoTo 3032
-            TempColor = Abs(tTransfer(x, y) - tTransfer(c, d))
-            If TempColor > MaxTotal Then
-                MaxTotal = TempColor
-                MaxX = c
-                MaxY = d
-            End If
-3032     Next d
-        Next c
-        FTransfer(QuickVal + 2, y) = ImageData(MaxX * 3 + 2, MaxY)
-        FTransfer(QuickVal + 1, y) = ImageData(MaxX * 3 + 1, MaxY)
-        FTransfer(QuickVal, y) = ImageData(MaxX * 3, MaxY)
-    Next y
-        If x Mod 10 = 0 Then SetProgBarVal x
-    Next x
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    For z = 0 To 2
-        ImageData(QuickVal + z, y) = FTransfer(QuickVal + z, y)
-    Next z
-    Next y
-    Next x
-    SetProgBarVal cProgBar.Max
-    Message "Extreme rank function applied successfully.  Generating final data..."
-    setImageData
 End Sub
 
 'LOAD form
 Private Sub Form_Load()
+    
+    'Note the current image's width and height, which will be needed to adjust the preview effect
+    iWidth = pdImages(CurrentImage).Width
+    iHeight = pdImages(CurrentImage).Height
     
     'Possible methods of calculating rank filters:
     cboRank.AddItem "Maximum (Dilate)", 0
@@ -522,111 +418,22 @@ Private Sub Form_Load()
     cboRank.ListIndex = 0
     
     'Create the image previews
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-    UpdatePreview
+    DrawPreviewImage picPreview
+    CustomRankFilter hsRadius.Value, cboRank.ListIndex, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-'Same as above, but exclusively for previewing
-Private Sub PreviewRank(ByVal Radius As Long, ByVal RankType As Byte)
-    Dim tR As Long, tG As Long, tB As Long
-    Dim MaxX As Long, MaxY As Long
-    Dim MaxTotal As Long
-    Dim c As Long, d As Long
-    GetPreviewData PicPreview
-    Dim FTransfer() As Byte
-    Dim tTransfer() As Integer
-    Dim TempColor As Long
-    PicWidthL = PicPreview.ScaleWidth
-    PicHeightL = PicPreview.ScaleHeight
-    Dim tWidth As Long
-    tWidth = (PicWidthL * 3) - 1
-    tWidth = tWidth + (PicWidthL Mod 4)
-    ReDim FTransfer(0 To tWidth, 0 To PicHeightL) As Byte
-    ReDim tTransfer(0 To tWidth, 0 To PicHeightL) As Integer
-    Dim QuickVal As Long
-    Dim QuickVal2 As Long
-    Dim fX As Long, fY As Long
-    fX = PreviewX + PreviewWidth
-    fY = PreviewY + PreviewHeight
-    For x = PreviewX To fX
-        QuickVal = x * 3
-    For y = PreviewY To fY
-        tR = ImageData(QuickVal + 2, y)
-        tG = ImageData(QuickVal + 1, y)
-        tB = ImageData(QuickVal, y)
-        TempColor = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
-        tTransfer(x, y) = TempColor
-    Next y
-    Next x
-    For x = PreviewX To fX
-        QuickVal2 = x * 3
-    For y = PreviewY To fY
-        If RankType = 0 Then
-            MaxTotal = -1
-        ElseIf RankType = 1 Then
-            MaxTotal = 256
-        Else
-            MaxTotal = -1
-        End If
-        For c = x - Radius To x + Radius
-        For d = y - Radius To y + Radius
-            If c < PreviewX Then GoTo 303303
-            If c > fX Then GoTo 303303
-            If d < PreviewY Then GoTo 303303
-            If d > fY Then GoTo 303303
-            If RankType = 0 Then
-                If tTransfer(c, d) > MaxTotal Then
-                    MaxTotal = tTransfer(c, d)
-                    MaxX = c
-                    MaxY = d
-                End If
-            ElseIf RankType = 1 Then
-                If tTransfer(c, d) < MaxTotal Then
-                    MaxTotal = tTransfer(c, d)
-                    MaxX = c
-                    MaxY = d
-                End If
-            Else
-                TempColor = Abs(tTransfer(x, y) - tTransfer(c, d))
-                If TempColor > MaxTotal Then
-                    MaxTotal = TempColor
-                    MaxX = c
-                    MaxY = d
-                End If
-            End If
-303303     Next d
-        Next c
-        QuickVal = MaxX * 3
-        FTransfer(QuickVal2 + 2, y) = ImageData(QuickVal + 2, MaxY)
-        FTransfer(QuickVal2 + 1, y) = ImageData(QuickVal + 1, MaxY)
-        FTransfer(QuickVal2, y) = ImageData(QuickVal, MaxY)
-    Next y
-    Next x
-    For x = PreviewX To fX
-    QuickVal = x * 3
-    For y = PreviewY To fY
-        'I have removed the z-loop in an attempt to speed things up
-        ImageData(QuickVal + 2, y) = FTransfer(QuickVal + 2, y)
-        ImageData(QuickVal + 1, y) = FTransfer(QuickVal + 1, y)
-        ImageData(QuickVal, y) = FTransfer(QuickVal, y)
-    Next y
-    Next x
-    SetPreviewData PicEffect
-End Sub
-
 Private Sub hsRadius_Change()
     txtRadius.Text = hsRadius.Value
-    UpdatePreview
+    CustomRankFilter hsRadius.Value, cboRank.ListIndex, True, picEffect
 End Sub
 
 Private Sub hsRadius_Scroll()
     txtRadius.Text = hsRadius.Value
-    UpdatePreview
+    CustomRankFilter hsRadius.Value, cboRank.ListIndex, True, picEffect
 End Sub
 
 Private Sub txtRadius_Change()
@@ -635,15 +442,4 @@ End Sub
 
 Private Sub txtRadius_GotFocus()
     AutoSelectText txtRadius
-End Sub
-
-Private Sub UpdatePreview()
-    GetPreviewData PicPreview
-    Dim maxSide As Long
-    If PicWidthL > PicHeightL Then
-        maxSide = hsRadius.Value * (PicWidthL / pdImages(CurrentImage).Width)
-    Else
-        maxSide = hsRadius.Value * (PicHeightL / pdImages(CurrentImage).Height)
-    End If
-    PreviewRank maxSide, cboRank.ListIndex
 End Sub
