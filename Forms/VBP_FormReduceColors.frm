@@ -368,7 +368,7 @@ Private Sub CmdOK_Click()
         Me.Visible = False
         
         'Do the appropriate method of color reduction
-        If ChkColorDither.Value = vbUnchecked Then
+        If chkColorDither.Value = vbUnchecked Then
             If chkSmartColors.Value = vbUnchecked Then
                 Process ReduceColors, REDUCECOLORS_MANUAL, TxtR, TxtG, TxtB, False
             Else
@@ -494,7 +494,7 @@ Private Sub DisplayManualOptions(ByVal toDisplay As Boolean)
         hsRed.Enabled = False
         hsGreen.Enabled = False
         hsBlue.Enabled = False
-        ChkColorDither.Enabled = False
+        chkColorDither.Enabled = False
         chkSmartColors.Enabled = False
     Else
         lblOptions.ForeColor = &H400000
@@ -508,7 +508,7 @@ Private Sub DisplayManualOptions(ByVal toDisplay As Boolean)
         hsRed.Enabled = True
         hsGreen.Enabled = True
         hsBlue.Enabled = True
-        ChkColorDither.Enabled = True
+        chkColorDither.Enabled = True
         chkSmartColors.Enabled = True
     End If
 End Sub
@@ -981,7 +981,7 @@ Private Sub updateReductionPreview()
         ReduceImageColors_Auto FIQ_NNQUANT, True, picEffect
     Else
         If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then
-            If ChkColorDither.Value = vbUnchecked Then
+            If chkColorDither.Value = vbUnchecked Then
                 If chkSmartColors.Value = vbUnchecked Then
                     ReduceImageColors_BitRGB TxtR, TxtG, TxtB, False, True, picEffect
                 Else
