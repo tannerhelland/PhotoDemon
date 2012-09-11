@@ -14,7 +14,8 @@ Attribute VB_Name = "FreeImage_Expanded_Interface"
 'This module is based heavily on the work of Herman Liu, to whom I owe a large debt of gratitude.
 '
 'Additionally, this module continues to rely heavily on Carsten Klein's FreeImage wrapper for VB (included in this project
-' as Outside_FreeImageV3; see that file for license details).
+' as Outside_FreeImageV3; see that file for license details).  Thanks to Carsten for his work on integrating FreeImage
+' into classic VB.
 '
 '***************************************************************************
 
@@ -62,8 +63,15 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     Dim fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS
     fi_ImportFlags = 0
     
-    'For JPEGs, specify a preference for accuracy and quality over load speed
-    If fileFIF = FIF_JPEG Then fi_ImportFlags = FILO_JPEG_ACCURATE
+    'For JPEGs, specify a preference for accuracy and quality over load speed under normal circumstances,
+    ' but when performing a batch conversion choose the reverse (speed over accuracy).
+    If fileFIF = FIF_JPEG Then
+        If MacroStatus = MacroBATCH Then
+            fi_ImportFlags = FILO_JPEG_FAST
+        Else
+            fi_ImportFlags = FILO_JPEG_ACCURATE
+        End If
+    End If
     
     'For icons, we prefer a white background (default is black).
     If fileFIF = FIF_ICO Then fi_ImportFlags = FILO_ICO_MAKEALPHA
