@@ -3,45 +3,45 @@ Begin VB.Form FormTwins
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Generate Twins"
-   ClientHeight    =   3855
+   ClientHeight    =   5055
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   5055
+   ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   257
+   ScaleHeight     =   337
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   337
+   ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.PictureBox PicEffect 
+   Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
+      BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
+      ScaleWidth      =   191
       TabIndex        =   5
       Top             =   120
-      Width           =   2175
+      Width           =   2895
    End
-   Begin VB.PictureBox PicPreview 
+   Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
+      BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
+      ScaleWidth      =   191
       TabIndex        =   4
       Top             =   120
-      Width           =   2175
+      Width           =   2895
    End
    Begin VB.OptionButton OptVertical 
       Appearance      =   0  'Flat
@@ -57,9 +57,9 @@ Begin VB.Form FormTwins
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   2640
+      Left            =   3240
       TabIndex        =   1
-      Top             =   2760
+      Top             =   3600
       Width           =   2175
    End
    Begin VB.OptionButton OptHorizontal 
@@ -76,9 +76,9 @@ Begin VB.Form FormTwins
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   1200
+      Left            =   1800
       TabIndex        =   0
-      Top             =   2760
+      Top             =   3600
       Value           =   -1  'True
       Width           =   1215
    End
@@ -95,9 +95,9 @@ Begin VB.Form FormTwins
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   3720
+      Left            =   4920
       TabIndex        =   3
-      Top             =   3360
+      Top             =   4560
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -113,16 +113,14 @@ Begin VB.Form FormTwins
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   2520
+      Left            =   3720
       TabIndex        =   2
-      Top             =   3360
+      Top             =   4560
       Width           =   1125
    End
-   Begin VB.Label lblPreview 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "  Before                                                           After"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -134,10 +132,10 @@ Begin VB.Form FormTwins
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
+      Left            =   120
       TabIndex        =   6
-      Top             =   2310
-      Width           =   4575
+      Top             =   2880
+      Width           =   3975
    End
 End
 Attribute VB_Name = "FormTwins"
@@ -149,10 +147,8 @@ Attribute VB_Exposed = False
 '"Twin" Filter Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 13/June/12
-'Last update: fixed RGB misalignment when performing vertical flipping
-'Need to update: Needs optimization. Only run the loop through half the image,
-'                and double-store values (they are mirrored, after all - duh!!)
+'Last updated: 10/September/12
+'Last update: rewrote twin algorithm against new layer class
 '
 'Unoptimized "twin" generator.  Simple 50% alpha blending combined with a flip.
 '
@@ -177,72 +173,110 @@ Private Sub CmdOK_Click()
 End Sub
 
 'This routine mirrors and alphablends an image, making it "tilable" or symmetrical
-Public Sub GenerateTwins(ByVal tType As Byte)
+Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+   
+    If toPreview = False Then Message "Generating image twin..."
     
-    GetImageData
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Temporary colors
-    Dim Color1 As Long, Color2 As Long
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent already-processed pixels from affecting the results of later pixels.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
     
-    'Temporary array to store the image information (preventing bad overlaps)
-    Dim tA() As Byte
-    Dim tWidth As Long
-    tWidth = (PicWidthL * 3) - 1
-    tWidth = tWidth + (PicWidthL Mod 4)
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer workingLayer
     
-    ReDim tA(0 To tWidth, 0 To PicHeightL) As Byte
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
     
-    Message "Creating twin image..."
+    'Pre-calculate the largest possible processed x-value
+    Dim maxX As Long
+    maxX = finalX * qvDepth
     
-    'First, copy our array into TA()
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tA(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
-        tA(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
-        tA(QuickVal, y) = ImageData(QuickVal, y)
-    Next y
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+            
+    'This look-up table will be used for alpha-blending.  It contains the equivalent of any two color values [0,255] added
+    ' together and divided by 2.
+    Dim hLookup(0 To 510) As Byte
+    For x = 0 To 510
+        hLookup(x) = x \ 2
     Next x
     
-    SetProgBarMax PicWidthL
+    'Color variables
+    Dim r As Long, g As Long, b As Long
+    Dim r2 As Long, g2 As Long, b2 As Long
     
-    Dim PicBitsX As Long
-    Dim NewColor As Long
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
-    PicBitsX = PicWidthL * 3
-    
-    'This loop will actually generate the twins
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    For z = 0 To 2
-        'Get the value of the "first" pixel
-        Color1 = tA(QuickVal + z, y)
-        'Get the value of the "second" pixel, depending on the method
+        'Grab the current pixel values
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
+        
+        'Grab the value of the "second" pixel, whose position will vary depending on the method (vertical or horizontal)
         If tType = 0 Then
-            Color2 = tA(QuickVal + z, PicHeightL - y)
+            r2 = srcImageData(QuickVal + 2, finalY - y)
+            g2 = srcImageData(QuickVal + 1, finalY - y)
+            b2 = srcImageData(QuickVal, finalY - y)
         Else
-            Color2 = tA(PicBitsX - QuickVal + z, y)
+            r2 = srcImageData(maxX - QuickVal + 2, y)
+            g2 = srcImageData(maxX - QuickVal + 1, y)
+            b2 = srcImageData(maxX - QuickVal, y)
         End If
-        'Simple alpha-blend, kids
-        NewColor = (Color1 + Color2) \ 2
-        'Remember this value and continue
-        ImageData(QuickVal + z, y) = NewColor
-    Next z
+        
+        'Alpha-blend the two pixels using our shortcut look-up table
+        dstImageData(QuickVal + 2, y) = hLookup(r + r2)
+        dstImageData(QuickVal + 1, y) = hLookup(g + g2)
+        dstImageData(QuickVal, y) = hLookup(b + b2)
+        
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
-    SetImageData
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+        
 End Sub
 
 'LOAD form
 Private Sub Form_Load()
     
     'Create the image previews
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-    PreviewTwins 1
+    DrawPreviewImage picPreview
+    GenerateTwins 1, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -250,50 +284,9 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub OptHorizontal_Click()
-    PreviewTwins 1
+    GenerateTwins 1, True, picEffect
 End Sub
 
 Private Sub OptVertical_Click()
-    PreviewTwins 0
-End Sub
-
-'Same routine as above, but only for previewing
-Private Sub PreviewTwins(ByVal tType As Byte)
-    GetPreviewData PicPreview
-    Dim Color1 As Long, Color2 As Long
-    Dim tA() As Byte
-    Dim tWidth As Long
-    PicWidthL = PicPreview.ScaleWidth
-    PicHeightL = PicPreview.ScaleHeight
-    tWidth = (PicWidthL * 3) + 2
-    tWidth = tWidth + (PicWidthL Mod 4)
-    ReDim tA(0 To tWidth, 0 To PicHeightL + 1) As Byte
-    Dim QuickVal As Long
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-        tA(QuickVal + 2, y) = ImageData(QuickVal + 2, y)
-        tA(QuickVal + 1, y) = ImageData(QuickVal + 1, y)
-        tA(QuickVal, y) = ImageData(QuickVal, y)
-    Next y
-    Next x
-    Dim PicBitsX As Long
-    Dim NewColor As Long
-    PicBitsX = PicWidthL * 3
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-    For z = 0 To 2
-        Color1 = tA(QuickVal + z, y)
-        If tType = 0 Then
-            Color2 = tA(QuickVal + z, PicHeightL - y)
-        Else
-            Color2 = tA(PicBitsX - QuickVal + z, y)
-        End If
-        NewColor = (Color1 + Color2) \ 2
-        ImageData(QuickVal + z, y) = NewColor
-    Next z
-    Next y
-    Next x
-    SetPreviewData PicEffect
+    GenerateTwins 0, True, picEffect
 End Sub
