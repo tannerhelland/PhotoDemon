@@ -3,10 +3,8 @@ Attribute VB_Name = "MDI_Handler"
 'MDI Window Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 29/June/12
-'Last update: added a SuppressUpdating component to two routines; this prevents a call to PrepareViewport.
-'             Now, when an image is loaded, PrepareViewport only gets called once (instead of 3x, as before).
-'             This speeds up image load time by a non-trivial amount.
+'Last updated: 10/September/12
+'Last update: when calling FitOnScreen, maximized forms are now left maximized (previously they were forceably un-maximized)
 '
 'Interfaces with the main MDI active form; this module handles determining
 'form size in relation to image size, etc.
@@ -50,7 +48,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     
     'Remember this ID in the associated image class
     pdImages(NumOfImagesLoaded).IsActive = True
-    pdImages(NumOfImagesLoaded).ImageID = NumOfImagesLoaded
+    pdImages(NumOfImagesLoaded).imageID = NumOfImagesLoaded
     
     'Default size (stupid twip measurements, unfortunately)
     frm.Width = 4500
@@ -200,19 +198,15 @@ End Sub
 
 'Fit the current image onscreen at as large a size as possible (including possibility of zoomed-in)
 Public Sub FitOnScreen()
-    'Current plan: this needs to be an individual task.
     
     'Gotta change the scalemode to twips to match the MDI form
     FormMain.ActiveForm.ScaleMode = 1
-    
-    'Next, get the image data (so we have picwidthl and picheightl)
-    'GetImageData
-    
-    'Make sure the window isn't minimized or maximized
-    FormMain.ActiveForm.WindowState = 0
-    
+        
     'Disable AutoScroll, because that messes with our calculations
     FixScrolling = False
+    
+    'If the image is minimized, restore it
+    If FormMain.ActiveForm.WindowState = vbMinimized Then FormMain.ActiveForm.WindowState = 0
     
     'Now let's get some dimensions for our calculations
     Dim tDif As Long, hDif As Long
@@ -246,9 +240,13 @@ Public Sub FitOnScreen()
     
     'Set the scalemode back to pixels
     FormMain.ActiveForm.ScaleMode = 3
+    
     'Re-enable scrolling
     FixScrolling = True
-    FitWindowToImage
+    
+    'If the window is not maximized or minimized, fit the window to it
+    If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
+    
     'Now fix scrollbars and everything
     PrepareViewport FormMain.ActiveForm, "FitOnScreen"
     
@@ -256,8 +254,8 @@ End Sub
 
 'When windows are created or destroyed, launch this routine to dis/en/able windows and toolbars, etc
 Public Sub UpdateMDIStatus()
-    'If every window has been closed, disable all toolbar and menu
-    ' options that are no longer applicable
+
+    'If every window has been closed, disable all toolbar and menu options that are no longer applicable
     If NumOfWindows < 1 Then
         tInit tFilter, False
         tInit tSave, False
@@ -311,4 +309,5 @@ Public Sub UpdateMDIStatus()
             FormMain.lblZoom.ForeColor = &H544E43
         End If
     End If
+    
 End Sub
