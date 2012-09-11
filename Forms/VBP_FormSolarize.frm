@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormSolarize 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Solarize"
-   ClientHeight    =   4530
+   ClientHeight    =   5085
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   5070
+   ClientWidth     =   6255
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,20 +18,66 @@ Begin VB.Form FormSolarize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   302
+   ScaleHeight     =   339
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   338
+   ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   6
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   5
+      Top             =   120
+      Width           =   2895
+   End
    Begin VB.HScrollBar hsThreshold 
       Height          =   255
-      Left            =   240
+      Left            =   360
       Max             =   254
       Min             =   1
       TabIndex        =   1
-      Top             =   3240
+      Top             =   3720
       Value           =   127
-      Width           =   4575
+      Width           =   4935
    End
    Begin VB.TextBox txtThreshold 
       BeginProperty Font 
@@ -44,82 +90,34 @@ Begin VB.Form FormSolarize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
-      Left            =   2520
+      Height          =   330
+      Left            =   5400
       TabIndex        =   0
       Text            =   "127"
-      Top             =   2760
+      Top             =   3690
       Width           =   495
-   End
-   Begin VB.PictureBox PicEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   2640
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2175
-   End
-   Begin VB.PictureBox PicPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2175
-      Left            =   240
-      ScaleHeight     =   143
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   143
-      TabIndex        =   5
-      Top             =   120
-      Width           =   2175
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   3720
+      Left            =   4920
       TabIndex        =   3
-      Top             =   3960
+      Top             =   4560
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2520
+      Left            =   3720
       TabIndex        =   2
-      Top             =   3960
+      Top             =   4560
       Width           =   1125
    End
-   Begin VB.Label Label3 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                           After"
+      Caption         =   "  Before                                                           After"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   8.25
@@ -131,10 +129,10 @@ Begin VB.Form FormSolarize
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   240
+      Left            =   120
       TabIndex        =   7
-      Top             =   2310
-      Width           =   4575
+      Top             =   2880
+      Width           =   3975
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -151,9 +149,9 @@ Begin VB.Form FormSolarize
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   1560
+      Left            =   240
       TabIndex        =   4
-      Top             =   2790
+      Top             =   3360
       Width           =   870
    End
 End
@@ -166,11 +164,10 @@ Attribute VB_Exposed = False
 'Solarizing Effect Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/14/01
-'Last updated: 05/July/12
-'Last update: optimized for speed
+'Last updated: 10/September/12
+'Last update: rewrote against new layer class; also, optimized with look-up tables
 '
-'Updated solarizing interface; it has been optimized for speed and
-'  ease-of-implementation.
+'Updated solarizing interface; it has been optimized for speed and ease-of-implementation.
 '
 '***************************************************************************
 
@@ -193,40 +190,63 @@ Private Sub CmdOK_Click()
 End Sub
 
 'Subroutine for "solarizing" an image
-Public Sub SolarizeImage(ByVal Threshold As Byte)
+' Inputs: solarize threshold [0,255], optional previewing information
+Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
-    Message "Solarizing image..."
+    If toPreview = False Then Message "Solarizing image..."
     
-    Dim r As Byte, g As Byte, b As Byte
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
     
-    GetImageData
-    SetProgBarMax PicWidthL
-    
-    Dim QuickVal As Long
-    
-    For x = 0 To PicWidthL
-        QuickVal = x * 3
-    For y = 0 To PicHeightL
-    
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
-        'Solarizing is simple - invert every value above the threshold
-        If r > Threshold Then r = 255 - r
-        If g > Threshold Then g = 255 - g
-        If b > Threshold Then b = 255 - b
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+            
+    'Because solarize values are constant, we can use a look-up table to calculate them.  Very fast.
+    Dim sLookup(0 To 255) As Byte
+    For x = 0 To 255
+        If x > Threshold Then sLookup(x) = 255 - x Else sLookup(x) = x
+    Next x
         
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Perform the solarize in a single line, thanks to our pre-built look-up table
+        ImageData(QuickVal + 2, y) = sLookup(ImageData(QuickVal + 2, y))
+        ImageData(QuickVal + 1, y) = sLookup(ImageData(QuickVal + 1, y))
+        ImageData(QuickVal, y) = sLookup(ImageData(QuickVal, y))
         
     Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
     Next x
     
-    SetProgBarVal PicWidthL
-    SetImageData
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -234,52 +254,23 @@ End Sub
 Private Sub Form_Load()
     
     'Create the previews
-    DrawPreviewImage PicPreview
-    DrawPreviewImage PicEffect
-    PreviewSolarize hsThreshold.Value
+    DrawPreviewImage picPreview
+    SolarizeImage hsThreshold.Value, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
     
 End Sub
 
-'Same as above, but exclusively for previewing
-Private Sub PreviewSolarize(ByVal Threshold As Byte)
-
-    Dim r As Byte, g As Byte, b As Byte
-    
-    GetPreviewData PicPreview
-    
-    Dim QuickVal As Long
-    
-    For x = PreviewX To PreviewX + PreviewWidth
-        QuickVal = x * 3
-    For y = PreviewY To PreviewY + PreviewHeight
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        If r > Threshold Then r = 255 - r
-        If g > Threshold Then g = 255 - g
-        If b > Threshold Then b = 255 - b
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-    Next y
-    Next x
-    
-    SetPreviewData PicEffect
-    
-End Sub
-
 'When the horizontal scroll bar is moved, update the preview and text box to match
 Private Sub hsThreshold_Change()
     txtThreshold.Text = hsThreshold.Value
-    PreviewSolarize hsThreshold.Value
+    SolarizeImage hsThreshold.Value, True, picEffect
 End Sub
 
 Private Sub hsThreshold_Scroll()
     txtThreshold.Text = hsThreshold.Value
-    PreviewSolarize hsThreshold.Value
+    SolarizeImage hsThreshold.Value, True, picEffect
 End Sub
 
 'When the text box is changed, update the preview and text box to match (assuming the text box value is valid)
