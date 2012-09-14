@@ -435,13 +435,39 @@ End Sub
 ' At present, it only address the Undo and Redo menu items.
 Public Sub ResetMenuIcons()
 
+    'The position of menus changes if the MDI child is maximized.  When maximized, the form menu is given index 0, shifting
+    ' everything to the right by one.
+    
+    'Thus, we must check for that and redraw the Undo/Redo menus accordingly
+
+    Dim numOfMRUFiles As Long
+
+    'First, however, make sure children forms are loaded before doing anything
+    If NumOfWindows > 0 Then
+    
+        If FormMain.ActiveForm.WindowState = vbMaximized Then
+        
+            With cMenuImage
+                .PutImageToVBMenu 12, 0, 2      'Undo
+                .PutImageToVBMenu 13, 1, 2      'Redo
+            End With
+            
+            'Dynamically calculate the position of the Clear Recent Files menu item
+            numOfMRUFiles = MRU_ReturnCount()
+            cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 1, 1
+        
+            Exit Sub
+            
+        End If
+        
+    End If
+        
     With cMenuImage
         .PutImageToVBMenu 12, 0, 1      'Undo
         .PutImageToVBMenu 13, 1, 1      'Redo
     End With
     
     'Dynamically calculate the position of the Clear Recent Files menu item
-    Dim numOfMRUFiles As Long
     numOfMRUFiles = MRU_ReturnCount()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
     
@@ -472,7 +498,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     Dim icoSize As Long
     icoSize = 32
 
-    'Draw the form's backbuffer image to an in-memory picture
+    'Determine aspect ratio
     Dim aspectRatio As Single
     aspectRatio = CSng(pdImages(imgForm.Tag).Width) / CSng(pdImages(imgForm.Tag).Height)
     
