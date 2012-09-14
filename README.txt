@@ -1,10 +1,10 @@
-PhotoDemon v4.4 - Copyright (c) 2012 by Tanner Helland
+PhotoDemon v5.0b1 - Copyright (c) 2012 by Tanner Helland
 =====================================================================================
-A free, open-source image processing tool.
+A free, open-source photo editor and image processing tool.
 http://tannerhelland.com/photodemon
 
 
-What makes PhotoDemon preferable to other image editing tools?
+What makes PhotoDemon preferable to other photo editing tools?
 -------------------------------------------------------------------------------------
 :: Portable and lightweight
 	PhotoDemon is designed to be run as a standalone .exe.  No installer is provided
