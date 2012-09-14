@@ -304,9 +304,6 @@ End Sub
 Private Sub Form_Load()
 
     Message "Waiting for user input..."
-
-    'Select the URL text, which is nice for someone who's ready to paste a URL in
-    AutoSelectText txtURL
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
