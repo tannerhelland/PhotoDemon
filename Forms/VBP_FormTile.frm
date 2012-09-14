@@ -341,7 +341,6 @@ Private Sub cboTarget_Click()
             
             'If the user was previously measuring in tiles, convert that value to pixels
             If (lastTargetMode = 2) And (NumberValid(TxtWidth)) And (NumberValid(TxtHeight)) Then
-                GetImageData
                 TxtWidth = CLng(TxtWidth) * iWidth
                 TxtHeight = CLng(TxtHeight) * iHeight
             End If
