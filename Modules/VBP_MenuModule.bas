@@ -267,17 +267,29 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 'Remember the JPEG quality so we don't have to pester the user for it if they save again
                 pdImages(imageID).saveFlag0 = optionalSaveParameter0
                 
-                'I implement two separate save functions for JPEG images.  FreeImage's is preferred, as it's faster and more
-                ' reliable than the very clunky GDI+ system.  However, GDI+ is a good fallback if FreeImage isn't available.
-                If FreeImageEnabled Then
-                    SaveJPEGImage imageID, dstPath, optionalSaveParameter0
-                ElseIf GDIPlusEnabled Then
-                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
-                    'SaveJPEGImageUsingVB imageID, dstPath, optionalSaveParameter0
+                'I implement two separate save functions for JPEG images: FreeImage and GDI+.  The system we select is
+                ' contingent on a variety of factors, most important of which is - are we in the midst of a batch conversion.
+                ' If we are, use GDI+ as it does not need to make a copy of the image before saving it (which is much faster).
+                If MacroStatus = MacroBATCH Then
+                    If GDIPlusEnabled Then
+                        GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
+                    ElseIf FreeImageEnabled Then
+                        SaveJPEGImage imageID, dstPath, optionalSaveParameter0
+                    Else
+                        Message "No JPEG encoder found. Save aborted."
+                        PhotoDemon_SaveImage = False
+                        Exit Function
+                    End If
                 Else
-                    Message "No JPEG encoder found. Save aborted."
-                    PhotoDemon_SaveImage = False
-                    Exit Function
+                    If FreeImageEnabled Then
+                        SaveJPEGImage imageID, dstPath, optionalSaveParameter0
+                    ElseIf GDIPlusEnabled Then
+                        GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
+                    Else
+                        Message "No JPEG encoder found. Save aborted."
+                        PhotoDemon_SaveImage = False
+                        Exit Function
+                    End If
                 End If
                 updateMRU = True
             End If

@@ -333,13 +333,25 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     LoadBMP sFile(thisImage), targetLayer
                 End If
             Case "JIF", "JPG", "JPEG", "JPE"
-                'JPEGs are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
-                If FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
-                ElseIf GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage), targetLayer
+                'JPEGs are preferentially loaded by FreeImage, then GDI+ if available, then default VB, unless we are in the
+                ' midst of a batch conversion - in that case, use GDI+ first because it is significantly faster as it doesn't
+                ' need to make a copy of the image before operating on it.
+                If MacroStatus = MacroBATCH Then
+                    If GDIPlusEnabled Then
+                        LoadGDIPlusImage sFile(thisImage), targetLayer
+                    ElseIf FreeImageEnabled Then
+                        loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                    Else
+                        LoadBMP sFile(thisImage), targetLayer
+                    End If
                 Else
-                    LoadBMP sFile(thisImage), targetLayer
+                    If FreeImageEnabled Then
+                        loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                    ElseIf GDIPlusEnabled Then
+                        LoadGDIPlusImage sFile(thisImage), targetLayer
+                    Else
+                        LoadBMP sFile(thisImage), targetLayer
+                    End If
                 End If
             Case "PDI"
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
@@ -368,7 +380,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 Else
                     MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will proceed to download this plugin for you.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
                     Message "Image load canceled."
-                    pdImages(CurrentImage).isActive = False
+                    pdImages(CurrentImage).IsActive = False
                     Unload FormMain.ActiveForm
                     GoTo PreloadMoreImages
                 End If
@@ -379,7 +391,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If loadSuccessful = False Then
             MsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbCritical + vbOKOnly + vbApplicationModal, "PhotoDemon Import Failed"
             Message "Image load canceled."
-            targetImage.isActive = False
+            targetImage.IsActive = False
             If isThisPrimaryImage Then Unload FormMain.ActiveForm
             GoTo PreloadMoreImages
         End If
@@ -498,7 +510,7 @@ Public Sub LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLaye
     Set tmpPicture = LoadPicture(PDIPath)
     
     'Copy the image into the current pdImage object
-    dstLayer.CreateFromPicture tmpPicture
+    dstLayer.createFromPicture tmpPicture
     
     'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
     ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
@@ -512,7 +524,7 @@ End Sub
 Public Sub LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer)
         
     'Copy the image returned by GDI+ into the current pdImage object
-    dstLayer.CreateFromPicture GDIPlusLoadPicture(imagePath)
+    dstLayer.createFromPicture GDIPlusLoadPicture(imagePath)
     
 End Sub
 
@@ -525,7 +537,7 @@ Public Sub LoadBMP(ByVal BMPFile As String, ByRef dstLayer As pdLayer)
     Set tmpPicture = LoadPicture(BMPFile)
     
     'Copy the image into the current pdImage object
-    dstLayer.CreateFromPicture tmpPicture
+    dstLayer.createFromPicture tmpPicture
     
 End Sub
 
