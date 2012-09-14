@@ -409,8 +409,8 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 28, 1, 6     'Fit Window to Image
         .PutImageToVBMenu 33, 3, 6     'Arrange Icons
         .PutImageToVBMenu 32, 4, 6     'Cascade
-        .PutImageToVBMenu 30, 5, 6     'Tile Horizontally
-        .PutImageToVBMenu 31, 6, 6     'Tile Vertically
+        .PutImageToVBMenu 31, 5, 6     'Tile Horizontally
+        .PutImageToVBMenu 30, 6, 6     'Tile Vertically
         .PutImageToVBMenu 34, 8, 6     'Minimize All
         .PutImageToVBMenu 35, 9, 6     'Restore All
         
