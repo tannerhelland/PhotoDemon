@@ -166,7 +166,7 @@ Public Function CheckForSoftwareUpdate() As Boolean
     'If we made it all the way here, we can assume the update check was successful.  The last thing we need to do is compare
     ' the updated software version numbers with the current software version numbers.  If THAT yields results, we can finally
     ' return "TRUE" for this function
-    If (updateMajor > App.Major) Or (updateMinor > App.Minor) Then
+    If (updateMajor > App.Major) Or ((updateMinor > App.Minor) And (updateMajor = App.Major)) Then
         CheckForSoftwareUpdate = True
     
     '...otherwise, we went to all that work for nothing.  Oh well.  An update check occurred, but this version is up-to-date.
