@@ -300,6 +300,11 @@ Private Sub CmdOK_Click()
     
 End Sub
 
+'When the form is activated, automatically select the text box for the user.  This makes a quick Ctrl+V possible.
+Private Sub Form_Activate()
+    AutoSelectText txtURL
+End Sub
+
 'LOAD form
 Private Sub Form_Load()
 
