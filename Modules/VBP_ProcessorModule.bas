@@ -67,6 +67,7 @@ Option Explicit
     Public Const ComicBook As Long = 206
     Public Const BWEnhancedDither As Long = 207
     Public Const BWFloydSteinberg As Long = 208
+    Public Const BWMaster As Long = 210 'Added 9/2012 - this is a single BW conversion routine to rule them all
     
     'Grayscale conversion; numbers 300-399
     Public Const Desaturate As Long = 300
@@ -355,9 +356,6 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     
     'First, make sure that the current command is a filter or image-changing event
     If pType >= 101 Then
-    
-        'Get the image data (to get image size and information)
-        GetImageData
         
         'Only save an "undo" image if we are NOT loading a form for user input, and if
         'we ARE allowed to record this action, and if it's not counting colors (useless),
@@ -404,30 +402,34 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Black/White conversion
+    'NOTE: as of PhotoDemon v5.0 all black/white conversions are being rebuilt in a single master function (masterBlackWhiteConversion).
+    ' For sake of compatibility with old macros, I need to make sure old processor values are rerouted through the new master function.
     If pType >= 200 And pType <= 299 Then
         Select Case pType
             Case BWImpressionist
                 If LoadForm = True Then
                     FormBlackAndWhite.Show 1, FormMain
                 Else
-                    MenuBWImpressionist
+                    'MenuBWImpressionist
                 End If
             Case BWNearestColor
-                MenuBWNearestColor
+                'MenuBWNearestColor
             Case BWComponent
-                MenuBWComponent
+                'MenuBWComponent
             Case BWOrderedDither
-                MenuBWOrderedDither
+                'MenuBWOrderedDither
             Case BWDiffusionDither
-                MenuBWDiffusionDither
+                'MenuBWDiffusionDither
             Case Threshold
-                MenuThreshold pOPCODE
+                'MenuThreshold pOPCODE
             Case ComicBook
-                MenuComicBook
+                'MenuComicBook
             Case BWEnhancedDither
-                MenuBWEnhancedDither
+                'MenuBWEnhancedDither
             Case BWFloydSteinberg
-                MenuBWFloydSteinberg
+                'MenuBWFloydSteinberg
+            Case BWMaster
+                FormBlackAndWhite.masterBlackWhiteConversion pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4
         End Select
     End If
     
