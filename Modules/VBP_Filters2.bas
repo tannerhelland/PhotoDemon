@@ -140,9 +140,9 @@ Public Sub MenuSynthesize()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookUp(0 To 765) As Byte
+    Dim gLookup(0 To 765) As Byte
     For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
+        gLookup(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -154,7 +154,7 @@ Public Sub MenuSynthesize()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookUp(r + g + b)
+        grayVal = gLookup(r + g + b)
         
         r = g + b - grayVal
         g = r + b - grayVal
@@ -283,9 +283,9 @@ Public Sub MenuAntique()
     progBarCheck = findBestProgBarValue()
     
     'We're going to need grayscale values as part of the effect; grayscale is easily optimized via a look-up table
-    Dim gLookUp(0 To 765) As Byte
+    Dim gLookup(0 To 765) As Byte
     For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
+        gLookup(x) = CByte(x \ 3)
     Next x
     
     'We're going to use gamma conversion as part of the effect; gamma is easily optimized via a look-up table
@@ -322,7 +322,7 @@ Public Sub MenuAntique()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        gray = gLookUp(r + g + b)
+        gray = gLookup(r + g + b)
         
         r = (r + gray) \ 2
         g = (g + gray) \ 2
@@ -409,9 +409,9 @@ Public Sub MenuDream()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookUp(0 To 765) As Byte
+    Dim gLookup(0 To 765) As Byte
     For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
+        gLookup(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -423,7 +423,7 @@ Public Sub MenuDream()
         newG = ImageData(QuickVal + 1, y)
         newB = ImageData(QuickVal, y)
         
-        grayVal = gLookUp(newR + newG + newB)
+        grayVal = gLookup(newR + newG + newB)
         
         r = Abs(newR - grayVal) + Abs(newR - newG) + Abs(newR - newB) + (newR \ 2)
         g = Abs(newG - grayVal) + Abs(newG - newB) + Abs(newG - newR) + (newG \ 2)
@@ -558,9 +558,9 @@ Public Sub MenuComicBook()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookUp(0 To 765) As Byte
+    Dim gLookup(0 To 765) As Byte
     For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
+        gLookup(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -580,7 +580,7 @@ Public Sub MenuComicBook()
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        grayVal = gLookUp(r + g + b)
+        grayVal = gLookup(r + g + b)
         
         ImageData(QuickVal + 2, y) = grayVal
         ImageData(QuickVal + 1, y) = grayVal
@@ -679,185 +679,8 @@ Public Sub MenuTest()
     
     MsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test out your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Pro Tip"
     
-    'Currently testing plugin downloading
-    'zLibEnabled = False
-    'ScanEnabled = False
-    'FreeImageEnabled = False
-    'FormPluginDownloader.Show 1, FormMain
-    
-    Exit Sub
-    
-    'Supply an arbitrary process value to the Undo file generator
-    CreateUndoFile 9999
-    
-    GetImageData
-    Dim r As Long, g As Long, b As Long
-    Dim TC As Long, tR As Long, tB As Long, tG As Long
-    Dim bR As Byte, bG As Byte, bB As Byte, bC As Byte
-    Dim HH As Single, SS As Single, LL As Single
-    Dim tH As Single, tS As Single, tL As Single
-    Dim xCalc As Long, yCalc As Long
-    Dim totalval As Long
-    totalval = 0
-    
-    SetProgBarMax PicWidthL
-    
-    For x = 0 To PicWidthL
-    For y = 0 To PicHeightL
-        tR = ImageData(x * 3 + 2, y)
-        tG = ImageData(x * 3 + 1, y)
-        tB = ImageData(x * 3, y)
-        TC = (tR + tG + tB) \ 3
-        
-        'If TC = 0 Then TC = 1
-        'bR = TR
-        'bG = TG
-        'bB = TB
-        'bC = TC
-        
-        'bR = bR Xor bC
-        'bG = bG Xor bC
-        'bB = bB Xor bC
-        tR = TC * 1.2
-        tG = TC
-        tB = TC * 0.8
-        
-        ByteMeL tR
-        ByteMeL tG
-        ByteMeL tB
-        
-        ImageData(x * 3 + 2, y) = tR
-        ImageData(x * 3 + 1, y) = tG
-        ImageData(x * 3, y) = tB
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    
-    SetProgBarVal 0
-    
-    setImageData
-    
-    
-    
-    
-    
-
-    
-    
-    Exit Sub
-    
-    
-    
-    
-    
-    
-    
-    
-    'xCalc = 10
-    'yCalc = 5
-    'Randomize
-    Message "Running test filter..."
-    SetProgBarMax PicWidthL
-    xCalc = PicWidthL + PicHeightL
-    For x = 0 To PicWidthL
-    For y = 0 To PicHeightL
-        tR = ImageData(x * 3 + 2, y)
-        tG = ImageData(x * 3 + 1, y)
-        tB = ImageData(x * 3, y)
-        TC = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
-        'Get the hue and saturation
-        'tRGBToHSL TR, TG, TB, HH, SS, LL
-
-        'Working on night-vision
-        r = TC \ 2
-        b = r
-        g = tG + ((tR + tB) \ 4)
-        
-        'Convert back to RGB using our artificial luminance values
-        'tHSLToRGB HH, SS, LL, r, g, b
-        
-        ByteMeL r
-        ByteMeL g
-        ByteMeL b
-        ImageData(x * 3 + 2, y) = r
-        ImageData(x * 3 + 1, y) = g
-        ImageData(x * 3, y) = b
-    Next y
-        If x Mod 20 = 0 Then SetProgBarVal x
-    Next x
-    setImageData
 End Sub
-
-'Here's all the filters I haven't yet found a home for
-Public Sub TempHolderForUnplacedFilters()
-        Dim r As Long, g As Long, b As Long
-        Dim TC As Long, tR As Long, tG As Long, tB As Long
-        Dim xCalc As Single, yCalc As Single
-        
-        'Purpleize
-        r = tR
-        g = tG + Abs(r - TC)
-        b = tB + Abs(g - TC)
-        r = tR + Abs(b - TC)
-        
-        'Trigonometric noise
-        xCalc = 6
-        yCalc = xCalc \ 2
-        'horizontal
-        r = tR * Cos((x Mod xCalc - yCalc) / yCalc)
-        g = tG * Cos((x Mod xCalc - yCalc) / yCalc)
-        b = tB * Cos((x Mod xCalc - yCalc) / yCalc)
-        'vertical
-        r = tR * Cos(((x + y) Mod xCalc - yCalc) / yCalc)
-        g = tG * Cos(((x + y) Mod xCalc - yCalc) / yCalc)
-        b = tB * Cos(((x + y) Mod xCalc - yCalc) / yCalc)
-        
-        'Two-tiered invert
-        If tR < 128 Then r = Abs(tR - 128) Else r = Abs(tR - 255)
-        If tG < 128 Then g = Abs(tG - 128) Else g = Abs(tG - 255)
-        If tB < 128 Then b = Abs(tB - 128) Else b = Abs(tB - 255)
-        
-        'Difference between colors (can cycle between colors)
-        r = Abs(tR - tB)
-        g = Abs(tG - tR)
-        b = Abs(tB - tG)
-        
-        'Psycho versions...
-        If TC = 0 Then TC = 1
-        r = tR Mod TC
-        g = tG Mod TC
-        b = tB Mod TC
-        'and all the bitwise operators
-        
-        'AutoEnhance clone...?
-        r = (tR - TC) + tR
-        g = (tG - TC) + tG
-        b = (tB - TC) + tB
-        'another AutoEnhance clone?
-        If TC = 0 Then TC = 1
-        r = tR / TC * tR
-        g = tG / TC * TC
-        b = tB / TC * tB
-        'Yet another AutoEnhance version...
-        r = Abs(tR - TC) - TC + 2 * tR
-        g = Abs(tG - TC) - TC + 2 * tG
-        b = Abs(tB - TC) - TC + 2 * tB
-        
-        'Strange infrared effect
-        r = Abs(tR - 64)
-        g = Abs(r - 64)
-        b = Abs(g - 64)
-        TC = Int((222 * tR + 707 * tG + 71 * tB) \ 1000)
-        r = TC + 70
-        r = r + (((r - 128) * 100) \ 100)
-        g = Abs(TC - 6) + 70
-        g = g + (((g - 128) * 100) \ 100)
-        b = (TC + 4) + 70
-        b = b + (((b - 128) * 100) \ 100)
-        r = (r - TC) * 5
-        g = (g - TC) * 5
-        b = (b - TC) * 5
-End Sub
+    
 
 'This function will return the luminance value of an RGB triplet.  Note that the value will be in the [0,255] range instead
 ' of the usual [0,1.0] one.

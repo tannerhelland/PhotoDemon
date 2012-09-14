@@ -53,8 +53,6 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     
     'Paint the image from the back buffer to the front buffer
     If ZoomVal <= 1 Then
-        'StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, formToBuffer.BackBuffer.hDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
-        'DOHC: Attempt to perform the StretchBlt call from the in-memory object
         StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
     Else
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
@@ -64,8 +62,6 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         SrcWidth = bltWidth / ZoomVal
         bltHeight = pdImages(formToBuffer.Tag).targetHeight + (Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue)) - (pdImages(formToBuffer.Tag).targetHeight Mod Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue))))
         SrcHeight = bltHeight / ZoomVal
-        'StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, formToBuffer.BackBuffer.hDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
-        'DOHC: Attempt to perform the StretchBlt call from the in-memory object
         StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
     End If
     formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
@@ -204,9 +200,6 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'If we've reached this point, one or both scroll bars are enabled.  The time has come to calculate their values.
     'Horizontal scroll bar comes first.
-    
-    'MsgBox zWidth & ":" & FormMain.ActiveForm.ScaleWidth & vbCrLf & zHeight & ":" & FormMain.ActiveForm.ScaleHeight
-    
     If hScrollEnabled = True Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.

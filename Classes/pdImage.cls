@@ -59,7 +59,7 @@ Option Explicit
     Public imageID As Long
 
     'Is the form associated with this image still loaded?
-    Public isActive As Boolean
+    Public IsActive As Boolean
 
     'Was the image loaded successfully?
     Public loadedSuccessfully As Boolean
@@ -151,7 +151,6 @@ End Sub
 Public Sub BuildUndo(ByVal processID As Long)
     
     'Easy enough - just store a 24-bit bitmap of the current image
-    'SavePicture FormMain.ActiveForm.BackBuffer.Picture, GenerateUndoFile(UndoNum)
     mainLayer.writeToFile GenerateUndoFile(UndoNum)
     Debug.Print "Saved " & GenerateUndoFile(UndoNum) & " as Undo file #" & UndoNum & "."
     
@@ -181,8 +180,6 @@ Public Sub BuildUndo(ByVal processID As Long)
     
     Debug.Print "Undo created successfully."
 
-    'MsgBox UndoNum & "," & UndoMax & "," & UndoTotal & "," & vbCrLf & UndoState & "," & RedoState
-
 End Sub
     
 'Restore an undo entry, i.e. pushing the Undo button (formerly RestoreImage)
@@ -190,7 +187,6 @@ Public Sub Undo()
     
     'If we're at the end of actions, save this image for Redo potential
     If UndoNum = UndoMax Then
-        'SavePicture FormMain.ActiveForm.BackBuffer.Picture, GenerateUndoFile(UndoNum)
         mainLayer.writeToFile GenerateUndoFile(UndoNum)
         Debug.Print "Undo initiated by user. Saved " & GenerateUndoFile(UndoNum) & " for Redo purposes."
         'Mirror the current processID
@@ -326,7 +322,7 @@ End Function
 Private Sub Class_Initialize()
 
     'Initially, mark the image as *not* having been saved
-    isActive = False
+    IsActive = False
     loadedSuccessfully = False
     HasBeenSaved = False
     UndoNumAtLastSave = 0

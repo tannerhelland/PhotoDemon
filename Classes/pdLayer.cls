@@ -15,41 +15,33 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 06/September/12
-'Last update: added clipboard functionality.
+'Last updated: 13/September/12
+'Last update: improved all comments to match the completed state of the class
 '
-'The time has come to break PhotoDemon's reliance on picture boxes.  The new plan is to implement an honest-to-God
-' DIB class that will manage all image data in memory.  If built correctly, this thing will provide a whole host of
-' benefits, including but not limited to:
+'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
+' pdLayer is a powerful DIB class responsible for managing all image data in memory.  Some of the benefits provided by
+' this approach include:
 '
 '- Ability to load large images without problems
 '- Alpha channels
 '- High bit depths
-'- Much faster
-'- Eventual implementation of layers and adjustment layers
+'- Much faster than picture boxes
+'- Allows for the eventual implementation of layers and adjustment layers
 '
-'Those are serious benefits.
+'These are serious benefits.
 '
-'Implementation will be slow and steady at first.  A rough roadmap is as follows:
-'- (DONE) Get image loading working.  This will require a lot of plumbing to already be in place, but I can't do anything else
-' until I can get image data into the class.
-'- (DONE) Get viewport rendering working.  If I can't see the image, I can't work on it.
-'- (DONE) Experiment with tying the class's data into GetImageData, which is already well-implemented throughout PD.
-'- (DONE) Get image saving working.
-'- (IN PROGRESS) Replace PicWidthL and PicHeightL with width/height values provided by this class.
-'- (IN PROGRESS) Remove all direct intervention with ActiveForm.BackBuffer and force it through this class.  That means no unmanaged
-' changing of width, height, etc - it has to come through here.
+'Note that anything you can do with an hDC property you can do with this class - simply use the getLayerDC function to
+' return the DIB's hDC then do with it what you please.  All functions are heavily commented and should be self-explanatory.
 '
-'This class will be a subset of pdImage().  Initially there will only be one layer (the image's data), but in the future,
-' assuming this class is written well, a pdImage object could theoretically store many layers.
+'Note also that this class is treated as a subset of pdImage().  Right now each pdImage object only contains one layer
+' (the image itself), but in the future a pdImage object could theoretically store many layers.
 '
-'Let the fun begin.
-'
-'Note: in building this, I utilized a number of other DIB classes for reference and testing.  Special thanks to:
+'SPECIAL THANKS
+'In building this class, I utilized a number of other DIB classes for reference and testing.  Special thanks to:
 ' Herman Liu (personal correspondence)
 ' Carles PV's iBMP project: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 ' Steve McMahon's DIB/SafeArray analysis: http://www.vbaccelerator.com/home/VB/Code/vbMedia/DIB_Sections/True_Colour_DIBSection/article.asp
-' Many thanks to both these individuals for their outstanding work on graphics in VB.
+' Many thanks to these three individuals for their outstanding work on graphics in VB.
 '
 '***************************************************************************
 
@@ -407,7 +399,7 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
 
 End Function
 
-' Simplified and for 24 or 32-BPP only
+'Create a blank layer.  If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
 Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite) As Boolean
     
     'Erase any existing layer data
@@ -427,7 +419,6 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     With layerDIBHeader
         .Size = Len(layerDIBHeader)
         .Planes = 1
-        'This could be 24; for now, I'm using only 32 as part of the test implementation
         .BitCount = colorDepth
         .Width = iWidth
         .Height = -iHeight

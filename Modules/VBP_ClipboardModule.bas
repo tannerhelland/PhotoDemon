@@ -6,9 +6,8 @@ Attribute VB_Name = "Clipboard_Handler"
 'Last updated: 06/September/12
 'Last update: rewrote copy/paste against the new layer class.
 '
-'Module for handling all Windows clipboard routines.  Copy and Paste are the real stars; I include Cut
-' for completeness' sake, though it really serves no purpose, and there is also Empty Clipboard
-' functionality.
+'Module for handling all Windows clipboard routines.  Copy and Paste are the real stars; Cut is not included
+' (as there is no purpose for it at present), though Empty Clipboard does make an appearance.
 '
 '***************************************************************************
 
@@ -21,14 +20,6 @@ Private Const CLIPBOARD_FORMAT_METAFILE As Long = 3
 Public Sub ClipboardCopy()
     pdImages(CurrentImage).mainLayer.copyLayerToClipboard
 End Sub
-
-'Cut image (a stupid command given the current nature of the program, but I include it for completeness' sake)
-'Public Sub ClipboardCut()
-'    Clipboard.Clear
-'    Clipboard.SetData FormMain.ActiveForm.BackBuffer.Image, CLIPBOARD_FORMAT_BMP
-'    FormMain.ActiveForm.BackBuffer.Picture = LoadPicture("")
-'    PrepareViewport
-'End Sub
 
 'Empty the clipboard
 Public Sub ClipboardEmpty()
@@ -48,7 +39,7 @@ Public Sub ClipboardPaste()
         'Create a temporary layer and copy the temporary StdPicture object into it
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
-        tmpLayer.CreateFromPicture tmpPicture
+        tmpLayer.createFromPicture tmpPicture
         
         'Ask the layer to write its contents to file in BMP format
         Dim tmpClipboardFile As String

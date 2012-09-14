@@ -441,8 +441,6 @@ End Sub
 Private Sub Form_Load()
 
     UpdatePaperSize
-
-    GetImageData
     
     'Though it's not really necessary, I'm only enabling print preview if FreeImage is Enabled (we use FreeImage to perform
     ' fast, high-quality rotations of images).  I anticipate that pretty much no one will ever use this printing option, so
@@ -483,11 +481,6 @@ Private Sub Form_Load()
     picOut.ScaleMode = vbPixels
     pdImages(CurrentImage).mainLayer.renderToPictureBox picOut
     picOut.ScaleMode = vbTwips
-    'iOut.Width = pdImages(CurrentImage).Width
-    'iOut.Height = pdImages(CurrentImage).Height
-    'iOut.Paint
-    'iOut.Picture = FormMain.ActiveForm.BackBuffer.Picture
-    'iOut.Refresh
     
     'Determine base DPI (should be screen DPI, but calculate it manually to be sure)
     Dim pic As StdPicture
@@ -785,7 +778,6 @@ Private Sub RebuildPreview(Optional forceDPI As Boolean = False)
         picThumbFinal.Height = iSrc.Height
 
         DrawPreviewImage picThumb90
-        GetPreviewData picThumb90
         
         'Now comes the rotation itself.
         picThumbFinal.Picture = FreeImage_RotateIOP(picThumb90.Picture, 90)
@@ -808,13 +800,13 @@ Private Sub UpdatePaperSize()
     Dim pWidth As Double, pHeight As Double
     pWidth = Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
     pHeight = Printer.ScaleY(Printer.Height, Printer.ScaleMode, vbInches)
-    Dim txtWidth As String, txtHeight As String
-    txtWidth = Format(pWidth, "#0.##")
-    txtHeight = Format(pHeight, "#0.##")
-    If Right(txtWidth, 1) = "." Then txtWidth = Left$(txtWidth, Len(txtWidth) - 1)
-    If Right(txtHeight, 1) = "." Then txtHeight = Left$(txtHeight, Len(txtHeight) - 1)
+    Dim TxtWidth As String, TxtHeight As String
+    TxtWidth = Format(pWidth, "#0.##")
+    TxtHeight = Format(pHeight, "#0.##")
+    If Right(TxtWidth, 1) = "." Then TxtWidth = Left$(TxtWidth, Len(TxtWidth) - 1)
+    If Right(TxtHeight, 1) = "." Then TxtHeight = Left$(TxtHeight, Len(TxtHeight) - 1)
     
-    lblPaperSize = "Paper size: " & txtWidth & """ x  " & txtHeight & """"
+    lblPaperSize = "Paper size: " & TxtWidth & """ x  " & TxtHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
     Dim aspectRatio As Double

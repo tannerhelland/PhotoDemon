@@ -22,12 +22,8 @@ Public FilterWeight As Long
 'The bias (i.e. +/-)
 Public FilterBias As Long
 'Area filter data
-Public FTransfer() As Long
-Public tData() As Byte
-
-'Picture dimensions
-Public PicWidthL As Long
-Public PicHeightL As Long
+'Public FTransfer() As Long
+'Public tData() As Byte
 
 'Others
 

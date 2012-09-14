@@ -138,7 +138,6 @@ Public Sub MenuCShift(ByVal SType As Byte)
     Else
         Message "Shifting RGB values left..."
     End If
-    SetProgBarMax PicWidthL
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -560,9 +559,9 @@ Public Sub MenuAutoEnhanceHighlights()
         'Emphasize highlights by making bright colors emphasize the 2x contrast value, while dark colors stay the same.
         blendValue = grayVal / 255
         
-        r = blendColors(r, newR, blendValue)
-        g = blendColors(g, newG, blendValue)
-        b = blendColors(b, newB, blendValue)
+        r = BlendColors(r, newR, blendValue)
+        g = BlendColors(g, newG, blendValue)
+        b = BlendColors(b, newB, blendValue)
         
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
@@ -661,9 +660,9 @@ Public Sub MenuAutoEnhanceMidtones()
         ' receive minimal blending.
         blendValue = sLookup(grayVal)
         
-        r = blendColors(r, newR, blendValue)
-        g = blendColors(g, newG, blendValue)
-        b = blendColors(b, newB, blendValue)
+        r = BlendColors(r, newR, blendValue)
+        g = BlendColors(g, newG, blendValue)
+        b = BlendColors(b, newB, blendValue)
         
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
@@ -756,9 +755,9 @@ Public Sub MenuAutoEnhanceShadows()
         'Emphasize shadows by making dark colors emphasize the 2x contrast value, while bright colors stay the same.
         blendValue = 1 - eLookup(grayVal)
         
-        r = blendColors(r, newR, blendValue)
-        g = blendColors(g, newG, blendValue)
-        b = blendColors(b, newB, blendValue)
+        r = BlendColors(r, newR, blendValue)
+        g = BlendColors(g, newG, blendValue)
+        b = BlendColors(b, newB, blendValue)
         
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g

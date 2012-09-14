@@ -16,7 +16,7 @@ Option Explicit
 'Used to draw the main image onto a preview picture box
 Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdLayer)
     
-    'Normally this will draw a preview of FormMain.ActiveForm.BackBuffer.  However, another picture source can be specified.
+    'Normally this will draw a preview of FormMain.ActiveForm's relevant image.  However, another picture source can be specified.
     If useOtherPictureSrc = False Then
         pdImages(CurrentImage).mainLayer.renderToPictureBox dstPicture
     Else
