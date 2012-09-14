@@ -64,7 +64,7 @@ Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
     'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, FIF_GIF, , FICD_8BPP, , , , , False)
+        fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, FIF_GIF, , FICD_8BPP, , , , , True)
         If fi_Check = False Then
             Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -102,7 +102,7 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional
     'Use that handle to save the image to PNG format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, PNGColorDepth, , , , , False)
+        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, PNGColorDepth, , , , , True)
         If fi_Check = False Then
             Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -140,7 +140,7 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
     'Use that handle to save the image to PPM format (ASCII)
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, FIF_PPM, , FICD_24BPP, , , , , False)
+        fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, FIF_PPM, , FICD_24BPP, , , , , True)
         If fi_Check = False Then
             Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -178,7 +178,7 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
     'Use that handle to save the image to TGA format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, FILO_TARGA_DEFAULT, FICD_24BPP, , , , , False)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, FILO_TARGA_DEFAULT, FICD_24BPP, , , , , True)
         If fi_Check = False Then
             Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -216,7 +216,7 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, JPEG_OPTIMIZE + jQuality, FICD_24BPP, , , , , False)
+        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, JPEG_OPTIMIZE + jQuality, FICD_24BPP, , , , , True)
         If fi_Check = False Then
             Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -254,7 +254,7 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
     'Use that handle to save the image to TIFF format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFF_NONE, FICD_24BPP, , , , , False)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFF_NONE, FICD_24BPP, , , , , True)
         If fi_Check = False Then
             Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
