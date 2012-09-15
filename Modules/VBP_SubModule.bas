@@ -72,7 +72,7 @@ End Sub
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
-    FormMain.lblImgSize.Caption = "Size: " & iWidth & "x" & iHeight
+    FormMain.lblImgSize.Caption = "size: " & iWidth & "x" & iHeight
     DoEvents
 End Sub
 
