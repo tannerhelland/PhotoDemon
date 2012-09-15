@@ -31,7 +31,7 @@ Public FilterBias As Long
 Public Type ZoomData
     ZoomCount As Byte
     ZoomArray() As Double
-    ZoomFactor() As Byte
+    ZoomFactor() As Double
 End Type
 
 Public Zoom As ZoomData

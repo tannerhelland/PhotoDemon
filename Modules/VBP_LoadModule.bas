@@ -73,36 +73,126 @@ Public Sub LoadTheProgram()
     'Initialize our current zoom method
     LoadMessage "Initializing zoom processor..."
     
+    'This list of zoom values is effectively arbitrary.  I've based this list off similar lists (Paint.NET, GIMP) while
+    ' including a few extra values for convenience's sake
+    Zoom.ZoomCount = 25
+    ReDim Zoom.ZoomArray(0 To Zoom.ZoomCount) As Double
+    ReDim Zoom.ZoomFactor(0 To Zoom.ZoomCount) As Double
+    FormMain.CmbZoom.AddItem "3200%", 0
+        Zoom.ZoomArray(0) = 32
+        Zoom.ZoomFactor(0) = 32
+    FormMain.CmbZoom.AddItem "2400%", 1
+        Zoom.ZoomArray(1) = 24
+        Zoom.ZoomFactor(1) = 24
+    FormMain.CmbZoom.AddItem "1600%", 2
+        Zoom.ZoomArray(2) = 16
+        Zoom.ZoomFactor(2) = 16
+    FormMain.CmbZoom.AddItem "1200%", 3
+        Zoom.ZoomArray(3) = 12
+        Zoom.ZoomFactor(3) = 12
+    FormMain.CmbZoom.AddItem "800%", 4
+        Zoom.ZoomArray(4) = 8
+        Zoom.ZoomFactor(4) = 8
+    FormMain.CmbZoom.AddItem "700%", 5
+        Zoom.ZoomArray(5) = 7
+        Zoom.ZoomFactor(5) = 7
+    FormMain.CmbZoom.AddItem "600%", 6
+        Zoom.ZoomArray(6) = 6
+        Zoom.ZoomFactor(6) = 6
+    FormMain.CmbZoom.AddItem "500%", 7
+        Zoom.ZoomArray(7) = 5
+        Zoom.ZoomFactor(7) = 5
+    FormMain.CmbZoom.AddItem "400%", 8
+        Zoom.ZoomArray(8) = 4
+        Zoom.ZoomFactor(8) = 4
+    FormMain.CmbZoom.AddItem "300%", 9
+        Zoom.ZoomArray(9) = 3
+        Zoom.ZoomFactor(9) = 3
+    FormMain.CmbZoom.AddItem "200%", 10
+        Zoom.ZoomArray(10) = 2
+        Zoom.ZoomFactor(10) = 2
+    FormMain.CmbZoom.AddItem "100%", 11
+        Zoom.ZoomArray(11) = 1
+        Zoom.ZoomFactor(11) = 1
+    FormMain.CmbZoom.AddItem "75%", 12
+        Zoom.ZoomArray(12) = 3 / 4
+        Zoom.ZoomFactor(12) = 1
+    FormMain.CmbZoom.AddItem "67%", 13
+        Zoom.ZoomArray(13) = 2 / 3
+        Zoom.ZoomFactor(13) = 1
+    FormMain.CmbZoom.AddItem "50%", 14
+        Zoom.ZoomArray(14) = 0.5
+        Zoom.ZoomFactor(14) = 1
+    FormMain.CmbZoom.AddItem "33%", 15
+        Zoom.ZoomArray(15) = 1 / 3
+        Zoom.ZoomFactor(15) = 1
+    FormMain.CmbZoom.AddItem "25%", 16
+        Zoom.ZoomArray(16) = 0.25
+        Zoom.ZoomFactor(16) = 1
+    FormMain.CmbZoom.AddItem "20%", 17
+        Zoom.ZoomArray(17) = 0.2
+        Zoom.ZoomFactor(17) = 1
+    FormMain.CmbZoom.AddItem "16%", 18
+        Zoom.ZoomArray(18) = 0.16
+        Zoom.ZoomFactor(18) = 1
+    FormMain.CmbZoom.AddItem "12%", 19
+        Zoom.ZoomArray(19) = 0.12
+        Zoom.ZoomFactor(19) = 1
+    FormMain.CmbZoom.AddItem "8%", 20
+        Zoom.ZoomArray(20) = 0.08
+        Zoom.ZoomFactor(20) = 1
+    FormMain.CmbZoom.AddItem "6%", 21
+        Zoom.ZoomArray(21) = 0.06
+        Zoom.ZoomFactor(21) = 1
+    FormMain.CmbZoom.AddItem "4%", 22
+        Zoom.ZoomArray(22) = 0.04
+        Zoom.ZoomFactor(22) = 1
+    FormMain.CmbZoom.AddItem "3%", 23
+        Zoom.ZoomArray(23) = 0.03
+        Zoom.ZoomFactor(23) = 1
+    FormMain.CmbZoom.AddItem "2%", 24
+        Zoom.ZoomArray(24) = 0.02
+        Zoom.ZoomFactor(24) = 1
+    FormMain.CmbZoom.AddItem "1%", 25
+        Zoom.ZoomArray(25) = 0.01
+        Zoom.ZoomFactor(25) = 1
+    
+    'If desired, the global "zoom object"'s # of available zoom values can be set automatically using this line
+    'Zoom.ZoomCount = FormMain.CmbZoom.ListCount - 1
+    'ReDim Zoom.ZoomArray(0 To Zoom.ZoomCount) As Double
+    'ReDim Zoom.ZoomFactor(0 To Zoom.ZoomCount) As Byte
+    
+    'Store zoom coefficients (such as .5, .3333, .25) within a global ZoomArray, whose indices correspond
+    ' with the matching combo box values; ZoomFactor stores whole-number values of the zoom ratio, and it
+    ' is up to the zoom routine to remember that > index zoomIndex100 is zoomed OUT values, while > index
+    ' zoomIndex100 is zoomed IN values.  (ZoomFactor is used to prevent stretching blemishes when zoomed-in.)
+    
+    'In the past, this zoom list was automatically generated using simple ratios (16:1...1:1...1:16).  I no longer use this method.
     'Create the first half of the zoom combo box values (zoomed out)
-    For x = 16 To 1 Step -1
-        If x <> 1 Then FormMain.CmbZoom.AddItem (Format((CDbl(1) / CDbl(x)) * CDbl(100), "##.0") & "%") Else FormMain.CmbZoom.AddItem "100%"
-    Next x
+    'For x = 16 To 1 Step -1
+    '    If x <> 1 Then FormMain.CmbZoom.AddItem (Format((CDbl(1) / CDbl(x)) * CDbl(100), "##.0") & "%") Else FormMain.CmbZoom.AddItem "100%"
+    'Next x
     
     'Create the second half of the zoom combo box values (zoomed in)
-    For x = 2 To 16 Step 1
-        FormMain.CmbZoom.AddItem (CInt((CDbl(x) / CDbl(1)) * CDbl(100)) & "%")
-    Next x
-
-    'Set the global "zoom object"'s # of available zoom values
-    Zoom.ZoomCount = FormMain.CmbZoom.ListCount - 1
-    ReDim Zoom.ZoomArray(0 To Zoom.ZoomCount) As Double
-    ReDim Zoom.ZoomFactor(0 To Zoom.ZoomCount) As Byte
+    'For x = 2 To 16 Step 1
+    '    FormMain.CmbZoom.AddItem (CInt((CDbl(x) / CDbl(1)) * CDbl(100)) & "%")
+    'Next x
     
     'Store zoom coefficients (such as .5, .3333, .25) within a global ZoomArray, whose indices correspond
     ' with the matching combo box values; ZoomFactor stores whole-number values of the zoom ratio, and it
     ' is up to the zoom routine to remember that < index 16 is zoomed out values, while > index 15 is
     ' zoomed in values.
-    For x = 0 To 15
-        Zoom.ZoomArray(x) = 1 / (16 - x)
-        Zoom.ZoomFactor(x) = 16 - x
-    Next x
-    For x = 2 To 16
-        Zoom.ZoomArray(x + 14) = x
-        Zoom.ZoomFactor(x + 14) = x
-    Next x
+    'For x = 0 To 15
+    '    Zoom.ZoomArray(x) = 1 / (16 - x)
+    '    Zoom.ZoomFactor(x) = 16 - x
+    'Next x
+    'For x = 2 To 16
+    '    Zoom.ZoomArray(x + 14) = x
+    '    Zoom.ZoomFactor(x + 14) = x
+    'Next x
     
     'Set the zoom box to display "100%"
-    FormMain.CmbZoom.ListIndex = 15
+    FormMain.CmbZoom.ListIndex = zoomIndex100
     
     'Get the auto-zoom preference from the INI file
     AutosizeLargeImages = CLng(GetFromIni("General Preferences", "AutosizeLargeImages"))
@@ -413,7 +503,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Message "Resizing image to fit screen..."
     
             'If the user wants us to resize the image to fit on-screen, do that now
-            If AutosizeLargeImages = 0 Then FitImageToWindow True
+            If AutosizeLargeImages = 0 Then FitImageToViewport True
                     
             'If the window is not maximized or minimized, fit the form around the picture box
             If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
@@ -462,7 +552,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             DisplaySize targetImage.Width, targetImage.Height
             If imgFormTitle = "" Then FormMain.ActiveForm.Caption = sFile(thisImage) Else FormMain.ActiveForm.Caption = imgFormTitle
             
-            'FixScrolling may have been reset by this point (by the FitImageToWindow sub, among others), so MAKE SURE it's false
+            'FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
             FixScrolling = False
             FormMain.CmbZoom.ListIndex = targetImage.CurrentZoomValue
         
@@ -583,8 +673,8 @@ Public Sub LoadMenuShortcuts()
         .AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask, "Redo"
         .AddAccelerator vbKeyZ, vbCtrlMask Or vbShiftMask, "Repeat_Last"
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Empty_Clipboard"
-        .AddAccelerator vbKeyAdd, vbCtrlMask, "Zoom_In"
-        .AddAccelerator vbKeySubtract, vbCtrlMask, "Zoom_Out"
+        .AddAccelerator vbKeyAdd, 0, "Zoom_In"
+        .AddAccelerator vbKeySubtract, 0, "Zoom_Out"
         .AddAccelerator vbKeyEscape, 0, "Escape"
         
         'Most-recently used files
@@ -734,7 +824,7 @@ Public Sub DuplicateCurrentImage()
     Message "Resizing image to fit screen..."
     
     'If the user wants us to resize the image to fit on-screen, do that now
-    If AutosizeLargeImages = 0 Then FitImageToWindow True
+    If AutosizeLargeImages = 0 Then FitImageToViewport True
                 
     'If the window is not maximized or minimized, fit the form around the picture box
     If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
@@ -745,7 +835,7 @@ Public Sub DuplicateCurrentImage()
     'Update the current caption to match
     FormMain.ActiveForm.Caption = pdImages(CurrentImage).OriginalFileNameAndExtension
         
-    'FixScrolling may have been reset by this point (by the FitImageToWindow sub, among others), so MAKE SURE it's false
+    'FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
     FixScrolling = False
     FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
         

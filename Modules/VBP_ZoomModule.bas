@@ -15,6 +15,9 @@ Attribute VB_Name = "Zoom_Handler"
 
 Option Explicit
 
+'This is the ListIndex of the FormMain zoom combo box that corresponds to 100%
+Public Const zoomIndex100 As Long = 11
+
 'Width and height values of the image AFTER zoom has been applied.  (For example, if the image is 100x100
 ' and the zoom value is 200%, zWidth and zHeight will be 200.)
 Dim zWidth As Single, zHeight As Single
@@ -45,7 +48,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     DrawSpecificCanvas formToBuffer
 
     'When zoomed out, specify halftone mode (for limited resampling).  Otherwise, nearest-neighbor sampling is fine.
-    If FormMain.CmbZoom.ListIndex >= 15 Then
+    If ZoomVal >= 1 Then
         SetStretchBltMode formToBuffer.FrontBuffer.hDC, STRETCHBLT_COLORONCOLOR
     Else
         SetStretchBltMode formToBuffer.FrontBuffer.hDC, STRETCHBLT_HALFTONE

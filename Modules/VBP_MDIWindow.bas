@@ -61,7 +61,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     pdImages(NumOfImagesLoaded).UndoMax = 0
     pdImages(NumOfImagesLoaded).UndoState = False
     pdImages(NumOfImagesLoaded).RedoState = False
-    pdImages(NumOfImagesLoaded).CurrentZoomValue = 15   'Default zoom is 100%
+    pdImages(NumOfImagesLoaded).CurrentZoomValue = zoomIndex100   'Default zoom is 100%
     
     'This is kind of cheap, but let's just set a random loading point between 0 and 99% :)
     Randomize Timer
@@ -133,7 +133,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
 End Sub
 
 'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
-Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
+Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = False)
     
     'Disable AutoScroll, because that messes with our calculations
     FixScrolling = False
@@ -153,13 +153,13 @@ Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
     
     'Use this to track zoom
     Dim zVal As Long
-    zVal = 15
+    zVal = zoomIndex100
     
     'First, let's check to see if we need to adjust zoom because the width is too big
     If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) > (FormMain.ScaleWidth - tDif) Then
         'If it is too big, run a loop backwards through the possible zoom values to see
         'if one will make it fit
-        For x = 15 To 0 Step -1
+        For x = zoomIndex100 To Zoom.ZoomCount Step 1
             If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * Zoom.ZoomArray(x)) < (FormMain.ScaleWidth - tDif) Then
                 zVal = x
                 Exit For
@@ -172,7 +172,7 @@ Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
     If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) > (FormMain.ScaleHeight - hDif) Then
         'If the image's height is too big for the form, run a loop backwards through all
         ' possible zoom values to see if one will make it fit
-        For x = zVal To 0 Step -1
+        For x = zVal To Zoom.ZoomCount Step 1
             If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
                 zVal = x
                 Exit For
@@ -192,7 +192,7 @@ Public Sub FitImageToWindow(Optional ByVal suppressRendering As Boolean = False)
     FixScrolling = True
     
     'Now fix scrollbars and everything
-    If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitImageToWindow"
+    If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitImageToViewport"
     
 End Sub
 
@@ -217,11 +217,11 @@ Public Sub FitOnScreen()
 
     'Use this to track zoom
     Dim zVal As Long
-    zVal = FormMain.CmbZoom.ListCount - 1
+    zVal = 0
     
     'Run a loop backwards through the possible zoom values to see
     'if one will make it fit at the maximum possible size
-    For x = FormMain.CmbZoom.ListCount - 1 To 0 Step -1
+    For x = 0 To Zoom.ZoomCount Step 1
         If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
             zVal = x
             Exit For
@@ -229,7 +229,7 @@ Public Sub FitOnScreen()
     Next x
     
     'Now we do the same thing for the height
-    For x = zVal To 0 Step -1
+    For x = zVal To Zoom.ZoomCount Step 1
         If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
             zVal = x
             Exit For
@@ -274,8 +274,8 @@ Public Sub UpdateMDIStatus()
         FormMain.MnuFitOnScreen.Enabled = False
         If FormMain.CmbZoom.Enabled = True Then
             FormMain.CmbZoom.Enabled = False
-            FormMain.lblZoom.ForeColor = &HD1B499
-            FormMain.CmbZoom.ListIndex = 15   'Reset zoom to 100%
+            FormMain.lblZoom.ForeColor = &H808080
+            FormMain.CmbZoom.ListIndex = zoomIndex100   'Reset zoom to 100%
         End If
         
         FormMain.lblImgSize.ForeColor = &HD1B499
