@@ -64,17 +64,17 @@ Begin VB.Form FormAbout
    Begin VB.Label lblDisclaimer 
       Alignment       =   1  'Right Justify
       BackStyle       =   0  'Transparent
-      Caption         =   " Copyright (automatically populated at run-time)"
+      Caption         =   "Copyright (auto-populated at run-time)"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00000000&
+      ForeColor       =   &H00404040&
       Height          =   315
       Left            =   2910
       TabIndex        =   2
@@ -85,22 +85,22 @@ Begin VB.Form FormAbout
    Begin VB.Label lblVersion 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Version (automatically populated at run-time)"
+      Caption         =   "Version XX.XX.XXXX"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00000000&
-      Height          =   240
-      Left            =   120
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   210
       TabIndex        =   1
       Top             =   2400
-      Width           =   3900
+      Width           =   2100
    End
 End
 Attribute VB_Name = "FormAbout"
@@ -132,7 +132,7 @@ Private Sub Form_Load()
     
     'Automatic generation of version & copyright information
     lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
-    lblDisclaimer.Caption = App.LegalCopyright & "   "
+    lblDisclaimer.Caption = App.LegalCopyright & " "
     
     curCredit = 1
     
