@@ -671,7 +671,7 @@ Private Sub Form_Load()
     If HasCreatedFilter = True Then OpenCustomFilter TempPath & "~W096THCF.tmp"
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

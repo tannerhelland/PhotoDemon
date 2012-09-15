@@ -290,7 +290,7 @@ Private Sub Form_Load()
     If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

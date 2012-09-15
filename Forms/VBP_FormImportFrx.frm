@@ -265,7 +265,7 @@ TryBinaryImportAgain:
         End If
         
         'Assign the system hand cursor to all relevant objects
-        setHandCursorForAll Me
+        makeFormPretty Me
         
     'If the commondialog box is canceled...
     Else

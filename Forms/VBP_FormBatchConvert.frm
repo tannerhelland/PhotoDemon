@@ -1185,7 +1185,7 @@ Private Sub Form_Load()
     cmbPattern.ListIndex = 0
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

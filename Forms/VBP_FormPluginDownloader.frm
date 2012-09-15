@@ -507,7 +507,7 @@ Private Sub Form_Load()
     Message "Ready to update. Awaiting user permission..."
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
 
 End Sub
 

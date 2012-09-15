@@ -416,6 +416,6 @@ End Sub
 Private Sub Form_Load()
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub

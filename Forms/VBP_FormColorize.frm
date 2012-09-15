@@ -299,7 +299,7 @@ Private Sub Form_Load()
     If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, picEffect Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

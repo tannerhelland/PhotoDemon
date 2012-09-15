@@ -521,7 +521,7 @@ Private Sub cmdExportHistogram_Click()
         CreateNewImageForm True
         
         'Copy the current histogram image into the temporary form's main layer
-        pdImages(CurrentImage).mainLayer.CreateFromPicture FormHistogram.picH.Picture
+        pdImages(CurrentImage).mainLayer.createFromPicture FormHistogram.picH.Picture
                 
         'Use the core PhotoDemon save function to save the histogram image to file
         PhotoDemon_SaveImage CurrentImage, sFile, False, &H8
@@ -554,7 +554,7 @@ Private Sub Form_Load()
     histogramGenerated = False
 
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
     'For now, initialize all histogram types
     For x = 0 To 3

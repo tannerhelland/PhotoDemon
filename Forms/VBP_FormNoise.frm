@@ -193,7 +193,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub ChkM_Click()
-    AddNoise hsNoise.Value, ChkM.Value, True, PicEffect
+    AddNoise hsNoise.Value, ChkM.Value, True, picEffect
 End Sub
 
 'CANCEL button
@@ -314,22 +314,22 @@ Private Sub Form_Load()
     
     'Create the previews
     DrawPreviewImage picPreview
-    AddNoise hsNoise.Value, ChkM.Value, True, PicEffect
+    AddNoise hsNoise.Value, ChkM.Value, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 
 'The following four routines keep the value of the textbox and scroll bar in lock-step
 Private Sub hsNoise_Change()
     txtNoise.Text = hsNoise.Value
-    AddNoise hsNoise.Value, ChkM.Value, True, PicEffect
+    AddNoise hsNoise.Value, ChkM.Value, True, picEffect
 End Sub
 
 Private Sub hsNoise_Scroll()
     txtNoise.Text = hsNoise.Value
-    AddNoise hsNoise.Value, ChkM.Value, True, PicEffect
+    AddNoise hsNoise.Value, ChkM.Value, True, picEffect
 End Sub
 
 Private Sub txtNoise_Change()

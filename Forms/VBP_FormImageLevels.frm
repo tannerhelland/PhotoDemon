@@ -386,7 +386,7 @@ Private Sub Form_Load()
     
     'Draw preview images to the top picture boxes
     DrawPreviewImage picPreview
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
     
     'Set the default midtone scrollbar ratio to 1/2
     midRatio = 0.5
@@ -395,7 +395,7 @@ Private Sub Form_Load()
     iRefresh = True
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 
@@ -428,19 +428,19 @@ End Sub
 '*********************************************************************************
 Private Sub hsInL_Change()
     FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
 End Sub
 
 Private Sub hsInL_Scroll()
     FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
 End Sub
 
 Private Sub hsInM_Change()
     If iRefresh = True Then
         midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
         FixScrollBars True
-        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
     End If
 End Sub
 
@@ -448,34 +448,34 @@ Private Sub hsInM_Scroll()
     If iRefresh = True Then
         midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
         FixScrollBars True
-        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
     End If
 End Sub
 
 Private Sub hsInR_Change()
     FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
 End Sub
 
 Private Sub hsInR_Scroll()
     FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
 End Sub
 
 Private Sub hsOutL_Change()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
 End Sub
 
 Private Sub hsOutL_Scroll()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
 End Sub
 
 Private Sub hsOutR_Change()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
 End Sub
 
 Private Sub hsOutR_Scroll()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, PicEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
 End Sub
 
 

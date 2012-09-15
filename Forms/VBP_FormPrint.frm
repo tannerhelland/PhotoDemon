@@ -509,7 +509,7 @@ Private Sub Form_Load()
     cmbDPI = baseDPI
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
 
 End Sub
 

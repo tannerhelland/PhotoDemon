@@ -519,7 +519,7 @@ Private Sub Form_Load()
     GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

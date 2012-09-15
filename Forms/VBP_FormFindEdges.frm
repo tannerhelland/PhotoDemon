@@ -261,7 +261,7 @@ Private Sub Form_Load()
     UpdateDescriptions
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 
@@ -487,32 +487,32 @@ Private Sub UpdateDescriptions()
     Dim l As String
     l = LstEdgeOptions.List(LstEdgeOptions.ListIndex)
     If l = "Prewitt Horizontal" Then
-        lblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
-        FilterPrewittHorizontal True, PicEffect
+        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
+        FilterPrewittHorizontal True, picEffect
     ElseIf l = "Prewitt Vertical" Then
-        lblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
-        FilterPrewittVertical True, PicEffect
+        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
+        FilterPrewittVertical True, picEffect
     ElseIf l = "Sobel Horizontal" Then
-        lblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
-        FilterSobelHorizontal True, PicEffect
+        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
+        FilterSobelHorizontal True, picEffect
     ElseIf l = "Sobel Vertical" Then
-        lblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
-        FilterSobelVertical True, PicEffect
+        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
+        FilterSobelVertical True, picEffect
     ElseIf l = "Laplacian" Then
-        lblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
-        FilterLaplacian True, PicEffect
+        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
+        FilterLaplacian True, picEffect
     ElseIf l = "Artistic Contour" Then
-        lblDesc = "Algorithm designed to present a clean, artistic prediction of image edges."
-        FilterSmoothContour True, PicEffect
+        LblDesc = "Algorithm designed to present a clean, artistic prediction of image edges."
+        FilterSmoothContour True, picEffect
     ElseIf l = "Hilite" Then
-        lblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
-        FilterHilite True, PicEffect
+        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
+        FilterHilite True, picEffect
     ElseIf l = "PhotoDemon Linear" Then
-        lblDesc = "Simple mathematical routine based on linear relationships between diagonal pixels."
-        PhotoDemonLinearEdgeDetection True, PicEffect
+        LblDesc = "Simple mathematical routine based on linear relationships between diagonal pixels."
+        PhotoDemonLinearEdgeDetection True, picEffect
     Else
-        lblDesc = "Advanced mathematical routine based on cubic relationships between diagonal pixels."
-        PhotoDemonCubicEdgeDetection True, PicEffect
+        LblDesc = "Advanced mathematical routine based on cubic relationships between diagonal pixels."
+        PhotoDemonCubicEdgeDetection True, picEffect
     End If
 End Sub
 

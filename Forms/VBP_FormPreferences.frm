@@ -474,7 +474,7 @@ Private Sub Form_Load()
     cmbLargeImages.ListIndex = val(tmpString)
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     setHandCursor picCanvasColor
     
 End Sub

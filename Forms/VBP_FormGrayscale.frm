@@ -348,29 +348,29 @@ Private Sub drawGrayscalePreview()
         
         Select Case cboMethod.ListIndex
             Case 0
-                MenuGrayscaleAverage True, PicEffect
+                MenuGrayscaleAverage True, picEffect
             Case 1
-                MenuGrayscale True, PicEffect
+                MenuGrayscale True, picEffect
             Case 2
-                MenuDesaturate True, PicEffect
+                MenuDesaturate True, picEffect
             Case 3
                 If optDecompose(0).Value = True Then
-                    MenuDecompose 0, True, PicEffect
+                    MenuDecompose 0, True, picEffect
                 Else
-                    MenuDecompose 1, True, PicEffect
+                    MenuDecompose 1, True, picEffect
                 End If
             Case 4
                 If optChannel(0).Value = True Then
-                    MenuGrayscaleSingleChannel 0, True, PicEffect
+                    MenuGrayscaleSingleChannel 0, True, picEffect
                 ElseIf optChannel(1).Value = True Then
-                    MenuGrayscaleSingleChannel 1, True, PicEffect
+                    MenuGrayscaleSingleChannel 1, True, picEffect
                 Else
-                    MenuGrayscaleSingleChannel 2, True, PicEffect
+                    MenuGrayscaleSingleChannel 2, True, picEffect
                 End If
             Case 5
-                fGrayscaleCustom hsShades.Value, True, PicEffect
+                fGrayscaleCustom hsShades.Value, True, picEffect
             Case 6
-                fGrayscaleCustomDither hsShades.Value, True, PicEffect
+                fGrayscaleCustomDither hsShades.Value, True, picEffect
         End Select
     
     End If
@@ -492,7 +492,7 @@ Private Sub Form_Load()
     DrawPreviewImage picPreview
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
     'Draw the initial preview
     drawGrayscalePreview

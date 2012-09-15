@@ -207,7 +207,7 @@ Private Sub Form_Load()
     If IsProgramCompiled Then Call WheelHook(Me.HWnd)
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

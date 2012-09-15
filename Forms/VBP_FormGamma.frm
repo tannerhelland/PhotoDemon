@@ -2,14 +2,14 @@ VERSION 5.00
 Begin VB.Form FormGamma 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Gamma Correction"
-   ClientHeight    =   5430
+   ClientHeight    =   5880
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   362
+   ScaleHeight     =   392
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -44,13 +44,13 @@ Begin VB.Form FormGamma
    End
    Begin VB.HScrollBar hsGamma 
       Height          =   255
-      Left            =   1080
+      Left            =   360
       Max             =   200
       Min             =   1
       TabIndex        =   3
-      Top             =   4080
+      Top             =   4680
       Value           =   100
-      Width           =   4215
+      Width           =   4935
    End
    Begin VB.TextBox txtGamma 
       Alignment       =   2  'Center
@@ -68,7 +68,7 @@ Begin VB.Form FormGamma
       Left            =   5400
       TabIndex        =   4
       Text            =   "1.00"
-      Top             =   4050
+      Top             =   4650
       Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
@@ -86,7 +86,7 @@ Begin VB.Form FormGamma
       Height          =   375
       Left            =   4920
       TabIndex        =   1
-      Top             =   4920
+      Top             =   5400
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -104,7 +104,7 @@ Begin VB.Form FormGamma
       Height          =   375
       Left            =   3720
       TabIndex        =   0
-      Top             =   4920
+      Top             =   5400
       Width           =   1125
    End
    Begin VB.ComboBox CboChannel 
@@ -120,11 +120,11 @@ Begin VB.Form FormGamma
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   330
-      Left            =   1050
+      Left            =   360
       Style           =   2  'Dropdown List
       TabIndex        =   2
-      Top             =   3480
-      Width           =   1575
+      Top             =   3840
+      Width           =   1935
    End
    Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
@@ -162,7 +162,7 @@ Begin VB.Form FormGamma
       Height          =   210
       Left            =   240
       TabIndex        =   6
-      Top             =   4095
+      Top             =   4320
       Width           =   720
    End
    Begin VB.Label Label1 
@@ -182,7 +182,7 @@ Begin VB.Form FormGamma
       Height          =   210
       Left            =   240
       TabIndex        =   5
-      Top             =   3540
+      Top             =   3480
       Width           =   705
    End
 End
@@ -244,7 +244,7 @@ Private Sub Form_Load()
     GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

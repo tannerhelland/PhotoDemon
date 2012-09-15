@@ -358,7 +358,7 @@ Private Sub Form_Load()
     FadeImage CSng(hsPercent.Value / 100), True, picEffect
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

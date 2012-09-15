@@ -216,9 +216,9 @@ Option Explicit
 
 Private Sub ChkToColor_Click()
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, PicEffect Else FilterEmbossColor RGB(127, 127, 127), True, PicEffect
+        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
     Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, PicEffect Else FilterEngraveColor RGB(127, 127, 127), True, PicEffect
+        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
     End If
 End Sub
 
@@ -255,13 +255,13 @@ Private Sub Form_Load()
     
     'Draw a preview of the emboss/engrave effect to the right box
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, PicEffect Else FilterEmbossColor RGB(127, 127, 127), True, PicEffect
+        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
     Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, PicEffect Else FilterEngraveColor RGB(127, 127, 127), True, PicEffect
+        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
     End If
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     setHandCursor PicColor
     
 End Sub
@@ -269,17 +269,17 @@ End Sub
 'When the emboss/engrave options are clicked, redraw the preview
 Private Sub OptEmboss_Click()
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, PicEffect Else FilterEmbossColor RGB(127, 127, 127), True, PicEffect
+        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
     Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, PicEffect Else FilterEngraveColor RGB(127, 127, 127), True, PicEffect
+        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
     End If
 End Sub
 
 Private Sub OptEngrave_Click()
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, PicEffect Else FilterEmbossColor RGB(127, 127, 127), True, PicEffect
+        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
     Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, PicEffect Else FilterEngraveColor RGB(127, 127, 127), True, PicEffect
+        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
     End If
 End Sub
 
@@ -298,9 +298,9 @@ Private Sub PicColor_Click()
         PicColor.BackColor = retColor
         ChkToColor.Value = vbChecked
         If OptEmboss.Value = True Then
-            If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, PicEffect Else FilterEmbossColor RGB(127, 127, 127), True, PicEffect
+            If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
         Else
-            If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, PicEffect Else FilterEngraveColor RGB(127, 127, 127), True, PicEffect
+            If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
         End If
     End If
     

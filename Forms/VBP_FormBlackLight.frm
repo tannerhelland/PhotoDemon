@@ -284,7 +284,7 @@ Private Sub Form_Load()
     fxBlackLight hsIntensity.Value, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 

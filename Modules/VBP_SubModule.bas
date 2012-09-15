@@ -196,9 +196,13 @@ Public Sub destroyHandCursor()
     DestroyCursor hc_Handle
 End Sub
 
-'Set all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor
-Public Sub setHandCursorForAll(ByRef tForm As Form)
+'Because VB6 apps tend to look pretty lame on modern version of Windows, we do a bit of beautification to every form when
+' it's loaded.  This routine is nice because every form calls it at least once, so we can make centralized changes without
+' having to rewrite code in every individual form.
+Public Sub makeFormPretty(ByRef tForm As Form)
 
+    'STEP 1: give all clickable controls a hand icon instead of the default pointer
+    ' (Note: this code will set all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
     Dim eControl As Control
     
     For Each eControl In tForm.Controls

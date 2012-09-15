@@ -236,16 +236,16 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max) Then
-        If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max) Then
+    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max) Then
+        If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max) Then
             Me.Visible = False
             Process Mosaic, hsWidth.Value, hsHeight.Value
             Unload Me
         Else
-            AutoSelectText txtHeight
+            AutoSelectText TxtHeight
         End If
     Else
-        AutoSelectText txtWidth
+        AutoSelectText TxtWidth
     End If
 End Sub
 
@@ -415,42 +415,42 @@ Private Sub Form_Load()
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 
 Private Sub hsHeight_Change()
-    txtHeight.Text = hsHeight.Value
+    TxtHeight.Text = hsHeight.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsWidth_Change()
-    txtWidth.Text = hsWidth.Value
+    TxtWidth.Text = hsWidth.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsHeight_Scroll()
-    txtHeight.Text = hsHeight.Value
+    TxtHeight.Text = hsHeight.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsWidth_Scroll()
-    txtWidth.Text = hsWidth.Value
+    TxtWidth.Text = hsWidth.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub txtHeight_Change()
-    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = val(txtHeight)
+    If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = val(TxtHeight)
 End Sub
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText txtHeight
+    AutoSelectText TxtHeight
 End Sub
 
 Private Sub txtWidth_Change()
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = val(txtWidth)
+    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = val(TxtWidth)
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText txtWidth
+    AutoSelectText TxtWidth
 End Sub

@@ -411,7 +411,7 @@ Private Sub Form_Load()
     updateReductionPreview
     
     'Assign the system hand cursor to all relevant objects
-    setHandCursorForAll Me
+    makeFormPretty Me
     
 End Sub
 
