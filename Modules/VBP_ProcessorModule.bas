@@ -423,7 +423,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Threshold
                 'MenuThreshold pOPCODE
             Case ComicBook
-                'MenuComicBook
+                MenuComicBook
             Case BWEnhancedDither
                 'MenuBWEnhancedDither
             Case BWFloydSteinberg
