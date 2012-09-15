@@ -748,17 +748,20 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuInvertTop 
          Caption         =   "Invert"
-         Begin VB.Menu MnuCompoundInvert 
-            Caption         =   "Compound Invert"
-         End
          Begin VB.Menu MnuNegative 
             Caption         =   "Invert CMYK (Film Negative)"
          End
          Begin VB.Menu MnuInvertHue 
             Caption         =   "Invert Hue"
          End
-         Begin VB.Menu MnuInvert 
+         Begin VB.Menu mnuInvert 
             Caption         =   "Invert RGB"
+         End
+         Begin VB.Menu mnuInvertSepBar0 
+            Caption         =   "-"
+         End
+         Begin VB.Menu MnuCompoundInvert 
+            Caption         =   "Compound Invert"
          End
       End
       Begin VB.Menu MnuPosterize 

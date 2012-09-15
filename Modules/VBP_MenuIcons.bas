@@ -323,10 +323,10 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 65, 14, 3      'Grayscale
         .PutImageToVBMenu 66, 15, 3      'Invert
             '--> Invert sub-menu
-            .PutImageToVBMenu 101, 0, 3, 15  'Compound Invert
-            .PutImageToVBMenu 67, 1, 3, 15   'Invert CMYK
-            .PutImageToVBMenu 68, 2, 3, 15   'Invert Hue
-            .PutImageToVBMenu 69, 3, 3, 15   'Invert RGB
+            .PutImageToVBMenu 67, 0, 3, 15   'Invert CMYK
+            .PutImageToVBMenu 68, 1, 3, 15   'Invert Hue
+            .PutImageToVBMenu 69, 2, 3, 15   'Invert RGB
+            .PutImageToVBMenu 101, 4, 3, 15  'Compound Invert
         .PutImageToVBMenu 70, 16, 3      'Posterize
         .PutImageToVBMenu 72, 18, 3      'Count Colors
         .PutImageToVBMenu 71, 19, 3      'Reduce Colors
