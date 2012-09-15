@@ -48,7 +48,7 @@ Public Sub LoadTheProgram()
     LoadPlugins
     
     'Set default variables
-    LoadMessage "Initializing all variables..."
+    LoadMessage "Initializing all user settings..."
     
     'No custom filters have been created yet
     HasCreatedFilter = False
@@ -109,6 +109,12 @@ Public Sub LoadTheProgram()
     
     'Render various aspects of the UI
     LoadMessage "Initializing user interface..."
+    
+    'Manually create multi-line tooltips
+    FormMain.cmdOpen.ToolTip = "Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop" & vbCrLf & " or Windows Explorer and dropping them onto PhotoDemon.)"
+    FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "(If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes.)"
+    FormMain.cmdSave.ToolTip = "Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file." & vbCrLf & "To save to a different file, use the ""Save As"" button."
+    FormMain.cmdSaveAs.ToolTip = "Save the current image to a new file."
     
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
     LoadMenuShortcuts

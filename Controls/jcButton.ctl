@@ -94,8 +94,8 @@ Option Explicit
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINT) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
@@ -860,7 +860,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
    Dim DataDest()       As RGBTRIPLE, DataSrc() As RGBTRIPLE
    Dim Info             As BITMAPINFO, BrushRGB As RGBTRIPLE, gCol As Long
    'Dim hOldOb           As Long
-   Dim PicEffect As enumPicEffect
+   Dim picEffect As enumPicEffect
    Dim srcDC            As Long, tObj As Long  ', ttt As Long
    Dim bDisOpacity      As Byte
    Dim OverOpacity      As Byte
@@ -871,9 +871,9 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
    If SrcPic Is Nothing Then Exit Sub
 
    If m_Buttonstate = eStateOver Then
-      PicEffect = m_PicEffectonOver
+      picEffect = m_PicEffectonOver
    ElseIf m_Buttonstate = eStateDown Then
-      PicEffect = m_PicEffectonDown
+      picEffect = m_PicEffectonDown
    End If
    
    If Not m_bEnabled Then
@@ -973,11 +973,11 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
                      End If
                   Else
                      If a1 = 255 Then
-                        If PicEffect = epeLighter Then
+                        If picEffect = epeLighter Then
                            .rgbRed = aLighten(DataSrc(i).rgbRed)
                            .rgbGreen = aLighten(DataSrc(i).rgbGreen)
                            .rgbBlue = aLighten(DataSrc(i).rgbBlue)
-                        ElseIf PicEffect = epeDarker Then
+                        ElseIf picEffect = epeDarker Then
                            .rgbRed = aDarken(DataSrc(i).rgbRed)
                            .rgbGreen = aDarken(DataSrc(i).rgbGreen)
                            .rgbBlue = aDarken(DataSrc(i).rgbBlue)
@@ -985,11 +985,11 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
                            DataDest(i) = DataSrc(i)
                         End If
                      ElseIf a1 > 0 Then
-                        If (PicEffect = epeLighter) Then
+                        If (picEffect = epeLighter) Then
                            .rgbRed = (a2 * .rgbRed + a1 * aLighten(DataSrc(i).rgbRed)) \ 256
                            .rgbGreen = (a2 * .rgbGreen + a1 * aLighten(DataSrc(i).rgbGreen)) \ 256
                            .rgbBlue = (a2 * .rgbBlue + a1 * aLighten(DataSrc(i).rgbBlue)) \ 256
-                        ElseIf PicEffect = epeDarker Then
+                        ElseIf picEffect = epeDarker Then
                            .rgbRed = (a2 * .rgbRed + a1 * aDarken(DataSrc(i).rgbRed)) \ 256
                            .rgbGreen = (a2 * .rgbGreen + a1 * aDarken(DataSrc(i).rgbGreen)) \ 256
                            .rgbBlue = (a2 * .rgbBlue + a1 * aDarken(DataSrc(i).rgbBlue)) \ 256
@@ -1033,7 +1033,7 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
    Dim DataDest()       As RGBQUAD, DataSrc() As RGBQUAD
    Dim Info             As BITMAPINFO, BrushRGB As RGBQUAD, gCol As Long
    'Dim hOldOb           As Long
-   Dim PicEffect As enumPicEffect
+   Dim picEffect As enumPicEffect
    Dim srcDC            As Long, tObj As Long  ', ttt As Long
    Dim bDisOpacity      As Byte
    Dim OverOpacity      As Byte
@@ -1044,9 +1044,9 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
    If SrcPic Is Nothing Then Exit Sub
 
    If m_Buttonstate = eStateOver Then
-      PicEffect = m_PicEffectonOver
+      picEffect = m_PicEffectonOver
    ElseIf m_Buttonstate = eStateDown Then
-      PicEffect = m_PicEffectonDown
+      picEffect = m_PicEffectonDown
    End If
    
    If Not m_bEnabled Then
@@ -1137,11 +1137,11 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
                   End If
                Else
                   If a1 = 255 Then
-                     If (PicEffect = epeLighter) Then
+                     If (picEffect = epeLighter) Then
                         .rgbRed = aLighten(DataSrc(i).rgbRed)
                         .rgbGreen = aLighten(DataSrc(i).rgbGreen)
                         .rgbBlue = aLighten(DataSrc(i).rgbBlue)
-                     ElseIf PicEffect = epeDarker Then
+                     ElseIf picEffect = epeDarker Then
                         .rgbRed = aDarken(DataSrc(i).rgbRed)
                         .rgbGreen = aDarken(DataSrc(i).rgbGreen)
                         .rgbBlue = aDarken(DataSrc(i).rgbBlue)
@@ -1149,11 +1149,11 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
                         DataDest(i) = DataSrc(i)
                      End If
                   ElseIf a1 > 0 Then
-                     If (PicEffect = epeLighter) Then
+                     If (picEffect = epeLighter) Then
                         .rgbRed = (a2 * .rgbRed + a1 * aLighten(DataSrc(i).rgbRed)) \ 256
                         .rgbGreen = (a2 * .rgbGreen + a1 * aLighten(DataSrc(i).rgbGreen)) \ 256
                         .rgbBlue = (a2 * .rgbBlue + a1 * aLighten(DataSrc(i).rgbBlue)) \ 256
-                     ElseIf PicEffect = epeDarker Then
+                     ElseIf picEffect = epeDarker Then
                         .rgbRed = (a2 * .rgbRed + a1 * aDarken(DataSrc(i).rgbRed)) \ 256
                         .rgbGreen = (a2 * .rgbGreen + a1 * aDarken(DataSrc(i).rgbGreen)) \ 256
                         .rgbBlue = (a2 * .rgbBlue + a1 * aDarken(DataSrc(i).rgbBlue)) \ 256

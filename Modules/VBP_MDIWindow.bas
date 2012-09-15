@@ -269,6 +269,7 @@ Public Sub UpdateMDIStatus()
         tInit tMacro, False
         tInit tRepeatLast, False
         FormMain.MnuClose.Enabled = False
+        FormMain.cmdClose.Enabled = False
         FormMain.MnuFitWindowToImage.Enabled = False
         FormMain.MnuFitOnScreen.Enabled = False
         If FormMain.CmbZoom.Enabled = True Then
@@ -300,6 +301,7 @@ Public Sub UpdateMDIStatus()
         tInit tMacro, True
         tInit tRepeatLast, pdImages(CurrentImage).RedoState
         FormMain.MnuClose.Enabled = True
+        FormMain.cmdClose.Enabled = True
         FormMain.MnuFitWindowToImage.Enabled = True
         FormMain.MnuFitOnScreen.Enabled = True
         FormMain.lblImgSize.ForeColor = &H544E43

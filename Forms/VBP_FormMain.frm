@@ -112,16 +112,16 @@ Begin VB.MDIForm FormMain
          Style           =   2  'Dropdown List
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
-         Top             =   2610
+         Top             =   3930
          Width           =   1215
       End
       Begin PhotoDemon.jcbutton cmdOpen 
          Height          =   615
          Left            =   120
          TabIndex        =   1
-         Top             =   120
-         Width           =   1935
-         _ExtentX        =   3413
+         Top             =   480
+         Width           =   900
+         _ExtentX        =   1588
          _ExtentY        =   1085
          ButtonStyle     =   13
          ShowFocusRect   =   -1  'True
@@ -135,19 +135,21 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          BackColor       =   15199212
-         Caption         =   "Open Image"
+         Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":A6C6
          DisabledPictureMode=   1
          CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
          Left            =   120
          TabIndex        =   2
-         Top             =   840
-         Width           =   1935
-         _ExtentX        =   3413
+         Top             =   1590
+         Width           =   900
+         _ExtentX        =   1588
          _ExtentY        =   1085
          ButtonStyle     =   13
          ShowFocusRect   =   -1  'True
@@ -160,17 +162,19 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "Save Image"
+         Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":B718
          DisabledPictureMode=   1
          CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Save"
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
          Left            =   120
          TabIndex        =   3
-         Top             =   1680
+         Top             =   2880
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
@@ -198,7 +202,7 @@ Begin VB.MDIForm FormMain
          Height          =   615
          Left            =   1155
          TabIndex        =   4
-         Top             =   1680
+         Top             =   2880
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
@@ -222,12 +226,127 @@ Begin VB.MDIForm FormMain
          TooltipTitle    =   "Redo"
          TooltipBackColor=   -2147483643
       End
+      Begin PhotoDemon.jcbutton cmdClose 
+         Height          =   615
+         Left            =   1155
+         TabIndex        =   13
+         Top             =   480
+         Width           =   900
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":E80E
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Close"
+      End
+      Begin PhotoDemon.jcbutton cmdSaveAs 
+         Height          =   615
+         Left            =   1155
+         TabIndex        =   15
+         Top             =   1590
+         Width           =   900
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":F860
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Save As"
+      End
+      Begin VB.Label lblUndoRedo 
+         Alignment       =   2  'Center
+         BackStyle       =   0  'Transparent
+         Caption         =   "Undo / Redo"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00400000&
+         Height          =   255
+         Left            =   120
+         TabIndex        =   16
+         Top             =   2535
+         Width           =   1935
+      End
+      Begin VB.Label lblSaveSaveas 
+         Alignment       =   2  'Center
+         BackStyle       =   0  'Transparent
+         Caption         =   "Save / Save As"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00400000&
+         Height          =   255
+         Left            =   120
+         TabIndex        =   14
+         Top             =   1245
+         Width           =   1935
+      End
+      Begin VB.Label lblOpenClose 
+         Alignment       =   2  'Center
+         BackStyle       =   0  'Transparent
+         Caption         =   "Open / Close"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00400000&
+         Height          =   255
+         Left            =   120
+         TabIndex        =   12
+         Top             =   120
+         Width           =   1935
+      End
       Begin VB.Line Line3 
          BorderColor     =   &H80000002&
          X1              =   5
          X2              =   142
-         Y1              =   232
-         Y2              =   232
+         Y1              =   320
+         Y2              =   320
       End
       Begin VB.Label lblRecording 
          Alignment       =   2  'Center
@@ -246,7 +365,7 @@ Begin VB.MDIForm FormMain
          Height          =   255
          Left            =   0
          TabIndex        =   10
-         Top             =   3720
+         Top             =   5040
          Visible         =   0   'False
          Width           =   2175
       End
@@ -288,7 +407,7 @@ Begin VB.MDIForm FormMain
          Height          =   195
          Left            =   120
          TabIndex        =   8
-         Top             =   3120
+         Top             =   4440
          Width           =   1845
       End
       Begin VB.Label lblZoom 
@@ -308,22 +427,22 @@ Begin VB.MDIForm FormMain
          Height          =   240
          Left            =   150
          TabIndex        =   6
-         Top             =   2640
+         Top             =   3960
          Width           =   555
       End
       Begin VB.Line Line2 
          BorderColor     =   &H80000002&
          X1              =   5
          X2              =   142
-         Y1              =   160
-         Y2              =   160
+         Y1              =   248
+         Y2              =   248
       End
       Begin VB.Line Line1 
          BorderColor     =   &H80000002&
          X1              =   5
          X2              =   142
-         Y1              =   104
-         Y2              =   104
+         Y1              =   160
+         Y2              =   160
       End
    End
    Begin VB.Menu MnuFile 
@@ -968,6 +1087,10 @@ Private Sub CmbZoom_Click()
     
 End Sub
 
+Private Sub cmdClose_Click()
+    Unload Me.ActiveForm
+End Sub
+
 Private Sub cmdOpen_Click()
     Process FileOpen
 End Sub
@@ -978,6 +1101,10 @@ End Sub
 
 Private Sub cmdSave_Click()
     Process FileSave
+End Sub
+
+Private Sub cmdSaveAs_Click()
+    Process FileSaveAs
 End Sub
 
 Private Sub cmdUndo_Click()

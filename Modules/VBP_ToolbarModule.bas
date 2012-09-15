@@ -50,7 +50,10 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
         'Save As (menu item only)
         Case tSaveAs
-            If FormMain.MnuSaveAs.Enabled <> tState Then FormMain.MnuSaveAs.Enabled = tState
+            If FormMain.MnuSaveAs.Enabled <> tState Then
+                FormMain.cmdSaveAs.Enabled = tState
+                FormMain.MnuSaveAs.Enabled = tState
+            End If
         
         'Copy (menu item only)
         Case tCopy
