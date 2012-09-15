@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBlackLight 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Blacklight Options"
-   ClientHeight    =   4965
+   ClientHeight    =   5145
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6285
@@ -18,7 +18,7 @@ Begin VB.Form FormBlackLight
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   331
+   ScaleHeight     =   343
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   419
    ShowInTaskbar   =   0   'False
@@ -71,13 +71,13 @@ Begin VB.Form FormBlackLight
    End
    Begin VB.HScrollBar hsIntensity 
       Height          =   255
-      Left            =   1080
+      Left            =   360
       Max             =   10
       Min             =   1
       TabIndex        =   2
-      Top             =   3585
+      Top             =   3840
       Value           =   2
-      Width           =   4335
+      Width           =   5055
    End
    Begin VB.TextBox txtIntensity 
       Alignment       =   2  'Center
@@ -95,7 +95,7 @@ Begin VB.Form FormBlackLight
       Left            =   5520
       TabIndex        =   3
       Text            =   "2"
-      Top             =   3555
+      Top             =   3810
       Width           =   495
    End
    Begin VB.CommandButton CmdCancel 
@@ -104,7 +104,7 @@ Begin VB.Form FormBlackLight
       Height          =   375
       Left            =   5040
       TabIndex        =   1
-      Top             =   4440
+      Top             =   4680
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -113,7 +113,7 @@ Begin VB.Form FormBlackLight
       Height          =   375
       Left            =   3840
       TabIndex        =   0
-      Top             =   4440
+      Top             =   4680
       Width           =   1125
    End
    Begin VB.Label lblBeforeandAfter 
@@ -152,7 +152,7 @@ Begin VB.Form FormBlackLight
       Height          =   210
       Left            =   240
       TabIndex        =   4
-      Top             =   3600
+      Top             =   3480
       Width           =   780
    End
 End
@@ -281,7 +281,7 @@ Private Sub Form_Load()
     DrawPreviewImage picPreview
     
     'Draw a preview of the effect on the neighboring picture box
-    fxBlackLight hsIntensity.Value, True, PicEffect
+    fxBlackLight hsIntensity.Value, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -290,12 +290,12 @@ End Sub
 
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsIntensity_Change()
-    fxBlackLight hsIntensity.Value, True, PicEffect
+    fxBlackLight hsIntensity.Value, True, picEffect
     txtIntensity.Text = hsIntensity.Value
 End Sub
 
 Private Sub hsIntensity_Scroll()
-    fxBlackLight hsIntensity.Value, True, PicEffect
+    fxBlackLight hsIntensity.Value, True, picEffect
     txtIntensity.Text = hsIntensity.Value
 End Sub
 

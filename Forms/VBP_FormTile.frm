@@ -39,6 +39,7 @@ Begin VB.Form FormTile
       Width           =   5760
    End
    Begin VB.TextBox TxtWidth 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -57,6 +58,7 @@ Begin VB.Form FormTile
       Width           =   855
    End
    Begin VB.TextBox TxtHeight 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75

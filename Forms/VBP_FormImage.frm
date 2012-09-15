@@ -3,10 +3,10 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H00FFFFFF&
    Caption         =   "Image Window"
-   ClientHeight    =   2310
+   ClientHeight    =   2475
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   5550
+   ClientWidth     =   5925
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Arial"
@@ -22,9 +22,9 @@ Begin VB.Form FormImage
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   154
+   ScaleHeight     =   165
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   370
+   ScaleWidth      =   395
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin VB.PictureBox picIcon 
@@ -50,43 +50,16 @@ Begin VB.Form FormImage
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   2640
       Visible         =   0   'False
       Width           =   240
-   End
-   Begin VB.PictureBox BackBuffer2 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ClipControls    =   0   'False
-      FillColor       =   &H00FFFFFF&
-      FillStyle       =   0  'Solid
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FFFFFF&
-      Height          =   495
-      Left            =   2760
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   5
-      Top             =   2640
-      Visible         =   0   'False
-      Width           =   495
    End
    Begin VB.VScrollBar VScroll 
       Height          =   3615
       LargeChange     =   10
       Left            =   6240
-      TabIndex        =   4
+      TabIndex        =   3
       TabStop         =   0   'False
       Top             =   120
       Visible         =   0   'False
@@ -96,7 +69,7 @@ Begin VB.Form FormImage
       Height          =   255
       LargeChange     =   10
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       TabStop         =   0   'False
       Top             =   3720
       Visible         =   0   'False
@@ -114,37 +87,10 @@ Begin VB.Form FormImage
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
-      TabIndex        =   2
-      Top             =   2640
-      Visible         =   0   'False
-      Width           =   270
-   End
-   Begin VB.PictureBox BackBuffer 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ClipControls    =   0   'False
-      FillColor       =   &H00FFFFFF&
-      FillStyle       =   0  'Solid
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FFFFFF&
-      Height          =   495
-      Left            =   2160
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
       TabIndex        =   1
       Top             =   2640
       Visible         =   0   'False
-      Width           =   495
+      Width           =   270
    End
    Begin VB.PictureBox FrontBuffer 
       Appearance      =   0  'Flat

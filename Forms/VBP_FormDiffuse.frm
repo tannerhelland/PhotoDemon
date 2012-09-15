@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormDiffuse 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Diffuse"
-   ClientHeight    =   6030
+   ClientHeight    =   6480
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,7 +18,7 @@ Begin VB.Form FormDiffuse
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   402
+   ScaleHeight     =   432
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -71,23 +71,24 @@ Begin VB.Form FormDiffuse
    End
    Begin VB.HScrollBar hsY 
       Height          =   255
-      Left            =   1200
+      Left            =   240
       Max             =   10
       TabIndex        =   3
-      Top             =   4200
+      Top             =   4680
       Value           =   5
-      Width           =   4215
+      Width           =   5175
    End
    Begin VB.HScrollBar hsX 
       Height          =   255
-      Left            =   1200
+      Left            =   240
       Max             =   10
       TabIndex        =   1
-      Top             =   3600
+      Top             =   3840
       Value           =   5
-      Width           =   4215
+      Width           =   5175
    End
    Begin VB.TextBox txtX 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -102,10 +103,11 @@ Begin VB.Form FormDiffuse
       Left            =   5520
       TabIndex        =   0
       Text            =   "0"
-      Top             =   3570
+      Top             =   3810
       Width           =   495
    End
    Begin VB.TextBox txtY 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -120,7 +122,7 @@ Begin VB.Form FormDiffuse
       Left            =   5520
       TabIndex        =   2
       Text            =   "0"
-      Top             =   4170
+      Top             =   4650
       Width           =   495
    End
    Begin VB.CheckBox ChkWrap 
@@ -128,9 +130,9 @@ Begin VB.Form FormDiffuse
       Caption         =   " Wrap edge values"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   2400
+      Left            =   240
       TabIndex        =   4
-      Top             =   4875
+      Top             =   5280
       Width           =   1935
    End
    Begin VB.CommandButton CmdCancel 
@@ -138,7 +140,7 @@ Begin VB.Form FormDiffuse
       Height          =   375
       Left            =   5040
       TabIndex        =   6
-      Top             =   5520
+      Top             =   6000
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -147,7 +149,7 @@ Begin VB.Form FormDiffuse
       Height          =   375
       Left            =   3840
       TabIndex        =   5
-      Top             =   5520
+      Top             =   6000
       Width           =   1125
    End
    Begin VB.Label lblBeforeandAfter 
@@ -186,7 +188,7 @@ Begin VB.Form FormDiffuse
       Height          =   210
       Left            =   120
       TabIndex        =   8
-      Top             =   4215
+      Top             =   4320
       Width           =   975
    End
    Begin VB.Label Label1 
@@ -206,7 +208,7 @@ Begin VB.Form FormDiffuse
       Height          =   210
       Left            =   120
       TabIndex        =   7
-      Top             =   3615
+      Top             =   3480
       Width           =   960
    End
 End

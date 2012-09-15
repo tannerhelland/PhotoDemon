@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormFade 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Fade Image"
-   ClientHeight    =   4935
+   ClientHeight    =   5265
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6270
@@ -18,7 +18,7 @@ Begin VB.Form FormFade
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   329
+   ScaleHeight     =   351
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
@@ -71,15 +71,16 @@ Begin VB.Form FormFade
    End
    Begin VB.HScrollBar hsPercent 
       Height          =   255
-      Left            =   1080
+      Left            =   240
       Max             =   100
       Min             =   1
       TabIndex        =   1
-      Top             =   3600
+      Top             =   3840
       Value           =   50
-      Width           =   4335
+      Width           =   5175
    End
    Begin VB.TextBox txtPercent 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -94,7 +95,7 @@ Begin VB.Form FormFade
       Left            =   5520
       TabIndex        =   0
       Text            =   "50"
-      Top             =   3570
+      Top             =   3810
       Width           =   495
    End
    Begin VB.CommandButton cmdCancel 
@@ -103,7 +104,7 @@ Begin VB.Form FormFade
       Height          =   375
       Left            =   5040
       TabIndex        =   3
-      Top             =   4440
+      Top             =   4800
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
@@ -112,7 +113,7 @@ Begin VB.Form FormFade
       Height          =   375
       Left            =   3840
       TabIndex        =   2
-      Top             =   4440
+      Top             =   4800
       Width           =   1125
    End
    Begin VB.Label lblBeforeandAfter 
@@ -149,9 +150,9 @@ Begin VB.Form FormFade
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   240
+      Left            =   120
       TabIndex        =   4
-      Top             =   3615
+      Top             =   3480
       Width           =   795
    End
 End

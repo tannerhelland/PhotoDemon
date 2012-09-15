@@ -46,6 +46,7 @@ Begin VB.Form FormResize
       Width           =   270
    End
    Begin VB.TextBox TxtHeight 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -64,6 +65,7 @@ Begin VB.Form FormResize
       Width           =   855
    End
    Begin VB.TextBox TxtWidth 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75

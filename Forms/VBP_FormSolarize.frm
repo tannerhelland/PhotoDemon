@@ -80,6 +80,7 @@ Begin VB.Form FormSolarize
       Width           =   4935
    End
    Begin VB.TextBox txtThreshold 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -95,7 +96,7 @@ Begin VB.Form FormSolarize
       TabIndex        =   0
       Text            =   "127"
       Top             =   3690
-      Width           =   495
+      Width           =   615
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True

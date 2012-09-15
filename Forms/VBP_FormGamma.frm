@@ -124,7 +124,7 @@ Begin VB.Form FormGamma
       Style           =   2  'Dropdown List
       TabIndex        =   2
       Top             =   3480
-      Width           =   1335
+      Width           =   1575
    End
    Begin VB.Label lblBeforeandAfter 
       BackStyle       =   0  'Transparent
@@ -207,7 +207,7 @@ Option Explicit
 
 'Update the preview when the user changes the channel combo box
 Private Sub CboChannel_Click()
-    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, PicEffect
+    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
 End Sub
 
 'CANCEL button
@@ -241,7 +241,7 @@ Private Sub Form_Load()
     DoEvents
     
     'Now, draw a preview of the gamma effect to the right picture box
-    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, PicEffect
+    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     setHandCursorForAll Me
@@ -282,7 +282,7 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
     Dim r As Long, g As Long, b As Long
     
     'Gamma can be easily applied using a look-up table
-    Dim gLookUp(0 To 255) As Byte
+    Dim gLookup(0 To 255) As Byte
     Dim tmpVal As Single
     
     For x = 0 To 255
@@ -293,7 +293,7 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
         
-        gLookUp(x) = tmpVal
+        gLookup(x) = tmpVal
     Next x
         
     'Loop through each pixel in the image, converting values as we go
@@ -308,15 +308,15 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
         
         'Correct the gamma values according to the channel requested by the user
         If Method = 0 Then
-            r = gLookUp(r)
-            g = gLookUp(g)
-            b = gLookUp(b)
+            r = gLookup(r)
+            g = gLookup(g)
+            b = gLookup(b)
         ElseIf Method = 1 Then
-            r = gLookUp(r)
+            r = gLookup(r)
         ElseIf Method = 2 Then
-            g = gLookUp(g)
+            g = gLookup(g)
         ElseIf Method = 3 Then
-            b = gLookUp(b)
+            b = gLookup(b)
         End If
         
         'Assign the new values to each color channel
@@ -342,12 +342,12 @@ End Sub
 'When the horizontal scroll bar is moved, change the text box to match
 Private Sub hsGamma_Change()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
-    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, PicEffect
+    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
 End Sub
 
 Private Sub hsGamma_Scroll()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
-    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, PicEffect
+    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
 End Sub
 
 Private Sub txtGamma_GotFocus()

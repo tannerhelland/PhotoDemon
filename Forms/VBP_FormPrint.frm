@@ -154,6 +154,7 @@ Begin VB.Form FormPrint
       Width           =   3375
    End
    Begin VB.TextBox txtCopies 
+      Alignment       =   2  'Center
       ForeColor       =   &H00800000&
       Height          =   285
       Left            =   6960

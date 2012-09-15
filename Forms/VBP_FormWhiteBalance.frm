@@ -69,7 +69,7 @@ Begin VB.Form FormWhiteBalance
       TabIndex        =   0
       Text            =   "0.05"
       Top             =   3810
-      Width           =   615
+      Width           =   735
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True

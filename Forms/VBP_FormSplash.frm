@@ -53,7 +53,7 @@ Begin VB.Form FormSplash
    Begin VB.Label lblMessage 
       Alignment       =   1  'Right Justify
       BackStyle       =   0  'Transparent
-      Caption         =   "Preparing image routines..."
+      Caption         =   "Initializing software..."
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25

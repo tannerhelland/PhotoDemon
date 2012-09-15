@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBrightnessContrast 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Brightness/Contrast"
-   ClientHeight    =   6135
+   ClientHeight    =   6450
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6270
@@ -18,7 +18,7 @@ Begin VB.Form FormBrightnessContrast
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   409
+   ScaleHeight     =   430
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
@@ -71,21 +71,21 @@ Begin VB.Form FormBrightnessContrast
    End
    Begin VB.HScrollBar hsContrast 
       Height          =   255
-      Left            =   1200
+      Left            =   360
       Max             =   100
       Min             =   -100
       TabIndex        =   4
-      Top             =   4320
-      Width           =   4215
+      Top             =   4680
+      Width           =   5055
    End
    Begin VB.HScrollBar hsBright 
       Height          =   255
-      Left            =   1200
+      Left            =   360
       Max             =   255
       Min             =   -255
       TabIndex        =   2
-      Top             =   3600
-      Width           =   4215
+      Top             =   3840
+      Width           =   5055
    End
    Begin VB.TextBox txtContrast 
       Alignment       =   2  'Center
@@ -103,7 +103,7 @@ Begin VB.Form FormBrightnessContrast
       Left            =   5520
       TabIndex        =   5
       Text            =   "0"
-      Top             =   4290
+      Top             =   4650
       Width           =   495
    End
    Begin VB.TextBox txtBrightness 
@@ -122,26 +122,26 @@ Begin VB.Form FormBrightnessContrast
       Left            =   5520
       TabIndex        =   3
       Text            =   "0"
-      Top             =   3570
+      Top             =   3810
       Width           =   495
    End
    Begin VB.CheckBox chkSample 
       Appearance      =   0  'Flat
-      Caption         =   "Sample image for true contrast (slow but more accurate)"
+      Caption         =   "Sample image for true contrast (slower but more accurate)"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   1200
+      Left            =   360
       TabIndex        =   6
-      Top             =   4920
+      Top             =   5280
       Value           =   1  'Checked
-      Width           =   5655
+      Width           =   4695
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "Cancel"
       Height          =   375
       Left            =   5040
       TabIndex        =   1
-      Top             =   5640
+      Top             =   6000
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -150,7 +150,7 @@ Begin VB.Form FormBrightnessContrast
       Height          =   375
       Left            =   3840
       TabIndex        =   0
-      Top             =   5640
+      Top             =   6000
       Width           =   1125
    End
    Begin VB.Label lblBeforeandAfter 
@@ -209,7 +209,7 @@ Begin VB.Form FormBrightnessContrast
       Height          =   210
       Left            =   240
       TabIndex        =   7
-      Top             =   3615
+      Top             =   3480
       Width           =   900
    End
 End
@@ -380,8 +380,8 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Op
                 GTotal = 0
                 BTotal = 0
                 
-                Dim numOfPixels As Long
-                numOfPixels = 0
+                Dim NumOfPixels As Long
+                NumOfPixels = 0
                 
                 For x = initX To finalX
                     QuickVal = x * qvDepth
@@ -389,13 +389,13 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Op
                     RTotal = RTotal + ImageData(QuickVal + 2, y)
                     GTotal = GTotal + ImageData(QuickVal + 1, y)
                     BTotal = BTotal + ImageData(QuickVal, y)
-                    numOfPixels = numOfPixels + 1
+                    NumOfPixels = NumOfPixels + 1
                 Next y
                 Next x
                 
-                RTotal = RTotal \ numOfPixels
-                GTotal = GTotal \ numOfPixels
-                BTotal = BTotal \ numOfPixels
+                RTotal = RTotal \ NumOfPixels
+                GTotal = GTotal \ NumOfPixels
+                BTotal = BTotal \ NumOfPixels
                 
                 Mean = (RTotal + GTotal + BTotal) \ 3
                 

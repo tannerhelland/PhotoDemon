@@ -76,12 +76,13 @@ Begin VB.Form FormBatchConvert
       Width           =   3255
    End
    Begin VB.TextBox txtQuality 
+      Alignment       =   2  'Center
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   300
       Left            =   9240
       TabIndex        =   18
       Text            =   "92"
-      Top             =   6120
+      Top             =   6105
       Width           =   495
    End
    Begin VB.TextBox txtOutputPath 

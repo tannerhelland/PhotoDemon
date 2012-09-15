@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormJPEG 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Options"
-   ClientHeight    =   2325
+   ClientHeight    =   2445
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   4560
@@ -18,7 +18,7 @@ Begin VB.Form FormJPEG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   155
+   ScaleHeight     =   163
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   304
    ShowInTaskbar   =   0   'False
@@ -26,7 +26,7 @@ Begin VB.Form FormJPEG
    Begin VB.HScrollBar hsQuality 
       Height          =   285
       LargeChange     =   5
-      Left            =   960
+      Left            =   360
       Max             =   100
       Min             =   1
       TabIndex        =   5
@@ -54,6 +54,7 @@ Begin VB.Form FormJPEG
       Width           =   3975
    End
    Begin VB.TextBox txtQuality 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -64,28 +65,28 @@ Begin VB.Form FormJPEG
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
-      Left            =   360
+      Height          =   330
+      Left            =   3840
       TabIndex        =   2
       Text            =   "90"
-      Top             =   1200
+      Top             =   1185
       Width           =   495
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   3120
+      Left            =   3240
       TabIndex        =   1
-      Top             =   1800
+      Top             =   1920
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   1920
+      Left            =   2040
       TabIndex        =   0
-      Top             =   1800
+      Top             =   1920
       Width           =   1125
    End
    Begin VB.Label lblTitle 

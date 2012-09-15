@@ -53,7 +53,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.HScrollBar hsBlue 
       Height          =   255
-      Left            =   3360
+      Left            =   2640
       Max             =   256
       Min             =   1
       TabIndex        =   8
@@ -63,7 +63,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.HScrollBar hsGreen 
       Height          =   255
-      Left            =   3360
+      Left            =   2640
       Max             =   256
       Min             =   1
       TabIndex        =   6
@@ -73,7 +73,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.HScrollBar hsRed 
       Height          =   255
-      Left            =   3360
+      Left            =   2640
       Max             =   256
       Min             =   1
       TabIndex        =   4
@@ -93,27 +93,30 @@ Begin VB.Form FormReduceColors
       Width           =   2775
    End
    Begin VB.TextBox TxtB 
+      Alignment       =   2  'Center
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2640
+      Left            =   5640
       TabIndex        =   7
       Text            =   "6"
       Top             =   6000
       Width           =   615
    End
    Begin VB.TextBox TxtG 
+      Alignment       =   2  'Center
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2640
+      Left            =   5640
       TabIndex        =   5
       Text            =   "7"
       Top             =   5640
       Width           =   615
    End
    Begin VB.TextBox TxtR 
+      Alignment       =   2  'Center
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   2640
+      Left            =   5640
       TabIndex        =   3
       Text            =   "6"
       Top             =   5280

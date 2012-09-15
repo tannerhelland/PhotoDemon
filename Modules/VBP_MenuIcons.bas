@@ -442,7 +442,7 @@ Public Sub ResetMenuIcons()
 
     Dim numOfMRUFiles As Long
 
-    'First, however, make sure children forms are loaded before doing anything
+    'Make sure children forms are loaded before doing anything
     If NumOfWindows > 0 Then
     
         If FormMain.ActiveForm.WindowState = vbMaximized Then
