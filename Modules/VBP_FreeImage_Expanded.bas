@@ -25,7 +25,7 @@ Option Explicit
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer) As Boolean
+Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
 
     On Error GoTo FreeImageV3_AdvancedError
     
@@ -56,6 +56,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         LoadFreeImageV3_Advanced = False
         Exit Function
     End If
+    
+    'Store this file format inside the relevant pdImage object
+    dstImage.OriginalFileFormat = fileFIF
     
     Message "Preparing import flags..."
     

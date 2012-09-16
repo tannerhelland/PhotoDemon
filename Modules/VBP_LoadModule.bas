@@ -382,6 +382,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
         Message "Determining filetype..."
         
+        'Initially, set the filetype of the target image to "unknown".  If the load is successful, this value will
+        ' be changed to something >= 0. (Note: if FreeImage is used to load the file, this value will be set by the
+        ' LoadFreeImageV3 function.)
+        targetImage.OriginalFileFormat = -1
+        
         Dim FileExtension As String
         FileExtension = UCase(GetExtension(sFile(thisImage)))
         
@@ -395,38 +400,46 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         Select Case FileExtension
             Case "BMP"
                 'Bitmaps are preferentially loaded by GDI+ if available (which can handle 32bpp), then FreeImage (which is
-                ' unpredictable with 32bpp), then default VB (which simply fails with 32bpp but will load other depths).
+                ' unpredictable with 32bpp), then default VB (which fails with 32bpp but will load other depths).
                 If GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 0
                 ElseIf FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
-                    LoadBMP sFile(thisImage), targetLayer
+                    LoadVBImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 0
                 End If
             Case "GIF"
                 'GIF is preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 ElseIf GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 25
                 Else
-                    LoadBMP sFile(thisImage), targetLayer
+                    LoadVBImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 25
                 End If
             Case "EMF", "WMF"
                 'Metafiles are preferentially loaded by GDI+ if available, then default VB.
                 If GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 110
                 Else
-                    LoadBMP sFile(thisImage), targetLayer
+                    LoadVBImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 110
                 End If
             Case "ICO"
                 'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 ElseIf GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 1
                 Else
-                    LoadBMP sFile(thisImage), targetLayer
+                    LoadVBImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 1
                 End If
             Case "JIF", "JPG", "JPEG", "JPE"
                 'JPEGs are preferentially loaded by FreeImage, then GDI+ if available, then default VB, unless we are in the
@@ -435,44 +448,57 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If MacroStatus = MacroBATCH Then
                     If GDIPlusEnabled Then
                         LoadGDIPlusImage sFile(thisImage), targetLayer
+                        targetImage.OriginalFileFormat = 2
                     ElseIf FreeImageEnabled Then
-                        loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                        loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     Else
-                        LoadBMP sFile(thisImage), targetLayer
+                        LoadVBImage sFile(thisImage), targetLayer
+                        targetImage.OriginalFileFormat = 2
                     End If
                 Else
                     If FreeImageEnabled Then
-                        loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                        loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     ElseIf GDIPlusEnabled Then
                         LoadGDIPlusImage sFile(thisImage), targetLayer
+                        targetImage.OriginalFileFormat = 2
                     Else
-                        LoadBMP sFile(thisImage), targetLayer
+                        LoadVBImage sFile(thisImage), targetLayer
+                        targetImage.OriginalFileFormat = 2
                     End If
                 End If
             Case "PDI"
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
                 LoadPhotoDemonImage sFile(thisImage), targetLayer
+                targetImage.OriginalFileFormat = 100
             Case "PNG"
-                'FreeImage has a more robust .png implementation than GDI+, so use it if available
-                If FreeImageEnabled = True Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                'FreeImage has a more robust PNG implementation than GDI+, so use it if available
+                If FreeImageEnabled Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
                     LoadGDIPlusImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 13
                 End If
             Case "TIF", "TIFF"
                 'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
-                If FreeImageEnabled = True Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                If FreeImageEnabled Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
                     LoadGDIPlusImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 18
                 End If
             Case "TMP"
-                'TMP files are internal files used by PhotoDemon.  VB's internal LoadPicture is fine for these.
-                LoadBMP sFile(thisImage), targetLayer
+                'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too
+                If GDIPlusEnabled Then
+                    LoadGDIPlusImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 2
+                Else
+                    LoadVBImage sFile(thisImage), targetLayer
+                    targetImage.OriginalFileFormat = 2
+                End If
             'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
             Case Else
                 If FreeImageEnabled = True Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer)
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
                     MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will proceed to download this plugin for you.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
                     Message "Image load canceled."
@@ -588,9 +614,9 @@ PreloadMoreImages:
 End Sub
 
 'Load any file that hasn't explicitly been sent elsewhere.  FreeImage will automatically determine filetype.
-Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer) As Boolean
+Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
 
-    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstLayer)
+    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstLayer, dstImage)
     
 End Function
 
@@ -625,12 +651,12 @@ Public Sub LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer
 End Sub
 
 'BITMAP loading
-Public Sub LoadBMP(ByVal BMPFile As String, ByRef dstLayer As pdLayer)
+Public Sub LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer)
     
     'Create a temporary StdPicture object that will be used to load the image
     Dim tmpPicture As StdPicture
     Set tmpPicture = New StdPicture
-    Set tmpPicture = LoadPicture(BMPFile)
+    Set tmpPicture = LoadPicture(imagePath)
     
     'Copy the image into the current pdImage object
     dstLayer.createFromPicture tmpPicture

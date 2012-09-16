@@ -15,17 +15,17 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2000-2012 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 07/July/12
-'Last update: implemented HasBeenSaved tracking
+'Last updated: 16/September/12
+'Last update: added OriginalFileFormat tracker
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
 ' in the MDIWindow module.
 '
-'At present, the main purpose of this class is to hold a bunch of variables related to a given image -
-' things like size, zoom, name, file path, containing form, Undo/Redo tracking.  In the future, I'd like
-' for this class to reference an in-memory copy of an image's data, which would finally break PhotoDemon's
-' reliance on picture boxes for storing image data (and would allow things like deep color support).
+'The purpose of this class is to hold a bunch of variables related to a given image - things like size, zoom,
+' name, file path, format containing form, Undo/Redo tracking - as well as a reference to a pdLayer object
+' called "mainLayer", which contains an in-memory copy of the relevant image's data.  In the future,
+' additional layers may be utilized within each image.
 '
 '***************************************************************************
 
@@ -33,7 +33,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 
-'This class is designed to store all the information about a particular image
+'This class is designed to store all the information about a particular image.
 'It currently includes the following information, per image:
 
 'Image ID (the value of NumOfImagesLoaded when the class was initialized - see the CreateNewImageForm routine)
@@ -44,6 +44,7 @@ Option Explicit
 'Original file name (e.g. the file name used when the image was first loaded)
 'Original file name + extension (e.g. original file name + .***)
 'Location on disk (full path, from the drive all the way to the filename + extension)
+'Original file format (a numerical value corresponding to the relevant FREE_IMAGE_FORMAT enum)
 'Undo information, specifically:
     'Current Undo state (e.g. have undo files been created?)
     'Current Redo state (e.g. has the user pressed the undo button, meaning it's possible to redo actions?)
@@ -54,7 +55,7 @@ Option Explicit
 'Current zoom level
 'Two save flags (e.g. which format the image was saved in, and any attached parameters - such as JPEG quality)
 
-'Layer's image data (stored as a DIB inside this layer class)
+'Layer's image data (stored as a DIB inside the mainLayer object)
 
     Public imageID As Long
 
@@ -97,6 +98,9 @@ Option Explicit
     'Original path of the image (full path, including filename); blank if image does not exist on disk
     Public LocationOnDisk As String
     
+    'Original image format.  This is derived from the equivalent FreeImage constant - see the enum for FREE_IMAGE_FORMAT for details
+    Public OriginalFileFormat As Long
+    
     'Save flags let us save the image using settings the user has already specified (so we don't have to pester
     ' them every time they save)
     Public saveFlag0 As Long
@@ -123,7 +127,7 @@ Option Explicit
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user
     Public forInternalUseOnly As Boolean
     
-    'Layer's image data (stored as a DIB inside this layer class)
+    'Layer's image data (stored as a DIB inside the mainLayer object)
     Public mainLayer As pdLayer
     
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
