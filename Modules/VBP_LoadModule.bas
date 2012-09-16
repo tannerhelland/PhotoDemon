@@ -471,7 +471,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 LoadPhotoDemonImage sFile(thisImage), targetLayer
                 targetImage.OriginalFileFormat = 100
             Case "PNG"
-                'FreeImage has a more robust PNG implementation than GDI+, so use it if available
+                'FreeImage has a more robust (and reliable) PNG implementation than GDI+, so use it if available
                 If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else

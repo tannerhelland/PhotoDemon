@@ -77,7 +77,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
     
     'For icons, we prefer a white background (default is black).
-    If fileFIF = FIF_ICO Then fi_ImportFlags = FILO_ICO_MAKEALPHA
+    ' NOTE: this is disabled, because it uses the AND mask incorrectly for mixed-format icons
+    'If fileFIF = FIF_ICO Then fi_ImportFlags = FILO_ICO_MAKEALPHA
     
     Message "Importing image from file..."
     
@@ -101,26 +102,79 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     Dim fi_BPP As Long
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
+    Dim new_hDIB As Long
+    
+    Dim fi_hasTransparency As Boolean
+    Dim fi_transparentEntries As Long
+        
     'First, check source images without an alpha channel.  Convert these using the superior tone mapping method.
-    If (fi_BPP = 48) Or (fi_BPP = 96) Then fi_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
+    If (fi_BPP = 48) Or (fi_BPP = 96) Then
+        'While images with these bit-depths may not have an alpha channel, they can have binary transparency - check for that now.
+        ' (Note: as of FreeImage 3.15 binary bit-depths are not detected correctly.  That said, they may someday be supported - so
+        ' I've implemented two checks to cover both contingencies.
+        fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
+        fi_transparentEntries = FreeImage_GetTransparencyCount(fi_hDIB)
+        
+        If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
+            new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, True)
+            fi_hDIB = new_hDIB
+        Else
+            new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
+            FreeImage_UnloadEx fi_hDIB
+            fi_hDIB = new_hDIB
+        End If
+    End If
     
     'Because tone mapping may not preserve alpha channels (the FreeImage documentation is unclear on this),
     ' high-bit-depth images with alpha channels are converted using a traditional method, which is inferior from a
     ' quality standpoint, but at least guaranteed to preserve the alpha channel data.
-    If (fi_BPP = 64) Or (fi_BPP = 128) Then fi_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, True)
-    
+    If (fi_BPP = 64) Or (fi_BPP = 128) Then
+        new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, True)
+        fi_hDIB = new_hDIB
+    End If
+        
     'Similarly, check for low-bit-depth images
     If fi_BPP < 24 Then
         
-        'Conversion to higher bit depths is contingent on the presence of an alpha channel
-        Dim fi_hasTransparency As Boolean
-        fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
+        'Next, check to see if this is actually a high-bit-depth grayscale image masquerading as a low-bit-depth RGB image
+        Dim fi_imageType As FREE_IMAGE_TYPE
+        fi_imageType = FreeImage_GetImageType(fi_hDIB)
         
-        'Images with an alpha channel are converted to 32 bit.  Without, 24.
-        If fi_hasTransparency = True Then
-            fi_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, True)
+        'If it is such a grayscale image, it requires a unique conversion operation
+        If fi_imageType = FIT_UINT16 Then
+            
+            Message "Tone-mapping high-bit-depth grayscale image to 24bpp..."
+            
+            'First, convert it to a high-bit depth RGB image
+            fi_hDIB = FreeImage_ConvertToRGB16(fi_hDIB)
+            
+            'Now use tone-mapping to reduce it back to 24bpp or 32bpp (contingent on the presence of transparency)
+            fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
+            fi_transparentEntries = FreeImage_GetTransparencyCount(fi_hDIB)
+        
+            If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
+                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, True)
+                fi_hDIB = new_hDIB
+            Else
+                new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
+                FreeImage_UnloadEx fi_hDIB
+                fi_hDIB = new_hDIB
+            End If
+            
         Else
-            fi_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, True)
+        
+            'Conversion to higher bit depths is contingent on the presence of an alpha channel
+            fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
+        
+            'Images with an alpha channel are converted to 32 bit.  Without, 24.
+            If fi_hasTransparency = True Then
+                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, True)
+                fi_hDIB = new_hDIB
+            Else
+                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, True)
+                fi_hDIB = new_hDIB
+            End If
+            
         End If
         
     End If
@@ -129,6 +183,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'The last thing we need to do is specific to transparent images.  FreeImage will default to loading transparent images
     ' against a black background.  We prefer white.  FreeImage's composite function can be used to handle this.
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
+    
     If fi_BPP = 32 Then
         
         Message "Recompositing alpha channel..."
