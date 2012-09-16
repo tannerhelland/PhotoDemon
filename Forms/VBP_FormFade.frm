@@ -71,13 +71,13 @@ Begin VB.Form FormFade
    End
    Begin VB.HScrollBar hsPercent 
       Height          =   255
-      Left            =   240
+      Left            =   360
       Max             =   100
       Min             =   1
       TabIndex        =   1
       Top             =   3840
       Value           =   50
-      Width           =   5175
+      Width           =   5055
    End
    Begin VB.TextBox txtPercent 
       Alignment       =   2  'Center
@@ -171,7 +171,7 @@ Begin VB.Form FormFade
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   120
+      Left            =   240
       TabIndex        =   4
       Top             =   3480
       Width           =   1980
