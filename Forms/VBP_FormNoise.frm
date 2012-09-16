@@ -75,9 +75,9 @@ Begin VB.Form FormNoise
       Max             =   500
       Min             =   1
       TabIndex        =   1
-      Top             =   3720
+      Top             =   3840
       Value           =   1
-      Width           =   4815
+      Width           =   4935
    End
    Begin VB.TextBox txtNoise 
       Alignment       =   2  'Center
@@ -92,33 +92,33 @@ Begin VB.Form FormNoise
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5280
+      Left            =   5400
       TabIndex        =   0
       Text            =   "1"
-      Top             =   3690
+      Top             =   3810
       Width           =   615
    End
    Begin VB.CheckBox ChkM 
       Appearance      =   0  'Flat
-      Caption         =   "Monochromatic noise"
+      Caption         =   "monochromatic noise only"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   255
       Left            =   360
       TabIndex        =   2
-      Top             =   4320
-      Width           =   2535
+      Top             =   4440
+      Width           =   2775
    End
    Begin VB.CommandButton CmdCancel 
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   5040
       TabIndex        =   4
@@ -126,7 +126,7 @@ Begin VB.Form FormNoise
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   3840
@@ -134,11 +134,12 @@ Begin VB.Form FormNoise
       Top             =   5040
       Width           =   1125
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -146,32 +147,52 @@ Begin VB.Form FormNoise
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   9
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
       TabIndex        =   8
       Top             =   2880
-      Width           =   3975
+      Width           =   480
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Amount:"
+      Caption         =   "amount:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   5
-      Top             =   3360
-      Width           =   720
+      Top             =   3480
+      Width           =   900
    End
 End
 Attribute VB_Name = "FormNoise"

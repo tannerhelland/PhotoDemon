@@ -228,7 +228,7 @@ Begin VB.Form FormBatchConvert
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   10800
       TabIndex        =   21
@@ -236,7 +236,7 @@ Begin VB.Form FormBatchConvert
       Width           =   1095
    End
    Begin VB.CommandButton cmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   9600

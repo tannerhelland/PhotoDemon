@@ -45,17 +45,17 @@ Begin VB.Form FormTwins
    End
    Begin VB.OptionButton OptVertical 
       Appearance      =   0  'Flat
-      Caption         =   "Vertical"
+      Caption         =   "vertical"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   255
       Left            =   3240
       TabIndex        =   1
@@ -64,27 +64,27 @@ Begin VB.Form FormTwins
    End
    Begin VB.OptionButton OptHorizontal 
       Appearance      =   0  'Flat
-      Caption         =   "Horizontal"
+      Caption         =   "horizontal"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   255
-      Left            =   1800
+      Left            =   1560
       TabIndex        =   0
       Top             =   3600
       Value           =   -1  'True
-      Width           =   1215
+      Width           =   1455
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -101,7 +101,7 @@ Begin VB.Form FormTwins
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -118,11 +118,12 @@ Begin VB.Form FormTwins
       Top             =   4560
       Width           =   1125
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -130,12 +131,32 @@ Begin VB.Form FormTwins
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   7
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
       TabIndex        =   6
       Top             =   2880
-      Width           =   3975
+      Width           =   480
    End
 End
 Attribute VB_Name = "FormTwins"

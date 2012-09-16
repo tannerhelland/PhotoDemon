@@ -30,7 +30,7 @@ Begin VB.Form FormAbout
    Visible         =   0   'False
    Begin VB.CommandButton cmdOK 
       Cancel          =   -1  'True
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   465
       Left            =   7635

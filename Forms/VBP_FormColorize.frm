@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormColorize 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Colorize Options"
-   ClientHeight    =   5670
+   ClientHeight    =   5790
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,21 +18,30 @@ Begin VB.Form FormColorize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   378
+   ScaleHeight     =   386
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CheckBox chkSaturation 
       Appearance      =   0  'Flat
-      Caption         =   "Maintain existing saturation"
-      ForeColor       =   &H80000008&
-      Height          =   195
-      Left            =   2040
+      Caption         =   "preserve existing saturation"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   315
+      Left            =   1800
       TabIndex        =   3
       Top             =   4560
       Value           =   1  'Checked
-      Width           =   3855
+      Width           =   4095
    End
    Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
@@ -115,27 +124,28 @@ Begin VB.Form FormColorize
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   4920
       TabIndex        =   1
-      Top             =   5160
+      Top             =   5280
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   3720
       TabIndex        =   0
-      Top             =   5160
+      Top             =   5280
       Width           =   1125
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -143,12 +153,32 @@ Begin VB.Form FormColorize
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   8
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
       TabIndex        =   7
       Top             =   2880
-      Width           =   3975
+      Width           =   480
    End
 End
 Attribute VB_Name = "FormColorize"

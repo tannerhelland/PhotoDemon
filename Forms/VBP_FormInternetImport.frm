@@ -24,31 +24,40 @@ Begin VB.Form FormInternetImport
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   6480
       TabIndex        =   1
-      Top             =   1320
+      Top             =   1440
       Width           =   1095
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   7680
       TabIndex        =   2
-      Top             =   1320
+      Top             =   1440
       Width           =   1095
    End
    Begin VB.TextBox txtURL 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
-      Left            =   120
+      Height          =   360
+      Left            =   240
       TabIndex        =   0
       Text            =   "http://"
-      Top             =   600
-      Width           =   8655
+      Top             =   720
+      Width           =   8535
    End
    Begin VB.Label lblCopyrightWarning 
       Appearance      =   0  'Flat
@@ -57,21 +66,30 @@ Begin VB.Form FormInternetImport
       Caption         =   $"VBP_FormInternetImport.frx":0000
       ForeColor       =   &H00808080&
       Height          =   495
-      Left            =   120
+      Left            =   240
       TabIndex        =   4
-      Top             =   1305
-      Width           =   6255
+      Top             =   1425
+      Width           =   6135
    End
    Begin VB.Label lblDownloadPath 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Full download path (must begin with ""http://"" or ""ftp://""):"
-      ForeColor       =   &H00400000&
-      Height          =   195
+      Caption         =   "full download path (must begin with ""http://"" or ""ftp://""):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   120
       TabIndex        =   3
-      Top             =   240
-      Width           =   4095
+      Top             =   360
+      Width           =   6090
    End
 End
 Attribute VB_Name = "FormInternetImport"

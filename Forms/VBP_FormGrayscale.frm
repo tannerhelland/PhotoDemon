@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormGrayscale 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Color to Grayscale Conversion"
-   ClientHeight    =   5985
+   ClientHeight    =   6735
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6495
+   ClientWidth     =   6255
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,9 +18,9 @@ Begin VB.Form FormGrayscale
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   399
+   ScaleHeight     =   449
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   433
+   ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
@@ -39,12 +39,12 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H80000008&
       Height          =   2730
-      Left            =   240
+      Left            =   120
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
       TabIndex        =   13
-      Top             =   240
+      Top             =   120
       Width           =   2895
    End
    Begin VB.PictureBox picEffect 
@@ -62,23 +62,23 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H80000008&
       Height          =   2730
-      Left            =   3360
+      Left            =   3240
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
       TabIndex        =   12
-      Top             =   240
+      Top             =   120
       Width           =   2895
    End
    Begin VB.HScrollBar hsShades 
       Height          =   255
-      Left            =   2160
+      Left            =   360
       Max             =   254
       Min             =   2
       TabIndex        =   2
-      Top             =   4200
+      Top             =   5280
       Value           =   3
-      Width           =   3345
+      Width           =   4905
    End
    Begin VB.TextBox txtShades 
       Alignment       =   2  'Center
@@ -93,10 +93,10 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5640
+      Left            =   5400
       TabIndex        =   1
       Text            =   "3"
-      Top             =   4170
+      Top             =   5250
       Visible         =   0   'False
       Width           =   495
    End
@@ -113,28 +113,28 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   330
-      Left            =   2160
+      Left            =   360
       Style           =   2  'Dropdown List
       TabIndex        =   0
-      Top             =   3600
+      Top             =   4080
       Width           =   3975
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   3960
+      Left            =   3720
       TabIndex        =   8
-      Top             =   5400
+      Top             =   6240
       Width           =   1125
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
-      Left            =   5160
+      Left            =   4920
       TabIndex        =   9
-      Top             =   5400
+      Top             =   6240
       Width           =   1125
    End
    Begin VB.PictureBox picChannel 
@@ -142,48 +142,48 @@ Begin VB.Form FormGrayscale
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   2160
+      Left            =   360
       ScaleHeight     =   375
-      ScaleWidth      =   3975
-      TabIndex        =   16
-      Top             =   4200
-      Width           =   3975
+      ScaleWidth      =   3855
+      TabIndex        =   15
+      Top             =   5280
+      Width           =   3855
       Begin VB.OptionButton optChannel 
          Appearance      =   0  'Flat
-         Caption         =   "Blue"
+         Caption         =   "blue"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   9
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
+         ForeColor       =   &H00404040&
          Height          =   255
          Index           =   2
-         Left            =   2400
+         Left            =   2520
          TabIndex        =   7
          Top             =   0
          Width           =   1095
       End
       Begin VB.OptionButton optChannel 
          Appearance      =   0  'Flat
-         Caption         =   "Red"
+         Caption         =   "red"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   9
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
+         ForeColor       =   &H00404040&
          Height          =   255
          Index           =   0
-         Left            =   120
+         Left            =   240
          TabIndex        =   5
          Top             =   0
          Value           =   -1  'True
@@ -191,20 +191,20 @@ Begin VB.Form FormGrayscale
       End
       Begin VB.OptionButton optChannel 
          Appearance      =   0  'Flat
-         Caption         =   "Green"
+         Caption         =   "green"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   9
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
+         ForeColor       =   &H00404040&
          Height          =   255
          Index           =   1
-         Left            =   1200
+         Left            =   1320
          TabIndex        =   6
          Top             =   0
          Width           =   1095
@@ -215,25 +215,25 @@ Begin VB.Form FormGrayscale
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   2160
+      Left            =   360
       ScaleHeight     =   375
       ScaleWidth      =   3975
-      TabIndex        =   15
-      Top             =   4200
+      TabIndex        =   14
+      Top             =   5280
       Width           =   3975
       Begin VB.OptionButton optDecompose 
          Appearance      =   0  'Flat
-         Caption         =   "Maximum"
+         Caption         =   "maximum"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   9
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
+         ForeColor       =   &H00404040&
          Height          =   255
          Index           =   1
          Left            =   1920
@@ -243,17 +243,17 @@ Begin VB.Form FormGrayscale
       End
       Begin VB.OptionButton optDecompose 
          Appearance      =   0  'Flat
-         Caption         =   "Minimum"
+         Caption         =   "minimum"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   9
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000008&
+         ForeColor       =   &H00404040&
          Height          =   255
          Index           =   0
          Left            =   120
@@ -263,11 +263,12 @@ Begin VB.Form FormGrayscale
          Width           =   1455
       End
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -275,50 +276,70 @@ Begin VB.Form FormGrayscale
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   17
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
       Left            =   240
-      TabIndex        =   14
-      Top             =   3000
-      Width           =   3975
+      TabIndex        =   16
+      Top             =   2880
+      Width           =   480
    End
    Begin VB.Label lblAdditional 
       AutoSize        =   -1  'True
-      Caption         =   "Additional options:"
+      Caption         =   "additional options for this method:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   360
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
       TabIndex        =   11
-      Top             =   4200
-      Width           =   1515
+      Top             =   4800
+      Width           =   3690
    End
    Begin VB.Label lblAlgorithm 
       AutoSize        =   -1  'True
-      Caption         =   "Grayscale algorithm:"
+      Caption         =   "grayscale method:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   360
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
       TabIndex        =   10
       Top             =   3645
-      Width           =   1620
+      Width           =   1950
    End
 End
 Attribute VB_Name = "FormGrayscale"
@@ -394,24 +415,28 @@ Private Sub UpdateVisibleControls()
         Case 3
             txtShades.Visible = False
             hsShades.Visible = False
+            lblAdditional.Caption = "decompose using these values:"
             lblAdditional.Visible = True
             picDecompose.Visible = True
             picChannel.Visible = False
         Case 4
             txtShades.Visible = False
             hsShades.Visible = False
+            lblAdditional.Caption = "use this channel:"
             lblAdditional.Visible = True
             picDecompose.Visible = False
             picChannel.Visible = True
         Case 5
             txtShades.Visible = True
             hsShades.Visible = True
+            lblAdditional.Caption = "use this many shades of gray:"
             lblAdditional.Visible = True
             picDecompose.Visible = False
             picChannel.Visible = False
         Case 6
             txtShades.Visible = True
             hsShades.Visible = True
+            lblAdditional.Caption = "use this many shades of gray:"
             lblAdditional.Visible = True
             picDecompose.Visible = False
             picChannel.Visible = False

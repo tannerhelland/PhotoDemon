@@ -3,7 +3,7 @@ Begin VB.Form FormDespeckle
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Advanced Despeckle"
-   ClientHeight    =   1965
+   ClientHeight    =   2535
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   5820
@@ -19,98 +19,99 @@ Begin VB.Form FormDespeckle
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   131
+   ScaleHeight     =   169
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   388
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.HScrollBar hsDespeckle 
       Height          =   255
-      Left            =   2160
+      Left            =   240
       Max             =   5
       Min             =   2
       TabIndex        =   1
-      Top             =   480
+      Top             =   840
       Value           =   5
-      Width           =   3255
+      Width           =   5295
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   3240
+      Left            =   3360
       TabIndex        =   2
-      Top             =   1440
+      Top             =   2040
       Width           =   1125
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
-      Left            =   4440
+      Left            =   4560
       TabIndex        =   3
-      Top             =   1440
+      Top             =   2040
       Width           =   1125
    End
-   Begin VB.Label Label3 
+   Begin VB.Label strong 
+      Alignment       =   1  'Right Justify
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Strong"
+      Caption         =   "strong"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   4560
+      ForeColor       =   &H00404040&
+      Height          =   270
+      Left            =   4620
       TabIndex        =   5
-      Top             =   840
-      Width           =   555
+      Top             =   1170
+      Width           =   615
    End
-   Begin VB.Label Label2 
+   Begin VB.Label lblWeak 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Weak"
+      Caption         =   "weak"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   2400
+      ForeColor       =   &H00404040&
+      Height          =   270
+      Left            =   510
       TabIndex        =   4
-      Top             =   840
-      Width           =   465
+      Top             =   1170
+      Width           =   495
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Despeckle Strength:"
+      Caption         =   "despeckle strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   240
-      Left            =   240
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   120
       TabIndex        =   0
-      Top             =   480
-      Width           =   1725
+      Top             =   360
+      Width           =   2055
    End
 End
 Attribute VB_Name = "FormDespeckle"

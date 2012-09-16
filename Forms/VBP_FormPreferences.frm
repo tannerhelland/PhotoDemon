@@ -146,7 +146,7 @@ Begin VB.Form FormPreferences
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   3720
       TabIndex        =   1
@@ -154,7 +154,7 @@ Begin VB.Form FormPreferences
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   2520

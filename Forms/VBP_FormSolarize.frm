@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormSolarize 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Solarize"
-   ClientHeight    =   5085
+   ClientHeight    =   5190
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,7 +18,7 @@ Begin VB.Form FormSolarize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   339
+   ScaleHeight     =   346
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -75,7 +75,7 @@ Begin VB.Form FormSolarize
       Max             =   254
       Min             =   1
       TabIndex        =   1
-      Top             =   3720
+      Top             =   3840
       Value           =   127
       Width           =   4935
    End
@@ -95,32 +95,33 @@ Begin VB.Form FormSolarize
       Left            =   5400
       TabIndex        =   0
       Text            =   "127"
-      Top             =   3690
+      Top             =   3810
       Width           =   615
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   4920
       TabIndex        =   3
-      Top             =   4560
+      Top             =   4680
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   3720
       TabIndex        =   2
-      Top             =   4560
+      Top             =   4680
       Width           =   1125
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -128,32 +129,54 @@ Begin VB.Form FormSolarize
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
-      TabIndex        =   7
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   8
       Top             =   2880
-      Width           =   3975
+      Width           =   360
    End
-   Begin VB.Label Label1 
+   Begin VB.Label lblBefore 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Threshold:"
+      Caption         =   "before"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   7
+      Top             =   2880
+      Width           =   480
+   End
+   Begin VB.Label lblThreshold 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "solarize threshold:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   4
-      Top             =   3360
-      Width           =   870
+      Top             =   3480
+      Width           =   1950
    End
 End
 Attribute VB_Name = "FormSolarize"

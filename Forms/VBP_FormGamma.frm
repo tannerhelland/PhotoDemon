@@ -2,14 +2,14 @@ VERSION 5.00
 Begin VB.Form FormGamma 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Gamma Correction"
-   ClientHeight    =   5880
+   ClientHeight    =   6270
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   392
+   ScaleHeight     =   418
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -48,7 +48,7 @@ Begin VB.Form FormGamma
       Max             =   200
       Min             =   1
       TabIndex        =   3
-      Top             =   4680
+      Top             =   4920
       Value           =   100
       Width           =   4935
    End
@@ -68,12 +68,12 @@ Begin VB.Form FormGamma
       Left            =   5400
       TabIndex        =   4
       Text            =   "1.00"
-      Top             =   4650
+      Top             =   4890
       Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -86,11 +86,11 @@ Begin VB.Form FormGamma
       Height          =   375
       Left            =   4920
       TabIndex        =   1
-      Top             =   5400
+      Top             =   5760
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -104,14 +104,14 @@ Begin VB.Form FormGamma
       Height          =   375
       Left            =   3720
       TabIndex        =   0
-      Top             =   5400
+      Top             =   5760
       Width           =   1125
    End
    Begin VB.ComboBox CboChannel 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -119,18 +119,19 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
+      Height          =   360
       Left            =   360
       Style           =   2  'Dropdown List
       TabIndex        =   2
       Top             =   3840
       Width           =   1935
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -138,52 +139,72 @@ Begin VB.Form FormGamma
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   10
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
       TabIndex        =   9
       Top             =   2880
-      Width           =   3975
+      Width           =   480
    End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Amount:"
+      Caption         =   "strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   6
-      Top             =   4320
-      Width           =   720
+      Top             =   4560
+      Width           =   960
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Channel:"
+      Caption         =   "channel:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   5
       Top             =   3480
-      Width           =   705
+      Width           =   900
    End
 End
 Attribute VB_Name = "FormGamma"

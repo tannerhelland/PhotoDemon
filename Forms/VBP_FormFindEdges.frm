@@ -71,7 +71,7 @@ Begin VB.Form FormFindEdges
       Width           =   2895
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -90,7 +90,7 @@ Begin VB.Form FormFindEdges
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -109,25 +109,26 @@ Begin VB.Form FormFindEdges
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   1950
+      ForeColor       =   &H00404040&
+      Height          =   1980
       Left            =   120
       TabIndex        =   0
-      Top             =   3360
+      Top             =   3480
       Width           =   2895
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -135,30 +136,50 @@ Begin VB.Form FormFindEdges
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   8
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
       TabIndex        =   7
       Top             =   2880
-      Width           =   3975
+      Width           =   480
    End
    Begin VB.Label Label1 
       BackStyle       =   0  'Transparent
-      Caption         =   "Description:"
+      Caption         =   "description:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   375
       Left            =   3240
       TabIndex        =   4
-      Top             =   3360
+      Top             =   3450
       Width           =   2055
    End
    Begin VB.Label LblDesc 
@@ -168,18 +189,18 @@ Begin VB.Form FormFindEdges
       Caption         =   "<No Item Selected>"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   1575
       Left            =   3240
       TabIndex        =   3
-      Top             =   3720
+      Top             =   3840
       Width           =   2895
       WordWrap        =   -1  'True
    End

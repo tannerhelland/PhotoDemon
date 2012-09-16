@@ -127,8 +127,17 @@ Begin VB.Form FormDiffuse
    End
    Begin VB.CheckBox ChkWrap 
       Appearance      =   0  'Flat
-      Caption         =   " Wrap edge values"
-      ForeColor       =   &H00400000&
+      Caption         =   "wrap edge values"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
       Height          =   255
       Left            =   240
       TabIndex        =   4
@@ -136,7 +145,7 @@ Begin VB.Form FormDiffuse
       Width           =   1935
    End
    Begin VB.CommandButton CmdCancel 
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   5040
       TabIndex        =   6
@@ -144,7 +153,7 @@ Begin VB.Form FormDiffuse
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   3840
@@ -152,11 +161,12 @@ Begin VB.Form FormDiffuse
       Top             =   6000
       Width           =   1125
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -164,52 +174,72 @@ Begin VB.Form FormDiffuse
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   12
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
       TabIndex        =   11
       Top             =   2880
-      Width           =   3975
+      Width           =   480
    End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Y Strength:"
+      Caption         =   "vertical strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   120
       TabIndex        =   8
       Top             =   4320
-      Width           =   975
+      Width           =   1785
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "X Strength:"
+      Caption         =   "horizontal strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   120
       TabIndex        =   7
       Top             =   3480
-      Width           =   960
+      Width           =   2085
    End
 End
 Attribute VB_Name = "FormDiffuse"

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBlackAndWhite 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Black/White Color Conversion"
-   ClientHeight    =   7230
+   ClientHeight    =   7470
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,7 +18,7 @@ Begin VB.Form FormBlackAndWhite
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   482
+   ScaleHeight     =   498
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -119,39 +119,7 @@ Begin VB.Form FormBlackAndWhite
    End
    Begin VB.CheckBox chkAutoThreshold 
       Appearance      =   0  'Flat
-      Caption         =   "Automatically choose the best threshold for this image/dithering combination"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   240
-      TabIndex        =   2
-      Top             =   4320
-      Width           =   5895
-   End
-   Begin VB.CommandButton CmdCancel 
-      BackColor       =   &H00C0C0C0&
-      Cancel          =   -1  'True
-      Caption         =   "Cancel"
-      Height          =   375
-      Left            =   4920
-      TabIndex        =   4
-      Top             =   6390
-      Width           =   1125
-   End
-   Begin VB.CommandButton CmdOK 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00E0E0E0&
-      Caption         =   "OK"
-      Default         =   -1  'True
-      Height          =   375
-      Left            =   3720
-      MaskColor       =   &H00000000&
-      TabIndex        =   3
-      Top             =   6390
-      Width           =   1125
-   End
-   Begin VB.Label lblDither 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Dithering method:"
+      Caption         =   "have PhotoDemon estimate the ideal threshold for this image"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -161,28 +129,41 @@ Begin VB.Form FormBlackAndWhite
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   240
-      TabIndex        =   10
-      Top             =   4920
-      Width           =   2415
-   End
-   Begin VB.Label lblBWDisclaimer 
-      BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormBlackAndWhite.frx":0000
       ForeColor       =   &H00404040&
-      Height          =   1095
-      Left            =   240
-      TabIndex        =   9
-      Top             =   6120
-      Width           =   3135
+      Height          =   360
+      Left            =   360
+      TabIndex        =   2
+      Top             =   4320
+      Width           =   5655
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.CommandButton CmdCancel 
+      BackColor       =   &H00C0C0C0&
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   375
+      Left            =   5040
+      TabIndex        =   4
+      Top             =   6990
+      Width           =   1125
+   End
+   Begin VB.CommandButton CmdOK 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00E0E0E0&
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   3840
+      MaskColor       =   &H00000000&
+      TabIndex        =   3
+      Top             =   6990
+      Width           =   1125
+   End
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -190,31 +171,82 @@ Begin VB.Form FormBlackAndWhite
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
-      TabIndex        =   8
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   12
       Top             =   2880
-      Width           =   3975
+      Width           =   360
    End
-   Begin VB.Label lblHeader 
+   Begin VB.Label lblDither 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Threshold:"
+      Caption         =   "dithering technique:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
+      TabIndex        =   10
+      Top             =   4920
+      Width           =   2130
+   End
+   Begin VB.Label lblBWDisclaimer 
+      BackStyle       =   0  'Transparent
+      Caption         =   $"VBP_FormBlackAndWhite.frx":0000
+      ForeColor       =   &H00404040&
+      Height          =   735
+      Left            =   240
+      TabIndex        =   9
+      Top             =   6000
+      Width           =   5775
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   8
+      Top             =   2880
+      Width           =   480
+   End
+   Begin VB.Label lblHeader 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "threshold:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   5
       Top             =   3480
-      Width           =   2415
+      Width           =   1080
    End
 End
 Attribute VB_Name = "FormBlackAndWhite"

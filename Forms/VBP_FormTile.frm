@@ -3,14 +3,14 @@ Begin VB.Form FormTile
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tile Image"
-   ClientHeight    =   8070
+   ClientHeight    =   8280
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   538
+   ScaleHeight     =   552
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -54,7 +54,7 @@ Begin VB.Form FormTile
       Left            =   1200
       TabIndex        =   7
       Text            =   "N/A"
-      Top             =   6420
+      Top             =   6660
       Width           =   855
    End
    Begin VB.TextBox TxtHeight 
@@ -73,7 +73,7 @@ Begin VB.Form FormTile
       Left            =   4080
       TabIndex        =   6
       Text            =   "N/A"
-      Top             =   6420
+      Top             =   6660
       Width           =   855
    End
    Begin VB.VScrollBar VSWidth 
@@ -83,7 +83,7 @@ Begin VB.Form FormTile
       Min             =   1
       TabIndex        =   5
       TabStop         =   0   'False
-      Top             =   6360
+      Top             =   6600
       Value           =   15000
       Width           =   270
    End
@@ -94,7 +94,7 @@ Begin VB.Form FormTile
       Min             =   1
       TabIndex        =   4
       TabStop         =   0   'False
-      Top             =   6360
+      Top             =   6600
       Value           =   15000
       Width           =   270
    End
@@ -102,7 +102,7 @@ Begin VB.Form FormTile
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -110,16 +110,16 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
-      Left            =   2520
+      Height          =   360
+      Left            =   720
       Style           =   2  'Dropdown List
       TabIndex        =   3
-      Top             =   5760
+      Top             =   6000
       Width           =   3375
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -132,11 +132,11 @@ Begin VB.Form FormTile
       Height          =   375
       Left            =   4920
       TabIndex        =   1
-      Top             =   7560
+      Top             =   7800
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -150,11 +150,13 @@ Begin VB.Form FormTile
       Height          =   375
       Left            =   3720
       TabIndex        =   0
-      Top             =   7560
+      Top             =   7800
       Width           =   1125
    End
    Begin VB.Label lblDescription 
       Alignment       =   2  'Center
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "The tiled image will be 0 tiles wide by 0 tiles tall"
       BeginProperty Font 
@@ -166,17 +168,17 @@ Begin VB.Form FormTile
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   210
       Left            =   120
       TabIndex        =   13
-      Top             =   7020
+      Top             =   7260
       Width           =   5955
    End
    Begin VB.Label lblWidth 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Width:"
+      Caption         =   "width:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -190,13 +192,13 @@ Begin VB.Form FormTile
       Height          =   210
       Left            =   480
       TabIndex        =   11
-      Top             =   6465
-      Width           =   555
+      Top             =   6705
+      Width           =   525
    End
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Height:"
+      Caption         =   "height:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -210,8 +212,8 @@ Begin VB.Form FormTile
       Height          =   210
       Left            =   3360
       TabIndex        =   10
-      Top             =   6465
-      Width           =   600
+      Top             =   6705
+      Width           =   585
    End
    Begin VB.Label lblWidthType 
       BackStyle       =   0  'Transparent
@@ -229,7 +231,7 @@ Begin VB.Form FormTile
       Height          =   255
       Left            =   2490
       TabIndex        =   9
-      Top             =   6465
+      Top             =   6705
       Width           =   855
    End
    Begin VB.Label lblHeightType 
@@ -248,28 +250,30 @@ Begin VB.Form FormTile
       Height          =   255
       Left            =   5370
       TabIndex        =   8
-      Top             =   6465
+      Top             =   6705
       Width           =   855
    End
    Begin VB.Label lblAmount 
+      Appearance      =   0  'Flat
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Render tiled image using:"
+      Caption         =   "render tiled image using:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   360
+      ForeColor       =   &H00404040&
+      Height          =   405
+      Left            =   480
       TabIndex        =   2
-      Top             =   5805
-      Width           =   2070
+      Top             =   5640
+      Width           =   2670
    End
 End
 Attribute VB_Name = "FormTile"

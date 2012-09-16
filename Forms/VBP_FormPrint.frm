@@ -192,7 +192,7 @@ Begin VB.Form FormPrint
       End
    End
    Begin VB.CommandButton cmdOK 
-      Caption         =   "Print"
+      Caption         =   "&Print"
       Default         =   -1  'True
       Height          =   435
       Left            =   4920
@@ -202,7 +202,7 @@ Begin VB.Form FormPrint
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   435
       Left            =   6240
       TabIndex        =   1

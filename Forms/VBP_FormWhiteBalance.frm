@@ -73,7 +73,7 @@ Begin VB.Form FormWhiteBalance
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -90,7 +90,7 @@ Begin VB.Form FormWhiteBalance
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -107,11 +107,12 @@ Begin VB.Form FormWhiteBalance
       Top             =   4920
       Width           =   1125
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -119,32 +120,54 @@ Begin VB.Form FormWhiteBalance
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
-      TabIndex        =   7
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   8
       Top             =   2880
-      Width           =   3975
+      Width           =   360
    End
-   Begin VB.Label lblAmount 
+   Begin VB.Label lblBefore 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Amount:"
+      Caption         =   "before"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   7
+      Top             =   2880
+      Width           =   480
+   End
+   Begin VB.Label lblAmount 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "strength:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   4
       Top             =   3480
-      Width           =   720
+      Width           =   960
    End
 End
 Attribute VB_Name = "FormWhiteBalance"

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormReduceColors 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Reduce Image Colors"
-   ClientHeight    =   8070
+   ClientHeight    =   8310
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6480
@@ -18,7 +18,7 @@ Begin VB.Form FormReduceColors
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   538
+   ScaleHeight     =   554
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   432
    ShowInTaskbar   =   0   'False
@@ -57,7 +57,7 @@ Begin VB.Form FormReduceColors
       Max             =   256
       Min             =   1
       TabIndex        =   8
-      Top             =   6015
+      Top             =   6135
       Value           =   6
       Width           =   2895
    End
@@ -67,7 +67,7 @@ Begin VB.Form FormReduceColors
       Max             =   256
       Min             =   1
       TabIndex        =   6
-      Top             =   5655
+      Top             =   5775
       Value           =   7
       Width           =   2895
    End
@@ -77,20 +77,29 @@ Begin VB.Form FormReduceColors
       Max             =   256
       Min             =   1
       TabIndex        =   4
-      Top             =   5295
+      Top             =   5415
       Value           =   6
       Width           =   2895
    End
    Begin VB.OptionButton OptQuant 
       Appearance      =   0  'Flat
       Caption         =   "PhotoDemon Advanced (manual)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
       Height          =   255
       Index           =   2
-      Left            =   840
+      Left            =   360
       TabIndex        =   2
       Top             =   4440
-      Width           =   2775
+      Width           =   3255
    End
    Begin VB.TextBox TxtB 
       Alignment       =   2  'Center
@@ -99,7 +108,7 @@ Begin VB.Form FormReduceColors
       Left            =   5640
       TabIndex        =   7
       Text            =   "6"
-      Top             =   6000
+      Top             =   6120
       Width           =   615
    End
    Begin VB.TextBox TxtG 
@@ -109,7 +118,7 @@ Begin VB.Form FormReduceColors
       Left            =   5640
       TabIndex        =   5
       Text            =   "7"
-      Top             =   5640
+      Top             =   5760
       Width           =   615
    End
    Begin VB.TextBox TxtR 
@@ -119,7 +128,7 @@ Begin VB.Form FormReduceColors
       Left            =   5640
       TabIndex        =   3
       Text            =   "6"
-      Top             =   5280
+      Top             =   5400
       Width           =   615
    End
    Begin VB.CheckBox chkColorDither 
@@ -129,7 +138,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   720
       TabIndex        =   9
-      Top             =   6960
+      Top             =   7080
       Value           =   1  'Checked
       Width           =   2415
    End
@@ -140,55 +149,74 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   3480
       TabIndex        =   10
-      Top             =   6960
+      Top             =   7080
       Value           =   1  'Checked
       Width           =   2535
    End
    Begin VB.OptionButton OptQuant 
       Appearance      =   0  'Flat
       Caption         =   "Xiaolin Wu (automatic)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
       Height          =   255
       Index           =   0
-      Left            =   840
+      Left            =   360
       TabIndex        =   0
       Top             =   3720
       Value           =   -1  'True
-      Width           =   2055
+      Width           =   2535
    End
    Begin VB.OptionButton OptQuant 
       Appearance      =   0  'Flat
       Caption         =   "NeuQuant by Anthony Dekker (automatic)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
       Height          =   255
       Index           =   1
-      Left            =   840
+      Left            =   360
       TabIndex        =   1
       Top             =   4080
-      Width           =   3375
+      Width           =   3855
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   3960
       TabIndex        =   11
-      Top             =   7560
+      Top             =   7800
       Width           =   1125
    End
    Begin VB.CommandButton CmdCancel 
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   5160
       TabIndex        =   12
-      Top             =   7560
+      Top             =   7800
       Width           =   1125
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -196,12 +224,32 @@ Begin VB.Form FormReduceColors
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   240
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3480
+      TabIndex        =   23
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   360
       TabIndex        =   22
       Top             =   2880
-      Width           =   3975
+      Width           =   480
    End
    Begin VB.Label lblWarning 
       Caption         =   "Note: some options on this page have been disabled because the FreeImage plugin could not be found."
@@ -215,24 +263,26 @@ Begin VB.Form FormReduceColors
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblOptions 
+      Appearance      =   0  'Flat
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "PhotoDemon Advanced Quantization options:"
+      Caption         =   "advanced quantization options:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   12
          Charset         =   0
-         Weight          =   700
+         Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   195
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   18
-      Top             =   4920
-      Width           =   3825
+      Top             =   5040
+      Width           =   3300
    End
    Begin VB.Label lblBlue 
       BackStyle       =   0  'Transparent
@@ -241,7 +291,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   360
       TabIndex        =   17
-      Top             =   6045
+      Top             =   6165
       Width           =   2175
    End
    Begin VB.Label lblGreen 
@@ -251,7 +301,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   360
       TabIndex        =   16
-      Top             =   5685
+      Top             =   5805
       Width           =   2535
    End
    Begin VB.Label lblRed 
@@ -261,7 +311,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   360
       TabIndex        =   15
-      Top             =   5325
+      Top             =   5445
       Width           =   2175
    End
    Begin VB.Label lblMaxColors 
@@ -272,30 +322,30 @@ Begin VB.Form FormReduceColors
       Height          =   195
       Left            =   360
       TabIndex        =   14
-      Top             =   6480
+      Top             =   6600
       Width           =   5505
    End
-   Begin VB.Label Label5 
+   Begin VB.Label lblQuantMethod 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Quantization method:"
+      Caption         =   "quantization method:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   12
          Charset         =   0
-         Weight          =   700
+         Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   195
+      ForeColor       =   &H00404040&
+      Height          =   405
       Left            =   240
       TabIndex        =   13
       Top             =   3360
-      Width           =   1830
+      Width           =   2265
    End
 End
 Attribute VB_Name = "FormReduceColors"

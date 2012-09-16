@@ -25,7 +25,7 @@ Begin VB.Form FormSoftwareUpdate
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdOKNo 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Height          =   495
       Left            =   3960
       TabIndex        =   15
@@ -113,7 +113,7 @@ Begin VB.Form FormSoftwareUpdate
       Width           =   5055
    End
    Begin VB.CommandButton cmdYesDownload 
-      Caption         =   "Yes!  Take me to the download page."
+      Caption         =   "&Yes!  Take me to the download page."
       Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"

@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.Form FormResize 
-   BorderStyle     =   5  'Sizable ToolWindow
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   4155
-   ClientLeft      =   60
-   ClientTop       =   300
+   ClientHeight    =   4230
+   ClientLeft      =   -15
+   ClientTop       =   225
    ClientWidth     =   4005
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -18,7 +18,7 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   277
+   ScaleHeight     =   282
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   267
    ShowInTaskbar   =   0   'False
@@ -30,7 +30,7 @@ Begin VB.Form FormResize
       Min             =   1
       TabIndex        =   12
       TabStop         =   0   'False
-      Top             =   1140
+      Top             =   1170
       Value           =   15000
       Width           =   270
    End
@@ -57,11 +57,11 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   1560
       TabIndex        =   1
       Text            =   "N/A"
-      Top             =   1200
+      Top             =   1230
       Width           =   855
    End
    Begin VB.TextBox TxtWidth 
@@ -76,7 +76,7 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   1560
       TabIndex        =   0
       Text            =   "N/A"
@@ -86,7 +86,7 @@ Begin VB.Form FormResize
    Begin VB.ComboBox cboResample 
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -94,143 +94,153 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
-      Left            =   240
+      Height          =   360
+      Left            =   360
       Style           =   2  'Dropdown List
       TabIndex        =   3
-      Top             =   2760
-      Width           =   3495
+      Top             =   2880
+      Width           =   3375
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
-      Left            =   2640
+      Left            =   2760
       TabIndex        =   6
-      Top             =   3600
+      Top             =   3720
       Width           =   1125
    End
    Begin VB.CheckBox ChkRatio 
       Appearance      =   0  'Flat
-      Caption         =   "Preserve size ratio"
+      Caption         =   "maintain current aspect ratio"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H80000008&
+      ForeColor       =   &H00404040&
       Height          =   255
-      Left            =   1080
+      Left            =   600
       TabIndex        =   2
       Top             =   1920
       Value           =   1  'Checked
-      Width           =   1815
+      Width           =   3015
    End
    Begin VB.CommandButton CmdResize 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   1440
+      Left            =   1560
       TabIndex        =   4
-      Top             =   3600
+      Top             =   3720
       Width           =   1125
    End
-   Begin VB.Label Label4 
+   Begin VB.Label lblHeightUnit 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "pixels"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
+      ForeColor       =   &H00808080&
+      Height          =   375
       Left            =   2850
       TabIndex        =   10
-      Top             =   1260
+      Top             =   1245
       Width           =   855
    End
-   Begin VB.Label Label3 
+   Begin VB.Label lblWidthUnit 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "pixels"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
+      ForeColor       =   &H00808080&
+      Height          =   480
       Left            =   2850
       TabIndex        =   9
-      Top             =   645
+      Top             =   615
       Width           =   855
    End
-   Begin VB.Label Label2 
+   Begin VB.Label lblHeight 
+      Appearance      =   0  'Flat
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Height:"
+      Caption         =   "height:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   840
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   720
       TabIndex        =   8
-      Top             =   1230
-      Width           =   600
+      Top             =   1245
+      Width           =   750
    End
-   Begin VB.Label Label1 
+   Begin VB.Label lblWidth 
+      Appearance      =   0  'Flat
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Width:"
+      Caption         =   "width:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   840
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   720
       TabIndex        =   7
-      Top             =   645
-      Width           =   555
+      Top             =   615
+      Width           =   675
    End
-   Begin VB.Label Label5 
+   Begin VB.Label lblResample 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Resample method:"
+      Caption         =   "resample method:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
+      ForeColor       =   &H00404040&
+      Height          =   375
       Left            =   240
       TabIndex        =   5
       Top             =   2520

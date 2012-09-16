@@ -24,7 +24,7 @@ Begin VB.Form FormPluginDownloader
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdOKNo 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Height          =   495
       Left            =   6720
       TabIndex        =   18

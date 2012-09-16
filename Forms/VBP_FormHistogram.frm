@@ -95,7 +95,7 @@ Begin VB.Form FormHistogram
       Width           =   1695
    End
    Begin VB.CommandButton cmdExportHistogram 
-      Caption         =   "Export Histogram to File..."
+      Caption         =   "&Export Histogram to File..."
       Height          =   495
       Left            =   240
       TabIndex        =   3
@@ -103,7 +103,7 @@ Begin VB.Form FormHistogram
       Width           =   2535
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
       Left            =   10440

@@ -72,23 +72,23 @@ Begin VB.Form FormMosaic
    End
    Begin VB.HScrollBar hsHeight 
       Height          =   255
-      Left            =   240
+      Left            =   360
       Max             =   64
       Min             =   1
       TabIndex        =   3
       Top             =   4800
       Value           =   2
-      Width           =   5055
+      Width           =   4935
    End
    Begin VB.HScrollBar hsWidth 
       Height          =   255
-      Left            =   240
+      Left            =   360
       Max             =   64
       Min             =   1
       TabIndex        =   1
       Top             =   3840
       Value           =   2
-      Width           =   5055
+      Width           =   4935
    End
    Begin VB.TextBox txtHeight 
       Alignment       =   2  'Center
@@ -130,7 +130,7 @@ Begin VB.Form FormMosaic
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   435
       Left            =   4920
       TabIndex        =   5
@@ -138,7 +138,7 @@ Begin VB.Form FormMosaic
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   435
       Left            =   3720
@@ -146,11 +146,12 @@ Begin VB.Form FormMosaic
       Top             =   5760
       Width           =   1125
    End
-   Begin VB.Label lblBeforeandAfter 
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "  Before                                                           After"
+      Caption         =   "after"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -158,52 +159,72 @@ Begin VB.Form FormMosaic
          Italic          =   -1  'True
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   120
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   11
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
       TabIndex        =   10
       Top             =   2880
-      Width           =   3975
+      Width           =   480
    End
    Begin VB.Label lblWidth 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Block Width:"
+      Caption         =   "block width:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   7
       Top             =   3480
-      Width           =   1035
+      Width           =   1305
    End
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Block Height:"
+      Caption         =   "block height:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   6
       Top             =   4440
-      Width           =   1080
+      Width           =   1380
    End
 End
 Attribute VB_Name = "FormMosaic"

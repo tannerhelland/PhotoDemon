@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormJPEG 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Options"
-   ClientHeight    =   2445
+   ClientHeight    =   2565
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   4560
@@ -18,7 +18,7 @@ Begin VB.Form FormJPEG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   163
+   ScaleHeight     =   171
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   304
    ShowInTaskbar   =   0   'False
@@ -38,7 +38,7 @@ Begin VB.Form FormJPEG
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -46,7 +46,7 @@ Begin VB.Form FormJPEG
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
+      Height          =   360
       Left            =   360
       Style           =   2  'Dropdown List
       TabIndex        =   3
@@ -73,41 +73,41 @@ Begin VB.Form FormJPEG
       Width           =   495
    End
    Begin VB.CommandButton CmdCancel 
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   3240
       TabIndex        =   1
-      Top             =   1920
+      Top             =   2040
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   2040
       TabIndex        =   0
-      Top             =   1920
+      Top             =   2040
       Width           =   1125
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "JPEG Save Quality:"
+      Caption         =   "jpeg save quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   240
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   240
       TabIndex        =   4
       Top             =   240
-      Width           =   1605
+      Width           =   1875
    End
 End
 Attribute VB_Name = "FormJPEG"

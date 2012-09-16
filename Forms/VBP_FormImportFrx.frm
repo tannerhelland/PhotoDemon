@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormImportFrx 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Import From VB Binary File"
-   ClientHeight    =   4500
+   ClientHeight    =   5085
    ClientLeft      =   45
    ClientTop       =   210
-   ClientWidth     =   7005
+   ClientWidth     =   6975
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,9 +18,9 @@ Begin VB.Form FormImportFrx
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   300
+   ScaleHeight     =   339
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   467
+   ScaleWidth      =   465
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.PictureBox PicLoadImage 
@@ -55,7 +55,7 @@ Begin VB.Form FormImportFrx
       Height          =   375
       Left            =   5640
       TabIndex        =   2
-      Top             =   3960
+      Top             =   4560
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -65,13 +65,13 @@ Begin VB.Form FormImportFrx
       Height          =   375
       Left            =   4440
       TabIndex        =   1
-      Top             =   3960
+      Top             =   4560
       Width           =   1125
    End
    Begin VB.ListBox LstInfo 
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -79,20 +79,31 @@ Begin VB.Form FormImportFrx
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   3000
+      Height          =   2940
       Left            =   120
       TabIndex        =   0
-      Top             =   720
+      Top             =   1080
       Width           =   3495
    End
    Begin VB.Label LblData 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "No Image Selected"
-      ForeColor       =   &H00400000&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
       Height          =   2535
       Left            =   3960
       TabIndex        =   7
-      Top             =   840
+      Top             =   1200
       Width           =   2835
    End
    Begin VB.Image Image1 
@@ -101,49 +112,86 @@ Begin VB.Form FormImportFrx
       Height          =   2985
       Left            =   3840
       Stretch         =   -1  'True
-      Top             =   720
+      Top             =   1080
       Width           =   2970
    End
-   Begin VB.Label Label3 
+   Begin VB.Label lblPreview 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Image Preview:"
-      ForeColor       =   &H00400000&
-      Height          =   255
+      Caption         =   "image preview:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   405
       Left            =   3840
       TabIndex        =   6
-      Top             =   360
-      Width           =   3495
+      Top             =   720
+      Width           =   1635
    End
    Begin VB.Label Label2 
       BackStyle       =   0  'Transparent
-      Caption         =   "Data Type  -  Offset  -  Size (in bytes)"
-      ForeColor       =   &H00800000&
-      Height          =   255
+      Caption         =   "data type | offset | size (bytes)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   375
       Left            =   120
       TabIndex        =   5
-      Top             =   360
-      Width           =   3255
+      Top             =   720
+      Width           =   3495
    End
    Begin VB.Label LblCurFile 
       BackStyle       =   0  'Transparent
       Caption         =   "N/A"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
       Height          =   255
-      Left            =   1080
+      Left            =   1440
       TabIndex        =   4
-      Top             =   120
-      Width           =   5655
+      Top             =   240
+      Width           =   5295
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Current file:"
-      ForeColor       =   &H00800000&
-      Height          =   195
+      Caption         =   "current file:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   120
       TabIndex        =   3
-      Top             =   120
-      Width           =   870
+      Top             =   240
+      Width           =   1230
    End
 End
 Attribute VB_Name = "FormImportFrx"

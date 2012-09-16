@@ -43,7 +43,7 @@ Begin VB.Form FormCustomFilter
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
-      Caption         =   "Cancel"
+      Caption         =   "&Cancel"
       Height          =   375
       Left            =   1800
       TabIndex        =   28
@@ -51,7 +51,7 @@ Begin VB.Form FormCustomFilter
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
-      Caption         =   "OK"
+      Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
       Left            =   600
