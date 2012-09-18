@@ -477,11 +477,11 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal Rotation As Long, ByVal Xpo
   'Zooming - only trigger when Ctrl has been pressed
   If CtrlDown Then
   
-    If Rotation < 0 Then
+    If Rotation > 0 Then
         
         If FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
     
-    ElseIf Rotation > 0 Then
+    ElseIf Rotation < 0 Then
         
         If FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
         

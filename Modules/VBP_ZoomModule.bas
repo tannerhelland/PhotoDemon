@@ -186,7 +186,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         'Hide the scroll bars if necessary
         If formToBuffer.HScroll.Visible = True Then formToBuffer.HScroll.Visible = False
         If formToBuffer.VScroll.Visible = True Then formToBuffer.VScroll.Visible = False
-    
+            
         'Resize the front buffer and store the relevant painting information into this pdImages object
         formToBuffer.FrontBuffer.Width = FormWidth
         formToBuffer.FrontBuffer.Height = FormHeight
@@ -242,10 +242,8 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         formToBuffer.HScroll.Move 0, FormHeight - formToBuffer.HScroll.Height, viewportWidth, formToBuffer.HScroll.Height
         If formToBuffer.HScroll.Visible = False Then formToBuffer.HScroll.Visible = True
     Else
-        If formToBuffer.HScroll.Visible = True Then
-            formToBuffer.HScroll.Value = 0
-            formToBuffer.HScroll.Visible = False
-        End If
+        formToBuffer.HScroll.Value = 0
+        If formToBuffer.HScroll.Visible = True Then formToBuffer.HScroll.Visible = False
     End If
     
     'Then vertical scroll bar...
@@ -253,10 +251,8 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         formToBuffer.VScroll.Move FormWidth - formToBuffer.VScroll.Width, 0, formToBuffer.VScroll.Width, viewportHeight
         If formToBuffer.VScroll.Visible = False Then formToBuffer.VScroll.Visible = True
     Else
-        If formToBuffer.VScroll.Visible = True Then
-            formToBuffer.VScroll.Value = False
-            formToBuffer.VScroll.Visible = False
-        End If
+        formToBuffer.VScroll.Value = 0
+        If formToBuffer.VScroll.Visible = True Then formToBuffer.VScroll.Visible = False
     End If
     
     'We don't actually render the image here; instead, we prepare the front buffer (.FrontBuffer) and store the relevant
