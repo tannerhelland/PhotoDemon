@@ -1,0 +1,483 @@
+VERSION 5.00
+Begin VB.Form FormColorTemp 
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   " Adjust Color Temperature"
+   ClientHeight    =   6150
+   ClientLeft      =   45
+   ClientTop       =   285
+   ClientWidth     =   6255
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   ScaleHeight     =   410
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   417
+   ShowInTaskbar   =   0   'False
+   StartUpPosition =   1  'CenterOwner
+   Begin VB.CheckBox ChkLuminance 
+      Appearance      =   0  'Flat
+      Caption         =   "preserve luminance (e.g. don't brighten or darken the image)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   255
+      Left            =   240
+      TabIndex        =   10
+      Top             =   4800
+      Value           =   1  'Checked
+      Width           =   5775
+   End
+   Begin VB.TextBox txtTemperature 
+      Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   5400
+      TabIndex        =   9
+      Text            =   "5500"
+      Top             =   3675
+      Width           =   735
+   End
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   5
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   4
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.HScrollBar hsTemperature 
+      Height          =   255
+      Left            =   240
+      Max             =   150
+      Min             =   10
+      TabIndex        =   2
+      Top             =   3720
+      Value           =   55
+      Width           =   5055
+   End
+   Begin VB.PictureBox picTempDemo 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Left            =   480
+      ScaleHeight     =   23
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   303
+      TabIndex        =   3
+      Top             =   4080
+      Width           =   4575
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   375
+      Left            =   4920
+      TabIndex        =   1
+      Top             =   5640
+      Width           =   1125
+   End
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   3720
+      TabIndex        =   0
+      Top             =   5640
+      Width           =   1125
+   End
+   Begin VB.Label lblTemperature 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "apply new temperature (in Kelvin):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   120
+      TabIndex        =   8
+      Top             =   3360
+      Width           =   3690
+   End
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "after"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   7
+      Top             =   2880
+      Width           =   360
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   6
+      Top             =   2880
+      Width           =   480
+   End
+End
+Attribute VB_Name = "FormColorTemp"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+'***************************************************************************
+'Color Temperature Adjustment Form
+'Copyright ©2006-2012 by Tanner Helland
+'Created: 16/September/12
+'Last updated: 16/September/12
+'Last update: initial build
+'
+'Color temperature adjustment form.  A full discussion of color temperature and how it works is available at this wikipedia article:
+' http://en.wikipedia.org/wiki/Color_temperature
+'
+'Many cameras provide the ability to compensate for shooting under various types of lights by reversing the color casts
+' caused by certain wavelengths.  For example, you may have seen options like "tungsten" or "fluorescent" or "overcast"
+' when using a point-and-shoot camera.
+'
+'This form provides a similar effect, but more powerful.  It can be used to:
+' 1) Automatically correct certain lighting conditions.  For example, a picture taken under fluorescent lights can be
+'     adjusted to attempt to make it look more natural.
+' 2) Convert image lighting from one type to another.  For example, a picture taken under overcast conditions can be made
+'     to look like it was taken on a sunny day.
+' 3) Simulate artificial lighting.
+' 4) Manually apply color temperature changes.  Warning: this involves some ridiculous math.  Basically, I manually calculated
+'     best-fit curves for established blackbody radiance values (taken from http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html).
+'     Then I wrote a function to return values from these best-fit curves based on a supplied color temperature.  It's not perfect
+'     (some of the R-squared values were good, like 99.5% for blue between 1900 and 6600 degrees, but others were not as good,
+'     like green above 6700 degrees which was only .959.)  Still, I've never found a function capable of doing this - especially
+'     not in VB - so it's better than anything out there right now.
+'
+'***************************************************************************
+
+Option Explicit
+
+Private Sub ChkLuminance_Click()
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), , True, picEffect
+End Sub
+
+'CANCEL button
+Private Sub CmdCancel_Click()
+    Unload Me
+End Sub
+
+'OK button
+Private Sub CmdOK_Click()
+    
+    'The scroll bar max and min values are used to check the temperature input for validity
+    If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100) Then
+        Me.Visible = False
+        Process AdjustTemperature, CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), 0.25
+        Unload Me
+    Else
+        AutoSelectText txtTemperature
+    End If
+    
+End Sub
+
+'Colorize an image using a hue defined between -1 and 5
+' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
+Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal tempStrength As Single = 0.25, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+    
+    If toPreview = False Then Message "Applying new temperature to image..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    
+    prepImageData tmpSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long
+    Dim h As Single, s As Single, l As Single
+    Dim originalLuminance As Single
+    Dim tmpR As Long, tmpG As Long, tmpB As Long
+            
+    'Get the corresponding RGB values for this temperature
+    getRGBfromTemperature tmpR, tmpG, tmpB, newTemperature
+            
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'If luminance is being preserved, we need to determine the initial luminance value
+        originalLuminance = (getLuminance(r, g, b) / 255)
+        
+        'Blend the original and new RGB values using the specified strength
+        r = BlendColors(r, tmpR, tempStrength)
+        g = BlendColors(g, tmpG, tempStrength)
+        b = BlendColors(b, tmpB, tempStrength)
+        
+        'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
+        ' value with the original
+        If preserveLuminance Then
+            tRGBToHSL r, g, b, h, s, l
+            tHSLToRGB h, s, originalLuminance, r, g, b
+        End If
+        
+        'Assign the new values to each color channel
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
+        
+    Next y
+        If toPreview = False Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        End If
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+    
+End Sub
+
+'LOAD form
+Private Sub Form_Load()
+
+    'This short routine is for drawing the picture box below the temperature slider
+    Dim temperatureVal As Double
+    Dim r As Long, g As Long, b As Long
+    
+    'Simple gradient-ish code implementation of drawing temperature between 1000 and 12000 Kelvin
+    For x = 0 To picTempDemo.ScaleWidth
+    
+        'Based on our x-position, gradient a value between 1000 and 12000
+        temperatureVal = x / picTempDemo.ScaleWidth
+        temperatureVal = temperatureVal * (CLng(hsTemperature.Max) * 100)
+        temperatureVal = temperatureVal + (CLng(hsTemperature.Min) * 100)
+        
+        'Generate an RGB equivalent for this temperature
+        getRGBfromTemperature r, g, b, temperatureVal
+        
+        'Draw the color
+        picTempDemo.Line (x, 0)-(x, picTempDemo.ScaleHeight), RGB(r, g, b)
+        
+    Next x
+    
+    picTempDemo.Picture = picTempDemo.Image
+    
+    'Create a copy of the image on the preview window
+    DrawPreviewImage picPreview
+    
+    'Display the previewed effect in the neighboring window
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), , True, picEffect
+    
+    'Assign the system hand cursor to all relevant objects
+    makeFormPretty Me
+    
+End Sub
+
+'When the hue scroll bar is changed, redraw the preview
+Private Sub hsTemperature_Change()
+    txtTemperature.Text = val(hsTemperature) * 100
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), , True, picEffect
+End Sub
+
+Private Sub hsTemperature_Scroll()
+    txtTemperature.Text = val(hsTemperature) * 100
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), , True, picEffect
+End Sub
+
+'Given a temperature (in Kelvin), generate the RGB equivalent of an ideal black body
+' NOTE: the mathematical formula used in this routine is NOT STANDARD.  I wrote it myself using self-calculated regression equations based
+'        off the raw data on blackbody radiation provided at http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html
+'        Because of that, I can't guarantee great precision - but the function works well enough for photo-manipulation purposes.
+Private Sub getRGBfromTemperature(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByVal tmpKelvin As Long)
+
+    Static tmpCalc As Double
+
+    'Temperature must fall between 1000 and 40000 degrees
+    If tmpKelvin < 1000 Then tmpKelvin = 1000
+    If tmpKelvin > 40000 Then tmpKelvin = 40000
+    
+    'All calculations require tmpKelvin \ 100, so only do the conversion once
+    tmpKelvin = tmpKelvin \ 100
+    
+    'Calculate each color in turn
+    
+    'First: red
+    If tmpKelvin <= 66 Then
+        r = 255
+    Else
+        'Note: the R-squared value for this approximation is .988
+        tmpCalc = tmpKelvin - 60
+        tmpCalc = 329.698727446 * (tmpCalc ^ -0.1332047592)
+        r = tmpCalc
+        If r < 0 Then r = 0
+        If r > 255 Then r = 255
+    End If
+    
+    'Second: green
+    If tmpKelvin <= 66 Then
+        'Note: the R-squared value for this approximation is .996
+        tmpCalc = tmpKelvin
+        tmpCalc = 99.4708025861 * Log(tmpCalc) - 161.1195681661
+        g = tmpCalc
+        If g < 0 Then g = 0
+        If g > 255 Then g = 255
+    Else
+        'Note: the R-squared value for this approximation is .987
+        tmpCalc = tmpKelvin - 60
+        tmpCalc = 288.1221695283 * (tmpCalc ^ -0.0755148492)
+        g = tmpCalc
+        If g < 0 Then g = 0
+        If g > 255 Then g = 255
+    End If
+    
+    'Third: blue
+    If tmpKelvin >= 66 Then
+        b = 255
+    ElseIf tmpKelvin <= 19 Then
+        b = 0
+    Else
+        'Note: the R-squared value for this approximation is .998
+        tmpCalc = tmpKelvin - 10
+        tmpCalc = 138.5177312231 * Log(tmpCalc) - 305.0447927307
+        
+        b = tmpCalc
+        If b < 0 Then b = 0
+        If b > 255 Then b = 255
+    End If
+    
+End Sub
+
+'Keep the text box and scroll bar in sync
+Private Sub txtTemperature_Change()
+    If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100, False, False) Then hsTemperature.Value = val(txtTemperature) \ 100
+End Sub
+
+Private Sub txtTemperature_Click()
+    AutoSelectText txtTemperature
+End Sub
