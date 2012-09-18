@@ -56,7 +56,7 @@ Begin VB.Form FormWhiteBalance
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -64,11 +64,11 @@ Begin VB.Form FormWhiteBalance
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5280
       TabIndex        =   0
       Text            =   "0.05"
-      Top             =   3810
+      Top             =   3795
       Width           =   735
    End
    Begin VB.CommandButton CmdCancel 
