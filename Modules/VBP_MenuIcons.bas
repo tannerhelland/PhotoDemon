@@ -290,46 +290,46 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 46, 0, 3      'Brightness/Contrast
         .PutImageToVBMenu 47, 1, 3      'Gamma Correction
         .PutImageToVBMenu 48, 2, 3      'Levels
-        .PutImageToVBMenu 49, 3, 3      'White Balance
-        .PutImageToVBMenu 50, 5, 3      'Histogram
+        .PutImageToVBMenu 49, 4, 3      'White Balance
+        .PutImageToVBMenu 50, 6, 3      'Histogram
             '--> Histogram sub-menu
-            .PutImageToVBMenu 50, 0, 3, 5   'Display Histogram
-            .PutImageToVBMenu 51, 1, 3, 5   'Equalize
-            .PutImageToVBMenu 52, 2, 3, 5   'Stretch
-        .PutImageToVBMenu 53, 7, 3      'Color Shift
+            .PutImageToVBMenu 50, 0, 3, 6   'Display Histogram
+            .PutImageToVBMenu 51, 1, 3, 6   'Equalize
+            .PutImageToVBMenu 52, 2, 3, 6   'Stretch
+        .PutImageToVBMenu 53, 8, 3      'Color Shift
             '--> Color-Shift sub-menu
-            .PutImageToVBMenu 53, 0, 3, 7   'Shift Right
-            .PutImageToVBMenu 54, 1, 3, 7   'Shift Left
-        .PutImageToVBMenu 57, 8, 3      'Rechannel
+            .PutImageToVBMenu 53, 0, 3, 8   'Shift Right
+            .PutImageToVBMenu 54, 1, 3, 8   'Shift Left
+        .PutImageToVBMenu 57, 9, 3      'Rechannel
             '--> Rechannel sub-menu
-            .PutImageToVBMenu 55, 0, 3, 8   'Red
-            .PutImageToVBMenu 56, 1, 3, 8   'Green
-            .PutImageToVBMenu 57, 2, 3, 8   'Blue
-        .PutImageToVBMenu 58, 10, 3      'Black and White
-        .PutImageToVBMenu 59, 11, 3      'Colorize
-        .PutImageToVBMenu 60, 12, 3      'Enhance
+            .PutImageToVBMenu 55, 0, 3, 9   'Red
+            .PutImageToVBMenu 56, 1, 3, 9   'Green
+            .PutImageToVBMenu 57, 2, 3, 9   'Blue
+        .PutImageToVBMenu 58, 11, 3      'Black and White
+        .PutImageToVBMenu 59, 12, 3      'Colorize
+        .PutImageToVBMenu 60, 13, 3      'Enhance
             '--> Enhance sub-menu
-            .PutImageToVBMenu 61, 0, 3, 12   'Contrast
-            .PutImageToVBMenu 62, 1, 3, 12   'Highlights
-            .PutImageToVBMenu 63, 2, 3, 12   'Midtones
-            .PutImageToVBMenu 64, 3, 3, 12   'Shadows
-        .PutImageToVBMenu 102, 13, 3     'Fade
+            .PutImageToVBMenu 61, 0, 3, 13   'Contrast
+            .PutImageToVBMenu 62, 1, 3, 13   'Highlights
+            .PutImageToVBMenu 63, 2, 3, 13   'Midtones
+            .PutImageToVBMenu 64, 3, 3, 13   'Shadows
+        .PutImageToVBMenu 102, 14, 3     'Fade
             '--> Fade sub-menu
-            .PutImageToVBMenu 103, 0, 3, 13  'Low Fade
-            .PutImageToVBMenu 102, 1, 3, 13  'Medium Fade
-            .PutImageToVBMenu 104, 2, 3, 13  'High Fade
-            .PutImageToVBMenu 105, 3, 3, 13  'Custom Fade
-            .PutImageToVBMenu 106, 5, 3, 13  'Unfade
-        .PutImageToVBMenu 65, 14, 3      'Grayscale
-        .PutImageToVBMenu 66, 15, 3      'Invert
+            .PutImageToVBMenu 103, 0, 3, 14  'Low Fade
+            .PutImageToVBMenu 102, 1, 3, 14  'Medium Fade
+            .PutImageToVBMenu 104, 2, 3, 14  'High Fade
+            .PutImageToVBMenu 105, 3, 3, 14  'Custom Fade
+            .PutImageToVBMenu 106, 5, 3, 14  'Unfade
+        .PutImageToVBMenu 65, 15, 3      'Grayscale
+        .PutImageToVBMenu 66, 16, 3      'Invert
             '--> Invert sub-menu
-            .PutImageToVBMenu 67, 0, 3, 15   'Invert CMYK
-            .PutImageToVBMenu 68, 1, 3, 15   'Invert Hue
-            .PutImageToVBMenu 69, 2, 3, 15   'Invert RGB
-            .PutImageToVBMenu 101, 4, 3, 15  'Compound Invert
-        .PutImageToVBMenu 70, 16, 3      'Posterize
-        .PutImageToVBMenu 72, 18, 3      'Count Colors
-        .PutImageToVBMenu 71, 19, 3      'Reduce Colors
+            .PutImageToVBMenu 67, 0, 3, 16   'Invert CMYK
+            .PutImageToVBMenu 68, 1, 3, 16   'Invert Hue
+            .PutImageToVBMenu 69, 2, 3, 16   'Invert RGB
+            .PutImageToVBMenu 101, 4, 3, 16  'Compound Invert
+        .PutImageToVBMenu 70, 17, 3      'Posterize
+        .PutImageToVBMenu 72, 19, 3      'Count Colors
+        .PutImageToVBMenu 71, 20, 3      'Reduce Colors
         
         'Filters Menu
         .PutImageToVBMenu 73, 0, 4       'Fade Last
