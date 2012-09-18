@@ -154,7 +154,9 @@ Option Explicit
     Public Const Colorize As Long = 615
     'Reduce image colors
     Public Const ReduceColors As Long = 616
-    'NOTE: 617 is the max value for this section (CompoundInvert)
+    'Temperature
+    Public Const AdjustTemperature As Long = 618
+    'NOTE: 618 is the max value for this section (AdjustTemperature)
     
     'Coordinate filters/transformations; numbers 700-799
     '-Resize
@@ -616,6 +618,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                         MsgBox "Unsupported color reduction method."
                     End If
                 End If
+            Case AdjustTemperature
+                If LoadForm = True Then
+                    FormColorTemp.Show 1, FormMain
+                Else
+                    FormColorTemp.ApplyTemperatureToImage pOPCODE, pOPCODE2, pOPCODE3
+                End If
         End Select
     End If
     
@@ -1046,6 +1054,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Colorize"
         Case ReduceColors
             GetNameOfProcess = "Reduce Colors"
+        Case AdjustTemperature
+            GetNameOfProcess = "Adjust Temperature"
             
         'Coordinate filters/transformations; numbers 700-799
         Case ImageSize
