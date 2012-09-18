@@ -238,6 +238,7 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("TILE", "CUSTOM")        '132
         .AddImageFromStream LoadResData("TWINS", "CUSTOM")       '133
         .AddImageFromStream LoadResData("VIBRATE", "CUSTOM")     '134
+        .AddImageFromStream LoadResData("TEMPERATURE", "CUSTOM") '135
         
         
         'File Menu
@@ -290,6 +291,7 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 46, 0, 3      'Brightness/Contrast
         .PutImageToVBMenu 47, 1, 3      'Gamma Correction
         .PutImageToVBMenu 48, 2, 3      'Levels
+        .PutImageToVBMenu 135, 3, 3     'Temperature
         .PutImageToVBMenu 49, 4, 3      'White Balance
         .PutImageToVBMenu 50, 6, 3      'Histogram
             '--> Histogram sub-menu
