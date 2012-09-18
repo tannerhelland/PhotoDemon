@@ -116,46 +116,46 @@ Public Sub LoadTheProgram()
         Zoom.ZoomFactor(11) = 1
     FormMain.CmbZoom.AddItem "75%", 12
         Zoom.ZoomArray(12) = 3 / 4
-        Zoom.ZoomFactor(12) = 1
+        Zoom.ZoomFactor(12) = 4 / 3
     FormMain.CmbZoom.AddItem "67%", 13
         Zoom.ZoomArray(13) = 2 / 3
-        Zoom.ZoomFactor(13) = 1
+        Zoom.ZoomFactor(13) = 3 / 2
     FormMain.CmbZoom.AddItem "50%", 14
         Zoom.ZoomArray(14) = 0.5
-        Zoom.ZoomFactor(14) = 1
+        Zoom.ZoomFactor(14) = 2
     FormMain.CmbZoom.AddItem "33%", 15
         Zoom.ZoomArray(15) = 1 / 3
-        Zoom.ZoomFactor(15) = 1
+        Zoom.ZoomFactor(15) = 3
     FormMain.CmbZoom.AddItem "25%", 16
         Zoom.ZoomArray(16) = 0.25
-        Zoom.ZoomFactor(16) = 1
+        Zoom.ZoomFactor(16) = 4
     FormMain.CmbZoom.AddItem "20%", 17
         Zoom.ZoomArray(17) = 0.2
-        Zoom.ZoomFactor(17) = 1
+        Zoom.ZoomFactor(17) = 5
     FormMain.CmbZoom.AddItem "16%", 18
         Zoom.ZoomArray(18) = 0.16
-        Zoom.ZoomFactor(18) = 1
+        Zoom.ZoomFactor(18) = 100 / 16
     FormMain.CmbZoom.AddItem "12%", 19
         Zoom.ZoomArray(19) = 0.12
-        Zoom.ZoomFactor(19) = 1
+        Zoom.ZoomFactor(19) = 100 / 12
     FormMain.CmbZoom.AddItem "8%", 20
         Zoom.ZoomArray(20) = 0.08
-        Zoom.ZoomFactor(20) = 1
+        Zoom.ZoomFactor(20) = 100 / 8
     FormMain.CmbZoom.AddItem "6%", 21
         Zoom.ZoomArray(21) = 0.06
-        Zoom.ZoomFactor(21) = 1
+        Zoom.ZoomFactor(21) = 100 / 6
     FormMain.CmbZoom.AddItem "4%", 22
         Zoom.ZoomArray(22) = 0.04
-        Zoom.ZoomFactor(22) = 1
+        Zoom.ZoomFactor(22) = 25
     FormMain.CmbZoom.AddItem "3%", 23
         Zoom.ZoomArray(23) = 0.03
-        Zoom.ZoomFactor(23) = 1
+        Zoom.ZoomFactor(23) = 100 / 0.03
     FormMain.CmbZoom.AddItem "2%", 24
         Zoom.ZoomArray(24) = 0.02
-        Zoom.ZoomFactor(24) = 1
+        Zoom.ZoomFactor(24) = 50
     FormMain.CmbZoom.AddItem "1%", 25
         Zoom.ZoomArray(25) = 0.01
-        Zoom.ZoomFactor(25) = 1
+        Zoom.ZoomFactor(25) = 100
     
     'If desired, the global "zoom object"'s # of available zoom values can be set automatically using this line
     'Zoom.ZoomCount = FormMain.CmbZoom.ListCount - 1
@@ -434,6 +434,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                    If loadSuccessful = False Then
+                        LoadGDIPlusImage sFile(thisImage), targetLayer
+                        targetImage.OriginalFileFormat = 1
+                        loadSuccessful = True
+                    End If
                 ElseIf GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage), targetLayer
                     targetImage.OriginalFileFormat = 1
