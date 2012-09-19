@@ -54,8 +54,8 @@ Option Explicit
     Public Const ViewHistogram As Long = 100
     Public Const StretchHistogram As Long = 101
     Public Const Equalize As Long = 102
-    Public Const EqualizeLuminance As Long = 103
     Public Const WhiteBalance As Long = 104
+    'Note: 103 is empty (formerly EqualizeLuminance, which is now handled as part of Equalize)
     
     'Black/White conversion; numbers 200-299
     Public Const BWImpressionist As Long = 200
@@ -391,9 +391,11 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case StretchHistogram
                 FormHistogram.StretchHistogram
             Case Equalize
-                FormHistogram.EqualizeHistogram pOPCODE, pOPCODE2, pOPCODE3
-            Case EqualizeLuminance
-                FormHistogram.EqualizeLuminance
+                If LoadForm = True Then
+                    FormEqualize.Show 1, FormMain
+                Else
+                    FormEqualize.EqualizeHistogram pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4
+                End If
             Case WhiteBalance
                 If LoadForm = True Then
                     FormWhiteBalance.Show 1, FormMain
@@ -912,8 +914,6 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Stretch Histogram"
         Case Equalize
             GetNameOfProcess = "Equalize"
-        Case EqualizeLuminance
-            GetNameOfProcess = "Equalize Luminance"
         Case WhiteBalance
             GetNameOfProcess = "White Balance"
             

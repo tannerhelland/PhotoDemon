@@ -296,8 +296,8 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 50, 6, 3      'Histogram
             '--> Histogram sub-menu
             .PutImageToVBMenu 50, 0, 3, 6   'Display Histogram
-            .PutImageToVBMenu 51, 1, 3, 6   'Equalize
-            .PutImageToVBMenu 52, 2, 3, 6   'Stretch
+            .PutImageToVBMenu 51, 2, 3, 6   'Equalize
+            .PutImageToVBMenu 52, 3, 3, 6   'Stretch
         .PutImageToVBMenu 53, 8, 3      'Color Shift
             '--> Color-Shift sub-menu
             .PutImageToVBMenu 53, 0, 3, 8   'Shift Right

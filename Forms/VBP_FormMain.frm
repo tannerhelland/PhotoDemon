@@ -601,26 +601,11 @@ Begin VB.MDIForm FormMain
             Caption         =   "Display Histogram"
             Shortcut        =   ^H
          End
+         Begin VB.Menu mnuHistogramSepBar1 
+            Caption         =   "-"
+         End
          Begin VB.Menu MnuHistogramEqualize 
-            Caption         =   "Equalize"
-            Begin VB.Menu MnuEqualizeLuminance 
-               Caption         =   "Luminance"
-            End
-            Begin VB.Menu MnuHistogramSepBar1 
-               Caption         =   "-"
-            End
-            Begin VB.Menu MnuEqualizeRed 
-               Caption         =   "Red"
-            End
-            Begin VB.Menu MnuEqualizeGreen 
-               Caption         =   "Green"
-            End
-            Begin VB.Menu MnuEqualizeBlue 
-               Caption         =   "Blue"
-            End
-            Begin VB.Menu MnuEqualizeAll 
-               Caption         =   "All Channels"
-            End
+            Caption         =   "Equalize..."
          End
          Begin VB.Menu MnuHistogramStretch 
             Caption         =   "Stretch"
@@ -1448,26 +1433,6 @@ Private Sub MnuEmbossEngrave_Click()
     Process EmbossToColor, , , , , , , , , , True
 End Sub
 
-Private Sub MnuEqualizeAll_Click()
-    Process Equalize, True, True, True
-End Sub
-
-Private Sub MnuEqualizeBlue_Click()
-    Process Equalize, 0, 0, True
-End Sub
-
-Private Sub MnuEqualizeGreen_Click()
-    Process Equalize, 0, True, 0
-End Sub
-
-Private Sub MnuEqualizeLuminance_Click()
-    Process EqualizeLuminance
-End Sub
-
-Private Sub MnuEqualizeRed_Click()
-    Process Equalize, True, 0, 0
-End Sub
-
 Private Sub MnuExtreme_Click()
     Process CustomRank, 1, 2
 End Sub
@@ -1530,6 +1495,10 @@ End Sub
 
 Private Sub MnuHistogram_Click()
     Process ViewHistogram, , , , , , , , , , True
+End Sub
+
+Private Sub MnuHistogramEqualize_Click()
+    Process Equalize, , , , , , , , , , True
 End Sub
 
 Private Sub MnuHistogramStretch_Click()
