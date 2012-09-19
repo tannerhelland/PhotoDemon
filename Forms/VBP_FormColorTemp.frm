@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormColorTemp 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Adjust Color Temperature"
-   ClientHeight    =   7065
+   ClientHeight    =   6735
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,7 +18,7 @@ Begin VB.Form FormColorTemp
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   471
+   ScaleHeight     =   449
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -28,8 +28,8 @@ Begin VB.Form FormColorTemp
       Left            =   240
       Max             =   100
       Min             =   1
-      TabIndex        =   12
-      Top             =   5160
+      TabIndex        =   11
+      Top             =   5400
       Value           =   55
       Width           =   5055
    End
@@ -47,30 +47,10 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   5400
-      TabIndex        =   11
-      Text            =   "50"
-      Top             =   5115
-      Width           =   735
-   End
-   Begin VB.CheckBox ChkLuminance 
-      Appearance      =   0  'Flat
-      Caption         =   "preserve luminance (e.g. don't brighten or darken the image)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   255
-      Left            =   240
       TabIndex        =   10
-      Top             =   5850
-      Value           =   1  'Checked
-      Width           =   5775
+      Text            =   "50"
+      Top             =   5355
+      Width           =   735
    End
    Begin VB.TextBox txtTemperature 
       Alignment       =   2  'Center
@@ -176,7 +156,7 @@ Begin VB.Form FormColorTemp
       Height          =   375
       Left            =   4920
       TabIndex        =   1
-      Top             =   6480
+      Top             =   6240
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -185,13 +165,51 @@ Begin VB.Form FormColorTemp
       Height          =   375
       Left            =   3720
       TabIndex        =   0
-      Top             =   6480
+      Top             =   6240
       Width           =   1125
+   End
+   Begin VB.Label lblCool 
+      AutoSize        =   -1  'True
+      Caption         =   "cool tones"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   4245
+      TabIndex        =   14
+      Top             =   4560
+      Width           =   735
+   End
+   Begin VB.Label lblWarm 
+      AutoSize        =   -1  'True
+      Caption         =   "warm tones"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   480
+      TabIndex        =   13
+      Top             =   4560
+      Width           =   840
    End
    Begin VB.Label lblStrength 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "strength (%):"
+      Caption         =   "strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -204,14 +222,14 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   120
-      TabIndex        =   13
-      Top             =   4800
-      Width           =   1455
+      TabIndex        =   12
+      Top             =   5040
+      Width           =   960
    End
    Begin VB.Label lblTemperature 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "apply new temperature (in Kelvin):"
+      Caption         =   "new temperature:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -226,7 +244,7 @@ Begin VB.Form FormColorTemp
       Left            =   120
       TabIndex        =   8
       Top             =   3360
-      Width           =   3690
+      Width           =   1890
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -278,8 +296,8 @@ Attribute VB_Exposed = False
 'Color Temperature Adjustment Form
 'Copyright ©2006-2012 by Tanner Helland
 'Created: 16/September/12
-'Last updated: 16/September/12
-'Last update: initial build
+'Last updated: 18/September/12
+'Last update: remove "preserve luminance" checkbox.  There was never any reason to uncheck it.
 '
 'Color temperature adjustment form.  A full discussion of color temperature and how it works is available at this wikipedia article:
 ' http://en.wikipedia.org/wiki/Color_temperature
@@ -293,21 +311,14 @@ Attribute VB_Exposed = False
 '     adjusted to attempt to make it look more natural.
 ' 2) Convert image lighting from one type to another.  For example, a picture taken under overcast conditions can be made
 '     to look like it was taken on a sunny day.
-' 3) Simulate artificial lighting.
-' 4) Manually apply color temperature changes.  Warning: this involves some ridiculous math.  Basically, I manually calculated
+' 3) Manually apply color temperature changes.  Warning: this involves some ridiculous math.  Basically, I manually calculated
 '     best-fit curves for established blackbody radiance values (taken from http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html).
 '     Then I wrote a function to return values from these best-fit curves based on a supplied color temperature.  It's not perfect
-'     (some of the R-squared values were good, like 99.5% for blue between 1900 and 6600 degrees, but others were not as good,
-'     like green above 6700 degrees which was only .959.)  Still, I've never found a function capable of doing this - especially
-'     not in VB - so it's better than anything out there right now.
+'     but I've never found a function capable of doing this - especially not in VB - so it's better than anything out there right now.
 '
 '***************************************************************************
 
 Option Explicit
-
-Private Sub ChkLuminance_Click()
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), CSng(hsStrength.Value) / 2, True, picEffect
-End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -320,7 +331,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the temperature input for validity
     If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100) Then
         Me.Visible = False
-        Process AdjustTemperature, CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), CSng(hsStrength.Value) / 2
+        Process AdjustTemperature, CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2
         Unload Me
     Else
         AutoSelectText txtTemperature
@@ -444,7 +455,7 @@ Private Sub Form_Load()
     DrawPreviewImage picPreview
     
     'Display the previewed effect in the neighboring window
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -453,23 +464,23 @@ End Sub
 
 Private Sub hsStrength_Change()
     txtStrength.Text = hsStrength.Value
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 Private Sub hsStrength_Scroll()
     txtStrength.Text = hsStrength.Value
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 'When the hue scroll bar is changed, redraw the preview
 Private Sub hsTemperature_Change()
     txtTemperature.Text = val(hsTemperature) * 100
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 Private Sub hsTemperature_Scroll()
     txtTemperature.Text = val(hsTemperature) * 100
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, CBool(ChkLuminance), CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 'Given a temperature (in Kelvin), generate the RGB equivalent of an ideal black body
