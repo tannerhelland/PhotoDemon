@@ -124,30 +124,30 @@ Begin VB.Form FormSoftwareUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   495
+      Height          =   615
       Left            =   240
       TabIndex        =   7
-      Top             =   4080
+      Top             =   3960
       Width           =   5055
    End
    Begin VB.Label lblQuestion 
       Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
-      Caption         =   "Do you want to download the new version of PhotoDemon?"
+      Caption         =   "Do you want to download the new version?"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   12
          Charset         =   0
-         Weight          =   700
+         Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   315
+      ForeColor       =   &H00404040&
+      Height          =   555
       Left            =   120
       TabIndex        =   10
-      Top             =   3480
+      Top             =   3405
       Width           =   5340
    End
    Begin VB.Line Line2 
@@ -196,7 +196,7 @@ Begin VB.Form FormSoftwareUpdate
    Begin VB.Label lblAnnouncementExplanation 
       BackStyle       =   0  'Transparent
       Caption         =   $"VBP_FormSoftwareUpdates.frx":02A4
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   675
       Left            =   120
       TabIndex        =   5
@@ -217,7 +217,7 @@ Begin VB.Form FormSoftwareUpdate
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   210
-      Left            =   3000
+      Left            =   3120
       TabIndex        =   4
       Top             =   1155
       Width           =   2205
@@ -234,9 +234,9 @@ Begin VB.Form FormSoftwareUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   210
-      Left            =   3000
+      Left            =   3120
       TabIndex        =   3
       Top             =   810
       Width           =   1950
@@ -256,7 +256,7 @@ Begin VB.Form FormSoftwareUpdate
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   210
-      Left            =   -600
+      Left            =   -480
       TabIndex        =   2
       Top             =   1155
       Width           =   3360
@@ -274,9 +274,9 @@ Begin VB.Form FormSoftwareUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
+      ForeColor       =   &H00404040&
       Height          =   210
-      Left            =   -600
+      Left            =   -480
       TabIndex        =   1
       Top             =   810
       Width           =   3360
@@ -285,11 +285,20 @@ Begin VB.Form FormSoftwareUpdate
       Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
       Caption         =   "A new version of PhotoDemon is available!"
-      ForeColor       =   &H00400000&
-      Height          =   195
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   315
       Left            =   120
       TabIndex        =   0
-      Top             =   210
+      Top             =   165
       Width           =   5220
    End
 End
