@@ -30,6 +30,13 @@ Option Explicit
 ' History:          17/07/2010 First
 ' ---------------------------------------------------
 
+
+'Tanner's addition 20 September 2012:
+' We must check if theming is enabled.  On Vista/7, use of the "Classic Theme" disables theming and screws up menu icon placement.
+Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal HWnd As Long, ByVal pszClassList As Long) As Long
+Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
+
+' ------------
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal HWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -37,13 +44,13 @@ Private Declare Function GetModuleHandle Lib "kernel32.dll" Alias "GetModuleHand
 Private Declare Function GetProcAddress Lib "kernel32.dll" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 Private Declare Function VirtualAlloc Lib "kernel32.dll" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32.dll" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
-Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hdc As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDC Lib "user32.dll" (ByVal HWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32.dll" (ByVal HWnd As Long, ByVal hdc As Long) As Long
-Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function ReleaseDC Lib "user32.dll" (ByVal HWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Private Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal dwImageType As Long, ByVal dwDesiredWidth As Long, ByVal dwDesiredHeight As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef piconinfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
@@ -60,19 +67,19 @@ Private Declare Function DrawMenuBar Lib "user32" (ByVal HWnd As Long) As Long
 Private Declare Function GetMenuItemID Lib "user32.dll" (ByVal hMenu As Long, ByVal nPos As Long) As Long
 Private Declare Function CreateIconFromResourceEx Lib "user32.dll" (ByRef presbits As Any, ByVal dwResSize As Long, ByVal fIcon As Long, ByVal dwVer As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal Flags As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
-Private Declare Function Rectangle Lib "gdi32.dll" (ByVal hdc As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
+Private Declare Function Rectangle Lib "gdi32.dll" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function CreatePen Lib "gdi32.dll" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function GetStockObject Lib "gdi32.dll" (ByVal nIndex As Long) As Long
 Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Long
 
 ' ------------------------------------------------------- GDI Plus -------------------------------------------------------------------
-Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal CallbackData As Long = 0) As Long
-Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hdc As Long, ByRef Graphics As Long) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal CallbackData As Long = 0) As Long
+Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef Graphics As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal Graphics As Long) As Long
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef Image As Long) As Long
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef token As Long, ByRef lpInput As GDIPlusStartupInput, Optional ByRef lpOutput As Any) As Long
-Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal token As Long) As Long
+Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef lpInput As GDIPlusStartupInput, Optional ByRef lpOutput As Any) As Long
+Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As Long
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
@@ -136,7 +143,7 @@ Private Type DRAWITEMSTRUCT
     itemAction      As Long
     ItemState       As Long
     hwndItem        As Long
-    hdc             As Long
+    hDC             As Long
     rcItem          As RECT
     ItemData        As Long
 End Type
@@ -202,7 +209,7 @@ Private Type BITMAPINFO
 End Type
 
 Private Type GDIPlusStartupInput
-    GdiPlusVersion              As Long
+    GDIPlusVersion              As Long
     DebugEventCallback          As Long
     SuppressBackgroundThread    As Long
     SuppressExternalCodecs      As Long
@@ -223,7 +230,7 @@ End Type
 
 
 Private Type MemoDIB
-    hdc     As Long
+    hDC     As Long
     hDIB    As Long
     Ptr     As Long
 End Type
@@ -253,7 +260,7 @@ End Enum
 Private Const PixelFormat32bppARGB  As Long = &H26200A
 Private Const PixelFormat32bppRGB   As Long = &H22009
 
-Private Const GdiPlusVersion        As Long = 1&
+Private Const GDIPlusVersion        As Long = 1&
 Private Const IconVersion           As Long = &H30000
     
 Private Const BI_RGB                As Long = 0&
@@ -396,11 +403,11 @@ Public Function WindowProc(ByVal HWnd As Long, ByVal uMsg As Long, ByVal wParam 
                 
                 If Not IsCheckStyle And IsChecked Then
                 
-                    Call DrawCheck(DIS.hdc, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, IsDisabled)
+                    Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, IsDisabled)
                     
                 End If
                 
-                DrawDIB DIS.hdc, lLeft + 2, DIS.rcItem.Top + 2, cColl(DIS.hwndItem & "-" & DIS.itemID), IsDisabled
+                DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hwndItem & "-" & DIS.itemID), IsDisabled
                 
                 WindowProc = 1
             Else
@@ -440,7 +447,7 @@ Public Function RemoveImage(ByVal Index As Long) As Boolean
     
     With mDIB(Index)
         Call DeleteObject(.hDIB)
-        Call DeleteDC(.hdc)
+        Call DeleteDC(.hDC)
     End With
     
     For i = Index To Me.ImageCount
@@ -453,7 +460,7 @@ Public Function RemoveImage(ByVal Index As Long) As Boolean
 End Function
 
 
-Public Function PutImageToVBMenu(ByVal ImageID As Long, ByVal MenuPos As Long, ParamArray vSubMenuPos() As Variant) As Boolean
+Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, ParamArray vSubMenuPos() As Variant) As Boolean
     
     On Error Resume Next
     
@@ -484,16 +491,16 @@ Public Function PutImageToVBMenu(ByVal ImageID As Long, ByVal MenuPos As Long, P
         '.cbSize = Len(MII)
         .fMask = MIIM_BITMAP 'Or MIIM_DATA
         
-        If ImageID = -1 Then
+        If imageID = -1 Then
             .hbmpItem = 0
             If KeyExists(sKey) Then Call cColl.Remove(sKey)
         Else
             If IsWinVistaOrLater Then
-                .hbmpItem = mDIB(ImageID).hDIB
+                .hbmpItem = mDIB(imageID).hDIB
             Else
                 .hbmpItem = HBMMENU_CALLBACK
                 If KeyExists(sKey) Then Call cColl.Remove(sKey)
-                cColl.Add ImageID, sKey
+                cColl.Add imageID, sKey
             End If
         End If
         
@@ -507,7 +514,7 @@ Public Function PutImageToVBMenu(ByVal ImageID As Long, ByVal MenuPos As Long, P
     
 End Function
 
-Public Function PutImageToApiMenu(ByVal ImageID As Long, ByVal hMenu As Long, ByVal MenuPos As Long, Optional ByVal ItemData As Long) As Boolean
+Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, ByVal MenuPos As Long, Optional ByVal ItemData As Long) As Boolean
 
     Dim MII As MENUITEMINFO
     Dim sKey As String
@@ -524,16 +531,16 @@ Public Function PutImageToApiMenu(ByVal ImageID As Long, ByVal hMenu As Long, By
     With MII
         .fMask = MIIM_BITMAP Or MIIM_DATA
         
-        If ImageID = -1 Then
+        If imageID = -1 Then
             .hbmpItem = 0
             If KeyExists(sKey) Then Call cColl.Remove(sKey)
         Else
             If IsWinVistaOrLater Then
-                .hbmpItem = mDIB(ImageID).hDIB
+                .hbmpItem = mDIB(imageID).hDIB
             Else
                 .hbmpItem = HBMMENU_CALLBACK
                 If KeyExists(sKey) Then Call cColl.Remove(sKey)
-                cColl.Add ImageID, sKey
+                cColl.Add imageID, sKey
             End If
         End If
         .dwItemData = ItemData
@@ -579,20 +586,20 @@ Public Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
 End Sub
 
 
-Private Sub DrawCheck(ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal X2 As Long, ByVal Y2 As Long, bDisabled As Boolean)
+Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
     Dim hPen As Long, OldPen As Long
     Dim hBrush As Long, OldBrush As Long
     
     hPen = CreatePen(0, 1, GetSysColor(IIf(bDisabled, COLOR_GRAYTEXT, COLOR_APPWORKSPACE)))
     hBrush = GetStockObject(NULL_BRUSH)
     
-    OldPen = SelectObject(hdc, hPen)
-    OldBrush = SelectObject(hdc, hBrush)
+    OldPen = SelectObject(hDC, hPen)
+    OldBrush = SelectObject(hDC, hBrush)
     
-    Rectangle hdc, x, y, x + X2, y + Y2
+    Rectangle hDC, x, y, x + x2, y + y2
     
-    DeleteObject SelectObject(hdc, OldPen)
-    Call SelectObject(hdc, OldBrush)
+    DeleteObject SelectObject(hDC, OldPen)
+    Call SelectObject(hDC, OldBrush)
     
 End Sub
 
@@ -619,7 +626,7 @@ Private Function CreateNewDib() As Long
     
         TempDC = GetDC(0&)
         
-        .hdc = CreateCompatibleDC(TempDC)
+        .hDC = CreateCompatibleDC(TempDC)
 
         .hDIB = CreateDIBSection(TempDC, tBITMAPINFO, DIB_RGB_COLORS, .Ptr, 0&, 0&)
         
@@ -645,7 +652,7 @@ Public Function Clear()
     For i = 0 To UBound(mDIB) - 1
         With mDIB(i)
             Call DeleteObject(.hDIB)
-            Call DeleteDC(.hdc)
+            Call DeleteDC(.hDC)
         End With
     Next
     
@@ -867,9 +874,9 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
         
         If Index <> -1 Then
 
-            OldhDib = SelectObject(mDIB(Index).hdc, mDIB(Index).hDIB)
+            OldhDib = SelectObject(mDIB(Index).hDC, mDIB(Index).hDIB)
         
-            GdipCreateFromHDC mDIB(Index).hdc, hGraphics
+            GdipCreateFromHDC mDIB(Index).hDC, hGraphics
         
             GdipGetImageDimension hImage, ImgWidth, ImgHeight
             
@@ -900,7 +907,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
     
             GdipDeleteGraphics hGraphics
             
-            Call SelectObject(mDIB(Index).hdc, OldhDib)
+            Call SelectObject(mDIB(Index).hDC, OldhDib)
             
             pvAddImagen = True
         
@@ -940,7 +947,7 @@ Private Function LoadIconFromStream(ByRef bytIcoData() As Byte) As Long
     Dim tIconHeader     As IconHeader
     Dim tIconEntry()    As IconEntry
     Dim MaxBitCount     As Long
-    Dim MaxSize         As Long
+    Dim maxSize         As Long
     Dim Aproximate      As Long
     Dim IconID          As Long
     Dim hIcon           As Long
@@ -964,9 +971,9 @@ Private Function LoadIconFromStream(ByRef bytIcoData() As Byte) As Long
        
         For i = 0 To tIconHeader.ihCount - 1
             If MaxBitCount = tIconEntry(i).ieBitCount Then
-                MaxSize = CLng(tIconEntry(i).ieWidth) + CLng(tIconEntry(i).ieHeight)
-                If MaxSize > Aproximate And MaxSize <= (m_lWidth + m_lHeight) Then
-                    Aproximate = MaxSize
+                maxSize = CLng(tIconEntry(i).ieWidth) + CLng(tIconEntry(i).ieHeight)
+                If maxSize > Aproximate And maxSize <= (m_lWidth + m_lHeight) Then
+                    Aproximate = maxSize
                     IconID = i
                 End If
             End If
@@ -1072,6 +1079,18 @@ Private Sub Class_Initialize()
 
     IsWinVistaOrLater = tOSVI.dwMajorVersion >= 6
     
+    'Tanner's addition 20 September 2012:
+    ' Double-check that theming is enabled.  If it isn't, fall-back to subclassing (e.g. Windows XP style)
+    Dim hTheme As Long
+    Dim sClass As String
+    sClass = "Window"
+    hTheme = OpenThemeData(FormMain.HWnd, StrPtr(sClass))
+    If hTheme = 0 Then
+        IsWinVistaOrLater = False
+    Else
+        CloseThemeData hTheme
+    End If
+    
     ReDim mDIB(0)
 
     InitGDI
@@ -1136,7 +1155,7 @@ End Sub
 
 Private Sub InitGDI()
     Dim GdipStartupInput As GDIPlusStartupInput
-    GdipStartupInput.GdiPlusVersion = GdiPlusVersion
+    GdipStartupInput.GDIPlusVersion = GDIPlusVersion
     Call GdiplusStartup(GdipToken, GdipStartupInput, ByVal 0&)
 End Sub
  
