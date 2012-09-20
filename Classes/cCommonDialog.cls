@@ -533,7 +533,7 @@ Function VBGetOpenFileName(FileName As String, _
                            Optional Owner As Long = -1, _
                            Optional Flags As Long = 0) As Boolean
 
-    Message "Preparing common dialog interface..."
+    'Message "Preparing common dialog interface..."
 
     Dim opfile As OPENFILENAME, s As String
     
@@ -587,11 +587,11 @@ With opfile
     .nMaxFileTitle = MAX_FILE
     ' All other fields set to zero
     
-    Message "Waiting for user to select one or more images to load..."
+    'Message "Waiting for user to select one or more images to load..."
     
     m_lApiReturn = GetOpenFileName(opfile)
     
-    Message "Parsing file string..."
+    'Message "Parsing file string..."
     
     Select Case m_lApiReturn
     Case 1
