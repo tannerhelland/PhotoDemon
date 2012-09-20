@@ -95,7 +95,7 @@ Begin VB.Form FormBlackAndWhite
       Min             =   1
       TabIndex        =   1
       Top             =   3840
-      Value           =   128
+      Value           =   127
       Width           =   4935
    End
    Begin VB.TextBox txtThreshold 
@@ -113,7 +113,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   315
       Left            =   5400
       TabIndex        =   0
-      Text            =   "128"
+      Text            =   "127"
       Top             =   3810
       Width           =   540
    End
@@ -318,8 +318,16 @@ Private Sub Form_Load()
     cboDither.AddItem "None", 0
     cboDither.AddItem "Ordered (Bayer 4x4)", 1
     cboDither.AddItem "Ordered (Bayer 8x8)", 2
-    'cboDither.AddItem "Genuine Floyd-Steinberg", 3
-    cboDither.ListIndex = 2
+    cboDither.AddItem "False (Fast) Floyd-Steinberg", 3
+    cboDither.AddItem "Genuine Floyd-Steinberg", 4
+    cboDither.AddItem "Jarvis, Judice, and Ninke", 5
+    cboDither.AddItem "Stucki", 6
+    cboDither.AddItem "Burkes", 7
+    cboDither.AddItem "Sierra-3", 8
+    cboDither.AddItem "Two-Row Sierra", 9
+    cboDither.AddItem "Sierra Lite", 10
+    cboDither.AddItem "Atkinson / Classic Macintosh", 11
+    cboDither.ListIndex = 11
     DoEvents
     
     'Draw the previews
@@ -354,88 +362,82 @@ End Sub
 'Calculate the optimal threshold for the current image
 Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
 
-    'Create a local array and point it at the pixel data of the image
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    
-    prepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
-    
-    'Color variables
-    Dim r As Long, g As Long, b As Long
-    
-    'Histogram tables
-    Dim lLookup(0 To 255)
-    Dim pLuminance As Long
-    Dim NumOfPixels As Long
-        
-    'Loop through each pixel in the image, tallying values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-    
-        'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        
-        pLuminance = getLuminance(r, g, b)
-        
-        'Store this value in the histogram
-        lLookup(pLuminance) = lLookup(pLuminance) + 1
-        
-        'Increment the pixel count
-        NumOfPixels = NumOfPixels + 1
-        
-    Next y
-    Next x
-    
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    workingLayer.eraseLayer
-    Set workingLayer = Nothing
-    
-    'Divide the number of pixels by two
-    NumOfPixels = NumOfPixels \ 2
-            
-    Dim pixelCount As Long
-    pixelCount = 0
-    x = 0
-            
-    'Loop through the histogram table until we have moved past half the pixels in the image
-    Do
-        pixelCount = pixelCount + lLookup(x)
-        x = x + 1
-    Loop While pixelCount < NumOfPixels
-    
-    'X now equals the value where half the image will be black and half will be white.  Use that to determine an optimal
-    ' threshold based on the selected dithering mechanism.
     Select Case DitherMethod
     
-        'No dither
         Case 0
-            calculateOptimalThreshold = x
+
+            'Create a local array and point it at the pixel data of the image
+            Dim ImageData() As Byte
+            Dim tmpSA As SAFEARRAY2D
             
-        'Bayer 4x4
-        Case 1
-            calculateOptimalThreshold = ((255 - x) + (127 * 3)) \ 4
+            prepImageData tmpSA
+            CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+                
+            'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+            initX = curLayerValues.Left
+            initY = curLayerValues.Top
+            finalX = curLayerValues.Right
+            finalY = curLayerValues.Bottom
+                    
+            'These values will help us access locations in the array more quickly.
+            ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+            Dim QuickVal As Long, qvDepth As Long
+            qvDepth = curLayerValues.BytesPerPixel
+            
+            'Color variables
+            Dim r As Long, g As Long, b As Long
+            
+            'Histogram tables
+            Dim lLookup(0 To 255)
+            Dim pLuminance As Long
+            Dim NumOfPixels As Long
+                
+            'Loop through each pixel in the image, tallying values as we go
+            For x = initX To finalX
+                QuickVal = x * qvDepth
+            For y = initY To finalY
+            
+                'Get the source pixel color values
+                r = ImageData(QuickVal + 2, y)
+                g = ImageData(QuickVal + 1, y)
+                b = ImageData(QuickVal, y)
+                
+                pLuminance = getLuminance(r, g, b)
+                
+                'Store this value in the histogram
+                lLookup(pLuminance) = lLookup(pLuminance) + 1
+                
+                'Increment the pixel count
+                NumOfPixels = NumOfPixels + 1
+                
+            Next y
+            Next x
+            
+            'With our work complete, point ImageData() away from the DIB and deallocate it
+            CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+            Erase ImageData
+            workingLayer.eraseLayer
+            Set workingLayer = Nothing
+            
+            'Divide the number of pixels by two
+            NumOfPixels = NumOfPixels \ 2
+                    
+            Dim pixelCount As Long
+            pixelCount = 0
+            x = 0
+                    
+            'Loop through the histogram table until we have moved past half the pixels in the image
+            Do
+                pixelCount = pixelCount + lLookup(x)
+                x = x + 1
+            Loop While pixelCount < NumOfPixels
+    
+            calculateOptimalThreshold = x
         
-        'Bayer 8x8
-        Case 2
-            calculateOptimalThreshold = (x + (127 * 7)) \ 8
+        'For all dithered methods, the optimal threshold is 127.  The dithering will take care of the rest.
+        Case Else
+            calculateOptimalThreshold = 127
     
     End Select
     
@@ -454,7 +456,8 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, i As Long, j As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -462,7 +465,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -483,10 +486,14 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     highB = ExtractB(highColor)
     
     'Calculationg color variables (including luminance)
-    Dim r As Long, g As Long, b As Long, l As Long
+    Dim r As Long, g As Long, b As Long
+    Dim l As Long, newL As Long
     Dim lReference As Byte
     Dim xModQuick As Long
     Dim DitherTable() As Byte
+    Dim xLeft As Long, xRight As Long, yDown As Long
+    Dim errorVal As Single
+    Dim dDivisor As Single
     
     'Process the image based on the dither method requested
     Select Case DitherMethod
@@ -526,7 +533,6 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             
         'Ordered dither (Bayer 4x4).  Unfortunately, this routine requires a unique set of code owing to its specialized
         ' implementation. Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
-        ' Note also that ordered dithers ignore the set threshold value.  This is by design.
         Case 1
         
             'First, prepare a Bayer dither table
@@ -594,7 +600,6 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
 
         'Ordered dither (Bayer 8x8).  Unfortunately, this routine requires a unique set of code owing to its specialized
         ' implementation. Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
-        ' Note also that ordered dithers ignore the set threshold value.  This is by design.
         Case 2
         
             'First, prepare a Bayer dither table
@@ -711,8 +716,292 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
                     If (x And progBarCheck) = 0 Then SetProgBarVal x
                 End If
             Next x
+        
+        'False Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 3
+        
+            'First, prepare a dither table
+            ReDim DitherTable(0 To 1, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 3
+            DitherTable(0, 1) = 3
+            DitherTable(1, 1) = 2
+            
+            dDivisor = 8
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = 0
+            xRight = 1
+            yDown = 1
+            
+        'Genuine Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 4
+        
+            'First, prepare a Floyd-Steinberg dither table
+            ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 7
+            DitherTable(-1, 1) = 3
+            DitherTable(0, 1) = 5
+            DitherTable(1, 1) = 1
+            
+            dDivisor = 16
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -1
+            xRight = 1
+            yDown = 1
+            
+        'Jarvis, Judice, Ninke.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 5
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            
+            DitherTable(1, 0) = 7
+            DitherTable(2, 0) = 5
+            
+            DitherTable(-2, 1) = 3
+            DitherTable(-1, 1) = 5
+            DitherTable(0, 1) = 7
+            DitherTable(1, 1) = 5
+            DitherTable(2, 1) = 3
+            
+            DitherTable(-2, 2) = 1
+            DitherTable(-1, 2) = 3
+            DitherTable(0, 2) = 5
+            DitherTable(1, 2) = 3
+            DitherTable(2, 2) = 1
+            
+            dDivisor = 48
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        'Stucki.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 6
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            
+            DitherTable(1, 0) = 8
+            DitherTable(2, 0) = 4
+            
+            DitherTable(-2, 1) = 2
+            DitherTable(-1, 1) = 4
+            DitherTable(0, 1) = 8
+            DitherTable(1, 1) = 4
+            DitherTable(2, 1) = 2
+            
+            DitherTable(-2, 2) = 1
+            DitherTable(-1, 2) = 2
+            DitherTable(0, 2) = 4
+            DitherTable(1, 2) = 2
+            DitherTable(2, 2) = 1
+            
+            dDivisor = 42
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        'Burkes.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 7
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 8
+            DitherTable(2, 0) = 4
+            
+            DitherTable(-2, 1) = 2
+            DitherTable(-1, 1) = 4
+            DitherTable(0, 1) = 8
+            DitherTable(1, 1) = 4
+            DitherTable(2, 1) = 2
+            
+            dDivisor = 32
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 1
+            
+        'Sierra-3.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 8
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            
+            DitherTable(1, 0) = 5
+            DitherTable(2, 0) = 3
+            
+            DitherTable(-2, 1) = 2
+            DitherTable(-1, 1) = 4
+            DitherTable(0, 1) = 5
+            DitherTable(1, 1) = 4
+            DitherTable(2, 1) = 2
+            
+            DitherTable(-2, 2) = 0
+            DitherTable(-1, 2) = 2
+            DitherTable(0, 2) = 3
+            DitherTable(1, 2) = 2
+            DitherTable(2, 2) = 0
+            
+            dDivisor = 32
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        'Sierra-2.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 9
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 4
+            DitherTable(2, 0) = 3
+            
+            DitherTable(-2, 1) = 1
+            DitherTable(-1, 1) = 2
+            DitherTable(0, 1) = 3
+            DitherTable(1, 1) = 2
+            DitherTable(2, 1) = 1
+            
+            dDivisor = 16
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 1
+            
+        'Sierra-2-4A.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 10
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 2
+
+            DitherTable(-1, 1) = 1
+            DitherTable(0, 1) = 1
+            
+            dDivisor = 4
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -1
+            xRight = 1
+            yDown = 1
+            
+        'Bill Atkinson's original Hyperdither/HyperScan algorithm.  (Note: Bill invented MacPaint, QuickDraw, and HyperCard.)
+        ' This is the dithering algorithm used on the original Apple Macintosh.
+        ' Coefficients derived from http://gazs.github.com/canvas-atkinson-dither/
+        Case 11
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-1 To 2, 0 To 2) As Byte
+            
+            DitherTable(1, 0) = 1
+            DitherTable(2, 0) = 1
+            
+            DitherTable(-1, 1) = 1
+            DitherTable(0, 1) = 1
+            DitherTable(1, 1) = 1
+            
+            DitherTable(0, 2) = 1
+            
+            dDivisor = 8
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -1
+            xRight = 2
+            yDown = 2
             
     End Select
+    
+    'If we have been asked to use a non-ordered dithering method, apply it now
+    If DitherMethod >= 3 Then
+    
+        'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
+        ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
+        Dim dErrors() As Single
+        
+        ReDim dErrors(0 To workingLayer.getLayerWidth, 0 To workingLayer.getLayerHeight) As Single
+        
+        Dim QuickX As Long, QuickY As Long
+        
+        'Now loop through the image, calculating errors as we go
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
+        
+            'Get the source pixel color values
+            r = ImageData(QuickVal + 2, y)
+            g = ImageData(QuickVal + 1, y)
+            b = ImageData(QuickVal, y)
+            
+            'Convert those to a luminance value and add the value of the error at this location
+            l = getLuminance(r, g, b)
+            newL = l + dErrors(x, y)
+            
+            If newL > 255 Then newL = 255
+            If newL < 0 Then newL = 0
+            
+            'Check our modified luminance value against the threshold, and set new values accordingly
+            If newL >= cThreshold Then
+                errorVal = newL - 255
+                ImageData(QuickVal + 2, y) = highR
+                ImageData(QuickVal + 1, y) = highG
+                ImageData(QuickVal, y) = highB
+            Else
+                errorVal = newL
+                ImageData(QuickVal + 2, y) = lowR
+                ImageData(QuickVal + 1, y) = lowG
+                ImageData(QuickVal, y) = lowB
+            End If
+            
+            'If there is an error, spread it
+            If errorVal <> 0 Then
+            
+                'Now, spread that error across the relevant pixels according to the dither table formula
+                For i = xLeft To xRight
+                    QuickValInner = (i * qvDepth) + QuickVal
+                For j = 0 To yDown
+                
+                    'First, ignore already processed pixels
+                    If j = 0 And i <= 0 Then GoTo NextDitheredPixel
+                    
+                    'Second, ignore pixels that have a zero in the dither table
+                    If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
+                    
+                    QuickX = x + i
+                    QuickY = y + j
+                    
+                    'Next, ignore target pixels that are off the image boundary
+                    If QuickX < initX Then GoTo NextDitheredPixel
+                    If QuickX > finalX Then GoTo NextDitheredPixel
+                    If QuickY > finalY Then GoTo NextDitheredPixel
+                    
+                    'If we've made it all the way here, we are able to actually spread the error to this location
+                    dErrors(QuickX, QuickY) = dErrors(QuickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                
+NextDitheredPixel:     Next j
+                Next i
+            
+            End If
+                
+        Next y
+            If toPreview = False Then
+                If (x And progBarCheck) = 0 Then SetProgBarVal x
+            End If
+        Next x
+    
+    End If
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -720,11 +1009,6 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
-   
-
-
-    
-    
 
 End Sub
 
