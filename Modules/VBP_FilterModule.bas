@@ -210,6 +210,10 @@ NextCustomFilterPixel:  Next y2
     CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
     Erase tmpData
     
+    'Erase our temporary layer
+    tmpLayer.eraseLayer
+    Set tmpLayer = Nothing
+    
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
     

@@ -37,7 +37,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   4920
-      TabIndex        =   39
+      TabIndex        =   26
       Text            =   "1"
       Top             =   4560
       Width           =   735
@@ -61,7 +61,8 @@ Begin VB.Form FormCustomFilter
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
-      TabIndex        =   29
+      TabIndex        =   32
+      TabStop         =   0   'False
       Top             =   120
       Width           =   2895
    End
@@ -84,7 +85,8 @@ Begin VB.Form FormCustomFilter
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
-      TabIndex        =   28
+      TabIndex        =   31
+      TabStop         =   0   'False
       Top             =   120
       Width           =   2895
    End
@@ -93,7 +95,7 @@ Begin VB.Form FormCustomFilter
       Caption         =   "&Cancel"
       Height          =   375
       Left            =   5040
-      TabIndex        =   27
+      TabIndex        =   30
       Top             =   7080
       Width           =   1125
    End
@@ -102,7 +104,7 @@ Begin VB.Form FormCustomFilter
       Default         =   -1  'True
       Height          =   375
       Left            =   3840
-      TabIndex        =   26
+      TabIndex        =   29
       Top             =   7080
       Width           =   1125
    End
@@ -628,7 +630,7 @@ Begin VB.Form FormCustomFilter
    Begin PhotoDemon.jcbutton cmdOpen 
       Height          =   615
       Left            =   3840
-      TabIndex        =   34
+      TabIndex        =   27
       Top             =   5730
       Width           =   900
       _ExtentX        =   1588
@@ -650,13 +652,14 @@ Begin VB.Form FormCustomFilter
       PictureNormal   =   "VBP_FormCustomFilter.frx":0000
       DisabledPictureMode=   1
       CaptionEffects  =   0
+      ToolTip         =   "Open a previously saved convolution filter."
       TooltipType     =   1
-      TooltipTitle    =   "Open"
+      TooltipTitle    =   "Open Filter"
    End
    Begin PhotoDemon.jcbutton cmdSave 
       Height          =   615
       Left            =   4920
-      TabIndex        =   35
+      TabIndex        =   28
       Top             =   5730
       Width           =   900
       _ExtentX        =   1588
@@ -677,8 +680,9 @@ Begin VB.Form FormCustomFilter
       PictureNormal   =   "VBP_FormCustomFilter.frx":1052
       DisabledPictureMode=   1
       CaptionEffects  =   0
+      ToolTip         =   "Save the current filter to file.  This allows you to use the filter later, or share the filter with other PhotoDemon users."
       TooltipType     =   1
-      TooltipTitle    =   "Save"
+      TooltipTitle    =   "Save Current Filter"
    End
    Begin VB.Label lblAdditional 
       AutoSize        =   -1  'True
@@ -695,7 +699,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3720
-      TabIndex        =   38
+      TabIndex        =   39
       Top             =   3600
       Width           =   2010
    End
@@ -714,7 +718,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   37
+      TabIndex        =   38
       Top             =   4560
       Width           =   675
    End
@@ -733,7 +737,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   33
+      TabIndex        =   36
       Top             =   4095
       Width           =   795
    End
@@ -752,7 +756,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3720
-      TabIndex        =   36
+      TabIndex        =   37
       Top             =   5250
       Width           =   1800
    End
@@ -771,7 +775,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   240
-      TabIndex        =   32
+      TabIndex        =   35
       Top             =   3600
       Width           =   2070
    End
@@ -791,7 +795,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   240
-      TabIndex        =   31
+      TabIndex        =   34
       Top             =   2880
       Width           =   480
    End
@@ -811,7 +815,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   3360
-      TabIndex        =   30
+      TabIndex        =   33
       Top             =   2880
       Width           =   360
    End
@@ -849,31 +853,40 @@ Private Sub CmdOK_Click()
         AutoSelectText TxtWeight
         Exit Sub
     End If
-    If Not NumberValid(TxtBias) Then
-        AutoSelectText TxtBias
+    If Not NumberValid(txtBias) Then
+        AutoSelectText txtBias
         Exit Sub
     End If
     
     Me.Visible = False
-    FormMain.SetFocus
+    
     'Copy the values from the text boxes into an array
     Message "Generating filter data..."
-        FilterSize = 5
-        ReDim FM(-2 To 2, -2 To 2) As Long
-        For x = -2 To 2
-        For y = -2 To 2
-            FM(x, y) = val(TxtF((x + 2) + (y + 2) * 5))
-        Next y
-        Next x
-'What to divide the final value by
+        
+    FilterSize = 5
+        
+    ReDim FM(-2 To 2, -2 To 2) As Long
+    
+    For x = -2 To 2
+    For y = -2 To 2
+        FM(x, y) = val(TxtF((x + 2) + (y + 2) * 5))
+    Next y
+    Next x
+        
+    'What to divide the final value by
     FilterWeight = val(TxtWeight.Text)
-'Any offset value
-    FilterBias = val(TxtBias.Text)
-'Set that we have created a filter during this program session, and save it accordingly
+    
+    'Any offset value
+    FilterBias = val(txtBias.Text)
+    
+    'Set that we have created a filter during this program session, and save it accordingly
     HasCreatedFilter = True
-    SaveCustomFilter TempPath & "~W096THCF.tmp"
-    Process CustomFilter, TempPath & "~W096THCF.tmp"
+    
+    SaveCustomFilter TempPath & "~PD_CF.tmp"
+    Process CustomFilter, TempPath & "~PD_CF.tmp"
+    
     Unload Me
+    
 End Sub
 
 'CANCEL button
@@ -884,8 +897,14 @@ End Sub
 'LOAD form
 Private Sub Form_Load()
     
+    'Draw the left preview
+    DrawPreviewImage picPreview
+    
     'If a filter has been used previously, load it from the temp file
-    If HasCreatedFilter = True Then OpenCustomFilter TempPath & "~W096THCF.tmp"
+    If HasCreatedFilter = True Then OpenCustomFilter TempPath & "~PD_CF.tmp"
+    
+    'Draw the right preview
+    updatePreview
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -904,21 +923,25 @@ Private Sub cmdOpen_Click()
     Set CC = New cCommonDialog
     If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , tempPathString, "Open a custom filter", , FormCustomFilter.HWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
+            
             'Save the new directory as the default path for future usage
             tempPathString = sFile
             StripDirectory tempPathString
             WriteToIni "Program Paths", "CustomFilter", tempPathString
-            Message "Custom filter loaded successfully."
+            
+            'Redraw the preview
+            updatePreview
+            
         Else
-            Me.Visible = False
-            Message "Custom filter not loaded."
             MsgBox "An error occurred while attempting to load " & sFile & ".  Please verify that the file is a valid custom filter file.", vbOKOnly + vbCritical + vbApplicationModal, PROGRAMNAME & " Custom Filter Error"
-            Me.Visible = True
         End If
     End If
+    
 End Sub
 
+'Provide a save prompt, and use that to trigger a save of this custom filter to file
 Private Sub cmdSave_Click()
+    
     'Simple save dialog
     Dim CC As cCommonDialog
     
@@ -929,16 +952,20 @@ Private Sub cmdSave_Click()
     Dim sFile As String
     Set CC = New cCommonDialog
     If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , tempPathString, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.HWnd, 0) Then
+        
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
         WriteToIni "Program Paths", "CustomFilter", tempPathString
  
+        'Write out the file
         SaveCustomFilter sFile
+        
     End If
+    
 End Sub
 
-'Subroutine for loading a custom filter
+'Load a custom filter from file
 Private Function OpenCustomFilter(ByRef FilterPath As String) As Boolean
     
     Dim tmpVal As Integer
@@ -975,12 +1002,12 @@ Private Function OpenCustomFilter(ByRef FilterPath As String) As Boolean
             Get #fileNum, , tmpVal
             TxtWeight = tmpVal
             Get #fileNum, , tmpVal
-            TxtBias = tmpVal
+            txtBias = tmpVal
         ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
             Get #fileNum, , tmpValLong
             TxtWeight = tmpValLong
             Get #fileNum, , tmpValLong
-            TxtBias = tmpValLong
+            txtBias = tmpValLong
         End If
         
         If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
@@ -996,10 +1023,12 @@ Private Function OpenCustomFilter(ByRef FilterPath As String) As Boolean
         End If
         
     Close #fileNum
+    
     OpenCustomFilter = True
+    
 End Function
 
-'Subroutine for saving a custom filter
+'Save a custom filter to file
 Private Function SaveCustomFilter(ByRef FilterPath As String) As Boolean
 
     If FileExist(FilterPath) Then Kill FilterPath
@@ -1017,7 +1046,7 @@ Private Function SaveCustomFilter(ByRef FilterPath As String) As Boolean
         Dim tmpVal As Long
         tmpVal = val(TxtWeight.Text)
         Put #fileNum, , tmpVal
-        tmpVal = val(TxtBias.Text)
+        tmpVal = val(txtBias.Text)
         Put #fileNum, , tmpVal
         For x = 0 To 24
             tmpVal = val(TxtF(x).Text)
@@ -1029,13 +1058,59 @@ Private Function SaveCustomFilter(ByRef FilterPath As String) As Boolean
 End Function
 
 Private Sub TxtBias_GotFocus()
-    AutoSelectText TxtBias
+    AutoSelectText txtBias
+End Sub
+
+Private Sub txtBias_KeyUp(KeyCode As Integer, Shift As Integer)
+    updatePreview
 End Sub
 
 Private Sub TxtF_GotFocus(Index As Integer)
     AutoSelectText TxtF(Index)
 End Sub
 
+Private Sub TxtF_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
+    updatePreview
+End Sub
+
 Private Sub TxtWeight_GotFocus()
     AutoSelectText TxtWeight
+End Sub
+
+'When the filter is changed, update the preview to match
+Private Sub updatePreview()
+
+    'We can only apply the preview if all loaded text boxes are valid
+    For x = 0 To 24
+        If Not EntryValid(TxtF(x), -1000000, 1000000, False, False) Then Exit Sub
+    Next x
+    
+    If Not EntryValid(TxtWeight, -1000000, 1000000, False, False) Then Exit Sub
+    
+    If Not EntryValid(txtBias, -1000000, 1000000, False, False) Then Exit Sub
+    
+    'Copy the values from the text boxes into an array
+    FilterSize = 5
+        
+    ReDim FM(-2 To 2, -2 To 2) As Long
+    
+    For x = -2 To 2
+    For y = -2 To 2
+        FM(x, y) = val(TxtF((x + 2) + (y + 2) * 5))
+    Next y
+    Next x
+        
+    'What to divide the final value by
+    FilterWeight = val(TxtWeight.Text)
+    
+    'Offset value
+    FilterBias = val(txtBias.Text)
+        
+    'Apply the preview
+    DoFilter "Preview", False, , True, picEffect
+    
+End Sub
+
+Private Sub TxtWeight_KeyUp(KeyCode As Integer, Shift As Integer)
+    updatePreview
 End Sub
