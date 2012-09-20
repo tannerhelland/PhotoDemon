@@ -1080,7 +1080,7 @@ Private Sub Class_Initialize()
     IsWinVistaOrLater = tOSVI.dwMajorVersion >= 6
     
     'Tanner's addition 20 September 2012:
-    ' Double-check that theming is enabled.  If it isn't, fall-back to subclassing (e.g. Windows XP style)
+    ' Double-check that theming is enabled.  If it isn't, fall back to subclassing (e.g. Windows XP style)
     Dim hTheme As Long
     Dim sClass As String
     sClass = "Window"
@@ -1105,7 +1105,7 @@ Private Sub Class_Initialize()
         pVirtualFree = GetProcAddress(GetModuleHandle("kernel32.dll"), "VirtualFree")
 
         'TANNER'S NOTE: Don't let this line frighten you.  This ASM code is based off the work of Paul Caton, who pioneered
-        ' the art of using ASM to perform IDE-safe subclassing.  The original version of Paul's code can be seen here:
+        ' the art of using ASM to perform IDE-safe subclassing.  The original version of Paul's code can be found here:
         ' http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=42918&lngWId=1
         sCode = "90FF05000000006A0054FF742418FF742418FF742418FF7424186800000000B800000000FFD0FF0D00000000A10000000085C075" & _
                 "0458C21000A10000000085C0740458C2100058595858585868008000006A00680000000051B800000000FFE00000000000000000"
