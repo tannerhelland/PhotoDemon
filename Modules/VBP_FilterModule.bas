@@ -25,7 +25,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     
     'If requested, load the custom filter data from a file
     If srcFilterFile <> "" Then
-        Message "Loading custom filter information..."
+        If toPreview = False Then Message "Loading custom filter information..."
         Dim FilterReturn As Boolean
         FilterReturn = LoadCustomFilterData(srcFilterFile)
         If FilterReturn = False Then

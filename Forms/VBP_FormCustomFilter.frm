@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormCustomFilter 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Filter"
-   ClientHeight    =   3000
+   ClientHeight    =   7590
    ClientLeft      =   150
-   ClientTop       =   420
-   ClientWidth     =   2985
+   ClientTop       =   120
+   ClientWidth     =   6285
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,15 +18,16 @@ Begin VB.Form FormCustomFilter
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   200
+   ScaleHeight     =   506
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   199
+   ScaleWidth      =   419
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.TextBox TxtBias 
+   Begin VB.TextBox txtBias 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -34,35 +35,82 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
-      Left            =   2160
-      TabIndex        =   30
-      Text            =   "0"
-      Top             =   2040
-      Width           =   615
+      Height          =   360
+      Left            =   4920
+      TabIndex        =   39
+      Text            =   "1"
+      Top             =   4560
+      Width           =   735
+   End
+   Begin VB.PictureBox picEffect 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   3240
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   29
+      Top             =   120
+      Width           =   2895
+   End
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   2730
+      Left            =   120
+      ScaleHeight     =   180
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   191
+      TabIndex        =   28
+      Top             =   120
+      Width           =   2895
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   375
-      Left            =   1800
-      TabIndex        =   28
-      Top             =   2520
+      Left            =   5040
+      TabIndex        =   27
+      Top             =   7080
       Width           =   1125
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   600
-      TabIndex        =   27
-      Top             =   2520
+      Left            =   3840
+      TabIndex        =   26
+      Top             =   7080
       Width           =   1125
    End
    Begin VB.TextBox TxtWeight 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -70,17 +118,18 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
-      Left            =   720
-      TabIndex        =   26
+      Height          =   360
+      Left            =   4920
+      TabIndex        =   25
       Text            =   "1"
-      Top             =   2040
-      Width           =   615
+      Top             =   4080
+      Width           =   735
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -88,18 +137,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   24
-      Left            =   2520
+      Left            =   2760
       TabIndex        =   24
       Text            =   "0"
-      Top             =   1560
-      Width           =   375
+      Top             =   6000
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -107,18 +157,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   23
-      Left            =   1920
+      Left            =   2160
       TabIndex        =   23
       Text            =   "0"
-      Top             =   1560
-      Width           =   375
+      Top             =   6000
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -126,18 +177,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   22
-      Left            =   1320
+      Left            =   1560
       TabIndex        =   22
       Text            =   "0"
-      Top             =   1560
-      Width           =   375
+      Top             =   6000
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -145,18 +197,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   21
-      Left            =   720
+      Left            =   960
       TabIndex        =   21
       Text            =   "0"
-      Top             =   1560
-      Width           =   375
+      Top             =   6000
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -164,18 +217,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   20
-      Left            =   120
+      Left            =   360
       TabIndex        =   20
       Text            =   "0"
-      Top             =   1560
-      Width           =   375
+      Top             =   6000
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -183,18 +237,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   19
-      Left            =   2520
+      Left            =   2760
       TabIndex        =   19
       Text            =   "0"
-      Top             =   1200
-      Width           =   375
+      Top             =   5520
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -202,18 +257,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   18
-      Left            =   1920
+      Left            =   2160
       TabIndex        =   18
       Text            =   "0"
-      Top             =   1200
-      Width           =   375
+      Top             =   5520
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -221,18 +277,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   17
-      Left            =   1320
+      Left            =   1560
       TabIndex        =   17
       Text            =   "0"
-      Top             =   1200
-      Width           =   375
+      Top             =   5520
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -240,18 +297,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   16
-      Left            =   720
+      Left            =   960
       TabIndex        =   16
       Text            =   "0"
-      Top             =   1200
-      Width           =   375
+      Top             =   5520
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -259,18 +317,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00400000&
-      Height          =   285
+      Height          =   360
       Index           =   15
-      Left            =   120
+      Left            =   360
       TabIndex        =   15
       Text            =   "0"
-      Top             =   1200
-      Width           =   375
+      Top             =   5520
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -278,18 +337,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   14
-      Left            =   2520
+      Left            =   2760
       TabIndex        =   14
       Text            =   "0"
-      Top             =   840
-      Width           =   375
+      Top             =   5040
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -297,18 +357,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   13
-      Left            =   1920
+      Left            =   2160
       TabIndex        =   13
       Text            =   "0"
-      Top             =   840
-      Width           =   375
+      Top             =   5040
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -316,18 +377,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   12
-      Left            =   1320
+      Left            =   1560
       TabIndex        =   12
       Text            =   "1"
-      Top             =   840
-      Width           =   375
+      Top             =   5040
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -335,18 +397,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   11
-      Left            =   720
+      Left            =   960
       TabIndex        =   11
       Text            =   "0"
-      Top             =   840
-      Width           =   375
+      Top             =   5040
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -354,18 +417,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00400000&
-      Height          =   285
+      Height          =   360
       Index           =   10
-      Left            =   120
+      Left            =   360
       TabIndex        =   10
       Text            =   "0"
-      Top             =   840
-      Width           =   375
+      Top             =   5040
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -373,18 +437,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   9
-      Left            =   2520
+      Left            =   2760
       TabIndex        =   9
       Text            =   "0"
-      Top             =   480
-      Width           =   375
+      Top             =   4560
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -392,18 +457,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   8
-      Left            =   1920
+      Left            =   2160
       TabIndex        =   8
       Text            =   "0"
-      Top             =   480
-      Width           =   375
+      Top             =   4560
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -411,18 +477,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   7
-      Left            =   1320
+      Left            =   1560
       TabIndex        =   7
       Text            =   "0"
-      Top             =   480
-      Width           =   375
+      Top             =   4560
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -430,18 +497,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   6
-      Left            =   720
+      Left            =   960
       TabIndex        =   6
       Text            =   "0"
-      Top             =   480
-      Width           =   375
+      Top             =   4560
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -449,18 +517,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00400000&
-      Height          =   285
+      Height          =   360
       Index           =   5
-      Left            =   120
+      Left            =   360
       TabIndex        =   5
       Text            =   "0"
-      Top             =   480
-      Width           =   375
+      Top             =   4560
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -468,18 +537,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   4
-      Left            =   2520
+      Left            =   2760
       TabIndex        =   4
       Text            =   "0"
-      Top             =   120
-      Width           =   375
+      Top             =   4080
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -487,18 +557,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   3
-      Left            =   1920
+      Left            =   2160
       TabIndex        =   3
       Text            =   "0"
-      Top             =   120
-      Width           =   375
+      Top             =   4080
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -506,18 +577,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   2
-      Left            =   1320
+      Left            =   1560
       TabIndex        =   2
       Text            =   "0"
-      Top             =   120
-      Width           =   375
+      Top             =   4080
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -525,18 +597,19 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Index           =   1
-      Left            =   720
+      Left            =   960
       TabIndex        =   1
       Text            =   "0"
-      Top             =   120
-      Width           =   375
+      Top             =   4080
+      Width           =   540
    End
    Begin VB.TextBox TxtF 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -544,59 +617,203 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00400000&
-      Height          =   285
+      Height          =   360
       Index           =   0
-      Left            =   120
+      Left            =   360
       TabIndex        =   0
       Text            =   "0"
-      Top             =   120
-      Width           =   375
+      Top             =   4080
+      Width           =   540
    End
-   Begin VB.Label lblBias 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Bias:"
-      BeginProperty Font 
+   Begin PhotoDemon.jcbutton cmdOpen 
+      Height          =   615
+      Left            =   3840
+      TabIndex        =   34
+      Top             =   5730
+      Width           =   900
+      _ExtentX        =   1588
+      _ExtentY        =   1085
+      ButtonStyle     =   13
+      ShowFocusRect   =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   8.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   1680
-      TabIndex        =   29
-      Top             =   2085
-      Width           =   360
+      BackColor       =   15199212
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormCustomFilter.frx":0000
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipType     =   1
+      TooltipTitle    =   "Open"
    End
-   Begin VB.Label lblScale 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Scale:"
-      BeginProperty Font 
+   Begin PhotoDemon.jcbutton cmdSave 
+      Height          =   615
+      Left            =   4920
+      TabIndex        =   35
+      Top             =   5730
+      Width           =   900
+      _ExtentX        =   1588
+      _ExtentY        =   1085
+      ButtonStyle     =   13
+      ShowFocusRect   =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   8.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   120
-      TabIndex        =   25
-      Top             =   2085
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormCustomFilter.frx":1052
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipType     =   1
+      TooltipTitle    =   "Save"
+   End
+   Begin VB.Label lblAdditional 
+      AutoSize        =   -1  'True
+      Caption         =   "additional settings:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   3720
+      TabIndex        =   38
+      Top             =   3600
+      Width           =   2010
+   End
+   Begin VB.Label lblOffset 
+      AutoSize        =   -1  'True
+      Caption         =   "offset:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   3960
+      TabIndex        =   37
+      Top             =   4560
+      Width           =   675
+   End
+   Begin VB.Label lblDivisor 
+      AutoSize        =   -1  'True
+      Caption         =   "divisor:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   3960
+      TabIndex        =   33
+      Top             =   4095
+      Width           =   795
+   End
+   Begin VB.Label lblLoadSave 
+      AutoSize        =   -1  'True
+      Caption         =   "load / save filter:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   3720
+      TabIndex        =   36
+      Top             =   5250
+      Width           =   1800
+   End
+   Begin VB.Label lblConvolution 
+      AutoSize        =   -1  'True
+      Caption         =   "convolution matrix:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
+      TabIndex        =   32
+      Top             =   3600
+      Width           =   2070
+   End
+   Begin VB.Label lblBefore 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "before"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   240
+      TabIndex        =   31
+      Top             =   2880
       Width           =   480
    End
-   Begin VB.Menu MnuOpen 
-      Caption         =   "Open Filter"
-   End
-   Begin VB.Menu MnuSave 
-      Caption         =   "Save Filter"
+   Begin VB.Label lblAfter 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "after"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   195
+      Left            =   3360
+      TabIndex        =   30
+      Top             =   2880
+      Width           =   360
    End
 End
 Attribute VB_Name = "FormCustomFilter"
@@ -675,7 +892,7 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub MnuOpen_Click()
+Private Sub cmdOpen_Click()
     'Simple open dialog
     Dim CC As cCommonDialog
     
@@ -701,7 +918,7 @@ Private Sub MnuOpen_Click()
     End If
 End Sub
 
-Private Sub MnuSave_Click()
+Private Sub cmdSave_Click()
     'Simple save dialog
     Dim CC As cCommonDialog
     
