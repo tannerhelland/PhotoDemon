@@ -102,7 +102,17 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional
     'Use that handle to save the image to PNG format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, PNGColorDepth, , , , , True)
+        
+        'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
+        ' the color depth of the current image
+        Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
+        If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+            fi_OutputColorDepth = FICD_24BPP
+        Else
+            fi_OutputColorDepth = FICD_32BPP
+        End If
+        
+        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, fi_OutputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
