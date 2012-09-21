@@ -98,6 +98,8 @@ End Sub
 'Fit the active window tightly around the image
 Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
         
+    If NumOfWindows = 0 Then Exit Sub
+        
     'Make sure the window isn't minimized or maximized
     If FormMain.ActiveForm.WindowState = 0 Then
     
@@ -134,6 +136,8 @@ End Sub
 
 'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
 Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = False)
+    
+    If NumOfWindows = 0 Then Exit Sub
     
     'Disable AutoScroll, because that messes with our calculations
     FixScrolling = False
@@ -199,6 +203,8 @@ End Sub
 'Fit the current image onscreen at as large a size as possible (including possibility of zoomed-in)
 Public Sub FitOnScreen()
     
+    If NumOfWindows = 0 Then Exit Sub
+    
     'Gotta change the scalemode to twips to match the MDI form
     FormMain.ActiveForm.ScaleMode = 1
         
@@ -254,6 +260,15 @@ End Sub
 
 'When windows are created or destroyed, launch this routine to dis/en/able windows and toolbars, etc
 Public Sub UpdateMDIStatus()
+
+    'If two or more windows are open, enable the Next/Previous image menu items
+    If NumOfWindows >= 2 Then
+        FormMain.MnuNextImage.Enabled = True
+        FormMain.MnuPreviousImage.Enabled = True
+    Else
+        FormMain.MnuNextImage.Enabled = False
+        FormMain.MnuPreviousImage.Enabled = False
+    End If
 
     'If every window has been closed, disable all toolbar and menu options that are no longer applicable
     If NumOfWindows < 1 Then
