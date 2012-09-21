@@ -267,7 +267,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Resampling declarations
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 
 'Used to prevent the scroll bars from getting stuck in update loops
 Dim updateWidthBar As Boolean, updateHeightBar As Boolean
@@ -380,12 +380,10 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
             
             'Red and green values we'll use to interpolate the new pixel
             Dim r As Long, r1 As Single, r2 As Single, r3 As Single, r4 As Single
-            Dim g As Long, g1 As Single, g2 As Single, g3 As Single, g4 As Single
-            Dim b As Long, b1 As Single, b2 As Single, b3 As Single, b4 As Single
+            Dim i As Long
             
             'Interpolated red, green, and blue
-            Dim ir1 As Long, ig1 As Long, ib1 As Long
-            Dim ir2 As Long, ig2 As Long, ib2 As Long
+            Dim ir1 As Long, ir2 As Long
             
             'Shortcut variables for x positions
             Dim QuickX As Long, QuickXInt As Long, QuickXIntRight As Long
@@ -415,57 +413,37 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                     CalcY = dstY - IntrplY
                     invCalcY = 1 - CalcY
                     
-                    'Get the 4 pixels around the interpolated one
-                    r1 = srcImageData(QuickXInt + 2, IntrplY)
-                    g1 = srcImageData(QuickXInt + 1, IntrplY)
-                    b1 = srcImageData(QuickXInt, IntrplY)
+                    'Using a loop at this point allows us to handle 24bpp images (qvDepth = 3) and 32bpp images (qvDepth = 4)
+                    ' without modifying our interpolation.  Thus, alpha will be interpolated just like the color channels.
+                    For i = 0 To qvDepth - 1
                     
-                    r2 = srcImageData(QuickXIntRight + 2, IntrplY)
-                    g2 = srcImageData(QuickXIntRight + 1, IntrplY)
-                    b2 = srcImageData(QuickXIntRight, IntrplY)
-                    
-                    r3 = srcImageData(QuickXInt + 2, IntrplY + 1)
-                    g3 = srcImageData(QuickXInt + 1, IntrplY + 1)
-                    b3 = srcImageData(QuickXInt, IntrplY + 1)
-        
-                    r4 = srcImageData(QuickXIntRight + 2, IntrplY + 1)
-                    g4 = srcImageData(QuickXIntRight + 1, IntrplY + 1)
-                    b4 = srcImageData(QuickXIntRight, IntrplY + 1)
-        
-                    'Interpolate the R,G,B values in the Y direction
-                    ir1 = r1 * invCalcY + r3 * CalcY
-                    ig1 = g1 * invCalcY + g3 * CalcY
-                    ib1 = b1 * invCalcY + b3 * CalcY
-                    ir2 = r2 * invCalcY + r4 * CalcY
-                    ig2 = g2 * invCalcY + g4 * CalcY
-                    ib2 = b2 * invCalcY + b4 * CalcY
-                    
-                    'Intepolate the R,G,B values in the X direction
-                    r = ir1 * invCalcX + ir2 * CalcX
-                    g = ig1 * invCalcX + ig2 * CalcX
-                    b = ib1 * invCalcX + ib2 * CalcX
-                    
-                    'Make sure that the values are in the acceptable range
-                    If r > 255 Then
-                        r = 255
-                    ElseIf r < 0 Then
-                        r = 0
-                    End If
-                    If g > 255 Then
-                        g = 255
-                    ElseIf g < 0 Then
-                        g = 0
-                    End If
-                    If b > 255 Then
-                        b = 255
-                    ElseIf b < 0 Then
-                        b = 0
-                    End If
-                    
-                    'Set this pixel onto the destination image
-                    dstImageData(QuickX + 2, y) = r
-                    dstImageData(QuickX + 1, y) = g
-                    dstImageData(QuickX, y) = b
+                        'Get the 4 pixels around the interpolated one
+                        r1 = srcImageData(QuickXInt + i, IntrplY)
+                        
+                        r2 = srcImageData(QuickXIntRight + i, IntrplY)
+                        
+                        r3 = srcImageData(QuickXInt + i, IntrplY + 1)
+            
+                        r4 = srcImageData(QuickXIntRight + i, IntrplY + 1)
+            
+                        'Interpolate the value in the Y direction
+                        ir1 = r1 * invCalcY + r3 * CalcY
+                        ir2 = r2 * invCalcY + r4 * CalcY
+                        
+                        'Intepolate the value in the X direction
+                        r = ir1 * invCalcX + ir2 * CalcX
+                        
+                        'Make sure that the value is in acceptable byte range
+                        If r > 255 Then
+                            r = 255
+                        ElseIf r < 0 Then
+                            r = 0
+                        End If
+                        
+                        'Set this pixel onto the destination image
+                        dstImageData(QuickX + i, y) = r
+                        
+                    Next i
                 
                 Next y
             
@@ -519,12 +497,12 @@ End Sub
 Private Sub CmdResize_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
-    If Not EntryValid(TxtWidth, 1, 32767, True, True) Then
-        AutoSelectText TxtWidth
+    If Not EntryValid(txtWidth, 1, 32767, True, True) Then
+        AutoSelectText txtWidth
         Exit Sub
     End If
-    If Not EntryValid(TxtHeight, 1, 32767, True, True) Then
-        AutoSelectText TxtHeight
+    If Not EntryValid(txtHeight, 1, 32767, True, True) Then
+        AutoSelectText txtHeight
         Exit Sub
     End If
     
@@ -533,19 +511,19 @@ Private Sub CmdResize_Click()
     'Resample based on the combo box entry...
     Select Case cboResample.ListIndex
         Case 0
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_NORMAL
+            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_NORMAL
         Case 1
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_HALFTONE
+            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_HALFTONE
         Case 2
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BILINEAR
+            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_BILINEAR
         Case 3
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BSPLINE
+            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_BSPLINE
         Case 4
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BICUBIC_MITCHELL
+            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_BICUBIC_MITCHELL
         Case 5
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BICUBIC_CATMULL
+            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_BICUBIC_CATMULL
         Case 6
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_LANCZOS
+            Process ImageSize, val(txtWidth), val(txtHeight), RESIZE_LANCZOS
     End Select
     
     Unload Me
@@ -560,14 +538,14 @@ End Sub
 Private Sub Form_Load()
     
     'Add one to the displayed width and height, since we store them -1 for loops
-    TxtWidth.Text = pdImages(CurrentImage).Width
-    TxtHeight.Text = pdImages(CurrentImage).Height
+    txtWidth.Text = pdImages(CurrentImage).Width
+    txtHeight.Text = pdImages(CurrentImage).Height
     
     'Make the scroll bars match the text boxes
     updateWidthBar = False
     updateHeightBar = False
-    VSWidth.Value = Abs(32767 - CInt(TxtWidth))
-    VSHeight.Value = Abs(32767 - CInt(TxtHeight))
+    VSWidth.Value = Abs(32767 - CInt(txtWidth))
+    VSHeight.Value = Abs(32767 - CInt(txtHeight))
     updateWidthBar = True
     updateHeightBar = True
     
@@ -599,7 +577,7 @@ End Sub
 'If "Preserve Size Ratio" is selected, this set of routines handles the preservation
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText TxtHeight
+    AutoSelectText txtHeight
 End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
@@ -611,7 +589,7 @@ Private Sub TxtHeight_LostFocus()
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText TxtWidth
+    AutoSelectText txtWidth
 End Sub
 
 Private Sub TxtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
@@ -624,15 +602,15 @@ End Sub
 
 Private Sub UpdateHeightBox()
     updateHeightBar = False
-    TxtHeight = Int((CDbl(val(TxtWidth)) * HRatio) + 0.5)
-    VSHeight.Value = Abs(32767 - val(TxtHeight))
+    txtHeight = Int((CDbl(val(txtWidth)) * HRatio) + 0.5)
+    VSHeight.Value = Abs(32767 - val(txtHeight))
     updateHeightBar = True
 End Sub
 
 Private Sub UpdateWidthBox()
     updateWidthBar = False
-    TxtWidth = Int((CDbl(val(TxtHeight)) * WRatio) + 0.5)
-    VSWidth.Value = Abs(32767 - val(TxtWidth))
+    txtWidth = Int((CDbl(val(txtHeight)) * WRatio) + 0.5)
+    VSWidth.Value = Abs(32767 - val(txtWidth))
     updateWidthBar = True
 End Sub
 '*************************************************************************************
@@ -686,22 +664,22 @@ End Sub
 ' relative to the associated text box
 Private Sub VSHeight_Change()
     If updateHeightBar = True Then
-        TxtHeight = Abs(32767 - CStr(VSHeight.Value))
+        txtHeight = Abs(32767 - CStr(VSHeight.Value))
         ChangeToHeight
     End If
 End Sub
 
 Private Sub VSWidth_Change()
     If updateWidthBar = True Then
-        TxtWidth = Abs(32767 - CStr(VSWidth.Value))
+        txtWidth = Abs(32767 - CStr(VSWidth.Value))
         ChangeToWidth
     End If
 End Sub
 
 Private Sub ChangeToWidth()
-    If EntryValid(TxtWidth, 1, 32767, False, True) Then
+    If EntryValid(txtWidth, 1, 32767, False, True) Then
         updateWidthBar = False
-        VSWidth.Value = Abs(32767 - CInt(TxtWidth))
+        VSWidth.Value = Abs(32767 - CInt(txtWidth))
         updateWidthBar = True
         If ChkRatio.Value = vbChecked Then
             UpdateHeightBox
@@ -710,9 +688,9 @@ Private Sub ChangeToWidth()
 End Sub
 
 Private Sub ChangeToHeight()
-    If EntryValid(TxtHeight, 1, 32767, False, True) Then
+    If EntryValid(txtHeight, 1, 32767, False, True) Then
         updateHeightBar = False
-        VSHeight.Value = Abs(32767 - CInt(TxtHeight))
+        VSHeight.Value = Abs(32767 - CInt(txtHeight))
         updateHeightBar = True
         If ChkRatio.Value = vbChecked Then
             UpdateWidthBox

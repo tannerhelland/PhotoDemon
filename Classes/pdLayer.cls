@@ -569,13 +569,13 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
 End Sub
 
 'Load a layer's DIB information from file.
-Public Sub createFromFile(ByRef srcFilename As String)
+Public Sub createFromFile(ByRef SrcFilename As String)
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open srcFilename For Binary As #fileNum
+    Open SrcFilename For Binary As #fileNum
     
         'Check to make sure this is actually a layer file
         Dim LayerIDCheck As String * 4
@@ -631,16 +631,16 @@ Public Sub createFromFile(ByRef srcFilename As String)
 End Sub
 
 'Write this layer's DIB information to file.
-Public Sub writeToFile(ByRef dstFilename As String)
+Public Sub writeToFile(ByRef DstFilename As String)
 
     'Delete any existing file (overwrite)
-    If FileExist(dstFilename) = True Then Kill dstFilename
+    If FileExist(DstFilename) = True Then Kill DstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open dstFilename For Binary As #fileNum
+    Open DstFilename For Binary As #fileNum
     
         'Identifiers
         Put #fileNum, 1, LAYER_IDENTIFIER
@@ -676,7 +676,7 @@ Public Sub writeToFile(ByRef dstFilename As String)
 End Sub
 
 'Write this layer's DIB information to a valid BMP file.
-Public Sub writeToBitmapFile(ByRef dstFilename As String)
+Public Sub writeToBitmapFile(ByRef DstFilename As String)
 
     'First, make sure this layer actually contains image data
     If Not Me.hasImage() Then Exit Sub
@@ -711,13 +711,13 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
     
     'With all our information in place, check to see if that file already exists.  Delete it if necessary.
-    If FileExist(dstFilename) = True Then Kill dstFilename
+    If FileExist(DstFilename) = True Then Kill DstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump the two headers and image data into it
-    Open dstFilename For Binary As #fileNum
+    Open DstFilename For Binary As #fileNum
     
         'Headers
         Put #fileNum, 1, bmpFileHeader
