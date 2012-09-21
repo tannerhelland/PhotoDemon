@@ -572,6 +572,54 @@ Begin VB.MDIForm FormMain
          Caption         =   "Program Preferences..."
       End
    End
+   Begin VB.Menu MnuView 
+      Caption         =   "&View"
+      Begin VB.Menu MnuFitOnScreen 
+         Caption         =   "&Fit Image on Screen"
+      End
+      Begin VB.Menu MnuFitWindowToImage 
+         Caption         =   "Fit Viewport to &Image"
+      End
+      Begin VB.Menu MnuViewSepBar0 
+         Caption         =   "-"
+      End
+      Begin VB.Menu MnuZoomIn 
+         Caption         =   "Zoom &In"
+      End
+      Begin VB.Menu MnuZoomOut 
+         Caption         =   "Zoom &Out"
+      End
+      Begin VB.Menu MnuViewSepBar1 
+         Caption         =   "-"
+      End
+      Begin VB.Menu MnuZoom161 
+         Caption         =   "16:1 (1600%)"
+      End
+      Begin VB.Menu MnuZoom81 
+         Caption         =   "8:1 (800%)"
+      End
+      Begin VB.Menu MnuZoom41 
+         Caption         =   "4:1 (400%)"
+      End
+      Begin VB.Menu MnuZoom21 
+         Caption         =   "2:1 (200%)"
+      End
+      Begin VB.Menu MnuActualSize 
+         Caption         =   "1:1 (Actual Size, 100%)"
+      End
+      Begin VB.Menu MnuZoom12 
+         Caption         =   "1:2 (50%)"
+      End
+      Begin VB.Menu MnuZoom14 
+         Caption         =   "1:4 (25%)"
+      End
+      Begin VB.Menu MnuZoom18 
+         Caption         =   "1:8 (12.5%)"
+      End
+      Begin VB.Menu MnuZoom116 
+         Caption         =   "1:16 (6.25%)"
+      End
+   End
    Begin VB.Menu MnuImage 
       Caption         =   "&Image"
       Begin VB.Menu MnuDuplicate 
@@ -588,29 +636,29 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuImageSepBar1 
          Caption         =   "-"
       End
-      Begin VB.Menu MnuFlip 
-         Caption         =   "Flip (Vertical)"
-      End
       Begin VB.Menu MnuMirror 
          Caption         =   "Mirror (Horizontal)"
       End
-      Begin VB.Menu MnuRotate 
-         Caption         =   "Rotate"
-         Begin VB.Menu MnuRotateClockwise 
-            Caption         =   "90° Clockwise"
-         End
-         Begin VB.Menu MnuRotate270Clockwise 
-            Caption         =   "90° Counter-clockwise"
-         End
-         Begin VB.Menu MnuRotate180 
-            Caption         =   "180°"
-         End
-         Begin VB.Menu MnuRotateArbitrary 
-            Caption         =   "Arbitrary..."
-            Visible         =   0   'False
-         End
+      Begin VB.Menu MnuFlip 
+         Caption         =   "Flip (Vertical)"
       End
       Begin VB.Menu MnuImageSepBar2 
+         Caption         =   "-"
+      End
+      Begin VB.Menu MnuRotateClockwise 
+         Caption         =   "Rotate 90° Clockwise"
+      End
+      Begin VB.Menu MnuRotate270Clockwise 
+         Caption         =   "Rotate 90° Counter-clockwise"
+      End
+      Begin VB.Menu MnuRotate180 
+         Caption         =   "Rotate 180°"
+      End
+      Begin VB.Menu MnuRotateArbitrary 
+         Caption         =   "Arbitrary..."
+         Visible         =   0   'False
+      End
+      Begin VB.Menu MnuImageSepBar3 
          Caption         =   "-"
       End
       Begin VB.Menu MnuIsometric 
@@ -988,13 +1036,13 @@ Begin VB.MDIForm FormMain
    Begin VB.Menu MnuWindow 
       Caption         =   "&Window"
       WindowList      =   -1  'True
-      Begin VB.Menu MnuFitOnScreen 
-         Caption         =   "&Fit Image On Screen"
+      Begin VB.Menu MnuNextImage 
+         Caption         =   "Next Image"
       End
-      Begin VB.Menu MnuFitWindowToImage 
-         Caption         =   "Fit Window to &Image"
+      Begin VB.Menu MnuPreviousImage 
+         Caption         =   "Previous Image"
       End
-      Begin VB.Menu MnuWindowSepBar1 
+      Begin VB.Menu MnuWindowSepBar0 
          Caption         =   "-"
       End
       Begin VB.Menu MnuArrangeIcons 
@@ -1009,7 +1057,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuTileVertically 
          Caption         =   "Tile &Vertically"
       End
-      Begin VB.Menu MnuWindowSepBar3 
+      Begin VB.Menu MnuWindowSepBar1 
          Caption         =   "-"
       End
       Begin VB.Menu MnuMinimizeAllWindows 
@@ -1171,8 +1219,8 @@ Private Sub MDIForm_Load()
     
     Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
     
-    'Draw a subtle gradient on the left-hand pane
-    DrawGradient Me.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
+    'Render the main form with any extra visual styles we've decided to apply
+    RedrawMainForm
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -1286,6 +1334,10 @@ Private Sub MnuAbout_Click()
     'With the painting done, we can now display the form.
     FormAbout.Show 1, FormMain
     
+End Sub
+
+Private Sub MnuActualSize_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = zoomIndex100
 End Sub
 
 'Private Sub MnuAnimate_Click()
@@ -1617,6 +1669,20 @@ Private Sub MnuNegative_Click()
     Process Negative
 End Sub
 
+Private Sub MnuNextImage_Click()
+    
+    'If one (or zero) images are loaded, ignore this option
+    If NumOfWindows <= 1 Then Exit Sub
+    
+    'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
+    Dim MDIClient As Long
+    MDIClient = GetWindow(FormMain.HWnd, 5)
+        
+    'Use the API to instruct the MDI window to move one window forward or back
+    SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
+    
+End Sub
+
 Private Sub MnuNoise_Click()
     Process Noise, , , , , , , , , , True
 End Sub
@@ -1676,6 +1742,20 @@ End Sub
 
 Private Sub MnuPreferences_Click()
     If FormPreferences.Visible = False Then FormPreferences.Show 1, FormMain
+End Sub
+
+Private Sub MnuPreviousImage_Click()
+    
+    'If one (or zero) images are loaded, ignore this command
+    If NumOfWindows <= 1 Then Exit Sub
+    
+    'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
+    Dim MDIClient As Long
+    MDIClient = GetWindow(FormMain.HWnd, 5)
+        
+    'Use the API to instruct the MDI window to move one window forward or back
+    SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
+    
 End Sub
 
 Private Sub MnuPrint_Click()
@@ -1948,6 +2028,9 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Empty clipboard
     If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then Process cEmpty
     
+    'Fit on screen
+    If ctlAccelerator.Key(nIndex) = "FitOnScreen" Then FitOnScreen
+    
     'Zoom in
     If ctlAccelerator.Key(nIndex) = "Zoom_In" Then
         If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
@@ -1956,6 +2039,44 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Zoom out
     If ctlAccelerator.Key(nIndex) = "Zoom_Out" Then
         If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+    End If
+    
+    'Actual size
+    If ctlAccelerator.Key(nIndex) = "Actual_Size" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = zoomIndex100
+    End If
+    
+    'Various zoom values
+    If ctlAccelerator.Key(nIndex) = "Zoom_161" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 2
+    End If
+    
+    If ctlAccelerator.Key(nIndex) = "Zoom_81" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 4
+    End If
+    
+    If ctlAccelerator.Key(nIndex) = "Zoom_41" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 8
+    End If
+    
+    If ctlAccelerator.Key(nIndex) = "Zoom_21" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 10
+    End If
+    
+    If ctlAccelerator.Key(nIndex) = "Zoom_12" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 14
+    End If
+    
+    If ctlAccelerator.Key(nIndex) = "Zoom_14" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 16
+    End If
+    
+    If ctlAccelerator.Key(nIndex) = "Zoom_18" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 19
+    End If
+    
+    If ctlAccelerator.Key(nIndex) = "Zoom_116" Then
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
     End If
     
     'Escape - right now it's only used to cancel batch conversions, but it could be applied elsewhere
@@ -2007,9 +2128,51 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
 End Sub
 
+Private Sub MnuZoom116_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
+End Sub
+
+Private Sub MnuZoom12_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 14
+End Sub
+
+Private Sub MnuZoom14_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 16
+End Sub
+
+Private Sub MnuZoom161_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 2
+End Sub
+
+Private Sub MnuZoom18_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 19
+End Sub
+
+Private Sub MnuZoom21_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 10
+End Sub
+
+Private Sub MnuZoom41_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 8
+End Sub
+
+Private Sub MnuZoom81_Click()
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 4
+End Sub
+
+Private Sub MnuZoomIn_Click()
+    If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+End Sub
+
+Private Sub MnuZoomOut_Click()
+    If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+End Sub
+
 'When the form is resized, the progress bar at bottom needs to be manually redrawn.  Unfortunately, VB doesn't trigger
 ' the Resize() event properly for MDI parent forms, so we use the picProgBar resize event instead.
 Private Sub picProgBar_Resize()
-    picProgBar.Refresh
-    cProgBar.Draw
+    
+    'When this main form is resized, reapply any custom visual styles
+    RedrawMainForm
+    
 End Sub

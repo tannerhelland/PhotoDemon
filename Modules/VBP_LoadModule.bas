@@ -721,6 +721,20 @@ Public Sub LoadMenuShortcuts()
         .AddAccelerator vbKeyZ, vbCtrlMask Or vbShiftMask, "Repeat_Last"
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Empty_Clipboard"
         
+        'View menu
+        .AddAccelerator vbKey0, 0, "FitOnScreen"
+        .AddAccelerator vbKeyAdd, 0, "Zoom_In"
+        .AddAccelerator vbKeySubtract, 0, "Zoom_Out"
+        .AddAccelerator vbKey5, 0, "Zoom_161"
+        .AddAccelerator vbKey4, 0, "Zoom_81"
+        .AddAccelerator vbKey3, 0, "Zoom_41"
+        .AddAccelerator vbKey2, 0, "Zoom_21"
+        .AddAccelerator vbKey1, 0, "Actual_Size"
+        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12"
+        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14"
+        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18"
+        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116"
+        
         'Image menu
         .AddAccelerator vbKeyL, 0, "Rotate_Left"
         .AddAccelerator vbKeyR, 0, "Rotate_Right"
@@ -728,14 +742,12 @@ Public Sub LoadMenuShortcuts()
         'Color Menu
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
         
+        'Window menu
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image"
+        
         'No equivalent menu
-        .AddAccelerator vbKeyAdd, 0, "Zoom_In"
-        .AddAccelerator vbKeySubtract, 0, "Zoom_Out"
         .AddAccelerator vbKeyEscape, 0, "Escape"
-            
-            'Next/previous image
-            .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
-            .AddAccelerator vbKeyPageDown, 0, "Next_Image"
         
         .Enabled = True
     End With
@@ -745,6 +757,8 @@ Public Sub LoadMenuShortcuts()
     FormMain.MnuImportFromInternet.Caption = FormMain.MnuImportFromInternet.Caption & vbTab & "Ctrl+Shift+I"
     FormMain.MnuScreenCapture.Caption = FormMain.MnuScreenCapture.Caption & vbTab & "Ctrl+Alt+I"
     FormMain.MnuImportFrx.Caption = FormMain.MnuImportFrx.Caption & vbTab & "Ctrl+Alt+Shift+I"
+    
+    'NOTE: Drawing of MRU shortcuts is handled in the MRU module
 
     'Edit menu
     FormMain.MnuPreferences.Caption = FormMain.MnuPreferences.Caption & vbTab & "Alt+Enter"
@@ -752,6 +766,20 @@ Public Sub LoadMenuShortcuts()
     FormMain.MnuRepeatLast.Caption = FormMain.MnuRepeatLast.Caption & vbTab & "Ctrl+Shift+Z"
     FormMain.MnuEmptyClipboard.Caption = FormMain.MnuEmptyClipboard.Caption & vbTab & "Ctrl+Shift+X"
     
+    'View menu
+    FormMain.MnuFitOnScreen.Caption = FormMain.MnuFitOnScreen.Caption & vbTab & "0"
+    FormMain.MnuZoomIn.Caption = FormMain.MnuZoomIn.Caption & vbTab & " +"
+    FormMain.MnuZoomOut.Caption = FormMain.MnuZoomOut.Caption & vbTab & "-"
+    FormMain.MnuActualSize.Caption = FormMain.MnuActualSize.Caption & vbTab & "1"
+    FormMain.MnuZoom161.Caption = FormMain.MnuZoom161.Caption & vbTab & "5"
+    FormMain.MnuZoom81.Caption = FormMain.MnuZoom81.Caption & vbTab & "4"
+    FormMain.MnuZoom41.Caption = FormMain.MnuZoom41.Caption & vbTab & "3"
+    FormMain.MnuZoom21.Caption = FormMain.MnuZoom21.Caption & vbTab & "2"
+    FormMain.MnuZoom12.Caption = FormMain.MnuZoom12.Caption & vbTab & "Shift+2"
+    FormMain.MnuZoom14.Caption = FormMain.MnuZoom14.Caption & vbTab & "Shift+3"
+    FormMain.MnuZoom18.Caption = FormMain.MnuZoom18.Caption & vbTab & "Shift+4"
+    FormMain.MnuZoom116.Caption = FormMain.MnuZoom116.Caption & vbTab & "Shift+5"
+        
     'Image menu
     FormMain.MnuRotateClockwise.Caption = FormMain.MnuRotateClockwise.Caption & vbTab & "R"
     FormMain.MnuRotate270Clockwise.Caption = FormMain.MnuRotate270Clockwise.Caption & vbTab & "L"
@@ -759,7 +787,10 @@ Public Sub LoadMenuShortcuts()
     'Color menu
     FormMain.MnuBrightness.Caption = FormMain.MnuBrightness.Caption & vbTab & "Ctrl+Shift+C"
     
-    'NOTE: Drawing of MRU shortcuts is handled in the MRU module
+    'Window menu
+    FormMain.MnuNextImage.Caption = FormMain.MnuNextImage.Caption & vbTab & "Page Down"
+    FormMain.MnuPreviousImage.Caption = FormMain.MnuPreviousImage.Caption & vbTab & "Page Up"
+    
     
 End Sub
 

@@ -239,6 +239,11 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("TWINS", "CUSTOM")       '133
         .AddImageFromStream LoadResData("VIBRATE", "CUSTOM")     '134
         .AddImageFromStream LoadResData("TEMPERATURE", "CUSTOM") '135
+        .AddImageFromStream LoadResData("ZOOMIN", "CUSTOM")      '136
+        .AddImageFromStream LoadResData("ZOOMOUT", "CUSTOM")     '137
+        .AddImageFromStream LoadResData("ZOOMACTUAL", "CUSTOM")  '138
+        .AddImageFromStream LoadResData("NEXTIMAGE", "CUSTOM")   '139
+        .AddImageFromStream LoadResData("PREVIMAGE", "CUSTOM")   '140
         
         
         'File Menu
@@ -275,154 +280,160 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 17, 6, 1      'Empty Clipboard
         .PutImageToVBMenu 18, 8, 1      'Program Preferences
         
+        'View Menu
+        .PutImageToVBMenu 29, 0, 2     'Fit on Screen
+        .PutImageToVBMenu 28, 1, 2     'Fit Viewport to Image
+        .PutImageToVBMenu 136, 3, 2     'Zoom In
+        .PutImageToVBMenu 137, 4, 2     'Zoom Out
+        .PutImageToVBMenu 138, 10, 2     'Zoom 100%
+        
         'Image Menu
-        .PutImageToVBMenu 42, 0, 2
-        .PutImageToVBMenu 19, 2, 2      'Resize
-        .PutImageToVBMenu 23, 4, 2      'Flip
-        .PutImageToVBMenu 24, 5, 2      'Mirror
-        .PutImageToVBMenu 22, 6, 2      'Top Rotate menu
-        .PutImageToVBMenu 20, 0, 2, 6     'Rotate Clockwise (rotate submenu)
-        .PutImageToVBMenu 21, 1, 2, 6     'Rotate Counter-clockwise (rotate submenu)
-        .PutImageToVBMenu 22, 2, 2, 6     'Rotate 180 (rotate submenu)
-        .PutImageToVBMenu 125, 8, 2     'Isometric
-        .PutImageToVBMenu 132, 9, 2     'Tile
+        .PutImageToVBMenu 42, 0, 3
+        .PutImageToVBMenu 19, 2, 3      'Resize
+        .PutImageToVBMenu 24, 4, 3      'Mirror
+        .PutImageToVBMenu 23, 5, 3      'Flip
+        .PutImageToVBMenu 20, 7, 3      'Rotate Clockwise (rotate submenu)
+        .PutImageToVBMenu 21, 8, 3      'Rotate Counter-clockwise (rotate submenu)
+        .PutImageToVBMenu 22, 9, 3      'Rotate 180 (rotate submenu)
+        .PutImageToVBMenu 125, 11, 3     'Isometric
+        .PutImageToVBMenu 132, 12, 3     'Tile
         
         'Color Menu
-        .PutImageToVBMenu 46, 0, 3      'Brightness/Contrast
-        .PutImageToVBMenu 47, 1, 3      'Gamma Correction
-        .PutImageToVBMenu 48, 2, 3      'Levels
-        .PutImageToVBMenu 135, 3, 3     'Temperature
-        .PutImageToVBMenu 49, 4, 3      'White Balance
-        .PutImageToVBMenu 50, 6, 3      'Histogram
+        .PutImageToVBMenu 46, 0, 4      'Brightness/Contrast
+        .PutImageToVBMenu 47, 1, 4      'Gamma Correction
+        .PutImageToVBMenu 48, 2, 4      'Levels
+        .PutImageToVBMenu 135, 3, 4     'Temperature
+        .PutImageToVBMenu 49, 4, 4      'White Balance
+        .PutImageToVBMenu 50, 6, 4      'Histogram
             '--> Histogram sub-menu
-            .PutImageToVBMenu 50, 0, 3, 6   'Display Histogram
-            .PutImageToVBMenu 51, 2, 3, 6   'Equalize
-            .PutImageToVBMenu 52, 3, 3, 6   'Stretch
-        .PutImageToVBMenu 53, 8, 3      'Color Shift
+            .PutImageToVBMenu 50, 0, 4, 6   'Display Histogram
+            .PutImageToVBMenu 51, 2, 4, 6   'Equalize
+            .PutImageToVBMenu 52, 3, 4, 6   'Stretch
+        .PutImageToVBMenu 53, 8, 4      'Color Shift
             '--> Color-Shift sub-menu
-            .PutImageToVBMenu 53, 0, 3, 8   'Shift Right
-            .PutImageToVBMenu 54, 1, 3, 8   'Shift Left
-        .PutImageToVBMenu 57, 9, 3      'Rechannel
+            .PutImageToVBMenu 53, 0, 4, 8   'Shift Right
+            .PutImageToVBMenu 54, 1, 4, 8   'Shift Left
+        .PutImageToVBMenu 57, 9, 4      'Rechannel
             '--> Rechannel sub-menu
-            .PutImageToVBMenu 55, 0, 3, 9   'Red
-            .PutImageToVBMenu 56, 1, 3, 9   'Green
-            .PutImageToVBMenu 57, 2, 3, 9   'Blue
-        .PutImageToVBMenu 58, 11, 3      'Black and White
-        .PutImageToVBMenu 59, 12, 3      'Colorize
-        .PutImageToVBMenu 60, 13, 3      'Enhance
+            .PutImageToVBMenu 55, 0, 4, 9   'Red
+            .PutImageToVBMenu 56, 1, 4, 9   'Green
+            .PutImageToVBMenu 57, 2, 4, 9   'Blue
+        .PutImageToVBMenu 58, 11, 4      'Black and White
+        .PutImageToVBMenu 59, 12, 4      'Colorize
+        .PutImageToVBMenu 60, 13, 4      'Enhance
             '--> Enhance sub-menu
-            .PutImageToVBMenu 61, 0, 3, 13   'Contrast
-            .PutImageToVBMenu 62, 1, 3, 13   'Highlights
-            .PutImageToVBMenu 63, 2, 3, 13   'Midtones
-            .PutImageToVBMenu 64, 3, 3, 13   'Shadows
-        .PutImageToVBMenu 102, 14, 3     'Fade
+            .PutImageToVBMenu 61, 0, 4, 13   'Contrast
+            .PutImageToVBMenu 62, 1, 4, 13   'Highlights
+            .PutImageToVBMenu 63, 2, 4, 13   'Midtones
+            .PutImageToVBMenu 64, 3, 4, 13   'Shadows
+        .PutImageToVBMenu 102, 14, 4     'Fade
             '--> Fade sub-menu
-            .PutImageToVBMenu 103, 0, 3, 14  'Low Fade
-            .PutImageToVBMenu 102, 1, 3, 14  'Medium Fade
-            .PutImageToVBMenu 104, 2, 3, 14  'High Fade
-            .PutImageToVBMenu 105, 3, 3, 14  'Custom Fade
-            .PutImageToVBMenu 106, 5, 3, 14  'Unfade
-        .PutImageToVBMenu 65, 15, 3      'Grayscale
-        .PutImageToVBMenu 66, 16, 3      'Invert
+            .PutImageToVBMenu 103, 0, 4, 14  'Low Fade
+            .PutImageToVBMenu 102, 1, 4, 14  'Medium Fade
+            .PutImageToVBMenu 104, 2, 4, 14  'High Fade
+            .PutImageToVBMenu 105, 3, 4, 14  'Custom Fade
+            .PutImageToVBMenu 106, 5, 4, 14  'Unfade
+        .PutImageToVBMenu 65, 15, 4      'Grayscale
+        .PutImageToVBMenu 66, 16, 4      'Invert
             '--> Invert sub-menu
-            .PutImageToVBMenu 67, 0, 3, 16   'Invert CMYK
-            .PutImageToVBMenu 68, 1, 3, 16   'Invert Hue
-            .PutImageToVBMenu 69, 2, 3, 16   'Invert RGB
-            .PutImageToVBMenu 101, 4, 3, 16  'Compound Invert
-        .PutImageToVBMenu 70, 17, 3      'Posterize
-        .PutImageToVBMenu 72, 19, 3      'Count Colors
-        .PutImageToVBMenu 71, 20, 3      'Reduce Colors
+            .PutImageToVBMenu 67, 0, 4, 16   'Invert CMYK
+            .PutImageToVBMenu 68, 1, 4, 16   'Invert Hue
+            .PutImageToVBMenu 69, 2, 4, 16   'Invert RGB
+            .PutImageToVBMenu 101, 4, 4, 16  'Compound Invert
+        .PutImageToVBMenu 70, 17, 4      'Posterize
+        .PutImageToVBMenu 72, 19, 4      'Count Colors
+        .PutImageToVBMenu 71, 20, 4      'Reduce Colors
         
         'Filters Menu
-        .PutImageToVBMenu 73, 0, 4       'Fade Last
-        .PutImageToVBMenu 74, 2, 4       'Artistic
+        .PutImageToVBMenu 73, 0, 5       'Fade Last
+        .PutImageToVBMenu 74, 2, 5       'Artistic
             '--> Artistic sub-menu
-            .PutImageToVBMenu 83, 0, 4, 2   'Antique (Sepia)
-            .PutImageToVBMenu 84, 1, 4, 2   'Comic Book
-            .PutImageToVBMenu 85, 2, 4, 2   'Mosaic
-            .PutImageToVBMenu 86, 3, 4, 2   'Pencil
-            .PutImageToVBMenu 87, 4, 4, 2   'Relief
-        .PutImageToVBMenu 75, 3, 4       'Blur
+            .PutImageToVBMenu 83, 0, 5, 2   'Antique (Sepia)
+            .PutImageToVBMenu 84, 1, 5, 2   'Comic Book
+            .PutImageToVBMenu 85, 2, 5, 2   'Mosaic
+            .PutImageToVBMenu 86, 3, 5, 2   'Pencil
+            .PutImageToVBMenu 87, 4, 5, 2   'Relief
+        .PutImageToVBMenu 75, 3, 5       'Blur
             '--> Blur sub-menu
-            .PutImageToVBMenu 88, 0, 4, 3   'Antialias
-            .PutImageToVBMenu 89, 2, 4, 3   'Soften
-            .PutImageToVBMenu 90, 3, 4, 3   'Soften More
-            .PutImageToVBMenu 91, 4, 4, 3   'Blur
-            .PutImageToVBMenu 92, 5, 4, 3   'Blur More
-            .PutImageToVBMenu 93, 6, 4, 3   'Gaussian Blur
-            .PutImageToVBMenu 94, 7, 4, 3   'Gaussian Blur More
-            .PutImageToVBMenu 95, 9, 4, 3   'Grid Blur
-        .PutImageToVBMenu 76, 4, 4       'Diffuse
+            .PutImageToVBMenu 88, 0, 5, 3   'Antialias
+            .PutImageToVBMenu 89, 2, 5, 3   'Soften
+            .PutImageToVBMenu 90, 3, 5, 3   'Soften More
+            .PutImageToVBMenu 91, 4, 5, 3   'Blur
+            .PutImageToVBMenu 92, 5, 5, 3   'Blur More
+            .PutImageToVBMenu 93, 6, 5, 3   'Gaussian Blur
+            .PutImageToVBMenu 94, 7, 5, 3   'Gaussian Blur More
+            .PutImageToVBMenu 95, 9, 5, 3   'Grid Blur
+        .PutImageToVBMenu 76, 4, 5       'Diffuse
             '--> Diffuse sub-menu
-            .PutImageToVBMenu 76, 0, 4, 4   'Diffuse
-            .PutImageToVBMenu 96, 1, 4, 4   'Diffuse More
-            .PutImageToVBMenu 97, 3, 4, 4   'Diffuse (Custom)
-        .PutImageToVBMenu 77, 5, 4       'Edges
+            .PutImageToVBMenu 76, 0, 5, 4   'Diffuse
+            .PutImageToVBMenu 96, 1, 5, 4   'Diffuse More
+            .PutImageToVBMenu 97, 3, 5, 4   'Diffuse (Custom)
+        .PutImageToVBMenu 77, 5, 5       'Edges
             '--> Edges sub-menu
-            .PutImageToVBMenu 100, 0, 4, 5  'Emboss / Engrave
-            .PutImageToVBMenu 99, 1, 4, 5   'Enhance Edges
-            .PutImageToVBMenu 77, 2, 4, 5   'Find Edges
-        .PutImageToVBMenu 78, 6, 4       'Natural
+            .PutImageToVBMenu 100, 0, 5, 5  'Emboss / Engrave
+            .PutImageToVBMenu 99, 1, 5, 5   'Enhance Edges
+            .PutImageToVBMenu 77, 2, 5, 5   'Find Edges
+        .PutImageToVBMenu 78, 6, 5       'Natural
             '--> Natural sub-menu
-            .PutImageToVBMenu 107, 0, 4, 6  'Atmosphere
-            .PutImageToVBMenu 108, 1, 4, 6  'Burn
-            .PutImageToVBMenu 109, 2, 4, 6  'Fog
-            .PutImageToVBMenu 110, 3, 4, 6  'Freeze
-            .PutImageToVBMenu 111, 4, 4, 6  'Lava
-            .PutImageToVBMenu 112, 5, 4, 6  'Ocean
-            .PutImageToVBMenu 113, 6, 4, 6  'Rainbow
-            .PutImageToVBMenu 114, 7, 4, 6  'Steel
-            .PutImageToVBMenu 115, 8, 4, 6  'Water
-        .PutImageToVBMenu 79, 7, 4       'Noise
+            .PutImageToVBMenu 107, 0, 5, 6  'Atmosphere
+            .PutImageToVBMenu 108, 1, 5, 6  'Burn
+            .PutImageToVBMenu 109, 2, 5, 6  'Fog
+            .PutImageToVBMenu 110, 3, 5, 6  'Freeze
+            .PutImageToVBMenu 111, 4, 5, 6  'Lava
+            .PutImageToVBMenu 112, 5, 5, 6  'Ocean
+            .PutImageToVBMenu 113, 6, 5, 6  'Rainbow
+            .PutImageToVBMenu 114, 7, 5, 6  'Steel
+            .PutImageToVBMenu 115, 8, 5, 6  'Water
+        .PutImageToVBMenu 79, 7, 5       'Noise
             '--> Noise sub-menu
-            .PutImageToVBMenu 116, 0, 4, 7  'Add Noise
-            .PutImageToVBMenu 117, 2, 4, 7  'Despeckle
-            .PutImageToVBMenu 118, 3, 4, 7  'Remove Orphan
-        .PutImageToVBMenu 80, 8, 4       'Other
+            .PutImageToVBMenu 116, 0, 5, 7  'Add Noise
+            .PutImageToVBMenu 117, 2, 5, 7  'Despeckle
+            .PutImageToVBMenu 118, 3, 5, 7  'Remove Orphan
+        .PutImageToVBMenu 80, 8, 5       'Other
             '--> Other sub-menu
-            .PutImageToVBMenu 126, 0, 4, 8  'Alien
-            .PutImageToVBMenu 127, 1, 4, 8  'Blacklight
-            .PutImageToVBMenu 128, 2, 4, 8  'Dream
-            .PutImageToVBMenu 129, 3, 4, 8  'Radioactive
-            .PutImageToVBMenu 130, 4, 4, 8  'Solarize
-            .PutImageToVBMenu 131, 5, 4, 8  'Synthesize
-            .PutImageToVBMenu 133, 6, 4, 8  'Twins
-            .PutImageToVBMenu 134, 7, 4, 8  'Vibrate
-        .PutImageToVBMenu 81, 9, 4       'Rank
+            .PutImageToVBMenu 126, 0, 5, 8  'Alien
+            .PutImageToVBMenu 127, 1, 5, 8  'Blacklight
+            .PutImageToVBMenu 128, 2, 5, 8  'Dream
+            .PutImageToVBMenu 129, 3, 5, 8  'Radioactive
+            .PutImageToVBMenu 130, 4, 5, 8  'Solarize
+            .PutImageToVBMenu 131, 5, 5, 8  'Synthesize
+            .PutImageToVBMenu 133, 6, 5, 8  'Twins
+            .PutImageToVBMenu 134, 7, 5, 8  'Vibrate
+        .PutImageToVBMenu 81, 9, 5       'Rank
             '--> Rank sub-menu
-            .PutImageToVBMenu 119, 0, 4, 9  'Dilate
-            .PutImageToVBMenu 120, 1, 4, 9  'Erode
-            .PutImageToVBMenu 121, 2, 4, 9  'Extreme
-            .PutImageToVBMenu 122, 4, 4, 9  'Custom Rank
-        .PutImageToVBMenu 82, 10, 4      'Sharpen
+            .PutImageToVBMenu 119, 0, 5, 9  'Dilate
+            .PutImageToVBMenu 120, 1, 5, 9  'Erode
+            .PutImageToVBMenu 121, 2, 5, 9  'Extreme
+            .PutImageToVBMenu 122, 4, 5, 9  'Custom Rank
+        .PutImageToVBMenu 82, 10, 5      'Sharpen
             '--> Sharpen sub-menu
-            .PutImageToVBMenu 124, 0, 4, 10 'Unsharp
-            .PutImageToVBMenu 82, 2, 4, 10  'Sharpen
-            .PutImageToVBMenu 123, 3, 4, 10 'Sharpen More
-        .PutImageToVBMenu 98, 12, 4      'Custom Filter
+            .PutImageToVBMenu 124, 0, 5, 10 'Unsharp
+            .PutImageToVBMenu 82, 2, 5, 10  'Sharpen
+            .PutImageToVBMenu 123, 3, 5, 10 'Sharpen More
+        .PutImageToVBMenu 98, 12, 5      'Custom Filter
         
         'Macro Menu
-        .PutImageToVBMenu 36, 0, 5     'Open Macro
-        .PutImageToVBMenu 37, 2, 5     'Start Recording
-        .PutImageToVBMenu 38, 3, 5     'Stop Recording
+        .PutImageToVBMenu 36, 0, 6     'Open Macro
+        .PutImageToVBMenu 37, 2, 6     'Start Recording
+        .PutImageToVBMenu 38, 3, 6     'Stop Recording
         
         'Window Menu
-        .PutImageToVBMenu 29, 0, 6     'Fit on Screen
-        .PutImageToVBMenu 28, 1, 6     'Fit Window to Image
-        .PutImageToVBMenu 33, 3, 6     'Arrange Icons
-        .PutImageToVBMenu 32, 4, 6     'Cascade
-        .PutImageToVBMenu 31, 5, 6     'Tile Horizontally
-        .PutImageToVBMenu 30, 6, 6     'Tile Vertically
-        .PutImageToVBMenu 34, 8, 6     'Minimize All
-        .PutImageToVBMenu 35, 9, 6     'Restore All
+        .PutImageToVBMenu 139, 0, 7    'Next image
+        .PutImageToVBMenu 140, 1, 7    'Previous image
+        .PutImageToVBMenu 33, 3, 7     'Arrange Icons
+        .PutImageToVBMenu 32, 4, 7     'Cascade
+        .PutImageToVBMenu 31, 5, 7     'Tile Horizontally
+        .PutImageToVBMenu 30, 6, 7     'Tile Vertically
+        .PutImageToVBMenu 34, 8, 7     'Minimize All
+        .PutImageToVBMenu 35, 9, 7     'Restore All
         
         'Help Menu
-        .PutImageToVBMenu 40, 0, 7     'Donate
-        .PutImageToVBMenu 41, 2, 7     'Check for updates
-        .PutImageToVBMenu 25, 3, 7     'Visit the PhotoDemon website
-        .PutImageToVBMenu 26, 4, 7     'Submit Feedback
-        .PutImageToVBMenu 39, 5, 7     'Submit Bug
-        .PutImageToVBMenu 27, 7, 7     'About PD
+        .PutImageToVBMenu 40, 0, 8     'Donate
+        .PutImageToVBMenu 41, 2, 8     'Check for updates
+        .PutImageToVBMenu 25, 3, 8     'Visit the PhotoDemon website
+        .PutImageToVBMenu 26, 4, 8     'Submit Feedback
+        .PutImageToVBMenu 39, 5, 8     'Submit Bug
+        .PutImageToVBMenu 27, 7, 8     'About PD
     
     End With
     

@@ -80,14 +80,16 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 ResetMenuIcons
             End If
             
-        'ImageOps is all Image-related menu items; it enables/disables the Image, Color, and Print menus
+        'ImageOps is all Image-related menu items; it enables/disables the Image, Color, View, and Print menus
         Case tImageOps
             If FormMain.MnuImage.Enabled <> tState Then
                 FormMain.MnuImage.Enabled = tState
                 'Cheat and use the same command to disable the color menu...hey, at least it works
                 FormMain.MnuColor.Enabled = tState
-                'Cheat again and enable/disable the Print menu too
+                'Cheat again and enable/disable the Print menu
                 FormMain.MnuPrint.Enabled = tState
+                'Cheat again and enable/disable the View menu
+                FormMain.MnuView.Enabled = tState
             End If
         
         'Filter (top-level menu)
