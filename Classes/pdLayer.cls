@@ -344,7 +344,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 End Function
 
 'Give this layer a picture from a standard VB picture object
-Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
+Public Function createFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
 
     'Make sure the picture we're passed isn't empty
     If (Not srcPicture Is Nothing) Then
@@ -380,7 +380,8 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background.  We want the background to be white, so perform our own premultiplication.
                     ' (In the future, this could be a checkerboard pattern or a custom color instead of white.)
-                    If layerColorDepth = 32 Then compositeBackgroundColor
+                    'NOTE! This is now handled at draw-time, and the instruction to re-render has been made optional.
+                    If forceWhiteBackground And (layerColorDepth = 32) Then compositeBackgroundColor
                     
                     'Success!
                     createFromPicture = True

@@ -25,7 +25,7 @@ Option Explicit
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
+Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
 
     On Error GoTo FreeImageV3_AdvancedError
     
@@ -44,11 +44,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'While we could manually test our extension against the FreeImage database, it is capable of doing so itself.
     'First, check the file header to see if it matches a known head type
     Dim fileFIF As FREE_IMAGE_FORMAT
-    fileFIF = FreeImage_GetFileType(srcFilename)
+    fileFIF = FreeImage_GetFileType(SrcFilename)
     
     'For certain filetypes (CUT, MNG, PCD, TARGA and WBMP, according to the FreeImage documentation), the lack of a reliable
     ' header may prevent GetFileType from working.  As a result, double-check the file using its file extension.
-    If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilename(srcFilename)
+    If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilename(SrcFilename)
     
     'By this point, if the file still doesn't show up in FreeImage's database, abandon the import attempt.
     If Not FreeImage_FIFSupportsReading(fileFIF) Then
@@ -84,7 +84,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'With all flags set and filetype correctly determined, import the image
     Dim fi_hDIB As Long
-    fi_hDIB = FreeImage_Load(fileFIF, srcFilename, fi_ImportFlags)
+    fi_hDIB = FreeImage_Load(fileFIF, SrcFilename, fi_ImportFlags)
     
     'If an empty handle is returned, abandon the import attempt.
     If fi_hDIB = 0 Then
@@ -213,10 +213,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     FreeLibrary hFreeImgLib
     
     'If the loaded image has an alpha-channel, recomposite the image against a white background (by default it will be black)
-    If dstLayer.getLayerColorDepth = 32 Then
-        Message "Performing final alpha channel recomposite..."
-        dstLayer.compositeBackgroundColor
-    End If
+    'NOTE: this is now handled prior to drawing.
+    'If dstLayer.getLayerColorDepth = 32 Then
+    '    Message "Performing final alpha channel recomposite..."
+    '    dstLayer.compositeBackgroundColor
+    'End If
     
     'Mark this load as successful
     LoadFreeImageV3_Advanced = True
