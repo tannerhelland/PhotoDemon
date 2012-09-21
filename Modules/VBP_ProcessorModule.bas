@@ -936,6 +936,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Black and White (Santos Enhanced)"
         Case BWFloydSteinberg
             GetNameOfProcess = "Black and White (Floyd-Steinberg)"
+        Case BWMaster
+            GetNameOfProcess = "Black and White conversion"
             
         'Grayscale conversion; numbers 300-399
         Case Desaturate
