@@ -133,7 +133,7 @@ Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -357,7 +357,7 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
             GetObject srcPicture.Handle, Len(tmpBitmap), tmpBitmap
             
             'Use that bitmap object to create a new, blank DIB of the same size
-            If createBlank(tmpBitmap.Width, tmpBitmap.Height) Then
+            If createBlank(tmpBitmap.Width, tmpBitmap.Height, tmpBitmap.BitsPerPixel) Then
             
                 'Create a new DC
                 Dim TmpDC As Long
@@ -376,7 +376,12 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture) As Boolean
                     'Now that we have the pixel data, erase all temporary objects
                     SelectObject TmpDC, oldBitmap
                     DeleteDC TmpDC
-                
+                    
+                    'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
+                    ' black background.  We want the background to be white, so perform our own premultiplication.
+                    ' (In the future, this could be a checkerboard pattern or a custom color instead of white.)
+                    If layerColorDepth = 32 Then compositeBackgroundColor
+                    
                     'Success!
                     createFromPicture = True
                     Exit Function
@@ -705,30 +710,6 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     ReDim iData(0 To slWidth - 1, 0 To layerHeight - 1) As Byte
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
     
-    'Unfortunately, due to reasons I don't currently understand, the alpha channel of imported images is completely lost
-    ' (perhaps by the "FreeImage_composite" command?  I don't know.)  The API handles this by setting the alpha channel to
-    ' all null values, which effectively makes the entire image transparent!  So before saving, we need to go through and
-    ' set all alpha channel values to 255.
-    If layerColorDepth = 32 Then
-        
-        Dim x As Long, y As Long
-        Dim QuickVal As Long
-        
-        For x = 0 To layerWidth - 1
-            QuickVal = x * 4 + 3
-        For y = 0 To layerHeight - 1
-            'If iData(QuickVal, y) <> 0 Then MsgBox x & "," & y & ":" & iData(QuickVal, y)
-            iData(QuickVal, y) = 255
-        Next y
-        Next x
-            
-        'Finally, we play a trick in the top-left pixel.  Some software libraries (including FreeImage) will ignore the
-        ' alpha channel if it is fully opaque or fully transparent.  By barely adjusting the top-left pixel, we can remind
-        ' it that this image contains an intentional alpha channel.
-        iData(3, 0) = 254
-        
-    End If
-    
     'With all our information in place, check to see if that file already exists.  Delete it if necessary.
     If FileExist(dstFilename) = True Then Kill dstFilename
         
@@ -761,3 +742,53 @@ Private Sub prepInternalSafeArray(ByRef tmpSA As SAFEARRAY2D)
         .pvData = layerDIBits
     End With
 End Sub
+
+'Pre-composite an image with an alpha-channel against a background color.  Until PhotoDemon is capable of rendering transparent
+' images itself, this is necessary to give transparent images a white background.
+Public Sub compositeBackgroundColor(Optional ByVal newR As Long = 255, Optional ByVal newG As Long = 255, Optional ByVal newB As Long = 255)
+
+    'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
+    If layerColorDepth <> 32 Then Exit Sub
+
+    'Start, as always, with a SafeArray
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepInternalSafeArray tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    Dim x As Long, y As Long, QuickX As Long
+    Dim checkAlpha As Byte, tmpAlpha As Single
+    
+    'Loop through the image, blending colors as we go
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
+        
+        'Access the alpha data for this pixel
+        checkAlpha = iData(QuickX + 3, y)
+        
+        'Ignore fully opaque pixels.  (This makes the routine much faster.)
+        If checkAlpha <> 255 Then
+            
+            'Convert the alpha value to a floating-point variable
+            tmpAlpha = CSng(checkAlpha) / 255
+            
+            'Use that alpha value to blend the current colors with the newly requested color
+            iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), newR, tmpAlpha)
+            iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), newG, tmpAlpha)
+            iData(QuickX, y) = Blend2Colors(iData(QuickX, y), newB, tmpAlpha)
+            
+        End If
+        
+    Next y
+    Next x
+    
+    'With our compositing complete, point iData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+
+End Sub
+
+'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
+Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Single) As Byte
+    Blend2Colors = (mixRatio * Color1) + ((1 - mixRatio) * Color2)
+End Function
