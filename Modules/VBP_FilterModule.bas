@@ -759,14 +759,18 @@ Public Sub FilterIsometric()
         
         srcX = getIsometricX(x, y, hWidth)
         
-        QuickVal = srcX * 3
+        QuickVal = srcX * qvDepth
         srcY = getIsometricY(x, y, hWidth)
         
         If (srcX >= 0 And srcX <= oWidth And srcY >= 0 And srcY <= oHeight) Then
+            'If the image is 32bpp, transfer the alpha channel as well
+            If qvDepth = 4 Then dstImageData(dstQuickVal + 3, y) = srcImageData(QuickVal + 3, srcY)
             dstImageData(dstQuickVal + 2, y) = srcImageData(QuickVal + 2, srcY)
             dstImageData(dstQuickVal + 1, y) = srcImageData(QuickVal + 1, srcY)
             dstImageData(dstQuickVal, y) = srcImageData(QuickVal, srcY)
         Else
+            'If the image is 32bpp, then set outlying pixels to fully transparent
+            If qvDepth = 4 Then dstImageData(dstQuickVal + 3, y) = 0
             dstImageData(dstQuickVal + 2, y) = 255
             dstImageData(dstQuickVal + 1, y) = 255
             dstImageData(dstQuickVal, y) = 255
