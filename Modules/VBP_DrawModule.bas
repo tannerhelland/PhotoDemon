@@ -55,6 +55,19 @@ Public Sub DrawSpecificCanvas(ByRef dstForm As Form)
     
 End Sub
 
+'Perform any drawing routines related to the main form
+Public Sub RedrawMainForm()
+
+    'Draw a subtle gradient on the left-hand pane
+    FormMain.picLeftPane.Refresh
+    DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
+    
+    'Redraw the progress bar
+    FormMain.picProgBar.Refresh
+    cProgBar.Draw
+    
+End Sub
+
 'Draw a gradient from Color1 to Color 2 (RGB longs) on a specified picture box
 Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal Color2 As Long, Optional ByVal drawHorizontal As Boolean = False)
 
