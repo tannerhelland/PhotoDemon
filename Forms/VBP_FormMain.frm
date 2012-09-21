@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.MDIForm FormMain 
    AutoShowChildren=   0   'False
-   BackColor       =   &H00808080&
+   BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
    ClientHeight    =   8280
    ClientLeft      =   225
@@ -47,6 +47,7 @@ Begin VB.MDIForm FormMain
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -296,7 +297,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00808080&
+         ForeColor       =   &H00606060&
          Height          =   285
          Left            =   135
          TabIndex        =   16
@@ -317,7 +318,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00808080&
+         ForeColor       =   &H00606060&
          Height          =   375
          Left            =   120
          TabIndex        =   15
@@ -338,7 +339,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00808080&
+         ForeColor       =   &H00606060&
          Height          =   375
          Left            =   120
          TabIndex        =   14
@@ -359,7 +360,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00808080&
+         ForeColor       =   &H00606060&
          Height          =   375
          Left            =   120
          TabIndex        =   11
@@ -1169,6 +1170,9 @@ Private Sub MDIForm_Load()
     End If
     
     Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
+    
+    'Draw a subtle gradient on the left-hand pane
+    DrawGradient Me.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me

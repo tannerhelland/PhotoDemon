@@ -56,10 +56,11 @@ Public Sub DrawSpecificCanvas(ByRef dstForm As Form)
 End Sub
 
 'Draw a gradient from Color1 to Color 2 (RGB longs) on a specified picture box
-Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal Color2 As Long)
+Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal Color2 As Long, Optional ByVal drawHorizontal As Boolean = False)
 
     'Calculation variables (used to interpolate between the gradient colors)
     Dim VR As Single, VG As Single, VB As Single
+    Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color
     Dim r As Long, g As Long, b As Long
@@ -81,9 +82,15 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
 
     'Create a calculation variable, which will be used to determine the interpolation step between
     ' each gradient color
-    VR = Abs(r - r2) / tmpHeight
-    VG = Abs(g - g2) / tmpHeight
-    VB = Abs(b - b2) / tmpHeight
+    If drawHorizontal Then
+        VR = Abs(r - r2) / tmpWidth
+        VG = Abs(g - g2) / tmpWidth
+        VB = Abs(b - b2) / tmpWidth
+    Else
+        VR = Abs(r - r2) / tmpHeight
+        VG = Abs(g - g2) / tmpHeight
+        VB = Abs(b - b2) / tmpHeight
+    End If
     
     'If the second color is less than the first value, make the step negative
     If r2 < r Then VR = -VR
@@ -91,12 +98,20 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     If b2 < b Then VB = -VB
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
-    For y = 0 To tmpHeight
-        r2 = r + VR * y
-        g2 = g + VG * y
-        b2 = b + VB * y
-        
-        DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
-    Next y
-
+    If drawHorizontal Then
+        For x = 0 To tmpWidth
+            r2 = r + VR * x
+            g2 = g + VG * x
+            b2 = b + VB * x
+            DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
+        Next x
+    Else
+        For y = 0 To tmpHeight
+            r2 = r + VR * y
+            g2 = g + VG * y
+            b2 = b + VB * y
+            DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
+        Next y
+    End If
+    
 End Sub

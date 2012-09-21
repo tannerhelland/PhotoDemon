@@ -274,7 +274,7 @@ Public Sub UpdateMDIStatus()
         FormMain.MnuFitOnScreen.Enabled = False
         If FormMain.CmbZoom.Enabled = True Then
             FormMain.CmbZoom.Enabled = False
-            FormMain.lblZoom.ForeColor = &H808080
+            FormMain.lblZoom.ForeColor = &H606060
             FormMain.CmbZoom.ListIndex = zoomIndex100   'Reset zoom to 100%
         End If
         
