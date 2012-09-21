@@ -61,7 +61,8 @@ Public Sub MenuRotate90Clockwise()
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, i As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -86,9 +87,11 @@ Public Sub MenuRotate90Clockwise()
         QuickVal = x * qvDepth
     For y = initY To finalY
         QuickValY = y * qvDepth
-        dstImageData(iHeight - QuickValY + 2, finalX - x) = srcImageData(iWidth - QuickVal + 2, y)
-        dstImageData(iHeight - QuickValY + 1, finalX - x) = srcImageData(iWidth - QuickVal + 1, y)
-        dstImageData(iHeight - QuickValY, finalX - x) = srcImageData(iWidth - QuickVal, y)
+        
+        For i = 0 To qvDepth - 1
+            dstImageData(iHeight - QuickValY + i, finalX - x) = srcImageData(iWidth - QuickVal + i, y)
+        Next i
+        
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
@@ -157,7 +160,8 @@ Public Sub MenuRotate270Clockwise()
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, i As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -181,9 +185,11 @@ Public Sub MenuRotate270Clockwise()
         QuickVal = x * qvDepth
     For y = initY To finalY
         QuickValY = y * qvDepth
-        dstImageData(QuickValY + 2, x) = srcImageData(iWidth - QuickVal + 2, y)
-        dstImageData(QuickValY + 1, x) = srcImageData(iWidth - QuickVal + 1, y)
-        dstImageData(QuickValY, x) = srcImageData(iWidth - QuickVal, y)
+        
+        For i = 0 To qvDepth - 1
+            dstImageData(QuickValY + i, x) = srcImageData(iWidth - QuickVal + i, y)
+        Next i
+        
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
