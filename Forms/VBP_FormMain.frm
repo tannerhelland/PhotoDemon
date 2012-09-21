@@ -625,11 +625,11 @@ Begin VB.MDIForm FormMain
          Caption         =   "Brightness/Contrast..."
       End
       Begin VB.Menu MnuGamma 
-         Caption         =   "Gamma Correction..."
+         Caption         =   "Gamma..."
          Shortcut        =   ^G
       End
       Begin VB.Menu MnuImageLevels 
-         Caption         =   "Image Levels..."
+         Caption         =   "Levels..."
          Shortcut        =   ^L
       End
       Begin VB.Menu MnuTemperature 
@@ -1963,6 +1963,10 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     If ctlAccelerator.Key(nIndex) = "Bright_Contrast" Then
         Process BrightnessAndContrast, , , , , , , , , , True
     End If
+    
+    'Rotate Right / Left
+    If ctlAccelerator.Key(nIndex) = "Rotate_Left" Then Process Rotate270Clockwise
+    If ctlAccelerator.Key(nIndex) = "Rotate_Right" Then Process Rotate90Clockwise
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
     If ctlAccelerator.Key(nIndex) = "Prev_Image" Or ctlAccelerator.Key(nIndex) = "Next_Image" Then

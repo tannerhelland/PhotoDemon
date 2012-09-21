@@ -696,36 +696,46 @@ End Sub
 Public Sub LoadMenuShortcuts()
 
     With FormMain.ctlAccelerator
+    
+        'File menu
         .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save_As"
         .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Internet_Import"
         .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen_Capture"
         .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask Or vbShiftMask, "Import_FRX"
+        
+            'Most-recently used files
+            .AddAccelerator vbKey0, vbCtrlMask, "MRU_0"
+            .AddAccelerator vbKey1, vbCtrlMask, "MRU_1"
+            .AddAccelerator vbKey2, vbCtrlMask, "MRU_2"
+            .AddAccelerator vbKey3, vbCtrlMask, "MRU_3"
+            .AddAccelerator vbKey4, vbCtrlMask, "MRU_4"
+            .AddAccelerator vbKey5, vbCtrlMask, "MRU_5"
+            .AddAccelerator vbKey6, vbCtrlMask, "MRU_6"
+            .AddAccelerator vbKey7, vbCtrlMask, "MRU_7"
+            .AddAccelerator vbKey8, vbCtrlMask, "MRU_8"
+            .AddAccelerator vbKey9, vbCtrlMask, "MRU_9"
+            
+        'Edit menu
         .AddAccelerator vbKeyReturn, vbAltMask, "Preferences"
         .AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask, "Redo"
         .AddAccelerator vbKeyZ, vbCtrlMask Or vbShiftMask, "Repeat_Last"
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Empty_Clipboard"
+        
+        'Image menu
+        .AddAccelerator vbKeyL, 0, "Rotate_Left"
+        .AddAccelerator vbKeyR, 0, "Rotate_Right"
+        
+        'Color Menu
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
+        
+        'No equivalent menu
         .AddAccelerator vbKeyAdd, 0, "Zoom_In"
         .AddAccelerator vbKeySubtract, 0, "Zoom_Out"
         .AddAccelerator vbKeyEscape, 0, "Escape"
-        
-        'Most-recently used files
-        .AddAccelerator vbKey0, vbCtrlMask, "MRU_0"
-        .AddAccelerator vbKey1, vbCtrlMask, "MRU_1"
-        .AddAccelerator vbKey2, vbCtrlMask, "MRU_2"
-        .AddAccelerator vbKey3, vbCtrlMask, "MRU_3"
-        .AddAccelerator vbKey4, vbCtrlMask, "MRU_4"
-        .AddAccelerator vbKey5, vbCtrlMask, "MRU_5"
-        .AddAccelerator vbKey6, vbCtrlMask, "MRU_6"
-        .AddAccelerator vbKey7, vbCtrlMask, "MRU_7"
-        .AddAccelerator vbKey8, vbCtrlMask, "MRU_8"
-        .AddAccelerator vbKey9, vbCtrlMask, "MRU_9"
-        
-        'Next/previous image
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image"
-        
-        'Brightness/Contrast
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
+            
+            'Next/previous image
+            .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
+            .AddAccelerator vbKeyPageDown, 0, "Next_Image"
         
         .Enabled = True
     End With
@@ -741,6 +751,10 @@ Public Sub LoadMenuShortcuts()
     FormMain.MnuRedo.Caption = FormMain.MnuRedo.Caption & vbTab & "Ctrl+Alt+Z"
     FormMain.MnuRepeatLast.Caption = FormMain.MnuRepeatLast.Caption & vbTab & "Ctrl+Shift+Z"
     FormMain.MnuEmptyClipboard.Caption = FormMain.MnuEmptyClipboard.Caption & vbTab & "Ctrl+Shift+X"
+    
+    'Image menu
+    FormMain.MnuRotateClockwise.Caption = FormMain.MnuRotateClockwise.Caption & vbTab & "R"
+    FormMain.MnuRotate270Clockwise.Caption = FormMain.MnuRotate270Clockwise.Caption & vbTab & "L"
     
     'Color menu
     FormMain.MnuBrightness.Caption = FormMain.MnuBrightness.Caption & vbTab & "Ctrl+Shift+C"
