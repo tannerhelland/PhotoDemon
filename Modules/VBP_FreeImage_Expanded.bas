@@ -22,7 +22,7 @@ Attribute VB_Name = "FreeImage_Expanded_Interface"
 Option Explicit
 
 'DIB declarations
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
 Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
@@ -196,6 +196,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             .rgbReserved = 255      'Note that for purposes of this composite,
         End With
         fi_hDIB = FreeImage_Composite(fi_hDIB, , tmpWhite)
+        
+        'Note: at this point, the image is 24 bpp.  FreeImage_Composite always returns a 24bpp image.  Because PhotoDemon currently ignores
+        ' alpha channels, reset the BPP to 24.
+        fi_BPP = FreeImage_GetBPP(fi_hDIB)
+        
     End If
     
     'We are now finally ready to load the image.
