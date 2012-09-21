@@ -1,4 +1,4 @@
-PhotoDemon v5.0b1 - Copyright (c) 2012 by Tanner Helland
+PhotoDemon v5.0b4 - Copyright (c) 2012 by Tanner Helland
 =====================================================================================
 A free, open-source photo editor and image processing tool.
 http://tannerhelland.com/photodemon
@@ -38,6 +38,7 @@ What makes PhotoDemon preferable to other photo editing tools?
 	50+ in the current build – and that’s not including a custom filter tool that
 	allows you to build your own 5×5 convolution filters.
 
+
 	
 What doesn't PhotoDemon do?
 -------------------------------------------------------------------------------------
@@ -45,13 +46,18 @@ What doesn't PhotoDemon do?
 	PhotoDemon does not provide any painting tools.  It only supports actions and
 	filters that operate on an entire image.
 
-:: Alpha-channels (transparency) and high bit-depths
-	Per its name, PhotoDemon is designed for use with photos.  It will happily import
-	images with alpha channels or bit-depths greater than 16 million colors, but it
-	will internally convert these images to true color (24-bit RGB) before operating
-	on them, and it will only save images in non-alpha 8 or 24-bit color depths.  If
-	you need alpha or deep color support, I'm afraid PhotoDemon is not the right tool
-	for you.
+:: Alpha channels (transparency) and high bit-depths*
+	*NOTE: as of PhotoDemon 5.0 beta 4, alpha channel support has been experimentally
+	enabled.  Alpha channels cannot be edited directly, but they are preserved for
+	the life of each image, and when an image is saved, it is saved at the same color
+	depth at which it was loaded, with alpha channel intact.
+
+	(Old warning for pre-5.0 versions: Per its name, PhotoDemon is designed for use 
+	with photos.  It will happily import images with alpha channels or bit-depths 
+	greater than 16 million colors, but it will internally convert these images to
+	true color (24-bit RGB) before operating on them, and it will only save images in
+	non-alpha 8 or 24-bit color depths.  If you need alpha or deep color support, I'm
+	afraid PhotoDemon is not the best tool for you.)
 		
 :: Advanced color management (ICC profiles)
 	PhotoDemon ignores embedded ICC profiles.  As a tool designed for consumers and
@@ -155,7 +161,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.winimage.com/zLibDll/index.html)
 * Waty Thierry for many insights regarding printer interfacing in VB
   (http://www.ppreview.net/)
-* Manuel Augusto Santos for original versions of the 'Enhanced 2-bit Color Reduction' and 'Artistic Contour' algorithms
+* Manuel Augusto Santos for the original version of the 'Artistic Contour' algorithm
   (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1)
 * Johannes B for the original version of the 'Fog' algorithm
   (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42642&lngWId=1)
