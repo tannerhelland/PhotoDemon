@@ -179,29 +179,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         
     End If
     
-    'By this point, we have loaded the image, and it is guaranteed to be at 24 or 32 bit color depth.
-    'The last thing we need to do is specific to transparent images.  FreeImage will default to loading transparent images
-    ' against a black background.  We prefer white.  FreeImage's composite function can be used to handle this.
+    'By this point, we have loaded the image, and it is guaranteed to be at 24 or 32 bit color depth.  Verify it one final time.
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
-    
-    If fi_BPP = 32 Then
-        
-        Message "Recompositing alpha channel..."
-        
-        Dim tmpWhite As RGBQUAD
-        With tmpWhite
-            .rgbBlue = 255
-            .rgbGreen = 255
-            .rgbRed = 255
-            .rgbReserved = 255      'Note that for purposes of this composite,
-        End With
-        fi_hDIB = FreeImage_Composite(fi_hDIB, , tmpWhite)
-        
-        'Note: at this point, the image is 24 bpp.  FreeImage_Composite always returns a 24bpp image.  Because PhotoDemon currently ignores
-        ' alpha channels, reset the BPP to 24.
-        fi_BPP = FreeImage_GetBPP(fi_hDIB)
-        
-    End If
     
     'We are now finally ready to load the image.
     
@@ -232,6 +211,12 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'Release the FreeImage library
     FreeLibrary hFreeImgLib
+    
+    'If the loaded image has an alpha-channel, recomposite the image against a white background (by default it will be black)
+    If dstLayer.getLayerColorDepth = 32 Then
+        Message "Performing final alpha channel recomposite..."
+        dstLayer.compositeBackgroundColor
+    End If
     
     'Mark this load as successful
     LoadFreeImageV3_Advanced = True
