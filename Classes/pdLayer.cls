@@ -704,7 +704,31 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     Dim iData() As Byte
     ReDim iData(0 To slWidth - 1, 0 To layerHeight - 1) As Byte
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
+    
+    'Unfortunately, due to reasons I don't currently understand, the alpha channel of imported images is completely lost
+    ' (perhaps by the "FreeImage_composite" command?  I don't know.)  The API handles this by setting the alpha channel to
+    ' all null values, which effectively makes the entire image transparent!  So before saving, we need to go through and
+    ' set all alpha channel values to 255.
+    If layerColorDepth = 32 Then
         
+        Dim x As Long, y As Long
+        Dim QuickVal As Long
+        
+        For x = 0 To layerWidth - 1
+            QuickVal = x * 4 + 3
+        For y = 0 To layerHeight - 1
+            'If iData(QuickVal, y) <> 0 Then MsgBox x & "," & y & ":" & iData(QuickVal, y)
+            iData(QuickVal, y) = 255
+        Next y
+        Next x
+            
+        'Finally, we play a trick in the top-left pixel.  Some software libraries (including FreeImage) will ignore the
+        ' alpha channel if it is fully opaque or fully transparent.  By barely adjusting the top-left pixel, we can remind
+        ' it that this image contains an intentional alpha channel.
+        iData(3, 0) = 254
+        
+    End If
+    
     'With all our information in place, check to see if that file already exists.  Delete it if necessary.
     If FileExist(dstFilename) = True Then Kill dstFilename
         

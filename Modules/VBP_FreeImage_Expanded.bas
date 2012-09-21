@@ -193,7 +193,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             .rgbBlue = 255
             .rgbGreen = 255
             .rgbRed = 255
-            .rgbReserved = 0
+            .rgbReserved = 255      'Note that for purposes of this composite,
         End With
         fi_hDIB = FreeImage_Composite(fi_hDIB, , tmpWhite)
     End If
@@ -218,6 +218,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
     
     'Copy the bits from the FreeImage DIB to our DIB
+    'NOTE: investigate using AlphaBlend to copy the bits, with SourceConstantAlpha set to 255 (per http://msdn.microsoft.com/en-us/library/dd183393%28v=vs.85%29.aspx)
+    ' This may be a way to preserve the alpha channel... assuming that this SetDIBitsToDevice is actually the problem, which it may not be.
     SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
               
     'With the image bits now safely in our care, release the FreeImage DIB

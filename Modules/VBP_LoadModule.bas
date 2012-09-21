@@ -399,13 +399,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'Dependent on the file's extension, load the appropriate image decoding routine
         Select Case FileExtension
             Case "BMP"
-                'Bitmaps are preferentially loaded by GDI+ if available (which can handle 32bpp), then FreeImage (which is
-                ' unpredictable with 32bpp), then default VB (which fails with 32bpp but will load other depths).
-                If GDIPlusEnabled Then
+                'Bitmaps are preferentially loaded by FreeImage (which loads 32bpp bitmaps correctly), then GDI+ (which
+                ' loads 32bpp bitmaps but ignores the alpha channel), then default VB (which fails with 32bpp but will
+                ' load other depths).
+                If FreeImageEnabled Then
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                ElseIf GDIPlusEnabled Then
                     LoadGDIPlusImage sFile(thisImage), targetLayer
                     targetImage.OriginalFileFormat = 0
-                ElseIf FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
                     LoadVBImage sFile(thisImage), targetLayer
                     targetImage.OriginalFileFormat = 0
