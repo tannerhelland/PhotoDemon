@@ -1033,7 +1033,7 @@ Private Sub Form_Load()
     curFormatIndex = 0
     
     cmbPattern.AddItem "All Compatible Images", curFormatIndex
-    filePatterns(curFormatIndex) = "*.bmp;*.jpg;*.jpeg;*.jpe;*.gif;*.wmf;*.emf;*.ico"
+    filePatterns(curFormatIndex) = "*.bmp;*.jpg;*.jpeg;*.jpe;*.gif;*.ico"
     curFormatIndex = curFormatIndex + 1
     
     'Only allow PDI loading if the zLib dll was detected at program load
@@ -1054,11 +1054,7 @@ Private Sub Form_Load()
         filePatterns(curFormatIndex) = "*.dds"
         curFormatIndex = curFormatIndex + 1
     End If
-    
-    cmbPattern.AddItem "EMF - Windows Enhanced Meta File", curFormatIndex
-    filePatterns(curFormatIndex) = "*.emf"
-    curFormatIndex = curFormatIndex + 1
-    
+        
     cmbPattern.AddItem "GIF - Compuserve", curFormatIndex
     filePatterns(curFormatIndex) = "*.gif"
     curFormatIndex = curFormatIndex + 1
@@ -1171,11 +1167,7 @@ Private Sub Form_Load()
         filePatterns(curFormatIndex) = "*.wbmp;*.wbm"
         curFormatIndex = curFormatIndex + 1
     End If
-    
-    cmbPattern.AddItem "WMF - Windows Metafile", curFormatIndex
-    filePatterns(curFormatIndex) = "*.wmf"
-    curFormatIndex = curFormatIndex + 1
-    
+        
     cmbPattern.AddItem "All files", curFormatIndex
     filePatterns(curFormatIndex) = "*.*"
     curFormatIndex = curFormatIndex + 1

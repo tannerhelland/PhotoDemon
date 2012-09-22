@@ -38,7 +38,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
     Set CC = New cCommonDialog
     Dim cdfStr As String
-    cdfStr = "All Compatible Images|*.bmp;*.jpg;*.jpeg;*.gif;*.wmf;*.emf;*.ico"
+    cdfStr = "All Compatible Images|*.bmp;*.jpg;*.jpeg;*.gif;*.ico"
     
     'Only allow PDI loading if the zLib dll was detected at program load
     If zLibEnabled Then cdfStr = cdfStr & ";*.pdi"
@@ -57,7 +57,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
     If FreeImageEnabled Then cdfStr = cdfStr & "|DDS - DirectDraw Surface|*.dds"
     
-    cdfStr = cdfStr & "|EMF - Windows Enhanced Meta File|*.emf|GIF - Compuserve|*.gif|ICO - Windows Icon|*.ico"
+    cdfStr = cdfStr & "|GIF - Compuserve|*.gif|ICO - Windows Icon|*.ico"
     
     If FreeImageEnabled Then cdfStr = cdfStr & "|IFF - Amiga Interchange Format|*.iff|JNG - JPEG Network Graphics|*.jng"
     
@@ -79,7 +79,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
     If FreeImageEnabled Then cdfStr = cdfStr & "|WBMP - Wireless Bitmap|*.wbmp;*.wbm"
     
-    cdfStr = cdfStr & "|WMF - Windows Metafile|*.wmf|All files|*.*"
+    cdfStr = cdfStr & "|All files|*.*"
     
     Dim sFileList As String
     

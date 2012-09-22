@@ -405,7 +405,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 ElseIf GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 0
                 Else
                     LoadVBImage sFile(thisImage), targetLayer
@@ -416,32 +416,22 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 ElseIf GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 25
                 Else
                     LoadVBImage sFile(thisImage), targetLayer
                     targetImage.OriginalFileFormat = 25
-                End If
-            Case "EMF", "WMF"
-                'Metafiles are preferentially loaded by GDI+ if available, then default VB.
-                If GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage), targetLayer
-                    targetImage.OriginalFileFormat = 110
-                Else
-                    LoadVBImage sFile(thisImage), targetLayer
-                    targetImage.OriginalFileFormat = 110
                 End If
             Case "ICO"
                 'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     If loadSuccessful = False Then
-                        LoadGDIPlusImage sFile(thisImage), targetLayer
+                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 1
-                        loadSuccessful = True
                     End If
                 ElseIf GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 1
                 Else
                     LoadVBImage sFile(thisImage), targetLayer
@@ -453,7 +443,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 ' need to make a copy of the image before operating on it.
                 If MacroStatus = MacroBATCH Then
                     If GDIPlusEnabled Then
-                        LoadGDIPlusImage sFile(thisImage), targetLayer
+                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 2
                     ElseIf FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
@@ -465,7 +455,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     If FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     ElseIf GDIPlusEnabled Then
-                        LoadGDIPlusImage sFile(thisImage), targetLayer
+                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 2
                     Else
                         LoadVBImage sFile(thisImage), targetLayer
@@ -481,7 +471,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
-                    LoadGDIPlusImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 13
                 End If
             Case "TIF", "TIFF"
@@ -489,13 +479,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
-                    LoadGDIPlusImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 18
                 End If
             Case "TMP"
                 'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too
                 If GDIPlusEnabled Then
-                    LoadGDIPlusImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 2
                 Else
                     LoadVBImage sFile(thisImage), targetLayer
@@ -638,7 +628,7 @@ Public Sub LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLaye
     Set tmpPicture = LoadPicture(PDIPath)
     
     'Copy the image into the current pdImage object
-    dstLayer.createFromPicture tmpPicture
+    dstLayer.CreateFromPicture tmpPicture
     
     'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
     ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
@@ -649,12 +639,25 @@ End Sub
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
-Public Sub LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer)
-        
-    'Copy the image returned by GDI+ into the current pdImage object
-    dstLayer.createFromPicture GDIPlusLoadPicture(imagePath)
+Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer) As Boolean
+
+    Dim tmpPicture As StdPicture
+    Set tmpPicture = New StdPicture
+            
+    Dim verifyGDISuccess As Boolean
     
-End Sub
+    verifyGDISuccess = GDIPlusLoadPicture(imagePath, tmpPicture)
+    
+    If verifyGDISuccess Then
+    
+        'Copy the image returned by GDI+ into the current pdImage object
+        LoadGDIPlusImage = dstLayer.CreateFromPicture(tmpPicture)
+        
+    Else
+        LoadGDIPlusImage = False
+    End If
+    
+End Function
 
 'BITMAP loading
 Public Sub LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer)
@@ -665,7 +668,7 @@ Public Sub LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer)
     Set tmpPicture = LoadPicture(imagePath)
     
     'Copy the image into the current pdImage object
-    dstLayer.createFromPicture tmpPicture
+    dstLayer.CreateFromPicture tmpPicture
     
 End Sub
 
