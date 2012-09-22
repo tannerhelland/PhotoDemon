@@ -232,8 +232,6 @@ Public Function GDIPlusLoadPicture(ByVal SrcFilename As String, ByRef targetPict
     Dim hBitmap As Long
     GDIPlusReturn = GdipCreateHBITMAPFromBitmap(hImage, hBitmap, vbBlack)
     
-    MsgBox GDIPlusReturn
-    
     If (GDIPlusReturn <> [OK]) Then
         GdipDisposeImage hImage
         GDIPlusLoadPicture = False
