@@ -408,7 +408,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 0
                 Else
-                    LoadVBImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 0
                 End If
             Case "GIF"
@@ -419,7 +419,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 25
                 Else
-                    LoadVBImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 25
                 End If
             Case "ICO"
@@ -434,7 +434,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 1
                 Else
-                    LoadVBImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 1
                 End If
             Case "JIF", "JPG", "JPEG", "JPE"
@@ -448,7 +448,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     ElseIf FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     Else
-                        LoadVBImage sFile(thisImage), targetLayer
+                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 2
                     End If
                 Else
@@ -458,13 +458,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 2
                     Else
-                        LoadVBImage sFile(thisImage), targetLayer
+                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 2
                     End If
                 End If
             Case "PDI"
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
-                LoadPhotoDemonImage sFile(thisImage), targetLayer
+                loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetLayer)
                 targetImage.OriginalFileFormat = 100
             Case "PNG"
                 'FreeImage has a more robust (and reliable) PNG implementation than GDI+, so use it if available
@@ -488,7 +488,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 2
                 Else
-                    LoadVBImage sFile(thisImage), targetLayer
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 2
                 End If
             'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
@@ -496,7 +496,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If FreeImageEnabled = True Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
-                    MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will proceed to download this plugin for you.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
+                    MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will download this plugin for you.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
                     Message "Image load canceled."
                     pdImages(CurrentImage).IsActive = False
                     Unload FormMain.ActiveForm
@@ -617,7 +617,7 @@ Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer
 End Function
 
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
-Public Sub LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLayer)
+Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLayer) As Boolean
     
     'Decompress the current PDI file
     DecompressFile PDIPath
@@ -627,14 +627,21 @@ Public Sub LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLaye
     Set tmpPicture = New StdPicture
     Set tmpPicture = LoadPicture(PDIPath)
     
+    If tmpPicture.Width = 0 Or tmpPicture.Height = 0 Then
+        LoadPhotoDemonImage = False
+        Exit Function
+    End If
+    
     'Copy the image into the current pdImage object
     dstLayer.CreateFromPicture tmpPicture
     
     'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
     ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
     CompressFile PDIPath
+    
+    LoadPhotoDemonImage = True
 
-End Sub
+End Function
 
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
@@ -648,7 +655,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pd
     
     verifyGDISuccess = GDIPlusLoadPicture(imagePath, tmpPicture)
     
-    If verifyGDISuccess Then
+    If verifyGDISuccess And (tmpPicture.Width <> 0) And (tmpPicture.Height <> 0) Then
     
         'Copy the image returned by GDI+ into the current pdImage object
         LoadGDIPlusImage = dstLayer.CreateFromPicture(tmpPicture)
@@ -660,17 +667,24 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pd
 End Function
 
 'BITMAP loading
-Public Sub LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer)
+Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer) As Boolean
     
     'Create a temporary StdPicture object that will be used to load the image
     Dim tmpPicture As StdPicture
     Set tmpPicture = New StdPicture
     Set tmpPicture = LoadPicture(imagePath)
     
+    If tmpPicture.Width = 0 Or tmpPicture.Height = 0 Then
+        LoadVBImage = False
+        Exit Function
+    End If
+    
     'Copy the image into the current pdImage object
     dstLayer.CreateFromPicture tmpPicture
     
-End Sub
+    LoadVBImage = True
+    
+End Function
 
 'UNDO loading
 Public Sub LoadUndo(ByVal UndoFile As String)
