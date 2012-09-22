@@ -1067,13 +1067,7 @@ Private Sub Form_Load()
         cmbPattern.AddItem "IFF - Amiga Interchange Format", curFormatIndex
         filePatterns(curFormatIndex) = "*.iff"
         curFormatIndex = curFormatIndex + 1
-    End If
-    
-    cmbPattern.AddItem "ICO - Windows Icon", curFormatIndex
-    filePatterns(curFormatIndex) = "*.ico"
-    curFormatIndex = curFormatIndex + 1
-    
-    If FreeImageEnabled Then
+        
         cmbPattern.AddItem "JNG - JPEG Network Graphics", curFormatIndex
         filePatterns(curFormatIndex) = "*.jng"
         curFormatIndex = curFormatIndex + 1
