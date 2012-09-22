@@ -42,14 +42,14 @@ Public Enum GDIPlusStatus
     [WrongState] = 8
     [Aborted] = 9
     [FileNotFound] = 10
-    [ValueOverflow ] = 11
+    [ValueOverflow] = 11
     [AccessDenied] = 12
     [UnknownImageFormat] = 13
     [FontFamilyNotFound] = 14
     [FontStyleNotFound] = 15
     [NotTrueTypeFont] = 16
     [UnsupportedGdiplusVersion] = 17
-    [GdiplusNotInitialized ] = 18
+    [GdiplusNotInitialized] = 18
     [PropertyNotFound] = 19
     [PropertyNotSupported] = 20
 End Enum
@@ -92,7 +92,7 @@ Private Enum EncoderValue
     [EncoderValueFrameDimensionPage]
 End Enum
 
-Private Type CLSID
+Private Type clsid
     Data1         As Long
     Data2         As Integer
     Data3         As Integer
@@ -100,8 +100,8 @@ Private Type CLSID
 End Type
 
 Private Type ImageCodecInfo
-    ClassID           As CLSID
-    FormatID          As CLSID
+    ClassID           As clsid
+    FormatID          As clsid
     CodecName         As Long
     DllName           As Long
     FormatDescription As Long
@@ -116,7 +116,7 @@ Private Type ImageCodecInfo
 End Type
 
 Private Type EncoderParameter
-    GUID           As CLSID
+    Guid           As clsid
     NumberOfValues As Long
     Type           As EncoderParameterValueType
     Value          As Long
@@ -193,38 +193,52 @@ Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) A
 Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, Bitmap As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GDIPlusStatus
-Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As CLSID, encoderParams As Any) As GDIPlusStatus
+Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GDIPlusStatus
 
 'OleCreatePictureIndirect is used to convert GDI+ images to VB's preferred StdPicture
-Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, rIid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
+Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, riid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
 
 'CLSIDFromString is used to convert a mimetype into a CLSID required by the GDI+ image encoder
-Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, pCLSID As CLSID) As Long
+Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, pclsid As clsid) As Long
 
 'Necessary for converting between ASCII and UNICODE strings
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function lstrlenA Lib "kernel32" (ByVal psString As Any) As Long
 
 'CopyMemory
-Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, Src As Any, ByVal cb As Long) As Long
+Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
 
 'When GDI+ is initialized, it will assign us a token.  We use this to release GDI+ when the program terminates.
 Private GDIPlusToken As Long
 
 'Use GDI+ to load a picture into a StdPicture object - not ideal, as some information will be lost in the transition, but since
 ' this is only a fallback from FreeImage I'm not going out of my way to improve it.
-Public Function GDIPlusLoadPicture(ByVal srcFilename As String) As StdPicture
+Public Function GDIPlusLoadPicture(ByVal SrcFilename As String, ByRef targetPicture As StdPicture) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As Long
       
     'Use GDI+ to load the image
     Dim hImage As Long
-    GDIPlusReturn = GdipLoadImageFromFile(StrPtr(srcFilename), hImage)
+    GDIPlusReturn = GdipLoadImageFromFile(StrPtr(SrcFilename), hImage)
+    
+    If (GDIPlusReturn <> [OK]) Then
+        GdipDisposeImage hImage
+        GDIPlusLoadPicture = False
+        Exit Function
+    End If
     
     'Copy the GDI+ image into a standard bitmap
     Dim hBitmap As Long
     GDIPlusReturn = GdipCreateHBITMAPFromBitmap(hImage, hBitmap, vbBlack)
+    
+    MsgBox GDIPlusReturn
+    
+    If (GDIPlusReturn <> [OK]) Then
+        GdipDisposeImage hImage
+        GDIPlusLoadPicture = False
+        Exit Function
+    End If
     
     'Now we can release the GDI+ copy of the image
     GDIPlusReturn = GdipDisposeImage(hImage)
@@ -249,15 +263,19 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String) As StdPicture
         aGuid(3) = &HAB0C3000
         
         'Using the bitmap indirectly created by GDI+, build an identical StdPicture object
-        OleCreatePictureIndirect picHeader, aGuid(0), -1, GDIPlusLoadPicture
-        
+        OleCreatePictureIndirect picHeader, aGuid(0), -1, targetPicture
+    
+        GDIPlusLoadPicture = True
+    
+    Else
+        GDIPlusLoadPicture = False
     End If
 
 End Function
 
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
 ' Additional save options are currently available for JPEG format (save quality, range [1,100]).
-Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, Optional ByVal JPEGQuality As Long = 92) As Boolean
+Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As String, ByVal imgFormat As GDIPlusImageFormat, Optional ByVal JPEGQuality As Long = 92) As Boolean
 
     Message "Initializing GDI+..."
 
@@ -292,7 +310,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     TIFF_Compression = [EncoderValueCompressionLZW]
     
     'Request an encoder from GDI+ based on the type passed to this routine
-    Dim uEncCLSID As CLSID
+    Dim uEncCLSID As clsid
     Dim uEncParams As EncoderParameters
     Dim aEncParams() As Byte
 
@@ -309,7 +327,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
             With uEncParams.Parameter
                 .NumberOfValues = 1
                 .Type = EncoderParameterValueTypeLong
-                .GUID = pvDEFINE_GUID(EncoderVersion)
+                .Guid = pvDEFINE_GUID(EncoderVersion)
                 .Value = VarPtr(GIF_EncoderVersion)
             End With
             
@@ -324,7 +342,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
             With uEncParams.Parameter
                 .NumberOfValues = 1
                 .Type = [EncoderParameterValueTypeLong]
-                .GUID = pvDEFINE_GUID(EncoderQuality)
+                .Guid = pvDEFINE_GUID(EncoderQuality)
                 .Value = VarPtr(JPEGQuality)
             End With
             
@@ -339,7 +357,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
             With uEncParams.Parameter
                 .NumberOfValues = 1
                 .Type = EncoderParameterValueTypeLong
-                .GUID = pvDEFINE_GUID(EncoderColorDepth)
+                .Guid = pvDEFINE_GUID(EncoderColorDepth)
                 .Value = VarPtr(PNG_ColorDepth)
             End With
             
@@ -354,7 +372,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
             With uEncParams.Parameter
                 .NumberOfValues = 1
                 .Type = [EncoderParameterValueTypeLong]
-                .GUID = pvDEFINE_GUID(EncoderCompression)
+                .Guid = pvDEFINE_GUID(EncoderCompression)
                 .Value = VarPtr(TIFF_Compression)
             End With
             
@@ -363,7 +381,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
             With uEncParams.Parameter
                 .NumberOfValues = 1
                 .Type = [EncoderParameterValueTypeLong]
-                .GUID = pvDEFINE_GUID(EncoderColorDepth)
+                .Guid = pvDEFINE_GUID(EncoderColorDepth)
                 .Value = VarPtr(TIFF_ColorDepth)
             End With
             
@@ -374,12 +392,12 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     'With our encoder prepared, we can finally continue with the save
     
     'Check to see if a file already exists at this location
-    If FileExist(dstFilename) Then Kill dstFilename
+    If FileExist(DstFilename) Then Kill DstFilename
     
     Message "Saving the file..."
     
     'Perform the encode and save
-    GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))
+    GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(DstFilename, vbUnicode), uEncCLSID, aEncParams(1))
     
     Message "Releasing all temporary image copies..."
     
@@ -413,7 +431,7 @@ End Function
 
 'Thanks to Carles P.V. for providing the following four functions, which are used as part of GDI+ image saving.
 ' You can download Carles's full project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-Private Function pvGetEncoderClsID(strMimeType As String, ClassID As CLSID) As Long
+Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As Long
 
   Dim Num      As Long
   Dim Size     As Long
@@ -450,7 +468,7 @@ Private Function pvGetEncoderClsID(strMimeType As String, ClassID As CLSID) As L
     Erase Buffer
 End Function
 
-Private Function pvDEFINE_GUID(ByVal sGuid As String) As CLSID
+Private Function pvDEFINE_GUID(ByVal sGuid As String) As clsid
 '-- Courtesy of: Dana Seaman
 '   Helper routine to convert a CLSID(aka GUID) string to a structure
 '   Example ImageFormatBMP = {B96B3CAB-0728-11D3-9D7B-0000F81EF32E}
