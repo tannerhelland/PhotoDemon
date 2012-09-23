@@ -195,8 +195,6 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     
     If FreeImageEnabled Or GDIPlusEnabled Then cdfStr = cdfStr & "|TIFF - Tagged Image File Format|*.tif"
     
-    cdfStr = cdfStr & "|All files|*.*"
-    
     Dim sFile As String
     sFile = pdImages(imageID).OriginalFileName
     
