@@ -1177,7 +1177,7 @@ Private Sub MDIForm_Load()
     'Start by seeing if we're allowed to check for software updates
     tmpString = GetFromIni("General Preferences", "CheckForUpdates")
     Dim allowedToUpdate As Boolean
-    If val(tmpString) = 0 Then allowedToUpdate = False Else allowedToUpdate = True
+    If Val(tmpString) = 0 Then allowedToUpdate = False Else allowedToUpdate = True
     
     'If updates are allowed, now is the time to check
     If allowedToUpdate = True Then
@@ -1206,7 +1206,7 @@ Private Sub MDIForm_Load()
         'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
         tmpString = GetFromIni("General Preferences", "PromptForPluginDownload")
         Dim promptToDownload As Boolean
-        If val(tmpString) = 0 Then promptToDownload = False Else promptToDownload = True
+        If Val(tmpString) = 0 Then promptToDownload = False Else promptToDownload = True
         
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
         If promptToDownload = True Then
@@ -1984,6 +1984,9 @@ End Sub
 'Because VB doesn't allow key tracking in MDIForms, we have to hook keypresses via this method.
 ' Many thanks to Steve McMahon for the usercontrol that helps implement this
 Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
+
+    'Don't process accelerators when the main form is disabled (e.g. if a modal form is present)
+    If FormMain.Enabled = False Then Exit Sub
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
     ' faster than one quarter-second apart.
