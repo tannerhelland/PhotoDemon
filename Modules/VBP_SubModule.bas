@@ -23,6 +23,93 @@ Private Const GCL_HCURSOR = (-12)
 'This variable will hold the value of the loaded hand cursor.  We need to delete it (via DestroyCursor) when the program exits.
 Dim hc_Handle As Long
 
+'Validate a given number.
+Public Sub textValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed As Boolean = False, Optional ByVal floatAllowed As Boolean = False)
+
+    'Convert the input number to a string
+    Dim numString As String
+    numString = srcTextBox.Text
+    
+    'Remove any incidental white space before processing
+    numString = Trim(numString)
+    
+    'Create a string of valid numerical characters, based on the input specifications
+    Dim validChars As String
+    validChars = "0123456789"
+    If negAllowed Then validChars = validChars & "-"
+    If floatAllowed Then validChars = validChars & "."
+    
+    'Make note of the cursor position so we can restore it after removing invalid text
+    Dim cursorPos As Long
+    cursorPos = srcTextBox.SelStart
+    
+    'Loop through the text box contents and remove any invalid characters
+    Dim i As Long, j As Long
+    Dim invLoc As Long
+    
+    For i = 1 To Len(numString)
+        
+        'Compare a single character from the text box against our list of valid characters
+        invLoc = InStr(validChars, Mid$(numString, i, 1))
+        
+        'If this character was NOT found in the list of valid characters, remove it from the string
+        If invLoc = 0 Then
+        
+            numString = Left$(numString, i - 1) & Right$(numString, Len(numString) - i)
+            
+            'Modify the position of the cursor to match (so the text box maintains the same cursor position)
+            If i >= (cursorPos - 1) Then cursorPos = cursorPos - 1
+            
+            'Move the loop variable back by 1 so the next character is properly checked
+            i = i - 1
+            
+        End If
+            
+    Next i
+        
+    'Place the newly validated string back in the text box
+    srcTextBox.Text = numString
+    srcTextBox.Refresh
+    srcTextBox.SelStart = cursorPos
+
+End Sub
+
+'Populate a text box with a given integer value.  This is done constantly across the program, so I use a sub to handle it, as
+' there may be additional validations that need to be performed, and it's nice to be able to adjust those from a single location.
+Public Sub copyToTextBoxI(ByVal srcValue As Long, ByRef dstTextBox As TextBox)
+
+    'Remember the current cursor position
+    Dim cursorPos As Long
+    cursorPos = dstTextBox.SelStart
+
+    'Overwrite the current text box value with the new value
+    dstTextBox = CStr(srcValue)
+    dstTextBox.Refresh
+    
+    'Restore the cursor to its original position
+    If cursorPos >= Len(dstTextBox) Then cursorPos = Len(dstTextBox)
+    dstTextBox.SelStart = cursorPos
+
+End Sub
+
+'Populate a text box with a given floating-point value.  This is done constantly across the program, so I use a sub to handle it, as
+' there may be additional validations that need to be performed, and it's nice to be able to adjust those from a single location.
+Public Sub copyToTextBoxF(ByVal srcValue As Double, ByRef dstTextBox As TextBox)
+
+    'Remember the current cursor position
+    Dim cursorPos As Long
+    cursorPos = dstTextBox.SelStart
+
+    'PhotoDemon never allows more than two significant digits for floating-point text boxes
+    dstTextBox = Format(CStr(srcValue), "#0.00")
+    dstTextBox.Refresh
+    
+    'Restore the cursor to its original position
+    If cursorPos >= Len(dstTextBox) Then cursorPos = Len(dstTextBox)
+    dstTextBox.SelStart = cursorPos
+
+End Sub
+
 
 'Straight from MSDN - generate a "browse for folder" dialog
 Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
@@ -45,17 +132,17 @@ End Function
 
 'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
-Public Sub SetProgBarMax(ByVal val As Long)
-    If MacroStatus <> MacroBATCH Then cProgBar.Max = val
+Public Sub SetProgBarMax(ByVal pbVal As Long)
+    If MacroStatus <> MacroBATCH Then cProgBar.Max = pbVal
 End Sub
 
 Public Function getProgBarMax() As Long
     getProgBarMax = cProgBar.Max
 End Function
 
-Public Sub SetProgBarVal(ByVal val As Long)
+Public Sub SetProgBarVal(ByVal pbVal As Long)
     If MacroStatus <> MacroBATCH Then
-        cProgBar.Value = val
+        cProgBar.Value = pbVal
         cProgBar.Draw
     End If
 End Sub
