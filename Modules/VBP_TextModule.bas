@@ -3,10 +3,8 @@ Attribute VB_Name = "Text_Processing"
 'Text Operations Module
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 05/July/12
-'Last updated: 05/July/12
-'Last update: Initial build.  The "Miscellaneous" module was getting overrun
-'             with text-related code, so it was time to create a module for
-'             just those.
+'Last updated: 23/September/12
+'Last update: use local copies of "x" for each function
 '
 'Handles various string operations, mostly related to parsing and generating
 ' valid filenames and paths.
@@ -26,36 +24,49 @@ End Function
 
 'Pull the directory out of a filename
 Public Sub StripDirectory(ByRef sString As String)
+    
+    Dim x As Long
+    
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
             sString = Left(sString, x)
             Exit Sub
         End If
     Next x
+    
 End Sub
 
 'Pull the filename ONLY (no directory) off a path
 Public Sub StripFilename(ByRef sString As String)
+    
+    Dim x As Long
+    
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
             sString = Right(sString, Len(sString) - x)
             Exit Sub
         End If
     Next x
+    
 End Sub
 
 'Pull the filename & directory out WITHOUT any extension (but with the ".")
 Public Sub StripOffExtension(ByRef sString As String)
+
+    Dim x As Long
+
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid(sString, x, 1) = ".") Then
             sString = Left(sString, x - 1)
             Exit Sub
         End If
     Next x
+    
 End Sub
 
 'Function to strip the extension from a filename (taken long ago from the Internet; thank you to whoever wrote it!)
 Public Function GetExtension(FileName As String) As String
+    
     Dim pathLoc As Long, extLoc As Long
     Dim i As Long, j As Long
 
@@ -89,6 +100,7 @@ Public Sub makeValidWindowsFilename(ByRef FileName As String)
     
     Dim invLoc As Long
     
+    Dim x As Long
     For x = 1 To Len(strInvalidChars)
         invLoc = InStr(FileName, Mid$(strInvalidChars, x, 1))
         If invLoc <> 0 Then
@@ -100,12 +112,16 @@ End Sub
 
 'Remove the accelerator (e.g. "Ctrl+0") from the tail end of a string
 Public Sub StripAcceleratorFromCaption(ByRef sString As String)
+    
+    Dim x As Long
+    
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid(sString, x, 1) = vbTab) Then
             sString = Left(sString, x - 1)
             Exit Sub
         End If
     Next x
+    
 End Sub
 
 'This lovely function comes from "penagate"; it was downloaded from http://www.vbforums.com/showthread.php?t=342995 on 08 June '12
