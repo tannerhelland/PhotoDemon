@@ -47,6 +47,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   5400
+      MaxLength       =   3
       TabIndex        =   10
       Text            =   "50"
       Top             =   5355
@@ -66,6 +67,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   5400
+      MaxLength       =   5
       TabIndex        =   9
       Text            =   "5500"
       Top             =   3675
@@ -330,9 +332,18 @@ Private Sub CmdOK_Click()
     
     'The scroll bar max and min values are used to check the temperature input for validity
     If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100) Then
-        Me.Visible = False
-        Process AdjustTemperature, CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2
-        Unload Me
+        
+        'Same goes for the "strength" value
+        If EntryValid(txtStrength, hsStrength.Min, hsStrength.Max) Then
+            
+            Me.Visible = False
+            Process AdjustTemperature, CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2
+            Unload Me
+            
+        Else
+            AutoSelectText txtStrength
+        End If
+        
     Else
         AutoSelectText txtTemperature
     End If
@@ -426,8 +437,8 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+'When the form is activated (e.g. made visible and receives focus),
+Private Sub Form_Activate()
 
     'This short routine is for drawing the picture box below the temperature slider
     Dim temperatureVal As Double
@@ -463,23 +474,23 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub hsStrength_Change()
-    txtStrength.Text = hsStrength.Value
+    copyToTextBoxI hsStrength, txtStrength
     ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 Private Sub hsStrength_Scroll()
-    txtStrength.Text = hsStrength.Value
+    copyToTextBoxI hsStrength, txtStrength
     ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 'When the hue scroll bar is changed, redraw the preview
 Private Sub hsTemperature_Change()
-    txtTemperature.Text = val(hsTemperature) * 100
+    copyToTextBoxI hsTemperature * 100, txtTemperature
     ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 Private Sub hsTemperature_Scroll()
-    txtTemperature.Text = val(hsTemperature) * 100
+    copyToTextBoxI hsTemperature * 100, txtTemperature
     ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
@@ -546,19 +557,22 @@ Private Sub getRGBfromTemperature(ByRef r As Long, ByRef g As Long, ByRef b As L
     
 End Sub
 
-Private Sub txtStrength_Change()
-    If EntryValid(txtStrength, hsStrength.Min, hsStrength.Max, False, False) Then hsStrength.Value = val(txtStrength)
-End Sub
-
-Private Sub txtStrength_Click()
+'Keep the "Strength" scroll bar and text box in sync
+Private Sub txtStrength_GotFocus()
     AutoSelectText txtStrength
 End Sub
 
-'Keep the text box and scroll bar in sync
-Private Sub txtTemperature_Change()
-    If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100, False, False) Then hsTemperature.Value = val(txtTemperature) \ 100
+Private Sub txtStrength_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtStrength
+    If EntryValid(txtStrength, 1, 100, False, False) Then hsStrength.Value = val(txtStrength)
 End Sub
 
-Private Sub txtTemperature_Click()
+'Keep the "Temperature" scroll bar and text box in sync
+Private Sub txtTemperature_GotFocus()
     AutoSelectText txtTemperature
+End Sub
+
+Private Sub txtTemperature_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtTemperature
+    If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100, False, False) Then hsTemperature.Value = val(txtTemperature) \ 100
 End Sub
