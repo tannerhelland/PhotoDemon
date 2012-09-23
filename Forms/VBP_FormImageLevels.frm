@@ -686,13 +686,13 @@ Private Sub FixScrollBars(Optional midMoving As Boolean = False)
 End Sub
 
 'Used to convert Long-type variables to bytes (with proper [0,255] range)
-Private Function ByteMe(ByVal val As Long) As Byte
-    If val > 255 Then
+Private Function ByteMe(ByVal bVal As Long) As Byte
+    If bVal > 255 Then
         ByteMe = 255
-    ElseIf val < 0 Then
+    ElseIf bVal < 0 Then
         ByteMe = 0
     Else
-        ByteMe = val
+        ByteMe = bVal
     End If
 End Function
 

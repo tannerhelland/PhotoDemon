@@ -1171,9 +1171,9 @@ End Function
 
 Private Function KeyExists(ByVal sKey As String) As Boolean
     On Error GoTo HandleError:
-    Dim val As Variant
+    Dim tVal As Variant
     
-    val = cColl(sKey)
+    tVal = cColl(sKey)
   
     KeyExists = True
     Exit Function
