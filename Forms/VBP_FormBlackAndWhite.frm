@@ -112,10 +112,11 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   5400
+      MaxLength       =   3
       TabIndex        =   0
       Text            =   "127"
       Top             =   3810
-      Width           =   540
+      Width           =   660
    End
    Begin VB.CheckBox chkAutoThreshold 
       Appearance      =   0  'Flat
@@ -340,19 +341,14 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub hsThreshold_Change()
-    txtThreshold.Text = hsThreshold.Value
+    copyToTextBoxI hsThreshold.Value, txtThreshold
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
 End Sub
 
 Private Sub hsThreshold_Scroll()
     chkAutoThreshold.Value = vbUnchecked
-    txtThreshold.Text = hsThreshold.Value
-End Sub
-
-Private Sub txtThreshold_Change()
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then
-        hsThreshold.Value = val(txtThreshold)
-        If txtThreshold.Enabled Then masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
-    End If
+    copyToTextBoxI hsThreshold.Value, txtThreshold
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
 End Sub
 
 Private Sub txtThreshold_GotFocus()
@@ -1012,6 +1008,10 @@ NextDitheredPixel:     Next j
 
 End Sub
 
-Private Sub txtThreshold_KeyPress(KeyAscii As Integer)
+Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
+    
     chkAutoThreshold.Value = vbUnchecked
+    textValidate txtThreshold
+    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = val(txtThreshold)
+        
 End Sub
