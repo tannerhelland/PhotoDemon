@@ -50,7 +50,7 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   1200
       TabIndex        =   7
       Text            =   "N/A"
@@ -508,8 +508,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
 
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
         
     'Populate the combo box
     cboTarget.AddItem "Current screen size", 0
@@ -528,7 +527,8 @@ Private Sub Form_Load()
 End Sub
 
 'When the text boxes are changed, keep the scroll bar values in sync
-Private Sub txtHeight_Change()
+Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate TxtHeight
     If EntryValid(TxtHeight, 1, 32767, False, True) Then
         updateHeightBar = False
         VSHeight.Value = Abs(32767 - CInt(TxtHeight))
@@ -546,7 +546,8 @@ Private Sub txtHeight_GotFocus()
     AutoSelectText TxtHeight
 End Sub
 
-Private Sub txtWidth_Change()
+Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate TxtWidth
     If EntryValid(TxtWidth, 1, 32767, False, True) Then
         updateWidthBar = False
         VSWidth.Value = Abs(32767 - CInt(TxtWidth))

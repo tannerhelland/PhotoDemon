@@ -57,7 +57,7 @@ Begin VB.Form FormReduceColors
       Max             =   256
       Min             =   1
       TabIndex        =   8
-      Top             =   6135
+      Top             =   6195
       Value           =   6
       Width           =   2895
    End
@@ -67,7 +67,7 @@ Begin VB.Form FormReduceColors
       Max             =   256
       Min             =   1
       TabIndex        =   6
-      Top             =   5775
+      Top             =   5805
       Value           =   7
       Width           =   2895
    End
@@ -103,19 +103,39 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.TextBox TxtB 
       Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5640
+      MaxLength       =   3
       TabIndex        =   7
       Text            =   "6"
-      Top             =   6120
+      Top             =   6150
       Width           =   615
    End
    Begin VB.TextBox TxtG 
       Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5640
+      MaxLength       =   3
       TabIndex        =   5
       Text            =   "7"
       Top             =   5760
@@ -123,12 +143,22 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.TextBox TxtR 
       Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5640
+      MaxLength       =   3
       TabIndex        =   3
       Text            =   "6"
-      Top             =   5400
+      Top             =   5370
       Width           =   615
    End
    Begin VB.CheckBox chkColorDither 
@@ -138,7 +168,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   720
       TabIndex        =   9
-      Top             =   7080
+      Top             =   7110
       Value           =   1  'Checked
       Width           =   2415
    End
@@ -149,7 +179,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   3480
       TabIndex        =   10
-      Top             =   7080
+      Top             =   7110
       Value           =   1  'Checked
       Width           =   2535
    End
@@ -291,7 +321,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   360
       TabIndex        =   17
-      Top             =   6165
+      Top             =   6225
       Width           =   2175
    End
    Begin VB.Label lblGreen 
@@ -301,7 +331,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Left            =   360
       TabIndex        =   16
-      Top             =   5805
+      Top             =   5835
       Width           =   2535
    End
    Begin VB.Label lblRed 
@@ -322,7 +352,7 @@ Begin VB.Form FormReduceColors
       Height          =   195
       Left            =   360
       TabIndex        =   14
-      Top             =   6600
+      Top             =   6675
       Width           =   5505
    End
    Begin VB.Label lblQuantMethod 
@@ -369,7 +399,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'SetDIBitsToDevice is used to interact with the FreeImage DLL
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 
 Private Sub ChkColorDither_Click()
     updateReductionPreview
@@ -441,8 +471,7 @@ Private Sub CmdOK_Click()
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Only allow AutoReduction stuff if the FreeImage dll was found.
     If FreeImageEnabled = False Then
@@ -473,50 +502,56 @@ End Sub
 
 'The large chunk of subs that follow serve to keep the text box and scroll bar values in lock-step
 Private Sub hsRed_Change()
-    TxtR = hsRed.Value
+    copyToTextBoxI TxtR, hsRed.Value
+    updateColorLabel
 End Sub
 
 Private Sub hsGreen_Change()
-    TxtG = hsGreen.Value
+    copyToTextBoxI TxtG, hsGreen.Value
+    updateColorLabel
 End Sub
 
 Private Sub hsBlue_Change()
-    TxtB = hsBlue.Value
+    copyToTextBoxI TxtB, hsBlue.Value
+    updateColorLabel
 End Sub
 
 Private Sub hsRed_Scroll()
-    TxtR = hsRed.Value
+    copyToTextBoxI TxtR, hsRed.Value
+    updateColorLabel
 End Sub
 
 Private Sub hsGreen_Scroll()
-    TxtG = hsGreen.Value
+    copyToTextBoxI TxtG, hsGreen.Value
+    updateColorLabel
 End Sub
 
 Private Sub hsBlue_Scroll()
-    TxtB = hsBlue.Value
+    copyToTextBoxI TxtB, hsBlue.Value
+    updateColorLabel
 End Sub
 
-Private Sub TxtB_Change()
+Private Sub TxtB_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate TxtB
     If EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then hsBlue.Value = val(TxtB)
-    updateColorLabel
 End Sub
 
 Private Sub TxtB_GotFocus()
     AutoSelectText TxtB
 End Sub
 
-Private Sub TxtG_Change()
+Private Sub TxtG_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate TxtG
     If EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) Then hsGreen.Value = val(TxtG)
-    updateColorLabel
 End Sub
 
 Private Sub TxtG_GotFocus()
     AutoSelectText TxtG
 End Sub
 
-Private Sub TxtR_Change()
+Private Sub TxtR_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate TxtR
     If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) Then hsRed.Value = val(TxtR)
-    updateColorLabel
 End Sub
 
 Private Sub TxtR_GotFocus()
@@ -1050,3 +1085,4 @@ Private Sub updateReductionPreview()
         End If
     End If
 End Sub
+

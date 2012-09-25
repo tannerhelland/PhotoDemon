@@ -297,8 +297,8 @@ Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturati
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+
+Private Sub Form_Activate()
 
     'This short routine is for drawing the picture box below the hue slider
     Dim hVal As Single

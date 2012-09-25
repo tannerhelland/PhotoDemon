@@ -78,13 +78,13 @@ Begin VB.Form FormGrayscale
       TabIndex        =   2
       Top             =   5280
       Value           =   3
-      Width           =   4905
+      Width           =   4785
    End
    Begin VB.TextBox txtShades 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -93,12 +93,13 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5400
+      Left            =   5280
+      MaxLength       =   3
       TabIndex        =   1
       Text            =   "3"
       Top             =   5250
       Visible         =   0   'False
-      Width           =   495
+      Width           =   615
    End
    Begin VB.ComboBox cboMethod 
       Appearance      =   0  'Flat
@@ -498,8 +499,7 @@ Private Sub CmdOK_Click()
 
 End Sub
 
-'Initialize the combo box
-Private Sub Form_Load()
+Private Sub Form_Activate()
         
     'Set up the grayscale options combo box
     cboMethod.AddItem "Average value [(R+G+B) / 3]", 0
@@ -1068,11 +1068,13 @@ End Sub
 
 'When the "# of shades" horizontal scroll bar is changed, update the text box to match
 Private Sub hsShades_Change()
-    txtShades.Text = hsShades.Value
+    copyToTextBoxI txtShades, hsShades.Value
+    drawGrayscalePreview
 End Sub
 
 Private Sub hsShades_Scroll()
-    txtShades.Text = hsShades.Value
+    copyToTextBoxI txtShades, hsShades.Value
+    drawGrayscalePreview
 End Sub
 
 'When option buttons are used, update the preview accordingly
@@ -1084,15 +1086,13 @@ Private Sub optDecompose_Click(Index As Integer)
     drawGrayscalePreview
 End Sub
 
-'When the "# of shades" text box is changed, check the value for errors and redraw the preview
-Private Sub txtShades_Change()
-    If EntryValid(txtShades, hsShades.Min, hsShades.Max, False, False) Then
-        hsShades.Value = val(txtShades)
-        drawGrayscalePreview
-    End If
-End Sub
-
 'As a convenience to the user, when they click the "# of shades" text box, automatically select the text for them
 Private Sub txtShades_GotFocus()
     AutoSelectText txtShades
+End Sub
+
+'When the "# of shades" text box is changed, check the value for errors and redraw the preview
+Private Sub txtShades_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtShades
+    If EntryValid(txtShades, hsShades.Min, hsShades.Max, False, False) Then hsShades.Value = val(txtShades)
 End Sub

@@ -83,7 +83,7 @@ Begin VB.Form FormSolarize
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -91,11 +91,12 @@ Begin VB.Form FormSolarize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
+      Height          =   360
       Left            =   5400
+      MaxLength       =   3
       TabIndex        =   0
       Text            =   "127"
-      Top             =   3810
+      Top             =   3795
       Width           =   615
    End
    Begin VB.CommandButton cmdCancel 
@@ -274,8 +275,7 @@ Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Bo
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Create the previews
     DrawPreviewImage picPreview
@@ -288,20 +288,22 @@ End Sub
 
 'When the horizontal scroll bar is moved, update the preview and text box to match
 Private Sub hsThreshold_Change()
-    txtThreshold.Text = hsThreshold.Value
+    copyToTextBoxI txtThreshold, hsThreshold.Value
     SolarizeImage hsThreshold.Value, True, picEffect
 End Sub
 
 Private Sub hsThreshold_Scroll()
-    txtThreshold.Text = hsThreshold.Value
+    copyToTextBoxI txtThreshold, hsThreshold.Value
     SolarizeImage hsThreshold.Value, True, picEffect
 End Sub
 
 'When the text box is changed, update the preview and text box to match (assuming the text box value is valid)
-Private Sub txtThreshold_Change()
+Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtThreshold
     If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = val(txtThreshold)
 End Sub
 
 Private Sub txtThreshold_GotFocus()
     AutoSelectText txtThreshold
 End Sub
+

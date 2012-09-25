@@ -77,7 +77,7 @@ Begin VB.Form FormBlackLight
       TabIndex        =   2
       Top             =   3840
       Value           =   2
-      Width           =   5055
+      Width           =   4935
    End
    Begin VB.TextBox txtIntensity 
       Alignment       =   2  'Center
@@ -92,11 +92,12 @@ Begin VB.Form FormBlackLight
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5520
+      Left            =   5400
+      MaxLength       =   2
       TabIndex        =   3
       Text            =   "2"
       Top             =   3810
-      Width           =   495
+      Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
@@ -296,7 +297,7 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
 
 End Sub
 
-Private Sub Form_Load()
+Private Sub Form_Activate()
 
     'Create a copy of the original image to the preview picture box
     DrawPreviewImage picPreview
@@ -312,20 +313,21 @@ End Sub
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsIntensity_Change()
     fxBlackLight hsIntensity.Value, True, picEffect
-    txtIntensity.Text = hsIntensity.Value
+    copyToTextBoxI txtIntensity, hsIntensity.Value
 End Sub
 
 Private Sub hsIntensity_Scroll()
     fxBlackLight hsIntensity.Value, True, picEffect
-    txtIntensity.Text = hsIntensity.Value
-End Sub
-
-Private Sub txtIntensity_Change()
-    If EntryValid(txtIntensity, hsIntensity.Min, hsIntensity.Max, False, False) Then
-        hsIntensity.Value = val(txtIntensity)
-    End If
+    copyToTextBoxI txtIntensity, hsIntensity.Value
 End Sub
 
 Private Sub txtIntensity_GotFocus()
     AutoSelectText txtIntensity
+End Sub
+
+Private Sub txtIntensity_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtIntensity
+    If EntryValid(txtIntensity, hsIntensity.Min, hsIntensity.Max, False, False) Then
+        hsIntensity.Value = val(txtIntensity)
+    End If
 End Sub

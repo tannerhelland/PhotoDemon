@@ -83,7 +83,7 @@ Begin VB.Form FormRank
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -91,12 +91,13 @@ Begin VB.Form FormRank
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
+      Height          =   360
       Left            =   5400
+      MaxLength       =   2
       TabIndex        =   1
       Text            =   "1"
-      Top             =   4650
-      Width           =   495
+      Top             =   4635
+      Width           =   615
    End
    Begin VB.ComboBox cboRank 
       Appearance      =   0  'Flat
@@ -423,9 +424,8 @@ NextRankPixel:
 
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
-    
+Private Sub Form_Activate()
+   
     'Note the current image's width and height, which will be needed to adjust the preview effect
     iWidth = pdImages(CurrentImage).Width
     iHeight = pdImages(CurrentImage).Height
@@ -448,16 +448,17 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub hsRadius_Change()
-    txtRadius.Text = hsRadius.Value
+    copyToTextBoxI txtRadius, hsRadius.Value
     CustomRankFilter hsRadius.Value, cboRank.ListIndex, True, picEffect
 End Sub
 
 Private Sub hsRadius_Scroll()
-    txtRadius.Text = hsRadius.Value
+    copyToTextBoxI txtRadius, hsRadius.Value
     CustomRankFilter hsRadius.Value, cboRank.ListIndex, True, picEffect
 End Sub
 
-Private Sub txtRadius_Change()
+Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtRadius
     If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = val(txtRadius)
 End Sub
 

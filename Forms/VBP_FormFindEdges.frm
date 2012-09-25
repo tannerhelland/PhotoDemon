@@ -259,8 +259,7 @@ Private Sub CmdOK_Click()
 
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Draw a preview of the current image to the left box
     DrawPreviewImage picPreview

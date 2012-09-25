@@ -155,14 +155,23 @@ Begin VB.Form FormPrint
    End
    Begin VB.TextBox txtCopies 
       Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
       Height          =   285
-      Left            =   6960
+      Left            =   6840
       TabIndex        =   5
       TabStop         =   0   'False
       Text            =   "1"
       Top             =   1590
-      Width           =   390
+      Width           =   510
    End
    Begin VB.PictureBox iSrc 
       Appearance      =   0  'Flat
@@ -300,7 +309,7 @@ Begin VB.Form FormPrint
       Caption         =   "# of Copies:"
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   5985
+      Left            =   5880
       TabIndex        =   11
       Top             =   1620
       Width           =   945
@@ -801,13 +810,13 @@ Private Sub UpdatePaperSize()
     Dim pWidth As Double, pHeight As Double
     pWidth = Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
     pHeight = Printer.ScaleY(Printer.Height, Printer.ScaleMode, vbInches)
-    Dim TxtWidth As String, TxtHeight As String
-    TxtWidth = Format(pWidth, "#0.##")
-    TxtHeight = Format(pHeight, "#0.##")
-    If Right(TxtWidth, 1) = "." Then TxtWidth = Left$(TxtWidth, Len(TxtWidth) - 1)
-    If Right(TxtHeight, 1) = "." Then TxtHeight = Left$(TxtHeight, Len(TxtHeight) - 1)
+    Dim txtWidth As String, txtHeight As String
+    txtWidth = Format(pWidth, "#0.##")
+    txtHeight = Format(pHeight, "#0.##")
+    If Right(txtWidth, 1) = "." Then txtWidth = Left$(txtWidth, Len(txtWidth) - 1)
+    If Right(txtHeight, 1) = "." Then txtHeight = Left$(txtHeight, Len(txtHeight) - 1)
     
-    lblPaperSize = "Paper size: " & TxtWidth & """ x  " & TxtHeight & """"
+    lblPaperSize = "Paper size: " & txtWidth & """ x  " & txtHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
     Dim aspectRatio As Double

@@ -292,8 +292,7 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
         
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Create the image previews
     DrawPreviewImage picPreview

@@ -213,8 +213,7 @@ Private Sub CmdOK_Click()
     End If
 End Sub
 
-'Initialize the preview boxes and the gamma combo box
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     DrawPreviewImage picPreview
     AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
@@ -224,10 +223,8 @@ Private Sub Form_Load()
     
 End Sub
 
-
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
 Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-
 
     If toPreview = False Then Message "Preparing histogram data..."
     
@@ -438,11 +435,13 @@ End Sub
 'When the horizontal scroll bar is moved, change the text box to match
 Private Sub hsIgnore_Change()
     txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")
+    txtIgnore.Refresh
     AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
 End Sub
 
 Private Sub hsIgnore_Scroll()
     txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")
+    txtIgnore.Refresh
     AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
 End Sub
 
@@ -451,6 +450,8 @@ Private Sub txtIgnore_GotFocus()
 End Sub
 
 'If the user changes the gamma value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
-Private Sub txtIgnore_Change()
+Private Sub txtIgnore_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtIgnore, , True
     If EntryValid(txtIgnore, hsIgnore.Min / 100, hsIgnore.Max / 100, False, False) Then hsIgnore.Value = val(txtIgnore) * 100
 End Sub
+

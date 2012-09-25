@@ -77,13 +77,13 @@ Begin VB.Form FormFade
       TabIndex        =   1
       Top             =   3840
       Value           =   50
-      Width           =   5055
+      Width           =   4935
    End
    Begin VB.TextBox txtPercent 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -92,11 +92,12 @@ Begin VB.Form FormFade
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5520
+      Left            =   5400
+      MaxLength       =   3
       TabIndex        =   0
       Text            =   "50"
       Top             =   3810
-      Width           =   495
+      Width           =   615
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
@@ -371,8 +372,7 @@ Public Sub UnfadeImage(Optional ByVal toPreview As Boolean = False, Optional ByR
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Create the previews
     DrawPreviewImage picPreview
@@ -384,22 +384,20 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub hsPercent_Change()
-    txtPercent.Text = hsPercent.Value
+    copyToTextBoxI txtPercent, hsPercent.Value
     FadeImage CSng(hsPercent.Value / 100), True, picEffect
 End Sub
 
 Private Sub hsPercent_Scroll()
-    txtPercent.Text = hsPercent.Value
+    copyToTextBoxI txtPercent, hsPercent.Value
     FadeImage CSng(hsPercent.Value / 100), True, picEffect
-End Sub
-
-Private Sub txtPercent_Change()
-    If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, False, False) Then
-        hsPercent.Value = val(txtPercent)
-    End If
 End Sub
 
 Private Sub txtPercent_GotFocus()
     AutoSelectText txtPercent
 End Sub
 
+Private Sub txtPercent_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtPercent
+    If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, False, False) Then hsPercent.Value = val(txtPercent)
+End Sub

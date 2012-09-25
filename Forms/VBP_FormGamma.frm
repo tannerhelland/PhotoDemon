@@ -56,7 +56,7 @@ Begin VB.Form FormGamma
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -66,6 +66,7 @@ Begin VB.Form FormGamma
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   5400
+      MaxLength       =   4
       TabIndex        =   4
       Text            =   "1.00"
       Top             =   4890
@@ -248,8 +249,7 @@ Private Sub CmdOK_Click()
     End If
 End Sub
 
-'Initialize the preview boxes and the gamma combo box
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Draw a preview of the current image to the left picture box
     DrawPreviewImage picPreview
@@ -363,11 +363,13 @@ End Sub
 'When the horizontal scroll bar is moved, change the text box to match
 Private Sub hsGamma_Change()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
+    txtGamma.Refresh
     GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
 End Sub
 
 Private Sub hsGamma_Scroll()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
+    txtGamma.Refresh
     GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
 End Sub
 
@@ -376,6 +378,7 @@ Private Sub txtGamma_GotFocus()
 End Sub
 
 'If the user changes the gamma value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
-Private Sub txtGamma_Change()
+Private Sub txtGamma_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtGamma, , True
     If EntryValid(txtGamma, hsGamma.Min / 100, hsGamma.Max / 100, False, False) Then hsGamma.Value = val(txtGamma) * 100
 End Sub

@@ -76,7 +76,7 @@ Begin VB.Form FormDiffuse
       TabIndex        =   3
       Top             =   4680
       Value           =   5
-      Width           =   5175
+      Width           =   5055
    End
    Begin VB.HScrollBar hsX 
       Height          =   255
@@ -85,13 +85,13 @@ Begin VB.Form FormDiffuse
       TabIndex        =   1
       Top             =   3840
       Value           =   5
-      Width           =   5175
+      Width           =   5055
    End
    Begin VB.TextBox txtX 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -100,17 +100,17 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5520
+      Left            =   5400
       TabIndex        =   0
       Text            =   "0"
       Top             =   3810
-      Width           =   495
+      Width           =   615
    End
    Begin VB.TextBox txtY 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -119,11 +119,11 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5520
+      Left            =   5400
       TabIndex        =   2
       Text            =   "0"
       Top             =   4650
-      Width           =   495
+      Width           =   615
    End
    Begin VB.CheckBox ChkWrap 
       Appearance      =   0  'Flat
@@ -300,8 +300,7 @@ Private Sub CmdOK_Click()
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     iWidth = pdImages(CurrentImage).Width
@@ -326,39 +325,41 @@ End Sub
 
 'Everything below this line relates to mirroring the input of the textboxes across the scrollbars (and vice versa)
 Private Sub hsX_Change()
-    txtX.Text = hsX.Value
+    copyToTextBoxI txtX, hsX.Value
     If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
 End Sub
 
 Private Sub hsX_Scroll()
-    txtX.Text = hsX.Value
+    copyToTextBoxI txtX, hsX.Value
     If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
 End Sub
 
 Private Sub hsY_Change()
-    txtY.Text = hsY.Value
+    copyToTextBoxI txtY, hsY.Value
     If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
 End Sub
 
 Private Sub hsY_Scroll()
-    txtY.Text = hsY.Value
+    copyToTextBoxI txtY, hsY.Value
     If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
-End Sub
-
-Private Sub txtX_Change()
-    If EntryValid(txtX, hsX.Min, hsX.Max, False, False) Then hsX.Value = val(txtX)
 End Sub
 
 Private Sub txtX_GotFocus()
     AutoSelectText txtX
 End Sub
 
-Private Sub txtY_Change()
-    If EntryValid(txtY, hsY.Min, hsY.Max, False, False) Then hsY.Value = val(txtY)
+Private Sub txtX_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtX
+    If EntryValid(txtX, hsX.Min, hsX.Max, False, False) Then hsX.Value = val(txtX)
 End Sub
 
 Private Sub txtY_GotFocus()
     AutoSelectText txtY
+End Sub
+
+Private Sub txtY_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtY
+    If EntryValid(txtY, hsY.Min, hsY.Max, False, False) Then hsY.Value = val(txtY)
 End Sub
 
 'Custom diffuse effect
@@ -645,5 +646,3 @@ Public Sub DiffuseMore()
     finalizeImageData
 
 End Sub
-
-

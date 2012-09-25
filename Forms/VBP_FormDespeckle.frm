@@ -197,7 +197,7 @@ Public Sub Despeckle(ByVal dThreshold As Long, Optional ByVal toPreview As Boole
     Dim curR As Byte, curG As Byte, curB As Byte
     
     'Loop variable for the despeckle check
-    Dim DX As Long
+    Dim dx As Long
     
     'Whether or not we found this color in our despeckling array
     Dim dFoundColor As Boolean
@@ -226,12 +226,12 @@ Public Sub Despeckle(ByVal dThreshold As Long, Optional ByVal toPreview As Boole
         refB = srcImageData(QuickVal, y)
         
         'Erase despeckle data from the last pixel
-        For DX = 0 To dArrayMax
-            dArrayR(DX) = 0
-            dArrayG(DX) = 0
-            dArrayB(DX) = 0
-            dArrayCount(DX) = 0
-        Next DX
+        For dx = 0 To dArrayMax
+            dArrayR(dx) = 0
+            dArrayG(dx) = 0
+            dArrayB(dx) = 0
+            dArrayCount(dx) = 0
+        Next dx
         
         dArrayMax = 0
         dMost = 0
@@ -267,19 +267,19 @@ Public Sub Despeckle(ByVal dThreshold As Long, Optional ByVal toPreview As Boole
                                         
                         dFoundColor = False
                                         
-                        For DX = 0 To dArrayMax - 1
+                        For dx = 0 To dArrayMax - 1
                     
                             'If this color matches an existing color, increase the count and exit the loop
-                            If curR = dArrayR(DX) And curG = dArrayG(DX) And curB = dArrayB(DX) Then
-                                dArrayCount(DX) = dArrayCount(DX) + 1
-                                If dArrayCount(DX) > dMost Then
-                                    dMost = dArrayCount(DX)
-                                    dMostLoc = DX
+                            If curR = dArrayR(dx) And curG = dArrayG(dx) And curB = dArrayB(dx) Then
+                                dArrayCount(dx) = dArrayCount(dx) + 1
+                                If dArrayCount(dx) > dMost Then
+                                    dMost = dArrayCount(dx)
+                                    dMostLoc = dx
                                     dFoundColor = True
                                 End If
                             End If
                     
-                        Next DX
+                        Next dx
                         
                         'Check to see if this color was found in the array
                         If dFoundColor = False Then
@@ -380,7 +380,7 @@ Public Sub QuickDespeckle(Optional ByVal toPreview As Boolean = False, Optional 
         If ImageData(QuickVal + 2, y) <> refR Or ImageData(QuickVal + 1, y) <> refG Or ImageData(QuickVal, y) <> refB Then
         
             For x2 = x - 1 To x + 1
-                QuickValInner = x2 * 3
+                QuickValInner = x2 * qvDepth
             For y2 = y - 1 To y + 1
                 If (x2 <> x - 1) Or (y2 <> y - 1) Then
                     If (x2 <> x) Or (y2 <> y) Then

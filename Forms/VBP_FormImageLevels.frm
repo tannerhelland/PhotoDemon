@@ -420,8 +420,7 @@ Private Sub CmdOK_Click()
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Draw preview images to the top picture boxes
     DrawPreviewImage picPreview

@@ -76,7 +76,7 @@ End Sub
 
 'Populate a text box with a given integer value.  This is done constantly across the program, so I use a sub to handle it, as
 ' there may be additional validations that need to be performed, and it's nice to be able to adjust those from a single location.
-Public Sub copyToTextBoxI(ByVal srcValue As Long, ByRef dstTextBox As TextBox)
+Public Sub copyToTextBoxI(ByRef dstTextBox As TextBox, ByVal srcValue As Long)
 
     'Remember the current cursor position
     Dim cursorPos As Long

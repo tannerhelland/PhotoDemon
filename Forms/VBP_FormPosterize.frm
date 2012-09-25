@@ -77,13 +77,13 @@ Begin VB.Form FormPosterize
       TabIndex        =   1
       Top             =   3840
       Value           =   7
-      Width           =   4935
+      Width           =   4815
    End
    Begin VB.TextBox txtBits 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -92,11 +92,12 @@ Begin VB.Form FormPosterize
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5400
+      Left            =   5280
+      MaxLength       =   1
       TabIndex        =   0
       Text            =   "7"
       Top             =   3810
-      Width           =   495
+      Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
@@ -188,8 +189,8 @@ Attribute VB_Exposed = False
 'Posterizing Effect Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 6/August/06
-'Last update: previewing, optimization, comments, variable type changes
+'Last updated: 24/September/12
+'Last update: interface overhaul
 '
 'Updated posterizing interface; it has been optimized for speed and
 '  ease-of-implementation.  If only VB had bit-shift operators....
@@ -279,8 +280,7 @@ Public Sub PosterizeImage(ByVal NumOfBits As Byte, Optional ByVal toPreview As B
      
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Create the previews
     DrawPreviewImage picPreview
@@ -293,16 +293,17 @@ End Sub
 
 'The following routines are for keeping the text box and scroll bar values in lock-step
 Private Sub hsBits_Change()
-    txtBits.Text = hsBits.Value
+    copyToTextBoxI txtBits, hsBits.Value
     PosterizeImage hsBits.Value, True, picEffect
 End Sub
 
 Private Sub hsBits_Scroll()
-    txtBits.Text = hsBits.Value
+    copyToTextBoxI txtBits, hsBits.Value
     PosterizeImage hsBits.Value, True, picEffect
 End Sub
 
-Private Sub txtBits_Change()
+Private Sub txtBits_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtBits
     If EntryValid(txtBits, hsBits.Min, hsBits.Max, False, False) Then hsBits.Value = val(txtBits)
 End Sub
 

@@ -474,23 +474,23 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub hsStrength_Change()
-    copyToTextBoxI hsStrength, txtStrength
+    copyToTextBoxI txtStrength, hsStrength
     ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 Private Sub hsStrength_Scroll()
-    copyToTextBoxI hsStrength, txtStrength
+    copyToTextBoxI txtStrength, hsStrength
     ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 'When the hue scroll bar is changed, redraw the preview
 Private Sub hsTemperature_Change()
-    copyToTextBoxI hsTemperature * 100, txtTemperature
+    copyToTextBoxI txtTemperature, hsTemperature * 100
     ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 
 Private Sub hsTemperature_Scroll()
-    copyToTextBoxI hsTemperature * 100, txtTemperature
+    copyToTextBoxI txtTemperature, hsTemperature * 100
     ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
 End Sub
 

@@ -260,8 +260,7 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Create the previews
     DrawPreviewImage picPreview

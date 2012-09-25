@@ -312,9 +312,8 @@ Private Sub CmdOK_Click()
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
-    
+Private Sub Form_Activate()
+  
     'Populate the dither combobox
     cboDither.AddItem "None", 0
     cboDither.AddItem "Ordered (Bayer 4x4)", 1
@@ -341,13 +340,13 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub hsThreshold_Change()
-    copyToTextBoxI hsThreshold.Value, txtThreshold
+    copyToTextBoxI txtThreshold, hsThreshold.Value
     masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
 End Sub
 
 Private Sub hsThreshold_Scroll()
     chkAutoThreshold.Value = vbUnchecked
-    copyToTextBoxI hsThreshold.Value, txtThreshold
+    copyToTextBoxI txtThreshold, hsThreshold.Value
     masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
 End Sub
 

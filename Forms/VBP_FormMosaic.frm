@@ -94,7 +94,7 @@ Begin VB.Form FormMosaic
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -113,7 +113,7 @@ Begin VB.Form FormMosaic
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -348,7 +348,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
         dstYLoop = (y + 1) * BlockSizeY - 1
         
         For i = initXLoop To dstXLoop
-            QuickVal = i * 3
+            QuickVal = i * qvDepth
         For j = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
@@ -379,7 +379,7 @@ NextMosiacPixel1:
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
         For i = initXLoop To dstXLoop
-            QuickVal = i * 3
+            QuickVal = i * qvDepth
         For j = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
@@ -421,9 +421,8 @@ NextMosaicPixel3:
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
-    
+Private Sub Form_Activate()
+
     'Note the current image's width and height, which will be needed to adjust the preview effect
     iWidth = pdImages(CurrentImage).Width
     iHeight = pdImages(CurrentImage).Height
@@ -441,26 +440,27 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub hsHeight_Change()
-    TxtHeight.Text = hsHeight.Value
+    copyToTextBoxI TxtHeight, hsHeight.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsWidth_Change()
-    TxtWidth.Text = hsWidth.Value
+    copyToTextBoxI TxtWidth, hsWidth.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsHeight_Scroll()
-    TxtHeight.Text = hsHeight.Value
+    copyToTextBoxI TxtHeight, hsHeight.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
 Private Sub hsWidth_Scroll()
-    TxtWidth.Text = hsWidth.Value
+    copyToTextBoxI TxtWidth, hsWidth.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
 End Sub
 
-Private Sub txtHeight_Change()
+Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate TxtHeight
     If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = val(TxtHeight)
 End Sub
 
@@ -468,10 +468,12 @@ Private Sub txtHeight_GotFocus()
     AutoSelectText TxtHeight
 End Sub
 
-Private Sub txtWidth_Change()
+Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate TxtWidth
     If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = val(TxtWidth)
 End Sub
 
 Private Sub txtWidth_GotFocus()
     AutoSelectText TxtWidth
 End Sub
+

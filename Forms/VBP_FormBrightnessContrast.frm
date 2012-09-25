@@ -76,7 +76,7 @@ Begin VB.Form FormBrightnessContrast
       Min             =   -100
       TabIndex        =   4
       Top             =   4680
-      Width           =   5055
+      Width           =   4935
    End
    Begin VB.HScrollBar hsBright 
       Height          =   255
@@ -85,13 +85,13 @@ Begin VB.Form FormBrightnessContrast
       Min             =   -255
       TabIndex        =   2
       Top             =   3840
-      Width           =   5055
+      Width           =   4935
    End
    Begin VB.TextBox txtContrast 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -100,17 +100,18 @@ Begin VB.Form FormBrightnessContrast
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5520
+      Left            =   5400
+      MaxLength       =   3
       TabIndex        =   5
       Text            =   "0"
       Top             =   4650
-      Width           =   495
+      Width           =   615
    End
    Begin VB.TextBox txtBrightness 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -119,11 +120,12 @@ Begin VB.Form FormBrightnessContrast
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5520
+      Left            =   5400
+      MaxLength       =   3
       TabIndex        =   3
       Text            =   "0"
       Top             =   3810
-      Width           =   495
+      Width           =   615
    End
    Begin VB.CheckBox chkSample 
       Appearance      =   0  'Flat
@@ -256,11 +258,10 @@ Attribute VB_Exposed = False
 'Last update: better optimized sampled contrast while previewing.  The sampled mean is now calculated only once, then
 '              stored.  This way it doesn't have to be resampled every time the scroll bar is moved.
 '
-'The wonderful brightness/contrast handler.  Everything is done via look-up
-' tables, so it's extremely fast.  It's all linear (not logarithmic; sorry).
-' Maybe someday I'll change that, maybe not... honestly, I probably won't, since
-' brightness and contrast are such stupid functions anyway.  People should be
-' using levels or curves or white balance instead!
+'The central brightness/contrast handler.  Everything is done via look-up tables, so it's extremely fast.
+' It's all linear (not logarithmic; sorry). Maybe someday I'll change that, maybe not... honestly, I probably
+' won't, since brightness and contrast are such stupid functions anyway.  People should be using levels or
+' curves or white balance instead!
 '
 '***************************************************************************
 
@@ -483,9 +484,8 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Op
 
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
-    
+Private Sub Form_Activate()
+
     'Initialize the preview windows
     DrawPreviewImage picPreview
     
@@ -497,40 +497,42 @@ Private Sub Form_Load()
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
-
+    
 End Sub
 
 'Everything below this line is related to updating the text boxes and scroll bars when one or the
 ' other is modified by the user.  When that happens, the preview window also gets updated.
 Private Sub hsBright_Change()
+    copyToTextBoxI txtBrightness, hsBright.Value
     If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
-    txtBrightness.Text = hsBright.Value
 End Sub
 
 Private Sub hsBright_Scroll()
+    copyToTextBoxI txtBrightness, hsBright.Value
     If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
-    txtBrightness.Text = hsBright.Value
 End Sub
 
 Private Sub hsContrast_Change()
+    copyToTextBoxI txtContrast, hsContrast.Value
     If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
-    txtContrast.Text = hsContrast.Value
 End Sub
 
 Private Sub hsContrast_Scroll()
+    copyToTextBoxI txtContrast, hsContrast.Value
     If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
-    txtContrast.Text = hsContrast.Value
-End Sub
-
-Private Sub txtBrightness_Change()
-    If EntryValid(txtBrightness, hsBright.Min, hsBright.Max, False, False) Then hsBright.Value = val(txtBrightness)
 End Sub
 
 Private Sub txtBrightness_GotFocus()
     AutoSelectText txtBrightness
 End Sub
 
-Private Sub txtContrast_Change()
+Private Sub txtBrightness_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtBrightness, True
+    If EntryValid(txtBrightness, hsBright.Min, hsBright.Max, False, False) Then hsBright.Value = val(txtBrightness)
+End Sub
+
+Private Sub txtContrast_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtContrast, True
     If EntryValid(txtContrast, hsContrast.Min, hsContrast.Max, False, False) Then hsContrast.Value = val(txtContrast)
 End Sub
 

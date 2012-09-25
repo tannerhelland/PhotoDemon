@@ -894,8 +894,7 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
+Private Sub Form_Activate()
     
     'Draw the left preview
     DrawPreviewImage picPreview
@@ -1062,6 +1061,7 @@ Private Sub TxtBias_GotFocus()
 End Sub
 
 Private Sub txtBias_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtBias, True
     updatePreview
 End Sub
 
@@ -1070,11 +1070,17 @@ Private Sub TxtF_GotFocus(Index As Integer)
 End Sub
 
 Private Sub TxtF_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
+    textValidate TxtF, True
     updatePreview
 End Sub
 
 Private Sub TxtWeight_GotFocus()
     AutoSelectText TxtWeight
+End Sub
+
+Private Sub TxtWeight_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate TxtWeight, True
+    updatePreview
 End Sub
 
 'When the filter is changed, update the preview to match
@@ -1111,6 +1117,3 @@ Private Sub updatePreview()
     
 End Sub
 
-Private Sub TxtWeight_KeyUp(KeyCode As Integer, Shift As Integer)
-    updatePreview
-End Sub

@@ -83,7 +83,7 @@ Begin VB.Form FormNoise
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -93,6 +93,7 @@ Begin VB.Form FormNoise
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   5400
+      MaxLength       =   3
       TabIndex        =   0
       Text            =   "1"
       Top             =   3810
@@ -103,7 +104,7 @@ Begin VB.Form FormNoise
       Caption         =   "monochromatic noise only"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -115,7 +116,7 @@ Begin VB.Form FormNoise
       Left            =   360
       TabIndex        =   2
       Top             =   4440
-      Width           =   2775
+      Width           =   3255
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "&Cancel"
@@ -330,9 +331,8 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     
 End Sub
 
-'LOAD form
-Private Sub Form_Load()
-    
+Private Sub Form_Activate()
+
     'Create the previews
     DrawPreviewImage picPreview
     AddNoise hsNoise.Value, ChkM.Value, True, picEffect
@@ -344,16 +344,17 @@ End Sub
 
 'The following four routines keep the value of the textbox and scroll bar in lock-step
 Private Sub hsNoise_Change()
-    txtNoise.Text = hsNoise.Value
+    copyToTextBoxI txtNoise, hsNoise.Value
     AddNoise hsNoise.Value, ChkM.Value, True, picEffect
 End Sub
 
 Private Sub hsNoise_Scroll()
-    txtNoise.Text = hsNoise.Value
+    copyToTextBoxI txtNoise, hsNoise.Value
     AddNoise hsNoise.Value, ChkM.Value, True, picEffect
 End Sub
 
-Private Sub txtNoise_Change()
+Private Sub txtNoise_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtNoise
     If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max, False, False) Then hsNoise.Value = val(txtNoise)
 End Sub
 
