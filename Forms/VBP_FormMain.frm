@@ -3,10 +3,10 @@ Begin VB.MDIForm FormMain
    AutoShowChildren=   0   'False
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   8280
+   ClientHeight    =   8475
    ClientLeft      =   225
    ClientTop       =   855
-   ClientWidth     =   13845
+   ClientWidth     =   13785
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
@@ -31,11 +31,11 @@ Begin VB.MDIForm FormMain
       Left            =   0
       ScaleHeight     =   25
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   923
+      ScaleWidth      =   919
       TabIndex        =   6
       TabStop         =   0   'False
-      Top             =   7905
-      Width           =   13845
+      Top             =   8100
+      Width           =   13785
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12240
@@ -58,9 +58,9 @@ Begin VB.MDIForm FormMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   7905
+      Height          =   8100
       Left            =   0
-      ScaleHeight     =   525
+      ScaleHeight     =   538
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   147
       TabIndex        =   0
@@ -371,8 +371,8 @@ Begin VB.MDIForm FormMain
          BorderColor     =   &H80000002&
          X1              =   5
          X2              =   142
-         Y1              =   320
-         Y2              =   320
+         Y1              =   344
+         Y2              =   344
       End
       Begin VB.Label lblRecording 
          Alignment       =   2  'Center
@@ -391,7 +391,7 @@ Begin VB.MDIForm FormMain
          Height          =   735
          Left            =   120
          TabIndex        =   9
-         Top             =   5040
+         Top             =   5280
          Visible         =   0   'False
          Width           =   1935
       End
@@ -408,12 +408,11 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H80000002&
+         ForeColor       =   &H00808080&
          Height          =   195
          Left            =   120
          TabIndex        =   8
-         Top             =   7560
-         Visible         =   0   'False
+         Top             =   4800
          Width           =   1845
       End
       Begin VB.Label lblImgSize 
@@ -1228,7 +1227,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -1264,7 +1263,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub

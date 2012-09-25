@@ -144,18 +144,13 @@ Option Explicit
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
     
-Private Sub Bitmap_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    'Draw the current coordinates to the status bar
-    SetBitmapCoordinates x, y
-End Sub
-
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
 ' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
 
 Private Sub Form_Activate()
 
     'Update the current form variable
-    CurrentImage = val(Me.Tag)
+    CurrentImage = Val(Me.Tag)
     
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
@@ -211,12 +206,12 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_LostFocus()
-    'MsgBox "Lost focus" & Me.Tag
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    SetCoordinates X, Y
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -253,7 +248,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub

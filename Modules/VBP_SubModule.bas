@@ -147,14 +147,34 @@ Public Sub SetProgBarVal(ByVal pbVal As Long)
     End If
 End Sub
 
-'Display the current mouse position in the main form's status bar
-Public Sub SetBitmapCoordinates(ByVal x1 As Long, ByVal y1 As Long)
-    Dim ZoomVal As Single
-    ZoomVal = Zoom.ZoomArray(FormMain.CmbZoom.ListIndex)
-    x1 = FormMain.ActiveForm.HScroll.Value + Int(x1 / ZoomVal)
-    y1 = FormMain.ActiveForm.VScroll.Value + Int(y1 / ZoomVal)
-    FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
-    DoEvents
+'Calculate and display the current mouse position
+Public Sub SetCoordinates(ByVal x1 As Long, ByVal y1 As Long)
+
+    'Only calculate coordinates if they are over the image
+    If (x1 >= pdImages(CurrentImage).targetLeft) And (x1 <= pdImages(CurrentImage).targetLeft + pdImages(CurrentImage).targetWidth) Then
+        
+        If (y1 >= pdImages(CurrentImage).targetTop) And (y1 <= pdImages(CurrentImage).targetTop + pdImages(CurrentImage).targetHeight) Then
+            
+            'Grab the current zoom value
+            Dim ZoomVal As Single
+            ZoomVal = Zoom.ZoomArray(pdImages(CurrentImage).CurrentZoomValue)
+            
+            'Calculate x and y positions, while taking into account zoom and scroll values
+            x1 = pdImages(CurrentImage).containingForm.HScroll.Value + Int((x1 - pdImages(CurrentImage).targetLeft) / ZoomVal)
+            y1 = pdImages(CurrentImage).containingForm.VScroll.Value + Int((y1 - pdImages(CurrentImage).targetTop) / ZoomVal)
+            
+            'When zoomed very far out, the values might be calculated incorrectly.  Force them to the image dimensions if necessary.
+            If x1 < 0 Then x1 = 0
+            If y1 < 0 Then y1 = 0
+            If x1 > pdImages(CurrentImage).Width - 1 Then x1 = pdImages(CurrentImage).Width - 1
+            If y1 > pdImages(CurrentImage).Height - 1 Then y1 = pdImages(CurrentImage).Height - 1
+            
+            FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+            DoEvents
+        
+        End If
+    End If
+    
 End Sub
 
 'Display the specified size in the main form's status bar
