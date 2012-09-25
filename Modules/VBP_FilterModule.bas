@@ -122,7 +122,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
         
         'Run a sub-loop around the current pixel
         For x2 = x - CalcVar To x + CalcVar
-            QuickValInner = x2 * 3
+            QuickValInner = x2 * qvDepth
         For y2 = y - CalcVar To y + CalcVar
         
             CalcX = x2 - x
@@ -635,7 +635,7 @@ Public Sub FilterGridBlur()
         r = 0
         g = 0
         b = 0
-        QuickVal = x * 3
+        QuickVal = x * qvDepth
         For y = initY To finalY
             r = r + ImageData(QuickVal + 2, y)
             g = g + ImageData(QuickVal + 1, y)
@@ -652,7 +652,7 @@ Public Sub FilterGridBlur()
         g = 0
         b = 0
         For x = initX To finalX
-            QuickVal = x * 3
+            QuickVal = x * qvDepth
             r = r + ImageData(QuickVal + 2, y)
             g = g + ImageData(QuickVal + 1, y)
             b = b + ImageData(QuickVal, y)
