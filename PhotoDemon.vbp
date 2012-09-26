@@ -89,6 +89,7 @@ Module=GDI_Plus; Modules\VBP_GDIPlus.bas
 Module=FreeImage_Expanded_Interface; Modules\VBP_FreeImage_Expanded.bas
 Form=Forms\VBP_FormColorTemp.frm
 Form=Forms\VBP_FormEqualize.frm
+Class=pdSelection; Classes\pdSelection.cls
 ResFile32="Resources\PD_icons.RES"
 IconForm="FormMain"
 Startup="Sub Main"

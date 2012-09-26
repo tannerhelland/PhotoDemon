@@ -31,7 +31,7 @@ Attribute VB_Exposed = False
 'These are serious benefits.
 '
 'Note that anything you can do with an hDC property you can do with this class - simply use the getLayerDC function to
-' return the DIB's hDC then do with it what you please.  All functions are heavily commented and should be self-explanatory.
+' return the DIB's hDC, then do with it what you please.  All functions are heavily commented and should be self-explanatory.
 '
 'Note also that this class is treated as a subset of pdImage().  Right now each pdImage object only contains one layer
 ' (the image itself), but in the future a pdImage object could theoretically store many layers.
@@ -118,7 +118,7 @@ End Type
 
 
 'Drawing API functions
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
@@ -133,7 +133,7 @@ Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -344,7 +344,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 End Function
 
 'Give this layer a picture from a standard VB picture object
-Public Function createFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
+Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
 
     'Make sure the picture we're passed isn't empty
     If (Not srcPicture Is Nothing) Then
@@ -384,24 +384,24 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture, Optional force
                     If forceWhiteBackground And (layerColorDepth = 32) Then compositeBackgroundColor
                     
                     'Success!
-                    createFromPicture = True
+                    CreateFromPicture = True
                     Exit Function
                     
                 End If
             
-                createFromPicture = False
+                CreateFromPicture = False
             
             End If
             
-            createFromPicture = False
+            CreateFromPicture = False
         
         End If
         
-        createFromPicture = False
+        CreateFromPicture = False
     
     End If
     
-    createFromPicture = False
+    CreateFromPicture = False
 
 End Function
 
@@ -757,16 +757,16 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = 255, Optional 
     prepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim X As Long, Y As Long, QuickX As Long
     Dim checkAlpha As Byte, tmpAlpha As Single
     
     'Loop through the image, blending colors as we go
-    For x = 0 To layerWidth - 1
-        QuickX = x * 4
-    For y = 0 To layerHeight - 1
+    For X = 0 To layerWidth - 1
+        QuickX = X * 4
+    For Y = 0 To layerHeight - 1
         
         'Access the alpha data for this pixel
-        checkAlpha = iData(QuickX + 3, y)
+        checkAlpha = iData(QuickX + 3, Y)
         
         'Ignore fully opaque pixels.  (This makes the routine much faster.)
         If checkAlpha <> 255 Then
@@ -775,14 +775,14 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = 255, Optional 
             tmpAlpha = CSng(checkAlpha) / 255
             
             'Use that alpha value to blend the current colors with the newly requested color
-            iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), newR, tmpAlpha)
-            iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), newG, tmpAlpha)
-            iData(QuickX, y) = Blend2Colors(iData(QuickX, y), newB, tmpAlpha)
+            iData(QuickX + 2, Y) = Blend2Colors(iData(QuickX + 2, Y), newR, tmpAlpha)
+            iData(QuickX + 1, Y) = Blend2Colors(iData(QuickX + 1, Y), newG, tmpAlpha)
+            iData(QuickX, Y) = Blend2Colors(iData(QuickX, Y), newB, tmpAlpha)
             
         End If
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     'With our compositing complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
