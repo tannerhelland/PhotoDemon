@@ -60,7 +60,6 @@ Private m_dwPicType As PictureTypes
 
 Private m_sTypeName As String
 Private m_sExtension As String
-'
 
 Friend Sub Init(abBits() As Byte, dwSizeHdr, dwOffset As Long, dwSizeImage As Long, dwPicType As PictureTypes)
   m_abItem = abBits
@@ -101,7 +100,10 @@ End Property
 
 Public Property Get Picture() As StdPicture
   If m_dwPicType Then
-    Set Picture = PictureFromBits(m_abItem)
+    
+        Set Picture = New StdPicture
+        Set Picture = PictureFromBits(m_abItem)
+
   End If
 End Property
 

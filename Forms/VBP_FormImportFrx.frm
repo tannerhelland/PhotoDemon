@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormImportFrx 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Import From VB Binary File"
-   ClientHeight    =   5085
+   ClientHeight    =   5445
    ClientLeft      =   45
    ClientTop       =   210
-   ClientWidth     =   6975
+   ClientWidth     =   7710
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,11 +18,45 @@ Begin VB.Form FormImportFrx
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   339
+   ScaleHeight     =   363
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   465
+   ScaleWidth      =   514
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picDemo 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      ForeColor       =   &H80000008&
+      Height          =   2940
+      Left            =   3960
+      ScaleHeight     =   194
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   238
+      TabIndex        =   8
+      Top             =   1440
+      Width           =   3600
+      Begin VB.Label LblData 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "No Image Selected"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   2535
+         Left            =   120
+         TabIndex        =   9
+         Top             =   120
+         Width           =   3315
+      End
+   End
    Begin VB.PictureBox PicLoadImage 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -40,12 +74,12 @@ Begin VB.Form FormImportFrx
       EndProperty
       ForeColor       =   &H80000008&
       Height          =   255
-      Left            =   3360
+      Left            =   240
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   17
-      TabIndex        =   8
-      Top             =   360
+      TabIndex        =   7
+      Top             =   4920
       Visible         =   0   'False
       Width           =   255
    End
@@ -53,9 +87,9 @@ Begin VB.Form FormImportFrx
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   375
-      Left            =   5640
+      Left            =   6360
       TabIndex        =   2
-      Top             =   4560
+      Top             =   4920
       Width           =   1125
    End
    Begin VB.CommandButton CmdOK 
@@ -63,9 +97,9 @@ Begin VB.Form FormImportFrx
       Default         =   -1  'True
       Enabled         =   0   'False
       Height          =   375
-      Left            =   4440
+      Left            =   5160
       TabIndex        =   1
-      Top             =   4560
+      Top             =   4920
       Width           =   1125
    End
    Begin VB.ListBox LstInfo 
@@ -82,38 +116,16 @@ Begin VB.Form FormImportFrx
       Height          =   2940
       Left            =   120
       TabIndex        =   0
-      Top             =   1080
-      Width           =   3495
+      Top             =   1440
+      Width           =   3600
    End
-   Begin VB.Label LblData 
+   Begin VB.Image imgTemp 
       Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "No Image Selected"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   2535
-      Left            =   3960
-      TabIndex        =   7
-      Top             =   1200
-      Width           =   2835
-   End
-   Begin VB.Image Image1 
-      Appearance      =   0  'Flat
-      BorderStyle     =   1  'Fixed Single
-      Height          =   2985
-      Left            =   3840
-      Stretch         =   -1  'True
-      Top             =   1080
-      Width           =   2970
+      Height          =   495
+      Left            =   240
+      Top             =   4680
+      Visible         =   0   'False
+      Width           =   495
    End
    Begin VB.Label lblPreview 
       AutoSize        =   -1  'True
@@ -130,9 +142,9 @@ Begin VB.Form FormImportFrx
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   405
-      Left            =   3840
+      Left            =   3960
       TabIndex        =   6
-      Top             =   720
+      Top             =   1080
       Width           =   1635
    End
    Begin VB.Label Label2 
@@ -151,10 +163,11 @@ Begin VB.Form FormImportFrx
       Height          =   375
       Left            =   120
       TabIndex        =   5
-      Top             =   720
+      Top             =   1080
       Width           =   3495
    End
    Begin VB.Label LblCurFile 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "N/A"
       BeginProperty Font 
@@ -167,11 +180,11 @@ Begin VB.Form FormImportFrx
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   255
-      Left            =   1440
+      Height          =   285
+      Left            =   240
       TabIndex        =   4
-      Top             =   240
-      Width           =   5295
+      Top             =   600
+      Width           =   420
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -204,8 +217,9 @@ Attribute VB_Exposed = False
 'Copyright ©2000-2012 by Tanner Helland
 ' (Some segments adopted from the original version, which is ©1997-1999 by Brad Martinez, http://www.mvps.org - see Outside_ModFrx.bas for more details)
 'Created: 2/14/03
-'Last updated: 5/June/12
-'Last update: if binary import fails, allow the user to try another file
+'Last updated: 26/September/12
+'Last update: vastly improved preview rendering.  Small images are drawn at actual size.  Large images are resized to fit inside the
+'             demonstration picture box (with aspect ratio preserved).
 '
 'Module for importing images from VB binary files.  Allows the user to browse through all data
 ' within the resource file, and optionally load any images (ico, jpeg, whatever) contained therein.
@@ -324,22 +338,57 @@ End Sub
 
 Private Sub LstInfo_Click()
   
+    Dim tmpImportLayer As pdLayer
+    Set tmpImportLayer = New pdLayer
+  
     With m_cff(LstInfo.ListIndex + 1)
         If .PictureType Then
-            Image1.Picture = .Picture
-            CmdOK.Enabled = True
-            LblData.Visible = False
-            DoEvents
+        
+            'Convert the stupid HiMetric size of this StdPicture to pixels
+            Dim imgWidth As Long, imgHeight As Long
+            imgWidth = CInt(picDemo.ScaleX(.Picture.Width, vbHiMetric, vbPixels))
+            imgHeight = CInt(picDemo.ScaleY(.Picture.Height, vbHiMetric, vbPixels))
+        
+            'Icons and small images can be drawn at scale.  Large images must be scaled to the size of the sample picture box
+            If (.PictureType <> ptICO) And ((imgWidth > picDemo.ScaleWidth) Or (imgHeight > picDemo.ScaleHeight)) Then
+        
+                'Use a temporary layer to render the image to the sample picture box
+                tmpImportLayer.CreateFromPicture m_cff(LstInfo.ListIndex + 1).Picture
+                If tmpImportLayer.getLayerWidth <> 0 And tmpImportLayer.getLayerHeight <> 0 Then tmpImportLayer.renderToPictureBox picDemo
+                
+                cmdOK.Enabled = True
+                LblData.Visible = False
+                DoEvents
+            
+            Else
+                
+                picDemo.Picture = LoadPicture("")
+                PicLoadImage.Picture = .Picture
+                
+                'Center the image in the sample area
+                BitBlt picDemo.hDC, (picDemo.ScaleWidth \ 2) - (imgWidth \ 2), (picDemo.ScaleHeight \ 2) - (imgHeight \ 2), imgWidth, imgHeight, PicLoadImage.hDC, 0, 0, vbSrcCopy
+                picDemo.Picture = picDemo.Image
+                picDemo.Refresh
+                
+                cmdOK.Enabled = True
+                LblData.Visible = False
+                DoEvents
+            
+            End If
+            
         Else
-            Image1.Picture = Nothing
+            picDemo.Picture = Nothing
             LblData.Visible = True
-            CmdOK.Enabled = False
+            cmdOK.Enabled = False
             If .ImageSize And (.ImageSize < 2 ^ 15) Then
                 LblData.Caption = "Binary data: " & StrConv(.Bits, vbUnicode)
             Else
                 LblData.Caption = PROGRAMNAME & " is unable to display this data.  It may be from an incompatible version of Visual Basic, the source file may be corrupted, or the data may exceed 32k in size."
             End If
         End If
-  End With
-  
+    End With
+    
+    tmpImportLayer.eraseLayer
+    Set tmpImportLayer = Nothing
+    
 End Sub
