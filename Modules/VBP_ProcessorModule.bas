@@ -262,10 +262,11 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     
     'Mark the software processor as busy
     Processing = True
-    
-    'Set the mouse cursor to an hourglass
+        
+    'Set the mouse cursor to an hourglass and lock the main form (to prevent additional input)
     FormMain.MousePointer = vbHourglass
-    
+    FormMain.Enabled = False
+        
     'If we are to perform the last command, simply replace all the method parameters using data from the
     ' LastFilterCall object, then let the routine carry on as usual
     If pType = LastCommand Then
@@ -776,7 +777,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     ' redraw the active MDI child form icon.
     If (pType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) And (RecordAction <> False) And (pType <> CountColors) Then CreateCustomFormIcon FormMain.ActiveForm
     
-    'Mark the processor as no longer busy
+    'Mark the processor as no longer busy and unlock the main form
+    FormMain.Enabled = True
     Processing = False
     
     Exit Sub
@@ -786,8 +788,9 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
 
 MainErrHandler:
 
-    'Reset the mouse pointer
+    'Reset the mouse pointer and access to the main form
     FormMain.MousePointer = vbDefault
+    FormMain.Enabled = True
 
     'We'll use this string to hold additional error data
     Dim AddInfo As String
