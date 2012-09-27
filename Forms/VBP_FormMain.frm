@@ -1168,7 +1168,7 @@ Private Sub MDIForm_Load()
     
     'After the program has been successfully loaded, change the focus to the Open Image button
     Me.Visible = True
-    cmdOpen.SetFocus
+    If FormMain.Enabled Then cmdOpen.SetFocus
     
     'If the user wants us to check for updates, now's the time to do it
     Dim tmpString As String
@@ -1227,7 +1227,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -1263,7 +1263,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub

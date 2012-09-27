@@ -1,4 +1,4 @@
-PhotoDemon v5.0 - Copyright (c) 2012 by Tanner Helland
+PhotoDemon v5.1 alpha - Copyright (c) 2012 by Tanner Helland
 =====================================================================================
 A free, open-source photo editor and image processing tool.
 http://tannerhelland.com/photodemon
