@@ -17,7 +17,7 @@ Option Explicit
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Const IDC_HAND  As Long = 32649
+Private Const IDC_HAND As Long = 32649
 Private Const GCL_HCURSOR = (-12)
 
 'This variable will hold the value of the loaded hand cursor.  We need to delete it (via DestroyCursor) when the program exits.
@@ -147,32 +147,43 @@ Public Sub SetProgBarVal(ByVal pbVal As Long)
     End If
 End Sub
 
-'Calculate and display the current mouse position
-Public Sub SetCoordinates(ByVal x1 As Long, ByVal y1 As Long)
+'Let a form know whether the mouse pointer is over its image or just the viewport
+Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcForm As Form) As Boolean
 
-    'Only calculate coordinates if they are over the image
-    If (x1 >= pdImages(CurrentImage).targetLeft) And (x1 <= pdImages(CurrentImage).targetLeft + pdImages(CurrentImage).targetWidth) Then
-        
-        If (y1 >= pdImages(CurrentImage).targetTop) And (y1 <= pdImages(CurrentImage).targetTop + pdImages(CurrentImage).targetHeight) Then
-            
-            'Grab the current zoom value
-            Dim ZoomVal As Single
-            ZoomVal = Zoom.ZoomArray(pdImages(CurrentImage).CurrentZoomValue)
-            
-            'Calculate x and y positions, while taking into account zoom and scroll values
-            x1 = pdImages(CurrentImage).containingForm.HScroll.Value + Int((x1 - pdImages(CurrentImage).targetLeft) / ZoomVal)
-            y1 = pdImages(CurrentImage).containingForm.VScroll.Value + Int((y1 - pdImages(CurrentImage).targetTop) / ZoomVal)
-            
-            'When zoomed very far out, the values might be calculated incorrectly.  Force them to the image dimensions if necessary.
-            If x1 < 0 Then x1 = 0
-            If y1 < 0 Then y1 = 0
-            If x1 > pdImages(CurrentImage).Width - 1 Then x1 = pdImages(CurrentImage).Width - 1
-            If y1 > pdImages(CurrentImage).Height - 1 Then y1 = pdImages(CurrentImage).Height - 1
-            
-            FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
-            DoEvents
-        
+    If (x1 >= pdImages(srcForm.Tag).targetLeft) And (x1 <= pdImages(srcForm.Tag).targetLeft + pdImages(srcForm.Tag).targetWidth) Then
+        If (y1 >= pdImages(srcForm.Tag).targetTop) And (y1 <= pdImages(srcForm.Tag).targetTop + pdImages(srcForm.Tag).targetHeight) Then
+            isMouseOverImage = True
+            Exit Function
+        Else
+            isMouseOverImage = False
         End If
+        isMouseOverImage = False
+    End If
+
+End Function
+
+'Calculate and display the current mouse position
+Public Sub displayImageCoordinates(ByVal x1 As Long, ByVal y1 As Long, ByRef srcForm As Form)
+
+    If isMouseOverImage(x1, y1, srcForm) Then
+            
+        'Grab the current zoom value
+        Dim ZoomVal As Single
+        ZoomVal = Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
+            
+        'Calculate x and y positions, while taking into account zoom and scroll values
+        x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
+        y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
+            
+        'When zoomed very far out, the values might be calculated incorrectly.  Force them to the image dimensions if necessary.
+        If x1 < 0 Then x1 = 0
+        If y1 < 0 Then y1 = 0
+        If x1 > pdImages(srcForm.Tag).Width - 1 Then x1 = pdImages(srcForm.Tag).Width - 1
+        If y1 > pdImages(srcForm.Tag).Height - 1 Then y1 = pdImages(srcForm.Tag).Height - 1
+            
+        FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+        'DoEvents
+        
     End If
     
 End Sub

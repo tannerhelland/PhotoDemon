@@ -207,7 +207,21 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    SetCoordinates x, y
+    
+    'Check the location of the mouse to see if it's over the image
+    If isMouseOverImage(x, y, Me) Then
+    
+        Me.MousePointer = 2
+    
+        'Display the image coordinates under the mouse pointer
+        displayImageCoordinates x, y, Me
+    
+    Else
+    
+        Me.MousePointer = 0
+    
+    End If
+    
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
