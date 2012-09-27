@@ -182,6 +182,14 @@ Private Type BITMAPINFO
     Colors(0 To 255) As RGBQUAD
 End Type
 
+'Workaround for VB not exposing an IStream interface
+Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ppstm As Any) As Long
+Private Declare Function GlobalAlloc Lib "kernel32" (ByVal uFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, hGlobal As Long) As Long
+    
 'Start-up and shutdown
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef InputBuf As GDIPlusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
 Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As GDIPlusStatus
@@ -194,6 +202,7 @@ Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GDIPlusStatus
 Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GDIPlusStatus
+Private Declare Function GdipSaveImageToStream Lib "gdiplus" (ByVal Image As Long, ByVal Stream As IUnknown, clsidEncoder As Any, encoderParams As Any) As GDIPlusStatus
 
 'OleCreatePictureIndirect is used to convert GDI+ images to VB's preferred StdPicture
 Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, riid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
@@ -294,7 +303,13 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As S
     
     Message "Creating GDI+ compatible image copy..."
     
-    GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal pdImages(imageID).mainLayer.getLayerDIBits, hImage)
+    'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    If tmpLayer.getLayerColorDepth = 32 And imgFormat = [ImageJPEG] Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    
+    GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
     
     'Certain image formats require extra parameters, and because the values are passed ByRef, they can't be constants
     Dim GIF_EncoderVersion As Long
@@ -411,10 +426,10 @@ End Function
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
 Public Function isGDIPlusAvailable() As Boolean
 
-    Dim GDICheck As GDIPlusStartupInput
-    GDICheck.GDIPlusVersion = 1
+    Dim gdiCheck As GDIPlusStartupInput
+    gdiCheck.GDIPlusVersion = 1
     
-    If (GdiplusStartup(GDIPlusToken, GDICheck) <> [OK]) Then
+    If (GdiplusStartup(GDIPlusToken, gdiCheck) <> [OK]) Then
         isGDIPlusAvailable = False
     Else
         isGDIPlusAvailable = True
@@ -503,3 +518,116 @@ Private Function pvPtrToStrA(ByVal lpsz As Long) As String
     End If
 End Function
 
+'Implementation of an IStream-compatible interface.  Originally accessed from http://read.pudn.com/downloads151/sourcecode/graph/texture_mapping/657997/%E9%80%8F%E6%98%8E%E5%8A%A8%E6%80%81%E6%97%B6%E9%92%9F/Classes/cGDIPlus.cls__.htm
+Private Function CreateStream(byteContent() As Byte, Optional byteOffset As Long = 0&) As IUnknown
+     
+    ' Purpose: Create an IStream-compatible IUnknown interface containing the
+    ' passed byte aray. This IUnknown interface can be passed to GDI+ functions
+    ' that expect an IStream interface -- neat hack
+     
+    On Error GoTo HandleError
+    Dim o_lngLowerBound As Long
+    Dim o_lngByteCount  As Long
+    Dim o_hMem As Long
+    Dim o_lpMem  As Long
+      
+    If iparseIsArrayEmpty(VarPtrArray(byteContent)) = 0& Then ' create a growing stream as needed
+         Call CreateStreamOnHGlobal(0, 1, CreateStream)
+    Else                                        ' create a fixed stream
+         o_lngByteCount = UBound(byteContent) - byteOffset + 1
+         o_hMem = GlobalAlloc(&H2&, o_lngByteCount)
+         If o_hMem <> 0 Then
+             o_lpMem = GlobalLock(o_hMem)
+             If o_lpMem <> 0 Then
+                 CopyMemory ByVal o_lpMem, byteContent(byteOffset), o_lngByteCount
+                 Call GlobalUnlock(o_hMem)
+                 Call CreateStreamOnHGlobal(o_hMem, 1, CreateStream)
+             End If
+         End If
+     End If
+     
+HandleError:
+End Function
+
+'Test if an array has been initialized
+Private Function iparseIsArrayEmpty(FarPointer As Long) As Long
+    CopyMemory iparseIsArrayEmpty, ByVal FarPointer, 4&
+End Function
+
+'Save an image to a PNG stream using GDI+.  Per the current save spec, ImageID must be specified.
+Public Function GDIPlusSavePNGStream(ByVal imageID As Long, ByRef outStream() As Byte, ByRef IIStream As IUnknown) As Boolean
+
+    'Message "Initializing GDI+..."
+
+    'Begin by creating a generic bitmap header for the current layer
+    Dim imgHeader As BITMAPINFO
+    
+    With imgHeader.Header
+        .Size = Len(imgHeader.Header)
+        .Planes = 1
+        .BitCount = pdImages(imageID).mainLayer.getLayerColorDepth
+        .Width = pdImages(imageID).mainLayer.getLayerWidth
+        .Height = -pdImages(imageID).mainLayer.getLayerHeight
+    End With
+
+    'Use GDI+ to create a GDI+-compatible bitmap
+    Dim GDIPlusReturn As Long
+    Dim hImage As Long
+    
+    'Message "Creating GDI+ compatible image copy..."
+    
+    GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal pdImages(imageID).mainLayer.getLayerDIBits, hImage)
+    
+    If GDIPlusReturn <> 0 Then Exit Function
+    
+    'PNG requires extra parameters, and because the values are passed ByRef, they can't be constants
+    Dim PNG_ColorDepth As Long
+    PNG_ColorDepth = pdImages(imageID).mainLayer.getLayerColorDepth
+    
+    'Request an encoder from GDI+ based on the type passed to this routine
+    Dim uEncCLSID As clsid
+    Dim uEncParams As EncoderParameters
+    Dim aEncParams() As Byte
+
+    'Message "Preparing GDI+ encoder for this filetype..."
+    
+    'PNG export
+            pvGetEncoderClsID "image/png", uEncCLSID
+            uEncParams.Count = 1
+            ReDim aEncParams(1 To Len(uEncParams))
+            
+            With uEncParams.Parameter
+                .NumberOfValues = 1
+                .Type = EncoderParameterValueTypeLong
+                .Guid = pvDEFINE_GUID(EncoderColorDepth)
+                .Value = VarPtr(PNG_ColorDepth)
+            End With
+            
+            CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
+        
+    'With our encoder prepared, we can finally continue with the save
+        
+    'Message "Saving the file to memory stream..."
+    
+    'Perform the encode and save
+    
+    'First, create a null stream (IUnknown object)
+    Erase outStream
+    Set IIStream = CreateStream(outStream)
+    
+    GDIPlusReturn = GdipSaveImageToStream(hImage, IIStream, uEncCLSID, aEncParams(1))
+    
+    If GDIPlusReturn <> 0 Then Exit Function
+    
+    'Message "Releasing all temporary image copies..."
+    
+    'Release the GDI+ copy of the image
+    GDIPlusReturn = GdipDisposeImage(hImage)
+    
+    If GDIPlusReturn <> 0 Then Exit Function
+    
+    'Message "Copy complete."
+    
+    GDIPlusSavePNGStream = True
+
+End Function

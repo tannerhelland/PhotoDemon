@@ -118,7 +118,7 @@ End Type
 
 
 'Drawing API functions
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
@@ -133,7 +133,7 @@ Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -161,7 +161,9 @@ Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function OpenClipboard Lib "user32" (ByVal HWnd As Long) As Long
 Private Declare Function CloseClipboard Lib "user32" () As Long
 Private Declare Function SetClipboardData Lib "user32" (ByVal wFormat As Long, ByVal hMem As Long) As Long
+Private Declare Function RegisterClipboardFormat Lib "user32" Alias "RegisterClipboardFormatA" (ByVal lpString As String) As Long
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
+Private Const CLIPBOARD_FORMAT_DIB As Long = 8
 
 'Variables related to the DIB
 'hDC for this layer
@@ -243,7 +245,7 @@ Public Sub copyLayerToClipboard()
     
         'Make sure the clipboard is available and working
         If (OpenClipboard(0) <> 0) Then
-                
+               
             'Get a handle to the current desktop, and create a compatible clipboard device context in it
             Dim desktopHWnd As Long
             desktopHWnd = GetDesktopWindow
@@ -275,6 +277,24 @@ Public Sub copyLayerToClipboard()
                     ' DC we created.
                     EmptyClipboard
                     SetClipboardData CLIPBOARD_FORMAT_BMP, clipboardBMP
+                    
+                    'Also, add a PNG-format copy of the image if GDI+ is available
+                    
+                    'If GDIPlusEnabled Then
+                  '
+                  '      Dim tmpStream() As Byte
+                  '      Dim tmpIIStream As IUnknown
+                  '
+                  '      Dim gdiCheck As Boolean
+                  '      gdiCheck = GDIPlusSavePNGStream(CurrentImage, tmpStream, tmpIIStream)
+                  '
+                  '      Dim lPNG As Long
+                  '      lPNG = RegisterClipboardFormat("PNG")
+                  '
+                  '      SetClipboardData lPNG, VarPtr(tmpIIStream)
+                  '
+                  '  End If
+                                        
                     CloseClipboard
         
                     DeleteDC clipboardDC
@@ -321,7 +341,12 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 
                 'If either dimension of the new image will be smaller than the source, request halftoning
                 If useHalftoning Then
-                    SetStretchBltMode layerDC, STRETCHBLT_HALFTONE
+                    
+                    If srcLayer.getLayerColorDepth = 32 Then
+                        SetStretchBltMode layerDC, STRETCHBLT_COLORONCOLOR
+                    Else
+                        SetStretchBltMode layerDC, STRETCHBLT_HALFTONE
+                    End If
                 Else
                     SetStretchBltMode layerDC, STRETCHBLT_COLORONCOLOR
                 End If
@@ -746,7 +771,7 @@ End Sub
 
 'Pre-composite an image with an alpha-channel against a background color.  Until PhotoDemon is capable of rendering transparent
 ' images itself, this is necessary to give transparent images a white background.
-Public Sub compositeBackgroundColor(Optional ByVal newR As Long = 255, Optional ByVal newG As Long = 255, Optional ByVal newB As Long = 255)
+Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1)
 
     'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
     If layerColorDepth <> 32 Then Exit Sub
@@ -757,16 +782,59 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = 255, Optional 
     prepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-    Dim X As Long, Y As Long, QuickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     Dim checkAlpha As Byte, tmpAlpha As Single
     
+    'If no color is specified, apply a checkerboard pattern
+    Dim r1 As Long, g1 As Long, b1 As Long
+    Dim r2 As Long, g2 As Long, b2 As Long
+    
+    If newR <> -1 Then
+        r1 = newR
+        r2 = newR
+    Else
+        r1 = 153
+        r2 = 102
+    End If
+    
+    If newG <> -1 Then
+        g1 = newG
+        g2 = newG
+    Else
+        g1 = 153
+        g2 = 102
+    End If
+    
+    If newB <> -1 Then
+        b1 = newB
+        b2 = newB
+    Else
+        b1 = 153
+        b2 = 102
+    End If
+    
+    'Make sure the user didn't supply us with bad values
+    If r1 < 0 Then r1 = 0
+    If r2 < 0 Then r2 = 0
+    If g1 < 0 Then g1 = 0
+    If g2 < 0 Then g2 = 0
+    If b1 < 0 Then b1 = 0
+    If b2 < 0 Then b2 = 0
+    
+    If r1 > 255 Then r1 = 255
+    If r2 > 255 Then r2 = 255
+    If g1 > 255 Then g1 = 255
+    If g2 > 255 Then g2 = 255
+    If b1 > 255 Then b1 = 255
+    If b2 > 255 Then b2 = 255
+    
     'Loop through the image, blending colors as we go
-    For X = 0 To layerWidth - 1
-        QuickX = X * 4
-    For Y = 0 To layerHeight - 1
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
         
         'Access the alpha data for this pixel
-        checkAlpha = iData(QuickX + 3, Y)
+        checkAlpha = iData(QuickX + 3, y)
         
         'Ignore fully opaque pixels.  (This makes the routine much faster.)
         If checkAlpha <> 255 Then
@@ -774,15 +842,21 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = 255, Optional 
             'Convert the alpha value to a floating-point variable
             tmpAlpha = CSng(checkAlpha) / 255
             
-            'Use that alpha value to blend the current colors with the newly requested color
-            iData(QuickX + 2, Y) = Blend2Colors(iData(QuickX + 2, Y), newR, tmpAlpha)
-            iData(QuickX + 1, Y) = Blend2Colors(iData(QuickX + 1, Y), newG, tmpAlpha)
-            iData(QuickX, Y) = Blend2Colors(iData(QuickX, Y), newB, tmpAlpha)
+            'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
+            If (((x \ 8) + (y \ 8)) And 1) = 0 Then
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r1, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g1, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b1, tmpAlpha)
+            Else
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r2, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g2, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b2, tmpAlpha)
+            End If
             
         End If
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'With our compositing complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
