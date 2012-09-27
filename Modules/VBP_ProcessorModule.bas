@@ -264,7 +264,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     Processing = True
         
     'Set the mouse cursor to an hourglass and lock the main form (to prevent additional input)
-    FormMain.MousePointer = vbHourglass
+    If LoadForm = False Then Screen.MousePointer = vbHourglass
     FormMain.Enabled = False
         
     'If we are to perform the last command, simply replace all the method parameters using data from the
@@ -760,7 +760,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     
     'Restore the mouse pointer to its default value; if we are running a batch conversion, however, leave it busy
     ' The batch routine will handle restoring the cursor to normal.
-    If MacroStatus <> MacroBATCH Then FormMain.MousePointer = vbDefault
+    If MacroStatus <> MacroBATCH Then Screen.MousePointer = vbDefault
     
     'If the histogram form is visible and images are loaded, redraw the histogram
     If FormHistogram.Visible = True Then
@@ -789,7 +789,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
 MainErrHandler:
 
     'Reset the mouse pointer and access to the main form
-    FormMain.MousePointer = vbDefault
+    Screen.MousePointer = vbDefault
     FormMain.Enabled = True
 
     'We'll use this string to hold additional error data

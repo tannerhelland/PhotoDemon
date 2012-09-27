@@ -813,7 +813,7 @@ Private Sub CmdOK_Click()
             'Certain file extensions require extra attention.  Check for those formats, and send the PhotoDemon_SaveImage
             ' method a specialized string containing any extra information it may require
             If outputExtensions(cmbOutputFormat.ListIndex) = "jpg" Then
-                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFileName, False, val(txtQuality)
+                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFileName, False, Val(txtQuality)
             Else
                 PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFileName
             End If
@@ -867,7 +867,7 @@ Private Sub CmdOK_Click()
     
     MacroStatus = MacroSTOP
     
-    FormMain.MousePointer = vbDefault
+    Screen.MousePointer = vbDefault
     
     'Now we can use the traditional progress bar and message calls
     SetProgBarVal 0
@@ -881,7 +881,7 @@ MacroCanceled:
 
     MacroStatus = MacroSTOP
     
-    FormMain.MousePointer = vbDefault
+    Screen.MousePointer = vbDefault
     
     SetProgBarVal 0
     
@@ -1227,7 +1227,7 @@ Private Sub hsJpegQuality_Scroll()
 End Sub
 
 Private Sub txtQuality_Change()
-    If EntryValid(txtQuality, hsJpegQuality.Min, hsJpegQuality.Max, False, False) Then hsJpegQuality.Value = val(txtQuality)
+    If EntryValid(txtQuality, hsJpegQuality.Min, hsJpegQuality.Max, False, False) Then hsJpegQuality.Value = Val(txtQuality)
 End Sub
 
 Private Sub txtQuality_GotFocus()

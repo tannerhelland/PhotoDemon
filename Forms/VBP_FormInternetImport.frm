@@ -130,7 +130,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     'Normally changing the cursor is handled by the software processor, but because this function routes
     ' internally, we'll make an exception and change it here. Note that everywhere this function can
     ' terminate (and it's many places - a lot can go wrong while downloading) - the cursor needs to be reset.
-    FormMain.MousePointer = vbHourglass
+    Screen.MousePointer = vbHourglass
     
     'Open an Internet session and assign it a handle
     Dim hInternetSession As Long
@@ -141,7 +141,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     If hInternetSession = 0 Then
         MsgBox PROGRAMNAME & " could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbCritical + vbApplicationModal + vbOKOnly, "Internet Connection Error"
         ImportImageFromInternet = False
-        FormMain.MousePointer = 0
+        Screen.MousePointer = 0
         Exit Function
     End If
     
@@ -155,7 +155,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
         MsgBox PROGRAMNAME & " could not locate a valid image at that URL.  Please double-check the path.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbCritical + vbApplicationModal + vbOKOnly, "Online Image Not Found"
         If hInternetSession Then InternetCloseHandle hInternetSession
         ImportImageFromInternet = False
-        FormMain.MousePointer = 0
+        Screen.MousePointer = 0
         Exit Function
     End If
     
@@ -164,7 +164,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     Dim tmpStrBuffer As String
     tmpStrBuffer = String$(1024, 0)
     Call HttpQueryInfo(ByVal hUrl, HTTP_QUERY_CONTENT_LENGTH, ByVal tmpStrBuffer, Len(tmpStrBuffer), 0)
-    downloadSize = CLng(val(tmpStrBuffer))
+    downloadSize = CLng(Val(tmpStrBuffer))
     SetProgBarVal 0
     If downloadSize <> 0 Then SetProgBarMax downloadSize
     
@@ -214,7 +214,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
                 If hInternetSession Then InternetCloseHandle hInternetSession
                 SetProgBarVal 0
                 ImportImageFromInternet = False
-                FormMain.MousePointer = 0
+                Screen.MousePointer = 0
                 Exit Function
             End If
    
@@ -260,7 +260,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
         If hInternetSession Then InternetCloseHandle hInternetSession
         SetProgBarVal 0
         ImportImageFromInternet = False
-        FormMain.MousePointer = 0
+        Screen.MousePointer = 0
         Exit Function
     End If
     
@@ -281,7 +281,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     
     Message "Image download complete. "
     
-    FormMain.MousePointer = 0
+    Screen.MousePointer = 0
     
     ImportImageFromInternet = True
     
