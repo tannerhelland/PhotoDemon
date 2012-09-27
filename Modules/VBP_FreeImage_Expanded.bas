@@ -212,13 +212,6 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     'Release the FreeImage library
     FreeLibrary hFreeImgLib
     
-    'If the loaded image has an alpha-channel, recomposite the image against a white background (by default it will be black)
-    'NOTE: this is now handled prior to drawing.
-    'If dstLayer.getLayerColorDepth = 32 Then
-    '    Message "Performing final alpha channel recomposite..."
-    '    dstLayer.compositeBackgroundColor
-    'End If
-    
     'Mark this load as successful
     LoadFreeImageV3_Advanced = True
     
