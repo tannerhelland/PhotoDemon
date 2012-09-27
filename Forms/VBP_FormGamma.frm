@@ -229,7 +229,7 @@ Option Explicit
 
 'Update the preview when the user changes the channel combo box
 Private Sub CboChannel_Click()
-    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
+    GammaCorrect CSng(Val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
 End Sub
 
 'CANCEL button
@@ -242,7 +242,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
     If EntryValid(txtGamma, hsGamma.Min / 100, hsGamma.Max / 100) Then
         Me.Visible = False
-        Process GammaCorrection, CSng(val(txtGamma)), CByte(CboChannel.ListIndex)
+        Process GammaCorrection, CSng(Val(txtGamma)), CByte(CboChannel.ListIndex)
         Unload Me
     Else
         AutoSelectText txtGamma
@@ -262,7 +262,7 @@ Private Sub Form_Activate()
     DoEvents
     
     'Now, draw a preview of the gamma effect to the right picture box
-    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
+    GammaCorrect CSng(Val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -273,7 +273,7 @@ End Sub
 ' Inputs: new gamma level, which channels to adjust (r/g/b/all), and optional preview information
 Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
      
-    If toPreview = False Then Message "Colorizing image..."
+    If toPreview = False Then Message "Adjusting gamma values..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -364,13 +364,13 @@ End Sub
 Private Sub hsGamma_Change()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
     txtGamma.Refresh
-    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
+    GammaCorrect CSng(Val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
 End Sub
 
 Private Sub hsGamma_Scroll()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
     txtGamma.Refresh
-    GammaCorrect CSng(val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
+    GammaCorrect CSng(Val(txtGamma)), CByte(CboChannel.ListIndex), True, picEffect
 End Sub
 
 Private Sub txtGamma_GotFocus()
@@ -380,5 +380,5 @@ End Sub
 'If the user changes the gamma value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
 Private Sub txtGamma_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtGamma, , True
-    If EntryValid(txtGamma, hsGamma.Min / 100, hsGamma.Max / 100, False, False) Then hsGamma.Value = val(txtGamma) * 100
+    If EntryValid(txtGamma, hsGamma.Min / 100, hsGamma.Max / 100, False, False) Then hsGamma.Value = Val(txtGamma) * 100
 End Sub
