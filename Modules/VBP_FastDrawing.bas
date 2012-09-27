@@ -220,6 +220,9 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
     Else
     
+        'If the current layer is 32bpp, precomposite it against white before rendering
+        If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor
+    
         'Allow workingLayer to paint itself to the target picture box
         workingLayer.renderToPictureBox previewPictureBox
         

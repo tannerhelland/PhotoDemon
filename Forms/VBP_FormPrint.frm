@@ -155,15 +155,6 @@ Begin VB.Form FormPrint
    End
    Begin VB.TextBox txtCopies 
       Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   &H00800000&
       Height          =   285
       Left            =   6840
@@ -530,13 +521,13 @@ Private Sub CmdOK_Click()
     Message "Sending image to printer..."
     
     'Before printing anything, check to make sure the textboxes have valid input
-    If Not (NumberValid(txtCopies.Text) And RangeValid(val(txtCopies.Text), 1, 1000)) Then
+    If Not (NumberValid(txtCopies.Text) And RangeValid(Val(txtCopies.Text), 1, 1000)) Then
         AutoSelectText txtCopies
         Exit Sub
     End If
 
     'Set the number of copies
-    Printer.Copies = val(txtCopies.Text)
+    Printer.Copies = Val(txtCopies.Text)
       
     'Assuming there have been no errors thus far (basically, assuming the user actually has a printer attatched)...
     If (Err = 0) Then
@@ -746,12 +737,12 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
     
     'Draw a new preview
     If cbOrientation.ListIndex = 0 Then
-        DrawPreviewImage picThumb
+        DrawPreviewImage picThumb, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
         StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewWidth, pdImages(CurrentImage).mainLayer.PreviewHeight, vbSrcCopy
     Else
-        DrawPreviewImage picThumb90
+        DrawPreviewImage picThumb90, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
         StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewHeight, pdImages(CurrentImage).mainLayer.PreviewWidth, vbSrcCopy
@@ -777,7 +768,7 @@ Private Sub RebuildPreview(Optional forceDPI As Boolean = False)
         picThumb.Picture = LoadPicture("")
         picThumb.Width = iSrc.Width
         picThumb.Height = iSrc.Height
-        DrawPreviewImage picThumb
+        DrawPreviewImage picThumb, , , True
         
         'Now we need to get the source image at the size expected post-rotation
         picThumb90.Picture = LoadPicture("")
@@ -787,7 +778,7 @@ Private Sub RebuildPreview(Optional forceDPI As Boolean = False)
         picThumbFinal.Width = iSrc.Width
         picThumbFinal.Height = iSrc.Height
 
-        DrawPreviewImage picThumb90
+        DrawPreviewImage picThumb90, , , True
         
         'Now comes the rotation itself.
         picThumbFinal.Picture = FreeImage_RotateIOP(picThumb90.Picture, 90)

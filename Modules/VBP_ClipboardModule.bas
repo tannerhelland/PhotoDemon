@@ -18,7 +18,19 @@ Private Const CLIPBOARD_FORMAT_METAFILE As Long = 3
 
 'Copy image
 Public Sub ClipboardCopy()
-    pdImages(CurrentImage).mainLayer.copyLayerToClipboard
+    
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then
+        pdImages(CurrentImage).mainLayer.copyLayerToClipboard
+    Else
+    
+        'For transparent images, make a copy, pre-multiply it against white, then copy THAT to the clipboard
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+        tmpLayer.compositeBackgroundColor 255, 255, 255
+        tmpLayer.copyLayerToClipboard
+    End If
+    
 End Sub
 
 'Empty the clipboard
@@ -29,8 +41,8 @@ End Sub
 'Paste an image (e.g. create a new image based on data in the clipboard
 Public Sub ClipboardPaste()
     
-    'Make sure the clipboard format is a bitmap or metafile
-    If (Clipboard.GetFormat(CLIPBOARD_FORMAT_BMP) = True) Or (Clipboard.GetFormat(CLIPBOARD_FORMAT_METAFILE) = True) Then
+    'Make sure the clipboard format is a bitmap
+    If Clipboard.GetFormat(CLIPBOARD_FORMAT_BMP) Then
         
         'Copy the image into an StdPicture object
         Dim tmpPicture As StdPicture
@@ -39,7 +51,7 @@ Public Sub ClipboardPaste()
         'Create a temporary layer and copy the temporary StdPicture object into it
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
-        tmpLayer.createFromPicture tmpPicture
+        tmpLayer.CreateFromPicture tmpPicture
         
         'Ask the layer to write its contents to file in BMP format
         Dim tmpClipboardFile As String

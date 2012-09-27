@@ -143,9 +143,15 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
     
     Message "Preparing image..."
     
+    'Copy the image into a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
     'Use that handle to save the image to PPM format (ASCII)
     If fi_DIB <> 0 Then
@@ -229,9 +235,15 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
     
     Message "Preparing image..."
     
+    'Copy the image into a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then

@@ -14,13 +14,33 @@ Attribute VB_Name = "Drawing"
 Option Explicit
 
 'Used to draw the main image onto a preview picture box
-Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdLayer)
+Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdLayer, Optional forceWhiteBackground As Boolean = False)
+    
+    Dim tmpLayer As pdLayer
     
     'Normally this will draw a preview of FormMain.ActiveForm's relevant image.  However, another picture source can be specified.
     If useOtherPictureSrc = False Then
-        pdImages(CurrentImage).mainLayer.renderToPictureBox dstPicture
+        
+        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+            Set tmpLayer = New pdLayer
+            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+            If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
+            tmpLayer.renderToPictureBox dstPicture
+        Else
+            pdImages(CurrentImage).mainLayer.renderToPictureBox dstPicture
+        End If
+        
     Else
-        otherPictureSrc.renderToPictureBox dstPicture
+    
+        If otherPictureSrc.getLayerColorDepth = 32 Then
+            Set tmpLayer = New pdLayer
+            tmpLayer.createFromExistingLayer otherPictureSrc
+            If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
+            tmpLayer.renderToPictureBox dstPicture
+        Else
+            otherPictureSrc.renderToPictureBox dstPicture
+        End If
+        
     End If
     
 End Sub

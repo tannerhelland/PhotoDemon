@@ -533,7 +533,7 @@ End Sub
 
 Private Sub TxtB_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate TxtB
-    If EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then hsBlue.Value = val(TxtB)
+    If EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then hsBlue.Value = Val(TxtB)
 End Sub
 
 Private Sub TxtB_GotFocus()
@@ -542,7 +542,7 @@ End Sub
 
 Private Sub TxtG_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate TxtG
-    If EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) Then hsGreen.Value = val(TxtG)
+    If EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) Then hsGreen.Value = Val(TxtG)
 End Sub
 
 Private Sub TxtG_GotFocus()
@@ -551,7 +551,7 @@ End Sub
 
 Private Sub TxtR_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate TxtR
-    If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) Then hsRed.Value = val(TxtR)
+    If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) Then hsRed.Value = Val(TxtR)
 End Sub
 
 Private Sub TxtR_GotFocus()
@@ -561,7 +561,7 @@ End Sub
 'This lets the user know the max number of colors that the current set of quantization parameters will allow for
 Private Sub updateColorLabel()
     If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then
-        lblMaxColors = "These parameters allow for a maximum of " & val(TxtR) * val(TxtG) * val(TxtB) & " colors in the quantized image."
+        lblMaxColors = "These parameters allow for a maximum of " & Val(TxtR) * Val(TxtG) * Val(TxtB) & " colors in the quantized image."
         updateReductionPreview
     Else
         lblMaxColors = "Color count could not be calculated due to invalid text box values."
@@ -621,10 +621,13 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
         
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long
+        Dim tmp_fi_DIB As Long
         
         If toPreview Then
+            If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor 255, 255, 255
             fi_DIB = FreeImage_CreateFromDC(workingLayer.getLayerDC)
         Else
+            If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then pdImages(CurrentImage).mainLayer.compositeBackgroundColor 255, 255, 255
             fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
         End If
         
@@ -632,12 +635,15 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
         If fi_DIB <> 0 Then
             
             Dim returnDIB As Long
+            
             returnDIB = FreeImage_ColorQuantizeEx(fi_DIB, qMethod, True)
             
             'If this is a preview, render it to the temporary layer.  Otherwise, use the current main layer.
             If toPreview Then
+                workingLayer.createBlank workingLayer.getLayerWidth, workingLayer.getLayerHeight, 24
                 SetDIBitsToDevice workingLayer.getLayerDC, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, 0, 0, 0, workingLayer.getLayerHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             Else
+                pdImages(CurrentImage).mainLayer.createBlank pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, 24
                 SetDIBitsToDevice pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, 0, 0, 0, pdImages(CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             End If
             
