@@ -206,12 +206,12 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    SetCoordinates X, Y
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    SetCoordinates x, y
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -248,7 +248,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -275,8 +275,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             
             'Generate our save message
             Dim saveMsg As String
-            Me.SetFocus
-            DoEvents
+            If FormMain.Enabled Then
+                Me.SetFocus
+                DoEvents
+            End If
             saveMsg = "This image (""" & pdImages(Me.Tag).OriginalFileNameAndExtension & """) has not been saved.  Would you like to save it now?"
             
             'If this file exists on disk, warn them that this will initiate a SAVE, not a SAVE AS

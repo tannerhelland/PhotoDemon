@@ -76,7 +76,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     
     frm.Show
     frm.Caption = "Loading image (" & RandPercent & "%)..."
-    frm.SetFocus
+    If FormMain.Enabled Then frm.SetFocus
     
     'Set this image as the current one
     CurrentImage = NumOfImagesLoaded

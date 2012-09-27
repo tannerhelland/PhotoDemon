@@ -88,7 +88,7 @@ Public Sub Twain32Scan()
         
         Message "Image acquired successfully "
         
-        FormMain.SetFocus
+        If FormMain.Enabled Then FormMain.SetFocus
     Else
         'If the scan was unsuccessful, let the user know what happened
         GoTo ScanError
