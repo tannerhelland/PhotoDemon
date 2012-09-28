@@ -143,6 +143,9 @@ Option Explicit
 
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
+
+'Track mouse button use on this form
+Dim lMouseDown As Boolean, rMouseDown As Boolean
     
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
 ' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
@@ -206,26 +209,51 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+'Track which mouse buttons are pressed
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If Button = vbLeftButton Then lMouseDown = True
+    If Button = vbRightButton Then rMouseDown = True
+End Sub
+
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
-    'Check the location of the mouse to see if it's over the image
-    If isMouseOverImage(x, y, Me) Then
+    'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
+    Dim imgX As Long, imgY As Long
+    imgX = -1
+    imgY = -1
     
-        Me.MousePointer = 2
+    'Check the left mouse button
+    If lMouseDown Then
     
-        'Display the image coordinates under the mouse pointer
-        displayImageCoordinates x, y, Me
     
     Else
     
-        Me.MousePointer = 0
-    
+        'Check the location of the mouse to see if it's over the image
+        If isMouseOverImage(X, Y, Me) Then
+        
+            Me.MousePointer = 2
+        
+            'Display the image coordinates under the mouse pointer
+            displayImageCoordinates X, Y, Me
+        
+        Else
+        
+            Me.MousePointer = 0
+        
+        End If
+        
     End If
     
 End Sub
 
+'Track which mouse buttons are released
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If Button = vbLeftButton Then lMouseDown = False
+    If Button = vbRightButton Then rMouseDown = False
+End Sub
+
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -262,7 +290,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub

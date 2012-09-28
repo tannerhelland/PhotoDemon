@@ -127,8 +127,11 @@ Option Explicit
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user
     Public forInternalUseOnly As Boolean
     
-    'Layer's image data (stored as a DIB inside the mainLayer object)
+    'Image's actual image data (stored as a DIB inside the mainLayer object)
     Public mainLayer As pdLayer
+    
+    'Image's selection data (stored and handled by a mainSelection object)
+    Public mainSelection As pdSelection
     
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface

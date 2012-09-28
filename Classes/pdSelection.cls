@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 27/September/12
+'Last updated: 28/September/12
 'Last update: continued work on initial build
 '
 'This class handles all selections in PhotoDemon.  At present, selections are simply rectangular areas - but this will change
@@ -33,6 +33,14 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Public Enum SelectionType
+    sRectangle = 0
+    sSquare = 1
+    sCircle = 2
+End Enum
+
+Private sType As SelectionType
+
 Private x1 As Long, x2 As Long
 Private y1 As Long, y2 As Long
 
@@ -40,6 +48,11 @@ Private lockedIn As Boolean
 
 Public Left As Long, Top As Long
 Public Width As Long, Height As Long
+
+'Set a selection type
+Public Sub setSelectionType(ByVal selType As SelectionType)
+    sType = selType
+End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and stores them internally
 Public Sub setInitialCoordinates(ByVal x As Long, y As Long)
@@ -49,8 +62,11 @@ Public Sub setInitialCoordinates(ByVal x As Long, y As Long)
     
     x1 = x
     y1 = y
-    x2 = x
-    y2 = y
+    
+    If sType = sRectangle Then
+        x2 = x
+        y2 = y
+    End If
     
 End Sub
 
@@ -95,8 +111,11 @@ Public Sub renderIntermediate()
 
 End Sub
 
-'Render the final, locked in selection onto a given image.  This emphasizes quality over
+'Render the final, locked in selection onto a given image.  This emphasizes quality over speed.
 Public Sub renderFinal()
+
+    'Make sure the selection is locked in.  If it isn't, exit.
+    If lockedIn = False Then Exit Sub
 
 End Sub
 

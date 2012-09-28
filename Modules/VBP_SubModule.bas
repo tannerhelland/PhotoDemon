@@ -162,8 +162,10 @@ Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcFo
 
 End Function
 
-'Calculate and display the current mouse position
-Public Sub displayImageCoordinates(ByVal x1 As Long, ByVal y1 As Long, ByRef srcForm As Form)
+'Calculate and display the current mouse position.
+' INPUTS: x and y coordinates of the mouse cursor, current form, and optionally two long-type variables to receive the relative
+'          coordinates (e.g. location on the image) of the current mouse position.
+Public Sub displayImageCoordinates(ByVal x1 As Long, ByVal y1 As Long, ByRef srcForm As Form, Optional ByRef copyX As Long, Optional ByRef copyY As Long)
 
     If isMouseOverImage(x1, y1, srcForm) Then
             
@@ -180,7 +182,11 @@ Public Sub displayImageCoordinates(ByVal x1 As Long, ByVal y1 As Long, ByRef src
         If y1 < 0 Then y1 = 0
         If x1 > pdImages(srcForm.Tag).Width - 1 Then x1 = pdImages(srcForm.Tag).Width - 1
         If y1 > pdImages(srcForm.Tag).Height - 1 Then y1 = pdImages(srcForm.Tag).Height - 1
-            
+        
+        'If the user has requested copies of these coordinates, assign them now
+        If copyX Then copyX = x1
+        If copyY Then copyY = y1
+        
         FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
         'DoEvents
         
