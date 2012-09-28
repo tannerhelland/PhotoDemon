@@ -129,9 +129,9 @@ Option Explicit
     
     'Color operations; numbers 600-699
     '-Rechanneling
-    Public Const RechannelBlue As Long = 600
-    Public Const RechannelGreen As Long = 601
-    Public Const RechannelRed As Long = 602
+    Public Const Rechannel As Long = 600
+    Public Const RechannelGreen As Long = 601   'This is here for legacy reasons only
+    Public Const RechannelRed As Long = 602     'This is here for legacy reasons only
     '-Shifting
     Public Const ColorShiftLeft As Long = 603
     Public Const ColorShiftRight As Long = 604
@@ -557,12 +557,18 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     'Color operations
     If pType >= 600 And pType <= 699 Then
         Select Case pType
-            Case RechannelBlue
-                MenuRechannel pOPCODE
+            Case Rechannel
+                If LoadForm = True Then
+                    FormRechannel.Show 1, FormMain
+                Else
+                    FormRechannel.RechannelImage CLng(pOPCODE)
+                End If
+            'RechannelGreen and RechannelRed are only included for legacy reasons
             Case RechannelGreen
-                MenuRechannel pOPCODE
+                FormRechannel.RechannelImage pOPCODE
             Case RechannelRed
-                MenuRechannel pOPCODE
+                FormRechannel.RechannelImage pOPCODE
+            '------
             Case ColorShiftLeft
                 MenuCShift pOPCODE
             Case ColorShiftRight
@@ -1023,12 +1029,14 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Edge Enhance"
             
         'Color operations; numbers 600-699
-        Case RechannelBlue
-            GetNameOfProcess = "Rechannel (Blue)"
+        Case Rechannel
+            GetNameOfProcess = "Rechannel"
+        'Rechannel Green and Red are only included for legacy reasons
         Case RechannelGreen
             GetNameOfProcess = "Rechannel (Green)"
         Case RechannelRed
             GetNameOfProcess = "Rechannel (Red)"
+        '-------
         Case ColorShiftLeft
             GetNameOfProcess = "Shift Colors (Left)"
         Case ColorShiftRight

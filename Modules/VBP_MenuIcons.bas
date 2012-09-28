@@ -313,11 +313,11 @@ Public Sub LoadMenuIcons()
             '--> Color-Shift sub-menu
             .PutImageToVBMenu 53, 0, 4, 8   'Shift Right
             .PutImageToVBMenu 54, 1, 4, 8   'Shift Left
-        .PutImageToVBMenu 57, 9, 4      'Rechannel
+        .PutImageToVBMenu 55, 9, 4      'Rechannel
             '--> Rechannel sub-menu
-            .PutImageToVBMenu 55, 0, 4, 9   'Red
-            .PutImageToVBMenu 56, 1, 4, 9   'Green
-            .PutImageToVBMenu 57, 2, 4, 9   'Blue
+            '.PutImageToVBMenu 55, 0, 4, 9   'Red
+            '.PutImageToVBMenu 56, 1, 4, 9   'Green
+            '.PutImageToVBMenu 57, 2, 4, 9   'Blue
         .PutImageToVBMenu 58, 11, 4      'Black and White
         .PutImageToVBMenu 59, 12, 4      'Colorize
         .PutImageToVBMenu 60, 13, 4      'Enhance

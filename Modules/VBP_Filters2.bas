@@ -822,7 +822,7 @@ Public Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long
 End Sub
 
 'Return the maximum of three variables
-Private Function Maximum(rR As Single, rG As Single, rB As Single) As Single
+Public Function Maximum(rR As Single, rG As Single, rB As Single) As Single
    If (rR > rG) Then
       If (rR > rB) Then
          Maximum = rR
@@ -839,7 +839,7 @@ Private Function Maximum(rR As Single, rG As Single, rB As Single) As Single
 End Function
 
 'Return the minimum of three variables
-Private Function Minimum(rR As Single, rG As Single, rB As Single) As Single
+Public Function Minimum(rR As Single, rG As Single, rB As Single) As Single
    If (rR < rG) Then
       If (rR < rB) Then
          Minimum = rR
