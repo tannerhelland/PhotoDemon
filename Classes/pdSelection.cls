@@ -78,7 +78,23 @@ Private Const HS_DIAGCROSS = 5
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 
 'Rectangle drawing
+Private Type RECT
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+
+'Stock object retrieval
+Private Const NULL_BRUSH = 5
+Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
+
+'RasterOp selection
+Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
 
 'What type of selection is this?
 Public Enum SelectionType
@@ -190,17 +206,76 @@ Public Sub renderIntermediate(ByRef dstForm As Form, ByVal imgLeft As Long, ByVa
     dstY1 = (y1 * ZoomVal) + imgTop - dstForm.VScroll.Value
     dstY2 = (y2 * ZoomVal) + imgTop - dstForm.VScroll.Value
     
+    'Store the destination DC to a local variable
+    Static dstDC As Long
+    dstDC = pdImages(dstForm.Tag).backBuffer.getLayerDC
+    
     'Since we'll be using the API to draw our selection area, we need to initialize several brushes
     Dim hPen As Long, hOldPen As Long
-    Dim hBrush As Long, hOldBrush As Long
     
-    hPen = CreatePen(PS_DOT, 0, RGB(255, 255, 255))
+    hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
+    hOldPen = SelectObject(dstDC, hPen)
+    
+    'Get a transparent brush
+    Dim hBrush As Long, hOldBrush As Long
+    hBrush = GetStockObject(NULL_BRUSH)
+    hOldBrush = SelectObject(dstDC, hBrush)
+    
+    'Change the rasterOp to XOR (this will invert the line)
+    SetROP2 dstDC, vbSrcInvert
+    
+    'Draw the rectangle
+    Rectangle dstDC, dstX1, dstY1, dstX2, dstY2
+    
+    'Restore the normal COPY rOp
+    SetROP2 dstDC, vbSrcCopy
+    
+    'Remove the brush from the DC
+    SelectObject dstDC, hOldBrush
+    DeleteObject hBrush
+    
+    'Remove the pen from the DC
+    SelectObject dstDC, hOldPen
+    DeleteObject hPen
+    
+    Exit Sub
+    
+    'Figure out left/top/right/bottom values
+    Dim tmpLeft As Long, tmpTop As Long, tmpRight As Long, tmpBottom As Long
+    If dstX1 < dstX2 Then
+        tmpLeft = dstX1
+        tmpRight = dstX2
+    Else
+        tmpLeft = dstX2
+        tmpRight = dstX1
+    End If
+    
+    If dstY1 < dstY2 Then
+        tmpTop = dstY1
+        tmpBottom = dstY2
+    Else
+        tmpTop = dstY2
+        tmpBottom = dstY1
+    End If
+    
+    Dim r As RECT
+        
+    r.Left = tmpLeft - 1
+    r.Top = tmpTop - 1
+    r.Right = tmpRight + 1
+    r.Bottom = tmpBottom + 1
+    
+    'Set the coordinates of the rectangle
+    'rReturn = SetRect(r, dstX1, dstY1, dstX2, dstY2)
+        
+    'Use DrawFocusRect to draw an inverted rectangle on the buffer
+    'DrawFocusRect pdImages(dstForm.Tag).backBuffer.getLayerDC, r
     
     'Draw a box onto this image's front buffer
-    dstForm.FrontBuffer.Line (dstX2, dstY2)-(dstX2, dstY1)
-    dstForm.FrontBuffer.Line (dstX2, dstY2)-(dstX1, dstY2)
-    dstForm.FrontBuffer.Line (dstX1, dstY1)-(dstX2, dstY1)
-    dstForm.FrontBuffer.Line (dstX1, dstY1)-(dstX1, dstY2)
+    'dstForm.FrontBuffer.Line (dstX2, dstY2)-(dstX2, dstY1)
+    'dstForm.FrontBuffer.Line (dstX2, dstY2)-(dstX1, dstY2)
+    'dstForm.FrontBuffer.Line (dstX1, dstY1)-(dstX2, dstY1)
+    'dstForm.FrontBuffer.Line (dstX1, dstY1)-(dstX1, dstY2)
     
 End Sub
 
@@ -208,11 +283,11 @@ End Sub
 Public Sub renderFinal(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long)
 
     'Make sure the selection is locked in.  If it isn't, we probably meant to draw an intermediate region.  Call that and exit.
-    If lockedIn = False Then
-        renderIntermediate dstForm, imgLeft, imgTop
-        Exit Sub
-    End If
-    
+    'If lockedIn = False Then
+    '    renderIntermediate dstForm, imgLeft, imgTop
+    '    Exit Sub
+    'End If
+        
     'Before drawing, we need to convert our "image" coordinates back to "viewport" coordinates
     Static ZoomVal As Single
     ZoomVal = Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
