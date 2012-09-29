@@ -97,12 +97,11 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     If pdImages(formToBuffer.Tag).selectionActive Then
     
         'If it is, check to see if it's locked in
-        'If pdImages(formToBuffer.Tag).mainSelection.isLockedIn Then
-        '    formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
-        '    pdImages(formToBuffer.Tag).mainSelection.renderFinal formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight
-        'Else
-        '    pdImages(formToBuffer.Tag).mainSelection.renderIntermediate formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop
-        'End If
+        If pdImages(formToBuffer.Tag).mainSelection.isLockedIn Then
+            pdImages(formToBuffer.Tag).mainSelection.renderFinal formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight
+        Else
+            pdImages(formToBuffer.Tag).mainSelection.renderIntermediate formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop
+        End If
     
     End If
         
@@ -110,7 +109,6 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     formToBuffer.Picture = LoadPicture("")
     BitBlt formToBuffer.hDC, 0, 0, pdImages(formToBuffer.Tag).backBuffer.getLayerWidth, pdImages(formToBuffer.Tag).backBuffer.getLayerHeight, pdImages(formToBuffer.Tag).backBuffer.getLayerDC, 0, 0, vbSrcCopy
     formToBuffer.Picture = formToBuffer.Image
-    'formToBuffer.Refresh
     
     'If we don't fire DoEvents here, the image will only scroll after the mouse button is released.
     DoEvents
