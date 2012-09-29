@@ -346,12 +346,12 @@ Private Sub LstInfo_Click()
         If .PictureType Then
         
             'Convert the stupid HiMetric size of this StdPicture to pixels
-            Dim ImgWidth As Long, ImgHeight As Long
-            ImgWidth = CInt(picDemo.ScaleX(.Picture.Width, vbHiMetric, vbPixels))
-            ImgHeight = CInt(picDemo.ScaleY(.Picture.Height, vbHiMetric, vbPixels))
+            Dim imgWidth As Long, imgHeight As Long
+            imgWidth = CInt(picDemo.ScaleX(.Picture.Width, vbHiMetric, vbPixels))
+            imgHeight = CInt(picDemo.ScaleY(.Picture.Height, vbHiMetric, vbPixels))
         
             'Icons and small images can be drawn at scale.  Large images must be scaled to the size of the sample picture box
-            If (.PictureType <> ptICO) And ((ImgWidth > picDemo.ScaleWidth) Or (ImgHeight > picDemo.ScaleHeight)) Then
+            If (.PictureType <> ptICO) And ((imgWidth > picDemo.ScaleWidth) Or (imgHeight > picDemo.ScaleHeight)) Then
         
                 'Use a temporary layer to render the image to the sample picture box
                 tmpImportLayer.CreateFromPicture m_cff(LstInfo.ListIndex + 1).Picture
@@ -367,7 +367,7 @@ Private Sub LstInfo_Click()
                 PicLoadImage.Picture = .Picture
                 
                 'Center the image in the sample area
-                BitBlt picDemo.hDC, (picDemo.ScaleWidth \ 2) - (ImgWidth \ 2), (picDemo.ScaleHeight \ 2) - (ImgHeight \ 2), ImgWidth, ImgHeight, PicLoadImage.hDC, 0, 0, vbSrcCopy
+                BitBlt picDemo.hDC, (picDemo.ScaleWidth \ 2) - (imgWidth \ 2), (picDemo.ScaleHeight \ 2) - (imgHeight \ 2), imgWidth, imgHeight, PicLoadImage.hDC, 0, 0, vbSrcCopy
                 picDemo.Picture = picDemo.Image
                 picDemo.Refresh
                 
