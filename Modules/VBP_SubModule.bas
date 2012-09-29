@@ -20,8 +20,16 @@ Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As L
 Private Const IDC_HAND As Long = 32649
 Private Const GCL_HCURSOR = (-12)
 
+'Used to convert a system color (such as "button face") to a literal RGB value
+Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
+    
 'This variable will hold the value of the loaded hand cursor.  We need to delete it (via DestroyCursor) when the program exits.
 Dim hc_Handle As Long
+
+'Given an OLE color, return an RGB
+Public Function GetRealColor(ByVal Color As OLE_COLOR) As Long
+    TranslateColor Color, 0, GetRealColor
+End Function
 
 'Validate a given number.
 Public Sub textValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed As Boolean = False, Optional ByVal floatAllowed As Boolean = False)

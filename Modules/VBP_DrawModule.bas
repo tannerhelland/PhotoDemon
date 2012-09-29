@@ -3,8 +3,8 @@ Attribute VB_Name = "Drawing"
 'PhotoDemon Drawing Routines
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/3/01
-'Last updated: 04/July/12
-'Last update: Rewrote DrawPreviewImage so edge pixels weren't being missed
+'Last updated: 29/September/12
+'Last update: Rewrote DrawSpecificCanvas against the new layer method (instead of the previous picture box buffer)
 '
 'Miscellaneous drawing routines that don't fit elsewhere.  At present, this includes rendering preview images,
 ' drawing the canvas background of image forms, and a gradient-rendering sub (used primarily on the histogram form).
@@ -49,27 +49,22 @@ End Sub
 ' draw mode: -1 is a checkerboard effect, any other value is treated as an RGB long
 Public Sub DrawSpecificCanvas(ByRef dstForm As Form)
 
-    '-1 indicates the user wants a checkboard background pattern
+    '-1 indicates the user wants a checkerboard background pattern
     If CanvasBackground = -1 Then
 
         Dim stepIntervalX As Long, stepIntervalY As Long
         stepIntervalX = dstForm.PicCH.ScaleWidth
         stepIntervalY = dstForm.PicCH.ScaleHeight
-
-        If dstForm.ScaleMode = 3 Then
-            For x = 0 To dstForm.FrontBuffer.ScaleWidth Step stepIntervalX
-            For y = 0 To dstForm.FrontBuffer.ScaleHeight Step stepIntervalY
-                BitBlt dstForm.FrontBuffer.hDC, x, y, stepIntervalX, stepIntervalY, dstForm.PicCH.hDC, 0, 0, vbSrcCopy
-            Next y
-            Next x
-            dstForm.FrontBuffer.Picture = dstForm.FrontBuffer.Image
-        End If
-        
-    'Any other value is treated as an RGB long
-    Else
-    
-        dstForm.FrontBuffer.Picture = LoadPicture("")
-        dstForm.FrontBuffer.BackColor = CanvasBackground
+            
+        Dim x As Long, y As Long
+        Dim srchDC As Long
+        srchDC = dstForm.PicCH.hDC
+            
+        For x = 0 To pdImages(dstForm.Tag).backBuffer.getLayerWidth Step stepIntervalX
+        For y = 0 To pdImages(dstForm.Tag).backBuffer.getLayerHeight Step stepIntervalY
+            BitBlt pdImages(dstForm.Tag).backBuffer.getLayerDC, x, y, stepIntervalX, stepIntervalY, srchDC, 0, 0, vbSrcCopy
+        Next y
+        Next x
     
     End If
     
@@ -96,11 +91,11 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     
     'Extract the red, green, and blue values from the gradient colors (which were passed as Longs)
-    r = ExtractR(Color1)
+    R = ExtractR(Color1)
     g = ExtractG(Color1)
     b = ExtractB(Color1)
     r2 = ExtractR(Color2)
@@ -116,31 +111,31 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     'Create a calculation variable, which will be used to determine the interpolation step between
     ' each gradient color
     If drawHorizontal Then
-        VR = Abs(r - r2) / tmpWidth
+        VR = Abs(R - r2) / tmpWidth
         VG = Abs(g - g2) / tmpWidth
         VB = Abs(b - b2) / tmpWidth
     Else
-        VR = Abs(r - r2) / tmpHeight
+        VR = Abs(R - r2) / tmpHeight
         VG = Abs(g - g2) / tmpHeight
         VB = Abs(b - b2) / tmpHeight
     End If
     
     'If the second color is less than the first value, make the step negative
-    If r2 < r Then VR = -VR
+    If r2 < R Then VR = -VR
     If g2 < g Then VG = -VG
     If b2 < b Then VB = -VB
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
         For x = 0 To tmpWidth
-            r2 = r + VR * x
+            r2 = R + VR * x
             g2 = g + VG * x
             b2 = b + VB * x
             DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
         Next x
     Else
         For y = 0 To tmpHeight
-            r2 = r + VR * y
+            r2 = R + VR * y
             g2 = g + VG * y
             b2 = b + VB * y
             DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)

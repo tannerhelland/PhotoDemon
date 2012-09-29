@@ -45,21 +45,18 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     SrcHeight = pdImages(formToBuffer.Tag).targetHeight / ZoomVal
     
     'These variables are the offset, as determined by the scroll bar values
-    Dim SrcX As Long, SrcY As Long
-    SrcX = formToBuffer.HScroll.Value
-    SrcY = formToBuffer.VScroll.Value
-
-    'Clear out the buffer
-    formToBuffer.FrontBuffer.Picture = LoadPicture("")
+    Dim srcX As Long, srcY As Long
+    srcX = formToBuffer.HScroll.Value
+    srcY = formToBuffer.VScroll.Value
 
     'Prepare the background (checkerboard or color, per the user's setting in Edit -> Preferences)
     DrawSpecificCanvas formToBuffer
 
     'When zoomed out, specify halftone mode (for limited resampling).  Otherwise, nearest-neighbor sampling is fine.
     If ZoomVal >= 1 Then
-        SetStretchBltMode formToBuffer.FrontBuffer.hdc, STRETCHBLT_COLORONCOLOR
+        SetStretchBltMode pdImages(formToBuffer.Tag).backBuffer.getLayerDC, STRETCHBLT_COLORONCOLOR
     Else
-        SetStretchBltMode formToBuffer.FrontBuffer.hdc, STRETCHBLT_HALFTONE
+        SetStretchBltMode pdImages(formToBuffer.Tag).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
     End If
     
     'Paint the image from the back buffer to the front buffer
@@ -68,11 +65,11 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'Check for alpha channel.  If it's found, perform pre-multiplication against a white background before rendering.
         If pdImages(formToBuffer.Tag).mainLayer.getLayerColorDepth = 32 Then
             alphaFixLayer.createBlank SrcWidth, SrcHeight, 32
-            BitBlt alphaFixLayer.getLayerDC, 0, 0, SrcWidth, SrcHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, SrcX, SrcY, vbSrcCopy
+            BitBlt alphaFixLayer.getLayerDC, 0, 0, SrcWidth, SrcHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
             alphaFixLayer.compositeBackgroundColor
-            StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
         Else
-            StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
         End If
         
     Else
@@ -87,11 +84,11 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'Check for alpha channel.  If it's found, perform pre-multiplication against a white background before rendering.
         If pdImages(formToBuffer.Tag).mainLayer.getLayerColorDepth = 32 Then
             alphaFixLayer.createBlank SrcWidth, SrcHeight, 32
-            BitBlt alphaFixLayer.getLayerDC, 0, 0, SrcWidth, SrcHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, SrcX, SrcY, vbSrcCopy
+            BitBlt alphaFixLayer.getLayerDC, 0, 0, SrcWidth, SrcHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
             alphaFixLayer.compositeBackgroundColor
-            StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
         Else
-            StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
         End If
         
     End If
@@ -100,20 +97,20 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     If pdImages(formToBuffer.Tag).selectionActive Then
     
         'If it is, check to see if it's locked in
-        If pdImages(formToBuffer.Tag).mainSelection.isLockedIn Then
-            formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
-            pdImages(formToBuffer.Tag).mainSelection.renderFinal formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight
-        Else
-            pdImages(formToBuffer.Tag).mainSelection.renderIntermediate formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop
-        End If
+        'If pdImages(formToBuffer.Tag).mainSelection.isLockedIn Then
+        '    formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
+        '    pdImages(formToBuffer.Tag).mainSelection.renderFinal formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight
+        'Else
+        '    pdImages(formToBuffer.Tag).mainSelection.renderIntermediate formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop
+        'End If
     
     End If
-    
-    'Lock-in the front buffer
-    formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
-    
+        
     'Flip the front buffer to the screen
-    formToBuffer.Picture = formToBuffer.FrontBuffer.Picture
+    formToBuffer.Picture = LoadPicture("")
+    BitBlt formToBuffer.hDC, 0, 0, pdImages(formToBuffer.Tag).backBuffer.getLayerWidth, pdImages(formToBuffer.Tag).backBuffer.getLayerHeight, pdImages(formToBuffer.Tag).backBuffer.getLayerDC, 0, 0, vbSrcCopy
+    formToBuffer.Picture = formToBuffer.Image
+    'formToBuffer.Refresh
     
     'If we don't fire DoEvents here, the image will only scroll after the mouse button is released.
     DoEvents
@@ -236,9 +233,8 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         If formToBuffer.HScroll.Visible = True Then formToBuffer.HScroll.Visible = False
         If formToBuffer.VScroll.Visible = True Then formToBuffer.VScroll.Visible = False
             
-        'Resize the front buffer and store the relevant painting information into this pdImages object
-        formToBuffer.FrontBuffer.Width = FormWidth
-        formToBuffer.FrontBuffer.Height = FormHeight
+        'Resize the buffer and store the relevant painting information into this pdImages object
+        pdImages(formToBuffer.Tag).backBuffer.createBlank FormWidth, FormHeight, 24, CanvasBackground
         pdImages(formToBuffer.Tag).targetLeft = viewportLeft
         pdImages(formToBuffer.Tag).targetTop = viewportTop
         pdImages(formToBuffer.Tag).targetWidth = viewportWidth
@@ -248,6 +244,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         ScrollViewport formToBuffer
         
         Exit Sub
+        
     End If
     
     'If we've reached this point, one or both scroll bars are enabled.  The time has come to calculate their values.
@@ -304,10 +301,13 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         If formToBuffer.VScroll.Visible = True Then formToBuffer.VScroll.Visible = False
     End If
     
-    'We don't actually render the image here; instead, we prepare the front buffer (.FrontBuffer) and store the relevant
+    'We don't actually render the image here; instead, we prepare the buffer (vBackBuffer) and store the relevant
     ' drawing variables to this pdImages object.  ScrollViewport (above) will handle the actual drawing.
-    If hScrollEnabled = True Then formToBuffer.FrontBuffer.Width = viewportWidth Else formToBuffer.FrontBuffer.Width = FormWidth
-    If vScrollEnabled = True Then formToBuffer.FrontBuffer.Height = viewportHeight Else formToBuffer.FrontBuffer.Height = FormHeight
+    Dim newVWidth As Long, newVHeight As Long
+    If hScrollEnabled = True Then newVWidth = viewportWidth Else newVWidth = FormWidth
+    If vScrollEnabled = True Then newVHeight = viewportHeight Else newVHeight = FormHeight
+    pdImages(formToBuffer.Tag).backBuffer.createBlank newVWidth, newVHeight, 24, CanvasBackground
+    
     pdImages(formToBuffer.Tag).targetLeft = viewportLeft
     pdImages(formToBuffer.Tag).targetTop = viewportTop
     pdImages(formToBuffer.Tag).targetWidth = viewportWidth

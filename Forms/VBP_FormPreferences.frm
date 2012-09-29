@@ -391,7 +391,7 @@ Private Sub CmdOK_Click()
     Dim tForm As Form
     Message "Saving preferences..."
     For Each tForm In VB.Forms
-        If tForm.Name = "FormImage" Then ScrollViewport tForm
+        If tForm.Name = "FormImage" Then PrepareViewport tForm
     Next
     Message "Finished."
     
@@ -460,18 +460,18 @@ Private Sub Form_Load()
     ' it internally (it's only accessed when PhotoDemon is first loaded)
     Dim tmpString As String
     tmpString = GetFromIni("General Preferences", "PromptForPluginDownload")
-    If val(tmpString) = 1 Then ChkPromptPluginDownload.Value = vbChecked Else ChkPromptPluginDownload.Value = vbUnchecked
+    If Val(tmpString) = 1 Then ChkPromptPluginDownload.Value = vbChecked Else ChkPromptPluginDownload.Value = vbUnchecked
     
     'Same for checking for software updates
     tmpString = GetFromIni("General Preferences", "CheckForUpdates")
-    If val(tmpString) = 1 Then chkProgramUpdates.Value = vbChecked Else chkProgramUpdates.Value = vbUnchecked
+    If Val(tmpString) = 1 Then chkProgramUpdates.Value = vbChecked Else chkProgramUpdates.Value = vbUnchecked
     
     'Populate the "what to do when loading large images" combo box
     cmbLargeImages.AddItem "Automatically zoom out so the images fit on-screen", 0
     cmbLargeImages.AddItem "Load images at 100% zoom regardless of size", 1
     
     tmpString = GetFromIni("General Preferences", "AutosizeLargeImages")
-    cmbLargeImages.ListIndex = val(tmpString)
+    cmbLargeImages.ListIndex = Val(tmpString)
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me

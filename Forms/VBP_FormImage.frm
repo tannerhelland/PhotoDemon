@@ -3,10 +3,10 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H00FFFFFF&
    Caption         =   "Image Window"
-   ClientHeight    =   2475
+   ClientHeight    =   2595
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   5925
+   ClientWidth     =   6180
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Arial"
@@ -22,9 +22,9 @@ Begin VB.Form FormImage
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   165
+   ScaleHeight     =   173
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   395
+   ScaleWidth      =   412
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin VB.PictureBox picIcon 
@@ -50,7 +50,7 @@ Begin VB.Form FormImage
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2640
       Visible         =   0   'False
       Width           =   240
@@ -59,7 +59,7 @@ Begin VB.Form FormImage
       Height          =   3615
       LargeChange     =   10
       Left            =   6240
-      TabIndex        =   3
+      TabIndex        =   2
       TabStop         =   0   'False
       Top             =   120
       Visible         =   0   'False
@@ -69,7 +69,7 @@ Begin VB.Form FormImage
       Height          =   255
       LargeChange     =   10
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       TabStop         =   0   'False
       Top             =   3720
       Visible         =   0   'False
@@ -87,39 +87,10 @@ Begin VB.Form FormImage
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
-      TabIndex        =   1
-      Top             =   2640
-      Visible         =   0   'False
-      Width           =   270
-   End
-   Begin VB.PictureBox FrontBuffer 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ClipControls    =   0   'False
-      FillColor       =   &H00FFFFFF&
-      FillStyle       =   0  'Solid
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FFFFFF&
-      Height          =   495
-      Left            =   1560
-      MousePointer    =   2  'Cross
-      ScaleHeight     =   33
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   32
       TabIndex        =   0
       Top             =   2640
       Visible         =   0   'False
-      Width           =   480
+      Width           =   270
    End
 End
 Attribute VB_Name = "FormImage"
@@ -306,6 +277,8 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         End If
         
     End If
+    
+    makeFormPretty Me
     
 End Sub
 

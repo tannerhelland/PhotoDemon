@@ -130,6 +130,9 @@ Option Explicit
     'Image's actual image data (stored as a DIB inside the mainLayer object)
     Public mainLayer As pdLayer
     
+    'Image's back buffer (also a DIB; this is used to hold the final composite before everything is rendered on-screen
+    Public backBuffer As pdLayer
+    
     'Image's selection data (stored and handled by a mainSelection object)
     Public mainSelection As pdSelection
     Public selectionActive As Boolean
@@ -341,6 +344,9 @@ Private Sub Class_Initialize()
     
     'Initialize the main layer (currently, just the image data - layers aren't actually implemented)
     Set mainLayer = New pdLayer
+    
+    'Initialize the back buffer
+    Set backBuffer = New pdLayer
     
     'Initialize the main selection
     Set mainSelection = New pdSelection

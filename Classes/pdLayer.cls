@@ -154,6 +154,9 @@ Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long,
 'Brush creation
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 
+'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
+Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
+
 'Clipboard interaction
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function EmptyClipboard Lib "user32" () As Long
@@ -440,7 +443,10 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     If colorDepth <> 32 And colorDepth <> 24 Then
         colorDepth = 24
     End If
-    
+        
+    'The back color may or may not be a system color, so translate it just in case
+    TranslateColor BackColor, 0, BackColor
+        
     'Remember this color depth, width, and height
     layerColorDepth = colorDepth
     layerWidth = iWidth

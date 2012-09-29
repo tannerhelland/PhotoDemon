@@ -225,9 +225,11 @@ Public Sub LoadTheProgram()
     
     'Look in the MDIWindow module for this code - it enables/disables various control and menus based on
     ' whether or not images have been loaded
+    LoadMessage "Enabling user interface..."
     UpdateMDIStatus
     
     'Set up our main progress bar control
+    LoadMessage "Initializing progress bar..."
     Set cProgBar = New cProgressBar
     
     With cProgBar
@@ -246,9 +248,11 @@ Public Sub LoadTheProgram()
     SetProgBarVal 0
     
     'Set up the program's title bar
+    LoadMessage "Captioning main form..."
     FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
     
     'Initialize the custom MDI child form icon handler
+    LoadMessage "Preparing custom child icon handler..."
     initializeIconHandler
     
     'Check the command line to see if the user is attempting to load an image
@@ -324,7 +328,7 @@ Public Sub LoadTheProgram()
     End If
 
     'Set a generic message and start unloading and loading forms
-    LoadMessage "Preparing software processor..."
+    LoadMessage "All preparations successful. Loading final interface..."
     
     'Display the main form and hide the splash form
     FormMain.Show
