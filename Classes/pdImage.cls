@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2000-2012 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 16/September/12
-'Last update: added OriginalFileFormat tracker
+'Last updated: 28/September/12
+'Last update: added a Selection object (mainSelection)
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -132,6 +132,7 @@ Option Explicit
     
     'Image's selection data (stored and handled by a mainSelection object)
     Public mainSelection As pdSelection
+    Public selectionActive As Boolean
     
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface
@@ -340,5 +341,10 @@ Private Sub Class_Initialize()
     
     'Initialize the main layer (currently, just the image data - layers aren't actually implemented)
     Set mainLayer = New pdLayer
+    
+    'Initialize the main selection
+    Set mainSelection = New pdSelection
+    selectionActive = False
+    mainSelection.setSelectionType sRectangle
     
 End Sub

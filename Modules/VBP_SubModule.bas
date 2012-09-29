@@ -170,7 +170,7 @@ Public Sub displayImageCoordinates(ByVal x1 As Long, ByVal y1 As Long, ByRef src
     If isMouseOverImage(x1, y1, srcForm) Then
             
         'Grab the current zoom value
-        Dim ZoomVal As Single
+        Static ZoomVal As Single
         ZoomVal = Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
             
         'Calculate x and y positions, while taking into account zoom and scroll values
@@ -192,6 +192,25 @@ Public Sub displayImageCoordinates(ByVal x1 As Long, ByVal y1 As Long, ByRef src
         
     End If
     
+End Sub
+
+'If an x or y location is NOT in the image, find the nearest coordinate that IS in the image
+Public Sub findNearestImageCoordinates(ByRef x1 As Long, ByRef y1 As Long, ByRef srcForm As Form)
+
+    'Grab the current zoom value
+    Static ZoomVal As Single
+    ZoomVal = Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
+
+    'Calculate x and y positions, while taking into account zoom and scroll values
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
+    
+    'Force any invalid values to their nearest matching point in the image
+    If x1 < 0 Then x1 = 0
+    If y1 < 0 Then y1 = 0
+    If x1 > pdImages(srcForm.Tag).Width - 1 Then x1 = pdImages(srcForm.Tag).Width - 1
+    If y1 > pdImages(srcForm.Tag).Height - 1 Then y1 = pdImages(srcForm.Tag).Height - 1
+
 End Sub
 
 'Display the specified size in the main form's status bar

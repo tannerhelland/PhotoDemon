@@ -146,6 +146,9 @@ Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
 
 'Track mouse button use on this form
 Dim lMouseDown As Boolean, rMouseDown As Boolean
+
+'Track initial mouse button locations
+Dim initMouseX As Single, initMouseY As Single
     
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
 ' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
@@ -210,12 +213,43 @@ Private Sub Form_Load()
 End Sub
 
 'Track which mouse buttons are pressed
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If Button = vbLeftButton Then lMouseDown = True
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
+    Dim imgX As Long, imgY As Long
+    imgX = -1
+    imgY = -1
+    
+    'Check mouse button use
+    If Button = vbLeftButton Then
+        
+        'Check the location of the mouse to see if it's over the image
+        If isMouseOverImage(x, y, Me) Then
+        
+            'Only track the mouse state if it is over the image
+            lMouseDown = True
+                
+            Me.MousePointer = 2
+        
+            'Display the image coordinates under the mouse pointer
+            displayImageCoordinates x, y, Me, imgX, imgY
+        
+            'Activate the selection and pass in the first two points
+            pdImages(CurrentImage).selectionActive = True
+            pdImages(CurrentImage).mainSelection.setInitialCoordinates imgX, imgY
+    
+            'Remember this location
+            initMouseX = x
+            initMouseY = y
+    
+        End If
+        
+    End If
+    
     If Button = vbRightButton Then rMouseDown = True
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Long, imgY As Long
@@ -225,16 +259,45 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
     'Check the left mouse button
     If lMouseDown Then
     
+        'First, check to see if a selection is active.  (In the future, we will be checking for other tools as well.)
+        If pdImages(CurrentImage).selectionActive Then
+        
+            'Check the location of the mouse to see if it's over the image
+            If isMouseOverImage(x, y, Me) Then
+            
+                'Display the image coordinates under the mouse pointer
+                displayImageCoordinates x, y, Me, imgX, imgY
+            
+                'Pass new points to the active selection
+                pdImages(CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+            
+            'If the mouse coordinates are NOT over the image, we need to find the closest points in the image and pass those instead
+            Else
+        
+                imgX = x
+                imgY = y
+                findNearestImageCoordinates imgX, imgY, Me
+                
+                'Pass those points to the active selection
+                pdImages(CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+            
+            End If
+            
+        End If
+        
+        'Force a redraw of the viewport
+        ScrollViewport Me
     
+    'This else means the LEFT mouse button is NOT down
     Else
     
         'Check the location of the mouse to see if it's over the image
-        If isMouseOverImage(X, Y, Me) Then
+        If isMouseOverImage(x, y, Me) Then
         
             Me.MousePointer = 2
         
             'Display the image coordinates under the mouse pointer
-            displayImageCoordinates X, Y, Me
+            displayImageCoordinates x, y, Me
         
         Else
         
@@ -247,13 +310,41 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
 End Sub
 
 'Track which mouse buttons are released
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If Button = vbLeftButton Then lMouseDown = False
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    Dim imgX As Long, imgY As Long
+    
+    'Check mouse buttons
+    If Button = vbLeftButton Then
+    
+        lMouseDown = False
+        Me.MousePointer = 0
+    
+        'If a selection was being drawn, lock it into place
+        If pdImages(CurrentImage).selectionActive Then
+            
+            'Lock the selection
+            pdImages(CurrentImage).mainSelection.lockIn
+            
+            'Finally, check to see if this mouse location is the same as the initial mouse press.  If it is, clear the selection.
+            If (x = initMouseX) And (y = initMouseY) Then
+                pdImages(CurrentImage).mainSelection.lockRelease
+                pdImages(CurrentImage).selectionActive = False
+            End If
+            
+            'Force a redraw of the screen
+            ScrollViewport Me
+            
+        End If
+                
+    End If
+    
     If Button = vbRightButton Then rMouseDown = False
+    
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -290,7 +381,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub

@@ -23,48 +23,6 @@ Attribute VB_Name = "FastDrawing"
 
 Option Explicit
 
-'BEGIN DIB-RELATED DECLARATIONS
-'Private Type Bitmap
-'    bmType As Long
-'    bmWidth As Long
-'    bmHeight As Long
-'    bmWidthBytes As Long
-'    bmPlanes As Integer
-'    bmBitsPixel As Integer
-'    bmBits As Long
-'End Type
-'
-'Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
-'Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-'Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
-'
-'Private Type RGBQUAD
-'    Blue As Byte
-'    Green As Byte
-'    Red As Byte
-'    Alpha As Byte
-'End Type
-'
-'Private Type BITMAPINFOHEADER
-'        biSize As Long
-'        biWidth As Long
-'        biHeight As Long
-'        biPlanes As Integer
-'        biBitCount As Integer
-'        biCompression As Long
-'        biSizeImage As Long
-'        biXPelsPerMeter As Long
-'        biYPelsPerMeter As Long
-'        biClrUsed As Long
-'        biClrImportant As Long
-'End Type
-'
-'Private Type BITMAPINFO
-'        bmiHeader As BITMAPINFOHEADER
-'        bmiColors(0 To 255) As RGBQUAD
-'End Type
-'END DIB DECLARATIONS
-
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Long, lpSrc As Long, ByVal byteLength As Long)
 
@@ -92,8 +50,7 @@ End Type
 Public curLayerValues As FilterInfo
 
 
-'The new replacement for GetImageData
-' prepPixelData's job is to copy the relevant layer into a temporary object, which is what individual filters and effects
+'prepPixelData's job is to copy the relevant layer into a temporary object, which is what individual filters and effects
 ' will operate on.  prepPixelData() also populates the relevant SafeArray object and a host of other variables, which
 ' filters and effects can then copy locally to ensure the fastest possible runtime speed.
 '
@@ -165,7 +122,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .LayerY = 0
     End With
 
-    'Set up the progress bar (only if this is not a preview, mind you)
+    'Set up the progress bar (only if this is NOT a preview, mind you)
     If isPreview = False Then
         If newProgBarMax = -1 Then
             SetProgBarMax (curLayerValues.Left + curLayerValues.Width)
@@ -233,7 +190,8 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
     
 End Sub
 
-'We only want the progress bar updating when necessary, so this function finds a power of 2 closest to
+'We only want the progress bar updating when necessary, so this function finds a power of 2 closest to the progress bar
+' maximum divided by 20.  This is a nice compromise between responsive progress bar updates and extremely fast rendering.
 Public Function findBestProgBarValue() As Long
 
     'First, figure out what the range of this operation will be using the values in curLayerValues

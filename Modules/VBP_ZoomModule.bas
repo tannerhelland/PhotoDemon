@@ -45,9 +45,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     SrcHeight = pdImages(formToBuffer.Tag).targetHeight / ZoomVal
     
     'These variables are the offset, as determined by the scroll bar values
-    Dim srcX As Long, srcY As Long
-    srcX = formToBuffer.HScroll.Value
-    srcY = formToBuffer.VScroll.Value
+    Dim SrcX As Long, SrcY As Long
+    SrcX = formToBuffer.HScroll.Value
+    SrcY = formToBuffer.VScroll.Value
 
     'Clear out the buffer
     formToBuffer.FrontBuffer.Picture = LoadPicture("")
@@ -57,9 +57,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 
     'When zoomed out, specify halftone mode (for limited resampling).  Otherwise, nearest-neighbor sampling is fine.
     If ZoomVal >= 1 Then
-        SetStretchBltMode formToBuffer.FrontBuffer.hDC, STRETCHBLT_COLORONCOLOR
+        SetStretchBltMode formToBuffer.FrontBuffer.hdc, STRETCHBLT_COLORONCOLOR
     Else
-        SetStretchBltMode formToBuffer.FrontBuffer.hDC, STRETCHBLT_HALFTONE
+        SetStretchBltMode formToBuffer.FrontBuffer.hdc, STRETCHBLT_HALFTONE
     End If
     
     'Paint the image from the back buffer to the front buffer
@@ -68,11 +68,11 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'Check for alpha channel.  If it's found, perform pre-multiplication against a white background before rendering.
         If pdImages(formToBuffer.Tag).mainLayer.getLayerColorDepth = 32 Then
             alphaFixLayer.createBlank SrcWidth, SrcHeight, 32
-            BitBlt alphaFixLayer.getLayerDC, 0, 0, SrcWidth, SrcHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
+            BitBlt alphaFixLayer.getLayerDC, 0, 0, SrcWidth, SrcHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, SrcX, SrcY, vbSrcCopy
             alphaFixLayer.compositeBackgroundColor
-            StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
         Else
-            StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
         End If
         
     Else
@@ -87,14 +87,29 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'Check for alpha channel.  If it's found, perform pre-multiplication against a white background before rendering.
         If pdImages(formToBuffer.Tag).mainLayer.getLayerColorDepth = 32 Then
             alphaFixLayer.createBlank SrcWidth, SrcHeight, 32
-            BitBlt alphaFixLayer.getLayerDC, 0, 0, SrcWidth, SrcHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
+            BitBlt alphaFixLayer.getLayerDC, 0, 0, SrcWidth, SrcHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, SrcX, SrcY, vbSrcCopy
             alphaFixLayer.compositeBackgroundColor
-            StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
         Else
-            StretchBlt formToBuffer.FrontBuffer.hDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt formToBuffer.FrontBuffer.hdc, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, SrcX, SrcY, SrcWidth, SrcHeight, vbSrcCopy
         End If
+        
     End If
     
+    'Next, check to see if a selection is active.
+    If pdImages(formToBuffer.Tag).selectionActive Then
+    
+        'If it is, check to see if it's locked in
+        If pdImages(formToBuffer.Tag).mainSelection.isLockedIn Then
+            formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
+            pdImages(formToBuffer.Tag).mainSelection.renderFinal formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight
+        Else
+            pdImages(formToBuffer.Tag).mainSelection.renderIntermediate formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop
+        End If
+    
+    End If
+    
+    'Lock-in the front buffer
     formToBuffer.FrontBuffer.Picture = formToBuffer.FrontBuffer.Image
     
     'Flip the front buffer to the screen
