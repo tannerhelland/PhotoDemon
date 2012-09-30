@@ -521,13 +521,17 @@ Private Sub Form_Activate()
     redrawPreview = True
     GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
     
+    'Allow updating via scroll bars (which are masquerading as up/down controls)
+    updateWidthBar = True
+    updateHeightBar = True
+    
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
 End Sub
 
 'When the text boxes are changed, keep the scroll bar values in sync
-Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
+Private Sub TxtHeight_Change()
     textValidate TxtHeight
     If EntryValid(TxtHeight, 1, 32767, False, True) Then
         updateHeightBar = False
@@ -546,7 +550,7 @@ Private Sub txtHeight_GotFocus()
     AutoSelectText TxtHeight
 End Sub
 
-Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
+Private Sub txtWidth_Change()
     textValidate TxtWidth
     If EntryValid(TxtWidth, 1, 32767, False, True) Then
         updateWidthBar = False
