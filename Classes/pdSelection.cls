@@ -191,22 +191,22 @@ Public Sub lockRelease()
 
 End Sub
 
-Public Sub renderCustom(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal ImgWidth As Long, ByVal ImgHeight As Long, ByVal sType As SelectionRender)
+Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal ImgWidth As Long, ByVal ImgHeight As Long, ByVal sType As SelectionRender)
 
     'Update the internal coordinates, just in case
     updateInternalCoords
     
     'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates
-    Static ZoomVal As Single
-    ZoomVal = Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
+    Static zoomVal As Single
+    zoomVal = Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
     
     Static dstLeft As Single, dstRight As Single
     Static dstTop As Single, dstBottom As Single
         
-    dstLeft = ((selLeft - dstForm.HScroll.Value) * ZoomVal) + imgLeft
-    dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * ZoomVal) + imgLeft
-    dstTop = ((selTop - dstForm.VScroll.Value) * ZoomVal) + imgTop
-    dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * ZoomVal) + imgTop
+    dstLeft = ((selLeft - dstForm.HScroll.Value) * zoomVal) + imgLeft
+    dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * zoomVal) + imgLeft
+    dstTop = ((selTop - dstForm.VScroll.Value) * zoomVal) + imgTop
+    dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * zoomVal) + imgTop
     
     'Several draw methods use the same variables.  Declare those here.
     Static iData() As Byte
@@ -229,7 +229,7 @@ Public Sub renderCustom(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgT
         Case 0
         
             'Start by acquiring a pointer to the target layer's pixel bits
-            prepLayerSafeArray pdImages(dstForm.Tag).backBuffer, tmpSA
+            prepLayerSafeArray dstLayer, tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
             
             'Use a look-up table to dim the non-active parts of the image
@@ -267,7 +267,7 @@ Public Sub renderCustom(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgT
         Case 1
         
             'Start by acquiring a pointer to the target layer's pixel bits
-            prepLayerSafeArray pdImages(dstForm.Tag).backBuffer, tmpSA
+            prepLayerSafeArray dstLayer, tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
             
             'Use look-up tables to highlight the active parts of the image
@@ -314,7 +314,7 @@ Public Sub renderCustom(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgT
 
     'Store the destination DC to a local variable
     Static DstDC As Long
-    DstDC = pdImages(dstForm.Tag).backBuffer.getLayerDC
+    DstDC = dstLayer.getLayerDC
     
     'Since we'll be using the API to draw our selection area, we need to initialize several brushes
     Dim hPen As Long, hOldPen As Long

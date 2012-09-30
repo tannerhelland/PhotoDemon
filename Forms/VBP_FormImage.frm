@@ -186,6 +186,9 @@ End Sub
 'Track which mouse buttons are pressed
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
+    'If the image has not yet been loaded, exit
+    If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
+    
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Long, imgY As Long
     imgX = -1
@@ -212,6 +215,9 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
             'Remember this location
             initMouseX = x
             initMouseY = y
+            
+            'Render the new selection
+            RenderViewport Me
     
         End If
         
@@ -221,6 +227,9 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    'If the image has not yet been loaded, exit
+    If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Long, imgY As Long
@@ -257,7 +266,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         End If
         
         'Force a redraw of the viewport
-        ScrollViewport Me
+        RenderViewport Me
     
     'This else means the LEFT mouse button is NOT down
     Else
@@ -285,6 +294,9 @@ End Sub
 'Track which mouse buttons are released
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     
+    'If the image has not yet been loaded, exit
+    If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
+    
     Dim imgX As Long, imgY As Long
     
     'Check mouse buttons
@@ -306,7 +318,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
             End If
             
             'Force a redraw of the screen
-            ScrollViewport Me
+            RenderViewport Me
             
         End If
                 

@@ -133,6 +133,9 @@ Option Explicit
     'Image's back buffer (also a DIB; this is used to hold the final composite before everything is rendered on-screen
     Public backBuffer As pdLayer
     
+    'If this image is 32bpp then it requires a specialized compositing layer for rendering the transparency
+    Public alphaFixLayer As pdLayer
+    
     'Image's selection data (stored and handled by a mainSelection object)
     Public mainSelection As pdSelection
     Public selectionActive As Boolean
@@ -347,6 +350,9 @@ Private Sub Class_Initialize()
     
     'Initialize the back buffer
     Set backBuffer = New pdLayer
+    
+    'Initialize the alpha composite layer
+    Set alphaFixLayer = New pdLayer
     
     'Initialize the main selection
     Set mainSelection = New pdSelection

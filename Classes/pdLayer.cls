@@ -119,7 +119,7 @@ End Type
 
 'Drawing API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
@@ -564,20 +564,20 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     dstWidth = dstPicture.ScaleWidth
     dstHeight = dstPicture.ScaleHeight
     
-    Dim SrcWidth As Single, SrcHeight As Single
-    SrcWidth = layerWidth
-    SrcHeight = layerHeight
+    Dim srcWidth As Single, srcHeight As Single
+    srcWidth = layerWidth
+    srcHeight = layerHeight
     
     'Calculate the aspect ratio of this layer and the target picture box
     Dim srcAspect As Single, dstAspect As Single
-    srcAspect = SrcWidth / SrcHeight
+    srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
     
     Dim dWidth As Long, dHeight As Long
     
     If srcAspect > dstAspect Then
         dWidth = dstWidth
-        dHeight = CSng(SrcHeight / SrcWidth) * dWidth + 0.5
+        dHeight = CSng(srcHeight / srcWidth) * dWidth + 0.5
         PreviewY = CInt((dstHeight - dHeight) / 2)
         PreviewX = 0
         'PreviewWidth and PreviewHeight are only generated so that the "Print Preview" function works (it relies on those values
@@ -587,7 +587,7 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         StretchBlt dstPicture.hDC, 0, PreviewY, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
     Else
         dHeight = dstHeight
-        dWidth = CSng(SrcWidth / SrcHeight) * dHeight + 0.5
+        dWidth = CSng(srcWidth / srcHeight) * dHeight + 0.5
         PreviewX = CInt((dstWidth - dWidth) / 2)
         PreviewY = 0
         PreviewWidth = dWidth
@@ -775,6 +775,19 @@ Private Sub prepInternalSafeArray(ByRef tmpSA As SAFEARRAY2D)
     End With
 End Sub
 
+'Sometimes a layer needs to access the bits of other layers.  Here's how.
+Private Sub prepExternalSafeArray(ByRef srcLayer As pdLayer, ByRef tmpSA As SAFEARRAY2D)
+    With tmpSA
+        .cbElements = 1
+        .cDims = 2
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = srcLayer.getLayerHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = srcLayer.getLayerArrayWidth
+        .pvData = srcLayer.getLayerDIBits
+    End With
+End Sub
+
 'Pre-composite an image with an alpha-channel against a background color.  Until PhotoDemon is capable of rendering transparent
 ' images itself, this is necessary to give transparent images a white background.
 Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1)
@@ -873,3 +886,106 @@ End Sub
 Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Single) As Byte
     Blend2Colors = (mixRatio * Color1) + ((1 - mixRatio) * Color2)
 End Function
+
+
+'Pre-composite an image with an alpha-channel against a background color.  Until PhotoDemon is capable of rendering transparent
+' images itself, this is necessary to give transparent images a white background.
+Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1)
+
+    'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
+    If layerColorDepth <> 32 Then Exit Sub
+
+    'Start, as always, with a SafeArray
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepInternalSafeArray tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    'Now make a second array that points to the source alpha data
+    Dim aData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepExternalSafeArray srcAlpha, srcSA
+    CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
+    
+    Dim x As Long, y As Long, QuickX As Long
+    Dim checkAlpha As Byte, tmpAlpha As Single
+    
+    'If no color is specified, apply a checkerboard pattern
+    Dim r1 As Long, g1 As Long, b1 As Long
+    Dim r2 As Long, g2 As Long, b2 As Long
+    
+    If newR <> -1 Then
+        r1 = newR
+        r2 = newR
+    Else
+        r1 = 153
+        r2 = 102
+    End If
+    
+    If newG <> -1 Then
+        g1 = newG
+        g2 = newG
+    Else
+        g1 = 153
+        g2 = 102
+    End If
+    
+    If newB <> -1 Then
+        b1 = newB
+        b2 = newB
+    Else
+        b1 = 153
+        b2 = 102
+    End If
+    
+    'Make sure the user didn't supply us with bad values
+    If r1 < 0 Then r1 = 0
+    If r2 < 0 Then r2 = 0
+    If g1 < 0 Then g1 = 0
+    If g2 < 0 Then g2 = 0
+    If b1 < 0 Then b1 = 0
+    If b2 < 0 Then b2 = 0
+    
+    If r1 > 255 Then r1 = 255
+    If r2 > 255 Then r2 = 255
+    If g1 > 255 Then g1 = 255
+    If g2 > 255 Then g2 = 255
+    If b1 > 255 Then b1 = 255
+    If b2 > 255 Then b2 = 255
+    
+    'Loop through the image, blending colors as we go
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
+        
+        'Access the alpha data for this pixel
+        checkAlpha = aData(QuickX + 3, y)
+        
+        'Ignore fully opaque pixels.  (This makes the routine much faster.)
+        If checkAlpha <> 255 Then
+            
+            'Convert the alpha value to a floating-point variable
+            tmpAlpha = CSng(checkAlpha) / 255
+            
+            'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
+            If (((x \ 8) + (y \ 8)) And 1) = 0 Then
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r1, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g1, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b1, tmpAlpha)
+            Else
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r2, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g2, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b2, tmpAlpha)
+            End If
+            
+        End If
+        
+    Next y
+    Next x
+    
+    'With our compositing complete, point both arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    CopyMemory ByVal VarPtrArray(aData), 0&, 4
+
+End Sub
+
