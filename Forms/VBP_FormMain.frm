@@ -40,9 +40,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12240
       Top             =   6960
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -67,6 +67,29 @@ Begin VB.MDIForm FormMain
       TabStop         =   0   'False
       Top             =   0
       Width           =   2235
+      Begin VB.ComboBox cmbSelRender 
+         Appearance      =   0  'Flat
+         CausesValidation=   0   'False
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   360
+         ItemData        =   "VBP_FormMain.frx":058A
+         Left            =   240
+         List            =   "VBP_FormMain.frx":058C
+         Style           =   2  'Dropdown List
+         TabIndex        =   18
+         TabStop         =   0   'False
+         ToolTipText     =   "Click to change the way selections are rendered"
+         Top             =   5760
+         Width           =   1680
+      End
       Begin VB.PictureBox picLogo 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -85,7 +108,7 @@ Begin VB.MDIForm FormMain
          ForeColor       =   &H80000008&
          Height          =   2250
          Left            =   360
-         Picture         =   "VBP_FormMain.frx":058A
+         Picture         =   "VBP_FormMain.frx":058E
          ScaleHeight     =   150
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   600
@@ -107,9 +130,9 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          Height          =   360
-         ItemData        =   "VBP_FormMain.frx":A6C2
+         ItemData        =   "VBP_FormMain.frx":A6C6
          Left            =   900
-         List            =   "VBP_FormMain.frx":A6C4
+         List            =   "VBP_FormMain.frx":A6C8
          Style           =   2  'Dropdown List
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
@@ -122,19 +145,27 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   465
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":A6C6
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":A6EE
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         tooltiptype     =   1
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":A6CA
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -142,18 +173,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   1560
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":B740
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":B768
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Save"
-         tooltiptype     =   1
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":B71C
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Save"
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -161,19 +200,27 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   2880
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":C7BA
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":C7E2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Undo"
-         tooltiptype     =   1
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":C76E
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Undo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -181,19 +228,27 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   2880
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":D834
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":D85C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Redo"
-         tooltiptype     =   1
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":D7C0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Redo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
          Height          =   615
@@ -201,19 +256,27 @@ Begin VB.MDIForm FormMain
          TabIndex        =   12
          Top             =   465
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":E8AE
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":E8D6
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Close"
-         tooltiptype     =   1
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":E812
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Close"
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -221,18 +284,47 @@ Begin VB.MDIForm FormMain
          TabIndex        =   13
          Top             =   1560
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormMain.frx":F928
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":F950
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Save As"
-         tooltiptype     =   1
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":F864
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Save As"
+      End
+      Begin VB.Label lblSelections 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "selections"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   375
+         Left            =   120
+         TabIndex        =   17
+         Top             =   5310
+         Width           =   1695
       End
       Begin VB.Label lblZoom 
          Appearance      =   0  'Flat
@@ -343,7 +435,7 @@ Begin VB.MDIForm FormMain
          Height          =   735
          Left            =   120
          TabIndex        =   9
-         Top             =   5280
+         Top             =   7200
          Visible         =   0   'False
          Width           =   1935
       End
@@ -1061,8 +1153,24 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These functions are used to scroll through consecutive MDI windows without flickering
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+
+'When the selection type is changed, update the corresponding preference and redraw all selections
+Private Sub cmbSelRender_Click()
+    
+    selectionRenderPreference = FormMain.cmbSelRender.ListIndex
+    
+    If NumOfWindows > 0 Then
+    
+        Dim i As Long
+        For i = 1 To NumOfWindows
+            If pdImages(i).IsActive And pdImages(i).selectionActive Then ScrollViewport pdImages(i).containingForm
+        Next i
+    
+    End If
+    
+End Sub
 
 'When the zoom combo box is changed, redraw the image using the new zoom value
 Private Sub CmbZoom_Click()
@@ -1348,10 +1456,10 @@ Private Sub MnuBugReport_Click()
     'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
     If msgReturn = vbYes Then
         'Shell a browser window with the GitHub issue report form
-        ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+        ShellExecute FormMain.hWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
     Else
         'Shell a browser window with the tannerhelland.com PhotoDemon contact form
-        ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
+        ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
     End If
 
 End Sub
@@ -1366,7 +1474,7 @@ Private Sub MnuCascadeWindows_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To CurrentImage
+    For i = 1 To NumOfWindows
         If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Cascade"
     Next i
     
@@ -1455,7 +1563,7 @@ End Sub
 
 Private Sub MnuDonate_Click()
     'Launch the default web browser with the tannerhelland.com donation page
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuDream_Click()
@@ -1477,7 +1585,7 @@ End Sub
 Private Sub MnuEmailAuthor_Click()
     
     'Shell a browser window with the tannerhelland.com contact form
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1618,7 +1726,7 @@ Private Sub MnuNextImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.HWnd, 5)
+    MDIClient = GetWindow(FormMain.hWnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
@@ -1693,7 +1801,7 @@ Private Sub MnuPreviousImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.HWnd, 5)
+    MDIClient = GetWindow(FormMain.hWnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
@@ -1864,7 +1972,7 @@ Private Sub MnuTileHorizontally_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To CurrentImage
+    For i = 1 To NumOfWindows
         If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
     Next i
     
@@ -1876,7 +1984,7 @@ Private Sub MnuTileVertically_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To CurrentImage
+    For i = 1 To NumOfWindows
         If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
     Next i
     
@@ -1904,7 +2012,7 @@ End Sub
 
 Private Sub MnuVisitWebsite_Click()
     'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuWater_Click()
@@ -2038,7 +2146,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
         'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
         Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.HWnd, 5)
+        MDIClient = GetWindow(FormMain.hWnd, 5)
         
         'Use the API to instruct the MDI window to move one window forward or back
         If ctlAccelerator.Key(nIndex) = "Prev_Image" Then

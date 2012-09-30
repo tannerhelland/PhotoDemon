@@ -191,104 +191,12 @@ Public Sub lockRelease()
 
 End Sub
 
-'Render an intermediate version of the selection onto the canvas.  This uses the x1/x2/y1/y2 values, and is optimized for speed.
-Public Sub renderIntermediate(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long)
+Public Sub renderCustom(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal ImgWidth As Long, ByVal ImgHeight As Long, ByVal sType As SelectionRender)
 
-    'Before drawing, we need to convert our "image" coordinates back to "viewport" coordinates
-    Static ZoomVal As Single
-    ZoomVal = Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
+    'Update the internal coordinates, just in case
+    updateInternalCoords
     
-    Static dstX1 As Single, dstX2 As Single
-    Static dstY1 As Single, dstY2 As Single
-    
-    dstX1 = (x1 * ZoomVal) + imgLeft - dstForm.HScroll.Value
-    dstX2 = (x2 * ZoomVal) + imgLeft - dstForm.HScroll.Value
-    dstY1 = (y1 * ZoomVal) + imgTop - dstForm.VScroll.Value
-    dstY2 = (y2 * ZoomVal) + imgTop - dstForm.VScroll.Value
-    
-    'Store the destination DC to a local variable
-    Static dstDC As Long
-    dstDC = pdImages(dstForm.Tag).backBuffer.getLayerDC
-    
-    'Since we'll be using the API to draw our selection area, we need to initialize several brushes
-    Dim hPen As Long, hOldPen As Long
-    
-    hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
-    hOldPen = SelectObject(dstDC, hPen)
-    
-    'Get a transparent brush
-    Dim hBrush As Long, hOldBrush As Long
-    hBrush = GetStockObject(NULL_BRUSH)
-    hOldBrush = SelectObject(dstDC, hBrush)
-    
-    'Change the rasterOp to XOR (this will invert the line)
-    SetROP2 dstDC, vbSrcInvert
-    
-    'Draw the rectangle
-    Rectangle dstDC, dstX1, dstY1, dstX2, dstY2
-    
-    'Restore the normal COPY rOp
-    SetROP2 dstDC, vbSrcCopy
-    
-    'Remove the brush from the DC
-    SelectObject dstDC, hOldBrush
-    DeleteObject hBrush
-    
-    'Remove the pen from the DC
-    SelectObject dstDC, hOldPen
-    DeleteObject hPen
-    
-    Exit Sub
-    
-    'Figure out left/top/right/bottom values
-    Dim tmpLeft As Long, tmpTop As Long, tmpRight As Long, tmpBottom As Long
-    If dstX1 < dstX2 Then
-        tmpLeft = dstX1
-        tmpRight = dstX2
-    Else
-        tmpLeft = dstX2
-        tmpRight = dstX1
-    End If
-    
-    If dstY1 < dstY2 Then
-        tmpTop = dstY1
-        tmpBottom = dstY2
-    Else
-        tmpTop = dstY2
-        tmpBottom = dstY1
-    End If
-    
-    Dim r As RECT
-        
-    r.Left = tmpLeft - 1
-    r.Top = tmpTop - 1
-    r.Right = tmpRight + 1
-    r.Bottom = tmpBottom + 1
-    
-    'Set the coordinates of the rectangle
-    'rReturn = SetRect(r, dstX1, dstY1, dstX2, dstY2)
-        
-    'Use DrawFocusRect to draw an inverted rectangle on the buffer
-    'DrawFocusRect pdImages(dstForm.Tag).backBuffer.getLayerDC, r
-    
-    'Draw a box onto this image's front buffer
-    'dstForm.FrontBuffer.Line (dstX2, dstY2)-(dstX2, dstY1)
-    'dstForm.FrontBuffer.Line (dstX2, dstY2)-(dstX1, dstY2)
-    'dstForm.FrontBuffer.Line (dstX1, dstY1)-(dstX2, dstY1)
-    'dstForm.FrontBuffer.Line (dstX1, dstY1)-(dstX1, dstY2)
-    
-End Sub
-
-'Render the final, locked in selection onto a given image.  This emphasizes quality over speed.
-Public Sub renderFinal(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long)
-
-    'Make sure the selection is locked in.  If it isn't, we probably meant to draw an intermediate region.  Call that and exit.
-    'If lockedIn = False Then
-    '    renderIntermediate dstForm, imgLeft, imgTop
-    '    Exit Sub
-    'End If
-        
-    'Before drawing, we need to convert our "image" coordinates back to "viewport" coordinates
+    'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates
     Static ZoomVal As Single
     ZoomVal = Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
     
@@ -300,46 +208,146 @@ Public Sub renderFinal(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTo
     dstTop = ((selTop - dstForm.VScroll.Value) * ZoomVal) + imgTop
     dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * ZoomVal) + imgTop
     
-    'Get a pointer to the target layer's pixel bits
-    Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepLayerSafeArray pdImages(dstForm.Tag).backBuffer, tmpSA
-    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
+    'Several draw methods use the same variables.  Declare those here.
+    Static iData() As Byte
+    Static tmpSA As SAFEARRAY2D
     Static x As Long, y As Long
     Static QuickVal As Long
     
-    'Use a look-up table to dim the non-active parts of the image
-    Dim hData(0 To 255) As Byte
-    
-    For x = 0 To 255
-        hData(x) = x \ 2
-    Next x
-    
-    'Dim the non-active parts of the image
-    Dim rightBound As Long, bottomBound As Long
-    rightBound = imgLeft + imgWidth - 1
-    bottomBound = imgTop + imgHeight - 1
-    
+    'Just to be safe, declare some bounding variables in advance as well
+    Static rightBound As Long, bottomBound As Long
+    rightBound = imgLeft + ImgWidth - 1
+    bottomBound = imgTop + ImgHeight - 1
+            
     If rightBound > pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1 Then rightBound = pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1
     If bottomBound > pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1 Then bottomBound = pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1
-    
-    For x = imgLeft To rightBound
-        QuickVal = x * 3
-    For y = imgTop To bottomBound
-    
-        If (x < dstLeft) Or (x > dstRight) Or (y < dstTop) Or (y > dstBottom) Then
-            iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
-            iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
-            iData(QuickVal, y) = hData(iData(QuickVal, y))
-        End If
         
-    Next y
-    Next x
+    'Based on the selection type, draw a corresponding selection of some sort
+    Select Case sType
     
-    'With our work complete, point iData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    Erase iData
+        'Lightbox style
+        Case 0
+        
+            'Start by acquiring a pointer to the target layer's pixel bits
+            prepLayerSafeArray pdImages(dstForm.Tag).backBuffer, tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+            
+            'Use a look-up table to dim the non-active parts of the image
+            Dim hData(0 To 255) As Byte
+            
+            For x = 0 To 255
+                hData(x) = x \ 2
+            Next x
+            
+            dstRight = dstRight - 1
+            dstBottom = dstBottom - 1
+            
+            'Dim the non-active parts of the image
+            For x = imgLeft To rightBound
+                QuickVal = x * 3
+            For y = imgTop To bottomBound
+            
+                If (x < dstLeft) Or (x > dstRight) Or (y < dstTop) Or (y > dstBottom) Then
+                    iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
+                    iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
+                    iData(QuickVal, y) = hData(iData(QuickVal, y))
+                End If
+                
+            Next y
+            Next x
+            
+            'With our work complete, point iData() away from the DIB and deallocate it
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            Erase iData
+        
+            dstRight = dstRight + 1
+            dstBottom = dstBottom + 1
+        
+        'Highlight style (Paint.NET)
+        Case 1
+        
+            'Start by acquiring a pointer to the target layer's pixel bits
+            prepLayerSafeArray pdImages(dstForm.Tag).backBuffer, tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+            
+            'Use look-up tables to highlight the active parts of the image
+            Dim rData(0 To 255) As Byte, gData(0 To 255) As Byte, bData(0 To 255) As Byte
+            
+            Static newR As Long, newG As Long, newB As Long
+            newR = 112
+            newG = 183
+            newB = 255
+            
+            For x = 0 To 255
+                rData(x) = (newR + x) \ 2
+                gData(x) = (newG + x) \ 2
+                bData(x) = (newB + x) \ 2
+            Next x
+            
+            dstRight = dstRight - 1
+            dstBottom = dstBottom - 1
+            
+            'Dim the non-active parts of the image
+            For x = imgLeft To rightBound
+                QuickVal = x * 3
+            For y = imgTop To bottomBound
+            
+                If (x > dstLeft) And (x < dstRight) And (y > dstTop) And (y < dstBottom) Then
+                    iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
+                    iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
+                    iData(QuickVal, y) = bData(iData(QuickVal, y))
+                End If
+                
+            Next y
+            Next x
+            
+            'With our work complete, point iData() away from the DIB and deallocate it
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            Erase iData
+            
+            dstRight = dstRight + 1
+            dstBottom = dstBottom + 1
+            
+    End Select
+        
+    'Regardless of selection type, we tack on a focus rectangle.
+
+    'Store the destination DC to a local variable
+    Static DstDC As Long
+    DstDC = pdImages(dstForm.Tag).backBuffer.getLayerDC
+    
+    'Since we'll be using the API to draw our selection area, we need to initialize several brushes
+    Dim hPen As Long, hOldPen As Long
+    
+    hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
+    hOldPen = SelectObject(DstDC, hPen)
+    
+    'Get a transparent brush
+    Dim hBrush As Long, hOldBrush As Long
+    hBrush = GetStockObject(NULL_BRUSH)
+    hOldBrush = SelectObject(DstDC, hBrush)
+    
+    'Change the rasterOp to XOR (this will invert the line)
+    SetROP2 DstDC, vbSrcInvert
+    
+    If dstLeft > imgLeft Then dstLeft = dstLeft - 1
+    If dstTop > imgTop Then dstTop = dstTop - 1
+    dstRight = dstRight + 1
+    dstBottom = dstBottom + 1
+    
+    'Draw the rectangle
+    Rectangle DstDC, dstLeft, dstTop, dstRight, dstBottom
+    
+    'Restore the normal COPY rOp
+    SetROP2 DstDC, vbSrcCopy
+    
+    'Remove the brush from the DC
+    SelectObject DstDC, hOldBrush
+    DeleteObject hBrush
+    
+    'Remove the pen from the DC
+    SelectObject DstDC, hOldPen
+    DeleteObject hPen
     
 End Sub
 

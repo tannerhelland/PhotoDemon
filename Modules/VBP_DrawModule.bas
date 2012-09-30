@@ -91,11 +91,11 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     
     'Extract the red, green, and blue values from the gradient colors (which were passed as Longs)
-    R = ExtractR(Color1)
+    r = ExtractR(Color1)
     g = ExtractG(Color1)
     b = ExtractB(Color1)
     r2 = ExtractR(Color2)
@@ -111,31 +111,31 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     'Create a calculation variable, which will be used to determine the interpolation step between
     ' each gradient color
     If drawHorizontal Then
-        VR = Abs(R - r2) / tmpWidth
+        VR = Abs(r - r2) / tmpWidth
         VG = Abs(g - g2) / tmpWidth
         VB = Abs(b - b2) / tmpWidth
     Else
-        VR = Abs(R - r2) / tmpHeight
+        VR = Abs(r - r2) / tmpHeight
         VG = Abs(g - g2) / tmpHeight
         VB = Abs(b - b2) / tmpHeight
     End If
     
     'If the second color is less than the first value, make the step negative
-    If r2 < R Then VR = -VR
+    If r2 < r Then VR = -VR
     If g2 < g Then VG = -VG
     If b2 < b Then VB = -VB
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
         For x = 0 To tmpWidth
-            r2 = R + VR * x
+            r2 = r + VR * x
             g2 = g + VG * x
             b2 = b + VB * x
             DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
         Next x
     Else
         For y = 0 To tmpHeight
-            r2 = R + VR * y
+            r2 = r + VR * y
             g2 = g + VG * y
             b2 = b + VB * y
             DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)

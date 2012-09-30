@@ -98,7 +98,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     
         'If it is, check to see if it's locked in
         'If pdImages(formToBuffer.Tag).mainSelection.isLockedIn Then
-            pdImages(formToBuffer.Tag).mainSelection.renderFinal formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight
+        pdImages(formToBuffer.Tag).mainSelection.renderCustom formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, selectionRenderPreference
         'Else
         '    pdImages(formToBuffer.Tag).mainSelection.renderIntermediate formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop
         'End If

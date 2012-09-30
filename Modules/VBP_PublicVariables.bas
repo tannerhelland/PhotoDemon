@@ -21,11 +21,18 @@ Public FilterSize As Byte
 Public FilterWeight As Long
 'The bias (i.e. +/-)
 Public FilterBias As Long
-'Area filter data
-'Public FTransfer() As Long
-'Public tData() As Byte
 
-'Others
+'Selection variables
+
+'How should the selection be rendered?
+Public Enum SelectionRender
+    sLightbox = 0
+    sHighlight = 1
+    sInvertRect = 2
+End Enum
+
+Public selectionRenderPreference As SelectionRender
+
 
 'Zoom data
 Public Type ZoomData

@@ -197,6 +197,14 @@ Public Sub LoadTheProgram()
     'Get the auto-zoom preference from the INI file
     AutosizeLargeImages = CLng(GetFromIni("General Preferences", "AutosizeLargeImages"))
     
+    'Initialize the selection box next
+    LoadMessage "Initializing selection tool..."
+    FormMain.cmbSelRender.AddItem "Lightbox", 0
+    FormMain.cmbSelRender.AddItem "Highlight", 1
+    FormMain.cmbSelRender.AddItem "Simple", 2
+    FormMain.cmbSelRender.ListIndex = 0
+    selectionRenderPreference = 0
+    
     'Render various aspects of the UI
     LoadMessage "Initializing user interface..."
     
@@ -214,7 +222,7 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.HWnd, "AAA", True
+    SetIcon FormMain.hWnd, "AAA", True
     
     'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
