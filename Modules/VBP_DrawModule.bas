@@ -18,12 +18,36 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     
     Dim tmpLayer As pdLayer
     
+    'Start by calculating the aspect ratio of both the current image and the previewing picture box
+    Dim dstWidth As Single, dstHeight As Single
+    dstWidth = dstPicture.ScaleWidth
+    dstHeight = dstPicture.ScaleHeight
+    
+    Dim SrcWidth As Single, SrcHeight As Single
+    SrcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+    SrcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+    
+    Dim srcAspect As Single, dstAspect As Single
+    srcAspect = SrcWidth / SrcHeight
+    dstAspect = dstWidth / dstHeight
+        
+    'Now, use that aspect ratio to determine a proper size for our temporary layer
+    Dim newWidth As Long, newHeight As Long
+    
+    If srcAspect > dstAspect Then
+        newWidth = dstWidth
+        newHeight = CSng(SrcHeight / SrcWidth) * newWidth + 0.5
+    Else
+        newHeight = dstHeight
+        newWidth = CSng(SrcWidth / SrcHeight) * newHeight + 0.5
+    End If
+    
     'Normally this will draw a preview of FormMain.ActiveForm's relevant image.  However, another picture source can be specified.
     If useOtherPictureSrc = False Then
         
         If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
             Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight, True
             If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
             tmpLayer.renderToPictureBox dstPicture
         Else
@@ -34,7 +58,7 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     
         If otherPictureSrc.getLayerColorDepth = 32 Then
             Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer otherPictureSrc
+            tmpLayer.createFromExistingLayer otherPictureSrc, newWidth, newHeight, True
             If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
             tmpLayer.renderToPictureBox dstPicture
         Else

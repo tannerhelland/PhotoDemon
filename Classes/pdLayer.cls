@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 13/September/12
-'Last update: improved all comments to match the completed state of the class
+'Last updated: 30/September/12
+'Last update: added a workaround for resizing transparent images using HALFTONE mode
 '
 'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
 ' pdLayer is a powerful DIB class responsible for managing all image data in memory.  Some of the benefits provided by
@@ -119,7 +119,7 @@ End Type
 
 'Drawing API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
@@ -155,7 +155,7 @@ Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long,
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
+Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
 
 'Clipboard interaction
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
@@ -344,18 +344,61 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 
                 'If either dimension of the new image will be smaller than the source, request halftoning
                 If useHalftoning Then
-                    
-                    If srcLayer.getLayerColorDepth = 32 Then
-                        SetStretchBltMode layerDC, STRETCHBLT_COLORONCOLOR
-                    Else
-                        SetStretchBltMode layerDC, STRETCHBLT_HALFTONE
-                    End If
+                    SetStretchBltMode layerDC, STRETCHBLT_HALFTONE
                 Else
                     SetStretchBltMode layerDC, STRETCHBLT_COLORONCOLOR
                 End If
 
                 'Resize and copy the image data
                 StretchBlt layerDC, 0, 0, newWidth, newHeight, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, vbSrcCopy
+                
+                'Now comes a nasty hack; HALFTONE stretching does not preserve the alpha channel, but COLORONCOLOR does.  So for 32bpp
+                ' images, we now make a second copy of the original image using COLORONCOLOR - which means it contains valid alpha values.
+                ' Then we copy those into our current image, effectively taking the best of both HALFTONE and COLORONCOLOR stretching.
+                If srcLayer.getLayerColorDepth = 32 Then
+                    
+                    Dim hackLayer As pdLayer
+                    Set hackLayer = New pdLayer
+                    hackLayer.createBlank newWidth, newHeight, 32
+            
+                    SetStretchBltMode hackLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
+                    StretchBlt hackLayer.getLayerDC, 0, 0, newWidth, newHeight, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, vbSrcCopy
+            
+                    'At this point, hacklayer contains transparency data roughly equivalent to our half-toned images.  (Not perfect, but close.)
+                    ' We need to copy that data into our image, then release the hack layer.
+                    
+                    'Start, as always, with a SafeArray
+                    Dim iData() As Byte
+                    Dim tmpSA As SAFEARRAY2D
+                    prepInternalSafeArray tmpSA
+                    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+                    'Now make a second array that points to the hacked layer alpha data
+                    Dim aData() As Byte
+                    Dim srcSA As SAFEARRAY2D
+                    prepExternalSafeArray hackLayer, srcSA
+                    CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
+    
+                    Dim x As Long, y As Long, QuickX As Long
+    
+                    'Now loop through the image, copying alpha values as we go
+                    For x = 0 To layerWidth - 1
+                        QuickX = x * 4
+                    For y = 0 To layerHeight - 1
+                        iData(QuickX + 3, y) = aData(QuickX + 3, y)
+                    Next y
+                    Next x
+                    
+                    'Decommission both arrays
+                    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+                    CopyMemory ByVal VarPtrArray(aData), 0&, 4
+                    
+                    'Release the temporary layer
+                    hackLayer.eraseLayer
+                    Set hackLayer = Nothing
+    
+                End If
+                
                 createFromExistingLayer = True
                 Exit Function
                         
@@ -564,20 +607,20 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     dstWidth = dstPicture.ScaleWidth
     dstHeight = dstPicture.ScaleHeight
     
-    Dim srcWidth As Single, srcHeight As Single
-    srcWidth = layerWidth
-    srcHeight = layerHeight
+    Dim SrcWidth As Single, SrcHeight As Single
+    SrcWidth = layerWidth
+    SrcHeight = layerHeight
     
     'Calculate the aspect ratio of this layer and the target picture box
     Dim srcAspect As Single, dstAspect As Single
-    srcAspect = srcWidth / srcHeight
+    srcAspect = SrcWidth / SrcHeight
     dstAspect = dstWidth / dstHeight
     
     Dim dWidth As Long, dHeight As Long
     
     If srcAspect > dstAspect Then
         dWidth = dstWidth
-        dHeight = CSng(srcHeight / srcWidth) * dWidth + 0.5
+        dHeight = CSng(SrcHeight / SrcWidth) * dWidth + 0.5
         PreviewY = CInt((dstHeight - dHeight) / 2)
         PreviewX = 0
         'PreviewWidth and PreviewHeight are only generated so that the "Print Preview" function works (it relies on those values
@@ -587,7 +630,7 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         StretchBlt dstPicture.hDC, 0, PreviewY, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
     Else
         dHeight = dstHeight
-        dWidth = CSng(srcWidth / srcHeight) * dHeight + 0.5
+        dWidth = CSng(SrcWidth / SrcHeight) * dHeight + 0.5
         PreviewX = CInt((dstWidth - dWidth) / 2)
         PreviewY = 0
         PreviewWidth = dWidth

@@ -426,16 +426,16 @@ Private Sub CmdOK_Click()
     
     Dim rechannelMethod As Long
     
-    If optChannel(0) Then rechannelMethod = 0
-    If optChannel(1) Then rechannelMethod = 1
-    If optChannel(2) Then rechannelMethod = 2
-    If optChannel(3) Then rechannelMethod = 3
-    If optChannel(4) Then rechannelMethod = 4
-    If optChannel(5) Then rechannelMethod = 5
-    If optChannel(6) Then rechannelMethod = 6
-    If optChannel(7) Then rechannelMethod = 7
-    If optChannel(8) Then rechannelMethod = 8
-    If optChannel(9) Then rechannelMethod = 9
+    If OptChannel(0) Then rechannelMethod = 0
+    If OptChannel(1) Then rechannelMethod = 1
+    If OptChannel(2) Then rechannelMethod = 2
+    If OptChannel(3) Then rechannelMethod = 3
+    If OptChannel(4) Then rechannelMethod = 4
+    If OptChannel(5) Then rechannelMethod = 5
+    If OptChannel(6) Then rechannelMethod = 6
+    If OptChannel(7) Then rechannelMethod = 7
+    If OptChannel(8) Then rechannelMethod = 8
+    If OptChannel(9) Then rechannelMethod = 9
     
     Process Rechannel, rechannelMethod
     
@@ -553,7 +553,7 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
                 bK = Minimum(cK, mK, yK)
     
                 invBK = 1 - bK
-                If invBK = 0 Then invBK = 1
+                If invBK = 0 Then invBK = 0.0001
                 
                 If rType = 6 Then
                     cK = ((cK - bK) / invBK) * 255
