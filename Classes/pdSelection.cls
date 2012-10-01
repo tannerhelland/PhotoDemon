@@ -106,8 +106,8 @@ End Enum
 Private sType As SelectionType
 
 'The outer boundaries of the current selection
-Private x1 As Long, x2 As Long
-Private y1 As Long, y2 As Long
+Private x1 As Single, x2 As Single
+Private y1 As Single, y2 As Single
 
 'When a selection is "locked in", the x and y values are converted to these values
 Public selLeft As Long, selTop As Long
@@ -122,7 +122,7 @@ Public Sub setSelectionType(ByVal selType As SelectionType)
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and stores them internally
-Public Sub setInitialCoordinates(ByVal x As Long, y As Long)
+Public Sub setInitialCoordinates(ByVal x As Single, y As Single)
     
     'If new initial coordinates are being set, this selection must be "unlocked"
     lockedIn = False
@@ -140,7 +140,7 @@ Public Sub setInitialCoordinates(ByVal x As Long, y As Long)
 End Sub
 
 'Takes x and y coordinates (from a _MouseMove event, typically) and stores them internally
-Public Sub setAdditionalCoordinates(ByVal x As Long, y As Long)
+Public Sub setAdditionalCoordinates(ByVal x As Single, y As Single)
     x2 = x
     y2 = y
     
@@ -197,16 +197,16 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     updateInternalCoords
     
     'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates
-    Static zoomVal As Single
-    zoomVal = Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
+    Static ZoomVal As Single
+    ZoomVal = Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
     
     Static dstLeft As Single, dstRight As Single
     Static dstTop As Single, dstBottom As Single
         
-    dstLeft = ((selLeft - dstForm.HScroll.Value) * zoomVal) + imgLeft
-    dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * zoomVal) + imgLeft
-    dstTop = ((selTop - dstForm.VScroll.Value) * zoomVal) + imgTop
-    dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * zoomVal) + imgTop
+    dstLeft = ((selLeft - dstForm.HScroll.Value) * ZoomVal) + imgLeft
+    dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * ZoomVal) + imgLeft
+    dstTop = ((selTop - dstForm.VScroll.Value) * ZoomVal) + imgTop
+    dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * ZoomVal) + imgTop
     
     'Several draw methods use the same variables.  Declare those here.
     Static iData() As Byte
@@ -236,7 +236,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             Dim hData(0 To 255) As Byte
             
             For x = 0 To 255
-                hData(x) = x \ 2
+                hData(x) = x \ 3
             Next x
             
             dstRight = dstRight - 1
@@ -308,47 +308,48 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             dstRight = dstRight + 1
             dstBottom = dstBottom + 1
             
+        'Focus rectangle ("Simple" style)
+        Case 2
+        
+            'Store the destination DC to a local variable
+            Static DstDC As Long
+            DstDC = dstLayer.getLayerDC
+            
+            'Since we'll be using the API to draw our selection area, we need to initialize several brushes
+            Dim hPen As Long, hOldPen As Long
+            
+            hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
+            hOldPen = SelectObject(DstDC, hPen)
+            
+            'Get a transparent brush
+            Dim hBrush As Long, hOldBrush As Long
+            hBrush = GetStockObject(NULL_BRUSH)
+            hOldBrush = SelectObject(DstDC, hBrush)
+            
+            'Change the rasterOp to XOR (this will invert the line)
+            SetROP2 DstDC, vbSrcInvert
+            
+            'If dstLeft > imgLeft Then dstLeft = dstLeft - 1
+            'If dstTop > imgTop Then dstTop = dstTop - 1
+            'dstRight = dstRight + 1
+            'dstBottom = dstBottom + 1
+            
+            'Draw the rectangle
+            Rectangle DstDC, dstLeft, dstTop, dstRight, dstBottom
+            
+            'Restore the normal COPY rOp
+            SetROP2 DstDC, vbSrcCopy
+            
+            'Remove the brush from the DC
+            SelectObject DstDC, hOldBrush
+            DeleteObject hBrush
+            
+            'Remove the pen from the DC
+            SelectObject DstDC, hOldPen
+            DeleteObject hPen
+                    
     End Select
         
-    'Regardless of selection type, we tack on a focus rectangle.
-
-    'Store the destination DC to a local variable
-    Static DstDC As Long
-    DstDC = dstLayer.getLayerDC
-    
-    'Since we'll be using the API to draw our selection area, we need to initialize several brushes
-    Dim hPen As Long, hOldPen As Long
-    
-    hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
-    hOldPen = SelectObject(DstDC, hPen)
-    
-    'Get a transparent brush
-    Dim hBrush As Long, hOldBrush As Long
-    hBrush = GetStockObject(NULL_BRUSH)
-    hOldBrush = SelectObject(DstDC, hBrush)
-    
-    'Change the rasterOp to XOR (this will invert the line)
-    SetROP2 DstDC, vbSrcInvert
-    
-    If dstLeft > imgLeft Then dstLeft = dstLeft - 1
-    If dstTop > imgTop Then dstTop = dstTop - 1
-    dstRight = dstRight + 1
-    dstBottom = dstBottom + 1
-    
-    'Draw the rectangle
-    Rectangle DstDC, dstLeft, dstTop, dstRight, dstBottom
-    
-    'Restore the normal COPY rOp
-    SetROP2 DstDC, vbSrcCopy
-    
-    'Remove the brush from the DC
-    SelectObject DstDC, hOldBrush
-    DeleteObject hBrush
-    
-    'Remove the pen from the DC
-    SelectObject DstDC, hOldPen
-    DeleteObject hPen
-    
 End Sub
 
 Private Sub Class_Initialize()

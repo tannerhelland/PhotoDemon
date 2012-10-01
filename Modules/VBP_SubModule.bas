@@ -21,7 +21,7 @@ Private Const IDC_HAND As Long = 32649
 Private Const GCL_HCURSOR = (-12)
 
 'Used to convert a system color (such as "button face") to a literal RGB value
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
+Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
     
 'This variable will hold the value of the loaded hand cursor.  We need to delete it (via DestroyCursor) when the program exits.
 Dim hc_Handle As Long
@@ -173,7 +173,7 @@ End Function
 'Calculate and display the current mouse position.
 ' INPUTS: x and y coordinates of the mouse cursor, current form, and optionally two long-type variables to receive the relative
 '          coordinates (e.g. location on the image) of the current mouse position.
-Public Sub displayImageCoordinates(ByVal x1 As Long, ByVal y1 As Long, ByRef srcForm As Form, Optional ByRef copyX As Long, Optional ByRef copyY As Long)
+Public Sub displayImageCoordinates(ByVal x1 As Single, ByVal y1 As Single, ByRef srcForm As Form, Optional ByRef copyX As Single, Optional ByRef copyY As Single)
 
     If isMouseOverImage(x1, y1, srcForm) Then
             
@@ -203,7 +203,7 @@ Public Sub displayImageCoordinates(ByVal x1 As Long, ByVal y1 As Long, ByRef src
 End Sub
 
 'If an x or y location is NOT in the image, find the nearest coordinate that IS in the image
-Public Sub findNearestImageCoordinates(ByRef x1 As Long, ByRef y1 As Long, ByRef srcForm As Form)
+Public Sub findNearestImageCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form)
 
     'Grab the current zoom value
     Static ZoomVal As Single

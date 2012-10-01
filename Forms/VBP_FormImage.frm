@@ -190,7 +190,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
-    Dim imgX As Long, imgY As Long
+    Dim imgX As Single, imgY As Single
     imgX = -1
     imgY = -1
     
@@ -232,7 +232,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
-    Dim imgX As Long, imgY As Long
+    Dim imgX As Single, imgY As Single
     imgX = -1
     imgY = -1
     
@@ -297,7 +297,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
     'If the image has not yet been loaded, exit
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
     
-    Dim imgX As Long, imgY As Long
+    Dim imgX As Single, imgY As Single
     
     'Check mouse buttons
     If Button = vbLeftButton Then
