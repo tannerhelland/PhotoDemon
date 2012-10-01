@@ -292,7 +292,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
                 QuickVal = x * 3
             For y = imgTop To bottomBound
             
-                If (x > dstLeft) And (x < dstRight) And (y > dstTop) And (y < dstBottom) Then
+                If (x >= dstLeft) And (x <= dstRight) And (y >= dstTop) And (y <= dstBottom) Then
                     iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
                     iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
                     iData(QuickVal, y) = bData(iData(QuickVal, y))
