@@ -1164,7 +1164,7 @@ Private Sub cmbSelRender_Click()
     If NumOfWindows > 0 Then
     
         Dim i As Long
-        For i = 1 To NumOfWindows
+        For i = 1 To NumOfImagesLoaded
             If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
         Next i
     
@@ -1474,7 +1474,7 @@ Private Sub MnuCascadeWindows_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To NumOfWindows
+    For i = 1 To NumOfImagesLoaded
         If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Cascade"
     Next i
     
@@ -1972,7 +1972,7 @@ Private Sub MnuTileHorizontally_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To NumOfWindows
+    For i = 1 To NumOfImagesLoaded
         If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
     Next i
     
@@ -1984,7 +1984,7 @@ Private Sub MnuTileVertically_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To NumOfWindows
+    For i = 1 To NumOfImagesLoaded
         If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
     Next i
     
