@@ -17,7 +17,22 @@ Option Explicit
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Const IDC_HAND As Long = 32649
+
+Public Const IDC_APPSTARTING = 32650&
+Public Const IDC_HAND = 32649&
+Public Const IDC_ARROW = 32512&
+Public Const IDC_CROSS = 32515&
+Public Const IDC_IBEAM = 32513&
+Public Const IDC_ICON = 32641&
+Public Const IDC_NO = 32648&
+Public Const IDC_SIZEALL = 32646&
+Public Const IDC_SIZENESW = 32643&
+Public Const IDC_SIZENS = 32645&
+Public Const IDC_SIZENWSE = 32642&
+Public Const IDC_SIZEWE = 32644&
+Public Const IDC_UPARROW = 32516&
+Public Const IDC_WAIT = 32514&
+
 Private Const GCL_HCURSOR = (-12)
 
 'Used to convert a system color (such as "button face") to a literal RGB value
@@ -25,6 +40,17 @@ Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateCo
     
 'This variable will hold the value of the loaded hand cursor.  We need to delete it (via DestroyCursor) when the program exits.
 Dim hc_Handle As Long
+
+'These variables will hold the values of other custom-loaded cursors.  They also need to be deleted when the program exits.
+Dim hc_Handle_Arrow As Long
+Dim hc_Handle_Cross As Long
+Dim hc_Handle_SizeAll As Long
+Dim hc_Handle_SizeNESW As Long
+Dim hc_Handle_SizeNS As Long
+Dim hc_Handle_SizeNWSE As Long
+Dim hc_Handle_SizeWE As Long
+
+
 
 'Given an OLE color, return an RGB
 Public Function GetRealColor(ByVal Color As OLE_COLOR) As Long
@@ -341,11 +367,28 @@ End Function
 'Load the hand cursor into memory
 Public Sub initHandCursor()
     hc_Handle = LoadCursor(0, IDC_HAND)
+    
+    'Note: this routine also loads other cursors into memory, but the original name of the routine has stuck
+    hc_Handle_Arrow = LoadCursor(0, IDC_ARROW)
+    hc_Handle_Cross = LoadCursor(0, IDC_CROSS)
+    hc_Handle_SizeAll = LoadCursor(0, IDC_SIZEALL)
+    hc_Handle_SizeNESW = LoadCursor(0, IDC_SIZENESW)
+    hc_Handle_SizeNS = LoadCursor(0, IDC_SIZENS)
+    hc_Handle_SizeNWSE = LoadCursor(0, IDC_SIZENWSE)
+    hc_Handle_SizeWE = LoadCursor(0, IDC_SIZEWE)
+
 End Sub
 
 'Remove the hand cursor from memory
 Public Sub destroyHandCursor()
     DestroyCursor hc_Handle
+    DestroyCursor hc_Handle_Arrow
+    DestroyCursor hc_Handle_Cross
+    DestroyCursor hc_Handle_SizeAll
+    DestroyCursor hc_Handle_SizeNESW
+    DestroyCursor hc_Handle_SizeNS
+    DestroyCursor hc_Handle_SizeNWSE
+    DestroyCursor hc_Handle_SizeWE
 End Sub
 
 'Because VB6 apps tend to look pretty lame on modern version of Windows, we do a bit of beautification to every form when
@@ -367,7 +410,42 @@ Public Sub makeFormPretty(ByRef tForm As Form)
     
 End Sub
 
-'Set a single object ot use a particular hand cursor
+'Set a single object to use the hand cursor
 Public Sub setHandCursor(ByRef tControl As Control)
     SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle
+End Sub
+
+'Set a single form to use the cross cursor
+Public Sub setCrossCursor(ByRef tControl As Form)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Cross
+End Sub
+
+'Set a single form to use the arrow cursor
+Public Sub setArrowCursor(ByRef tControl As Form)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Arrow
+End Sub
+    
+'Set a single form to use the Size All cursor
+Public Sub setSizeAllCursor(ByRef tControl As Form)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeAll
+End Sub
+
+'Set a single form to use the Size NESW cursor
+Public Sub setSizeNESWCursor(ByRef tControl As Form)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNESW
+End Sub
+
+'Set a single form to use the Size NS cursor
+Public Sub setSizeNSCursor(ByRef tControl As Form)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNS
+End Sub
+
+'Set a single form to use the Size NWSE cursor
+Public Sub setSizeNWSECursor(ByRef tControl As Form)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNWSE
+End Sub
+
+'Set a single form to use the Size WE cursor
+Public Sub setSizeWECursor(ByRef tControl As Form)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeWE
 End Sub
