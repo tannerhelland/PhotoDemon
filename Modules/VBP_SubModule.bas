@@ -188,8 +188,8 @@ Public Sub displayImageCoordinates(ByVal x1 As Single, ByVal y1 As Single, ByRef
         'When zoomed very far out, the values might be calculated incorrectly.  Force them to the image dimensions if necessary.
         If x1 < 0 Then x1 = 0
         If y1 < 0 Then y1 = 0
-        If x1 > pdImages(srcForm.Tag).Width - 1 Then x1 = pdImages(srcForm.Tag).Width - 1
-        If y1 > pdImages(srcForm.Tag).Height - 1 Then y1 = pdImages(srcForm.Tag).Height - 1
+        If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
+        If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
         
         'If the user has requested copies of these coordinates, assign them now
         If copyX Then copyX = x1
@@ -217,8 +217,8 @@ Public Sub findNearestImageCoordinates(ByRef x1 As Single, ByRef y1 As Single, B
     'Force any invalid values to their nearest matching point in the image
     If x1 < 0 Then x1 = 0
     If y1 < 0 Then y1 = 0
-    If x1 > pdImages(srcForm.Tag).Width - 1 Then x1 = pdImages(srcForm.Tag).Width - 1
-    If y1 > pdImages(srcForm.Tag).Height - 1 Then y1 = pdImages(srcForm.Tag).Height - 1
+    If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
+    If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
 
 End Sub
 
