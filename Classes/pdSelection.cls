@@ -116,6 +116,9 @@ Public selWidth As Long, selHeight As Long
 'Is this selection "locked in"?
 Private lockedIn As Boolean
 
+'Is this selection requesting text box updates?  Because if it is, ignore external requests
+Private rejectRefreshRequests As Boolean
+
 'Set a selection type
 Public Sub setSelectionType(ByVal selType As SelectionType)
     sType = selType
@@ -153,6 +156,7 @@ Public Function isLockedIn() As Boolean
     isLockedIn = lockedIn
 End Function
 
+'Whenever the x1, y1, x2, y2 values are changed, this sub needs to be called to update the left/right/width/height values accordingly
 Private Sub updateInternalCoords()
 
     'Calculate left, top width, height based off the current x1/x2/y1/y2 values
@@ -171,6 +175,23 @@ Private Sub updateInternalCoords()
         selTop = y2
         selHeight = y1 - y2
     End If
+    
+    'Adjust the main form's selection text boxes to match the newly calculated values
+    refreshTextBoxes
+
+End Sub
+
+'Use this to populate the text boxes on the main form with the current selection values
+Public Sub refreshTextBoxes()
+
+    rejectRefreshRequests = True
+
+    If selLeft > 0 Then FormMain.vsSelLeft = Abs(32767 - selLeft)
+    If selTop > 0 Then FormMain.vsSelTop = Abs(32767 - selTop)
+    If selWidth > 0 Then FormMain.vsSelWidth = Abs(32767 - selWidth)
+    If selHeight > 0 Then FormMain.vsSelHeight = Abs(32767 - selHeight)
+
+    rejectRefreshRequests = False
 
 End Sub
 
@@ -191,7 +212,11 @@ Public Sub lockRelease()
 
 End Sub
 
+'Render a selection using one of several methods.
 Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal ImgWidth As Long, ByVal ImgHeight As Long, ByVal sType As SelectionRender)
+
+    'If we're the one requesting updates by accident, exit
+    If rejectRefreshRequests Then Exit Sub
 
     'Update the internal coordinates, just in case
     updateInternalCoords
@@ -350,6 +375,45 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
                     
     End Select
         
+End Sub
+
+'Update this selection using the values in the main form's selection text boxes
+Public Sub updateViaTextBox()
+
+    'Ignore text box update requests until the selection is locked in
+    If isLockedIn = False Then Exit Sub
+
+    rejectRefreshRequests = True
+
+    'Check all text box entries for validity, then update the corresponding selection values
+    If EntryValid(FormMain.txtSelLeft, 1, 32767, False, False) Then
+        If Val(FormMain.txtSelLeft) > pdImages(CurrentImage).Width - 1 Then FormMain.txtSelLeft = pdImages(CurrentImage).Width - 1
+        selLeft = Val(FormMain.txtSelLeft)
+    End If
+    If EntryValid(FormMain.txtSelTop, 1, 32767, False, False) Then
+        If Val(FormMain.txtSelTop) > pdImages(CurrentImage).Height - 1 Then FormMain.txtSelTop = pdImages(CurrentImage).Height - 1
+        selTop = Val(FormMain.txtSelTop)
+    End If
+    If EntryValid(FormMain.txtSelWidth, 1, 32767, False, False) Then
+        If Val(FormMain.txtSelWidth) > pdImages(CurrentImage).Width - 1 Then FormMain.txtSelWidth = pdImages(CurrentImage).Width - 1
+        selWidth = Val(FormMain.txtSelWidth)
+    End If
+    If EntryValid(FormMain.txtSelHeight, 1, 32767, False, False) Then
+        If Val(FormMain.txtSelHeight) > pdImages(CurrentImage).Height - 1 Then FormMain.txtSelHeight = pdImages(CurrentImage).Height - 1
+        selHeight = Val(FormMain.txtSelHeight)
+    End If
+    
+    'Adjust the x1, y1, x2, y2 values to match these new ones
+    x1 = selLeft
+    y1 = selTop
+    x2 = selLeft + selWidth
+    y2 = selTop + selHeight
+    
+    rejectRefreshRequests = False
+    
+    'Redraw the selection to the active form
+    RenderViewport FormMain.ActiveForm
+    
 End Sub
 
 Private Sub Class_Initialize()

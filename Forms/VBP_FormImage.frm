@@ -152,6 +152,9 @@ Private Sub Form_Activate()
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If pdImages(CurrentImage).Width <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
     
+    'If a selection is active on this image, update the text boxes to match
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.refreshTextBoxes
+    
     'Finally, if the histogram window is open, redraw it
     If (FormHistogram.Visible = True) And pdImages(Me.Tag).loadedSuccessfully Then
         FormHistogram.TallyHistogramValues
@@ -276,9 +279,6 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         
             Me.MousePointer = 2
         
-            'Display the image coordinates under the mouse pointer
-            displayImageCoordinates x, y, Me
-        
         Else
         
             Me.MousePointer = 0
@@ -288,6 +288,9 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     End If
     
     makeFormPretty Me
+    
+    'Display the image coordinates under the mouse pointer
+    displayImageCoordinates x, y, Me
     
 End Sub
 

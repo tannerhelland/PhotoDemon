@@ -3,10 +3,10 @@ Begin VB.MDIForm FormMain
    AutoShowChildren=   0   'False
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   8475
+   ClientHeight    =   9375
    ClientLeft      =   225
    ClientTop       =   855
-   ClientWidth     =   13785
+   ClientWidth     =   15045
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
@@ -31,15 +31,15 @@ Begin VB.MDIForm FormMain
       Left            =   0
       ScaleHeight     =   25
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   919
+      ScaleWidth      =   1003
       TabIndex        =   6
       TabStop         =   0   'False
-      Top             =   8100
-      Width           =   13785
+      Top             =   9000
+      Width           =   15045
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
-      Left            =   12240
-      Top             =   6960
+      Left            =   12000
+      Top             =   7560
       _ExtentX        =   1191
       _ExtentY        =   1058
       Enabled         =   0   'False
@@ -58,15 +58,135 @@ Begin VB.MDIForm FormMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   8100
+      Height          =   9000
       Left            =   0
-      ScaleHeight     =   538
+      ScaleHeight     =   598
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   147
       TabIndex        =   0
       TabStop         =   0   'False
       Top             =   0
       Width           =   2235
+      Begin VB.TextBox txtSelHeight 
+         Alignment       =   2  'Center
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   1110
+         MaxLength       =   5
+         TabIndex        =   27
+         Top             =   7620
+         Width           =   645
+      End
+      Begin VB.VScrollBar vsSelHeight 
+         Height          =   465
+         Left            =   1740
+         Max             =   32766
+         Min             =   1
+         TabIndex        =   26
+         TabStop         =   0   'False
+         Top             =   7560
+         Value           =   15000
+         Width           =   270
+      End
+      Begin VB.TextBox txtSelWidth 
+         Alignment       =   2  'Center
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   180
+         MaxLength       =   5
+         TabIndex        =   25
+         Top             =   7620
+         Width           =   645
+      End
+      Begin VB.VScrollBar vsSelWidth 
+         Height          =   465
+         Left            =   810
+         Max             =   32766
+         Min             =   1
+         TabIndex        =   24
+         TabStop         =   0   'False
+         Top             =   7560
+         Value           =   15000
+         Width           =   270
+      End
+      Begin VB.TextBox txtSelTop 
+         Alignment       =   2  'Center
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   1110
+         MaxLength       =   5
+         TabIndex        =   22
+         Top             =   6660
+         Width           =   645
+      End
+      Begin VB.VScrollBar vsSelTop 
+         Height          =   465
+         Left            =   1740
+         Max             =   32766
+         Min             =   1
+         TabIndex        =   21
+         TabStop         =   0   'False
+         Top             =   6600
+         Value           =   15000
+         Width           =   270
+      End
+      Begin VB.TextBox txtSelLeft 
+         Alignment       =   2  'Center
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   180
+         MaxLength       =   5
+         TabIndex        =   20
+         Top             =   6660
+         Width           =   645
+      End
+      Begin VB.VScrollBar vsSelLeft 
+         Height          =   465
+         Left            =   810
+         Max             =   32766
+         Min             =   1
+         TabIndex        =   19
+         TabStop         =   0   'False
+         Top             =   6600
+         Value           =   15000
+         Width           =   270
+      End
       Begin VB.ComboBox cmbSelRender 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
@@ -305,11 +425,53 @@ Begin VB.MDIForm FormMain
          TooltipType     =   1
          TooltipTitle    =   "Save As"
       End
-      Begin VB.Label lblSelections 
+      Begin VB.Label lblSelSize 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
-         Caption         =   "selections"
+         Caption         =   "selection size"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   375
+         Left            =   120
+         TabIndex        =   28
+         Top             =   7200
+         Width           =   1935
+      End
+      Begin VB.Label lblSelPosition 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "selection position"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   375
+         Left            =   120
+         TabIndex        =   23
+         Top             =   6240
+         Width           =   1935
+      End
+      Begin VB.Label lblSelType 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "selection type"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -432,10 +594,10 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H000000FF&
-         Height          =   735
+         Height          =   615
          Left            =   120
          TabIndex        =   9
-         Top             =   7200
+         Top             =   8160
          Visible         =   0   'False
          Width           =   1935
       End
@@ -1156,6 +1318,11 @@ Option Explicit
 Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
 Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
 
+'Use to prevent scroll bar / text box combos from getting stuck in update loops
+Dim suspendSelTextBoxUpdates As Boolean
+Private updateSelLeftBar As Boolean, updateSelTopBar As Boolean
+Private updateSelWidthBar As Boolean, updateSelHeightBar As Boolean
+
 'When the selection type is changed, update the corresponding preference and redraw all selections
 Private Sub cmbSelRender_Click()
     
@@ -1274,6 +1441,12 @@ Private Sub MDIForm_Load()
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Allow the selection scroll bars to be updated
+    updateSelLeftBar = True
+    updateSelTopBar = True
+    updateSelWidthBar = True
+    updateSelHeightBar = True
     
 End Sub
 
@@ -2221,3 +2394,95 @@ Private Sub picProgBar_Resize()
     RedrawMainForm
     
 End Sub
+
+'When the selection text boxes are updated, change the scrollbars to match
+Private Sub txtSelHeight_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtSelHeight
+    changeToSelHeight
+End Sub
+
+Private Sub txtSelLeft_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtSelLeft
+    changeToSelLeft
+End Sub
+
+Private Sub txtSelTop_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtSelTop
+    changeToSelTop
+End Sub
+
+Private Sub txtSelWidth_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtSelWidth
+    changeToSelWidth
+End Sub
+
+'When the selection scroll bars are updated, change the text boxes to match
+Private Sub vsSelLeft_Change()
+    If updateSelLeftBar = True Then
+        txtSelLeft = Abs(32767 - CStr(vsSelLeft.Value))
+        txtSelLeft.Refresh
+        changeToSelLeft
+    End If
+End Sub
+
+Private Sub vsSelTop_Change()
+    If updateSelTopBar = True Then
+        txtSelTop = Abs(32767 - CStr(vsSelTop.Value))
+        txtSelTop.Refresh
+        changeToSelTop
+    End If
+End Sub
+
+Private Sub vsSelWidth_Change()
+    If updateSelWidthBar = True Then
+        txtSelWidth = Abs(32767 - CStr(vsSelWidth.Value))
+        txtSelWidth.Refresh
+        changeToSelWidth
+    End If
+End Sub
+
+Private Sub vsSelHeight_Change()
+    If updateSelHeightBar = True Then
+        txtSelHeight = Abs(32767 - CStr(vsSelHeight.Value))
+        txtSelHeight.Refresh
+        changeToSelHeight
+    End If
+End Sub
+
+'The next four routines are used to keep the selection text boxes and scrollbars in sync
+Public Sub changeToSelLeft()
+    If EntryValid(txtSelLeft, 1, 32767, False, True) Then
+        updateSelLeftBar = False
+        vsSelLeft.Value = Abs(32767 - CInt(txtSelLeft))
+        updateSelLeftBar = True
+    End If
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.updateViaTextBox
+End Sub
+
+Public Sub changeToSelTop()
+    If EntryValid(txtSelTop, 1, 32767, False, True) Then
+        updateSelTopBar = False
+        vsSelTop.Value = Abs(32767 - CInt(txtSelTop))
+        updateSelTopBar = True
+    End If
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.updateViaTextBox
+End Sub
+
+Public Sub changeToSelWidth()
+    If EntryValid(txtSelWidth, 1, 32767, False, True) Then
+        updateSelWidthBar = False
+        vsSelWidth.Value = Abs(32767 - CInt(txtSelWidth))
+        updateSelWidthBar = True
+    End If
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.updateViaTextBox
+End Sub
+
+Public Sub changeToSelHeight()
+    If EntryValid(txtSelHeight, 1, 32767, False, True) Then
+        updateSelHeightBar = False
+        vsSelHeight.Value = Abs(32767 - CInt(txtSelHeight))
+        updateSelHeightBar = True
+    End If
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.updateViaTextBox
+End Sub
+
