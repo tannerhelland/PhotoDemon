@@ -67,7 +67,14 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     
     'If this is not a preview, simply copy the current layer without modification
     If isPreview = False Then
-        workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    
+        'Check for an active selection; if one is present, use that instead of the full layer
+        If pdImages(CurrentImage).selectionActive Then
+            workingLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            BitBlt workingLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+        Else
+            workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+        End If
     
     'If this IS a preview, more work is involved.
     Else
@@ -78,8 +85,15 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         dstHeight = previewPictureBox.ScaleHeight
     
         Dim SrcWidth As Single, SrcHeight As Single
-        SrcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
-        SrcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+        
+        'The source width needs to know if this is a selection or a full-image preview
+        If pdImages(CurrentImage).selectionActive Then
+            SrcWidth = pdImages(CurrentImage).mainSelection.selWidth
+            SrcHeight = pdImages(CurrentImage).mainSelection.selHeight
+        Else
+            SrcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+            SrcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+        End If
     
         Dim srcAspect As Single, dstAspect As Single
         srcAspect = SrcWidth / SrcHeight
@@ -95,9 +109,19 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             newHeight = dstHeight
             newWidth = CSng(SrcWidth / SrcHeight) * newHeight + 0.5
         End If
-        
+                
         'And finally, create our workingLayer using these values
-        workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight
+        If pdImages(CurrentImage).selectionActive Then
+            Dim copyLayer As pdLayer
+            Set copyLayer = New pdLayer
+            copyLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            BitBlt copyLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+            workingLayer.createFromExistingLayer copyLayer, newWidth, newHeight
+            copyLayer.eraseLayer
+            Set copyLayer = Nothing
+        Else
+            workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight
+        End If
         
     End If
     
@@ -162,7 +186,11 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Message "Rendering image to screen..."
         
         'Paint the working layer over the original layer
-        BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, curLayerValues.LayerX, curLayerValues.LayerY, curLayerValues.Width, curLayerValues.Height, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+        If pdImages(CurrentImage).selectionActive Then
+            BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, workingLayer.getLayerWidth, workingLayer.getLayerHeight, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+        Else
+            BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, curLayerValues.LayerX, curLayerValues.LayerY, curLayerValues.Width, curLayerValues.Height, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+        End If
                 
         'workingLayer has served its purpose, so erase it from memory
         Set workingLayer = Nothing
@@ -177,7 +205,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
     Else
     
-        'If the current layer is 32bpp, precomposite it against white before rendering
+        'If the current layer is 32bpp, precomposite it against a checkerboard background before rendering
         If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor
     
         'Allow workingLayer to paint itself to the target picture box
