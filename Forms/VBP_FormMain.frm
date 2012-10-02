@@ -750,6 +750,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuRepeatLast 
          Caption         =   "Repeat &Last Action"
          Enabled         =   0   'False
+         Shortcut        =   ^F
       End
       Begin VB.Menu MnuEditSepBar1 
          Caption         =   "-"
@@ -1203,7 +1204,6 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuCustomFilter 
          Caption         =   "Custom Filter..."
-         Shortcut        =   ^F
       End
       Begin VB.Menu MnuTest 
          Caption         =   "Test"
@@ -2233,11 +2233,6 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
         If FormMain.MnuRedo.Enabled = True Then Process Redo
     End If
     
-    'Repeat last action
-    If ctlAccelerator.Key(nIndex) = "Repeat_Last" Then
-        If FormMain.MnuRepeatLast.Enabled = True Then Process LastCommand
-    End If
-    
     'Empty clipboard
     If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then Process cEmpty
     
@@ -2390,10 +2385,18 @@ Private Sub picProgBar_Resize()
     
 End Sub
 
+Private Sub txtSelHeight_GotFocus()
+    AutoSelectText txtSelHeight
+End Sub
+
 'When the selection text boxes are updated, change the scrollbars to match
 Private Sub txtSelHeight_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtSelHeight
     changeToSelHeight
+End Sub
+
+Private Sub txtSelLeft_GotFocus()
+    AutoSelectText txtSelLeft
 End Sub
 
 Private Sub txtSelLeft_KeyUp(KeyCode As Integer, Shift As Integer)
@@ -2401,9 +2404,17 @@ Private Sub txtSelLeft_KeyUp(KeyCode As Integer, Shift As Integer)
     changeToSelLeft
 End Sub
 
+Private Sub txtSelTop_GotFocus()
+    AutoSelectText txtSelTop
+End Sub
+
 Private Sub txtSelTop_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtSelTop
     changeToSelTop
+End Sub
+
+Private Sub txtSelWidth_GotFocus()
+    AutoSelectText txtSelWidth
 End Sub
 
 Private Sub txtSelWidth_KeyUp(KeyCode As Integer, Shift As Integer)
