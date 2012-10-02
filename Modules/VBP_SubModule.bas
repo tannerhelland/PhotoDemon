@@ -196,6 +196,7 @@ Public Sub displayImageCoordinates(ByVal x1 As Single, ByVal y1 As Single, ByRef
         If copyY Then copyY = y1
         
         FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+        FormMain.lblCoordinates.Refresh
         'DoEvents
         
     End If
