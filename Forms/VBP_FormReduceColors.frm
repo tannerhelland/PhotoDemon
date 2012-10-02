@@ -53,33 +53,33 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.HScrollBar hsBlue 
       Height          =   255
-      Left            =   2640
-      Max             =   256
-      Min             =   1
+      Left            =   2520
+      Max             =   64
+      Min             =   2
       TabIndex        =   8
       Top             =   6195
       Value           =   6
-      Width           =   2895
+      Width           =   3015
    End
    Begin VB.HScrollBar hsGreen 
       Height          =   255
-      Left            =   2640
-      Max             =   256
-      Min             =   1
+      Left            =   2520
+      Max             =   64
+      Min             =   2
       TabIndex        =   6
       Top             =   5805
       Value           =   7
-      Width           =   2895
+      Width           =   3015
    End
    Begin VB.HScrollBar hsRed 
       Height          =   255
-      Left            =   2640
-      Max             =   256
-      Min             =   1
+      Left            =   2520
+      Max             =   64
+      Min             =   2
       TabIndex        =   4
       Top             =   5415
       Value           =   6
-      Width           =   2895
+      Width           =   3015
    End
    Begin VB.OptionButton OptQuant 
       Appearance      =   0  'Flat
@@ -316,7 +316,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.Label lblBlue 
       BackStyle       =   0  'Transparent
-      Caption         =   "Possible blue values (1-256):"
+      Caption         =   "Possible blue values (2-64):"
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   360
@@ -326,7 +326,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.Label lblGreen 
       BackStyle       =   0  'Transparent
-      Caption         =   "Possible green values (1-256):"
+      Caption         =   "Possible green values (2-64):"
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   360
@@ -336,7 +336,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.Label lblRed 
       BackStyle       =   0  'Transparent
-      Caption         =   "Possible red values (1-256):"
+      Caption         =   "Possible red values (2-64):"
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   360
