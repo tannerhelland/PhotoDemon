@@ -3,10 +3,10 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H00FFFFFF&
    Caption         =   "Image Window"
-   ClientHeight    =   2595
+   ClientHeight    =   5385
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   6180
+   ClientWidth     =   8490
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Arial"
@@ -22,11 +22,31 @@ Begin VB.Form FormImage
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   173
+   ScaleHeight     =   359
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   412
+   ScaleWidth      =   566
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin VB.HScrollBar HScroll 
+      Height          =   255
+      LargeChange     =   10
+      Left            =   120
+      TabIndex        =   1
+      TabStop         =   0   'False
+      Top             =   3720
+      Visible         =   0   'False
+      Width           =   5415
+   End
+   Begin VB.VScrollBar VScroll 
+      Height          =   3615
+      LargeChange     =   10
+      Left            =   6240
+      TabIndex        =   2
+      TabStop         =   0   'False
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   255
+   End
    Begin VB.PictureBox picIcon 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -54,26 +74,6 @@ Begin VB.Form FormImage
       Top             =   2640
       Visible         =   0   'False
       Width           =   240
-   End
-   Begin VB.VScrollBar VScroll 
-      Height          =   3615
-      LargeChange     =   10
-      Left            =   6240
-      TabIndex        =   2
-      TabStop         =   0   'False
-      Top             =   120
-      Visible         =   0   'False
-      Width           =   255
-   End
-   Begin VB.HScrollBar HScroll 
-      Height          =   255
-      LargeChange     =   10
-      Left            =   120
-      TabIndex        =   1
-      TabStop         =   0   'False
-      Top             =   3720
-      Visible         =   0   'False
-      Width           =   5415
    End
    Begin VB.PictureBox PicCH 
       Appearance      =   0  'Flat
@@ -203,24 +203,28 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         'Check the location of the mouse to see if it's over the image
         If isMouseOverImage(x, y, Me) Then
         
-            'Only track the mouse state if it is over the image
-            lMouseDown = True
-                
-            Me.MousePointer = 2
-        
-            'Display the image coordinates under the mouse pointer
-            displayImageCoordinates x, y, Me, imgX, imgY
-        
-            'Activate the selection and pass in the first two points
-            pdImages(CurrentImage).selectionActive = True
-            pdImages(CurrentImage).mainSelection.setInitialCoordinates imgX, imgY
-    
-            'Remember this location
-            initMouseX = x
-            initMouseY = y
+            'Also check to make sure we're not over the scroll bars
+            If (x < Me.VScroll.Left) And (y < Me.HScroll.Top) Then
             
-            'Render the new selection
-            RenderViewport Me
+                'Only track the mouse state if it is over the image
+                
+                lMouseDown = True
+            
+                'Display the image coordinates under the mouse pointer
+                displayImageCoordinates x, y, Me, imgX, imgY
+            
+                'Activate the selection and pass in the first two points
+                pdImages(CurrentImage).selectionActive = True
+                pdImages(CurrentImage).mainSelection.setInitialCoordinates imgX, imgY
+        
+                'Remember this location
+                initMouseX = x
+                initMouseY = y
+                
+                'Render the new selection
+                RenderViewport Me
+                
+            End If
     
         End If
         
@@ -277,11 +281,12 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         'Check the location of the mouse to see if it's over the image
         If isMouseOverImage(x, y, Me) Then
         
-            Me.MousePointer = 2
-        
+            'Perform a second set of checks to make sure the mouse isn't over a scroll bar
+            setCrossCursor Me
+
         Else
         
-            Me.MousePointer = 0
+            setArrowCursor Me
         
         End If
         
@@ -306,7 +311,6 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
     If Button = vbLeftButton Then
     
         lMouseDown = False
-        Me.MousePointer = 0
     
         'If a selection was being drawn, lock it into place
         If pdImages(CurrentImage).selectionActive Then
@@ -328,6 +332,8 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
     End If
     
     If Button = vbRightButton Then rMouseDown = False
+    
+    makeFormPretty Me
     
 End Sub
 
@@ -599,15 +605,21 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal Rotation As Long, ByVal Xpo
   End If
   
   'Zooming - only trigger when Ctrl has been pressed
-  If CtrlDown Then
+  If CtrlDown And (Not ShiftDown) Then
   
     If Rotation > 0 Then
         
-        If FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+        If FormMain.CmbZoom.ListIndex > 0 Then
+            FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+            PrepareViewport Me, "Ctrl+Mousewheel"
+        End If
     
     ElseIf Rotation < 0 Then
         
-        If FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+        If FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then
+            FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+            PrepareViewport Me, "Ctrl+Mousewheel"
+        End If
         
     End If
   End If
