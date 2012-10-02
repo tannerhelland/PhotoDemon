@@ -44,6 +44,12 @@ Dim frontBuffer As pdLayer
 ' which is then copied to the front buffer, and any final composites (such as a selection) are drawn atop that.
 Public Sub RenderViewport(ByRef formToBuffer As Form)
 
+    'Make sure the form is valid
+    If formToBuffer Is Nothing Then Exit Sub
+    
+    'If the image associated with this form is inactive, ignore this request
+    If pdImages(formToBuffer.Tag).IsActive = False Then Exit Sub
+
     'Reset the front buffer
     Set frontBuffer = New pdLayer
     
@@ -73,6 +79,12 @@ End Sub
 'ScrollViewport is used to update the on-screen image when the scroll bars are used.
 ' Given how frequently it is used, I've tried to make it as small and fast as possible.
 Public Sub ScrollViewport(ByRef formToBuffer As Form)
+    
+    'Make sure the form is valid
+    If formToBuffer Is Nothing Then Exit Sub
+    
+    'If the image associated with this form is inactive, ignore this request
+    If pdImages(formToBuffer.Tag).IsActive = False Then Exit Sub
     
     'The zoom value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
     ZoomVal = Zoom.ZoomArray(pdImages(formToBuffer.Tag).CurrentZoomValue)
