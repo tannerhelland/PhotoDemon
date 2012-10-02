@@ -270,10 +270,10 @@ Option Explicit
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 
 'Used to prevent the scroll bars from getting stuck in update loops
-Dim updateWidthBar As Boolean, updateHeightBar As Boolean
+Private updateWidthBar As Boolean, updateHeightBar As Boolean
 
 'Used for maintaining ratios when the check box is clicked
-Dim WRatio As Double, HRatio As Double
+Private wRatio As Double, wRatio As Double
 
 'If the ratio button is checked, then update the height box to match
 Private Sub ChkRatio_Click()
@@ -511,19 +511,19 @@ Private Sub CmdResize_Click()
     'Resample based on the combo box entry...
     Select Case cboResample.ListIndex
         Case 0
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_NORMAL
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_NORMAL
         Case 1
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_HALFTONE
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_HALFTONE
         Case 2
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BILINEAR
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BILINEAR
         Case 3
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BSPLINE
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BSPLINE
         Case 4
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BICUBIC_MITCHELL
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BICUBIC_MITCHELL
         Case 5
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_BICUBIC_CATMULL
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BICUBIC_CATMULL
         Case 6
-            Process ImageSize, val(TxtWidth), val(TxtHeight), RESIZE_LANCZOS
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_LANCZOS
     End Select
     
     Unload Me
@@ -550,7 +550,7 @@ Private Sub Form_Activate()
     updateHeightBar = True
     
     'Establish ratios
-    WRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
+    wRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
     HRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
 
     'Load up the combo box
@@ -604,15 +604,15 @@ End Sub
 
 Private Sub UpdateHeightBox()
     updateHeightBar = False
-    TxtHeight = Int((CDbl(val(TxtWidth)) * HRatio) + 0.5)
-    VSHeight.Value = Abs(32767 - val(TxtHeight))
+    TxtHeight = Int((CDbl(Val(TxtWidth)) * HRatio) + 0.5)
+    VSHeight.Value = Abs(32767 - Val(TxtHeight))
     updateHeightBar = True
 End Sub
 
 Private Sub UpdateWidthBox()
     updateWidthBar = False
-    TxtWidth = Int((CDbl(val(TxtHeight)) * WRatio) + 0.5)
-    VSWidth.Value = Abs(32767 - val(TxtWidth))
+    TxtWidth = Int((CDbl(Val(TxtHeight)) * wRatio) + 0.5)
+    VSWidth.Value = Abs(32767 - Val(TxtWidth))
     updateWidthBar = True
 End Sub
 '*************************************************************************************
