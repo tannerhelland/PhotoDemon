@@ -748,7 +748,6 @@ Public Sub LoadMenuShortcuts()
         'Edit menu
         .AddAccelerator vbKeyReturn, vbAltMask, "Preferences"
         .AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask, "Redo"
-        .AddAccelerator vbKeyZ, vbCtrlMask Or vbShiftMask, "Repeat_Last"
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Empty_Clipboard"
         
         'View menu
@@ -794,7 +793,6 @@ Public Sub LoadMenuShortcuts()
     FormMain.MnuPreferences.Caption = FormMain.MnuPreferences.Caption & vbTab & "Alt+Enter"
     'This Redo shortcut remains, but it is hidden; the Windows convention of Ctrl+Y is displayed instead.
     'FormMain.MnuRedo.Caption = FormMain.MnuRedo.Caption & vbTab & "Ctrl+Alt+Z"
-    FormMain.MnuRepeatLast.Caption = FormMain.MnuRepeatLast.Caption & vbTab & "Ctrl+Shift+Z"
     FormMain.MnuEmptyClipboard.Caption = FormMain.MnuEmptyClipboard.Caption & vbTab & "Ctrl+Shift+X"
     
     'View menu
