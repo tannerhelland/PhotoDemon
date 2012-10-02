@@ -604,6 +604,9 @@ End Sub
 'Automatic 8-bit color reduction via the FreeImage DLL.
 Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
 
+    'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
+
     'If this is a preview, we want to perform the color reduction on a temporary image
     If toPreview Then
         Dim tmpSA As SAFEARRAY2D

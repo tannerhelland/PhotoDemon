@@ -41,6 +41,10 @@ End Sub
 'Rotate an image 90° clockwise
 Public Sub MenuRotate90Clockwise()
 
+    'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
+    ' the selection to match the new image, but we can fix that at a later date.)
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
+
     Message "Rotating image clockwise..."
     
     'Create a local array and point it at the pixel data of the current image
@@ -139,6 +143,10 @@ End Sub
 
 'Rotate an image 90° counter-clockwise
 Public Sub MenuRotate270Clockwise()
+
+    'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
+    ' the selection to match the new image, but we can fix that at a later date.)
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
 
     Message "Rotating image counter-clockwise..."
     

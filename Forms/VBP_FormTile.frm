@@ -421,6 +421,9 @@ End Sub
 ' The other two parameters are width and height, or tiles in x and y direction
 Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional yTarget As Long, Optional ByVal isPreview As Boolean = False)
     
+    'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
+    
     If isPreview = False Then Message "Rendering tiled image..."
     
     'Create a temporary layer to generate the tile and/or tile preview
