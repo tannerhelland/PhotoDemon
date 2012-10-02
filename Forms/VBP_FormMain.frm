@@ -201,7 +201,7 @@ Begin VB.MDIForm FormMain
          TabIndex        =   18
          TabStop         =   0   'False
          ToolTipText     =   "Click to change the way selections are rendered"
-         Top             =   5760
+         Top             =   5730
          Width           =   1680
       End
       Begin VB.PictureBox picLogo 
@@ -745,6 +745,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuRedo 
          Caption         =   "&Redo"
+         Shortcut        =   ^Y
       End
       Begin VB.Menu MnuRepeatLast 
          Caption         =   "Repeat &Last Action"

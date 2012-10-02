@@ -106,11 +106,11 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If tState = True Then
                 FormMain.cmdRedo.ToolTip = GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID)
-                FormMain.MnuRedo.Caption = "Redo: " & GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID) & vbTab & "Ctrl+Alt+Z"
+                FormMain.MnuRedo.Caption = "Redo: " & GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID) '& vbTab & "Ctrl+Alt+Z"
                 ResetMenuIcons
             Else
                 FormMain.cmdRedo.ToolTip = ""
-                FormMain.MnuRedo.Caption = "Redo" & vbTab & "Ctrl+Alt+Z"
+                FormMain.MnuRedo.Caption = "Redo" '& vbTab & "Ctrl+Alt+Z"
                 ResetMenuIcons
             End If
             

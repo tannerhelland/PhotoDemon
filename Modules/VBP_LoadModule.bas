@@ -222,7 +222,7 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.hWnd, "AAA", True
+    SetIcon FormMain.HWnd, "AAA", True
     
     'Load and draw the menu icons
     LoadMessage "Generating menu icons..."
@@ -645,7 +645,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As p
     End If
     
     'Copy the image into the current pdImage object
-    dstLayer.CreateFromPicture tmpPicture
+    dstLayer.createFromPicture tmpPicture
     
     'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
     ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
@@ -670,7 +670,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pd
     If verifyGDISuccess And (tmpPicture.Width <> 0) And (tmpPicture.Height <> 0) Then
     
         'Copy the image returned by GDI+ into the current pdImage object
-        LoadGDIPlusImage = dstLayer.CreateFromPicture(tmpPicture)
+        LoadGDIPlusImage = dstLayer.createFromPicture(tmpPicture)
         
     Else
         LoadGDIPlusImage = False
@@ -692,7 +692,7 @@ Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer
     End If
     
     'Copy the image into the current pdImage object
-    dstLayer.CreateFromPicture tmpPicture
+    dstLayer.createFromPicture tmpPicture
     
     LoadVBImage = True
     
@@ -792,7 +792,8 @@ Public Sub LoadMenuShortcuts()
 
     'Edit menu
     FormMain.MnuPreferences.Caption = FormMain.MnuPreferences.Caption & vbTab & "Alt+Enter"
-    FormMain.MnuRedo.Caption = FormMain.MnuRedo.Caption & vbTab & "Ctrl+Alt+Z"
+    'This Redo shortcut remains, but it is hidden; the Windows convention of Ctrl+Y is displayed instead.
+    'FormMain.MnuRedo.Caption = FormMain.MnuRedo.Caption & vbTab & "Ctrl+Alt+Z"
     FormMain.MnuRepeatLast.Caption = FormMain.MnuRepeatLast.Caption & vbTab & "Ctrl+Shift+Z"
     FormMain.MnuEmptyClipboard.Caption = FormMain.MnuEmptyClipboard.Caption & vbTab & "Ctrl+Shift+X"
     
