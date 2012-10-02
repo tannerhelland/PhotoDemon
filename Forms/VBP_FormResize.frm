@@ -273,7 +273,7 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal
 Private updateWidthBar As Boolean, updateHeightBar As Boolean
 
 'Used for maintaining ratios when the check box is clicked
-Private wRatio As Double, wRatio As Double
+Private wRatio As Double, hRatio As Double
 
 'If the ratio button is checked, then update the height box to match
 Private Sub ChkRatio_Click()
@@ -551,7 +551,7 @@ Private Sub Form_Activate()
     
     'Establish ratios
     wRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
-    HRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
+    hRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
 
     'Load up the combo box
     cboResample.AddItem "Nearest Neighbor", 0
@@ -604,7 +604,7 @@ End Sub
 
 Private Sub UpdateHeightBox()
     updateHeightBar = False
-    TxtHeight = Int((CDbl(Val(TxtWidth)) * HRatio) + 0.5)
+    TxtHeight = Int((CDbl(Val(TxtWidth)) * hRatio) + 0.5)
     VSHeight.Value = Abs(32767 - Val(TxtHeight))
     updateHeightBar = True
 End Sub

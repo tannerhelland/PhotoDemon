@@ -186,10 +186,10 @@ Public Sub refreshTextBoxes()
 
     rejectRefreshRequests = True
 
-    If selLeft > 0 Then FormMain.vsSelLeft = Abs(32767 - selLeft)
-    If selTop > 0 Then FormMain.vsSelTop = Abs(32767 - selTop)
-    If selWidth > 0 Then FormMain.vsSelWidth = Abs(32767 - selWidth)
-    If selHeight > 0 Then FormMain.vsSelHeight = Abs(32767 - selHeight)
+    If selLeft >= 0 Then FormMain.vsSelLeft.Value = Abs(32767 - selLeft)
+    If selTop >= 0 Then FormMain.vsSelTop.Value = Abs(32767 - selTop)
+    If selWidth > 0 Then FormMain.vsSelWidth.Value = Abs(32767 - selWidth)
+    If selHeight > 0 Then FormMain.vsSelHeight.Value = Abs(32767 - selHeight)
 
     rejectRefreshRequests = False
 
@@ -386,20 +386,20 @@ Public Sub updateViaTextBox()
     rejectRefreshRequests = True
 
     'Check all text box entries for validity, then update the corresponding selection values
-    If EntryValid(FormMain.txtSelLeft, 1, 32767, False, False) Then
+    If EntryValid(FormMain.txtSelLeft, 0, 32767, False, False) Then
         If Val(FormMain.txtSelLeft) > pdImages(CurrentImage).Width - 1 Then FormMain.txtSelLeft = pdImages(CurrentImage).Width - 1
         selLeft = Val(FormMain.txtSelLeft)
     End If
-    If EntryValid(FormMain.txtSelTop, 1, 32767, False, False) Then
+    If EntryValid(FormMain.txtSelTop, 0, 32767, False, False) Then
         If Val(FormMain.txtSelTop) > pdImages(CurrentImage).Height - 1 Then FormMain.txtSelTop = pdImages(CurrentImage).Height - 1
         selTop = Val(FormMain.txtSelTop)
     End If
     If EntryValid(FormMain.txtSelWidth, 1, 32767, False, False) Then
-        If Val(FormMain.txtSelWidth) > pdImages(CurrentImage).Width - 1 Then FormMain.txtSelWidth = pdImages(CurrentImage).Width - 1
+        If Val(FormMain.txtSelWidth) + Val(FormMain.txtSelLeft) > pdImages(CurrentImage).Width Then FormMain.txtSelWidth = pdImages(CurrentImage).Width - Val(FormMain.txtSelLeft)
         selWidth = Val(FormMain.txtSelWidth)
     End If
     If EntryValid(FormMain.txtSelHeight, 1, 32767, False, False) Then
-        If Val(FormMain.txtSelHeight) > pdImages(CurrentImage).Height - 1 Then FormMain.txtSelHeight = pdImages(CurrentImage).Height - 1
+        If Val(FormMain.txtSelHeight) + Val(FormMain.txtSelTop) > pdImages(CurrentImage).Height Then FormMain.txtSelHeight = pdImages(CurrentImage).Height - Val(FormMain.txtSelTop)
         selHeight = Val(FormMain.txtSelHeight)
     End If
     

@@ -89,7 +89,6 @@ Begin VB.MDIForm FormMain
       Begin VB.VScrollBar vsSelHeight 
          Height          =   465
          Left            =   1740
-         Max             =   32766
          Min             =   1
          TabIndex        =   26
          TabStop         =   0   'False
@@ -119,7 +118,6 @@ Begin VB.MDIForm FormMain
       Begin VB.VScrollBar vsSelWidth 
          Height          =   465
          Left            =   810
-         Max             =   32766
          Min             =   1
          TabIndex        =   24
          TabStop         =   0   'False
@@ -149,8 +147,6 @@ Begin VB.MDIForm FormMain
       Begin VB.VScrollBar vsSelTop 
          Height          =   465
          Left            =   1740
-         Max             =   32766
-         Min             =   1
          TabIndex        =   21
          TabStop         =   0   'False
          Top             =   6600
@@ -179,8 +175,6 @@ Begin VB.MDIForm FormMain
       Begin VB.VScrollBar vsSelLeft 
          Height          =   465
          Left            =   810
-         Max             =   32766
-         Min             =   1
          TabIndex        =   19
          TabStop         =   0   'False
          Top             =   6600
@@ -2451,7 +2445,7 @@ End Sub
 
 'The next four routines are used to keep the selection text boxes and scrollbars in sync
 Public Sub changeToSelLeft()
-    If EntryValid(txtSelLeft, 1, 32767, False, True) Then
+    If EntryValid(txtSelLeft, 0, 32767, False, True) Then
         updateSelLeftBar = False
         vsSelLeft.Value = Abs(32767 - CInt(txtSelLeft))
         updateSelLeftBar = True
@@ -2460,7 +2454,7 @@ Public Sub changeToSelLeft()
 End Sub
 
 Public Sub changeToSelTop()
-    If EntryValid(txtSelTop, 1, 32767, False, True) Then
+    If EntryValid(txtSelTop, 0, 32767, False, True) Then
         updateSelTopBar = False
         vsSelTop.Value = Abs(32767 - CInt(txtSelTop))
         updateSelTopBar = True
