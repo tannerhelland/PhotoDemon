@@ -229,7 +229,7 @@ Public Sub LoadTheProgram()
     LoadMenuIcons
     
     'Initialize the hand cursor we use for all clickable objects
-    initHandCursor
+    InitAllCursors
     
     'Look in the MDIWindow module for this code - it enables/disables various control and menus based on
     ' whether or not images have been loaded
@@ -645,7 +645,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As p
     End If
     
     'Copy the image into the current pdImage object
-    dstLayer.createFromPicture tmpPicture
+    dstLayer.CreateFromPicture tmpPicture
     
     'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
     ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
@@ -670,7 +670,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pd
     If verifyGDISuccess And (tmpPicture.Width <> 0) And (tmpPicture.Height <> 0) Then
     
         'Copy the image returned by GDI+ into the current pdImage object
-        LoadGDIPlusImage = dstLayer.createFromPicture(tmpPicture)
+        LoadGDIPlusImage = dstLayer.CreateFromPicture(tmpPicture)
         
     Else
         LoadGDIPlusImage = False
@@ -692,7 +692,7 @@ Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer
     End If
     
     'Copy the image into the current pdImage object
-    dstLayer.createFromPicture tmpPicture
+    dstLayer.CreateFromPicture tmpPicture
     
     LoadVBImage = True
     

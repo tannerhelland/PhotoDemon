@@ -32,12 +32,11 @@ Public Const IDC_WAIT = 32514&
 
 Private Const GCL_HCURSOR = (-12)
 
-'This variable will hold the value of the loaded hand cursor.  We need to delete it (via DestroyCursor) when the program exits.
-Dim hc_Handle As Long
-
-'These variables will hold the values of other custom-loaded cursors.  They also need to be deleted when the program exits.
+'These variables will hold the values of all custom-loaded cursors.
+' They need to be deleted (via DestroyCursor) when the program exits; this is handled by unloadAllCursors.
 Dim hc_Handle_Arrow As Long
 Dim hc_Handle_Cross As Long
+Dim hc_Handle_Hand As Long
 Dim hc_Handle_SizeAll As Long
 Dim hc_Handle_SizeNESW As Long
 Dim hc_Handle_SizeNS As Long
@@ -63,13 +62,25 @@ Public Sub makeFormPretty(ByRef tForm As Form)
     
 End Sub
 
-'Load the hand cursor into memory
-Public Sub initHandCursor()
-    hc_Handle = LoadCursor(0, IDC_HAND)
+'Perform any drawing routines related to the main form
+Public Sub RedrawMainForm()
+
+    'Draw a subtle gradient on the left-hand pane
+    FormMain.picLeftPane.Refresh
+    DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
     
-    'Note: this routine also loads other cursors into memory, but the original name of the routine has stuck
+    'Redraw the progress bar
+    FormMain.picProgBar.Refresh
+    cProgBar.Draw
+    
+End Sub
+
+'Load all system cursors into memory
+Public Sub InitAllCursors()
+
     hc_Handle_Arrow = LoadCursor(0, IDC_ARROW)
     hc_Handle_Cross = LoadCursor(0, IDC_CROSS)
+    hc_Handle_Hand = LoadCursor(0, IDC_HAND)
     hc_Handle_SizeAll = LoadCursor(0, IDC_SIZEALL)
     hc_Handle_SizeNESW = LoadCursor(0, IDC_SIZENESW)
     hc_Handle_SizeNS = LoadCursor(0, IDC_SIZENS)
@@ -79,8 +90,8 @@ Public Sub initHandCursor()
 End Sub
 
 'Remove the hand cursor from memory
-Public Sub destroyHandCursor()
-    DestroyCursor hc_Handle
+Public Sub unloadAllCursors()
+    DestroyCursor hc_Handle_Hand
     DestroyCursor hc_Handle_Arrow
     DestroyCursor hc_Handle_Cross
     DestroyCursor hc_Handle_SizeAll
@@ -92,17 +103,17 @@ End Sub
 
 'Set a single object to use the hand cursor
 Public Sub setHandCursor(ByRef tControl As Control)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle
-End Sub
-
-'Set a single form to use the cross cursor
-Public Sub setCrossCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Cross
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Hand
 End Sub
 
 'Set a single form to use the arrow cursor
 Public Sub setArrowCursor(ByRef tControl As Form)
     SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Arrow
+End Sub
+
+'Set a single form to use the cross cursor
+Public Sub setCrossCursor(ByRef tControl As Form)
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Cross
 End Sub
     
 'Set a single form to use the Size All cursor

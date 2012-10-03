@@ -3,8 +3,8 @@ Attribute VB_Name = "Drawing"
 'PhotoDemon Drawing Routines
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/3/01
-'Last updated: 29/September/12
-'Last update: Rewrote DrawSpecificCanvas against the new layer method (instead of the previous picture box buffer)
+'Last updated: 03/October/12
+'Last update: Rewrote DrawPreviewImage to respect selections
 '
 'Miscellaneous drawing routines that don't fit elsewhere.  At present, this includes rendering preview images,
 ' drawing the canvas background of image forms, and a gradient-rendering sub (used primarily on the histogram form).
@@ -91,19 +91,6 @@ Public Sub DrawSpecificCanvas(ByRef dstForm As Form)
         Next x
     
     End If
-    
-End Sub
-
-'Perform any drawing routines related to the main form
-Public Sub RedrawMainForm()
-
-    'Draw a subtle gradient on the left-hand pane
-    FormMain.picLeftPane.Refresh
-    DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
-    
-    'Redraw the progress bar
-    FormMain.picProgBar.Refresh
-    cProgBar.Draw
     
 End Sub
 

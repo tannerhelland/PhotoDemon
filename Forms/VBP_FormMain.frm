@@ -1524,7 +1524,7 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     destroyAllIcons
     
     'Release the hand cursor we use for all clickable objects
-    destroyHandCursor
+    unloadAllCursors
 
     'Save the MRU list to the INI file.  (I've considered doing this as files are loaded, but the
     ' only time that would be an improvement is if the program crashes, and if it does crash, the user
