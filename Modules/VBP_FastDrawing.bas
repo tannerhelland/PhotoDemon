@@ -84,19 +84,19 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         dstWidth = previewPictureBox.ScaleWidth
         dstHeight = previewPictureBox.ScaleHeight
     
-        Dim SrcWidth As Single, SrcHeight As Single
+        Dim srcWidth As Single, srcHeight As Single
         
-        'The source width needs to know if this is a selection or a full-image preview
+        'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
         If pdImages(CurrentImage).selectionActive Then
-            SrcWidth = pdImages(CurrentImage).mainSelection.selWidth
-            SrcHeight = pdImages(CurrentImage).mainSelection.selHeight
+            srcWidth = pdImages(CurrentImage).mainSelection.selWidth
+            srcHeight = pdImages(CurrentImage).mainSelection.selHeight
         Else
-            SrcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
-            SrcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+            srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+            srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
         End If
     
         Dim srcAspect As Single, dstAspect As Single
-        srcAspect = SrcWidth / SrcHeight
+        srcAspect = srcWidth / srcHeight
         dstAspect = dstWidth / dstHeight
         
         'Now, use that aspect ratio to determine a proper size for our temporary layer
@@ -104,10 +104,10 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     
         If srcAspect > dstAspect Then
             newWidth = dstWidth
-            newHeight = CSng(SrcHeight / SrcWidth) * newWidth + 0.5
+            newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
         Else
             newHeight = dstHeight
-            newWidth = CSng(SrcWidth / SrcHeight) * newHeight + 0.5
+            newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
         End If
                 
         'And finally, create our workingLayer using these values

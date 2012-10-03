@@ -23,12 +23,19 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     dstWidth = dstPicture.ScaleWidth
     dstHeight = dstPicture.ScaleHeight
     
-    Dim SrcWidth As Single, SrcHeight As Single
-    SrcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
-    SrcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+    Dim srcWidth As Single, srcHeight As Single
+    
+    'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
+    If pdImages(CurrentImage).selectionActive Then
+        srcWidth = pdImages(CurrentImage).mainSelection.selWidth
+        srcHeight = pdImages(CurrentImage).mainSelection.selHeight
+    Else
+        srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+        srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+    End If
     
     Dim srcAspect As Single, dstAspect As Single
-    srcAspect = SrcWidth / SrcHeight
+    srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
         
     'Now, use that aspect ratio to determine a proper size for our temporary layer
@@ -36,22 +43,41 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     
     If srcAspect > dstAspect Then
         newWidth = dstWidth
-        newHeight = CSng(SrcHeight / SrcWidth) * newWidth + 0.5
+        newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
     Else
         newHeight = dstHeight
-        newWidth = CSng(SrcWidth / SrcHeight) * newHeight + 0.5
+        newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
     End If
     
     'Normally this will draw a preview of FormMain.ActiveForm's relevant image.  However, another picture source can be specified.
     If useOtherPictureSrc = False Then
         
-        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight, True
-            If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
-            tmpLayer.renderToPictureBox dstPicture
+        'Check to see if a selection is active; if it isn't, simply render the full form
+        If pdImages(CurrentImage).selectionActive = False Then
+        
+            If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+                Set tmpLayer = New pdLayer
+                tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight, True
+                If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
+                tmpLayer.renderToPictureBox dstPicture
+            Else
+                pdImages(CurrentImage).mainLayer.renderToPictureBox dstPicture
+            End If
+        
         Else
-            pdImages(CurrentImage).mainLayer.renderToPictureBox dstPicture
+        
+            'Copy the current selection into a temporary layer
+            Set tmpLayer = New pdLayer
+            tmpLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+        
+            'If the image is transparent, composite it; otherwise, render the preview using the temporary object
+            If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+                If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
+            End If
+            
+            tmpLayer.renderToPictureBox dstPicture
+            
         End If
         
     Else
