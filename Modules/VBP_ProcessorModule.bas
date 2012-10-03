@@ -217,7 +217,13 @@ Option Explicit
     
     'Other filters end at 840
 
-    'Reserved bytes; 1000 and up
+    'On-Canvas Tools; numbers 1000-2000
+    
+    'Selections
+    Public Const SelectionCreate As Long = 1000
+    Public Const SelectionClear As Long = 1001
+    
+    'Reserved bytes; 2000 and up
     
 'END SUBIDENTIFIERS (~130? currently)
 
@@ -1155,6 +1161,11 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Repeat Last Action"
         Case FadeLastEffect
             GetNameOfProcess = "Fade last effect"
+            
+        Case SelectionCreate
+            GetNameOfProcess = "Create New Selection"
+        Case SelectionClear
+            GetNameOfProcess = "Clear Active Selection"
             
         'This "Else" statement should never trigger, but if it does, return an empty string
         Case Else
