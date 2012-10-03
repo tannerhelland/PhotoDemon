@@ -19,17 +19,33 @@ Private Const CLIPBOARD_FORMAT_METAFILE As Long = 3
 'Copy image
 Public Sub ClipboardCopy()
     
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then
-        pdImages(CurrentImage).mainLayer.copyLayerToClipboard
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    
+    'Check for an active selection
+    If pdImages(CurrentImage).selectionActive Then
+    
+        'Fill the temporary layer with the selection
+        tmpLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+        BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+    
+        'If the selection contains transparency, blend it against a white background
+        If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
+        
     Else
     
-        'For transparent images, make a copy, pre-multiply it against white, then copy THAT to the clipboard
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
+        'If a selection is NOT active, just make a copy of the full image
         tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
-        tmpLayer.compositeBackgroundColor 255, 255, 255
-        tmpLayer.copyLayerToClipboard
+    
+        'If the image contains transparency, blend it against a white background
+        If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
+        
     End If
+    
+    'Copy the temporary layer to the clipboard, then erase it
+    tmpLayer.copyLayerToClipboard
+    
+    tmpLayer.eraseLayer
     
 End Sub
 
