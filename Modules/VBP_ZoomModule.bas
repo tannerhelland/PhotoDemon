@@ -72,7 +72,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     formToBuffer.Refresh
     
     'If we don't fire DoEvents here, the image will only scroll after the mouse button is released.
-    DoEvents
+    'DoEvents
 
 End Sub
 

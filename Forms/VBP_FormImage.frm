@@ -3,10 +3,10 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H00FFFFFF&
    Caption         =   "Image Window"
-   ClientHeight    =   5385
+   ClientHeight    =   2565
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   8490
+   ClientWidth     =   6015
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Arial"
@@ -22,9 +22,9 @@ Begin VB.Form FormImage
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   359
+   ScaleHeight     =   171
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   566
+   ScaleWidth      =   401
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin VB.HScrollBar HScroll 
@@ -118,6 +118,9 @@ Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
 'Track mouse button use on this form
 Dim lMouseDown As Boolean, rMouseDown As Boolean
 
+'Track mouse movement on this form
+Dim hasMouseMoved As Boolean
+
 'Track initial mouse button locations
 Dim initMouseX As Single, initMouseY As Single
     
@@ -189,6 +192,9 @@ End Sub
 'Track which mouse buttons are pressed
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
+    'If the main form is disabled, exit
+    If FormMain.Enabled = False Then Exit Sub
+    
     'If the image has not yet been loaded, exit
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
     
@@ -204,7 +210,13 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         If isMouseOverImage(x, y, Me) Then
         
             lMouseDown = True
-                
+            
+            hasMouseMoved = False
+            
+            'Remember this location
+            initMouseX = x
+            initMouseY = y
+            
             'Display the image coordinates under the mouse pointer
             displayImageCoordinates x, y, Me, imgX, imgY
         
@@ -226,10 +238,6 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                 End If
             
             End If
-        
-            'Remember this location
-            initMouseX = x
-            initMouseY = y
                 
             'Activate the selection and pass in the first two points
             pdImages(CurrentImage).selectionActive = True
@@ -248,8 +256,13 @@ End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
+    'If the main form is disabled, exit
+    If FormMain.Enabled = False Then Exit Sub
+    
     'If the image has not yet been loaded, exit
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
+    
+    hasMouseMoved = True
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Single, imgY As Single
@@ -378,7 +391,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
             pdImages(CurrentImage).mainSelection.lockIn Me
             
             'Finally, check to see if this mouse location is the same as the initial mouse press.  If it is, clear the selection.
-            If (x = initMouseX) And (y = initMouseY) Then
+            If (x = initMouseX) And (y = initMouseY) And (hasMouseMoved = False) Then
                 pdImages(CurrentImage).mainSelection.lockRelease
                 pdImages(CurrentImage).selectionActive = False
             End If

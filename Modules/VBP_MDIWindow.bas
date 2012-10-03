@@ -49,7 +49,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     'Remember this ID in the associated image class
     pdImages(NumOfImagesLoaded).IsActive = True
     pdImages(NumOfImagesLoaded).imageID = NumOfImagesLoaded
-    
+        
     'Default size (stupid twip measurements, unfortunately)
     frm.Width = 4500
     

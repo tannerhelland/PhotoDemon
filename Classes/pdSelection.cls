@@ -119,14 +119,17 @@ Private lockedIn As Boolean
 'When the selection is moved, it's necessary to know the difference between the current mouse point and the original left / top values
 Private moveXDist As Single, moveYDist As Single
 
-'Is this selection requesting text box updates?  Because if it is, ignore external requests
-Private rejectRefreshRequests As Boolean
+'Is this selection requesting text box updates?  Because if it is, ignore external requests to update.
+Public rejectRefreshRequests As Boolean
 
 'What is the current transformation mode?  (This is important for dragging to resize the selection.)
 Private selTransformationType As Long
 
 'Is transformation mode active?
 Private transformModeActive As Boolean
+
+'What image does this selection belong to?
+Public containingPDImage As pdImage
 
 'set a transformation type
 Public Sub setTransformationType(ByVal transType As Long)
@@ -290,6 +293,7 @@ Public Sub setAdditionalCoordinates(ByVal x As Single, y As Single)
                 x2 = x1 + selWidth
                 y2 = y1 + selHeight
                 updateInternalCoords
+                'Message x1 & "," & y1 & " <--> " & x2 & "," & y2 & " | " & selLeft & "," & selTop & " <--> " & selWidth & "," & selHeight
         
         End Select
     
@@ -330,6 +334,12 @@ Private Sub updateInternalCoords()
         selHeight = y1 - y2
     End If
     
+    'Perform a quick sanity check on the calculated variables
+    If selLeft < 0 Then selLeft = 0
+    If selTop < 0 Then selTop = 0
+    If selLeft + selWidth > containingPDImage.Width Then selLeft = containingPDImage.Width - selWidth
+    If selTop + selHeight > containingPDImage.Height Then selTop = containingPDImage.Height - selHeight
+    
     'Adjust the main form's selection text boxes to match the newly calculated values
     refreshTextBoxes
 
@@ -354,24 +364,7 @@ Public Sub lockIn(ByRef targetForm As Form)
     
     'Mark this selection as locked-in
     lockedIn = True
-    
-    'If the user was moving the selection around (transform mode 9), there's a chance they may have moved the selection off the image.
-    ' Ensure that the selection does not fall outside image boundaries.
-    If transformModeActive And selTransformationType = 9 Then
-    
-    If selLeft < 0 Then
-        selWidth = selWidth + selLeft
-        selLeft = 0
-    End If
-    If selTop < 0 Then
-        selHeight = selHeight + selTop
-        selTop = 0
-    End If
-    If selLeft + selWidth > pdImages(targetForm.Tag).Width Then selWidth = pdImages(targetForm.Tag).Width - selLeft
-    If selTop + selHeight > pdImages(targetForm.Tag).Height Then selHeight = pdImages(targetForm.Tag).Height - selTop
-    
-    End If
-    
+        
     'Update the internal coordinates one final time
     updateInternalCoords
     
@@ -401,9 +394,9 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     Static dstTop As Single, dstBottom As Single
         
     dstLeft = ((selLeft - dstForm.HScroll.Value) * ZoomVal) + imgLeft
-    dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * ZoomVal) + imgLeft
+    dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * ZoomVal) + imgLeft + 0.5
     dstTop = ((selTop - dstForm.VScroll.Value) * ZoomVal) + imgTop
-    dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * ZoomVal) + imgTop
+    dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * ZoomVal) + imgTop + 0.5
     
     'Several draw methods use the same variables.  Declare those here.
     Static iData() As Byte
@@ -559,20 +552,46 @@ Public Sub updateViaTextBox()
 
     'Check all text box entries for validity, then update the corresponding selection values
     If EntryValid(FormMain.txtSelLeft, 0, 32767, False, False) Then
-        If Val(FormMain.txtSelLeft) > pdImages(CurrentImage).Width - 1 Then FormMain.txtSelLeft = pdImages(CurrentImage).Width - 1
+        If Val(FormMain.txtSelLeft) > containingPDImage.Width - 1 Then FormMain.txtSelLeft = containingPDImage.Width - 1
         selLeft = Val(FormMain.txtSelLeft)
     End If
     If EntryValid(FormMain.txtSelTop, 0, 32767, False, False) Then
-        If Val(FormMain.txtSelTop) > pdImages(CurrentImage).Height - 1 Then FormMain.txtSelTop = pdImages(CurrentImage).Height - 1
+        If Val(FormMain.txtSelTop) > containingPDImage.Height - 1 Then FormMain.txtSelTop = containingPDImage.Height - 1
         selTop = Val(FormMain.txtSelTop)
     End If
     If EntryValid(FormMain.txtSelWidth, 1, 32767, False, False) Then
-        If Val(FormMain.txtSelWidth) + Val(FormMain.txtSelLeft) > pdImages(CurrentImage).Width Then FormMain.txtSelWidth = pdImages(CurrentImage).Width - Val(FormMain.txtSelLeft)
+        If Val(FormMain.txtSelWidth) + Val(FormMain.txtSelLeft) > containingPDImage.Width Then
+            'FormMain.txtSelWidth = pdImages(CurrentImage).Width - Val(FormMain.txtSelLeft)
+            selLeft = containingPDImage.Width - Val(FormMain.txtSelWidth)
+            FormMain.txtSelLeft = selLeft
+        End If
         selWidth = Val(FormMain.txtSelWidth)
     End If
     If EntryValid(FormMain.txtSelHeight, 1, 32767, False, False) Then
-        If Val(FormMain.txtSelHeight) + Val(FormMain.txtSelTop) > pdImages(CurrentImage).Height Then FormMain.txtSelHeight = pdImages(CurrentImage).Height - Val(FormMain.txtSelTop)
+        If Val(FormMain.txtSelHeight) + Val(FormMain.txtSelTop) > containingPDImage.Height Then
+            'FormMain.txtSelHeight = pdImages(CurrentImage).Height - Val(FormMain.txtSelTop)
+            selTop = containingPDImage.Height - Val(FormMain.txtSelHeight)
+            FormMain.txtSelTop = selTop
+        End If
         selHeight = Val(FormMain.txtSelHeight)
+    End If
+    
+    'Perform one final sanity check on all selection values
+    If selLeft < 0 Then
+        selLeft = 0
+        FormMain.txtSelLeft = selLeft
+    End If
+    If selTop < 0 Then
+        selTop = 0
+        FormMain.txtSelTop = selTop
+    End If
+    If selWidth > containingPDImage.Width Then
+        selWidth = containingPDImage.Width
+        FormMain.txtSelWidth = selWidth
+    End If
+    If selHeight > containingPDImage.Height Then
+        selHeight = containingPDImage.Height
+        FormMain.txtSelHeight = selHeight
     End If
     
     'Adjust the x1, y1, x2, y2 values to match these new ones

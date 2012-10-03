@@ -358,5 +358,6 @@ Private Sub Class_Initialize()
     Set mainSelection = New pdSelection
     selectionActive = False
     mainSelection.setSelectionType sRectangle
-    
+    Set mainSelection.containingPDImage = Me
+        
 End Sub

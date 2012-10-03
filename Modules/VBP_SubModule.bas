@@ -287,7 +287,11 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Static mouseAccuracy As Single
+    
     mouseAccuracy = mouseSelAccuracy * (1 / ZoomVal)
+    'If mouseAccuracy < 1 Then mouseAccuracy = 1
+        
+    Message mouseAccuracy & " (" & ZoomVal & ")"
     
     'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
     If (x1 < tLeft - mouseAccuracy) Or (x1 > tRight + mouseAccuracy) Or (y1 < tTop - mouseAccuracy) Or (y1 > tBottom + mouseAccuracy) Then
@@ -309,22 +313,22 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     minDistance = mouseAccuracy
     closestPoint = -1
     
-    If nwDist < minDistance Then
+    If nwDist <= minDistance Then
         minDistance = nwDist
         closestPoint = 1
     End If
     
-    If neDist < minDistance Then
+    If neDist <= minDistance Then
         minDistance = neDist
         closestPoint = 2
     End If
     
-    If seDist < minDistance Then
+    If seDist <= minDistance Then
         minDistance = seDist
         closestPoint = 3
     End If
     
-    If swDist < minDistance Then
+    If swDist <= minDistance Then
         minDistance = swDist
         closestPoint = 4
     End If
@@ -343,22 +347,22 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     sDist = distanceOneDimension(y1, tBottom)
     wDist = distanceOneDimension(x1, tLeft)
     
-    If (nDist < minDistance) Then
+    If (nDist <= minDistance) Then
         minDistance = nDist
         closestPoint = 5
     End If
     
-    If (eDist < minDistance) Then
+    If (eDist <= minDistance) Then
         minDistance = eDist
         closestPoint = 6
     End If
     
-    If (sDist < minDistance) Then
+    If (sDist <= minDistance) Then
         minDistance = sDist
         closestPoint = 7
     End If
     
-    If (wDist < minDistance) Then
+    If (wDist <= minDistance) Then
         minDistance = wDist
         closestPoint = 8
     End If

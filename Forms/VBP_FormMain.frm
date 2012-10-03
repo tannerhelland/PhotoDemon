@@ -2462,7 +2462,7 @@ Public Sub changeToSelLeft()
         vsSelLeft.Value = Abs(32767 - CInt(txtSelLeft))
         updateSelLeftBar = True
     End If
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.updateViaTextBox
+    If pdImages(CurrentImage).selectionActive And (pdImages(CurrentImage).mainSelection.rejectRefreshRequests = False) Then pdImages(CurrentImage).mainSelection.updateViaTextBox
 End Sub
 
 Public Sub changeToSelTop()
@@ -2471,7 +2471,7 @@ Public Sub changeToSelTop()
         vsSelTop.Value = Abs(32767 - CInt(txtSelTop))
         updateSelTopBar = True
     End If
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.updateViaTextBox
+    If pdImages(CurrentImage).selectionActive And (pdImages(CurrentImage).mainSelection.rejectRefreshRequests = False) Then pdImages(CurrentImage).mainSelection.updateViaTextBox
 End Sub
 
 Public Sub changeToSelWidth()
@@ -2480,7 +2480,7 @@ Public Sub changeToSelWidth()
         vsSelWidth.Value = Abs(32767 - CInt(txtSelWidth))
         updateSelWidthBar = True
     End If
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.updateViaTextBox
+    If pdImages(CurrentImage).selectionActive And (pdImages(CurrentImage).mainSelection.rejectRefreshRequests = False) Then pdImages(CurrentImage).mainSelection.updateViaTextBox
 End Sub
 
 Public Sub changeToSelHeight()
@@ -2489,6 +2489,6 @@ Public Sub changeToSelHeight()
         vsSelHeight.Value = Abs(32767 - CInt(txtSelHeight))
         updateSelHeightBar = True
     End If
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.updateViaTextBox
+    If pdImages(CurrentImage).selectionActive And (pdImages(CurrentImage).mainSelection.rejectRefreshRequests = False) Then pdImages(CurrentImage).mainSelection.updateViaTextBox
 End Sub
 
