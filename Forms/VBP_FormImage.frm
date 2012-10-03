@@ -203,34 +203,47 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         'Check the location of the mouse to see if it's over the image
         If isMouseOverImage(x, y, Me) Then
         
-            'Also check to make sure we're not over the scroll bars
-            If (x < Me.VScroll.Left) And (y < Me.HScroll.Top) Then
-            
-                'Only track the mouse state if it is over the image
+            lMouseDown = True
                 
-                lMouseDown = True
-            
-                'Display the image coordinates under the mouse pointer
-                displayImageCoordinates x, y, Me, imgX, imgY
-            
-                'Activate the selection and pass in the first two points
-                pdImages(CurrentImage).selectionActive = True
-                pdImages(CurrentImage).mainSelection.setInitialCoordinates imgX, imgY
+            'Display the image coordinates under the mouse pointer
+            displayImageCoordinates x, y, Me, imgX, imgY
         
-                'Remember this location
-                initMouseX = x
-                initMouseY = y
+            'Check to see if a selection is already active.
+            If pdImages(Me.Tag).selectionActive Then
+            
+                'Check the mouse coordinates of this click.
+                Static sCheck As Long
+                sCheck = findNearestSelectionCoordinates(x, y, Me)
                 
-                'Render the new selection
-                RenderViewport Me
+                'If that function did not return zero, notify the selection and exit
+                If sCheck <> 0 Then
                 
+                    pdImages(Me.Tag).mainSelection.setTransformationType sCheck
+                    pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
+                    
+                    Exit Sub
+                
+                End If
+            
             End If
-    
+        
+            'Remember this location
+            initMouseX = x
+            initMouseY = y
+                
+            'Activate the selection and pass in the first two points
+            pdImages(CurrentImage).selectionActive = True
+            pdImages(CurrentImage).mainSelection.setInitialCoordinates imgX, imgY
+                    
+            'Render the new selection
+            RenderViewport Me
+            
         End If
         
     End If
     
     If Button = vbRightButton Then rMouseDown = True
+    
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
@@ -248,7 +261,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
         'First, check to see if a selection is active.  (In the future, we will be checking for other tools as well.)
         If pdImages(CurrentImage).selectionActive Then
-        
+            
             'Check the location of the mouse to see if it's over the image
             If isMouseOverImage(x, y, Me) Then
             
@@ -278,16 +291,62 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     'This else means the LEFT mouse button is NOT down
     Else
     
-        'Check the location of the mouse to see if it's over the image
-        If isMouseOverImage(x, y, Me) Then
+        'Next, check to see if a selection is active.  If it is, we need to provide the user with visual cues about their
+        ' ability to resize the selection.
+        If pdImages(CurrentImage).selectionActive Then
         
-            'Perform a second set of checks to make sure the mouse isn't over a scroll bar
-            setCrossCursor Me
-
+            'This routine will return a best estimate for the location of the mouse.  The possible return values are:
+            ' 0 - Cursor is not near a selection point
+            ' 1 - NW corner
+            ' 2 - NE corner
+            ' 3 - SE corner
+            ' 4 - SW corner
+            ' 5 - N edge
+            ' 6 - E edge
+            ' 7 - S edge
+            ' 8 - W edge
+            ' 9 - interior of selection, not near a corner or edge
+            Static sCheck As Long
+            sCheck = findNearestSelectionCoordinates(x, y, Me)
+            
+            'Based on that return value, assign a new mouse cursor to the form
+            Select Case sCheck
+                
+                Case 0
+                    setCrossCursor Me
+                Case 1
+                    setSizeNWSECursor Me
+                Case 2
+                    setSizeNESWCursor Me
+                Case 3
+                    setSizeNWSECursor Me
+                Case 4
+                    setSizeNESWCursor Me
+                Case 5
+                    setSizeNSCursor Me
+                Case 6
+                    setSizeWECursor Me
+                Case 7
+                    setSizeNSCursor Me
+                Case 8
+                    setSizeWECursor Me
+                Case 9
+                    setSizeAllCursor Me
+                    
+            End Select
+        
+            'Set the active selection's transformation type to match
+            pdImages(CurrentImage).mainSelection.setTransformationType sCheck
+        
         Else
         
-            setArrowCursor Me
-        
+            'Check the location of the mouse to see if it's over the image, and set the cursor accordingly
+            If isMouseOverImage(x, y, Me) Then
+                setCrossCursor Me
+            Else
+                setArrowCursor Me
+            End If
+            
         End If
         
     End If
@@ -316,7 +375,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
         If pdImages(CurrentImage).selectionActive Then
             
             'Lock the selection
-            pdImages(CurrentImage).mainSelection.lockIn
+            pdImages(CurrentImage).mainSelection.lockIn Me
             
             'Finally, check to see if this mouse location is the same as the initial mouse press.  If it is, clear the selection.
             If (x = initMouseX) And (y = initMouseY) Then

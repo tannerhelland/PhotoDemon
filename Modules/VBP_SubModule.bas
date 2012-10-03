@@ -35,6 +35,9 @@ Public Const IDC_WAIT = 32514&
 
 Private Const GCL_HCURSOR = (-12)
 
+'Distance value for mouse_over events and selections; a literal "radius" below which the mouse cursor is considered "over" a point
+Private Const mouseSelAccuracy As Single = 8
+
 'Used to convert a system color (such as "button face") to a literal RGB value
 Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
     
@@ -247,6 +250,140 @@ Public Sub findNearestImageCoordinates(ByRef x1 As Single, ByRef y1 As Single, B
     If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
 
 End Sub
+
+'This sub will return a constant correlating to the nearest selection point.  Its return values are:
+' 0 - Cursor is not near a selection point
+' 1 - NW corner
+' 2 - NE corner
+' 3 - SE corner
+' 4 - SW corner
+' 5 - N edge
+' 6 - E edge
+' 7 - S edge
+' 8 - W edge
+' 9 - interior of selection, not near a corner or edge
+Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form) As Long
+
+    'Grab the current zoom value
+    Static ZoomVal As Single
+    ZoomVal = Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
+
+    'Calculate x and y positions, while taking into account zoom and scroll values
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
+    
+    'Force any invalid values to their nearest matching point in the image
+    If x1 < 0 Then x1 = 0
+    If y1 < 0 Then y1 = 0
+    If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
+    If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
+
+    'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
+    Static tLeft As Single, tTop As Single, tRight As Single, tBottom As Single
+    tLeft = pdImages(srcForm.Tag).mainSelection.selLeft
+    tTop = pdImages(srcForm.Tag).mainSelection.selTop
+    tRight = pdImages(srcForm.Tag).mainSelection.selLeft + pdImages(srcForm.Tag).mainSelection.selWidth
+    tBottom = pdImages(srcForm.Tag).mainSelection.selTop + pdImages(srcForm.Tag).mainSelection.selHeight
+    
+    'Adjust the mouseAccuracy value based on the current zoom value
+    Static mouseAccuracy As Single
+    mouseAccuracy = mouseSelAccuracy * (1 / ZoomVal)
+    
+    'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
+    If (x1 < tLeft - mouseAccuracy) Or (x1 > tRight + mouseAccuracy) Or (y1 < tTop - mouseAccuracy) Or (y1 > tBottom + mouseAccuracy) Then
+        findNearestSelectionCoordinates = 0
+        Exit Function
+    End If
+    
+    'If we made it here, this mouse location is worth evaluating.  Corners get preference, so check them first.
+    Static nwDist As Single, neDist As Single, seDist As Single, swDist As Single
+    
+    nwDist = distanceTwoPoints(x1, y1, tLeft, tTop)
+    neDist = distanceTwoPoints(x1, y1, tRight, tTop)
+    swDist = distanceTwoPoints(x1, y1, tLeft, tBottom)
+    seDist = distanceTwoPoints(x1, y1, tRight, tBottom)
+    
+    'Find the smallest distance for this mouse position
+    Static minDistance As Single
+    Static closestPoint As Long
+    minDistance = mouseAccuracy
+    closestPoint = -1
+    
+    If nwDist < minDistance Then
+        minDistance = nwDist
+        closestPoint = 1
+    End If
+    
+    If neDist < minDistance Then
+        minDistance = neDist
+        closestPoint = 2
+    End If
+    
+    If seDist < minDistance Then
+        minDistance = seDist
+        closestPoint = 3
+    End If
+    
+    If swDist < minDistance Then
+        minDistance = swDist
+        closestPoint = 4
+    End If
+    
+    'Was a close point found?  If yes, then return that value
+    If closestPoint <> -1 Then
+        findNearestSelectionCoordinates = closestPoint
+        Exit Function
+    End If
+
+    'If we're at this line of code, a closest corner was not found.  So check edges next.
+    Static nDist As Single, eDist As Single, sDist As Single, wDist As Single
+    
+    nDist = distanceOneDimension(y1, tTop)
+    eDist = distanceOneDimension(x1, tRight)
+    sDist = distanceOneDimension(y1, tBottom)
+    wDist = distanceOneDimension(x1, tLeft)
+    
+    If (nDist < minDistance) Then
+        minDistance = nDist
+        closestPoint = 5
+    End If
+    
+    If (eDist < minDistance) Then
+        minDistance = eDist
+        closestPoint = 6
+    End If
+    
+    If (sDist < minDistance) Then
+        minDistance = sDist
+        closestPoint = 7
+    End If
+    
+    If (wDist < minDistance) Then
+        minDistance = wDist
+        closestPoint = 8
+    End If
+    
+    'Was a close point found?  If yes, then return that value.
+    If closestPoint <> -1 Then
+        findNearestSelectionCoordinates = closestPoint
+        Exit Function
+    End If
+
+    'If we're at this line of code, a closest edge was not found.  That means the mousepointer is somewhere in the interior of
+    ' the selection.  Return that code and exit.
+    findNearestSelectionCoordinates = 9
+
+End Function
+
+'Return the distance between two values on the same line
+Public Function distanceOneDimension(ByVal x1 As Single, ByVal x2 As Single) As Single
+    distanceOneDimension = Sqr((x1 - x2) ^ 2)
+End Function
+
+'Return the distance between two points
+Public Function distanceTwoPoints(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Single
+    distanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+End Function
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)

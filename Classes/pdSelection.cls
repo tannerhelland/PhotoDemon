@@ -116,12 +116,113 @@ Public selWidth As Long, selHeight As Long
 'Is this selection "locked in"?
 Private lockedIn As Boolean
 
+'When the selection is moved, it's necessary to know the difference between the current mouse point and the original left / top values
+Private moveXDist As Single, moveYDist As Single
+
 'Is this selection requesting text box updates?  Because if it is, ignore external requests
 Private rejectRefreshRequests As Boolean
+
+'What is the current transformation mode?  (This is important for dragging to resize the selection.)
+Private selTransformationType As Long
+
+'Is transformation mode active?
+Private transformModeActive As Boolean
+
+'set a transformation type
+Public Sub setTransformationType(ByVal transType As Long)
+    selTransformationType = transType
+End Sub
 
 'Set a selection type
 Public Sub setSelectionType(ByVal selType As SelectionType)
     sType = selType
+End Sub
+
+'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
+' Note that this this should only be called after a transformation type has been set.
+Public Sub setInitialTransformCoordinates(ByVal x As Single, y As Single)
+
+    'If new transform coordinates are being set, this selection must be "unlocked"
+    lockedIn = False
+    
+    'The use of setInitialCoordinates means this IS a transformation
+    transformModeActive = True
+    
+    'Based on the transform mode, set the initial points accordingly
+    Select Case selTransformationType
+    
+        'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
+        Case 0
+            x1 = x
+            y1 = y
+            x2 = x
+            y2 = y
+        
+        '1 - NW corner
+        Case 1
+            x1 = selLeft + selWidth
+            y1 = selTop + selHeight
+            x2 = selLeft
+            y2 = selTop
+        
+        '2 - NE corner
+        Case 2
+            x1 = selLeft
+            y1 = selTop + selHeight
+            x2 = x
+            y2 = y
+        
+        '3 - SE corner
+        Case 3
+            x1 = selLeft
+            y1 = selTop
+            x2 = x
+            y2 = y
+        
+        '4 - SW corner
+        Case 4
+            x1 = selLeft + selWidth
+            y1 = selTop
+            x2 = x
+            y2 = y
+        
+        '5 - N edge
+        Case 5
+            x1 = selLeft
+            x2 = selLeft + selWidth
+            y1 = selTop + selHeight
+            y2 = y
+        
+        '6 - E edge
+        Case 6
+            x1 = selLeft
+            x2 = x
+            y1 = selTop
+            y2 = selTop + selHeight
+        
+        '7 - S edge
+        Case 7
+            x1 = selLeft
+            x2 = selLeft + selWidth
+            y1 = selTop
+            y2 = y
+        
+        '8 - W edge
+        Case 8
+            x1 = selLeft + selWidth
+            x2 = x
+            y1 = selTop
+            y2 = selTop + selHeight
+        
+        '9 - interior of selection, not near a corner or edge
+        Case 9
+            moveXDist = x - selLeft
+            moveYDist = y - selTop
+    
+    End Select
+    
+    updateInternalCoords
+    
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and stores them internally
@@ -129,6 +230,9 @@ Public Sub setInitialCoordinates(ByVal x As Single, y As Single)
     
     'If new initial coordinates are being set, this selection must be "unlocked"
     lockedIn = False
+    
+    'The use of setInitialCoordinates means this is not a transformation
+    transformModeActive = False
     
     x1 = x
     y1 = y
@@ -144,10 +248,60 @@ End Sub
 
 'Takes x and y coordinates (from a _MouseMove event, typically) and stores them internally
 Public Sub setAdditionalCoordinates(ByVal x As Single, y As Single)
-    x2 = x
-    y2 = y
     
-    updateInternalCoords
+    'Check for transformation mode activation
+    If transformModeActive Then
+    
+        'Based on the transform mode, set the initial points accordingly
+        Select Case selTransformationType
+        
+            'Cases 0 should never occur, but if it does - treat this like a normal subsequent coordinate call
+            'Cases 1-4 can similarly be treated like a normal subsequent coordinate call
+            Case 0 To 4
+                x2 = x
+                y2 = y
+    
+                updateInternalCoords
+            
+            '5 - N edge
+            Case 5
+                y2 = y
+                updateInternalCoords
+            
+            '6 - E edge
+            Case 6
+                x2 = x
+                updateInternalCoords
+            
+            '7 - S edge
+            Case 7
+                y2 = y
+                updateInternalCoords
+            
+            '8 - W edge
+            Case 8
+                x2 = x
+                updateInternalCoords
+            
+            '9 - interior of selection, not near a corner or edge
+            Case 9
+                x1 = x - moveXDist
+                y1 = y - moveYDist
+                x2 = x1 + selWidth
+                y2 = y1 + selHeight
+                updateInternalCoords
+        
+        End Select
+    
+    'No transform mode makes this easy; just update the second set of points and redraw the selection
+    Else
+    
+        x2 = x
+        y2 = y
+    
+        updateInternalCoords
+        
+    End If
     
 End Sub
 
@@ -196,11 +350,29 @@ Public Sub refreshTextBoxes()
 End Sub
 
 '"Lock-in" a selection.  Typically this is prompted by a _MouseUp event
-Public Sub lockIn()
+Public Sub lockIn(ByRef targetForm As Form)
     
     'Mark this selection as locked-in
     lockedIn = True
     
+    'If the user was moving the selection around (transform mode 9), there's a chance they may have moved the selection off the image.
+    ' Ensure that the selection does not fall outside image boundaries.
+    If transformModeActive And selTransformationType = 9 Then
+    
+    If selLeft < 0 Then
+        selWidth = selWidth + selLeft
+        selLeft = 0
+    End If
+    If selTop < 0 Then
+        selHeight = selHeight + selTop
+        selTop = 0
+    End If
+    If selLeft + selWidth > pdImages(targetForm.Tag).Width Then selWidth = pdImages(targetForm.Tag).Width - selLeft
+    If selTop + selHeight > pdImages(targetForm.Tag).Height Then selHeight = pdImages(targetForm.Tag).Height - selTop
+    
+    End If
+    
+    'Update the internal coordinates one final time
     updateInternalCoords
     
 End Sub
