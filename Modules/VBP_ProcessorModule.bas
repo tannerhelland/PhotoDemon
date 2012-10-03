@@ -264,7 +264,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     Processing = True
         
     'Set the mouse cursor to an hourglass and lock the main form (to prevent additional input)
-    If LoadForm = False Then Screen.MousePointer = vbHourglass
+    If LoadForm = False Then
+        Screen.MousePointer = vbHourglass
+    Else
+        setArrowCursor FormMain.ActiveForm
+    End If
+    
     FormMain.Enabled = False
         
     'If we are to perform the last command, simply replace all the method parameters using data from the
