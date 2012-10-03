@@ -244,6 +244,9 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("ZOOMACTUAL", "CUSTOM")  '138
         .AddImageFromStream LoadResData("NEXTIMAGE", "CUSTOM")   '139
         .AddImageFromStream LoadResData("PREVIMAGE", "CUSTOM")   '140
+        .AddImageFromStream LoadResData("DOWNLOADSRC", "CUSTOM") '141
+        .AddImageFromStream LoadResData("LICENSE", "CUSTOM")     '142
+        .AddImageFromStream LoadResData("SEPIA", "CUSTOM")       '143
         
         
         'File Menu
@@ -313,7 +316,7 @@ Public Sub LoadMenuIcons()
             '--> Color-Shift sub-menu
             .PutImageToVBMenu 53, 0, 4, 8   'Shift Right
             .PutImageToVBMenu 54, 1, 4, 8   'Shift Left
-        .PutImageToVBMenu 55, 9, 4      'Rechannel
+        .PutImageToVBMenu 57, 9, 4      'Rechannel
             '--> Rechannel sub-menu
             '.PutImageToVBMenu 55, 0, 4, 9   'Red
             '.PutImageToVBMenu 56, 1, 4, 9   'Green
@@ -353,6 +356,7 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 85, 2, 5, 2   'Mosaic
             .PutImageToVBMenu 86, 3, 5, 2   'Pencil
             .PutImageToVBMenu 87, 4, 5, 2   'Relief
+            .PutImageToVBMenu 143, 5, 5, 2  'Sepia
         .PutImageToVBMenu 75, 3, 5       'Blur
             '--> Blur sub-menu
             .PutImageToVBMenu 88, 0, 5, 3   'Antialias
@@ -430,10 +434,12 @@ Public Sub LoadMenuIcons()
         'Help Menu
         .PutImageToVBMenu 40, 0, 8     'Donate
         .PutImageToVBMenu 41, 2, 8     'Check for updates
-        .PutImageToVBMenu 25, 3, 8     'Visit the PhotoDemon website
-        .PutImageToVBMenu 26, 4, 8     'Submit Feedback
-        .PutImageToVBMenu 39, 5, 8     'Submit Bug
-        .PutImageToVBMenu 27, 7, 8     'About PD
+        .PutImageToVBMenu 26, 3, 8     'Submit Feedback
+        .PutImageToVBMenu 39, 4, 8     'Submit Bug
+        .PutImageToVBMenu 25, 6, 8     'Visit the PhotoDemon website
+        .PutImageToVBMenu 141, 7, 8    'Download source code
+        .PutImageToVBMenu 142, 8, 8    'License
+        .PutImageToVBMenu 27, 10, 8    'About PD
     
     End With
     
