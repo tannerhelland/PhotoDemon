@@ -217,24 +217,3 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
     End If
     
 End Sub
-
-'We only want the progress bar updating when necessary, so this function finds a power of 2 closest to the progress bar
-' maximum divided by 20.  This is a nice compromise between responsive progress bar updates and extremely fast rendering.
-Public Function findBestProgBarValue() As Long
-
-    'First, figure out what the range of this operation will be using the values in curLayerValues
-    Dim progBarRange As Double
-    progBarRange = CDbl(getProgBarMax())
-    
-    'Divide that value by 20.  20 is an arbitrary selection; the value can be set to any value X, where X is the number
-    ' of times we want the progress bar to update during a given filter or effect.
-    progBarRange = progBarRange / 20
-    
-    'Find the nearest power of two to that value, rounded down
-    Dim nearestP2 As Long
-    
-    nearestP2 = Log(progBarRange) / Log(2#)
-    
-    findBestProgBarValue = (2 ^ nearestP2) - 1
-    
-End Function

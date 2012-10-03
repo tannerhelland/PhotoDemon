@@ -1,39 +1,17 @@
-Attribute VB_Name = "Miscellaneous"
+Attribute VB_Name = "Misc_Uncategorized"
 '***************************************************************************
 'Miscellaneous Operations Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 12/August/12
-'Last update: Built several subs dedicated to assigning the system's hand cursor to clickable controls.
+'Last updated: 03/October/12
+'Last update: Reorganized this massive module into a bunch of smaller ones for improved organization.
 '
-'Handles messaging, value checking, RGB Extraction, checking if files exist,
-' variable truncation, and old array transfer routines.
+'If a function doesn't have a home in a more appropriate module, it gets stuck here.  Over time, I'm
+' hoping to clear out most of this module in favor of a more organized approach.
 '
 '***************************************************************************
 
 Option Explicit
-
-'Used to set the cursor for an object to the system's hand cursor
-Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
-Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
-
-Public Const IDC_APPSTARTING = 32650&
-Public Const IDC_HAND = 32649&
-Public Const IDC_ARROW = 32512&
-Public Const IDC_CROSS = 32515&
-Public Const IDC_IBEAM = 32513&
-Public Const IDC_ICON = 32641&
-Public Const IDC_NO = 32648&
-Public Const IDC_SIZEALL = 32646&
-Public Const IDC_SIZENESW = 32643&
-Public Const IDC_SIZENS = 32645&
-Public Const IDC_SIZENWSE = 32642&
-Public Const IDC_SIZEWE = 32644&
-Public Const IDC_UPARROW = 32516&
-Public Const IDC_WAIT = 32514&
-
-Private Const GCL_HCURSOR = (-12)
 
 'Distance value for mouse_over events and selections; a literal "radius" below which the mouse cursor is considered "over" a point
 Private Const mouseSelAccuracy As Single = 8
@@ -41,75 +19,12 @@ Private Const mouseSelAccuracy As Single = 8
 'Used to convert a system color (such as "button face") to a literal RGB value
 Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
     
-'This variable will hold the value of the loaded hand cursor.  We need to delete it (via DestroyCursor) when the program exits.
-Dim hc_Handle As Long
-
-'These variables will hold the values of other custom-loaded cursors.  They also need to be deleted when the program exits.
-Dim hc_Handle_Arrow As Long
-Dim hc_Handle_Cross As Long
-Dim hc_Handle_SizeAll As Long
-Dim hc_Handle_SizeNESW As Long
-Dim hc_Handle_SizeNS As Long
-Dim hc_Handle_SizeNWSE As Long
-Dim hc_Handle_SizeWE As Long
-
 
 
 'Given an OLE color, return an RGB
 Public Function GetRealColor(ByVal Color As OLE_COLOR) As Long
     TranslateColor Color, 0, GetRealColor
 End Function
-
-'Validate a given number.
-Public Sub textValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed As Boolean = False, Optional ByVal floatAllowed As Boolean = False)
-
-    'Convert the input number to a string
-    Dim numString As String
-    numString = srcTextBox.Text
-    
-    'Remove any incidental white space before processing
-    numString = Trim(numString)
-    
-    'Create a string of valid numerical characters, based on the input specifications
-    Dim validChars As String
-    validChars = "0123456789"
-    If negAllowed Then validChars = validChars & "-"
-    If floatAllowed Then validChars = validChars & "."
-    
-    'Make note of the cursor position so we can restore it after removing invalid text
-    Dim cursorPos As Long
-    cursorPos = srcTextBox.SelStart
-    
-    'Loop through the text box contents and remove any invalid characters
-    Dim i As Long, j As Long
-    Dim invLoc As Long
-    
-    For i = 1 To Len(numString)
-        
-        'Compare a single character from the text box against our list of valid characters
-        invLoc = InStr(validChars, Mid$(numString, i, 1))
-        
-        'If this character was NOT found in the list of valid characters, remove it from the string
-        If invLoc = 0 Then
-        
-            numString = Left$(numString, i - 1) & Right$(numString, Len(numString) - i)
-            
-            'Modify the position of the cursor to match (so the text box maintains the same cursor position)
-            If i >= (cursorPos - 1) Then cursorPos = cursorPos - 1
-            
-            'Move the loop variable back by 1 so the next character is properly checked
-            i = i - 1
-            
-        End If
-            
-    Next i
-        
-    'Place the newly validated string back in the text box
-    srcTextBox.Text = numString
-    srcTextBox.Refresh
-    srcTextBox.SelStart = cursorPos
-
-End Sub
 
 'Populate a text box with a given integer value.  This is done constantly across the program, so I use a sub to handle it, as
 ' there may be additional validations that need to be performed, and it's nice to be able to adjust those from a single location.
@@ -145,43 +60,6 @@ Public Sub copyToTextBoxF(ByVal srcValue As Double, ByRef dstTextBox As TextBox)
     If cursorPos >= Len(dstTextBox) Then cursorPos = Len(dstTextBox)
     dstTextBox.SelStart = cursorPos
 
-End Sub
-
-
-'Straight from MSDN - generate a "browse for folder" dialog
-Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
-    
-    Dim objShell As Shell
-    Dim objFolder As Folder
-    Dim returnString As String
-        
-    Set objShell = New Shell
-    Set objFolder = objShell.BrowseForFolder(srcHwnd, "Please select a folder:", 0)
-            
-    If (Not objFolder Is Nothing) Then returnString = objFolder.Items.Item.Path Else returnString = ""
-    
-    Set objFolder = Nothing
-    Set objShell = Nothing
-    
-    BrowseForFolder = returnString
-    
-End Function
-
-'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
-' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
-Public Sub SetProgBarMax(ByVal pbVal As Long)
-    If MacroStatus <> MacroBATCH Then cProgBar.Max = pbVal
-End Sub
-
-Public Function getProgBarMax() As Long
-    getProgBarMax = cProgBar.Max
-End Function
-
-Public Sub SetProgBarVal(ByVal pbVal As Long)
-    If MacroStatus <> MacroBATCH Then
-        cProgBar.Value = pbVal
-        cProgBar.Draw
-    End If
 End Sub
 
 'Let a form know whether the mouse pointer is over its image or just the viewport
@@ -389,69 +267,6 @@ Public Function distanceTwoPoints(ByVal x1 As Single, ByVal y1 As Single, ByVal 
     distanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 End Function
 
-'Display the specified size in the main form's status bar
-Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
-    FormMain.lblImgSize.Caption = "size: " & iWidth & "x" & iHeight
-    DoEvents
-End Sub
-
-'This popular function is used to display a message in the main form's status bar
-Public Sub Message(ByVal MString As String)
-    If MacroStatus = MacroSTART Then MString = MString & " {-Recording-}"
-    If MacroStatus <> MacroBATCH Then
-        If FormMain.Visible = True Then
-            cProgBar.Text = MString
-            cProgBar.Draw
-        End If
-    End If
-    
-    Debug.Print MString
-    
-    'If we're logging program messages, open up a log file and dump the message there
-    If LogProgramMessages = True Then
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        Open ProgramPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
-            Print #fileNum, MString
-            If MString = "Finished." Then Print #fileNum, vbCrLf
-        Close #fileNum
-    End If
-    
-End Sub
-
-'A pleasant combination of RangeValid and NumberValid
-Public Function EntryValid(ByVal check As Variant, ByVal Min As Long, ByVal Max As Long, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
-    If Not IsNumeric(check) Then
-        If displayNumError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbCritical + vbOKOnly + vbApplicationModal, "Invalid entry"
-        EntryValid = False
-    Else
-        If (check >= Min) And (check <= Max) Then
-            EntryValid = True
-        Else
-            If displayRangeError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a value between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, "Invalid entry"
-            EntryValid = False
-        End If
-    End If
-End Function
-
-Public Function RangeValid(ByVal check As Long, ByVal Min As Long, ByVal Max As Long) As Boolean
-    If (check >= Min) And (check <= Max) Then
-        RangeValid = True
-    Else
-        MsgBox check & " is not a valid entry.  Please enter a value between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME
-        RangeValid = False
-    End If
-End Function
-
-Public Function NumberValid(ByVal check) As Boolean
-    If Not IsNumeric(check) Then
-        MsgBox check & " is not a valid entry.  Please enter a numeric value.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME
-        NumberValid = False
-    Else
-        NumberValid = True
-    End If
-End Function
-
 'Extract the red, green, or blue value from an RGB() Long
 Public Function ExtractR(ByVal CurrentColor As Long) As Integer
     ExtractR = CurrentColor Mod 256
@@ -465,128 +280,7 @@ Public Function ExtractB(ByVal CurrentColor As Long) As Integer
     ExtractB = (CurrentColor \ 65536) And 255
 End Function
 
-'Convert to absolute byte values (Integer-type)
-Public Sub ByteMe(ByRef TempVar As Integer)
-    If TempVar > 255 Then TempVar = 255
-    If TempVar < 0 Then TempVar = 0
-End Sub
-
-'Convert to absolute byte values (Long-type)
-Public Sub ByteMeL(ByRef TempVar As Long)
-    If TempVar > 255 Then TempVar = 255
-    If TempVar < 0 Then TempVar = 0
-End Sub
-
-'Returns a boolean as to whether or not a given file exists
-Public Function FileExist(ByRef fName As String) As Boolean
-    On Error Resume Next
-    Dim Temp As Long
-    Temp = GetAttr(fName)
-    FileExist = Not CBool(Err)
-End Function
-
-'Returns a boolean as to whether or not a given directory exists
-Public Function DirectoryExist(ByRef dName As String) As Boolean
-    On Error Resume Next
-    Dim Temp As Long
-    Temp = GetAttr(dName) And vbDirectory
-    DirectoryExist = Not CBool(Err)
-End Function
-
 'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
 Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Single) As Byte
     BlendColors = ((1 - mixRatio) * Color1) + (mixRatio * Color2)
 End Function
-
-'Pass this a text box and it will select all text currently in the text box
-Public Function AutoSelectText(ByRef tBox As TextBox)
-    tBox.SetFocus
-    tBox.SelStart = 0
-    tBox.SelLength = Len(tBox.Text)
-End Function
-
-'Load the hand cursor into memory
-Public Sub initHandCursor()
-    hc_Handle = LoadCursor(0, IDC_HAND)
-    
-    'Note: this routine also loads other cursors into memory, but the original name of the routine has stuck
-    hc_Handle_Arrow = LoadCursor(0, IDC_ARROW)
-    hc_Handle_Cross = LoadCursor(0, IDC_CROSS)
-    hc_Handle_SizeAll = LoadCursor(0, IDC_SIZEALL)
-    hc_Handle_SizeNESW = LoadCursor(0, IDC_SIZENESW)
-    hc_Handle_SizeNS = LoadCursor(0, IDC_SIZENS)
-    hc_Handle_SizeNWSE = LoadCursor(0, IDC_SIZENWSE)
-    hc_Handle_SizeWE = LoadCursor(0, IDC_SIZEWE)
-
-End Sub
-
-'Remove the hand cursor from memory
-Public Sub destroyHandCursor()
-    DestroyCursor hc_Handle
-    DestroyCursor hc_Handle_Arrow
-    DestroyCursor hc_Handle_Cross
-    DestroyCursor hc_Handle_SizeAll
-    DestroyCursor hc_Handle_SizeNESW
-    DestroyCursor hc_Handle_SizeNS
-    DestroyCursor hc_Handle_SizeNWSE
-    DestroyCursor hc_Handle_SizeWE
-End Sub
-
-'Because VB6 apps tend to look pretty lame on modern version of Windows, we do a bit of beautification to every form when
-' it's loaded.  This routine is nice because every form calls it at least once, so we can make centralized changes without
-' having to rewrite code in every individual form.
-Public Sub makeFormPretty(ByRef tForm As Form)
-
-    'STEP 1: give all clickable controls a hand icon instead of the default pointer
-    ' (Note: this code will set all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
-    Dim eControl As Control
-    
-    For Each eControl In tForm.Controls
-        If ((TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) And (Not TypeOf eControl Is PictureBox) Then
-            eControl.MouseIcon = LoadPicture("")
-            eControl.MousePointer = 0
-            setHandCursor eControl
-        End If
-    Next
-    
-End Sub
-
-'Set a single object to use the hand cursor
-Public Sub setHandCursor(ByRef tControl As Control)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle
-End Sub
-
-'Set a single form to use the cross cursor
-Public Sub setCrossCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Cross
-End Sub
-
-'Set a single form to use the arrow cursor
-Public Sub setArrowCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Arrow
-End Sub
-    
-'Set a single form to use the Size All cursor
-Public Sub setSizeAllCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeAll
-End Sub
-
-'Set a single form to use the Size NESW cursor
-Public Sub setSizeNESWCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNESW
-End Sub
-
-'Set a single form to use the Size NS cursor
-Public Sub setSizeNSCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNS
-End Sub
-
-'Set a single form to use the Size NWSE cursor
-Public Sub setSizeNWSECursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNWSE
-End Sub
-
-'Set a single form to use the Size WE cursor
-Public Sub setSizeWECursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeWE
-End Sub
