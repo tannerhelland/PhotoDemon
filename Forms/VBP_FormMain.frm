@@ -756,7 +756,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuCopy 
-         Caption         =   "&Copy Image to Clipboard"
+         Caption         =   "&Copy to Clipboard"
          Shortcut        =   ^C
       End
       Begin VB.Menu MnuPaste 
@@ -1019,7 +1019,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuArtisticUpper 
          Caption         =   "Artistic"
          Begin VB.Menu MnuAntique 
-            Caption         =   "Antique (Sepia)"
+            Caption         =   "Antique"
          End
          Begin VB.Menu MnuComicBook 
             Caption         =   "Comic Book"
@@ -1032,6 +1032,9 @@ Begin VB.MDIForm FormMain
          End
          Begin VB.Menu MnuRelief 
             Caption         =   "Relief"
+         End
+         Begin VB.Menu MnuSepia 
+            Caption         =   "Sepia"
          End
       End
       Begin VB.Menu MnuBlurUpper 
@@ -1269,9 +1272,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuCheckUpdates 
          Caption         =   "Check for &Updates..."
       End
-      Begin VB.Menu MnuVisitWebsite 
-         Caption         =   "&Visit the PhotoDemon Website"
-      End
       Begin VB.Menu MnuEmailAuthor 
          Caption         =   "Submit Feedback..."
       End
@@ -1279,6 +1279,18 @@ Begin VB.MDIForm FormMain
          Caption         =   "Submit Bug Report..."
       End
       Begin VB.Menu MnuHelpSepBar1 
+         Caption         =   "-"
+      End
+      Begin VB.Menu MnuVisitWebsite 
+         Caption         =   "&Visit the PhotoDemon Website"
+      End
+      Begin VB.Menu MnuDownloadSource 
+         Caption         =   "Download PhotoDemon's Source Code"
+      End
+      Begin VB.Menu MnuReadLicense 
+         Caption         =   "Read PhotoDemon's License and Terms of Use"
+      End
+      Begin VB.Menu MnuHelpSepBar2 
          Caption         =   "-"
       End
       Begin VB.Menu MnuAbout 
@@ -1734,6 +1746,11 @@ Private Sub MnuDonate_Click()
     ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
 End Sub
 
+Private Sub MnuDownloadSource_Click()
+    'Launch the default web browser with PhotoDemon's GitHub page
+    ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon", "", 0, SW_SHOWNORMAL
+End Sub
+
 Private Sub MnuDream_Click()
     Process Dream
 End Sub
@@ -1990,6 +2007,11 @@ End Sub
 
 Private Sub MnuRainbow_Click()
     Process Rainbow
+End Sub
+
+Private Sub MnuReadLicense_Click()
+    'Launch the default web browser with PhotoDemon's license page on tannerhelland.com
+    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon/#license", "", 0, SW_SHOWNORMAL
 End Sub
 
 'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
