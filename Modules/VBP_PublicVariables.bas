@@ -27,8 +27,9 @@ Public FilterBias As Long
 'How should the selection be rendered?
 Public Enum SelectionRender
     sLightbox = 0
-    sHighlight = 1
-    sInvertRect = 2
+    sHighlightBlue = 1
+    sHighlightRed = 2
+    sInvertRect = 3
 End Enum
 
 Public selectionRenderPreference As SelectionRender
