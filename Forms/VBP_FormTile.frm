@@ -422,7 +422,10 @@ End Sub
 Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional yTarget As Long, Optional ByVal isPreview As Boolean = False)
     
     'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        tInit tSelection, False
+    End If
     
     If isPreview = False Then Message "Rendering tiled image..."
     

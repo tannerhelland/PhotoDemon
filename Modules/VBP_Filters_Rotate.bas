@@ -43,7 +43,10 @@ Public Sub MenuRotate90Clockwise()
 
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
     ' the selection to match the new image, but we can fix that at a later date.)
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        tInit tSelection, False
+    End If
 
     Message "Rotating image clockwise..."
     
@@ -146,7 +149,10 @@ Public Sub MenuRotate270Clockwise()
 
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
     ' the selection to match the new image, but we can fix that at a later date.)
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        tInit tSelection, False
+    End If
 
     Message "Rotating image counter-clockwise..."
     

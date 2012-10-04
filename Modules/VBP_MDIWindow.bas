@@ -280,9 +280,9 @@ Public Sub UpdateMDIStatus()
         tInit tRedo, False
         tInit tImageOps, False
         tInit tFilter, False
-        tInit tHistogram, False
         tInit tMacro, False
         tInit tRepeatLast, False
+        tInit tSelection, False
         FormMain.MnuClose.Enabled = False
         FormMain.cmdClose.Enabled = False
         FormMain.MnuFitWindowToImage.Enabled = False
@@ -312,7 +312,6 @@ Public Sub UpdateMDIStatus()
         tInit tRedo, pdImages(CurrentImage).RedoState
         tInit tImageOps, True
         tInit tFilter, True
-        tInit tHistogram, True
         tInit tMacro, True
         tInit tRepeatLast, pdImages(CurrentImage).RedoState
         FormMain.MnuClose.Enabled = True

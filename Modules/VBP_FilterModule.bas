@@ -700,8 +700,11 @@ End Sub
 'Convert an image to its isometric equivalent.  This can be very useful for developers of isometric games.
 Public Sub FilterIsometric()
 
-    'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix that at a later date.)
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
+    'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        tInit tSelection, False
+    End If
 
     Message "Preparing conversion tables..."
     

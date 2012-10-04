@@ -3,9 +3,8 @@ Attribute VB_Name = "Toolbar"
 'Toolbar Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 12/August/12
-'Last update: Undo/Redo actions now trigger adding descriptive text to the Undo/Redo menus and the tooltips of the
-'             Undo/Redo buttons on the left-hand panel.
+'Last updated: 03/October/12
+'Last update: Added capability for activating/deactivating the Selection tool interface
 '
 'Module for enabling/disabling toolbar buttons and menus.  Note that the toolbar was removed in June 2012 in favor of
 ' the new left-hand bar; this module remains, however, because the code handles menu items and the left-hand bar
@@ -24,10 +23,11 @@ Public Const tUndo As Byte = 5
 Public Const tImageOps As Byte = 6
 Public Const tFilter As Byte = 7
 Public Const tRedo As Byte = 8
-Public Const tHistogram As Byte = 9
+'Public Const tHistogram As Byte = 9
 Public Const tMacro As Byte = 10
 Public Const tEdit As Byte = 11
 Public Const tRepeatLast As Byte = 12
+Public Const tSelection As Byte = 13
 
 'tInit enables or disables a specified button and/or menu item
 Public Sub tInit(tButton As Byte, tState As Boolean)
@@ -114,15 +114,6 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 ResetMenuIcons
             End If
             
-        Case tHistogram
-            'The toolbar used to contain a histogram button, but now it does not.  This code is not necessary but
-            ' I'm leaving it here... just in case.
-            'If FormMain.MnuHistogramTop.Enabled <> tState Then
-            '    FormMain.Toolbar1.Buttons(10).Enabled = tState
-            '    changeMade = True
-            'End If
-            'FormMain.Toolbar1.Buttons(10).Enabled = tState
-        
         'Macro (top-level menu)
         Case tMacro
             If FormMain.MnuMacro.Enabled <> tState Then FormMain.MnuMacro.Enabled = tState
@@ -134,6 +125,19 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
         'Repeat last action (menu item only)
         Case tRepeatLast
             If FormMain.MnuRepeatLast.Enabled <> tState Then FormMain.MnuRepeatLast.Enabled = tState
+            
+        'Selections
+        Case tSelection
+            If FormMain.txtSelLeft.Visible <> tState Then FormMain.txtSelLeft.Visible = tState
+            If FormMain.txtSelTop.Visible <> tState Then FormMain.txtSelTop.Visible = tState
+            If FormMain.txtSelWidth.Visible <> tState Then FormMain.txtSelWidth.Visible = tState
+            If FormMain.txtSelHeight.Visible <> tState Then FormMain.txtSelHeight.Visible = tState
+            If FormMain.vsSelLeft.Visible <> tState Then FormMain.vsSelLeft.Visible = tState
+            If FormMain.vsSelTop.Visible <> tState Then FormMain.vsSelTop.Visible = tState
+            If FormMain.vsSelWidth.Visible <> tState Then FormMain.vsSelWidth.Visible = tState
+            If FormMain.vsSelHeight.Visible <> tState Then FormMain.vsSelHeight.Visible = tState
+            If FormMain.lblSelSize.Visible <> tState Then FormMain.lblSelSize.Visible = tState
+            If FormMain.lblSelPosition.Visible <> tState Then FormMain.lblSelPosition.Visible = tState
             
     End Select
     

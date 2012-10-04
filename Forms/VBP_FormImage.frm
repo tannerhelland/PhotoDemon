@@ -156,7 +156,12 @@ Private Sub Form_Activate()
     If pdImages(CurrentImage).Width <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
     
     'If a selection is active on this image, update the text boxes to match
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.refreshTextBoxes
+    If pdImages(CurrentImage).selectionActive Then
+        tInit tSelection, True
+        pdImages(CurrentImage).mainSelection.refreshTextBoxes
+    Else
+        tInit tSelection, False
+    End If
     
     'Finally, if the histogram window is open, redraw it
     If (FormHistogram.Visible = True) And pdImages(Me.Tag).loadedSuccessfully Then
@@ -242,7 +247,10 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
             'Activate the selection and pass in the first two points
             pdImages(CurrentImage).selectionActive = True
             pdImages(CurrentImage).mainSelection.setInitialCoordinates imgX, imgY
-                    
+
+            'Make the selection tools visible
+            tInit tSelection, True
+
             'Render the new selection
             RenderViewport Me
             
@@ -387,13 +395,17 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
         'If a selection was being drawn, lock it into place
         If pdImages(CurrentImage).selectionActive Then
             
-            'Lock the selection
-            pdImages(CurrentImage).mainSelection.lockIn Me
-            
-            'Finally, check to see if this mouse location is the same as the initial mouse press.  If it is, clear the selection.
+            'Check to see if this mouse location is the same as the initial mouse press.  If it is, clear the selection.
             If (x = initMouseX) And (y = initMouseY) And (hasMouseMoved = False) Then
                 pdImages(CurrentImage).mainSelection.lockRelease
                 pdImages(CurrentImage).selectionActive = False
+                tInit tSelection, False
+            Else
+            
+                'Lock the selection
+                pdImages(CurrentImage).mainSelection.lockIn Me
+                tInit tSelection, True
+            
             End If
             
             'Force a redraw of the screen

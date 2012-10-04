@@ -157,40 +157,6 @@ Public Sub LoadTheProgram()
         Zoom.ZoomArray(25) = 0.01
         Zoom.ZoomFactor(25) = 100
     
-    'If desired, the global "zoom object"'s # of available zoom values can be set automatically using this line
-    'Zoom.ZoomCount = FormMain.CmbZoom.ListCount - 1
-    'ReDim Zoom.ZoomArray(0 To Zoom.ZoomCount) As Double
-    'ReDim Zoom.ZoomFactor(0 To Zoom.ZoomCount) As Byte
-    
-    'Store zoom coefficients (such as .5, .3333, .25) within a global ZoomArray, whose indices correspond
-    ' with the matching combo box values; ZoomFactor stores whole-number values of the zoom ratio, and it
-    ' is up to the zoom routine to remember that > index zoomIndex100 is zoomed OUT values, while > index
-    ' zoomIndex100 is zoomed IN values.  (ZoomFactor is used to prevent stretching blemishes when zoomed-in.)
-    
-    'In the past, this zoom list was automatically generated using simple ratios (16:1...1:1...1:16).  I no longer use this method.
-    'Create the first half of the zoom combo box values (zoomed out)
-    'For x = 16 To 1 Step -1
-    '    If x <> 1 Then FormMain.CmbZoom.AddItem (Format((CDbl(1) / CDbl(x)) * CDbl(100), "##.0") & "%") Else FormMain.CmbZoom.AddItem "100%"
-    'Next x
-    
-    'Create the second half of the zoom combo box values (zoomed in)
-    'For x = 2 To 16 Step 1
-    '    FormMain.CmbZoom.AddItem (CInt((CDbl(x) / CDbl(1)) * CDbl(100)) & "%")
-    'Next x
-    
-    'Store zoom coefficients (such as .5, .3333, .25) within a global ZoomArray, whose indices correspond
-    ' with the matching combo box values; ZoomFactor stores whole-number values of the zoom ratio, and it
-    ' is up to the zoom routine to remember that < index 16 is zoomed out values, while > index 15 is
-    ' zoomed in values.
-    'For x = 0 To 15
-    '    Zoom.ZoomArray(x) = 1 / (16 - x)
-    '    Zoom.ZoomFactor(x) = 16 - x
-    'Next x
-    'For x = 2 To 16
-    '    Zoom.ZoomArray(x + 14) = x
-    '    Zoom.ZoomFactor(x + 14) = x
-    'Next x
-    
     'Set the zoom box to display "100%"
     FormMain.CmbZoom.ListIndex = zoomIndex100
     
@@ -200,8 +166,8 @@ Public Sub LoadTheProgram()
     'Initialize the selection box next
     LoadMessage "Initializing selection tool..."
     FormMain.cmbSelRender.AddItem "Lightbox", 0
-    FormMain.cmbSelRender.AddItem "Highlight", 1
-    FormMain.cmbSelRender.AddItem "Simple", 2
+    FormMain.cmbSelRender.AddItem "Highlight (Blue)", 1
+    FormMain.cmbSelRender.AddItem "Highlight (Red)", 2
     FormMain.cmbSelRender.ListIndex = 0
     selectionRenderPreference = 0
     
@@ -388,7 +354,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             tInit tRedo, False
             tInit tImageOps, True
             tInit tFilter, True
-            tInit tHistogram, True
             
         End If
             
@@ -903,7 +868,6 @@ Public Sub DuplicateCurrentImage()
     tInit tRedo, False
     tInit tImageOps, True
     tInit tFilter, True
-    tInit tHistogram, True
         
     'Copy the picture from the previous form to this new one
     pdImages(CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer

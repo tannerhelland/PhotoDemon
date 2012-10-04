@@ -195,14 +195,14 @@ Begin VB.MDIForm FormMain
          EndProperty
          Height          =   360
          ItemData        =   "VBP_FormMain.frx":058A
-         Left            =   240
+         Left            =   180
          List            =   "VBP_FormMain.frx":058C
          Style           =   2  'Dropdown List
          TabIndex        =   18
          TabStop         =   0   'False
          ToolTipText     =   "Click to change the way selections are rendered"
          Top             =   5730
-         Width           =   1680
+         Width           =   1845
       End
       Begin VB.PictureBox picLogo 
          Appearance      =   0  'Flat
@@ -461,11 +461,11 @@ Begin VB.MDIForm FormMain
          Top             =   6240
          Width           =   1935
       End
-      Begin VB.Label lblSelType 
+      Begin VB.Label lblSelStyle 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
-         Caption         =   "selection type"
+         Caption         =   "selection style"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -1454,6 +1454,9 @@ Private Sub MDIForm_Load()
     updateSelTopBar = True
     updateSelWidthBar = True
     updateSelHeightBar = True
+    
+    'Hide the selection tools
+    tInit tSelection, False
     
 End Sub
 

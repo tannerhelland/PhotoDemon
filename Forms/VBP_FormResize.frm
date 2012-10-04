@@ -285,7 +285,10 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
 
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be resizing
     ' the selection to match the new image, but we can fix that at a later date.)
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).selectionActive = False
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        tInit tSelection, False
+    End If
 
     'Because most resize methods require a temporary layer, create one here
     Dim tmpLayer As pdLayer
