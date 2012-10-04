@@ -106,6 +106,9 @@ Option Explicit
     Public saveFlag0 As Long
     Public saveFlag1 As Long
     
+    'For JPEGs specifically, has a quality value been set?  If it hasn't, the user needs to be prompted at least once.
+    Public hasSeenJPEGPrompt As Boolean
+    
     'Has this image been saved?
     Public HasBeenSaved As Boolean
     Public UndoNumAtLastSave As Integer
@@ -341,6 +344,7 @@ Private Sub Class_Initialize()
     HasBeenSaved = False
     UndoNumAtLastSave = 0
     forInternalUseOnly = False
+    hasSeenJPEGPrompt = False
     
     'Set up the process ID array
     ReDim UndoIDs(0 To 0) As Long

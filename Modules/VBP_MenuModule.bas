@@ -165,8 +165,17 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         'This image hasn't been saved before.  Launch the Save As... dialog
         MenuSave = MenuSaveAs(imageID)
     Else
-        'This image has been saved before.  Overwrite it.
-        MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, False, pdImages(imageID).saveFlag0, pdImages(imageID).saveFlag1)
+        'This image has been saved before.
+        
+        'Check to see if the image is a JPEG.  If it is, the user needs to be prompted at least once for a quality setting.
+        Dim FileExtension As String
+        FileExtension = UCase(GetExtension(pdImages(imageID).LocationOnDisk))
+        
+        If (FileExtension = "JPG") Or (FileExtension = "JPEG") Or (FileExtension = "JPE") Then
+            MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, True)
+        Else
+            MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, False, pdImages(imageID).saveFlag0, pdImages(imageID).saveFlag1)
+        End If
     End If
 
 End Function
@@ -258,9 +267,14 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
     Select Case FileExtension
         Case "JPG", "JPEG", "JPE"
             If loadRelevantForm = True Then
+                
                 FormJPEG.Show 1, FormMain
-                'If the dialog was canceled, note it
+                
+                'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 PhotoDemon_SaveImage = Not saveDialogCanceled
+                
+                If PhotoDemon_SaveImage Then pdImages(imageID).hasSeenJPEGPrompt = True
+                
             Else
                 'Remember the JPEG quality so we don't have to pester the user for it if they save again
                 pdImages(imageID).saveFlag0 = optionalSaveParameter0
