@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 28/September/12
-'Last update: continued work on initial build
+'Last updated: 03/October/12
+'Last update: added a "Red" highlight draw option
 '
 'This class handles all selections in PhotoDemon.  At present, selections are simply rectangular areas - but this will change
 ' in the future as new selection modes are added.
@@ -378,13 +378,13 @@ Public Sub lockRelease()
 End Sub
 
 'Render a selection using one of several methods.
-Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal ImgWidth As Long, ByVal ImgHeight As Long, ByVal sType As SelectionRender)
+Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal ImgWidth As Long, ByVal ImgHeight As Long, ByVal renderType As SelectionRender)
 
     'If we're the one requesting updates by accident, exit
     If rejectRefreshRequests Then Exit Sub
 
     'Update the internal coordinates, just in case
-    updateInternalCoords
+    'updateInternalCoords
     
     'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates
     Static ZoomVal As Single
@@ -413,7 +413,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     If bottomBound > pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1 Then bottomBound = pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1
         
     'Based on the selection type, draw a corresponding selection of some sort
-    Select Case sType
+    Select Case renderType
     
         'Lightbox style
         Case 0
@@ -454,7 +454,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             dstBottom = dstBottom + 1
         
         'Highlight style (Paint.NET)
-        Case 1
+        Case 1 To 2
         
             'Start by acquiring a pointer to the target layer's pixel bits
             prepLayerSafeArray dstLayer, tmpSA
@@ -464,9 +464,16 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             Dim rData(0 To 255) As Byte, gData(0 To 255) As Byte, bData(0 To 255) As Byte
             
             Static newR As Long, newG As Long, newB As Long
-            newR = 112
-            newG = 183
-            newB = 255
+            
+            If renderType = sHighlightBlue Then
+                newR = 112
+                newG = 183
+                newB = 255
+            Else
+                newR = 255
+                newG = 35
+                newB = 49
+            End If
             
             For x = 0 To 255
                 rData(x) = (newR + x) \ 2
@@ -499,7 +506,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             dstBottom = dstBottom + 1
             
         'Focus rectangle ("Simple" style)
-        Case 2
+        Case Else
         
             'Store the destination DC to a local variable
             Static DstDC As Long
