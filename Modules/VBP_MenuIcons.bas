@@ -344,8 +344,9 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 69, 2, 4, 16   'Invert RGB
             .PutImageToVBMenu 101, 4, 4, 16  'Compound Invert
         .PutImageToVBMenu 70, 17, 4      'Posterize
-        .PutImageToVBMenu 72, 19, 4      'Count Colors
-        .PutImageToVBMenu 71, 20, 4      'Reduce Colors
+        .PutImageToVBMenu 143, 18, 4     'Sepia
+        .PutImageToVBMenu 72, 20, 4      'Count Colors
+        .PutImageToVBMenu 71, 21, 4      'Reduce Colors
         
         'Filters Menu
         .PutImageToVBMenu 73, 0, 5       'Fade Last
@@ -356,7 +357,6 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 85, 2, 5, 2   'Mosaic
             .PutImageToVBMenu 86, 3, 5, 2   'Pencil
             .PutImageToVBMenu 87, 4, 5, 2   'Relief
-            .PutImageToVBMenu 143, 5, 5, 2  'Sepia
         .PutImageToVBMenu 75, 3, 5       'Blur
             '--> Blur sub-menu
             .PutImageToVBMenu 88, 0, 5, 3   'Antialias

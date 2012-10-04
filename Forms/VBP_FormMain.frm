@@ -997,6 +997,9 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuPosterize 
          Caption         =   "Posterize..."
       End
+      Begin VB.Menu MnuSepia 
+         Caption         =   "Sepia"
+      End
       Begin VB.Menu MnuColorSepBarPreCountColors 
          Caption         =   "-"
       End
@@ -1032,9 +1035,6 @@ Begin VB.MDIForm FormMain
          End
          Begin VB.Menu MnuRelief 
             Caption         =   "Relief"
-         End
-         Begin VB.Menu MnuSepia 
-            Caption         =   "Sepia"
          End
       End
       Begin VB.Menu MnuBlurUpper 
