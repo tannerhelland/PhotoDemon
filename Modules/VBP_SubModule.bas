@@ -247,9 +247,13 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
         Exit Function
     End If
 
-    'If we're at this line of code, a closest edge was not found.  That means the mousepointer is somewhere in the interior of
-    ' the selection.  Return that code and exit.
-    findNearestSelectionCoordinates = 9
+    'If we're at this line of code, a closest edge was not found.  Perform one final check to ensure that the mouse is within the
+    ' image's boundaries, and if it is, return the "move selection" ID, then exit.
+    If (x1 > tLeft) And (x1 < tRight) And (y1 > tTop) And (y1 < tBottom) Then
+        findNearestSelectionCoordinates = 9
+    Else
+        findNearestSelectionCoordinates = 0
+    End If
 
 End Function
 
