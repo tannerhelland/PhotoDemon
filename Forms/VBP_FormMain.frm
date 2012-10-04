@@ -2111,6 +2111,10 @@ Private Sub MnuSelectScanner_Click()
     Process SelectScanner
 End Sub
 
+Private Sub MnuSepia_Click()
+    Process Sepia
+End Sub
+
 Private Sub MnuSharpen_Click()
     Process Sharpen
 End Sub

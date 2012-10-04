@@ -194,6 +194,8 @@ Option Explicit
     '-Custom filters
     Public Const CustomFilter As Long = 817
     '-Miscellaneous
+    Public Const Dream As Long = 815
+    Public Const Alien As Long = 816
     Public Const Antique As Long = 818
     Public Const BlackLight As Long = 819
     Public Const Posterize As Long = 820
@@ -202,10 +204,8 @@ Option Explicit
     Public Const Twins As Long = 823
     Public Const Synthesize As Long = 824
     Public Const Noise As Long = 825
-    'Public Const ??? As Long = 826   'This value is free for use - the filter originally here has been removed
+    Public Const Sepia As Long = 826
     Public Const CountColors As Long = 827
-    Public Const Dream As Long = 815
-    Public Const Alien As Long = 816
     Public Const Vibrate As Long = 830
     Public Const Despeckle As Long = 831
     Public Const CustomDespeckle As Long = 832
@@ -768,6 +768,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 End If
             Case Animate
                 MenuAnimate
+            Case Sepia
+                MenuSepia
         
         End Select
     End If
@@ -1127,7 +1129,7 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
         Case CustomFilter
             GetNameOfProcess = "Custom Filter"
         Case Antique
-            GetNameOfProcess = "Sepia/Antique"
+            GetNameOfProcess = "Antique"
         Case BlackLight
             GetNameOfProcess = "Blacklight"
         Case Posterize
@@ -1156,6 +1158,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Custom Despeckle"
         Case Animate
             GetNameOfProcess = "Animate"
+        Case Sepia
+            GetNameOfProcess = "Sepia"
         
         Case LastCommand
             GetNameOfProcess = "Repeat Last Action"
