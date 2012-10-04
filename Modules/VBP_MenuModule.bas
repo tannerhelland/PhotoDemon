@@ -168,10 +168,7 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         'This image has been saved before.
         
         'Check to see if the image is a JPEG.  If it is, the user needs to be prompted at least once for a quality setting.
-        Dim FileExtension As String
-        FileExtension = UCase(GetExtension(pdImages(imageID).LocationOnDisk))
-        
-        If (FileExtension = "JPG") Or (FileExtension = "JPEG") Or (FileExtension = "JPE") Then
+        If (pdImages(imageID).OriginalFileFormat = 2) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
             MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, True)
         Else
             MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, False, pdImages(imageID).saveFlag0, pdImages(imageID).saveFlag1)
@@ -268,6 +265,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
         Case "JPG", "JPEG", "JPE"
             If loadRelevantForm = True Then
                 
+                SaveFileName = dstPath
                 FormJPEG.Show 1, FormMain
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.

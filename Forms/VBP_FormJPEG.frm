@@ -188,6 +188,9 @@ End Sub
 'LOAD form
 Private Sub Form_Load()
     
+    'Make sure that the proper cursor is set
+    Screen.MousePointer = 0
+    
     'I've found that pre-existing combo box entries are more user-friendly
     CmbSaveQuality.AddItem "Perfect (99)", 0
     CmbSaveQuality.AddItem "Excellent (92)", 1
@@ -215,7 +218,7 @@ Private Sub hsQuality_Scroll()
 End Sub
 
 Private Sub txtQuality_Change()
-    If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max, False, False) Then hsQuality.Value = val(txtQuality)
+    If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max, False, False) Then hsQuality.Value = Val(txtQuality)
 End Sub
 
 Private Sub txtQuality_GotFocus()
