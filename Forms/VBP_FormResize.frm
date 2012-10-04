@@ -283,11 +283,29 @@ End Sub
 'Resize an image using bicubic, bilinear, or nearest neighbor resampling
 Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMethod As Byte)
 
-    'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be resizing
-    ' the selection to match the new image, but we can fix that at a later date.)
+    'If the image contains an active selection, automatically resize it to match the new image.
+    Dim selActive As Boolean
+    Dim tsLeft As Single, tsTop As Single, tsWidth As Single, tsHeight As Single
+    
     If pdImages(CurrentImage).selectionActive Then
+        selActive = True
+        
+        'Remember all the current selection values
+        tsLeft = pdImages(CurrentImage).mainSelection.selLeft
+        tsTop = pdImages(CurrentImage).mainSelection.selTop
+        tsWidth = pdImages(CurrentImage).mainSelection.selWidth
+        tsHeight = pdImages(CurrentImage).mainSelection.selHeight
+        
+        'Deactivate the current selection
         pdImages(CurrentImage).selectionActive = False
         tInit tSelection, False
+        
+        'Note the ratio between the original width/height values and the new ones
+        wRatio = iWidth / pdImages(CurrentImage).Width
+        hRatio = iHeight / pdImages(CurrentImage).Height
+        
+    Else
+        selActive = False
     End If
 
     'Because most resize methods require a temporary layer, create one here
@@ -495,6 +513,25 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
     
     'Release our temporary layer
     Set tmpLayer = Nothing
+    
+    'If the image had a selection, recreate it - but make it match the new image size
+    If selActive Then
+                
+        'Populate the selection text boxes (which are now invisible)
+        FormMain.txtSelLeft = Int(tsLeft * wRatio)
+        FormMain.txtSelTop = Int(tsTop * hRatio)
+        FormMain.txtSelWidth = Int(tsWidth * wRatio)
+        FormMain.txtSelHeight = Int(tsHeight * hRatio)
+        
+        'Reactivate the current selection with the new values
+        tInit tSelection, True
+        pdImages(CurrentImage).mainSelection.updateViaTextBox
+        pdImages(CurrentImage).selectionActive = True
+        
+        'Redraw the image
+        RenderViewport pdImages(CurrentImage).containingForm
+        
+    End If
     
     Message "Finished."
     
