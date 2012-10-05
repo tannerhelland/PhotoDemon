@@ -1456,7 +1456,6 @@ Private Sub MDIForm_Load()
                 Message "Software is up-to-date."
                 
                 'Because the software is up-to-date, we can mark this as a successful check in the INI file
-                'Start by seeing if we're allowed to check for software updates
                 WriteToIni "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
                 
             Case 2
@@ -1729,7 +1728,10 @@ Private Sub MnuCheckUpdates_Click()
             Message "An error occurred while checking for updates.  Please try again later."
             
         Case 1
-            Message "This copy of PhotoDemon is the newest available.  (Version " & App.Major & "." & App.Minor & ")"
+            Message "This copy of PhotoDemon is the newest available.  (Version " & App.Major & "." & App.Minor & "." & App.Revision & ")"
+                
+            'Because the software is up-to-date, we can mark this as a successful check in the INI file
+            WriteToIni "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
                 
         Case 2
             Message "Software update found!  Launching update notifier..."

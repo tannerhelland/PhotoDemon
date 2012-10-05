@@ -23,7 +23,7 @@ Attribute VB_Name = "Software_Updater"
 Option Explicit
 
 'Because the update form needs access to the update version numbers, they are made publicly available
-Public updateMajor As Long, updateMinor As Long
+Public updateMajor As Long, updateMinor As Long, updateBuild As Long
 
 'Same goes for the update announcement path
 Public updateAnnouncement As String
@@ -160,6 +160,18 @@ Public Function CheckForSoftwareUpdate() As Long
         Exit Function
     End If
     
+    'Attempt to retrieve a build number
+    tmpIniRead = GetFromArbitraryIni(tmpFile, iniCategory, "Build")
+    
+    'Verify the minor version number
+    If tmpIniRead <> "" Then
+        updateBuild = CLng(tmpIniRead)
+    
+    'If it returns a blank string, that's okay - just set the build to 0 so it's effectively ignored
+    Else
+        updateBuild = 0
+    End If
+    
     'Finally, attempt to grab the update announcement URL.  This may or may not be blank; it depends on whether I've
     ' written an announcement yet, heh.
     tmpIniRead = GetFromArbitraryIni(tmpFile, iniCategory, "AnnouncementURL")
@@ -171,7 +183,7 @@ Public Function CheckForSoftwareUpdate() As Long
     'If we made it all the way here, we can assume the update check was successful.  The last thing we need to do is compare
     ' the updated software version numbers with the current software version numbers.  If THAT yields results, we can finally
     ' return "TRUE" for this function
-    If (updateMajor > App.Major) Or ((updateMinor > App.Minor) And (updateMajor = App.Major)) Then
+    If (updateMajor > App.Major) Or ((updateMinor > App.Minor) And (updateMajor = App.Major)) Or ((updateBuild > App.Revision) And (updateMinor = App.Minor) And (updateMajor = App.Major)) Then
         CheckForSoftwareUpdate = 2
     
     '...otherwise, we went to all that work for nothing.  Oh well.  An update check occurred, but this version is up-to-date.
