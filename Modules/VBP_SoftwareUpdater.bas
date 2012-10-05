@@ -3,8 +3,9 @@ Attribute VB_Name = "Software_Updater"
 'Automatic Software Updater (note: at present this doesn't techincally DO the updating (e.g. overwriting program files), it just CHECKS for updates)
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 19/August/12
-'Last updated: 19/August/12
-'Last update: initial build
+'Last updated: 05/October/12
+'Last update: improve status reports; now the update function is of type "Long", and it returns failure, success but no update
+'              needed, and success + update needed
 '
 'Interface for checking if a new version of PhotoDemon is available for download.  This code is a stripped-down
 ' version of PhotoDemon's "download image from Internet" code.
@@ -12,7 +13,7 @@ Attribute VB_Name = "Software_Updater"
 'A number of features have been added to the original version of this code, particularly the many checks I've added
 ' to protect against Internet and download errors.  Technically this code is fairly simply - it simply downloads a text
 ' file from the tannerhelland.com server, and compares the version numbers it provides against the ones supplied by this
-' build  If the numbers don't match, it spawns the related form and recommends a download.
+' build.  If the numbers don't match, it spawns the related form and recommends a download.
 '
 'Additionally, this code interfaces with the .INI file so the user can opt to not check for updates and never be
 ' notified again. (FYI - this option can be enabled/disabled from the 'Edit' -> 'Program Preferences' menu.)

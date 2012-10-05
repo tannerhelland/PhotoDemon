@@ -146,6 +146,7 @@ Public Sub LoadINI()
             Print #fileNum, "CanvasBackground=16777215"
             Print #fileNum, "CheckForUpdates=1"
             Print #fileNum, "ConfirmClosingUnsaved=1"
+            Print #fileNum, "LastUpdateCheck="
             Print #fileNum, "LogProgramMessages=0"
             Print #fileNum, "PromptForPluginDownload=1"
             Print #fileNum, ""
@@ -209,10 +210,25 @@ End Sub
 
 'Read values from an INI
 Public Function GetFromIni(strSectionHeader As String, strVariableName As String) As String
+    
+    'Blank out the return string (required by the API call)
     Dim strReturn As String
-    'Blank out the string (required by the API call)
     strReturn = String(255, Chr(0))
-    GetFromIni = Left$(strReturn, GetPrivateProfileString(strSectionHeader, ByVal strVariableName, "", strReturn, Len(strReturn), INIPath))
+    
+    Dim chkReturn As String
+    chkReturn = Left$(strReturn, GetPrivateProfileString(strSectionHeader, ByVal strVariableName, "", strReturn, Len(strReturn), INIPath))
+    
+    'Make sure a non-null string was returned
+    If chkReturn <> "" Then
+        GetFromIni = chkReturn
+    
+    'If a null string was returned, it may be because this key/value pair doesn't appear in the INI file.
+    ' Force a write of this key/pair to ensure that it exists in the file.
+    Else
+        WritePrivateProfileString strSectionHeader, strVariableName, "", INIPath
+        GetFromIni = ""
+    End If
+    
 End Function
 
 'Set values into an INI

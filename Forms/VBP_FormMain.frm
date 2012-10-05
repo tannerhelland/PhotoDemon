@@ -1403,7 +1403,38 @@ Private Sub MDIForm_Load()
     Dim allowedToUpdate As Boolean
     If Val(tmpString) = 0 Then allowedToUpdate = False Else allowedToUpdate = True
     
-    'If updates are allowed, now is the time to check
+    'If updates ARE allowed, see when we last checked.  To be polite, only check once every 10 days.
+    If allowedToUpdate = True Then
+    
+        Dim lastCheckDate As String
+        lastCheckDate = GetFromIni("General Preferences", "LastUpdateCheck")
+        
+        'If the last update check date was not found, request an update check now
+        If lastCheckDate = "" Then
+        
+            allowedToUpdate = True
+        
+        'If a last update check date was found, check to see how much time has elapsed since that check
+        Else
+        
+            Dim currentDate As Date
+            currentDate = Format$(Now, "Medium Date")
+            
+            'If 10 days have elapsed, allow an update check
+            If CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= 10 Then
+                allowedToUpdate = True
+            
+            'If 10 days haven't passed, prevent an update
+            Else
+                Message "Update check postponed (a check has been performed in the last 10 days)"
+                allowedToUpdate = False
+            End If
+                    
+        End If
+    
+    End If
+    
+    'If we're STILL allowed to update, do so now
     If allowedToUpdate = True Then
     
         Message "Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)..."
@@ -1423,6 +1454,10 @@ Private Sub MDIForm_Load()
             
             Case 1
                 Message "Software is up-to-date."
+                
+                'Because the software is up-to-date, we can mark this as a successful check in the INI file
+                'Start by seeing if we're allowed to check for software updates
+                WriteToIni "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
                 
             Case 2
                 Message "Software update found!  Launching update notifier..."

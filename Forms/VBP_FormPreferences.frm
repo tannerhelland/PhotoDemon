@@ -34,7 +34,7 @@ Begin VB.Form FormPreferences
    End
    Begin VB.CheckBox chkProgramUpdates 
       Appearance      =   0  'Flat
-      Caption         =   "Automatically check for software updates"
+      Caption         =   "Automatically check for software updates every 10 days"
       ForeColor       =   &H00400000&
       Height          =   255
       Left            =   240
