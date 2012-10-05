@@ -165,7 +165,7 @@ Public Sub Message(ByVal MString As String)
     If LogProgramMessages = True Then
         Dim fileNum As Integer
         fileNum = FreeFile
-        Open ProgramPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
+        Open DataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
             Print #fileNum, MString
             If MString = "Finished." Then Print #fileNum, vbCrLf
         Close #fileNum

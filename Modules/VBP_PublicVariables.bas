@@ -50,6 +50,9 @@ Public AutosizeLargeImages As Long
 'The path where this application is located
 Public ProgramPath As String
 
+'The path where the program's extra data is located.  This is currently ProgramPath/Data/
+Public DataPath As String
+
 'DLLs and related support libraries
 Public PluginPath As String
 

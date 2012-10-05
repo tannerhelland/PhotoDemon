@@ -39,6 +39,11 @@ Public Sub LoadTheProgram()
     ProgramPath = App.Path
     If Right(ProgramPath, 1) <> "\" Then ProgramPath = ProgramPath & "\"
     
+    'Create a "Data" path based off the ProgramPath - this is where plugins, the INI file, Help, and more are stored.
+    ' Also, make sure the directory exists; if it doesn't, create it.
+    DataPath = ProgramPath & "Data\"
+    If Not DirectoryExist(DataPath) Then MkDir DataPath
+    
     'Now, before doing anything else, load the INI file and corresponding data (via the INIProcessor module)
     LoadINI
     
@@ -610,7 +615,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As p
     End If
     
     'Copy the image into the current pdImage object
-    dstLayer.CreateFromPicture tmpPicture
+    dstLayer.createFromPicture tmpPicture
     
     'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
     ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
@@ -635,7 +640,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pd
     If verifyGDISuccess And (tmpPicture.Width <> 0) And (tmpPicture.Height <> 0) Then
     
         'Copy the image returned by GDI+ into the current pdImage object
-        LoadGDIPlusImage = dstLayer.CreateFromPicture(tmpPicture)
+        LoadGDIPlusImage = dstLayer.createFromPicture(tmpPicture)
         
     Else
         LoadGDIPlusImage = False
@@ -657,7 +662,7 @@ Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer
     End If
     
     'Copy the image into the current pdImage object
-    dstLayer.CreateFromPicture tmpPicture
+    dstLayer.createFromPicture tmpPicture
     
     LoadVBImage = True
     
@@ -792,9 +797,69 @@ End Sub
 ' experience: zLib, EZTwain32, and FreeImage.  For convenience' sake, it also checks for GDI+ availability.
 Public Sub LoadPlugins()
     
-    'Use the path the program was launched from to determine plug-in folder
-    PluginPath = ProgramPath & "Plugins\"
+    'Plugin files are located in the \Data\Plugins subdirectory
+    PluginPath = DataPath & "Plugins\"
     
+    'Make sure the plugin path exists
+    If Not DirectoryExist(PluginPath) Then MkDir PluginPath
+    
+    'Old versions of PhotoDemon kept plugins in a different directory. Check the old location,
+    ' and if plugin-related files are found, copy them to the new directory
+    On Error Resume Next
+    Dim tmpPluginPath As String
+    tmpPluginPath = ProgramPath & "Plugins\"
+    
+    If DirectoryExist(tmpPluginPath) Then
+        LoadMessage "Copying plugin files to new /Data/Plugins subdirectory"
+        
+        Dim pluginName As String
+        pluginName = "EZTW32.dll"
+        If FileExist(tmpPluginPath & pluginName) Then
+            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
+            Kill tmpPluginPath & pluginName
+        End If
+        
+        pluginName = "EZTWAIN_README.TXT"
+        If FileExist(tmpPluginPath & pluginName) Then
+            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
+            Kill tmpPluginPath & pluginName
+        End If
+        
+        pluginName = "FreeImage.dll"
+        If FileExist(tmpPluginPath & pluginName) Then
+            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
+            Kill tmpPluginPath & pluginName
+        End If
+        
+        pluginName = "license-fi.txt"
+        If FileExist(tmpPluginPath & pluginName) Then
+            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
+            Kill tmpPluginPath & pluginName
+        End If
+        
+        pluginName = "license-gplv2.txt"
+        If FileExist(tmpPluginPath & pluginName) Then
+            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
+            Kill tmpPluginPath & pluginName
+        End If
+        
+        pluginName = "license-gplv3.txt"
+        If FileExist(tmpPluginPath & pluginName) Then
+            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
+            Kill tmpPluginPath & pluginName
+        End If
+        
+        pluginName = "zlibwapi.dll"
+        If FileExist(tmpPluginPath & pluginName) Then
+            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
+            Kill tmpPluginPath & pluginName
+        End If
+        
+        'After all files have been removed, kill the old Plugin directory
+        RmDir tmpPluginPath
+        
+    End If
+        
     'Check for image scanning
     'First, make sure we have our dll file
     If FileExist(PluginPath & "EZTW32.dll") = False Then

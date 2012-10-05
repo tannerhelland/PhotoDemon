@@ -88,7 +88,7 @@ Attribute VB_Exposed = False
 '             behind the forced-to-top form).
 '
 'Responsible for checking the runtime environment and building paths
-'accordingly.  Also shows a nice little loading message while it does its thing.
+' accordingly.  Also shows a nice little loading message while it does its thing.
 '
 '***************************************************************************
 

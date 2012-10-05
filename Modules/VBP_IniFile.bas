@@ -3,8 +3,8 @@ Attribute VB_Name = "Ini_Handler"
 'Program INI Handler
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 26/September/01
-'Last updated: 19/August/12
-'Last update: Added functions for reading/writing arbitrary INI files.  These features will be used by the new update checker.
+'Last updated: 05/October/12
+'Last update: store the INI file in the new program data subdirectory
 '
 'Module for handling the initialization of the program via an INI file.  This
 ' routine sets program defaults, determines folders, and generally prepares the
@@ -97,12 +97,25 @@ Public Sub LoadINI()
     'Send a nice little message to the load form
     LoadMessage "Loading INI data..."
     
-    'If the INI file doesn't exist, let's build one
-    INIPath = ProgramPath & PROGRAMNAME & "_settings.ini"
+    'The INI file is located in the /Data subdirectory
+    INIPath = DataPath & PROGRAMNAME & "_settings.ini"
     
-    'This routine may need to open files.  To prevent "duplicate declarations in current scope," we declare a file number variable here
+    'Old versions of PhotoDemon kept the INI file in the same directory as the .exe file.  We now use a /Data subdirectory.
+    ' Check the old location, and if an INI file is found, copy it to the new directory
+    On Error Resume Next
+    Dim tmpINIPath As String
+    tmpINIPath = ProgramPath & PROGRAMNAME & "_settings.ini"
+    
+    If FileExist(tmpINIPath) Then
+        LoadMessage "Copying old .INI file to new \Data subdirectory"
+        FileCopy tmpINIPath, INIPath
+        Kill tmpINIPath
+    End If
+    
+    'This routine needs to open files.  To prevent "duplicate declarations in current scope," use a free file value
     Dim fileNum As Integer
     
+    'If no INI file exists, let's build one from scratch
     If FileExist(INIPath) = False Then
         
         LoadMessage "INI file could not be located. Generating a new one..."
@@ -166,14 +179,14 @@ Public Sub LoadINI()
     'Get the LogProgramMessages preference
     Dim tempString As String
     tempString = GetFromIni("General Preferences", "LogProgramMessages")
-    x = val(tempString)
+    x = Val(tempString)
     If x = 0 Then LogProgramMessages = False Else LogProgramMessages = True
     
     'If we're logging program messages, open up a log file and dump the date and time there
     If LogProgramMessages = True Then
         fileNum = FreeFile
     
-        Open ProgramPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
+        Open DataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
             Print #fileNum, vbCrLf
             Print #fileNum, vbCrLf
             Print #fileNum, "**********************************************"
@@ -184,12 +197,12 @@ Public Sub LoadINI()
 
     'Get the Canvas background preference (color vs checkerboard pattern)
     tempString = GetFromIni("General Preferences", "CanvasBackground")
-    x = val(tempString)
+    x = Val(tempString)
     CanvasBackground = x
     
     'Check if the user wants us to prompt them about closing unsaved images
     tempString = GetFromIni("General Preferences", "ConfirmClosingUnsaved")
-    x = val(tempString)
+    x = Val(tempString)
     If x = 0 Then ConfirmClosingUnsaved = False Else ConfirmClosingUnsaved = True
     
 End Sub
