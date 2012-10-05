@@ -24,7 +24,7 @@ Private Declare Function TWAIN_AcquireToFilename Lib "EZTW32.dll" (ByVal hwndApp
 Private Declare Function TWAIN_SelectImageSource Lib "EZTW32.dll" (ByVal hwndApp As Long) As Long
 Private Declare Function TWAIN_IsAvailable Lib "EZTW32.dll" () As Long
 
-'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the /Plugins subdirectory)
+'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)
 Dim hLib_Scanner As Long
 
 'This must be run before the scanner is accessed

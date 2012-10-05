@@ -37,7 +37,7 @@ Dim OriginalSize As Long, CompressedSize As Long
 'Compress a file
 Public Function CompressFile(ByVal SrcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
     
-    'Manually load the DLL from the "PluginPath" folder (should be App.Path/Plugins)
+    'Manually load the DLL from the "PluginPath" folder (should be App.Path\Data\Plugins)
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "zlibwapi.dll")
 
@@ -121,7 +121,7 @@ End Function
 'Decompress a file
 Public Function DecompressFile(ByVal SrcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
     
-    'Manually load the DLL from the "PluginPath" folder (should be App.Path/Plugins)
+    'Manually load the DLL from the "PluginPath" folder (should be App.Path\Data\Plugins)
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "zlibwapi.dll")
 

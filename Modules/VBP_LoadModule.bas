@@ -817,7 +817,7 @@ Public Sub LoadPlugins()
     tmpPluginPath = ProgramPath & "Plugins\"
     
     If DirectoryExist(tmpPluginPath) Then
-        LoadMessage "Copying plugin files to new /Data/Plugins subdirectory"
+        LoadMessage "Copying plugin files to new \Data\Plugins subdirectory"
         
         Dim pluginName As String
         pluginName = "EZTW32.dll"

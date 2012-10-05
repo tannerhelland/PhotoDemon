@@ -50,16 +50,16 @@ Public AutosizeLargeImages As Long
 'Where is this application located?
 Public ProgramPath As String
 
-'The path where the program's extra data is kept.  This is currently "ProgramPath/Data/"
+'The path where the program's extra data is kept.  This is currently "ProgramPath\Data\"
 Public DataPath As String
 
-'The path where DLLs and related support libraries are kept, currently "ProgramPath/Data/Plugins/"
+'The path where DLLs and related support libraries are kept, currently "ProgramPath\Data\Plugins\"
 Public PluginPath As String
 
-'The default folder for saved macros, currently "ProgramPath/Data/Macros/"
+'The default folder for saved macros, currently "ProgramPath\Data\Macros\"
 Public MacroPath As String
 
-'The default folder for saved convolution filters, currently "ProgramPath/Data/Filters/"
+'The default folder for saved convolution filters, currently "ProgramPath\Data\Filter\"
 Public FilterPath As String
 
 'Command line (used here for processing purposes)

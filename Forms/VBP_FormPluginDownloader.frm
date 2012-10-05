@@ -372,7 +372,7 @@ Private Sub cmdNoDownload_Click()
     picNo.Left = 0
     picNo.Top = 0
     DoEvents
-    txtNoExplanation.Text = "The next time you launch " & PROGRAMNAME & ", it will repeat this check for missing plugins." & vbCrLf & vbCrLf & "Note: if you're the adventurous type, you can manually download these plugin files from their respective sites.  " & PROGRAMNAME & " will look for the DLL versions of these libraries in the 'plugins' subdirectory of wherever the " & PROGRAMNAME & " executable file is located."
+    txtNoExplanation.Text = "The next time you launch " & PROGRAMNAME & ", it will repeat this check for missing plugins." & vbCrLf & vbCrLf & "Note: if you're the adventurous type, you can manually download these plugin files from their respective sites.  " & PROGRAMNAME & " will look for the DLL versions of these libraries in the '\Data\Plugins' subdirectory of wherever the " & PROGRAMNAME & " executable file is located."
     picNo.Visible = True
     cmdOKNo.Visible = True
     cmdOKNo.SetFocus
@@ -390,7 +390,7 @@ Private Sub cmdNoDownloadNoReminder_Click()
     cmdNoDownloadNoReminder.Visible = False
     picNo.Left = 0
     picNo.Top = 0
-    txtNoExplanation.Text = PROGRAMNAME & " will no longer prompt you about missing plugins.  (If you change your mind in the future, this setting can be reversed from the 'Edit' -> 'Program Preferences' menu.)" & vbCrLf & vbCrLf & "Note: if you're the adventurous type, you can manually download these plugin files from their respective sites.  " & PROGRAMNAME & " will look for the DLL versions of these libraries in the 'plugins' subdirectory of wherever the " & PROGRAMNAME & " executable file is located."
+    txtNoExplanation.Text = PROGRAMNAME & " will no longer prompt you about missing plugins.  (If you change your mind in the future, this setting can be reversed from the 'Edit' -> 'Program Preferences' menu.)" & vbCrLf & vbCrLf & "Note: if you're the adventurous type, you can manually download these plugin files from their respective sites.  " & PROGRAMNAME & " will look for the DLL versions of these libraries in the '\Data\Plugins' subdirectory of wherever the " & PROGRAMNAME & " executable file is located."
     DoEvents
     picNo.Visible = True
     cmdOKNo.Visible = True
