@@ -1408,16 +1408,28 @@ Private Sub MDIForm_Load()
     
         Message "Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)..."
     
-        Dim updateNeeded As Boolean
+        Dim updateNeeded As Long
         updateNeeded = CheckForSoftwareUpdate
         
-        If updateNeeded = True Then
-            Message "Update found!  Launching update notifier..."
-            FormSoftwareUpdate.Show 1, Me
-        Else
-            Message "Software is up-to-date."
-        End If
-    
+        'CheckForSoftwareUpdate can return one of three values:
+        ' 0 - something went wrong (no Internet connection, etc)
+        ' 1 - the check was successful, but this version is up-to-date
+        ' 2 - the check was successful, and an update is available
+        
+        Select Case updateNeeded
+        
+            Case 0
+                Message "An error occurred while checking for updates.  Please make sure you have an active Internet connection."
+            
+            Case 1
+                Message "Software is up-to-date."
+                
+            Case 2
+                Message "Software update found!  Launching update notifier..."
+                FormSoftwareUpdate.Show 1, Me
+            
+        End Select
+            
     End If
     
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
@@ -1668,16 +1680,28 @@ Private Sub MnuCheckUpdates_Click()
         
     Message "Checking for software updates..."
     
-    Dim updateNeeded As Boolean
+    Dim updateNeeded As Long
     updateNeeded = CheckForSoftwareUpdate
     
-    If updateNeeded = True Then
-        Message "Update found!  Launching update notifier..."
-        FormSoftwareUpdate.Show 1, Me
-    Else
-        Message "This copy of PhotoDemon is up-to-date.  (Version " & App.Major & "." & App.Minor & ")"
-    End If
-
+    'CheckForSoftwareUpdate can return one of three values:
+    ' 0 - something went wrong (no Internet connection, etc)
+    ' 1 - the check was successful, but this version is up-to-date
+    ' 2 - the check was successful, and an update is available
+        
+    Select Case updateNeeded
+        
+        Case 0
+            Message "An error occurred while checking for updates.  Please try again later."
+            
+        Case 1
+            Message "This copy of PhotoDemon is the newest available.  (Version " & App.Major & "." & App.Minor & ")"
+                
+        Case 2
+            Message "Software update found!  Launching update notifier..."
+            FormSoftwareUpdate.Show 1, Me
+            
+    End Select
+    
 End Sub
 
 Private Sub MnuClearMRU_Click()

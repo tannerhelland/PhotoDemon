@@ -176,15 +176,15 @@ Begin VB.Form FormSoftwareUpdate
       MouseIcon       =   "VBP_FormSoftwareUpdates.frx":0152
       MousePointer    =   99  'Custom
       TabIndex        =   6
-      Top             =   2640
+      Top             =   2520
       Width           =   5295
    End
    Begin VB.Line Line1 
       BorderColor     =   &H80000002&
       X1              =   360
       X2              =   8
-      Y1              =   104
-      Y2              =   104
+      Y1              =   120
+      Y2              =   120
    End
    Begin VB.Line Line0 
       BorderColor     =   &H80000002&
@@ -194,13 +194,14 @@ Begin VB.Form FormSoftwareUpdate
       Y2              =   40
    End
    Begin VB.Label lblAnnouncementExplanation 
+      Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormSoftwareUpdates.frx":02A4
+      Caption         =   "To learn about the latest version before downloading it, please visit:"
       ForeColor       =   &H00404040&
-      Height          =   675
+      Height          =   315
       Left            =   120
       TabIndex        =   5
-      Top             =   1800
+      Top             =   2160
       Width           =   5220
    End
    Begin VB.Label lblNewestAppVersion 
@@ -219,7 +220,7 @@ Begin VB.Form FormSoftwareUpdate
       Height          =   210
       Left            =   3120
       TabIndex        =   4
-      Top             =   1155
+      Top             =   1320
       Width           =   2205
    End
    Begin VB.Label lblCurrentAppVersion 
@@ -238,7 +239,7 @@ Begin VB.Form FormSoftwareUpdate
       Height          =   210
       Left            =   3120
       TabIndex        =   3
-      Top             =   810
+      Top             =   960
       Width           =   1950
    End
    Begin VB.Label lblNewVersion 
@@ -258,7 +259,7 @@ Begin VB.Form FormSoftwareUpdate
       Height          =   210
       Left            =   -480
       TabIndex        =   2
-      Top             =   1155
+      Top             =   1320
       Width           =   3360
    End
    Begin VB.Label lblCurVersion 
@@ -278,7 +279,7 @@ Begin VB.Form FormSoftwareUpdate
       Height          =   210
       Left            =   -480
       TabIndex        =   1
-      Top             =   810
+      Top             =   960
       Width           =   3360
    End
    Begin VB.Label lblUpdateIntro 

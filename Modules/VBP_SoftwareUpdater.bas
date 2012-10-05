@@ -28,7 +28,11 @@ Public updateMajor As Long, updateMinor As Long
 Public updateAnnouncement As String
 
 'Check for a software update; the update info will be contained in a text file at http://tannerhelland.com/photodemon_files/updates.txt
-Public Function CheckForSoftwareUpdate() As Boolean
+' This function will return one of three values:
+' 0 - something went wrong (no Internet connection, etc)
+' 1 - the check was successful, but this version is up-to-date
+' 2 - the check was successful, and an update is available
+Public Function CheckForSoftwareUpdate() As Long
 
     'First things first - set up our target URL
     Dim URL As String
@@ -40,7 +44,7 @@ Public Function CheckForSoftwareUpdate() As Boolean
     
     'If a connection couldn't be established, exit out
     If hInternetSession = 0 Then
-        CheckForSoftwareUpdate = False
+        CheckForSoftwareUpdate = 0
         Exit Function
     End If
     
@@ -48,10 +52,10 @@ Public Function CheckForSoftwareUpdate() As Boolean
     Dim hUrl As Long
     hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
-    'If the URL couldn't be found, the server may be down.  Close out this connection and exit out
+    'If the URL couldn't be found, my server may be down.  Close out this connection and exit.
     If hUrl = 0 Then
         If hInternetSession Then InternetCloseHandle hInternetSession
-        CheckForSoftwareUpdate = False
+        CheckForSoftwareUpdate = 0
         Exit Function
     End If
         
@@ -96,7 +100,7 @@ Public Function CheckForSoftwareUpdate() As Boolean
                 If hUrl Then InternetCloseHandle hUrl
                 If hInternetSession Then InternetCloseHandle hInternetSession
                 
-                CheckForSoftwareUpdate = False
+                CheckForSoftwareUpdate = 0
                 Exit Function
             End If
    
@@ -137,7 +141,7 @@ Public Function CheckForSoftwareUpdate() As Boolean
     'If it returns a blank string, something went wrong.  Exit the function
     Else
         If FileExist(tmpFile) Then Kill tmpFile
-        CheckForSoftwareUpdate = False
+        CheckForSoftwareUpdate = 0
         Exit Function
     End If
     
@@ -151,7 +155,7 @@ Public Function CheckForSoftwareUpdate() As Boolean
     'If it returns a blank string, something went wrong.  Exit the function
     Else
         If FileExist(tmpFile) Then Kill tmpFile
-        CheckForSoftwareUpdate = False
+        CheckForSoftwareUpdate = 0
         Exit Function
     End If
     
@@ -167,11 +171,11 @@ Public Function CheckForSoftwareUpdate() As Boolean
     ' the updated software version numbers with the current software version numbers.  If THAT yields results, we can finally
     ' return "TRUE" for this function
     If (updateMajor > App.Major) Or ((updateMinor > App.Minor) And (updateMajor = App.Major)) Then
-        CheckForSoftwareUpdate = True
+        CheckForSoftwareUpdate = 2
     
     '...otherwise, we went to all that work for nothing.  Oh well.  An update check occurred, but this version is up-to-date.
     Else
-        CheckForSoftwareUpdate = False
+        CheckForSoftwareUpdate = 1
     End If
     
 End Function
