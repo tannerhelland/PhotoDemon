@@ -19,7 +19,7 @@ Attribute VB_Name = "Undo_Handler"
 Option Explicit
 
 
-'Create an Undo entry (save a copy of the present image to the temp directory)
+'Create an Undo entry (save a copy of the present image or tool to the temp directory)
 ' Required: the ID of the process that called this action
 Public Sub CreateUndoFile(ByVal processID As Long)
     
@@ -63,7 +63,7 @@ Public Sub ClearALLUndo()
         'If it's a valid image form...
         If tForm.Name = "FormImage" Then
             'Strip tag out
-            CurWindow = val(tForm.Tag)
+            CurWindow = Val(tForm.Tag)
             'Clear the undos internally
             pdImages(CurWindow).ClearUndos
         End If
