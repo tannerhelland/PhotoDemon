@@ -44,6 +44,13 @@ Public Sub LoadTheProgram()
     DataPath = ProgramPath & "Data\"
     If Not DirectoryExist(DataPath) Then MkDir DataPath
     
+    'Within the \Data subfolder, check for two more folders - one for saved Macros and another for saved convolution filters
+    MacroPath = DataPath & "Macros\"
+    If Not DirectoryExist(MacroPath) Then MkDir MacroPath
+    
+    FilterPath = DataPath & "Filters\"
+    If Not DirectoryExist(FilterPath) Then MkDir FilterPath
+    
     'Now, before doing anything else, load the INI file and corresponding data (via the INIProcessor module)
     LoadINI
     

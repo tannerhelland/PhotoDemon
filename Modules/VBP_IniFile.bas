@@ -134,8 +134,8 @@ Public Sub LoadINI()
             Print #fileNum, "MainOpen=" & GetWindowsFolder(CSIDL_MYPICTURES)
             Print #fileNum, "MainSave=" & GetWindowsFolder(CSIDL_MYPICTURES)
             Print #fileNum, "ImportFRX=" & GetWindowsFolder(CSIDL_MY_DOCUMENTS)
-            Print #fileNum, "CustomFilter=" & ProgramPath
-            Print #fileNum, "Macro=" & ProgramPath
+            Print #fileNum, "CustomFilter=" & FilterPath
+            Print #fileNum, "Macro=" & MacroPath
             Print #fileNum, ""
             Print #fileNum, "[File Formats]"
             Print #fileNum, "LastOpenFilter=1"   'Default to "All Compatible Graphics" filter for loading

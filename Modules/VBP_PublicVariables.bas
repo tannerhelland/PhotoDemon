@@ -47,14 +47,20 @@ Public Zoom As ZoomData
 'Whether or not to resize large images to fit on-screen (preference is stored in the INI file; 0 means "yes," 1 means "no")
 Public AutosizeLargeImages As Long
 
-'The path where this application is located
+'Where is this application located?
 Public ProgramPath As String
 
-'The path where the program's extra data is located.  This is currently ProgramPath/Data/
+'The path where the program's extra data is kept.  This is currently "ProgramPath/Data/"
 Public DataPath As String
 
-'DLLs and related support libraries
+'The path where DLLs and related support libraries are kept, currently "ProgramPath/Data/Plugins/"
 Public PluginPath As String
+
+'The default folder for saved macros, currently "ProgramPath/Data/Macros/"
+Public MacroPath As String
+
+'The default folder for saved convolution filters, currently "ProgramPath/Data/Filters/"
+Public FilterPath As String
 
 'Command line (used here for processing purposes)
 Public CommandLine As String
@@ -99,7 +105,7 @@ Public FixScrolling As Boolean
 
 'For the Open and Save common dialog boxes, it's polite to remember what format the user used last, then default
 ' the boxes to that.  (Note that these values are stored in the INI file as well, but that is only accessed
-' upon program load and unload
+' upon program load and unload.)
 Public LastOpenFilter As Long
 Public LastSaveFilter As Long
 

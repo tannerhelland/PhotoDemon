@@ -62,21 +62,20 @@ Public Sub StopMacro()
     Set CC = New cCommonDialog
     
     'Get the last macro-related path from the INI file
-    Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "Macro")
-    
+    MacroPath = GetFromIni("Program Paths", "Macro")
+        
     'If the user cancels the save dialog, give them another chance to save - just in case
     Dim mReturn As VbMsgBoxResult
      
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , tempPathString, "Save macro data", "." & MACRO_EXT, FormMain.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , MacroPath, "Save macro data", "." & MACRO_EXT, FormMain.HWnd, 0) Then
         
         'Save the new directory as the default path for future usage
-        tempPathString = sFile
-        StripDirectory tempPathString
-        WriteToIni "Program Paths", "Macro", tempPathString
+        MacroPath = sFile
+        StripDirectory MacroPath
+        WriteToIni "Program Paths", "Macro", MacroPath
 
         'Delete any existing file (overwrite) and dump the info to file
         If FileExist(sFile) = True Then Kill sFile
@@ -111,17 +110,16 @@ Public Sub PlayMacro()
     Set CC = New cCommonDialog
     
     'Get the last macro-related path from the INI file
-    Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "Macro")
+    MacroPath = GetFromIni("Program Paths", "Macro")
    
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, "Open Macro File", "." & MACRO_EXT, FormMain.HWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , MacroPath, "Open Macro File", "." & MACRO_EXT, FormMain.HWnd, OFN_HIDEREADONLY) Then
         Message "Loading macro data..."
         
         'Save the new directory as the default path for future usage
-        tempPathString = sFile
-        StripDirectory tempPathString
-        WriteToIni "Program Paths", "Macro", tempPathString
+        MacroPath = sFile
+        StripDirectory MacroPath
+        WriteToIni "Program Paths", "Macro", MacroPath
         
         PlayMacroFromFile sFile
         

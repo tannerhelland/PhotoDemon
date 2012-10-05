@@ -869,15 +869,15 @@ Private Sub CmdOK_Click()
     
     For x = -2 To 2
     For y = -2 To 2
-        FM(x, y) = val(TxtF((x + 2) + (y + 2) * 5))
+        FM(x, y) = Val(TxtF((x + 2) + (y + 2) * 5))
     Next y
     Next x
         
     'What to divide the final value by
-    FilterWeight = val(TxtWeight.Text)
+    FilterWeight = Val(TxtWeight.Text)
     
     'Any offset value
-    FilterBias = val(txtBias.Text)
+    FilterBias = Val(txtBias.Text)
     
     'Set that we have created a filter during this program session, and save it accordingly
     HasCreatedFilter = True
@@ -915,18 +915,17 @@ Private Sub cmdOpen_Click()
     Dim CC As cCommonDialog
     
     'Get the last "open image" path from the INI file
-    Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "CustomFilter")
+    FilterPath = GetFromIni("Program Paths", "CustomFilter")
     
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , tempPathString, "Open a custom filter", , FormCustomFilter.HWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , FilterPath, "Open a custom filter", , FormCustomFilter.HWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
             
             'Save the new directory as the default path for future usage
-            tempPathString = sFile
-            StripDirectory tempPathString
-            WriteToIni "Program Paths", "CustomFilter", tempPathString
+            FilterPath = sFile
+            StripDirectory FilterPath
+            WriteToIni "Program Paths", "CustomFilter", FilterPath
             
             'Redraw the preview
             updatePreview
@@ -945,17 +944,16 @@ Private Sub cmdSave_Click()
     Dim CC As cCommonDialog
     
     'Get the last "open image" path from the INI file
-    Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "CustomFilter")
+    FilterPath = GetFromIni("Program Paths", "CustomFilter")
     
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , tempPathString, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , FilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.HWnd, 0) Then
         
         'Save the new directory as the default path for future usage
-        tempPathString = sFile
-        StripDirectory tempPathString
-        WriteToIni "Program Paths", "CustomFilter", tempPathString
+        FilterPath = sFile
+        StripDirectory FilterPath
+        WriteToIni "Program Paths", "CustomFilter", FilterPath
  
         'Write out the file
         SaveCustomFilter sFile
@@ -965,7 +963,7 @@ Private Sub cmdSave_Click()
 End Sub
 
 'Load a custom filter from file
-Private Function OpenCustomFilter(ByRef FilterPath As String) As Boolean
+Private Function OpenCustomFilter(ByRef srcFilterPath As String) As Boolean
     
     Dim tmpVal As Integer
     Dim tmpValLong As Long
@@ -974,7 +972,7 @@ Private Function OpenCustomFilter(ByRef FilterPath As String) As Boolean
     Dim fileNum As Integer
     fileNum = FreeFile
     
-    Open FilterPath For Binary As #fileNum
+    Open srcFilterPath For Binary As #fileNum
         
         'Verify that the filter is actually a valid filter file
         Dim VerifyID As String * 4
@@ -1028,27 +1026,27 @@ Private Function OpenCustomFilter(ByRef FilterPath As String) As Boolean
 End Function
 
 'Save a custom filter to file
-Private Function SaveCustomFilter(ByRef FilterPath As String) As Boolean
+Private Function SaveCustomFilter(ByRef dstFilterPath As String) As Boolean
 
-    If FileExist(FilterPath) Then Kill FilterPath
+    If FileExist(dstFilterPath) Then Kill dstFilterPath
     
     'Open the specified file
     Dim fileNum As Integer
     fileNum = FreeFile
     
-    Open FilterPath For Binary As #fileNum
+    Open dstFilterPath For Binary As #fileNum
         'Place the identifier
         Put #fileNum, 1, CUSTOM_FILTER_ID
         'Place the current version number
         Put #fileNum, , CUSTOM_FILTER_VERSION_2012
         'Strip the information out of the text boxes and send it
         Dim tmpVal As Long
-        tmpVal = val(TxtWeight.Text)
+        tmpVal = Val(TxtWeight.Text)
         Put #fileNum, , tmpVal
-        tmpVal = val(txtBias.Text)
+        tmpVal = Val(txtBias.Text)
         Put #fileNum, , tmpVal
         For x = 0 To 24
-            tmpVal = val(TxtF(x).Text)
+            tmpVal = Val(TxtF(x).Text)
             Put #fileNum, , tmpVal
         Next x
     Close #fileNum
@@ -1102,15 +1100,15 @@ Private Sub updatePreview()
     
     For x = -2 To 2
     For y = -2 To 2
-        FM(x, y) = val(TxtF((x + 2) + (y + 2) * 5))
+        FM(x, y) = Val(TxtF((x + 2) + (y + 2) * 5))
     Next y
     Next x
         
     'What to divide the final value by
-    FilterWeight = val(TxtWeight.Text)
+    FilterWeight = Val(TxtWeight.Text)
     
     'Offset value
-    FilterBias = val(txtBias.Text)
+    FilterBias = Val(txtBias.Text)
         
     'Apply the preview
     DoFilter "Preview", False, , True, picEffect

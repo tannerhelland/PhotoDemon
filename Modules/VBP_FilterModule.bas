@@ -220,7 +220,7 @@ NextCustomFilterPixel:  Next y2
 End Sub
 
 'This subroutine will load the data from a custom filter file straight into the FM() array
-Public Function LoadCustomFilterData(ByRef FilterPath As String) As Boolean
+Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
     
     'These are used to load values from the filter file; previously, they were integers, but in
     ' 2012 I changed them to Longs.  PhotoDemon loads both types.
@@ -231,7 +231,7 @@ Public Function LoadCustomFilterData(ByRef FilterPath As String) As Boolean
     Dim fileNum As Integer
     fileNum = FreeFile
     
-    Open FilterPath For Binary As #fileNum
+    Open srcFilterPath For Binary As #fileNum
         
         'Verify that the filter is actually a valid filter file
         Dim VerifyID As String * 4
