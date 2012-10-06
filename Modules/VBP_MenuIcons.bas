@@ -248,6 +248,7 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("LICENSE", "CUSTOM")     '142
         .AddImageFromStream LoadResData("SEPIA", "CUSTOM")       '143
         .AddImageFromStream LoadResData("CROPSEL", "CUSTOM")     '144
+        .AddImageFromStream LoadResData("HSL", "CUSTOM")         '145
         
         
         'File Menu
@@ -306,49 +307,50 @@ Public Sub LoadMenuIcons()
         'Color Menu
         .PutImageToVBMenu 46, 0, 4      'Brightness/Contrast
         .PutImageToVBMenu 47, 1, 4      'Gamma Correction
-        .PutImageToVBMenu 48, 2, 4      'Levels
-        .PutImageToVBMenu 135, 3, 4     'Temperature
-        .PutImageToVBMenu 49, 4, 4      'White Balance
-        .PutImageToVBMenu 50, 6, 4      'Histogram
+        .PutImageToVBMenu 145, 2, 4     'HSL adjustment
+        .PutImageToVBMenu 48, 3, 4      'Levels
+        .PutImageToVBMenu 135, 4, 4     'Temperature
+        .PutImageToVBMenu 49, 5, 4      'White Balance
+        .PutImageToVBMenu 50, 7, 4      'Histogram
             '--> Histogram sub-menu
-            .PutImageToVBMenu 50, 0, 4, 6   'Display Histogram
-            .PutImageToVBMenu 51, 2, 4, 6   'Equalize
-            .PutImageToVBMenu 52, 3, 4, 6   'Stretch
-        .PutImageToVBMenu 53, 8, 4      'Color Shift
+            .PutImageToVBMenu 50, 0, 4, 7   'Display Histogram
+            .PutImageToVBMenu 51, 2, 4, 7   'Equalize
+            .PutImageToVBMenu 52, 3, 4, 7   'Stretch
+        .PutImageToVBMenu 53, 9, 4      'Color Shift
             '--> Color-Shift sub-menu
-            .PutImageToVBMenu 53, 0, 4, 8   'Shift Right
-            .PutImageToVBMenu 54, 1, 4, 8   'Shift Left
-        .PutImageToVBMenu 57, 9, 4      'Rechannel
+            .PutImageToVBMenu 53, 0, 4, 9   'Shift Right
+            .PutImageToVBMenu 54, 1, 4, 9   'Shift Left
+        .PutImageToVBMenu 57, 10, 4      'Rechannel
             '--> Rechannel sub-menu
             '.PutImageToVBMenu 55, 0, 4, 9   'Red
             '.PutImageToVBMenu 56, 1, 4, 9   'Green
             '.PutImageToVBMenu 57, 2, 4, 9   'Blue
-        .PutImageToVBMenu 58, 11, 4      'Black and White
-        .PutImageToVBMenu 59, 12, 4      'Colorize
-        .PutImageToVBMenu 60, 13, 4      'Enhance
+        .PutImageToVBMenu 58, 12, 4      'Black and White
+        .PutImageToVBMenu 59, 13, 4      'Colorize
+        .PutImageToVBMenu 60, 14, 4      'Enhance
             '--> Enhance sub-menu
-            .PutImageToVBMenu 61, 0, 4, 13   'Contrast
-            .PutImageToVBMenu 62, 1, 4, 13   'Highlights
-            .PutImageToVBMenu 63, 2, 4, 13   'Midtones
-            .PutImageToVBMenu 64, 3, 4, 13   'Shadows
-        .PutImageToVBMenu 102, 14, 4     'Fade
+            .PutImageToVBMenu 61, 0, 4, 14   'Contrast
+            .PutImageToVBMenu 62, 1, 4, 14   'Highlights
+            .PutImageToVBMenu 63, 2, 4, 14   'Midtones
+            .PutImageToVBMenu 64, 3, 4, 14   'Shadows
+        .PutImageToVBMenu 102, 15, 4     'Fade
             '--> Fade sub-menu
-            .PutImageToVBMenu 103, 0, 4, 14  'Low Fade
-            .PutImageToVBMenu 102, 1, 4, 14  'Medium Fade
-            .PutImageToVBMenu 104, 2, 4, 14  'High Fade
-            .PutImageToVBMenu 105, 3, 4, 14  'Custom Fade
-            .PutImageToVBMenu 106, 5, 4, 14  'Unfade
-        .PutImageToVBMenu 65, 15, 4      'Grayscale
-        .PutImageToVBMenu 66, 16, 4      'Invert
+            .PutImageToVBMenu 103, 0, 4, 15  'Low Fade
+            .PutImageToVBMenu 102, 1, 4, 15  'Medium Fade
+            .PutImageToVBMenu 104, 2, 4, 15  'High Fade
+            .PutImageToVBMenu 105, 3, 4, 15  'Custom Fade
+            .PutImageToVBMenu 106, 5, 4, 15  'Unfade
+        .PutImageToVBMenu 65, 16, 4      'Grayscale
+        .PutImageToVBMenu 66, 17, 4      'Invert
             '--> Invert sub-menu
-            .PutImageToVBMenu 67, 0, 4, 16   'Invert CMYK
-            .PutImageToVBMenu 68, 1, 4, 16   'Invert Hue
-            .PutImageToVBMenu 69, 2, 4, 16   'Invert RGB
-            .PutImageToVBMenu 101, 4, 4, 16  'Compound Invert
-        .PutImageToVBMenu 70, 17, 4      'Posterize
-        .PutImageToVBMenu 143, 18, 4     'Sepia
-        .PutImageToVBMenu 72, 20, 4      'Count Colors
-        .PutImageToVBMenu 71, 21, 4      'Reduce Colors
+            .PutImageToVBMenu 67, 0, 4, 17   'Invert CMYK
+            .PutImageToVBMenu 68, 1, 4, 17   'Invert Hue
+            .PutImageToVBMenu 69, 2, 4, 17   'Invert RGB
+            .PutImageToVBMenu 101, 4, 4, 17  'Compound Invert
+        .PutImageToVBMenu 70, 18, 4      'Posterize
+        .PutImageToVBMenu 143, 19, 4     'Sepia
+        .PutImageToVBMenu 72, 21, 4      'Count Colors
+        .PutImageToVBMenu 71, 22, 4      'Reduce Colors
         
         'Filters Menu
         .PutImageToVBMenu 73, 0, 5       'Fade Last

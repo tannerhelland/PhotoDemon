@@ -904,7 +904,7 @@ Public Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long
         rR = l: rG = l: rB = l
     Else
         If l <= 0.5 Then
-             Min = l * (1 - s)
+            Min = l * (1 - s)
         Else
             Min = l - s * (1 - l)
         End If

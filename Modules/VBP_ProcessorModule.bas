@@ -156,7 +156,9 @@ Option Explicit
     Public Const ReduceColors As Long = 616
     'Temperature
     Public Const AdjustTemperature As Long = 618
-    'NOTE: 618 is the max value for this section (AdjustTemperature)
+    'HSL Adjustment
+    Public Const AdjustHSL As Long = 619
+    'NOTE: 619 is the max value for this section (AdjustHSL)
     
     'Coordinate filters/transformations; numbers 700-799
     '-Resize
@@ -645,6 +647,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                     FormColorTemp.Show 1, FormMain
                 Else
                     FormColorTemp.ApplyTemperatureToImage pOPCODE, pOPCODE2, pOPCODE3
+                End If
+            Case AdjustHSL
+                If LoadForm = True Then
+                    FormHSL.Show 1, FormMain
+                Else
+                    FormHSL.AdjustImageHSL pOPCODE, pOPCODE2, pOPCODE3
                 End If
         End Select
     End If

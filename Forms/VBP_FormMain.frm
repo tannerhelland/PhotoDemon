@@ -881,6 +881,10 @@ Begin VB.MDIForm FormMain
          Caption         =   "Gamma..."
          Shortcut        =   ^G
       End
+      Begin VB.Menu MnuHueSaturation 
+         Caption         =   "Hue / Saturation..."
+         Shortcut        =   ^H
+      End
       Begin VB.Menu MnuImageLevels 
          Caption         =   "Levels..."
          Shortcut        =   ^L
@@ -900,7 +904,6 @@ Begin VB.MDIForm FormMain
          Caption         =   "Histogram"
          Begin VB.Menu MnuHistogram 
             Caption         =   "Display Histogram"
-            Shortcut        =   ^H
          End
          Begin VB.Menu mnuHistogramSepBar1 
             Caption         =   "-"
@@ -1919,6 +1922,10 @@ End Sub
 
 Private Sub MnuHistogramStretch_Click()
     Process StretchHistogram
+End Sub
+
+Private Sub MnuHueSaturation_Click()
+    Process AdjustHSL, , , , , , , , , , True
 End Sub
 
 Private Sub MnuImageLevels_Click()
