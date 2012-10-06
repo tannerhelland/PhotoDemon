@@ -750,6 +750,77 @@ Public Sub MenuTest()
     
     MsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test out your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Pro Tip"
     
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Because gray values are constant, we can use a look-up table to calculate them
+    Dim gLookup(0 To 765) As Byte
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long, grayVal As Long
+    Dim newR As Long, newG As Long, newB As Long
+    Dim blendValue As Single
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        grayVal = gLookup(r + g + b)
+        
+        'Put interesting color transformations here
+                                
+        If newR < 0 Then newR = 0
+        If newG < 0 Then newG = 0
+        If newB < 0 Then newB = 0
+        
+        If newR > 255 Then newR = 255
+        If newG > 255 Then newG = 255
+        If newB > 255 Then newB = 255
+                
+        ImageData(QuickVal + 2, y) = newR
+        ImageData(QuickVal + 1, y) = newG
+        ImageData(QuickVal, y) = newB
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
+    
 End Sub
     
 
