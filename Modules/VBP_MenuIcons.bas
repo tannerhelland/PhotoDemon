@@ -247,6 +247,7 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("DOWNLOADSRC", "CUSTOM") '141
         .AddImageFromStream LoadResData("LICENSE", "CUSTOM")     '142
         .AddImageFromStream LoadResData("SEPIA", "CUSTOM")       '143
+        .AddImageFromStream LoadResData("CROPSEL", "CUSTOM")     '144
         
         
         'File Menu
@@ -293,13 +294,14 @@ Public Sub LoadMenuIcons()
         'Image Menu
         .PutImageToVBMenu 42, 0, 3
         .PutImageToVBMenu 19, 2, 3      'Resize
-        .PutImageToVBMenu 24, 4, 3      'Mirror
-        .PutImageToVBMenu 23, 5, 3      'Flip
-        .PutImageToVBMenu 20, 7, 3      'Rotate Clockwise (rotate submenu)
-        .PutImageToVBMenu 21, 8, 3      'Rotate Counter-clockwise (rotate submenu)
-        .PutImageToVBMenu 22, 9, 3      'Rotate 180 (rotate submenu)
-        .PutImageToVBMenu 125, 11, 3     'Isometric
-        .PutImageToVBMenu 132, 12, 3     'Tile
+        .PutImageToVBMenu 144, 3, 3     'Crop to Selection
+        .PutImageToVBMenu 24, 5, 3      'Mirror
+        .PutImageToVBMenu 23, 6, 3      'Flip
+        .PutImageToVBMenu 20, 8, 3      'Rotate Clockwise (rotate submenu)
+        .PutImageToVBMenu 21, 9, 3      'Rotate Counter-clockwise (rotate submenu)
+        .PutImageToVBMenu 22, 10, 3      'Rotate 180 (rotate submenu)
+        .PutImageToVBMenu 125, 12, 3     'Isometric
+        .PutImageToVBMenu 132, 13, 3     'Tile
         
         'Color Menu
         .PutImageToVBMenu 46, 0, 4      'Brightness/Contrast

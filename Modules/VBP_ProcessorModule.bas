@@ -171,8 +171,10 @@ Option Explicit
     Public Const FreeRotate As Long = 706
     '-Isometric
     Public Const Isometric As Long = 707
-    'Tiling
+    '-Tiling
     Public Const Tile As Long = 708
+    '-Crop to Selection
+    Public Const CropToSelection As Long = 709
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -676,6 +678,9 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormTile.GenerateTile CByte(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
                 End If
+            Case CropToSelection
+                MenuCropToSelection
+                
         End Select
     End If
     

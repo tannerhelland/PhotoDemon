@@ -744,6 +744,7 @@ Public Sub LoadMenuShortcuts()
         'Image menu
         .AddAccelerator vbKeyL, 0, "Rotate_Left"
         .AddAccelerator vbKeyR, 0, "Rotate_Right"
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop_Selection"
         
         'Color Menu
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
@@ -789,6 +790,7 @@ Public Sub LoadMenuShortcuts()
     'Image menu
     FormMain.MnuRotateClockwise.Caption = FormMain.MnuRotateClockwise.Caption & vbTab & "R"
     FormMain.MnuRotate270Clockwise.Caption = FormMain.MnuRotate270Clockwise.Caption & vbTab & "L"
+    FormMain.MnuCropSelection.Caption = FormMain.MnuCropSelection.Caption & vbTab & "Ctrl+Shift+X"
     
     'Color menu
     FormMain.MnuBrightness.Caption = FormMain.MnuBrightness.Caption & vbTab & "Ctrl+Shift+C"

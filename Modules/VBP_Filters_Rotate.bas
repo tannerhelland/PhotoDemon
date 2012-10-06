@@ -1,16 +1,57 @@
-Attribute VB_Name = "Filters_Rotate"
+Attribute VB_Name = "Filters_Transform"
 '***************************************************************************
-'Filter (Rotation) Interface
+'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 25/January/03
-'Last updated: 05/September/12
-'Last update: Rewrote all rotation code against the new layer system.
+'Last updated: 05/October/12
+'Last update: Added cropping to selection.
 '
-'Runs all rotation-style transformations.  Includes flip and mirror as well.
+'Runs all image transformations, including rotate, flip, mirror and crop at present.
 '
 '***************************************************************************
 
 Option Explicit
+
+'Crop the image to the current selection
+Public Sub MenuCropToSelection()
+
+    'First, make sure there is an active selection
+    If pdImages(CurrentImage).selectionActive = False Then
+        Message "No active selection found.  Crop abandoned."
+        Exit Sub
+    End If
+    
+    Message "Cropping image to selected area..."
+    
+    'Create a new layer the size of the active selection
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+    
+    'Copy the selection area to the temporary layer
+    BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+    
+    'Transfer the newly cropped image back into the main layer object
+    pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+    
+    'Erase the temporary layer
+    tmpLayer.eraseLayer
+    Set tmpLayer = Nothing
+    
+    'Update the current image size
+    pdImages(CurrentImage).updateSize
+    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    
+    Message "Finished. "
+    
+    'Deactivate the current selection, as it's no longer needed
+    pdImages(CurrentImage).selectionActive = False
+    tInit tSelection, False
+    
+    'Redraw the image
+    PrepareViewport FormMain.ActiveForm, "Crop to selection"
+
+End Sub
 
 'Flip an image vertically
 Public Sub MenuFlip()

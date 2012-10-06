@@ -834,6 +834,9 @@ Begin VB.MDIForm FormMain
          Caption         =   "Resize..."
          Shortcut        =   ^R
       End
+      Begin VB.Menu MnuCropSelection 
+         Caption         =   "Crop to Selection"
+      End
       Begin VB.Menu MnuImageSepBar1 
          Caption         =   "-"
       End
@@ -1765,6 +1768,10 @@ Private Sub MnuCountColors_Click()
     Process CountColors
 End Sub
 
+Private Sub MnuCropSelection_Click()
+    Process CropToSelection
+End Sub
+
 Private Sub MnuCShiftL_Click()
     Process ColorShiftLeft, 1
 End Sub
@@ -2390,6 +2397,9 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Rotate Right / Left
     If ctlAccelerator.Key(nIndex) = "Rotate_Left" Then Process Rotate270Clockwise
     If ctlAccelerator.Key(nIndex) = "Rotate_Right" Then Process Rotate90Clockwise
+    
+    'Crop to selection
+    If pdImages(CurrentImage).selectionActive Then Process CropToSelection
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
     If ctlAccelerator.Key(nIndex) = "Prev_Image" Or ctlAccelerator.Key(nIndex) = "Next_Image" Then

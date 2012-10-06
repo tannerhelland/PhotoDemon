@@ -139,6 +139,9 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             If FormMain.lblSelSize.Visible <> tState Then FormMain.lblSelSize.Visible = tState
             If FormMain.lblSelPosition.Visible <> tState Then FormMain.lblSelPosition.Visible = tState
             
+            'Selection enabling/disabling also affects the Crop to Selection command
+            If FormMain.MnuCropSelection.Enabled <> tState Then FormMain.MnuCropSelection.Enabled = tState
+            
     End Select
     
 End Sub
