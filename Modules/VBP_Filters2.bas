@@ -835,10 +835,11 @@ End Function
 
 'HSL <-> RGB conversion routines
 Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, s As Single, l As Single)
-    Dim Max As Single
-    Dim Min As Single
-    Dim delta As Single
-    Dim rR As Single, rG As Single, rB As Single
+    
+    Static Max As Single
+    Static Min As Single
+    Static delta As Single
+    Static rR As Single, rG As Single, rB As Single
     
     rR = r / 255
     rG = g / 255
@@ -896,8 +897,8 @@ End Sub
 'Convert HSL values to RGB values
 Public Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long, b As Long)
 
-    Dim rR As Single, rG As Single, rB As Single
-    Dim Min As Single, Max As Single
+    Static rR As Single, rG As Single, rB As Single
+    Static Min As Single, Max As Single
 
     'Unsaturated pixels do not technically have hue - they only have luminance
     If s = 0 Then
@@ -1030,4 +1031,3 @@ Public Function MinimumInt(rR As Long, rG As Long, rB As Long) As Long
       End If
    End If
 End Function
-

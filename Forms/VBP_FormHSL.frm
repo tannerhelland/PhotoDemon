@@ -316,9 +316,8 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
     If toPreview = False Then Message "Adjusting hue, saturation, and luminance values..."
     
     'Convert the modifiers to be on the same scale as the HSL translation routine
-    
     hModifier = hModifier / 60
-    sModifier = sModifier / 100
+    sModifier = (sModifier + 100) / 100
     lModifier = lModifier / 100
     
     'Create a local array and point it at the pixel data we want to operate on
@@ -367,7 +366,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
         If h > 5 Then h = h - 6
         If h < -1 Then h = h + 6
         
-        s = s + sModifier
+        s = s * sModifier
         If s < 0 Then s = 0
         If s > 1 Then s = 1
         
