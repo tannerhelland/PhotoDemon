@@ -779,7 +779,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "&Fit Image on Screen"
       End
       Begin VB.Menu MnuFitWindowToImage 
-         Caption         =   "Fit Viewport to &Image"
+         Caption         =   "Fit Viewport Around &Image"
       End
       Begin VB.Menu MnuViewSepBar0 
          Caption         =   "-"
