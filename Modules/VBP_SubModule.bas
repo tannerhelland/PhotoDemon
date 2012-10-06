@@ -124,8 +124,8 @@ Public Sub findNearestImageCoordinates(ByRef x1 As Single, ByRef y1 As Single, B
     'Force any invalid values to their nearest matching point in the image
     If x1 < 0 Then x1 = 0
     If y1 < 0 Then y1 = 0
-    If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
-    If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
+    If x1 >= pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width - 1
+    If y1 >= pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height - 1
 
 End Sub
 
