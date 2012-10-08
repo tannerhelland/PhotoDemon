@@ -352,8 +352,8 @@ Public Sub refreshTextBoxes()
 
     If selLeft >= 0 Then FormMain.vsSelLeft.Value = Abs(32767 - selLeft)
     If selTop >= 0 Then FormMain.vsSelTop.Value = Abs(32767 - selTop)
-    If selWidth > 0 Then FormMain.vsSelWidth.Value = Abs(32767 - selWidth)
-    If selHeight > 0 Then FormMain.vsSelHeight.Value = Abs(32767 - selHeight)
+    If selWidth > 0 Then FormMain.vsSelWidth.Value = Abs(32767 - selWidth) Else FormMain.txtSelWidth = ""
+    If selHeight > 0 Then FormMain.vsSelHeight.Value = Abs(32767 - selHeight) Else FormMain.txtSelHeight = ""
 
     rejectRefreshRequests = False
 

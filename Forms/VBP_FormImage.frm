@@ -119,7 +119,7 @@ Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
 Dim lMouseDown As Boolean, rMouseDown As Boolean
 
 'Track mouse movement on this form
-Dim hasMouseMoved As Boolean
+Dim hasMouseMoved As Long
 
 'Track initial mouse button locations
 Dim initMouseX As Single, initMouseY As Single
@@ -216,7 +216,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         
             lMouseDown = True
             
-            hasMouseMoved = False
+            hasMouseMoved = 0
             
             'Remember this location
             initMouseX = x
@@ -246,8 +246,13 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                 
             'Activate the selection and pass in the first two points
             pdImages(Me.Tag).selectionActive = True
+            pdImages(Me.Tag).mainSelection.selLeft = 0
+            pdImages(Me.Tag).mainSelection.selTop = 0
+            pdImages(Me.Tag).mainSelection.selWidth = 0
+            pdImages(Me.Tag).mainSelection.selHeight = 0
             pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
-
+            pdImages(Me.Tag).mainSelection.refreshTextBoxes
+            
             'Make the selection tools visible
             tInit tSelection, True
 
@@ -270,7 +275,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     'If the image has not yet been loaded, exit
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
     
-    hasMouseMoved = True
+    hasMouseMoved = hasMouseMoved + 1
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Single, imgY As Single
@@ -307,7 +312,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         End If
         
         'Force a redraw of the viewport
-        RenderViewport Me
+        If hasMouseMoved > 1 Then RenderViewport Me
     
     'This else means the LEFT mouse button is NOT down
     Else
@@ -396,7 +401,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
         If pdImages(Me.Tag).selectionActive Then
             
             'Check to see if this mouse location is the same as the initial mouse press.  If it is, clear the selection.
-            If (x = initMouseX) And (y = initMouseY) And (hasMouseMoved = False) Then
+            If ((x = initMouseX) And (y = initMouseY) And (hasMouseMoved <= 1)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
                 pdImages(Me.Tag).mainSelection.lockRelease
                 pdImages(Me.Tag).selectionActive = False
                 tInit tSelection, False
@@ -405,19 +410,30 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
                 'Lock the selection
                 pdImages(Me.Tag).mainSelection.lockIn Me
                 tInit tSelection, True
+                
+                Message x & "," & initMouseX & "-" & y & "," & initMouseY & "-" & hasMouseMoved
             
             End If
             
             'Force a redraw of the screen
             RenderViewport Me
             
+        Else
+        
+            'If the selection is not active, make sure it stays that way
+            pdImages(Me.Tag).mainSelection.lockRelease
+        
+            
         End If
-                
+                        
     End If
     
     If Button = vbRightButton Then rMouseDown = False
     
     makeFormPretty Me
+    
+    'Reset the mouse movement tracker
+    hasMouseMoved = 0
     
 End Sub
 
