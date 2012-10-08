@@ -245,8 +245,8 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
             End If
                 
             'Activate the selection and pass in the first two points
-            pdImages(CurrentImage).selectionActive = True
-            pdImages(CurrentImage).mainSelection.setInitialCoordinates imgX, imgY
+            pdImages(Me.Tag).selectionActive = True
+            pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
 
             'Make the selection tools visible
             tInit tSelection, True
@@ -281,7 +281,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     If lMouseDown Then
     
         'First, check to see if a selection is active.  (In the future, we will be checking for other tools as well.)
-        If pdImages(CurrentImage).selectionActive Then
+        If pdImages(Me.Tag).selectionActive Then
             
             'Check the location of the mouse to see if it's over the image
             If isMouseOverImage(x, y, Me) Then
@@ -290,7 +290,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
                 displayImageCoordinates x, y, Me, imgX, imgY
             
                 'Pass new points to the active selection
-                pdImages(CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
             
             'If the mouse coordinates are NOT over the image, we need to find the closest points in the image and pass those instead
             Else
@@ -300,7 +300,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
                 findNearestImageCoordinates imgX, imgY, Me
                 
                 'Pass those points to the active selection
-                pdImages(CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
             
             End If
             
@@ -314,7 +314,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
         'Next, check to see if a selection is active.  If it is, we need to provide the user with visual cues about their
         ' ability to resize the selection.
-        If pdImages(CurrentImage).selectionActive Then
+        If pdImages(Me.Tag).selectionActive Then
         
             'This routine will return a best estimate for the location of the mouse.  The possible return values are:
             ' 0 - Cursor is not near a selection point
@@ -357,7 +357,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             End Select
         
             'Set the active selection's transformation type to match
-            pdImages(CurrentImage).mainSelection.setTransformationType sCheck
+            pdImages(Me.Tag).mainSelection.setTransformationType sCheck
         
         Else
         
@@ -393,17 +393,17 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
         lMouseDown = False
     
         'If a selection was being drawn, lock it into place
-        If pdImages(CurrentImage).selectionActive Then
+        If pdImages(Me.Tag).selectionActive Then
             
             'Check to see if this mouse location is the same as the initial mouse press.  If it is, clear the selection.
             If (x = initMouseX) And (y = initMouseY) And (hasMouseMoved = False) Then
-                pdImages(CurrentImage).mainSelection.lockRelease
-                pdImages(CurrentImage).selectionActive = False
+                pdImages(Me.Tag).mainSelection.lockRelease
+                pdImages(Me.Tag).selectionActive = False
                 tInit tSelection, False
             Else
             
                 'Lock the selection
-                pdImages(CurrentImage).mainSelection.lockIn Me
+                pdImages(Me.Tag).mainSelection.lockIn Me
                 tInit tSelection, True
             
             End If
@@ -569,7 +569,7 @@ Private Sub Form_Resize()
         If allShrunk = True Then
         
             'Loop through every image, redrawing as we go
-            For i = 1 To CurrentImage
+            For i = 1 To NumOfImagesLoaded
                 If pdImages(i).IsActive = True Then
                     
                     'Remember this new window state and redraw the form containing this image
