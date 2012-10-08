@@ -919,7 +919,7 @@ Private Sub cmdOpen_Click()
     
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , FilterPath, "Open a custom filter", , FormCustomFilter.HWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , FilterPath, "Open a custom filter", , FormCustomFilter.hWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
             
             'Save the new directory as the default path for future usage
@@ -948,7 +948,7 @@ Private Sub cmdSave_Click()
     
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , FilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , FilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         FilterPath = sFile
@@ -1068,7 +1068,7 @@ Private Sub TxtF_GotFocus(Index As Integer)
 End Sub
 
 Private Sub TxtF_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
-    textValidate TxtF, True
+    textValidate TxtF(Index), True
     updatePreview
 End Sub
 
