@@ -67,7 +67,7 @@ Public Sub ClipboardPaste()
         'Create a temporary layer and copy the temporary StdPicture object into it
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
-        tmpLayer.CreateFromPicture tmpPicture
+        tmpLayer.createFromPicture tmpPicture
         
         'Ask the layer to write its contents to file in BMP format
         Dim tmpClipboardFile As String
