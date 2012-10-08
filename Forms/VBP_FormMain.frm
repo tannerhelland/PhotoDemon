@@ -1328,8 +1328,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These functions are used to scroll through consecutive MDI windows without flickering
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 
 'Use to prevent scroll bar / text box combos from getting stuck in update loops
 Dim suspendSelTextBoxUpdates As Boolean
@@ -1691,10 +1691,10 @@ Private Sub MnuBugReport_Click()
     'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
     If msgReturn = vbYes Then
         'Shell a browser window with the GitHub issue report form
-        ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+        ShellExecute FormMain.hWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
     Else
         'Shell a browser window with the tannerhelland.com PhotoDemon contact form
-        ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
+        ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
     End If
 
 End Sub
@@ -1817,12 +1817,12 @@ End Sub
 
 Private Sub MnuDonate_Click()
     'Launch the default web browser with the tannerhelland.com donation page
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/donate", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuDownloadSource_Click()
     'Launch the default web browser with PhotoDemon's GitHub page
-    ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "https://github.com/tannerhelland/PhotoDemon", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuDream_Click()
@@ -1844,7 +1844,7 @@ End Sub
 Private Sub MnuEmailAuthor_Click()
     
     'Shell a browser window with the tannerhelland.com contact form
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
 
 End Sub
 
@@ -1989,7 +1989,7 @@ Private Sub MnuNextImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.HWnd, 5)
+    MDIClient = GetWindow(FormMain.hWnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
@@ -2064,7 +2064,7 @@ Private Sub MnuPreviousImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.HWnd, 5)
+    MDIClient = GetWindow(FormMain.hWnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
@@ -2089,7 +2089,7 @@ End Sub
 
 Private Sub MnuReadLicense_Click()
     'Launch the default web browser with PhotoDemon's license page on tannerhelland.com
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon/#license", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon/#license", "", 0, SW_SHOWNORMAL
 End Sub
 
 'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
@@ -2284,7 +2284,7 @@ End Sub
 
 Private Sub MnuVisitWebsite_Click()
     'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
+    ShellExecute FormMain.hWnd, "Open", "http://www.tannerhelland.com/photodemon", "", 0, SW_SHOWNORMAL
 End Sub
 
 Private Sub MnuWater_Click()
@@ -2406,7 +2406,9 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     If ctlAccelerator.Key(nIndex) = "Rotate_Right" Then Process Rotate90Clockwise
     
     'Crop to selection
-    If pdImages(CurrentImage).selectionActive Then Process CropToSelection
+    If ctlAccelerator.Key(nIndex) = "Crop_Selection" Then
+        If pdImages(CurrentImage).selectionActive Then Process CropToSelection
+    End If
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
     If ctlAccelerator.Key(nIndex) = "Prev_Image" Or ctlAccelerator.Key(nIndex) = "Next_Image" Then
@@ -2416,7 +2418,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
         'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
         Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.HWnd, 5)
+        MDIClient = GetWindow(FormMain.hWnd, 5)
         
         'Use the API to instruct the MDI window to move one window forward or back
         If ctlAccelerator.Key(nIndex) = "Prev_Image" Then
