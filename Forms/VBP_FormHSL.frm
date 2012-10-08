@@ -177,7 +177,7 @@ Begin VB.Form FormHSL
    Begin VB.Label lblLuminance 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "luminance:"
+      Caption         =   "lightness:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -192,7 +192,7 @@ Begin VB.Form FormHSL
       Left            =   240
       TabIndex        =   13
       Top             =   5160
-      Width           =   1170
+      Width           =   1020
    End
    Begin VB.Label lblSaturation 
       AutoSize        =   -1  'True
