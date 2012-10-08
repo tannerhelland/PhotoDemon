@@ -543,27 +543,27 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Relief
                 FilterRelief
             Case SmoothContour
-                FormFindEdges.FilterSmoothContour
+                FormFindEdges.FilterSmoothContour pOPCODE
             Case PrewittHorizontal
-                FormFindEdges.FilterPrewittHorizontal
+                FormFindEdges.FilterPrewittHorizontal pOPCODE
             Case PrewittVertical
-                FormFindEdges.FilterPrewittVertical
+                FormFindEdges.FilterPrewittVertical pOPCODE
             Case SobelHorizontal
-               FormFindEdges.FilterSobelHorizontal
+               FormFindEdges.FilterSobelHorizontal pOPCODE
             Case SobelVertical
-                FormFindEdges.FilterSobelVertical
+                FormFindEdges.FilterSobelVertical pOPCODE
             Case Laplacian
                 If LoadForm = True Then
                     FormFindEdges.Show 1, FormMain
                 Else
-                    FormFindEdges.FilterLaplacian
+                    FormFindEdges.FilterLaplacian pOPCODE
                 End If
             Case HiliteEdge
-                FormFindEdges.FilterHilite
+                FormFindEdges.FilterHilite pOPCODE
             Case PhotoDemonEdgeLinear
-                FormFindEdges.PhotoDemonLinearEdgeDetection
+                FormFindEdges.PhotoDemonLinearEdgeDetection pOPCODE
             Case PhotoDemonEdgeCubic
-                FormFindEdges.PhotoDemonCubicEdgeDetection
+                FormFindEdges.PhotoDemonCubicEdgeDetection pOPCODE
             Case EdgeEnhance
                 FilterEdgeEnhance
         End Select

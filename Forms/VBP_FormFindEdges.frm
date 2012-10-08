@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormFindEdges 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Find Edges"
-   ClientHeight    =   6390
+   ClientHeight    =   6615
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6270
@@ -18,12 +18,31 @@ Begin VB.Form FormFindEdges
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   426
+   ScaleHeight     =   441
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin VB.CheckBox chkInvert 
+      Appearance      =   0  'Flat
+      Caption         =   " use black background"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   375
+      Left            =   3240
+      TabIndex        =   9
+      Top             =   5160
+      Width           =   2895
+   End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -85,7 +104,7 @@ Begin VB.Form FormFindEdges
       Height          =   375
       Left            =   3795
       TabIndex        =   1
-      Top             =   5880
+      Top             =   6120
       Width           =   1125
    End
    Begin VB.CommandButton CmdCancel 
@@ -103,7 +122,7 @@ Begin VB.Form FormFindEdges
       Height          =   375
       Left            =   4995
       TabIndex        =   2
-      Top             =   5880
+      Top             =   6120
       Width           =   1125
    End
    Begin VB.ListBox LstEdgeOptions 
@@ -224,6 +243,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Sub chkInvert_Click()
+    UpdateDescriptions
+End Sub
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -236,23 +259,23 @@ Private Sub CmdOK_Click()
     
     Select Case LstEdgeOptions.ListIndex
         Case 0
-            Process PrewittHorizontal
+            Process PrewittHorizontal, CBool(chkInvert.Value)
         Case 1
-            Process PrewittVertical
+            Process PrewittVertical, CBool(chkInvert.Value)
         Case 2
-            Process SobelHorizontal
+            Process SobelHorizontal, CBool(chkInvert.Value)
         Case 3
-            Process SobelVertical
+            Process SobelVertical, CBool(chkInvert.Value)
         Case 4
-            Process Laplacian
+            Process Laplacian, CBool(chkInvert.Value)
         Case 5
-            Process SmoothContour
+            Process SmoothContour, CBool(chkInvert.Value)
         Case 6
-            Process HiliteEdge
+            Process HiliteEdge, CBool(chkInvert.Value)
         Case 7
-            Process PhotoDemonEdgeLinear
+            Process PhotoDemonEdgeLinear, CBool(chkInvert.Value)
         Case 8
-            Process PhotoDemonEdgeCubic
+            Process PhotoDemonEdgeCubic, CBool(chkInvert.Value)
     End Select
     
     Unload Me
@@ -285,7 +308,7 @@ Private Sub Form_Activate()
     
 End Sub
 
-Public Sub FilterHilite(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     FilterSize = 3
     ReDim FM(-1 To 1, -1 To 1) As Long
     FM(-1, -1) = -4
@@ -296,10 +319,10 @@ Public Sub FilterHilite(Optional ByVal toPreview As Boolean = False, Optional By
     FM(0, 0) = 10
     FilterWeight = 1
     FilterBias = 0
-    DoFilter "Hilite edge detection", True, , toPreview, dstPic
+    DoFilter "Hilite edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     FilterSize = 5
     ReDim FM(-2 To 2, -2 To 2) As Long
     FM(-1, -2) = 1
@@ -309,10 +332,10 @@ Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal toPreview As Boolean = Fa
     FM(0, 0) = -4
     FilterWeight = 1
     FilterBias = 0
-    DoFilter "PhotoDemon cubic edge detection", True, , toPreview, dstPic
+    DoFilter "PhotoDemon cubic edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     FilterSize = 3
     ReDim FM(-1 To 1, -1 To 1) As Long
     FM(-1, -1) = -1
@@ -322,10 +345,10 @@ Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal toPreview As Boolean = F
     FM(0, 0) = 4
     FilterWeight = 1
     FilterBias = 0
-    DoFilter "PhotoDemon linear edge detection", True, , toPreview, dstPic
+    DoFilter "PhotoDemon linear edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterPrewittHorizontal(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     FilterSize = 3
     ReDim FM(-1 To 1, -1 To 1) As Long
     FM(-1, -1) = -1
@@ -336,10 +359,10 @@ Public Sub FilterPrewittHorizontal(Optional ByVal toPreview As Boolean = False, 
     FM(1, 1) = 1
     FilterWeight = 1
     FilterBias = 0
-    DoFilter "Prewitt horizontal edge detection", True, , toPreview, dstPic
+    DoFilter "Prewitt horizontal edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterPrewittVertical(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     FilterSize = 3
     ReDim FM(-1 To 1, -1 To 1) As Long
     FM(-1, -1) = 1
@@ -350,10 +373,10 @@ Public Sub FilterPrewittVertical(Optional ByVal toPreview As Boolean = False, Op
     FM(1, 1) = -1
     FilterWeight = 1
     FilterBias = 0
-    DoFilter "Prewitt vertical edge detection", True, , toPreview, dstPic
+    DoFilter "Prewitt vertical edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterSobelHorizontal(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     FilterSize = 3
     ReDim FM(-1 To 1, -1 To 1) As Long
     FM(-1, -1) = -1
@@ -364,10 +387,10 @@ Public Sub FilterSobelHorizontal(Optional ByVal toPreview As Boolean = False, Op
     FM(1, 1) = 1
     FilterWeight = 1
     FilterBias = 0
-    DoFilter "Sobel horizontal edge detection", True, , toPreview, dstPic
+    DoFilter "Sobel horizontal edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterSobelVertical(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     FilterSize = 3
     ReDim FM(-1 To 1, -1 To 1) As Long
     FM(-1, -1) = 1
@@ -378,10 +401,10 @@ Public Sub FilterSobelVertical(Optional ByVal toPreview As Boolean = False, Opti
     FM(1, 1) = -1
     FilterWeight = 1
     FilterBias = 0
-    DoFilter "Sobel vertical edge detection", True, , toPreview, dstPic
+    DoFilter "Sobel vertical edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterLaplacian(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     FilterSize = 3
     ReDim FM(-1 To 1, -1 To 1) As Long
     FM(-1, 0) = -1
@@ -391,12 +414,12 @@ Public Sub FilterLaplacian(Optional ByVal toPreview As Boolean = False, Optional
     FM(0, 0) = 4
     FilterWeight = 1
     FilterBias = 0
-    DoFilter "Laplacian edge detection", True, , toPreview, dstPic
+    DoFilter "Laplacian edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
 'This code is a modified version of an algorithm originally developed by Manuel Augusto Santos.  A link to his original
 ' implementation is available from the "Help -> About PhotoDemon" menu option.
-Public Sub FilterSmoothContour(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
 
     If toPreview = False Then Message "Tracing image edges with virtual paintbrush..."
     
@@ -469,7 +492,11 @@ Public Sub FilterSmoothContour(Optional ByVal toPreview As Boolean = False, Opti
             If tMin > 255 Then tMin = 255
             If tMin < 0 Then tMin = 0
             
-            dstImageData(QuickVal + z, y) = 255 - (srcImageData(QuickVal + z, y) - tMin)
+            If blackBackground Then
+                dstImageData(QuickVal + z, y) = srcImageData(QuickVal + z, y) - tMin
+            Else
+                dstImageData(QuickVal + z, y) = 255 - (srcImageData(QuickVal + z, y) - tMin)
+            End If
             
             'The edges of the image will always be missed, so manually check for and correct that
             If x = initX Then dstImageData(QuickValLeft + z, y) = dstImageData(QuickVal + z, y)
@@ -508,31 +535,31 @@ Private Sub UpdateDescriptions()
     l = LstEdgeOptions.List(LstEdgeOptions.ListIndex)
     If l = "Prewitt Horizontal" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
-        FilterPrewittHorizontal True, picEffect
+        FilterPrewittHorizontal CBool(chkInvert.Value), True, picEffect
     ElseIf l = "Prewitt Vertical" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
-        FilterPrewittVertical True, picEffect
+        FilterPrewittVertical CBool(chkInvert.Value), True, picEffect
     ElseIf l = "Sobel Horizontal" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
-        FilterSobelHorizontal True, picEffect
+        FilterSobelHorizontal CBool(chkInvert.Value), True, picEffect
     ElseIf l = "Sobel Vertical" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
-        FilterSobelVertical True, picEffect
+        FilterSobelVertical CBool(chkInvert.Value), True, picEffect
     ElseIf l = "Laplacian" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
-        FilterLaplacian True, picEffect
+        FilterLaplacian CBool(chkInvert.Value), True, picEffect
     ElseIf l = "Artistic Contour" Then
         LblDesc = "Algorithm designed to present a clean, artistic prediction of image edges."
-        FilterSmoothContour True, picEffect
+        FilterSmoothContour CBool(chkInvert.Value), True, picEffect
     ElseIf l = "Hilite" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
-        FilterHilite True, picEffect
+        FilterHilite CBool(chkInvert.Value), True, picEffect
     ElseIf l = "PhotoDemon Linear" Then
         LblDesc = "Simple mathematical routine based on linear relationships between diagonal pixels."
-        PhotoDemonLinearEdgeDetection True, picEffect
+        PhotoDemonLinearEdgeDetection CBool(chkInvert.Value), True, picEffect
     Else
         LblDesc = "Advanced mathematical routine based on cubic relationships between diagonal pixels."
-        PhotoDemonCubicEdgeDetection True, picEffect
+        PhotoDemonCubicEdgeDetection CBool(chkInvert.Value), True, picEffect
     End If
 End Sub
 
