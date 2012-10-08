@@ -795,7 +795,11 @@ Public Sub MenuTest()
         
         grayVal = gLookup(r + g + b)
         
-        'Put interesting color transformations here
+        'Put interesting color transformations here.  As an example, here's one possible sepia formula.
+                                
+        newR = grayVal + 40
+        newG = grayVal + 20
+        newB = grayVal - 30
                                 
         If newR < 0 Then newR = 0
         If newG < 0 Then newG = 0
