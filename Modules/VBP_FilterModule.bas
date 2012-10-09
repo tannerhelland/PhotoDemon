@@ -715,11 +715,11 @@ Public Sub FilterIsometric()
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Make note of the current image's width and height
-    Dim hWidth As Long
+    Dim hWidth As Single
     Dim oWidth As Long, oHeight As Long
     oWidth = curLayerValues.Width - 1
     oHeight = curLayerValues.Height - 1
-    hWidth = (oWidth \ 2)
+    hWidth = oWidth / 2
     
     Dim nWidth As Long, nHeight As Long
     nWidth = oWidth + oHeight + 1
@@ -743,11 +743,12 @@ Public Sub FilterIsometric()
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
     
-    Dim srcX As Long, srcY As Long
+    Dim srcX As Single, srcY As Single
+    Dim srcXInt As Long, srcYInt As Long
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, dstQuickVal As Long, qvDepth As Long
+    Dim dstQuickVal As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
         
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -755,6 +756,9 @@ Public Sub FilterIsometric()
     SetProgBarMax nWidth
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
+        
+    'Interpolated loop calculation
+    Dim lOffset As Long
         
     Message "Converting image to isometric view..."
         
@@ -764,23 +768,25 @@ Public Sub FilterIsometric()
     For y = 0 To nHeight
         
         srcX = getIsometricX(x, y, hWidth)
-        
-        QuickVal = srcX * qvDepth
         srcY = getIsometricY(x, y, hWidth)
-        
-        If (srcX >= 0 And srcX <= oWidth And srcY >= 0 And srcY <= oHeight) Then
-            'If the image is 32bpp, transfer the alpha channel as well
-            If qvDepth = 4 Then dstImageData(dstQuickVal + 3, y) = srcImageData(QuickVal + 3, srcY)
-            dstImageData(dstQuickVal + 2, y) = srcImageData(QuickVal + 2, srcY)
-            dstImageData(dstQuickVal + 1, y) = srcImageData(QuickVal + 1, srcY)
-            dstImageData(dstQuickVal, y) = srcImageData(QuickVal, srcY)
+                
+        'If the pixel is inside the image, reverse-map it using bilinear interpolation.
+        ' (Note: this will also reverse-map alpha values if they are present in the image.)
+        If (srcX >= 0 And srcX < oWidth And srcY >= 0 And srcY < oHeight) Then
+            
+            For lOffset = 0 To qvDepth - 1
+                dstImageData(dstQuickVal + lOffset, y) = getInterpolatedVal(srcX, srcY, srcImageData, lOffset, qvDepth)
+            Next lOffset
+                    
+        'Out-of-bound pixels don't need interpolation - just set them manually
         Else
-            'If the image is 32bpp, then set outlying pixels to fully transparent
+            'If the image is 32bpp, set outlying pixels as fully transparent
             If qvDepth = 4 Then dstImageData(dstQuickVal + 3, y) = 0
             dstImageData(dstQuickVal + 2, y) = 255
             dstImageData(dstQuickVal + 1, y) = 255
             dstImageData(dstQuickVal, y) = 255
         End If
+        
     
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
@@ -814,10 +820,33 @@ Public Sub FilterIsometric()
 End Sub
 
 'These two functions translate a normal (x,y) coordinate to an isometric plane
-Private Function getIsometricX(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Long
+Private Function getIsometricX(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Single
     getIsometricX = (xc / 2) - yc + tWidth
 End Function
 
-Private Function getIsometricY(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Long
+Private Function getIsometricY(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Single
     getIsometricY = (xc / 2) + yc - tWidth
+End Function
+
+'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
+' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
+Public Function getInterpolatedVal(ByVal x1 As Single, ByVal y1 As Single, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
+
+    Static cTotal As Long
+    
+    'First, blend the top-left and bottom-left pixels
+    cTotal = BlendColors(iData(Int(x1) * iDepth + iOffset, Int(y1)), iData(Int(x1) * iDepth + iOffset, Int(y1) + 1), y1 - Int(y1))
+    
+    'Next, blend the top-right and bottom-right pixels
+    cTotal = cTotal + BlendColors(iData((Int(x1) + 1) * iDepth + iOffset, Int(y1)), iData((Int(x1) + 1) * iDepth + iOffset, Int(y1) + 1), y1 - Int(y1))
+    
+    'Next, blend the top-left and top-right pixels
+    cTotal = cTotal + BlendColors(iData(Int(x1) * iDepth + iOffset, Int(y1)), iData((Int(x1) + 1) * iDepth + iOffset, Int(y1)), x1 - Int(x1))
+    
+    'Finally, blend the bottom-left and bottom-right pixels
+    cTotal = cTotal + BlendColors(iData(Int(x1) * iDepth + iOffset, Int(y1) + 1), iData((Int(x1) + 1) * iDepth + iOffset, Int(y1) + 1), x1 - Int(x1))
+
+    'Divide by four and return that result
+    getInterpolatedVal = cTotal \ 4
+
 End Function
