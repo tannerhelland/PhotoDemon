@@ -1095,6 +1095,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Reduce Colors"
         Case AdjustTemperature
             GetNameOfProcess = "Adjust Temperature"
+        Case AdjustHSL
+            GetNameOfProcess = "Adjust Hue/Saturation/Lightness"
             
         'Coordinate filters/transformations; numbers 700-799
         Case ImageSize
