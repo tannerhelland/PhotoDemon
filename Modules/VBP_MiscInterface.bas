@@ -48,16 +48,25 @@ Dim hc_Handle_SizeWE As Long
 ' having to rewrite code in every individual form.
 Public Sub makeFormPretty(ByRef tForm As Form)
 
-    'STEP 1: give all clickable controls a hand icon instead of the default pointer
-    ' (Note: this code will set all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
     Dim eControl As Control
     
     For Each eControl In tForm.Controls
+        
+        'STEP 1: give all clickable controls a hand icon instead of the default pointer
+        ' (Note: this code will set all command buttons, scroll bars, option buttons, check boxes,
+        ' list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
         If ((TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) And (Not TypeOf eControl Is PictureBox) Then
             eControl.MouseIcon = LoadPicture("")
             eControl.MousePointer = 0
             setHandCursor eControl
         End If
+        
+        'STEP 2: reset the .TabStop property of scroll bars.  This removes the obnoxious "flickering effect" in both
+        ' the IDE, and for users of the crappy old "classic theme" under modern versions of Windows.
+        If (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Then
+            eControl.TabStop = False
+        End If
+        
     Next
     
 End Sub

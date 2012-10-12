@@ -31,7 +31,7 @@ Begin VB.Form FormImage
       Height          =   255
       LargeChange     =   10
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       TabStop         =   0   'False
       Top             =   3720
       Visible         =   0   'False
@@ -41,7 +41,7 @@ Begin VB.Form FormImage
       Height          =   3615
       LargeChange     =   10
       Left            =   6240
-      TabIndex        =   2
+      TabIndex        =   3
       TabStop         =   0   'False
       Top             =   120
       Visible         =   0   'False
@@ -70,7 +70,7 @@ Begin VB.Form FormImage
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   2640
       Visible         =   0   'False
       Width           =   240
@@ -123,6 +123,9 @@ Dim hasMouseMoved As Long
 
 'Track initial mouse button locations
 Dim initMouseX As Single, initMouseY As Single
+
+'Used to prevent the obnoxious blinking effect of the main image scroll bars
+Private Declare Function DestroyCaret Lib "user32" () As Long
     
 'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
 ' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
@@ -635,12 +638,20 @@ Private Sub HScroll_Change()
     ScrollViewport Me
 End Sub
 
+Private Sub HScroll_GotFocus()
+    DestroyCaret
+End Sub
+
 Private Sub HScroll_Scroll()
     ScrollViewport Me
 End Sub
 
 Private Sub VScroll_Change()
     ScrollViewport Me
+End Sub
+
+Private Sub VScroll_GotFocus()
+    DestroyCaret
 End Sub
 
 Private Sub VScroll_Scroll()
