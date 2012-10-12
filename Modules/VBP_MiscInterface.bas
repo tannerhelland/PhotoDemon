@@ -60,13 +60,7 @@ Public Sub makeFormPretty(ByRef tForm As Form)
             eControl.MousePointer = 0
             setHandCursor eControl
         End If
-        
-        'STEP 2: reset the .TabStop property of scroll bars.  This removes the obnoxious "flickering effect" in both
-        ' the IDE, and for users of the crappy old "classic theme" under modern versions of Windows.
-        If (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Then
-            eControl.TabStop = False
-        End If
-        
+                
     Next
     
 End Sub

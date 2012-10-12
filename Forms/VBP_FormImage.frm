@@ -403,8 +403,9 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
         'If a selection was being drawn, lock it into place
         If pdImages(Me.Tag).selectionActive Then
             
-            'Check to see if this mouse location is the same as the initial mouse press.  If it is, clear the selection.
-            If ((x = initMouseX) And (y = initMouseY) And (hasMouseMoved <= 1)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
+            'Check to see if this mouse location is the same as the initial mouse press.  If it is, and that particular
+            ' point falls outside the selection, clear the selection from the image.
+            If ((x = initMouseX) And (y = initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
                 pdImages(Me.Tag).mainSelection.lockRelease
                 pdImages(Me.Tag).selectionActive = False
                 tInit tSelection, False
@@ -414,7 +415,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
                 pdImages(Me.Tag).mainSelection.lockIn Me
                 tInit tSelection, True
                 
-                Message x & "," & initMouseX & "-" & y & "," & initMouseY & "-" & hasMouseMoved
+                'Message x & "," & initMouseX & "-" & y & "," & initMouseY & "-" & hasMouseMoved
             
             End If
             
