@@ -3,8 +3,9 @@ Attribute VB_Name = "Misc_FileInteractions"
 'Miscellaneous Functions Related to File and Folder Interactions
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 03/October/12
-'Last update: First build
+'Last updated: 19/October/12
+'Last update: Added OpenURL function (previously every hyperlink in the project manually launched the URL)
+'
 '***************************************************************************
 
 Option Explicit
@@ -43,3 +44,8 @@ Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
     BrowseForFolder = returnString
     
 End Function
+
+'Open a string as a hyperlink in the user's default browser
+Public Sub OpenURL(ByVal targetURL As String)
+    ShellExecute FormMain.HWnd, "Open", targetURL, "", 0, SW_SHOWNORMAL
+End Sub

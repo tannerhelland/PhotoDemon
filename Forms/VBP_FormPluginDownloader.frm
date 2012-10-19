@@ -531,17 +531,17 @@ End Function
 
 'Launch the website for downloading the EZTW32 DLL
 Private Sub lblEZTW32_Click()
-    ShellExecute FormMain.HWnd, "Open", "http://eztwain.com/eztwain1.htm", "", 0, SW_SHOWNORMAL
+    OpenURL "http://eztwain.com/eztwain1.htm"
 End Sub
 
 'Launch the website for downloading the FreeImage DLL
 Private Sub lblFreeImage_Click()
-    ShellExecute FormMain.HWnd, "Open", "http://freeimage.sourceforge.net/download.html", "", 0, SW_SHOWNORMAL
+    OpenURL "http://freeimage.sourceforge.net/download.html"
 End Sub
 
 'Launch the website for downloading the zLibwapi DLL
 Private Sub lblzLib_Click()
-    ShellExecute FormMain.HWnd, "Open", "http://www.winimage.com/zLibDll/index.html", "", 0, SW_SHOWNORMAL
+    OpenURL "http://www.winimage.com/zLibDll/index.html"
 End Sub
 
 Private Function downloadAllPlugins() As Boolean

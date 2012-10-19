@@ -889,14 +889,14 @@ MainErrHandler:
         'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
         If secondaryReturn = vbYes Then
             'Shell a browser window with the GitHub issue report form
-            ShellExecute FormMain.HWnd, "Open", "https://github.com/tannerhelland/PhotoDemon/issues/new", "", 0, SW_SHOWNORMAL
+            OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
             
             'Display one final message box with additional instructions
             MsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the ""Title"" box, please enter the following error number with a short description of the problem: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the ""Submit new issue"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions"
             
         Else
             'Shell a browser window with the tannerhelland.com PhotoDemon contact form
-            ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon-contact/", "", 0, SW_SHOWNORMAL
+            OpenURL "http://www.tannerhelland.com/photodemon-contact/"
             
             'Display one final message box with additional instructions
             MsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the ""Additional details"" box, please describe the steps that led up to this error." & vbCrLf & vbCrLf & "In the bottom box of that page, please enter the following error number: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "When finished, click the ""Submit"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions"

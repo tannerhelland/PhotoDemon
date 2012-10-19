@@ -372,7 +372,7 @@ End Sub
 
 'Yes, the user wants us to download the new version.  Launch a link to the update page and close this form.
 Private Sub cmdYesDownload_Click()
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon/#download", "", 0, SW_SHOWNORMAL
+    OpenURL "http://www.tannerhelland.com/photodemon/#download"
     Message "Thanks for downloading the latest PhotoDemon update.  Hope you enjoy it!"
     Unload Me
 End Sub
@@ -399,10 +399,10 @@ End Sub
 
 'Open a browser window with the PhotoDemon download page
 Private Sub lblDirectPDDownload_Click()
-    ShellExecute FormMain.HWnd, "Open", "http://www.tannerhelland.com/photodemon/#download", "", 0, SW_SHOWNORMAL
+    OpenURL "http://www.tannerhelland.com/photodemon/#download"
 End Sub
 
 'When the user clicks the "more information" link, open a browser window with the blog article pulled from updates.txt
 Private Sub lblUpdateAnnouncement_Click()
-    ShellExecute FormMain.HWnd, "Open", updateAnnouncement, "", 0, SW_SHOWNORMAL
+    OpenURL updateAnnouncement
 End Sub

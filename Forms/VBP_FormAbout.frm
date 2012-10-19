@@ -216,6 +216,6 @@ End Sub
 'When a thank-you credit is clicked, launch the corresponding website
 Private Sub lblThanks_Click(Index As Integer)
 
-    If creditList(Index) <> "" Then ShellExecute FormMain.HWnd, "Open", creditList(Index), "", 0, SW_SHOWNORMAL
+    If creditList(Index) <> "" Then OpenURL creditList(Index)
 
 End Sub
