@@ -1,11 +1,11 @@
 VERSION 5.00
 Begin VB.Form FormGrayscale 
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Color to Grayscale Conversion"
-   ClientHeight    =   6735
+   Caption         =   " "
+   ClientHeight    =   6870
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6255
+   ClientWidth     =   10350
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,9 +18,9 @@ Begin VB.Form FormGrayscale
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   449
+   ScaleHeight     =   458
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   690
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
@@ -39,11 +39,12 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H80000008&
       Height          =   2730
-      Left            =   120
+      Left            =   4080
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
       TabIndex        =   13
+      TabStop         =   0   'False
       Top             =   120
       Width           =   2895
    End
@@ -62,20 +63,21 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H80000008&
       Height          =   2730
-      Left            =   3240
+      Left            =   7200
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
       TabIndex        =   12
+      TabStop         =   0   'False
       Top             =   120
       Width           =   2895
    End
    Begin VB.HScrollBar hsShades 
       Height          =   255
-      Left            =   360
+      Left            =   4320
       Max             =   254
       Min             =   2
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   5280
       Value           =   3
       Width           =   4785
@@ -93,9 +95,9 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5280
+      Left            =   9240
       MaxLength       =   3
-      TabIndex        =   1
+      TabIndex        =   3
       Text            =   "3"
       Top             =   5250
       Visible         =   0   'False
@@ -114,36 +116,36 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   330
-      Left            =   360
+      Left            =   4320
       Style           =   2  'Dropdown List
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   4080
       Width           =   3975
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3720
-      TabIndex        =   8
-      Top             =   6240
-      Width           =   1125
+      Height          =   495
+      Left            =   7560
+      TabIndex        =   0
+      Top             =   6270
+      Width           =   1245
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   4920
-      TabIndex        =   9
-      Top             =   6240
-      Width           =   1125
+      Height          =   495
+      Left            =   8880
+      TabIndex        =   1
+      Top             =   6270
+      Width           =   1245
    End
    Begin VB.PictureBox picChannel 
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   360
+      Left            =   4320
       ScaleHeight     =   375
       ScaleWidth      =   3855
       TabIndex        =   15
@@ -165,7 +167,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   2
          Left            =   2520
-         TabIndex        =   7
+         TabIndex        =   9
          Top             =   0
          Width           =   1095
       End
@@ -185,7 +187,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   0
          Left            =   240
-         TabIndex        =   5
+         TabIndex        =   7
          Top             =   0
          Value           =   -1  'True
          Width           =   855
@@ -206,7 +208,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   1
          Left            =   1320
-         TabIndex        =   6
+         TabIndex        =   8
          Top             =   0
          Width           =   1095
       End
@@ -216,7 +218,7 @@ Begin VB.Form FormGrayscale
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   360
+      Left            =   4320
       ScaleHeight     =   375
       ScaleWidth      =   3975
       TabIndex        =   14
@@ -238,7 +240,7 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   1
          Left            =   1920
-         TabIndex        =   4
+         TabIndex        =   6
          Top             =   0
          Width           =   1455
       End
@@ -258,11 +260,93 @@ Begin VB.Form FormGrayscale
          Height          =   255
          Index           =   0
          Left            =   120
-         TabIndex        =   3
+         TabIndex        =   5
          Top             =   0
          Value           =   -1  'True
          Width           =   1455
       End
+   End
+   Begin VB.Label lblLink 
+      Alignment       =   2  'Center
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "Grayscale Conversion: An In-Depth Look"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FFCBA1&
+      Height          =   255
+      Left            =   120
+      MouseIcon       =   "VBP_FormGrayscale.frx":0000
+      MousePointer    =   99  'Custom
+      TabIndex        =   21
+      Top             =   6375
+      Width           =   3495
+   End
+   Begin VB.Line Line1 
+      BorderColor     =   &H8000000D&
+      X1              =   264
+      X2              =   680
+      Y1              =   406
+      Y2              =   406
+   End
+   Begin VB.Label lblExplanation 
+      BackStyle       =   0  'Transparent
+      Caption         =   "(Description appears here)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00E0E0E0&
+      Height          =   5415
+      Left            =   360
+      TabIndex        =   20
+      Top             =   930
+      Width           =   3135
+   End
+   Begin VB.Label lblTitle 
+      Alignment       =   2  'Center
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "grayscale tool"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   17.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FFFFFF&
+      Height          =   420
+      Left            =   0
+      TabIndex        =   19
+      Top             =   240
+      Width           =   3825
+   End
+   Begin VB.Label lblBackColor 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00404040&
+      ForeColor       =   &H80000008&
+      Height          =   6855
+      Left            =   0
+      TabIndex        =   18
+      Top             =   0
+      Width           =   3825
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -279,7 +363,7 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   3360
+      Left            =   7320
       TabIndex        =   17
       Top             =   2880
       Width           =   360
@@ -299,7 +383,7 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   240
+      Left            =   4200
       TabIndex        =   16
       Top             =   2880
       Width           =   480
@@ -318,7 +402,7 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   4200
       TabIndex        =   11
       Top             =   4800
       Width           =   3690
@@ -337,7 +421,7 @@ Begin VB.Form FormGrayscale
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   4200
       TabIndex        =   10
       Top             =   3645
       Width           =   1950
@@ -502,8 +586,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Set up the grayscale options combo box
-    cboMethod.AddItem "Average value [(R+G+B) / 3]", 0
-    cboMethod.AddItem "Human eye equivalent [ITU Standard]", 1
+    cboMethod.AddItem "Fastest Calculation (average value)", 0
+    cboMethod.AddItem "Highest Quality (ITU Standard)", 1
     cboMethod.AddItem "Desaturate", 2
     cboMethod.AddItem "Decompose", 3
     cboMethod.AddItem "Single color channel", 4
@@ -513,11 +597,15 @@ Private Sub Form_Activate()
     
     UpdateVisibleControls
     
+    'Populate the explanation label
+    lblExplanation = "This tool removes color data from an image.  The new image contains only shades of gray." & vbCrLf & vbCrLf & "Sometimes this tool is called a ""black and white"" tool, but that name is misleading because the processed image contains many more shades than just ""black"" and ""white"".  A separate ""Black and White"" tool (found in the ""Color"" menu) exists if you want an image with just black and just white." & vbCrLf & vbCrLf & "While there are many ways to remove color from an image, most users stick with the ""Highest Quality (ITU Standard)"" method, which produces the best grayscale image.  Other options are provided for artistic effect." & vbCrLf & vbCrLf & "To learn more about the various grayscale conversion options, please visit this link:"
+    
     'Render the preview images
     DrawPreviewImage picPreview
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
     
     'Draw the initial preview
     drawGrayscalePreview
@@ -1077,6 +1165,10 @@ Private Sub hsShades_Scroll()
     drawGrayscalePreview
 End Sub
 
+Private Sub lblLink_Click()
+    OpenURL "http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/"
+End Sub
+
 'When option buttons are used, update the preview accordingly
 Private Sub optChannel_Click(Index As Integer)
     drawGrayscalePreview
@@ -1094,5 +1186,5 @@ End Sub
 'When the "# of shades" text box is changed, check the value for errors and redraw the preview
 Private Sub txtShades_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtShades
-    If EntryValid(txtShades, hsShades.Min, hsShades.Max, False, False) Then hsShades.Value = val(txtShades)
+    If EntryValid(txtShades, hsShades.Min, hsShades.Max, False, False) Then hsShades.Value = Val(txtShades)
 End Sub
