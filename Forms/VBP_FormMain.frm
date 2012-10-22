@@ -1704,13 +1704,18 @@ Private Sub MnuBurn_Click()
 End Sub
 
 Private Sub MnuCascadeWindows_Click()
+    
     Me.Arrange vbCascade
     
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
     For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Cascade"
+        If pdImages(i).IsActive = True Then
+            pdImages(i).containingForm.ScaleMode = 0
+            pdImages(i).containingForm.ScaleMode = vbPixels
+            PrepareViewport pdImages(i).containingForm, "Cascade"
+        End If
     Next i
     
 End Sub
@@ -2484,6 +2489,20 @@ End Sub
 Private Sub MnuZoomOut_Click()
     If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
 End Sub
+
+Private Sub picLeftPane_Click()
+
+End Sub
+
+'When the form is resized, the left-hand bar needs to be manually redrawn.  Unfortunately, VB doesn't trigger
+' the Resize() event properly for MDI parent forms, so we use the picLeftPane resize event instead.
+Private Sub picLeftPane_Resize()
+    
+    'When this main form is resized, reapply any custom visual styles
+    RedrawMainForm
+    
+End Sub
+
 
 'When the form is resized, the progress bar at bottom needs to be manually redrawn.  Unfortunately, VB doesn't trigger
 ' the Resize() event properly for MDI parent forms, so we use the picProgBar resize event instead.
