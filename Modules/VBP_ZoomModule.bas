@@ -94,8 +94,8 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     SrcHeight = pdImages(formToBuffer.Tag).targetHeight / ZoomVal
     
     'These variables are the offset, as determined by the scroll bar values
-    srcX = formToBuffer.HScroll.Value
-    srcY = formToBuffer.VScroll.Value
+    If formToBuffer.HScroll.Enabled Then srcX = formToBuffer.HScroll.Value Else srcX = 0
+    If formToBuffer.VScroll.Enabled Then srcY = formToBuffer.VScroll.Value Else srcY = 0
     
     'Prepare the background (checkerboard or color, per the user's setting in Edit -> Preferences)
     DrawSpecificCanvas formToBuffer
