@@ -368,6 +368,13 @@ Public Sub lockIn(ByRef targetForm As Form)
     'Update the internal coordinates one final time
     updateInternalCoords
     
+    'The final thing we need to check for is the width and height, which may be still be zero at this point.
+    If selWidth < 1 Then selWidth = 1
+    If selHeight < 1 Then selHeight = 1
+    
+    'Adjust the main form's selection text boxes to match the newly calculated values
+    refreshTextBoxes
+        
 End Sub
 
 '"Unlock" a selection
