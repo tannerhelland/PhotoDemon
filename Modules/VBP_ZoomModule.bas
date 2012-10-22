@@ -341,7 +341,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         If formToBuffer.VScroll.Visible = True Then formToBuffer.VScroll.Visible = False
     End If
     
-    'We don't actually render the image here; instead, we prepare the buffer (vBackBuffer) and store the relevant
+    'We don't actually render the image here; instead, we prepare the buffer (backBuffer) and store the relevant
     ' drawing variables to this pdImages object.  ScrollViewport (above) will handle the actual drawing.
     Dim newVWidth As Long, newVHeight As Long
     If hScrollEnabled = True Then newVWidth = viewportWidth Else newVWidth = FormWidth
