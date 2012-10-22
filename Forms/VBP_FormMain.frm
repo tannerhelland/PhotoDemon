@@ -1712,8 +1712,6 @@ Private Sub MnuCascadeWindows_Click()
     Dim i As Long
     For i = 1 To NumOfImagesLoaded
         If pdImages(i).IsActive = True Then
-            pdImages(i).containingForm.ScaleMode = 0
-            pdImages(i).containingForm.ScaleMode = vbPixels
             PrepareViewport pdImages(i).containingForm, "Cascade"
         End If
     Next i
@@ -2488,10 +2486,6 @@ End Sub
 
 Private Sub MnuZoomOut_Click()
     If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
-End Sub
-
-Private Sub picLeftPane_Click()
-
 End Sub
 
 'When the form is resized, the left-hand bar needs to be manually redrawn.  Unfortunately, VB doesn't trigger
