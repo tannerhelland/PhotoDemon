@@ -723,7 +723,7 @@ Private Sub VSWidth_Change()
 End Sub
 
 Private Sub ChangeToWidth()
-    If EntryValid(TxtWidth, 1, 32767, False, True) Then
+    If EntryValid(TxtWidth, 1, 32767, False, False) Then
         updateWidthBar = False
         VSWidth.Value = Abs(32767 - CInt(TxtWidth))
         updateWidthBar = True
@@ -734,7 +734,7 @@ Private Sub ChangeToWidth()
 End Sub
 
 Private Sub ChangeToHeight()
-    If EntryValid(TxtHeight, 1, 32767, False, True) Then
+    If EntryValid(TxtHeight, 1, 32767, False, False) Then
         updateHeightBar = False
         VSHeight.Value = Abs(32767 - CInt(TxtHeight))
         updateHeightBar = True
