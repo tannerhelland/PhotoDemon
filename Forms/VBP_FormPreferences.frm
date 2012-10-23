@@ -689,9 +689,11 @@ Private Sub CmdOK_Click()
     If chkConfirmUnsaved.Value = vbChecked Then
         ConfirmClosingUnsaved = True
         WriteToIni "General Preferences", "ConfirmClosingUnsaved", 1
+        FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes."
     Else
         ConfirmClosingUnsaved = False
         WriteToIni "General Preferences", "ConfirmClosingUnsaved", 0
+        FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences)," & vbCrLf & " you WILL NOT receive a prompt to save this image before it closes."
     End If
     
     'Store whether PhotoDemon is allowed to check for updates

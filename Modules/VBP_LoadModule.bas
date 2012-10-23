@@ -188,8 +188,12 @@ Public Sub LoadTheProgram()
     
     'Manually create multi-line tooltips
     FormMain.cmdOpen.ToolTip = "Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop" & vbCrLf & " or Windows Explorer and dropping them onto PhotoDemon.)"
-    FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "(If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes.)"
-    FormMain.cmdSave.ToolTip = "Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file." & vbCrLf & "To save to a different file, use the ""Save As"" button."
+    If ConfirmClosingUnsaved Then
+        FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes."
+    Else
+        FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences)," & vbCrLf & " you WILL NOT receive a prompt to save this image before it closes."
+    End If
+    FormMain.cmdSave.ToolTip = "Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file." & vbCrLf & " To save to a different file, use the ""Save As"" button."
     FormMain.cmdSaveAs.ToolTip = "Save the current image to a new file."
     
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
