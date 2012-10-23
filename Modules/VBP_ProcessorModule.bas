@@ -618,9 +618,9 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuAutoEnhanceShadows
             Case ImageLevels
                 If LoadForm = True Then
-                    FormImageLevels.Show 1, FormMain
+                    FormLevels.Show 1, FormMain
                 Else
-                    FormImageLevels.MapImageLevels pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
+                    FormLevels.MapImageLevels pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
                 End If
             Case Colorize
                 If LoadForm = True Then
