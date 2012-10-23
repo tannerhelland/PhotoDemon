@@ -123,3 +123,8 @@ Public AlphaCheckMode As Long
 Public AlphaCheckOne As Long
 Public AlphaCheckTwo As Long
 
+'Is the current system running Vista, Windows 7, or later?  (Used to determine availability of certain system fonts)
+Public isVistaOrLater As Boolean
+
+'Render the interface using Segoe UI if the user specifies as much in the Preferences dialog
+Public useFancyFonts As Boolean

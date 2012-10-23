@@ -48,6 +48,10 @@ Dim hc_Handle_SizeWE As Long
 ' having to rewrite code in every individual form.
 Public Sub makeFormPretty(ByRef tForm As Form)
 
+    'Before doing anything else, make sure the form's default cursor is set to an arror
+    tForm.MouseIcon = LoadPicture("")
+    tForm.MousePointer = 0
+
     Dim eControl As Control
     
     For Each eControl In tForm.Controls
@@ -58,9 +62,29 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         If ((TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) And (Not TypeOf eControl Is PictureBox) Then
             setHandCursor eControl
         End If
-                
+        
+        'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
+        ' redraw all control fonts using Segoe UI.
+        If isVistaOrLater And ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
+            If useFancyFonts Then
+                eControl.FontName = "Segoe UI"
+            Else
+                eControl.FontName = "Tahoma"
+            End If
+        End If
+        
+        If isVistaOrLater And (TypeOf eControl Is jcbutton) Then
+            If useFancyFonts Then
+                eControl.Font.Name = "Segoe UI"
+            Else
+                eControl.Font.Name = "Tahoma"
+            End If
+        End If
+                        
     Next
     
+    If tForm.Name <> "FormMain" Then tForm.Refresh
+        
 End Sub
 
 'Perform any drawing routines related to the main form

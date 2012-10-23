@@ -152,6 +152,7 @@ Public Sub LoadINI()
             Print #fileNum, "LastUpdateCheck="
             Print #fileNum, "LogProgramMessages=0"
             Print #fileNum, "PromptForPluginDownload=1"
+            Print #fileNum, "UseFancyFonts=0"
             Print #fileNum, ""
             Print #fileNum, "[Batch Preferences]"
             Print #fileNum, "DriveBox="
@@ -219,6 +220,15 @@ Public Sub LoadINI()
     tempString = GetFromIni("General Preferences", "ConfirmClosingUnsaved")
     x = Val(tempString)
     If x = 0 Then ConfirmClosingUnsaved = False Else ConfirmClosingUnsaved = True
+    
+    'Check if the user wants the interface to use modern typefaces if available
+    tempString = GetFromIni("General Preferences", "UseFancyFonts")
+    If tempString = "" Then
+        useFancyFonts = False
+    Else
+        x = Val(tempString)
+        If x = 0 Then useFancyFonts = False Else useFancyFonts = True
+    End If
     
 End Sub
 
