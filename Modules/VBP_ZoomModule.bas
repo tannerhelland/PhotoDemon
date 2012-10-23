@@ -39,6 +39,9 @@ Dim srcX As Long, srcY As Long
 'frontBuffer holds the final composited image, including any overlays (like selections)
 Dim frontBuffer As pdLayer
 
+'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
+Dim cornerFix As pdLayer
+
 'renderViewport is the last step in the viewport chain.  (PrepareViewport -> ScrollViewport -> renderViewport)
 ' It can only be executed after both PrepareViewport and ScrollViewport have been run at least once.  It assumes a fully composited backbuffer,
 ' which is then copied to the front buffer, and any final composites (such as a selection) are drawn atop that.
@@ -68,6 +71,21 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     
     'Finally, flip the front buffer to the screen
     BitBlt formToBuffer.hDC, 0, 0, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
+    
+    'If both scrollbars are active, copy a gray square over the small space between them
+    If formToBuffer.HScroll.Visible And formToBuffer.VScroll.Visible Then
+        
+        'Only initialize the corner fix image once
+        If cornerFix Is Nothing Then
+            Set cornerFix = New pdLayer
+            cornerFix.createBlank formToBuffer.VScroll.Width, formToBuffer.HScroll.Height, 24, vbButtonFace
+        End If
+        
+        'Draw the square over any exposed parts of the image in the bottom-right of the image, between the scroll bars
+        BitBlt formToBuffer.hDC, formToBuffer.VScroll.Left, formToBuffer.HScroll.Top, cornerFix.getLayerWidth, cornerFix.getLayerHeight, cornerFix.getLayerDC, 0, 0, vbSrcCopy
+        
+    End If
+    
     formToBuffer.Picture = formToBuffer.Image
     formToBuffer.Refresh
     
