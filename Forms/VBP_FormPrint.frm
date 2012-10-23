@@ -194,20 +194,20 @@ Begin VB.Form FormPrint
    Begin VB.CommandButton cmdOK 
       Caption         =   "&Print"
       Default         =   -1  'True
-      Height          =   435
-      Left            =   4920
+      Height          =   555
+      Left            =   4800
       TabIndex        =   0
       Top             =   4680
-      Width           =   1140
+      Width           =   1260
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   435
-      Left            =   6240
+      Height          =   555
+      Left            =   6120
       TabIndex        =   1
       Top             =   4680
-      Width           =   1140
+      Width           =   1260
    End
    Begin VB.Line Line2 
       BorderColor     =   &H80000002&

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormColorize 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Colorize Options"
-   ClientHeight    =   5790
+   ClientHeight    =   5940
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,7 +18,7 @@ Begin VB.Form FormColorize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   386
+   ScaleHeight     =   396
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -28,7 +28,7 @@ Begin VB.Form FormColorize
       Caption         =   "preserve existing saturation"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -36,12 +36,12 @@ Begin VB.Form FormColorize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   315
-      Left            =   1800
+      Height          =   435
+      Left            =   1560
       TabIndex        =   3
       Top             =   4560
       Value           =   1  'Checked
-      Width           =   4095
+      Width           =   4215
    End
    Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
@@ -125,20 +125,20 @@ Begin VB.Form FormColorize
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   1
       Top             =   5280
-      Width           =   1125
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   0
       Top             =   5280
-      Width           =   1125
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

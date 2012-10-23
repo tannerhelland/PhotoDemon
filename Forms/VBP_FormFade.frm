@@ -91,31 +91,31 @@ Begin VB.Form FormFade
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5400
       MaxLength       =   3
       TabIndex        =   0
       Text            =   "50"
-      Top             =   3810
+      Top             =   3780
       Width           =   615
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   5040
+      Height          =   495
+      Left            =   4920
       TabIndex        =   3
-      Top             =   4800
-      Width           =   1125
+      Top             =   4680
+      Width           =   1245
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3840
+      Height          =   495
+      Left            =   3600
       TabIndex        =   2
-      Top             =   4800
-      Width           =   1125
+      Top             =   4680
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -399,5 +399,5 @@ End Sub
 
 Private Sub txtPercent_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtPercent
-    If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, False, False) Then hsPercent.Value = val(txtPercent)
+    If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, False, False) Then hsPercent.Value = Val(txtPercent)
 End Sub

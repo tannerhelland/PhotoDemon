@@ -37,20 +37,20 @@ Begin VB.Form FormDespeckle
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3360
+      Height          =   495
+      Left            =   3120
       TabIndex        =   2
-      Top             =   2040
-      Width           =   1125
+      Top             =   1920
+      Width           =   1245
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   4560
+      Height          =   495
+      Left            =   4440
       TabIndex        =   3
-      Top             =   2040
-      Width           =   1125
+      Top             =   1920
+      Width           =   1245
    End
    Begin VB.Label strong 
       Alignment       =   1  'Right Justify

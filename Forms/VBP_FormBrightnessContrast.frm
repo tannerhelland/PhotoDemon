@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBrightnessContrast 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Brightness/Contrast"
-   ClientHeight    =   6450
+   ClientHeight    =   6660
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6270
@@ -18,7 +18,7 @@ Begin VB.Form FormBrightnessContrast
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   430
+   ScaleHeight     =   444
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
@@ -99,12 +99,12 @@ Begin VB.Form FormBrightnessContrast
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5400
       MaxLength       =   3
       TabIndex        =   5
       Text            =   "0"
-      Top             =   4650
+      Top             =   4620
       Width           =   615
    End
    Begin VB.TextBox txtBrightness 
@@ -119,12 +119,12 @@ Begin VB.Form FormBrightnessContrast
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5400
       MaxLength       =   3
       TabIndex        =   3
       Text            =   "0"
-      Top             =   3810
+      Top             =   3780
       Width           =   615
    End
    Begin VB.CheckBox chkSample 
@@ -140,7 +140,7 @@ Begin VB.Form FormBrightnessContrast
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   255
+      Height          =   375
       Left            =   360
       TabIndex        =   6
       Top             =   5280
@@ -149,20 +149,20 @@ Begin VB.Form FormBrightnessContrast
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   5040
+      Height          =   495
+      Left            =   4920
       TabIndex        =   1
       Top             =   6000
-      Width           =   1125
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3840
+      Height          =   495
+      Left            =   3600
       TabIndex        =   0
       Top             =   6000
-      Width           =   1125
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -528,12 +528,12 @@ End Sub
 
 Private Sub txtBrightness_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtBrightness, True
-    If EntryValid(txtBrightness, hsBright.Min, hsBright.Max, False, False) Then hsBright.Value = val(txtBrightness)
+    If EntryValid(txtBrightness, hsBright.Min, hsBright.Max, False, False) Then hsBright.Value = Val(txtBrightness)
 End Sub
 
 Private Sub txtContrast_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtContrast, True
-    If EntryValid(txtContrast, hsContrast.Min, hsContrast.Max, False, False) Then hsContrast.Value = val(txtContrast)
+    If EntryValid(txtContrast, hsContrast.Min, hsContrast.Max, False, False) Then hsContrast.Value = Val(txtContrast)
 End Sub
 
 Private Sub txtContrast_GotFocus()

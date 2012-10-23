@@ -80,7 +80,7 @@ Begin VB.Form FormTwins
       TabIndex        =   0
       Top             =   3600
       Value           =   -1  'True
-      Width           =   1455
+      Width           =   1575
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
@@ -94,11 +94,11 @@ Begin VB.Form FormTwins
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   3
-      Top             =   4560
-      Width           =   1125
+      Top             =   4440
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -112,11 +112,11 @@ Begin VB.Form FormTwins
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   2
-      Top             =   4560
-      Width           =   1125
+      Top             =   4440
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

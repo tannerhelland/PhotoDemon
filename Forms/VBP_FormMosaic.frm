@@ -102,11 +102,11 @@ Begin VB.Form FormMosaic
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5400
       TabIndex        =   2
       Text            =   "2"
-      Top             =   4770
+      Top             =   4740
       Width           =   615
    End
    Begin VB.TextBox txtWidth 
@@ -121,30 +121,30 @@ Begin VB.Form FormMosaic
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5400
       TabIndex        =   0
       Text            =   "2"
-      Top             =   3810
+      Top             =   3780
       Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   435
-      Left            =   4920
+      Height          =   555
+      Left            =   4800
       TabIndex        =   5
-      Top             =   5760
-      Width           =   1125
+      Top             =   5640
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   435
-      Left            =   3720
+      Height          =   555
+      Left            =   3480
       TabIndex        =   4
-      Top             =   5760
-      Width           =   1125
+      Top             =   5640
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -461,7 +461,7 @@ End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate TxtHeight
-    If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = val(TxtHeight)
+    If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(TxtHeight)
 End Sub
 
 Private Sub txtHeight_GotFocus()
@@ -470,7 +470,7 @@ End Sub
 
 Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate TxtWidth
-    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = val(TxtWidth)
+    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(TxtWidth)
 End Sub
 
 Private Sub txtWidth_GotFocus()

@@ -91,31 +91,31 @@ Begin VB.Form FormPosterize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5280
       MaxLength       =   1
       TabIndex        =   0
       Text            =   "7"
-      Top             =   3810
+      Top             =   3780
       Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   5040
+      Height          =   495
+      Left            =   4800
       TabIndex        =   3
-      Top             =   4680
-      Width           =   1125
+      Top             =   4560
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3840
+      Height          =   495
+      Left            =   3480
       TabIndex        =   2
-      Top             =   4680
-      Width           =   1125
+      Top             =   4560
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -304,7 +304,7 @@ End Sub
 
 Private Sub txtBits_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtBits
-    If EntryValid(txtBits, hsBits.Min, hsBits.Max, False, False) Then hsBits.Value = val(txtBits)
+    If EntryValid(txtBits, hsBits.Min, hsBits.Max, False, False) Then hsBits.Value = Val(txtBits)
 End Sub
 
 Private Sub txtBits_GotFocus()

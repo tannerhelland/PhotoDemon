@@ -138,28 +138,28 @@ Begin VB.Form FormDiffuse
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   255
+      Height          =   375
       Left            =   240
       TabIndex        =   4
       Top             =   5280
-      Width           =   1935
+      Width           =   2175
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   5040
+      Height          =   495
+      Left            =   4920
       TabIndex        =   6
-      Top             =   6000
-      Width           =   1125
+      Top             =   5880
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3840
+      Height          =   495
+      Left            =   3600
       TabIndex        =   5
-      Top             =   6000
-      Width           =   1125
+      Top             =   5880
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -350,7 +350,7 @@ End Sub
 
 Private Sub txtX_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtX
-    If EntryValid(txtX, hsX.Min, hsX.Max, False, False) Then hsX.Value = val(txtX)
+    If EntryValid(txtX, hsX.Min, hsX.Max, False, False) Then hsX.Value = Val(txtX)
 End Sub
 
 Private Sub txtY_GotFocus()
@@ -359,7 +359,7 @@ End Sub
 
 Private Sub txtY_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtY
-    If EntryValid(txtY, hsY.Min, hsY.Max, False, False) Then hsY.Value = val(txtY)
+    If EntryValid(txtY, hsY.Min, hsY.Max, False, False) Then hsY.Value = Val(txtY)
 End Sub
 
 'Custom diffuse effect

@@ -57,7 +57,7 @@ Begin VB.Form FormJPEG
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -65,29 +65,29 @@ Begin VB.Form FormJPEG
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
+      Height          =   360
       Left            =   3840
       TabIndex        =   2
       Text            =   "90"
-      Top             =   1185
+      Top             =   1170
       Width           =   495
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   3240
+      Height          =   495
+      Left            =   3120
       TabIndex        =   1
-      Top             =   2040
-      Width           =   1125
+      Top             =   1920
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   2040
+      Height          =   495
+      Left            =   1800
       TabIndex        =   0
-      Top             =   2040
-      Width           =   1125
+      Top             =   1920
+      Width           =   1245
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

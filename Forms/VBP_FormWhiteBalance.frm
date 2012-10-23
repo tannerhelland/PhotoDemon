@@ -83,11 +83,11 @@ Begin VB.Form FormWhiteBalance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   3
-      Top             =   4920
-      Width           =   1125
+      Top             =   4800
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -101,11 +101,11 @@ Begin VB.Form FormWhiteBalance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   2
-      Top             =   4920
-      Width           =   1125
+      Top             =   4800
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -206,7 +206,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
     If EntryValid(txtIgnore, hsIgnore.Min / 100, hsIgnore.Max / 100) Then
         Me.Visible = False
-        Process WhiteBalance, CSng(val(txtIgnore))
+        Process WhiteBalance, CSng(Val(txtIgnore))
         Unload Me
     Else
         AutoSelectText txtIgnore
@@ -216,7 +216,7 @@ End Sub
 Private Sub Form_Activate()
     
     DrawPreviewImage picPreview
-    AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
+    AutoWhiteBalance CSng(Val(txtIgnore)), True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -436,13 +436,13 @@ End Sub
 Private Sub hsIgnore_Change()
     txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")
     txtIgnore.Refresh
-    AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
+    AutoWhiteBalance CSng(Val(txtIgnore)), True, picEffect
 End Sub
 
 Private Sub hsIgnore_Scroll()
     txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")
     txtIgnore.Refresh
-    AutoWhiteBalance CSng(val(txtIgnore)), True, picEffect
+    AutoWhiteBalance CSng(Val(txtIgnore)), True, picEffect
 End Sub
 
 Private Sub txtIgnore_GotFocus()
@@ -452,6 +452,6 @@ End Sub
 'If the user changes the gamma value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
 Private Sub txtIgnore_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtIgnore, , True
-    If EntryValid(txtIgnore, hsIgnore.Min / 100, hsIgnore.Max / 100, False, False) Then hsIgnore.Value = val(txtIgnore) * 100
+    If EntryValid(txtIgnore, hsIgnore.Min / 100, hsIgnore.Max / 100, False, False) Then hsIgnore.Value = Val(txtIgnore) * 100
 End Sub
 

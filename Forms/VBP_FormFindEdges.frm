@@ -101,11 +101,11 @@ Begin VB.Form FormFindEdges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   3795
+      Height          =   495
+      Left            =   3600
       TabIndex        =   1
-      Top             =   6120
-      Width           =   1125
+      Top             =   6000
+      Width           =   1245
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
@@ -119,11 +119,11 @@ Begin VB.Form FormFindEdges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   4995
+      Height          =   495
+      Left            =   4875
       TabIndex        =   2
-      Top             =   6120
-      Width           =   1125
+      Top             =   6000
+      Width           =   1245
    End
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 

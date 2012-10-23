@@ -121,20 +121,20 @@ Begin VB.Form FormRank
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   4
-      Top             =   5520
-      Width           =   1125
+      Top             =   5400
+      Width           =   1245
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   3
-      Top             =   5520
-      Width           =   1125
+      Top             =   5400
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -459,7 +459,7 @@ End Sub
 
 Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = val(txtRadius)
+    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
 End Sub
 
 Private Sub txtRadius_GotFocus()

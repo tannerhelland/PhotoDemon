@@ -32,7 +32,7 @@ Begin VB.Form FormHistogram
       Height          =   375
       Index           =   3
       Left            =   5160
-      TabIndex        =   23
+      TabIndex        =   22
       Top             =   6480
       Value           =   1  'Checked
       Width           =   1215
@@ -44,7 +44,7 @@ Begin VB.Form FormHistogram
       Height          =   375
       Index           =   2
       Left            =   4080
-      TabIndex        =   22
+      TabIndex        =   21
       Top             =   6480
       Value           =   1  'Checked
       Width           =   855
@@ -56,7 +56,7 @@ Begin VB.Form FormHistogram
       Height          =   375
       Index           =   1
       Left            =   3000
-      TabIndex        =   21
+      TabIndex        =   20
       Top             =   6480
       Value           =   1  'Checked
       Width           =   855
@@ -68,7 +68,7 @@ Begin VB.Form FormHistogram
       Height          =   375
       Index           =   0
       Left            =   2040
-      TabIndex        =   20
+      TabIndex        =   19
       Top             =   6480
       Value           =   1  'Checked
       Width           =   855
@@ -79,7 +79,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H80000008&
       Height          =   375
       Left            =   3720
-      TabIndex        =   18
+      TabIndex        =   17
       Top             =   7080
       Width           =   2055
    End
@@ -89,7 +89,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H80000008&
       Height          =   375
       Left            =   1920
-      TabIndex        =   17
+      TabIndex        =   16
       Top             =   7080
       Value           =   1  'Checked
       Width           =   1695
@@ -167,7 +167,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00808080&
       Height          =   435
       Left            =   9000
-      TabIndex        =   25
+      TabIndex        =   24
       Top             =   5880
       Width           =   2745
    End
@@ -188,7 +188,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00400000&
       Height          =   195
       Left            =   240
-      TabIndex        =   24
+      TabIndex        =   23
       Top             =   7155
       Width           =   1395
    End
@@ -209,7 +209,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00400000&
       Height          =   195
       Left            =   240
-      TabIndex        =   19
+      TabIndex        =   18
       Top             =   6555
       Width           =   1560
    End
@@ -230,23 +230,11 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00400000&
       Height          =   195
       Left            =   720
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   6000
       Width           =   525
    End
    Begin VB.Label lblMaxCount 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "lblMaxCount"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   3600
-      TabIndex        =   15
-      Top             =   5460
-      Width           =   2415
-   End
-   Begin VB.Label lblMaxCountTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
@@ -521,7 +509,7 @@ Private Sub cmdExportHistogram_Click()
         CreateNewImageForm True
         
         'Copy the current histogram image into the temporary form's main layer
-        pdImages(CurrentImage).mainLayer.createFromPicture FormHistogram.picH.Picture
+        pdImages(CurrentImage).mainLayer.CreateFromPicture FormHistogram.picH.Picture
                 
         'Use the core PhotoDemon save function to save the histogram image to file
         PhotoDemon_SaveImage CurrentImage, sFile, False, &H8
@@ -728,7 +716,7 @@ Public Sub DrawHistogram()
         
         'Reset hMax, which may have been changed if the luminance histogram was rendered
         hMax = channelMax(maxChannel)
-        lblMaxCount.Caption = hMax
+        lblMaxCount.Caption = "Maximum count: " & hMax
         
         'Also display the channel with that max value, if applicable
         Select Case maxChannel

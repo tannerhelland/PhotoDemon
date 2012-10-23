@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormNoise 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Add Noise"
-   ClientHeight    =   5550
+   ClientHeight    =   5655
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6270
@@ -18,7 +18,7 @@ Begin VB.Form FormNoise
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   370
+   ScaleHeight     =   377
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
@@ -91,12 +91,12 @@ Begin VB.Form FormNoise
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5400
       MaxLength       =   3
       TabIndex        =   0
       Text            =   "1"
-      Top             =   3810
+      Top             =   3780
       Width           =   615
    End
    Begin VB.CheckBox ChkM 
@@ -112,7 +112,7 @@ Begin VB.Form FormNoise
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   255
+      Height          =   465
       Left            =   360
       TabIndex        =   2
       Top             =   4440
@@ -120,20 +120,20 @@ Begin VB.Form FormNoise
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   5040
+      Height          =   495
+      Left            =   4920
       TabIndex        =   4
       Top             =   5040
-      Width           =   1125
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3840
+      Height          =   495
+      Left            =   3600
       TabIndex        =   3
       Top             =   5040
-      Width           =   1125
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -355,7 +355,7 @@ End Sub
 
 Private Sub txtNoise_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtNoise
-    If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max, False, False) Then hsNoise.Value = val(txtNoise)
+    If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max, False, False) Then hsNoise.Value = Val(txtNoise)
 End Sub
 
 Private Sub txtNoise_GotFocus()

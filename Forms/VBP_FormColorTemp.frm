@@ -155,20 +155,20 @@ Begin VB.Form FormColorTemp
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   1
-      Top             =   6240
-      Width           =   1125
+      Top             =   6120
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   0
-      Top             =   6240
-      Width           =   1125
+      Top             =   6120
+      Width           =   1245
    End
    Begin VB.Label lblCool 
       AutoSize        =   -1  'True
@@ -564,7 +564,7 @@ End Sub
 
 Private Sub txtStrength_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtStrength
-    If EntryValid(txtStrength, 1, 100, False, False) Then hsStrength.Value = val(txtStrength)
+    If EntryValid(txtStrength, 1, 100, False, False) Then hsStrength.Value = Val(txtStrength)
 End Sub
 
 'Keep the "Temperature" scroll bar and text box in sync
@@ -574,5 +574,5 @@ End Sub
 
 Private Sub txtTemperature_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtTemperature
-    If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100, False, False) Then hsTemperature.Value = val(txtTemperature) \ 100
+    If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100, False, False) Then hsTemperature.Value = Val(txtTemperature) \ 100
 End Sub

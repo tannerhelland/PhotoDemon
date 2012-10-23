@@ -120,11 +120,11 @@ Begin VB.Form FormEmbossEngrave
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   5040
+      Height          =   495
+      Left            =   4920
       TabIndex        =   1
-      Top             =   5520
-      Width           =   1125
+      Top             =   5400
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -138,11 +138,11 @@ Begin VB.Form FormEmbossEngrave
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   3840
+      Height          =   495
+      Left            =   3600
       TabIndex        =   0
-      Top             =   5520
-      Width           =   1125
+      Top             =   5400
+      Width           =   1245
    End
    Begin VB.PictureBox PicColor 
       Appearance      =   0  'Flat
@@ -169,10 +169,10 @@ Begin VB.Form FormEmbossEngrave
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   255
-      Left            =   480
+      Height          =   375
+      Left            =   360
       TabIndex        =   4
-      Top             =   4200
+      Top             =   4080
       Width           =   5655
    End
    Begin VB.Label lblAfter 

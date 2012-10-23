@@ -159,20 +159,20 @@ Begin VB.Form FormHSL
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   1
-      Top             =   6360
-      Width           =   1125
+      Top             =   6240
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   0
-      Top             =   6360
-      Width           =   1125
+      Top             =   6240
+      Width           =   1245
    End
    Begin VB.Label lblLuminance 
       AutoSize        =   -1  'True

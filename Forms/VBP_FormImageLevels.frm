@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormImageLevels 
+Begin VB.Form FormLevels 
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Adjust Image Levels"
@@ -26,75 +26,75 @@ Begin VB.Form FormImageLevels
    StartUpPosition =   1  'CenterOwner
    Begin VB.HScrollBar hsOutL 
       Height          =   220
-      Left            =   1440
+      Left            =   1680
       Max             =   255
       TabIndex        =   3
       Top             =   5040
-      Width           =   4215
+      Width           =   3975
    End
    Begin VB.HScrollBar hsOutR 
       Height          =   220
-      Left            =   1440
+      Left            =   1680
       Max             =   255
       TabIndex        =   4
       Top             =   5280
       Value           =   255
-      Width           =   4215
+      Width           =   3975
    End
    Begin VB.HScrollBar hsInR 
       Height          =   220
-      Left            =   1440
+      Left            =   1680
       Max             =   255
       Min             =   2
       TabIndex        =   2
       Top             =   4200
       Value           =   255
-      Width           =   4215
+      Width           =   3975
    End
    Begin VB.HScrollBar hsInL 
       Height          =   220
-      Left            =   1440
+      Left            =   1680
       Max             =   253
       TabIndex        =   0
       Top             =   3720
-      Width           =   4215
+      Width           =   3975
    End
    Begin VB.HScrollBar hsInM 
       Height          =   220
-      Left            =   1440
+      Left            =   1680
       Max             =   254
       Min             =   1
       TabIndex        =   1
       Top             =   3960
       Value           =   127
-      Width           =   4215
+      Width           =   3975
    End
    Begin VB.CommandButton cmdReset 
       Appearance      =   0  'Flat
       Caption         =   "&Reset"
-      Height          =   375
+      Height          =   495
       Left            =   240
       TabIndex        =   5
-      Top             =   6120
+      Top             =   6000
       Width           =   1215
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   6
-      Top             =   6120
-      Width           =   1125
+      Top             =   6000
+      Width           =   1245
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   7
-      Top             =   6120
-      Width           =   1125
+      Top             =   6000
+      Width           =   1245
    End
    Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
@@ -141,6 +141,42 @@ Begin VB.Form FormImageLevels
       TabIndex        =   9
       Top             =   120
       Width           =   2895
+   End
+   Begin VB.Label Label9 
+      Alignment       =   1  'Right Justify
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "0"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   1560
+      TabIndex        =   28
+      Top             =   3720
+      Width           =   90
+   End
+   Begin VB.Label Label7 
+      Alignment       =   1  'Right Justify
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "1"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   1545
+      TabIndex        =   27
+      Top             =   5040
+      Width           =   90
+   End
+   Begin VB.Label Label4 
+      Alignment       =   1  'Right Justify
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "1"
+      ForeColor       =   &H00800000&
+      Height          =   195
+      Left            =   1545
+      TabIndex        =   26
+      Top             =   5280
+      Width           =   90
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -199,19 +235,19 @@ Begin VB.Form FormImageLevels
       Height          =   405
       Left            =   240
       TabIndex        =   23
-      Top             =   4680
+      Top             =   4650
       Width           =   1440
    End
    Begin VB.Label lblOutputL 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Left limit:      0"
+      Caption         =   "Left limit:"
       ForeColor       =   &H00800000&
       Height          =   195
       Left            =   360
       TabIndex        =   22
       Top             =   5040
-      Width           =   1020
+      Width           =   660
    End
    Begin VB.Label Label1 
       Alignment       =   1  'Right Justify
@@ -230,13 +266,13 @@ Begin VB.Form FormImageLevels
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Right limit:    0"
+      Caption         =   "Right limit:"
       ForeColor       =   &H00800000&
       Height          =   195
       Left            =   360
       TabIndex        =   20
       Top             =   5280
-      Width           =   1020
+      Width           =   750
    End
    Begin VB.Label Label3 
       Alignment       =   1  'Right Justify
@@ -269,7 +305,7 @@ Begin VB.Form FormImageLevels
       Height          =   405
       Left            =   240
       TabIndex        =   18
-      Top             =   3360
+      Top             =   3330
       Width           =   1290
    End
    Begin VB.Label Label5 
@@ -313,13 +349,13 @@ Begin VB.Form FormImageLevels
    Begin VB.Label Label8 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Left limit:      0"
+      Caption         =   "Left limit:"
       ForeColor       =   &H00800000&
       Height          =   195
       Left            =   360
       TabIndex        =   14
       Top             =   3720
-      Width           =   1020
+      Width           =   660
    End
    Begin VB.Label lblMiddleR 
       Appearance      =   0  'Flat
@@ -352,7 +388,7 @@ Begin VB.Form FormImageLevels
       Caption         =   "1"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   1275
+      Left            =   1545
       TabIndex        =   11
       Top             =   3960
       Width           =   90
@@ -364,13 +400,13 @@ Begin VB.Form FormImageLevels
       Caption         =   "2"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   1275
+      Left            =   1545
       TabIndex        =   10
       Top             =   4200
       Width           =   90
    End
 End
-Attribute VB_Name = "FormImageLevels"
+Attribute VB_Name = "FormLevels"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

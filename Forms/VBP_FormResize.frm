@@ -104,10 +104,10 @@ Begin VB.Form FormResize
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
+      Height          =   495
       Left            =   2760
       TabIndex        =   6
-      Top             =   3720
+      Top             =   3600
       Width           =   1125
    End
    Begin VB.CheckBox ChkRatio 
@@ -133,10 +133,10 @@ Begin VB.Form FormResize
    Begin VB.CommandButton CmdResize 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
+      Height          =   495
       Left            =   1560
       TabIndex        =   4
-      Top             =   3720
+      Top             =   3600
       Width           =   1125
    End
    Begin VB.Label lblHeightUnit 

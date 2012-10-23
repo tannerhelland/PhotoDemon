@@ -227,19 +227,19 @@ Begin VB.Form FormReduceColors
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3960
+      Height          =   495
+      Left            =   3720
       TabIndex        =   11
-      Top             =   7800
-      Width           =   1125
+      Top             =   7680
+      Width           =   1245
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   5160
+      Height          =   495
+      Left            =   5040
       TabIndex        =   12
-      Top             =   7800
-      Width           =   1125
+      Top             =   7680
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

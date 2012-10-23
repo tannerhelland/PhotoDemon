@@ -102,20 +102,20 @@ Begin VB.Form FormSolarize
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   3
-      Top             =   4680
-      Width           =   1125
+      Top             =   4560
+      Width           =   1245
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   2
-      Top             =   4680
-      Width           =   1125
+      Top             =   4560
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -300,7 +300,7 @@ End Sub
 'When the text box is changed, update the preview and text box to match (assuming the text box value is valid)
 Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtThreshold
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = val(txtThreshold)
+    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = Val(txtThreshold)
 End Sub
 
 Private Sub txtThreshold_GotFocus()

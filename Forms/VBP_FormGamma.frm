@@ -64,12 +64,12 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5400
       MaxLength       =   4
       TabIndex        =   4
       Text            =   "1.00"
-      Top             =   4890
+      Top             =   4860
       Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
@@ -84,11 +84,11 @@ Begin VB.Form FormGamma
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   1
-      Top             =   5760
-      Width           =   1125
+      Top             =   5640
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -102,11 +102,11 @@ Begin VB.Form FormGamma
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   0
-      Top             =   5760
-      Width           =   1125
+      Top             =   5640
+      Width           =   1245
    End
    Begin VB.ComboBox CboChannel 
       BackColor       =   &H00FFFFFF&

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBlackLight 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Blacklight Options"
-   ClientHeight    =   5145
+   ClientHeight    =   5175
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6285
@@ -18,7 +18,7 @@ Begin VB.Form FormBlackLight
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   343
+   ScaleHeight     =   345
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   419
    ShowInTaskbar   =   0   'False
@@ -83,7 +83,7 @@ Begin VB.Form FormBlackLight
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -91,31 +91,31 @@ Begin VB.Form FormBlackLight
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       Left            =   5400
       MaxLength       =   2
       TabIndex        =   3
       Text            =   "2"
-      Top             =   3810
+      Top             =   3780
       Width           =   615
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   5040
+      Height          =   495
+      Left            =   4920
       TabIndex        =   1
-      Top             =   4680
-      Width           =   1125
+      Top             =   4560
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3840
+      Height          =   495
+      Left            =   3600
       TabIndex        =   0
-      Top             =   4680
-      Width           =   1125
+      Top             =   4560
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -328,6 +328,6 @@ End Sub
 Private Sub txtIntensity_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtIntensity
     If EntryValid(txtIntensity, hsIntensity.Min, hsIntensity.Max, False, False) Then
-        hsIntensity.Value = val(txtIntensity)
+        hsIntensity.Value = Val(txtIntensity)
     End If
 End Sub

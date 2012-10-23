@@ -141,23 +141,23 @@ Begin VB.Form FormBlackAndWhite
       BackColor       =   &H00C0C0C0&
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   5040
+      Height          =   495
+      Left            =   4920
       TabIndex        =   4
-      Top             =   6990
-      Width           =   1125
+      Top             =   6870
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Appearance      =   0  'Flat
       BackColor       =   &H00E0E0E0&
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   3840
+      Height          =   495
+      Left            =   3600
       MaskColor       =   &H00000000&
       TabIndex        =   3
-      Top             =   6990
-      Width           =   1125
+      Top             =   6870
+      Width           =   1245
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -1011,6 +1011,6 @@ Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
     
     chkAutoThreshold.Value = vbUnchecked
     textValidate txtThreshold
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = val(txtThreshold)
+    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = Val(txtThreshold)
         
 End Sub

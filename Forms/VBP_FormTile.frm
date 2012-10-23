@@ -3,14 +3,14 @@ Begin VB.Form FormTile
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tile Image"
-   ClientHeight    =   8280
+   ClientHeight    =   8415
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   552
+   ScaleHeight     =   561
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -129,11 +129,11 @@ Begin VB.Form FormTile
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   4920
+      Height          =   495
+      Left            =   4800
       TabIndex        =   1
       Top             =   7800
-      Width           =   1125
+      Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -147,11 +147,11 @@ Begin VB.Form FormTile
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   375
-      Left            =   3720
+      Height          =   495
+      Left            =   3480
       TabIndex        =   0
       Top             =   7800
-      Width           =   1125
+      Width           =   1245
    End
    Begin VB.Label lblDescription 
       Alignment       =   2  'Center
@@ -169,7 +169,7 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   210
+      Height          =   435
       Left            =   120
       TabIndex        =   13
       Top             =   7260

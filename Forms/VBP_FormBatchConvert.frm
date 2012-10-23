@@ -33,7 +33,7 @@ Begin VB.Form FormBatchConvert
       Left            =   8520
       TabIndex        =   39
       Top             =   960
-      Width           =   3255
+      Width           =   3375
    End
    Begin VB.OptionButton optActions 
       Appearance      =   0  'Flat
@@ -45,7 +45,7 @@ Begin VB.Form FormBatchConvert
       TabIndex        =   38
       Top             =   480
       Value           =   -1  'True
-      Width           =   3135
+      Width           =   3375
    End
    Begin VB.ComboBox cmbPattern 
       ForeColor       =   &H00800000&
@@ -229,20 +229,20 @@ Begin VB.Form FormBatchConvert
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
-      Height          =   375
-      Left            =   10800
+      Height          =   495
+      Left            =   10680
       TabIndex        =   21
-      Top             =   7680
-      Width           =   1095
+      Top             =   7590
+      Width           =   1215
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   375
-      Left            =   9600
+      Height          =   495
+      Left            =   9360
       TabIndex        =   20
-      Top             =   7680
-      Width           =   1095
+      Top             =   7590
+      Width           =   1215
    End
    Begin VB.Label lblDisclaimer 
       BackStyle       =   0  'Transparent
