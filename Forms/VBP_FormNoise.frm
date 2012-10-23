@@ -74,7 +74,7 @@ Begin VB.Form FormNoise
       Left            =   360
       Max             =   500
       Min             =   1
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   3840
       Value           =   1
       Width           =   4935
@@ -94,7 +94,7 @@ Begin VB.Form FormNoise
       Height          =   360
       Left            =   5400
       MaxLength       =   3
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "1"
       Top             =   3780
       Width           =   615
@@ -114,7 +114,7 @@ Begin VB.Form FormNoise
       ForeColor       =   &H00404040&
       Height          =   465
       Left            =   360
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   4440
       Width           =   3255
    End
@@ -122,7 +122,7 @@ Begin VB.Form FormNoise
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4920
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   5040
       Width           =   1245
    End
@@ -131,7 +131,7 @@ Begin VB.Form FormNoise
       Default         =   -1  'True
       Height          =   495
       Left            =   3600
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   5040
       Width           =   1245
    End

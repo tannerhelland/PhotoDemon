@@ -89,7 +89,7 @@ Begin VB.Form FormImportFrx
       Caption         =   "Cancel"
       Height          =   495
       Left            =   6240
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   4800
       Width           =   1245
    End
@@ -99,7 +99,7 @@ Begin VB.Form FormImportFrx
       Enabled         =   0   'False
       Height          =   495
       Left            =   4920
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   4800
       Width           =   1245
    End
@@ -116,7 +116,7 @@ Begin VB.Form FormImportFrx
       ForeColor       =   &H00800000&
       Height          =   2940
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   1440
       Width           =   3600
    End

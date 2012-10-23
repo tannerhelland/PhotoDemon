@@ -73,7 +73,7 @@ Begin VB.Form FormDiffuse
       Height          =   255
       Left            =   240
       Max             =   10
-      TabIndex        =   3
+      TabIndex        =   5
       Top             =   4680
       Value           =   5
       Width           =   5055
@@ -82,7 +82,7 @@ Begin VB.Form FormDiffuse
       Height          =   255
       Left            =   240
       Max             =   10
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   3840
       Value           =   5
       Width           =   5055
@@ -101,7 +101,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   5400
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "0"
       Top             =   3810
       Width           =   615
@@ -120,7 +120,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   5400
-      TabIndex        =   2
+      TabIndex        =   4
       Text            =   "0"
       Top             =   4650
       Width           =   615
@@ -140,7 +140,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00404040&
       Height          =   375
       Left            =   240
-      TabIndex        =   4
+      TabIndex        =   6
       Top             =   5280
       Width           =   2175
    End
@@ -148,7 +148,7 @@ Begin VB.Form FormDiffuse
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4920
-      TabIndex        =   6
+      TabIndex        =   1
       Top             =   5880
       Width           =   1245
    End
@@ -157,7 +157,7 @@ Begin VB.Form FormDiffuse
       Default         =   -1  'True
       Height          =   495
       Left            =   3600
-      TabIndex        =   5
+      TabIndex        =   0
       Top             =   5880
       Width           =   1245
    End

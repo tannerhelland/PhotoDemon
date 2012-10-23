@@ -25,6 +25,7 @@ Begin VB.Form FormWhiteBalance
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
       TabIndex        =   6
+      TabStop         =   0   'False
       Top             =   120
       Width           =   2895
    End
@@ -39,6 +40,7 @@ Begin VB.Form FormWhiteBalance
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
       TabIndex        =   5
+      TabStop         =   0   'False
       Top             =   120
       Width           =   2895
    End
@@ -47,7 +49,7 @@ Begin VB.Form FormWhiteBalance
       Left            =   360
       Max             =   100
       Min             =   1
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   3840
       Value           =   5
       Width           =   4815
@@ -66,7 +68,7 @@ Begin VB.Form FormWhiteBalance
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   5280
-      TabIndex        =   0
+      TabIndex        =   3
       Text            =   "0.05"
       Top             =   3795
       Width           =   735
@@ -85,7 +87,7 @@ Begin VB.Form FormWhiteBalance
       EndProperty
       Height          =   495
       Left            =   4800
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4800
       Width           =   1245
    End
@@ -103,7 +105,7 @@ Begin VB.Form FormWhiteBalance
       EndProperty
       Height          =   495
       Left            =   3480
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   4800
       Width           =   1245
    End

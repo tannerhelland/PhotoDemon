@@ -74,7 +74,7 @@ Begin VB.Form FormFade
       Left            =   360
       Max             =   100
       Min             =   1
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   3840
       Value           =   50
       Width           =   4935
@@ -94,7 +94,7 @@ Begin VB.Form FormFade
       Height          =   360
       Left            =   5400
       MaxLength       =   3
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "50"
       Top             =   3780
       Width           =   615
@@ -104,7 +104,7 @@ Begin VB.Form FormFade
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4920
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4680
       Width           =   1245
    End
@@ -113,7 +113,7 @@ Begin VB.Form FormFade
       Default         =   -1  'True
       Height          =   495
       Left            =   3600
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   4680
       Width           =   1245
    End

@@ -80,6 +80,10 @@ Public Sub makeFormPretty(ByRef tForm As Form)
                 eControl.Font.Name = "Tahoma"
             End If
         End If
+        
+        'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
+        ' at design-time.
+        If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
                         
     Next
     

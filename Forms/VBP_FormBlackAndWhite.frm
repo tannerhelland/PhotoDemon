@@ -93,7 +93,7 @@ Begin VB.Form FormBlackAndWhite
       Left            =   360
       Max             =   254
       Min             =   1
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   3840
       Value           =   127
       Width           =   4935
@@ -113,7 +113,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   315
       Left            =   5400
       MaxLength       =   3
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "127"
       Top             =   3810
       Width           =   660
@@ -133,7 +133,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   360
       Left            =   360
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   4320
       Width           =   5655
    End
@@ -143,7 +143,7 @@ Begin VB.Form FormBlackAndWhite
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4920
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   6870
       Width           =   1245
    End
@@ -155,7 +155,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   495
       Left            =   3600
       MaskColor       =   &H00000000&
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   6870
       Width           =   1245
    End

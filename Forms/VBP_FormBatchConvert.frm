@@ -52,7 +52,7 @@ Begin VB.Form FormBatchConvert
       Height          =   315
       Left            =   240
       Style           =   2  'Dropdown List
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   3240
       Width           =   3495
    End
@@ -61,7 +61,7 @@ Begin VB.Form FormBatchConvert
       Left            =   9840
       Max             =   100
       Min             =   1
-      TabIndex        =   19
+      TabIndex        =   21
       Top             =   6120
       Value           =   92
       Width           =   1935
@@ -71,7 +71,7 @@ Begin VB.Form FormBatchConvert
       Height          =   315
       Left            =   8520
       Style           =   2  'Dropdown List
-      TabIndex        =   17
+      TabIndex        =   19
       Top             =   5640
       Width           =   3255
    End
@@ -80,7 +80,7 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   300
       Left            =   9240
-      TabIndex        =   18
+      TabIndex        =   20
       Text            =   "92"
       Top             =   6105
       Width           =   495
@@ -89,7 +89,7 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   285
       Left            =   8520
-      TabIndex        =   13
+      TabIndex        =   15
       Text            =   "C:\"
       Top             =   3000
       Width           =   2775
@@ -98,7 +98,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "..."
       Height          =   280
       Left            =   11400
-      TabIndex        =   14
+      TabIndex        =   16
       Top             =   3000
       Width           =   375
    End
@@ -106,7 +106,7 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   285
       Left            =   8520
-      TabIndex        =   15
+      TabIndex        =   17
       Text            =   "NEW_"
       Top             =   3720
       Width           =   3255
@@ -116,7 +116,7 @@ Begin VB.Form FormBatchConvert
       Height          =   315
       Left            =   8520
       Style           =   2  'Dropdown List
-      TabIndex        =   16
+      TabIndex        =   18
       Top             =   4440
       Width           =   3255
    End
@@ -125,7 +125,7 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   285
       Left            =   8520
-      TabIndex        =   11
+      TabIndex        =   13
       Text            =   "No macro selected"
       Top             =   1560
       Width           =   2775
@@ -135,7 +135,7 @@ Begin VB.Form FormBatchConvert
       Enabled         =   0   'False
       Height          =   280
       Left            =   11400
-      TabIndex        =   12
+      TabIndex        =   14
       Top             =   1560
       Width           =   375
    End
@@ -144,7 +144,7 @@ Begin VB.Form FormBatchConvert
       Height          =   4740
       Left            =   4080
       MultiSelect     =   2  'Extended
-      TabIndex        =   6
+      TabIndex        =   8
       Top             =   840
       Width           =   3975
    End
@@ -152,7 +152,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Remove selected file(s)"
       Height          =   375
       Left            =   4080
-      TabIndex        =   7
+      TabIndex        =   9
       Top             =   5760
       Width           =   1935
    End
@@ -160,7 +160,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Load an image list..."
       Height          =   495
       Left            =   4080
-      TabIndex        =   9
+      TabIndex        =   11
       Top             =   6720
       Width           =   1935
    End
@@ -168,7 +168,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Save the current list..."
       Height          =   495
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   12
       Top             =   6720
       Width           =   1935
    End
@@ -176,7 +176,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Remove all files"
       Height          =   375
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   10
       Top             =   5760
       Width           =   1935
    End
@@ -185,7 +185,7 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   315
       Left            =   840
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   480
       Width           =   2895
    End
@@ -195,7 +195,7 @@ Begin VB.Form FormBatchConvert
       ForeColor       =   &H00800000&
       Height          =   1665
       Left            =   240
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   1200
       Width           =   3495
    End
@@ -206,7 +206,7 @@ Begin VB.Form FormBatchConvert
       Left            =   240
       MultiSelect     =   2  'Extended
       Pattern         =   "*.jpg"
-      TabIndex        =   3
+      TabIndex        =   5
       Top             =   3960
       Width           =   3495
    End
@@ -214,7 +214,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Add selected files to the batch list ->"
       Height          =   375
       Left            =   360
-      TabIndex        =   4
+      TabIndex        =   6
       Top             =   5880
       Width           =   3255
    End
@@ -222,7 +222,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "Alternatively, you can use a Windows ""Common Dialog"" to select images..."
       Height          =   735
       Left            =   360
-      TabIndex        =   5
+      TabIndex        =   7
       Top             =   6480
       Width           =   3255
    End
@@ -231,7 +231,7 @@ Begin VB.Form FormBatchConvert
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   10680
-      TabIndex        =   21
+      TabIndex        =   1
       Top             =   7590
       Width           =   1215
    End
@@ -240,7 +240,7 @@ Begin VB.Form FormBatchConvert
       Default         =   -1  'True
       Height          =   495
       Left            =   9360
-      TabIndex        =   20
+      TabIndex        =   0
       Top             =   7590
       Width           =   1215
    End

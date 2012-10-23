@@ -37,7 +37,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   4920
-      TabIndex        =   26
+      TabIndex        =   28
       Text            =   "1"
       Top             =   4560
       Width           =   735
@@ -95,7 +95,7 @@ Begin VB.Form FormCustomFilter
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4920
-      TabIndex        =   30
+      TabIndex        =   1
       Top             =   6960
       Width           =   1245
    End
@@ -104,7 +104,7 @@ Begin VB.Form FormCustomFilter
       Default         =   -1  'True
       Height          =   495
       Left            =   3600
-      TabIndex        =   29
+      TabIndex        =   0
       Top             =   6960
       Width           =   1245
    End
@@ -122,7 +122,7 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   4920
-      TabIndex        =   25
+      TabIndex        =   27
       Text            =   "1"
       Top             =   4080
       Width           =   735
@@ -142,7 +142,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   24
       Left            =   2760
-      TabIndex        =   24
+      TabIndex        =   26
       Text            =   "0"
       Top             =   6000
       Width           =   540
@@ -162,7 +162,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   23
       Left            =   2160
-      TabIndex        =   23
+      TabIndex        =   25
       Text            =   "0"
       Top             =   6000
       Width           =   540
@@ -182,7 +182,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   22
       Left            =   1560
-      TabIndex        =   22
+      TabIndex        =   24
       Text            =   "0"
       Top             =   6000
       Width           =   540
@@ -202,7 +202,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   21
       Left            =   960
-      TabIndex        =   21
+      TabIndex        =   23
       Text            =   "0"
       Top             =   6000
       Width           =   540
@@ -222,7 +222,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   20
       Left            =   360
-      TabIndex        =   20
+      TabIndex        =   22
       Text            =   "0"
       Top             =   6000
       Width           =   540
@@ -242,7 +242,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   19
       Left            =   2760
-      TabIndex        =   19
+      TabIndex        =   21
       Text            =   "0"
       Top             =   5520
       Width           =   540
@@ -262,7 +262,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   18
       Left            =   2160
-      TabIndex        =   18
+      TabIndex        =   20
       Text            =   "0"
       Top             =   5520
       Width           =   540
@@ -282,7 +282,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   17
       Left            =   1560
-      TabIndex        =   17
+      TabIndex        =   19
       Text            =   "0"
       Top             =   5520
       Width           =   540
@@ -302,7 +302,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   16
       Left            =   960
-      TabIndex        =   16
+      TabIndex        =   18
       Text            =   "0"
       Top             =   5520
       Width           =   540
@@ -322,7 +322,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   15
       Left            =   360
-      TabIndex        =   15
+      TabIndex        =   17
       Text            =   "0"
       Top             =   5520
       Width           =   540
@@ -342,7 +342,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   14
       Left            =   2760
-      TabIndex        =   14
+      TabIndex        =   16
       Text            =   "0"
       Top             =   5040
       Width           =   540
@@ -362,7 +362,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   13
       Left            =   2160
-      TabIndex        =   13
+      TabIndex        =   15
       Text            =   "0"
       Top             =   5040
       Width           =   540
@@ -382,7 +382,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   12
       Left            =   1560
-      TabIndex        =   12
+      TabIndex        =   14
       Text            =   "1"
       Top             =   5040
       Width           =   540
@@ -402,7 +402,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   11
       Left            =   960
-      TabIndex        =   11
+      TabIndex        =   13
       Text            =   "0"
       Top             =   5040
       Width           =   540
@@ -422,7 +422,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   10
       Left            =   360
-      TabIndex        =   10
+      TabIndex        =   12
       Text            =   "0"
       Top             =   5040
       Width           =   540
@@ -442,7 +442,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   9
       Left            =   2760
-      TabIndex        =   9
+      TabIndex        =   11
       Text            =   "0"
       Top             =   4560
       Width           =   540
@@ -462,7 +462,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   8
       Left            =   2160
-      TabIndex        =   8
+      TabIndex        =   10
       Text            =   "0"
       Top             =   4560
       Width           =   540
@@ -482,7 +482,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   7
       Left            =   1560
-      TabIndex        =   7
+      TabIndex        =   9
       Text            =   "0"
       Top             =   4560
       Width           =   540
@@ -502,7 +502,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   6
       Left            =   960
-      TabIndex        =   6
+      TabIndex        =   8
       Text            =   "0"
       Top             =   4560
       Width           =   540
@@ -522,7 +522,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   5
       Left            =   360
-      TabIndex        =   5
+      TabIndex        =   7
       Text            =   "0"
       Top             =   4560
       Width           =   540
@@ -542,7 +542,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   4
       Left            =   2760
-      TabIndex        =   4
+      TabIndex        =   6
       Text            =   "0"
       Top             =   4080
       Width           =   540
@@ -562,7 +562,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   3
       Left            =   2160
-      TabIndex        =   3
+      TabIndex        =   5
       Text            =   "0"
       Top             =   4080
       Width           =   540
@@ -582,7 +582,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   2
       Left            =   1560
-      TabIndex        =   2
+      TabIndex        =   4
       Text            =   "0"
       Top             =   4080
       Width           =   540
@@ -602,7 +602,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   1
       Left            =   960
-      TabIndex        =   1
+      TabIndex        =   3
       Text            =   "0"
       Top             =   4080
       Width           =   540
@@ -622,7 +622,7 @@ Begin VB.Form FormCustomFilter
       Height          =   360
       Index           =   0
       Left            =   360
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "0"
       Top             =   4080
       Width           =   540
@@ -630,7 +630,7 @@ Begin VB.Form FormCustomFilter
    Begin PhotoDemon.jcbutton cmdOpen 
       Height          =   615
       Left            =   3840
-      TabIndex        =   27
+      TabIndex        =   29
       Top             =   5730
       Width           =   900
       _ExtentX        =   1588
@@ -659,7 +659,7 @@ Begin VB.Form FormCustomFilter
    Begin PhotoDemon.jcbutton cmdSave 
       Height          =   615
       Left            =   4920
-      TabIndex        =   28
+      TabIndex        =   30
       Top             =   5730
       Width           =   900
       _ExtentX        =   1588

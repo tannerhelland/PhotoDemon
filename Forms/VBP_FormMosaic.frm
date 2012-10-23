@@ -75,7 +75,7 @@ Begin VB.Form FormMosaic
       Left            =   360
       Max             =   64
       Min             =   1
-      TabIndex        =   3
+      TabIndex        =   5
       Top             =   4800
       Value           =   2
       Width           =   4935
@@ -85,7 +85,7 @@ Begin VB.Form FormMosaic
       Left            =   360
       Max             =   64
       Min             =   1
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   3840
       Value           =   2
       Width           =   4935
@@ -104,7 +104,7 @@ Begin VB.Form FormMosaic
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   5400
-      TabIndex        =   2
+      TabIndex        =   4
       Text            =   "2"
       Top             =   4740
       Width           =   615
@@ -123,7 +123,7 @@ Begin VB.Form FormMosaic
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   5400
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "2"
       Top             =   3780
       Width           =   615
@@ -133,7 +133,7 @@ Begin VB.Form FormMosaic
       Caption         =   "&Cancel"
       Height          =   555
       Left            =   4800
-      TabIndex        =   5
+      TabIndex        =   1
       Top             =   5640
       Width           =   1245
    End
@@ -142,7 +142,7 @@ Begin VB.Form FormMosaic
       Default         =   -1  'True
       Height          =   555
       Left            =   3480
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   5640
       Width           =   1245
    End

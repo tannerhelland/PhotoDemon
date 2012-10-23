@@ -59,7 +59,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   1560
-      TabIndex        =   1
+      TabIndex        =   3
       Text            =   "N/A"
       Top             =   1230
       Width           =   855
@@ -78,7 +78,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   1560
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "N/A"
       Top             =   600
       Width           =   855
@@ -97,7 +97,7 @@ Begin VB.Form FormResize
       Height          =   360
       Left            =   360
       Style           =   2  'Dropdown List
-      TabIndex        =   3
+      TabIndex        =   5
       Top             =   2880
       Width           =   3375
    End
@@ -106,7 +106,7 @@ Begin VB.Form FormResize
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   2760
-      TabIndex        =   6
+      TabIndex        =   1
       Top             =   3600
       Width           =   1125
    End
@@ -125,7 +125,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   255
       Left            =   600
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   1920
       Value           =   1  'Checked
       Width           =   3015
@@ -135,7 +135,7 @@ Begin VB.Form FormResize
       Default         =   -1  'True
       Height          =   495
       Left            =   1560
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   3600
       Width           =   1125
    End
@@ -242,7 +242,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   375
       Left            =   240
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2520
       Width           =   2895
    End

@@ -58,7 +58,7 @@ Begin VB.Form FormTwins
       ForeColor       =   &H00404040&
       Height          =   255
       Left            =   3240
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   3600
       Width           =   2175
    End
@@ -77,7 +77,7 @@ Begin VB.Form FormTwins
       ForeColor       =   &H00404040&
       Height          =   255
       Left            =   1560
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   3600
       Value           =   -1  'True
       Width           =   1575
@@ -96,7 +96,7 @@ Begin VB.Form FormTwins
       EndProperty
       Height          =   495
       Left            =   4800
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4440
       Width           =   1245
    End
@@ -114,7 +114,7 @@ Begin VB.Form FormTwins
       EndProperty
       Height          =   495
       Left            =   3480
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   4440
       Width           =   1245
    End

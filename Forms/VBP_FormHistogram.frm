@@ -103,13 +103,13 @@ Begin VB.Form FormHistogram
       Width           =   2535
    End
    Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
+      Caption         =   "Close Histogram"
       Default         =   -1  'True
       Height          =   495
-      Left            =   10440
-      TabIndex        =   2
+      Left            =   9600
+      TabIndex        =   0
       Top             =   7800
-      Width           =   1245
+      Width           =   2085
    End
    Begin VB.PictureBox picH 
       Appearance      =   0  'Flat
@@ -131,7 +131,7 @@ Begin VB.Form FormHistogram
       ScaleHeight     =   319
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   775
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   11655
    End
@@ -154,7 +154,7 @@ Begin VB.Form FormHistogram
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   775
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   4950
       Width           =   11655
    End

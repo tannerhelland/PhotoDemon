@@ -74,7 +74,7 @@ Begin VB.Form FormPosterize
       Left            =   360
       Max             =   7
       Min             =   1
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   3840
       Value           =   7
       Width           =   4815
@@ -94,7 +94,7 @@ Begin VB.Form FormPosterize
       Height          =   360
       Left            =   5280
       MaxLength       =   1
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "7"
       Top             =   3780
       Width           =   615
@@ -104,7 +104,7 @@ Begin VB.Form FormPosterize
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4800
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4560
       Width           =   1245
    End
@@ -113,7 +113,7 @@ Begin VB.Form FormPosterize
       Default         =   -1  'True
       Height          =   495
       Left            =   3480
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   4560
       Width           =   1245
    End

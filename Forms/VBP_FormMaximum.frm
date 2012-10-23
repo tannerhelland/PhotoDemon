@@ -74,7 +74,7 @@ Begin VB.Form FormRank
       Left            =   360
       Max             =   25
       Min             =   1
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   4680
       Value           =   1
       Width           =   4935
@@ -94,7 +94,7 @@ Begin VB.Form FormRank
       Height          =   360
       Left            =   5400
       MaxLength       =   2
-      TabIndex        =   1
+      TabIndex        =   3
       Text            =   "1"
       Top             =   4635
       Width           =   615
@@ -114,7 +114,7 @@ Begin VB.Form FormRank
       Height          =   360
       Left            =   360
       Style           =   2  'Dropdown List
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   3720
       Width           =   3135
    End
@@ -123,7 +123,7 @@ Begin VB.Form FormRank
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4800
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   5400
       Width           =   1245
    End
@@ -132,7 +132,7 @@ Begin VB.Form FormRank
       Default         =   -1  'True
       Height          =   495
       Left            =   3480
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   5400
       Width           =   1245
    End

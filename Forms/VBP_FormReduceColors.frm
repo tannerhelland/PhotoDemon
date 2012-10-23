@@ -56,7 +56,7 @@ Begin VB.Form FormReduceColors
       Left            =   2520
       Max             =   64
       Min             =   2
-      TabIndex        =   8
+      TabIndex        =   10
       Top             =   6195
       Value           =   6
       Width           =   3015
@@ -66,7 +66,7 @@ Begin VB.Form FormReduceColors
       Left            =   2520
       Max             =   64
       Min             =   2
-      TabIndex        =   6
+      TabIndex        =   8
       Top             =   5805
       Value           =   7
       Width           =   3015
@@ -76,7 +76,7 @@ Begin VB.Form FormReduceColors
       Left            =   2520
       Max             =   64
       Min             =   2
-      TabIndex        =   4
+      TabIndex        =   6
       Top             =   5415
       Value           =   6
       Width           =   3015
@@ -97,7 +97,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Index           =   2
       Left            =   360
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   4440
       Width           =   3255
    End
@@ -116,7 +116,7 @@ Begin VB.Form FormReduceColors
       Height          =   360
       Left            =   5640
       MaxLength       =   3
-      TabIndex        =   7
+      TabIndex        =   9
       Text            =   "6"
       Top             =   6150
       Width           =   615
@@ -136,7 +136,7 @@ Begin VB.Form FormReduceColors
       Height          =   360
       Left            =   5640
       MaxLength       =   3
-      TabIndex        =   5
+      TabIndex        =   7
       Text            =   "7"
       Top             =   5760
       Width           =   615
@@ -156,7 +156,7 @@ Begin VB.Form FormReduceColors
       Height          =   360
       Left            =   5640
       MaxLength       =   3
-      TabIndex        =   3
+      TabIndex        =   5
       Text            =   "6"
       Top             =   5370
       Width           =   615
@@ -167,7 +167,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   720
-      TabIndex        =   9
+      TabIndex        =   11
       Top             =   7110
       Value           =   1  'Checked
       Width           =   2415
@@ -178,7 +178,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00800000&
       Height          =   255
       Left            =   3480
-      TabIndex        =   10
+      TabIndex        =   12
       Top             =   7110
       Value           =   1  'Checked
       Width           =   2535
@@ -199,7 +199,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Index           =   0
       Left            =   360
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   3720
       Value           =   -1  'True
       Width           =   2535
@@ -220,7 +220,7 @@ Begin VB.Form FormReduceColors
       Height          =   255
       Index           =   1
       Left            =   360
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   4080
       Width           =   3855
    End
@@ -229,7 +229,7 @@ Begin VB.Form FormReduceColors
       Default         =   -1  'True
       Height          =   495
       Left            =   3720
-      TabIndex        =   11
+      TabIndex        =   0
       Top             =   7680
       Width           =   1245
    End
@@ -237,7 +237,7 @@ Begin VB.Form FormReduceColors
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   5040
-      TabIndex        =   12
+      TabIndex        =   1
       Top             =   7680
       Width           =   1245
    End

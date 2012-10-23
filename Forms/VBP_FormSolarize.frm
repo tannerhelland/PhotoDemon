@@ -74,7 +74,7 @@ Begin VB.Form FormSolarize
       Left            =   360
       Max             =   254
       Min             =   1
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   3840
       Value           =   127
       Width           =   4935
@@ -94,7 +94,7 @@ Begin VB.Form FormSolarize
       Height          =   360
       Left            =   5400
       MaxLength       =   3
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "127"
       Top             =   3795
       Width           =   615
@@ -104,7 +104,7 @@ Begin VB.Form FormSolarize
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4800
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4560
       Width           =   1245
    End
@@ -113,7 +113,7 @@ Begin VB.Form FormSolarize
       Default         =   -1  'True
       Height          =   495
       Left            =   3480
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   4560
       Width           =   1245
    End

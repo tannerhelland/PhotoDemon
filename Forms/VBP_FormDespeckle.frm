@@ -29,7 +29,7 @@ Begin VB.Form FormDespeckle
       Left            =   240
       Max             =   5
       Min             =   2
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   840
       Value           =   5
       Width           =   5295
@@ -39,7 +39,7 @@ Begin VB.Form FormDespeckle
       Default         =   -1  'True
       Height          =   495
       Left            =   3120
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1920
       Width           =   1245
    End
@@ -48,7 +48,7 @@ Begin VB.Form FormDespeckle
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   4440
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   1920
       Width           =   1245
    End
@@ -109,7 +109,7 @@ Begin VB.Form FormDespeckle
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   360
       Width           =   2055
    End
