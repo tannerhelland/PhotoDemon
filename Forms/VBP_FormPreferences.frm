@@ -192,8 +192,249 @@ Begin VB.Form FormPreferences
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4695
+      Index           =   0
+      Left            =   2280
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   369
+      TabIndex        =   7
+      Top             =   240
+      Width           =   5535
+      Begin VB.PictureBox picAlphaTwo 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00C0C0C0&
+         ForeColor       =   &H80000008&
+         Height          =   330
+         Left            =   4800
+         MouseIcon       =   "VBP_FormPreferences.frx":41D2
+         MousePointer    =   99  'Custom
+         ScaleHeight     =   20
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   37
+         TabIndex        =   33
+         TabStop         =   0   'False
+         ToolTipText     =   "Click to change the second checkerboard background color for alpha channels"
+         Top             =   1755
+         Width           =   585
+      End
+      Begin VB.PictureBox picAlphaOne 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00808080&
+         ForeColor       =   &H80000008&
+         Height          =   330
+         Left            =   4080
+         MouseIcon       =   "VBP_FormPreferences.frx":4324
+         MousePointer    =   99  'Custom
+         ScaleHeight     =   20
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   37
+         TabIndex        =   31
+         TabStop         =   0   'False
+         ToolTipText     =   "Click to change the second checkerboard background color for alpha channels"
+         Top             =   1755
+         Width           =   585
+      End
+      Begin VB.ComboBox cmbAlphaCheck 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   30
+         Top             =   1755
+         Width           =   3615
+      End
+      Begin VB.CheckBox chkConfirmUnsaved 
+         Appearance      =   0  'Flat
+         Caption         =   "warn me if the image has unsaved changes"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   255
+         Left            =   360
+         TabIndex        =   22
+         ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
+         Top             =   3510
+         Width           =   5055
+      End
+      Begin VB.ComboBox cmbLargeImages 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   11
+         Top             =   2640
+         Width           =   5055
+      End
+      Begin VB.ComboBox cmbCanvas 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   10
+         Top             =   960
+         Width           =   4335
+      End
+      Begin VB.PictureBox picCanvasColor 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   330
+         Left            =   4800
+         MouseIcon       =   "VBP_FormPreferences.frx":4476
+         MousePointer    =   99  'Custom
+         ScaleHeight     =   20
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   37
+         TabIndex        =   9
+         TabStop         =   0   'False
+         ToolTipText     =   "Click to change the image window background color"
+         Top             =   960
+         Width           =   585
+      End
+      Begin VB.Label lblAlphaCheck 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "alpha (transparency) background:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   32
+         Top             =   1440
+         Width           =   2910
+      End
+      Begin VB.Label lblClosingUnsavedImages 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when image files are closed:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   23
+         Top             =   3150
+         Width           =   2475
+      End
+      Begin VB.Label lblImgOpen 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when image files are opened: "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   13
+         Top             =   2280
+         Width           =   2625
+      End
+      Begin VB.Label lblCanvasFX 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "image window background:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   12
+         Top             =   645
+         Width           =   2370
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "interface and theme preferences"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   8
+         Top             =   0
+         Width           =   3390
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
       Index           =   3
       Left            =   2280
+      MousePointer    =   1  'Arrow
       ScaleHeight     =   313
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   369
@@ -254,7 +495,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   26
-         ToolTipText     =   $"VBP_FormPreferences.frx":41D2
+         ToolTipText     =   $"VBP_FormPreferences.frx":45C8
          Top             =   600
          Width           =   5175
       End
@@ -305,6 +546,7 @@ Begin VB.Form FormPreferences
       Height          =   4695
       Index           =   2
       Left            =   2280
+      MousePointer    =   1  'Arrow
       ScaleHeight     =   313
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   369
@@ -327,7 +569,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   20
-         ToolTipText     =   $"VBP_FormPreferences.frx":42C4
+         ToolTipText     =   $"VBP_FormPreferences.frx":46BA
          Top             =   1080
          Width           =   5295
       End
@@ -389,6 +631,7 @@ Begin VB.Form FormPreferences
       Height          =   4695
       Index           =   1
       Left            =   2280
+      MousePointer    =   1  'Arrow
       ScaleHeight     =   313
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   369
@@ -436,171 +679,6 @@ Begin VB.Form FormPreferences
          Width           =   3510
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   0
-      Left            =   2280
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   369
-      TabIndex        =   7
-      Top             =   240
-      Width           =   5535
-      Begin VB.CheckBox chkConfirmUnsaved 
-         Appearance      =   0  'Flat
-         Caption         =   "warn me if the image has unsaved changes"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Left            =   360
-         TabIndex        =   22
-         ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
-         Top             =   3420
-         Width           =   5055
-      End
-      Begin VB.ComboBox cmbLargeImages 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   360
-         Style           =   2  'Dropdown List
-         TabIndex        =   11
-         Top             =   2400
-         Width           =   5055
-      End
-      Begin VB.ComboBox cmbCanvas 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   360
-         Style           =   2  'Dropdown List
-         TabIndex        =   10
-         Top             =   960
-         Width           =   5055
-      End
-      Begin VB.PictureBox picCanvasColor 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H80000005&
-         ForeColor       =   &H80000008&
-         Height          =   375
-         Left            =   360
-         ScaleHeight     =   23
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   333
-         TabIndex        =   9
-         ToolTipText     =   "Click to change the image window background color"
-         Top             =   1440
-         Width           =   5025
-      End
-      Begin VB.Label lblClosingUnsavedImages 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "when image files are closed:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   23
-         Top             =   3000
-         Width           =   2475
-      End
-      Begin VB.Label lblImgOpen 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "when image files are opened: "
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   13
-         Top             =   2040
-         Width           =   2625
-      End
-      Begin VB.Label lblCanvasFX 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "image window background:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   12
-         Top             =   645
-         Width           =   2370
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "interface and theme preferences"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   8
-         Top             =   0
-         Width           =   3390
-      End
-   End
    Begin VB.Line lneVertical 
       BorderColor     =   &H8000000D&
       X1              =   136
@@ -630,8 +708,47 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to see if the user physically clicked the canvas combo box, or if VB selected it on its own
+'Used to see if the user physically clicked a combo box, or if VB selected it on its own
 Dim userInitiatedColorSelection As Boolean
+Dim userInitiatedAlphaSelection As Boolean
+
+'Alpha channel checkerboard selection
+Private Sub cmbAlphaCheck_Click()
+
+    'Only respond to user-generated events
+    If userInitiatedAlphaSelection = False Then Exit Sub
+
+    'Redraw the sample picture boxes based on the value the user has selected
+    AlphaCheckMode = cmbAlphaCheck.ListIndex
+    Select Case cmbAlphaCheck.ListIndex
+    
+        'Case 0 - Highlights
+        Case 0
+            AlphaCheckOne = RGB(255, 255, 255)
+            AlphaCheckTwo = RGB(204, 204, 204)
+        
+        'Case 1 - Midtones
+        Case 1
+            AlphaCheckOne = RGB(153, 153, 153)
+            AlphaCheckTwo = RGB(102, 102, 102)
+        
+        'Case 2 - Shadows
+        Case 2
+            AlphaCheckOne = RGB(51, 51, 51)
+            AlphaCheckTwo = RGB(0, 0, 0)
+        
+        'Case 3 - Custom
+        Case 3
+            AlphaCheckOne = RGB(255, 204, 246)
+            AlphaCheckTwo = RGB(255, 255, 255)
+        
+    End Select
+
+    'Change the picture boxes to match the current selection
+    picAlphaOne.BackColor = AlphaCheckOne
+    picAlphaTwo.BackColor = AlphaCheckTwo
+
+End Sub
 
 'Canvas background selection
 Private Sub cmbCanvas_Click()
@@ -734,6 +851,11 @@ Private Sub CmdOK_Click()
             
     End Select
     
+    'Store the alpha checkerboard preference
+    WriteToIni "General Preferences", "AlphaCheckMode", CStr(cmbAlphaCheck.ListIndex)
+    WriteToIni "General Preferences", "AlphaCheckOne", CStr(CLng(picAlphaOne.BackColor))
+    WriteToIni "General Preferences", "AlphaCheckTwo", CStr(CLng(picAlphaTwo.BackColor))
+    
     'Now run a loop to draw the checkerboard effect on every window
     Dim tForm As Form
     Message "Saving preferences..."
@@ -775,8 +897,8 @@ Private Sub Form_Load()
     cmbCanvas.AddItem "Checkerboard pattern", 0
     cmbCanvas.AddItem "System theme: light", 1
     cmbCanvas.AddItem "System theme: dark", 2
-    cmbCanvas.AddItem "Custom color (click box below this to customize)", 3
-    
+    cmbCanvas.AddItem "Custom color (click box to customize)", 3
+        
     'Select the proper combo box value based on the CanvasBackground variable
     If CanvasBackground = -1 Then
         'Checkerboard pattern
@@ -795,6 +917,21 @@ Private Sub Form_Load()
     'Draw the current canvas background to the sample picture box
     DrawSampleCanvasBackground
     userInitiatedColorSelection = True
+    
+    'Next, get the values for alpha-channel checkerboard rendering
+    userInitiatedAlphaSelection = False
+    
+    cmbAlphaCheck.AddItem "Highlight checks", 0
+    cmbAlphaCheck.AddItem "Midtone checks", 1
+    cmbAlphaCheck.AddItem "Shadow checks", 2
+    cmbAlphaCheck.AddItem "Custom (click boxes to customize)", 3
+    
+    cmbAlphaCheck.ListIndex = AlphaCheckMode
+    
+    picAlphaOne.BackColor = AlphaCheckOne
+    picAlphaTwo.BackColor = AlphaCheckTwo
+    
+    userInitiatedAlphaSelection = True
     
     'Assign the check box for logging program messages
     If LogProgramMessages = True Then ChkLogMessages.Value = vbChecked Else ChkLogMessages.Value = vbUnchecked
@@ -822,10 +959,6 @@ Private Sub Form_Load()
     tmpString = GetFromIni("General Preferences", "AutosizeLargeImages")
     cmbLargeImages.ListIndex = Val(tmpString)
     
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
-    setHandCursor picCanvasColor
-    
     'Populate the multi-line tooltips for the category command buttons
     'Interface
     cmdCategory(0).ToolTip = "Interface preferences include default setting for canvas backgrounds," & vbCrLf & "transparency checkerboards, and the program's visual theme."
@@ -846,6 +979,23 @@ Private Sub Form_Load()
     picContainer(2).Visible = False
     picContainer(3).Visible = False
     
+    'Assign the system hand cursor to all relevant objects
+    makeFormPretty Me
+    
+    'Note: at present, this doesn't seem to be working, and I'm not sure why.  It has something to do with
+    ' picture boxes contained within other picture boxes.  Because of this, I've manually set the mouse icon
+    ' to an old-school hand cursor (which is all VB will accept).
+    'setHandCursor picCanvasColor
+    'setHandCursor picAlphaOne
+    'setHandCursor picAlphaTwo
+    
+    'For some reason, the container picture boxes automatically acquire the pointer of children objects.
+    ' Manually force those cursors to arrows to prevent this.
+    setArrowCursorToObject picContainer(0)
+    setArrowCursorToObject picContainer(1)
+    setArrowCursorToObject picContainer(2)
+    setArrowCursorToObject picContainer(3)
+        
 End Sub
 
 'Draw a sample of the current background to the PicCanvasColor picture box
@@ -875,6 +1025,60 @@ Private Sub DrawSampleCanvasBackground()
     
         Me.picCanvasColor.Enabled = True
     
+    End If
+    
+End Sub
+
+'Allow the user to change the first checkerboard color for alpha channels
+Private Sub picAlphaOne_Click()
+    
+    Dim retColor As Long
+    
+    Dim CD1 As cCommonDialog
+    Set CD1 = New cCommonDialog
+    
+    retColor = picAlphaOne.BackColor
+    
+    'Display a Windows color selection box
+    CD1.VBChooseColor retColor, True, True, False, Me.HWnd
+    
+    'If a color was selected, change the picture box and associated combo box to match
+    If retColor > 0 Then
+    
+        AlphaCheckOne = retColor
+        picAlphaOne.BackColor = retColor
+        
+        userInitiatedAlphaSelection = False
+        cmbAlphaCheck.ListIndex = 3   '3 corresponds to "custom colors"
+        userInitiatedAlphaSelection = True
+                
+    End If
+    
+End Sub
+
+'Allow the user to change the second checkerboard color for alpha channels
+Private Sub picAlphaTwo_Click()
+    
+    Dim retColor As Long
+    
+    Dim CD1 As cCommonDialog
+    Set CD1 = New cCommonDialog
+    
+    retColor = picAlphaTwo.BackColor
+    
+    'Display a Windows color selection box
+    CD1.VBChooseColor retColor, True, True, False, Me.HWnd
+    
+    'If a color was selected, change the picture box and associated combo box to match
+    If retColor > 0 Then
+    
+        AlphaCheckTwo = retColor
+        picAlphaTwo.BackColor = retColor
+        
+        userInitiatedAlphaSelection = False
+        cmbAlphaCheck.ListIndex = 3   '3 corresponds to "custom colors"
+        userInitiatedAlphaSelection = True
+                
     End If
     
 End Sub

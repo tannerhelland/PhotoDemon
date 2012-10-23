@@ -415,7 +415,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 End Function
 
 'Give this layer a picture from a standard VB picture object
-Public Function createFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
+Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
 
     'Make sure the picture we're passed isn't empty
     If (Not srcPicture Is Nothing) Then
@@ -455,24 +455,24 @@ Public Function createFromPicture(ByRef srcPicture As StdPicture, Optional force
                     If forceWhiteBackground And (layerColorDepth = 32) Then compositeBackgroundColor
                     
                     'Success!
-                    createFromPicture = True
+                    CreateFromPicture = True
                     Exit Function
                     
                 End If
             
-                createFromPicture = False
+                CreateFromPicture = False
             
             End If
             
-            createFromPicture = False
+            CreateFromPicture = False
         
         End If
         
-        createFromPicture = False
+        CreateFromPicture = False
     
     End If
     
-    createFromPicture = False
+    CreateFromPicture = False
 
 End Function
 
@@ -850,29 +850,29 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     'If no color is specified, apply a checkerboard pattern
     Dim r1 As Long, g1 As Long, b1 As Long
     Dim r2 As Long, g2 As Long, b2 As Long
-    
+        
     If newR <> -1 Then
         r1 = newR
         r2 = newR
     Else
-        r1 = 153
-        r2 = 102
+        r1 = ExtractR(AlphaCheckOne)
+        r2 = ExtractR(AlphaCheckTwo)
     End If
     
     If newG <> -1 Then
         g1 = newG
         g2 = newG
     Else
-        g1 = 153
-        g2 = 102
+        g1 = ExtractG(AlphaCheckOne)
+        g2 = ExtractG(AlphaCheckTwo)
     End If
     
     If newB <> -1 Then
         b1 = newB
         b2 = newB
     Else
-        b1 = 153
-        b2 = 102
+        b1 = ExtractB(AlphaCheckOne)
+        b2 = ExtractB(AlphaCheckTwo)
     End If
     
     'Make sure the user didn't supply us with bad values

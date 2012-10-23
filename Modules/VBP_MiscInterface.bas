@@ -56,8 +56,6 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         ' (Note: this code will set all command buttons, scroll bars, option buttons, check boxes,
         ' list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
         If ((TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) And (Not TypeOf eControl Is PictureBox) Then
-            eControl.MouseIcon = LoadPicture("")
-            eControl.MousePointer = 0
             setHandCursor eControl
         End If
                 
@@ -106,7 +104,16 @@ End Sub
 
 'Set a single object to use the hand cursor
 Public Sub setHandCursor(ByRef tControl As Control)
+    tControl.MouseIcon = LoadPicture("")
+    tControl.MousePointer = 0
     SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Hand
+End Sub
+
+'Set a single object to use the arrow cursor
+Public Sub setArrowCursorToObject(ByRef tControl As Control)
+    tControl.MouseIcon = LoadPicture("")
+    tControl.MousePointer = 0
+    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Arrow
 End Sub
 
 'Set a single form to use the arrow cursor

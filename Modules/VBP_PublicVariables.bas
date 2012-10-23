@@ -112,5 +112,14 @@ Public LastSaveFilter As Long
 'Was the save dialog canceled?
 Public saveDialogCanceled As Boolean
 
+'Checkerboard mode for rendering transparency.  Possible values are:
+' 0 - Light
+' 1 - Midtones
+' 2 - Dark
+' 3 - Custom
+Public AlphaCheckMode As Long
 
+'Checkerboard colors for rendering transparency
+Public AlphaCheckOne As Long
+Public AlphaCheckTwo As Long
 

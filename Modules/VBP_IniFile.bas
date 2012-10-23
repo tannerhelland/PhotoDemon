@@ -142,6 +142,9 @@ Public Sub LoadINI()
             Print #fileNum, "LastSaveFilter=3"   'Default to JPEG for saving
             Print #fileNum, ""
             Print #fileNum, "[General Preferences]"
+            Print #fileNum, "AlphaCheckMode=1"
+            Print #fileNum, "AlphaCheckOne=" & RGB(153, 153, 153)
+            Print #fileNum, "AlphaCheckTwo=" & RGB(102, 102, 102)
             Print #fileNum, "AutosizeLargeImages=0"
             Print #fileNum, "CanvasBackground=16777215"
             Print #fileNum, "CheckForUpdates=1"
@@ -171,11 +174,11 @@ Public Sub LoadINI()
         
     End If
     
-    'Extract the system path and temporary path from the INI
+    'Extract the temporary path from the INI
     TempPath = GetFromIni("Paths", "TempPath")
     
-    'As a backup, make sure the System and Temp paths exist (to prevent future ugly errors)
-    If Dir(TempPath, vbDirectory) = vbNullString Then TempPath = GetTemporaryPath
+    'As a backup, make sure the temp path exists (to prevent future ugly errors)
+    If Not DirectoryExist(TempPath) Then TempPath = GetTemporaryPath
     
     'Get the LogProgramMessages preference
     Dim tempString As String
@@ -200,6 +203,17 @@ Public Sub LoadINI()
     tempString = GetFromIni("General Preferences", "CanvasBackground")
     x = Val(tempString)
     CanvasBackground = x
+    
+    'Get the alpha transparency checkerboard pattern
+    tempString = GetFromIni("General Preferences", "AlphaCheckMode")
+    If tempString = "" Then AlphaCheckMode = 1 Else AlphaCheckMode = Val(tempString)
+    
+    'Get the alpha transparency checkerboard colors
+    tempString = GetFromIni("General Preferences", "AlphaCheckOne")
+    If tempString = "" Then AlphaCheckOne = RGB(153, 153, 153) Else AlphaCheckOne = Val(tempString)
+    
+    tempString = GetFromIni("General Preferences", "AlphaCheckTwo")
+    If tempString = "" Then AlphaCheckTwo = RGB(102, 102, 102) Else AlphaCheckTwo = Val(tempString)
     
     'Check if the user wants us to prompt them about closing unsaved images
     tempString = GetFromIni("General Preferences", "ConfirmClosingUnsaved")
