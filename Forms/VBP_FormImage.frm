@@ -342,7 +342,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             Select Case sCheck
                 
                 Case 0
-                    setCrossCursor Me
+                    setArrowCursor Me
                 Case 1
                     setSizeNWSECursor Me
                 Case 2
@@ -369,9 +369,10 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         
         Else
         
-            'Check the location of the mouse to see if it's over the image, and set the cursor accordingly
+            'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
+            ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
             If isMouseOverImage(x, y, Me) Then
-                setCrossCursor Me
+                setArrowCursor Me
             Else
                 setArrowCursor Me
             End If
@@ -379,9 +380,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         End If
         
     End If
-    
-    makeFormPretty Me
-    
+        
     'Display the image coordinates under the mouse pointer
     displayImageCoordinates x, y, Me
     
