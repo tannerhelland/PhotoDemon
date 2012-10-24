@@ -123,6 +123,12 @@ Public AlphaCheckMode As Long
 Public AlphaCheckOne As Long
 Public AlphaCheckTwo As Long
 
+'Checkerboard size when rendering transparency.  Possible values are:
+' 0 - Small (4x4 pixels per square)
+' 1 - Medium (8x8 pixels per square)
+' 2 - Large (16x16 pixels per square)
+Public AlphaCheckSize As Long
+
 'Is the current system running Vista, Windows 7, or later?  (Used to determine availability of certain system fonts)
 Public isVistaOrLater As Boolean
 

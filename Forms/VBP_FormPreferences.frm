@@ -233,6 +233,24 @@ Begin VB.Form FormPreferences
       TabIndex        =   31
       Top             =   1800
       Width           =   8295
+      Begin VB.ComboBox cmbAlphaCheckSize 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   39
+         Top             =   1875
+         Width           =   5055
+      End
       Begin VB.ComboBox cmbAlphaCheck 
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -284,6 +302,26 @@ Begin VB.Form FormPreferences
          ToolTipText     =   "Click to change the second checkerboard background color for alpha channels"
          Top             =   915
          Width           =   585
+      End
+      Begin VB.Label lblAlphaCheckSize 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "transparency checkerboard size:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   40
+         Top             =   1560
+         Width           =   2790
       End
       Begin VB.Label lblAlphaCheck 
          AutoSize        =   -1  'True
@@ -803,18 +841,6 @@ Begin VB.Form FormPreferences
       Y1              =   106
       Y2              =   106
    End
-   Begin VB.Label lblMouseFix 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "  "
-      ForeColor       =   &H80000008&
-      Height          =   7455
-      Left            =   0
-      TabIndex        =   39
-      Top             =   0
-      Width           =   8895
-   End
 End
 Attribute VB_Name = "FormPreferences"
 Attribute VB_GlobalNameSpace = False
@@ -994,6 +1020,10 @@ Private Sub CmdOK_Click()
     WriteToIni "General Preferences", "AlphaCheckOne", CStr(CLng(picAlphaOne.BackColor))
     WriteToIni "General Preferences", "AlphaCheckTwo", CStr(CLng(picAlphaTwo.BackColor))
     
+    'Store the alpha checkerboard size preference
+    AlphaCheckSize = cmbAlphaCheckSize.ListIndex
+    WriteToIni "General Preferences", "AlphaCheckSize", CStr(AlphaCheckSize)
+    
     'Now run a loop to draw the checkerboard effect on every window
     Dim tForm As Form
     Message "Saving preferences..."
@@ -1078,6 +1108,13 @@ Private Sub Form_Load()
     
     userInitiatedAlphaSelection = True
     
+    'Next, get the current alpha-channel checkerboard size value
+    cmbAlphaCheckSize.AddItem "Small (4x4 pixels)", 0
+    cmbAlphaCheckSize.AddItem "Medium (8x8 pixels)", 1
+    cmbAlphaCheckSize.AddItem "Large (16x16 pixels)", 2
+    
+    cmbAlphaCheckSize.ListIndex = AlphaCheckSize
+    
     'Assign the check box for logging program messages
     If LogProgramMessages = True Then ChkLogMessages.Value = vbChecked Else ChkLogMessages.Value = vbUnchecked
     
@@ -1131,10 +1168,10 @@ Private Sub Form_Load()
     & vbCrLf & vbCrLf & "If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program."
     
     'Finally, hide the inactive category panels
-    picContainer(1).Visible = False
-    picContainer(2).Visible = False
-    picContainer(3).Visible = False
-    picContainer(4).Visible = False
+    Dim i As Long
+    For i = 1 To picContainer.Count - 1
+        picContainer(i).Visible = False
+    Next i
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -1148,10 +1185,9 @@ Private Sub Form_Load()
     
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.
-    setArrowCursorToObject picContainer(0)
-    setArrowCursorToObject picContainer(1)
-    setArrowCursorToObject picContainer(2)
-    setArrowCursorToObject picContainer(3)
+    For i = 0 To picContainer.Count - 1
+        setArrowCursorToObject picContainer(i)
+    Next i
         
 End Sub
 

@@ -48,15 +48,16 @@ Dim hc_Handle_SizeWE As Long
 ' having to rewrite code in every individual form.
 Public Sub makeFormPretty(ByRef tForm As Form)
 
-    'Before doing anything else, make sure the form's default cursor is set to an arror
+    'Before doing anything else, make sure the form's default cursor is set to an arrow
     tForm.MouseIcon = LoadPicture("")
     tForm.MousePointer = 0
 
+    'Next, enumerate through every control on the form.  We will be making changes on-the-fly on a per-control basis.
     Dim eControl As Control
     
     For Each eControl In tForm.Controls
         
-        'STEP 1: give all clickable controls a hand icon instead of the default pointer
+        'STEP 1: give all clickable controls a hand icon instead of the default pointer.
         ' (Note: this code will set all command buttons, scroll bars, option buttons, check boxes,
         ' list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
         If ((TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) And (Not TypeOf eControl Is PictureBox) Then
@@ -87,6 +88,7 @@ Public Sub makeFormPretty(ByRef tForm As Form)
                         
     Next
     
+    'Refresh all non-MDI forms after making the changes above
     If tForm.Name <> "FormMain" Then tForm.Refresh
         
 End Sub

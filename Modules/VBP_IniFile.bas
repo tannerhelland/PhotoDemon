@@ -145,6 +145,7 @@ Public Sub LoadINI()
             Print #fileNum, "AlphaCheckMode=1"
             Print #fileNum, "AlphaCheckOne=" & RGB(153, 153, 153)
             Print #fileNum, "AlphaCheckTwo=" & RGB(102, 102, 102)
+            Print #fileNum, "AlphaCheckSize=1"
             Print #fileNum, "AutosizeLargeImages=0"
             Print #fileNum, "CanvasBackground=16777215"
             Print #fileNum, "CheckForUpdates=1"
@@ -215,6 +216,10 @@ Public Sub LoadINI()
     
     tempString = GetFromIni("General Preferences", "AlphaCheckTwo")
     If tempString = "" Then AlphaCheckTwo = RGB(102, 102, 102) Else AlphaCheckTwo = Val(tempString)
+    
+    'Get the alpha checkerboard size
+    tempString = GetFromIni("General Preferences", "AlphaCheckSize")
+    If tempString = "" Then AlphaCheckSize = 1 Else AlphaCheckSize = Val(tempString)
     
     'Check if the user wants us to prompt them about closing unsaved images
     tempString = GetFromIni("General Preferences", "ConfirmClosingUnsaved")

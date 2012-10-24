@@ -890,6 +890,25 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     If b1 > 255 Then b1 = 255
     If b2 > 255 Then b2 = 255
     
+    'Finally, determine a checkerboard size based on the current user preference
+    Dim checkerSize As Byte
+    
+    Select Case AlphaCheckSize
+    
+        'Small (4x4 checks)
+        Case 0
+            checkerSize = 4
+            
+        'Medium (8x8 checks)
+        Case 1
+            checkerSize = 8
+        
+        'Large (16x16 checks)
+        Case Else
+            checkerSize = 16
+        
+    End Select
+    
     'Loop through the image, blending colors as we go
     For x = 0 To layerWidth - 1
         QuickX = x * 4
@@ -905,7 +924,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
             tmpAlpha = CSng(checkAlpha) / 255
             
             'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
-            If (((x \ 8) + (y \ 8)) And 1) = 0 Then
+            If (((x \ checkerSize) + (y \ checkerSize)) And 1) = 0 Then
                 iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r1, tmpAlpha)
                 iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g1, tmpAlpha)
                 iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b1, tmpAlpha)
