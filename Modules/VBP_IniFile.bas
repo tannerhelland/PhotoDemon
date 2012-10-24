@@ -148,7 +148,7 @@ Public Sub LoadINI()
             Print #fileNum, "AlphaCheckSize=1"
             Print #fileNum, "AutosizeLargeImages=0"
             Print #fileNum, "CanvasBackground=" & RGB(201, 211, 226)
-            Print #fileNum, "CanvasDropShadow=0"
+            Print #fileNum, "CanvasDropShadow=1"
             Print #fileNum, "CheckForUpdates=1"
             Print #fileNum, "ConfirmClosingUnsaved=1"
             Print #fileNum, "LastUpdateCheck="

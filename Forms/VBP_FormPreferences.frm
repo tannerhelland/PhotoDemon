@@ -218,7 +218,7 @@ Begin VB.Form FormPreferences
       Width           =   8295
       Begin VB.CheckBox chkDropShadow 
          Appearance      =   0  'Flat
-         Caption         =   " render drop shadow around image"
+         Caption         =   " draw a shadow between the image and the canvas"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -252,7 +252,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   35
-         ToolTipText     =   "This setting uses ""Segoe UI"" as the PhotoDemon Interface font"
+         ToolTipText     =   "This setting uses ""Segoe UI"" as the PhotoDemon interface font. Leaving it unchecked defaults to ""Tahoma""."
          Top             =   3150
          Width           =   7695
       End
