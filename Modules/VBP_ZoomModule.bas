@@ -42,6 +42,9 @@ Dim frontBuffer As pdLayer
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Dim cornerFix As pdLayer
 
+'canvasShadow contains a pdShadow object that helps us render a drop shadow around the image, if the user has requested such
+Dim canvasShadow As pdShadow
+
 'renderViewport is the last step in the viewport chain.  (PrepareViewport -> ScrollViewport -> renderViewport)
 ' It can only be executed after both PrepareViewport and ScrollViewport have been run at least once.  It assumes a fully composited backbuffer,
 ' which is then copied to the front buffer, and any final composites (such as a selection) are drawn atop that.
@@ -67,6 +70,70 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     
     End If
         
+    'If the user has requested a drop shadow drawn onto the canvas, handle that next
+    If CanvasDropShadow Then
+    
+        'The drop shadow can be any radius; 6 is the current default
+        Dim shadowSize As Long
+        shadowSize = 5
+    
+        'Initialize the shadow renderer if it hasn't already been initialized
+        If canvasShadow Is Nothing Then
+            Set canvasShadow = New pdShadow
+            canvasShadow.initializeSquareShadow shadowSize, 50, CanvasBackground
+        End If
+    
+        'We'll handle this in two steps; first, the horizontal stretches
+        If formToBuffer.VScroll.Visible = False Then
+                    
+            'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
+            If pdImages(formToBuffer.Tag).targetTop <> 0 Then
+            
+                'Top edge
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop - shadowSize, pdImages(formToBuffer.Tag).targetWidth, shadowSize, canvasShadow.singleHShadow.getLayerDC, 0, 0, 1, shadowSize, vbSrcCopy
+            
+                'Bottom edge
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).targetWidth, shadowSize, canvasShadow.singleHShadow2.getLayerDC, 0, 0, 1, shadowSize, vbSrcCopy
+            
+            End If
+        
+        End If
+        
+        'Second, the vertical stretches
+        If formToBuffer.HScroll.Visible = False Then
+                    
+            'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
+            If pdImages(formToBuffer.Tag).targetLeft <> 0 Then
+                        
+                'Left edge
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - shadowSize, pdImages(formToBuffer.Tag).targetTop, shadowSize, pdImages(formToBuffer.Tag).targetHeight, canvasShadow.singleVShadow.getLayerDC, 0, 0, shadowSize, 1, vbSrcCopy
+            
+                'Right edge
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop, shadowSize, pdImages(formToBuffer.Tag).targetHeight, canvasShadow.singleVShadow2.getLayerDC, 0, 0, shadowSize, 1, vbSrcCopy
+            
+            End If
+        
+        End If
+        
+        'Finally, the corners, which are only drawn if both scroll bars are invisible
+        If (formToBuffer.VScroll.Visible = False) And (formToBuffer.HScroll.Visible = False) Then
+        
+            'NW corner
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - shadowSize, pdImages(formToBuffer.Tag).targetTop - shadowSize, shadowSize, shadowSize, canvasShadow.nwShadow.getLayerDC, 0, 0, shadowSize, shadowSize, vbSrcCopy
+            
+            'NE corner
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop - shadowSize, shadowSize, shadowSize, canvasShadow.neShadow.getLayerDC, 0, 0, shadowSize, shadowSize, vbSrcCopy
+                    
+            'SE corner
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, shadowSize, shadowSize, canvasShadow.seShadow.getLayerDC, 0, 0, shadowSize, shadowSize, vbSrcCopy
+        
+            'SW corner
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - shadowSize, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, shadowSize, shadowSize, canvasShadow.swShadow.getLayerDC, 0, 0, shadowSize, shadowSize, vbSrcCopy
+        
+        End If
+    
+    End If
+    
     'In the future, additional compositing can be handled here.
     
     'Finally, flip the front buffer to the screen
@@ -114,10 +181,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     'These variables are the offset, as determined by the scroll bar values
     If formToBuffer.HScroll.Enabled Then srcX = formToBuffer.HScroll.Value Else srcX = 0
     If formToBuffer.VScroll.Enabled Then srcY = formToBuffer.VScroll.Value Else srcY = 0
-    
-    'Prepare the background (checkerboard or color, per the user's setting in Edit -> Preferences)
-    DrawSpecificCanvas formToBuffer
-    
+        
     'Paint the image from the back buffer to the front buffer
     If ZoomVal < 1 Then
         

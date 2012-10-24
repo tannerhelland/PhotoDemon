@@ -91,6 +91,9 @@ Public HasCreatedFilter As Boolean
 'How to draw the background of image forms; -1 is checkerboard, any other value is treated as an RGB long
 Public CanvasBackground As Long
 
+'Whether or not to render a drop shadow onto the canvas around the image
+Public CanvasDropShadow As Boolean
+
 'Does the user want us to prompt them when they try to close unsaved images?
 Public ConfirmClosingUnsaved As Boolean
 

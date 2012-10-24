@@ -554,7 +554,6 @@ Private Sub Form_Resize()
     
     'Redraw this form if certain criteria are met (image loaded, form visible, viewport adjustments allowed)
     If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And (Me.Visible = True) Then
-        DrawSpecificCanvas Me
         PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
     End If
     
