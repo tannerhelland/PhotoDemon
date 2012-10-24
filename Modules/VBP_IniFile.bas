@@ -147,7 +147,8 @@ Public Sub LoadINI()
             Print #fileNum, "AlphaCheckTwo=" & RGB(102, 102, 102)
             Print #fileNum, "AlphaCheckSize=1"
             Print #fileNum, "AutosizeLargeImages=0"
-            Print #fileNum, "CanvasBackground=16777215"
+            Print #fileNum, "CanvasBackground=" & RGB(201, 211, 226)
+            Print #fileNum, "CanvasDropShadow=0"
             Print #fileNum, "CheckForUpdates=1"
             Print #fileNum, "ConfirmClosingUnsaved=1"
             Print #fileNum, "LastUpdateCheck="
@@ -201,10 +202,25 @@ Public Sub LoadINI()
         Close #fileNum
     End If
 
-    'Get the Canvas background preference (color vs checkerboard pattern)
+    'Get the canvas background preference (color vs checkerboard pattern)
     tempString = GetFromIni("General Preferences", "CanvasBackground")
     x = Val(tempString)
+    'A value of -1 previously indicated a checkerboard background, which is no longer available.
+    ' If that values is found, overwrite it with a pleasant shade of blue.
+    If x = -1 Then
+        x = RGB(201, 211, 226)
+        WriteToIni "General Preferences", "CanvasBackground", CStr(RGB(201, 211, 226))
+    End If
     CanvasBackground = x
+    
+    'Get the canvas drop shadow preference
+    tempString = GetFromIni("General Preferences", "CanvasDropShadow")
+    If tempString = "" Then
+        CanvasDropShadow = False
+    Else
+        x = Val(tempString)
+        If x = 0 Then CanvasDropShadow = False Else CanvasDropShadow = True
+    End If
     
     'Get the alpha transparency checkerboard pattern
     tempString = GetFromIni("General Preferences", "AlphaCheckMode")

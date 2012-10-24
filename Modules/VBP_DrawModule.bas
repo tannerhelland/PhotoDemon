@@ -23,19 +23,19 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     dstWidth = dstPicture.ScaleWidth
     dstHeight = dstPicture.ScaleHeight
     
-    Dim srcWidth As Single, srcHeight As Single
+    Dim SrcWidth As Single, SrcHeight As Single
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     If pdImages(CurrentImage).selectionActive Then
-        srcWidth = pdImages(CurrentImage).mainSelection.selWidth
-        srcHeight = pdImages(CurrentImage).mainSelection.selHeight
+        SrcWidth = pdImages(CurrentImage).mainSelection.selWidth
+        SrcHeight = pdImages(CurrentImage).mainSelection.selHeight
     Else
-        srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
-        srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+        SrcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+        SrcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
     End If
     
     Dim srcAspect As Single, dstAspect As Single
-    srcAspect = srcWidth / srcHeight
+    srcAspect = SrcWidth / SrcHeight
     dstAspect = dstWidth / dstHeight
         
     'Now, use that aspect ratio to determine a proper size for our temporary layer
@@ -43,10 +43,10 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     
     If srcAspect > dstAspect Then
         newWidth = dstWidth
-        newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
+        newHeight = CSng(SrcHeight / SrcWidth) * newWidth + 0.5
     Else
         newHeight = dstHeight
-        newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
+        newWidth = CSng(SrcWidth / SrcHeight) * newHeight + 0.5
     End If
     
     'Normally this will draw a preview of FormMain.ActiveForm's relevant image.  However, another picture source can be specified.
@@ -91,31 +91,6 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
             otherPictureSrc.renderToPictureBox dstPicture
         End If
         
-    End If
-    
-End Sub
-
-'A simple routine to draw the canvas background; the public CanvasBackground variable is used to determine
-' draw mode: -1 is a checkerboard effect, any other value is treated as an RGB long
-Public Sub DrawSpecificCanvas(ByRef dstForm As Form)
-
-    '-1 indicates the user wants a checkerboard background pattern
-    If CanvasBackground = -1 Then
-
-        Dim stepIntervalX As Long, stepIntervalY As Long
-        stepIntervalX = dstForm.PicCH.ScaleWidth
-        stepIntervalY = dstForm.PicCH.ScaleHeight
-            
-        Dim x As Long, y As Long
-        Dim srchDC As Long
-        srchDC = dstForm.PicCH.hDC
-            
-        For x = 0 To pdImages(dstForm.Tag).backBuffer.getLayerWidth Step stepIntervalX
-        For y = 0 To pdImages(dstForm.Tag).backBuffer.getLayerHeight Step stepIntervalY
-            BitBlt pdImages(dstForm.Tag).backBuffer.getLayerDC, x, y, stepIntervalX, stepIntervalY, srchDC, 0, 0, vbSrcCopy
-        Next y
-        Next x
-    
     End If
     
 End Sub
