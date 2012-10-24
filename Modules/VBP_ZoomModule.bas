@@ -42,9 +42,6 @@ Dim frontBuffer As pdLayer
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Dim cornerFix As pdLayer
 
-'canvasShadow contains a pdShadow object that helps us render a drop shadow around the image, if the user has requested such
-Dim canvasShadow As pdShadow
-
 'renderViewport is the last step in the viewport chain.  (PrepareViewport -> ScrollViewport -> renderViewport)
 ' It can only be executed after both PrepareViewport and ScrollViewport have been run at least once.  It assumes a fully composited backbuffer,
 ' which is then copied to the front buffer, and any final composites (such as a selection) are drawn atop that.
@@ -73,28 +70,15 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     'If the user has requested a drop shadow drawn onto the canvas, handle that next
     If CanvasDropShadow Then
     
-        'The drop shadow can be any radius; 6 is the current default
-        Dim shadowSize As Long
-        shadowSize = 5
-    
-        'Initialize the shadow renderer if it hasn't already been initialized
-        If canvasShadow Is Nothing Then
-            Set canvasShadow = New pdShadow
-            canvasShadow.initializeSquareShadow shadowSize, 50, CanvasBackground
-        End If
-    
         'We'll handle this in two steps; first, the horizontal stretches
         If formToBuffer.VScroll.Visible = False Then
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
             If pdImages(formToBuffer.Tag).targetTop <> 0 Then
-            
                 'Top edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop - shadowSize, pdImages(formToBuffer.Tag).targetWidth, shadowSize, canvasShadow.singleHShadow.getLayerDC, 0, 0, 1, shadowSize, vbSrcCopy
-            
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetWidth, PD_CANVASSHADOWSIZE, canvasShadow.singleHShadow.getLayerDC, 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
                 'Bottom edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).targetWidth, shadowSize, canvasShadow.singleHShadow2.getLayerDC, 0, 0, 1, shadowSize, vbSrcCopy
-            
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).targetWidth, PD_CANVASSHADOWSIZE, canvasShadow.singleHShadow2.getLayerDC, 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
             End If
         
         End If
@@ -104,13 +88,10 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
             If pdImages(formToBuffer.Tag).targetLeft <> 0 Then
-                        
                 'Left edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - shadowSize, pdImages(formToBuffer.Tag).targetTop, shadowSize, pdImages(formToBuffer.Tag).targetHeight, canvasShadow.singleVShadow.getLayerDC, 0, 0, shadowSize, 1, vbSrcCopy
-            
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop, PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetHeight, canvasShadow.singleVShadow.getLayerDC, 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
                 'Right edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop, shadowSize, pdImages(formToBuffer.Tag).targetHeight, canvasShadow.singleVShadow2.getLayerDC, 0, 0, shadowSize, 1, vbSrcCopy
-            
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop, PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetHeight, canvasShadow.singleVShadow2.getLayerDC, 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
             End If
         
         End If
@@ -119,16 +100,13 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
         If (formToBuffer.VScroll.Visible = False) And (formToBuffer.HScroll.Visible = False) Then
         
             'NW corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - shadowSize, pdImages(formToBuffer.Tag).targetTop - shadowSize, shadowSize, shadowSize, canvasShadow.nwShadow.getLayerDC, 0, 0, shadowSize, shadowSize, vbSrcCopy
-            
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, canvasShadow.nwShadow.getLayerDC, 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'NE corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop - shadowSize, shadowSize, shadowSize, canvasShadow.neShadow.getLayerDC, 0, 0, shadowSize, shadowSize, vbSrcCopy
-                    
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, canvasShadow.neShadow.getLayerDC, 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'SE corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, shadowSize, shadowSize, canvasShadow.seShadow.getLayerDC, 0, 0, shadowSize, shadowSize, vbSrcCopy
-        
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, canvasShadow.seShadow.getLayerDC, 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'SW corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - shadowSize, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, shadowSize, shadowSize, canvasShadow.swShadow.getLayerDC, 0, 0, shadowSize, shadowSize, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, canvasShadow.swShadow.getLayerDC, 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
         
         End If
     

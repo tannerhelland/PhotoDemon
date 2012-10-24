@@ -39,9 +39,19 @@ Public swShadow As pdLayer, seShadow As pdLayer
 'Create the images necessary for rendering a drop shadow around a square object.
 Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStrength As Byte, ByVal backColor As Long)
 
-    'The shadow strength is just a value between 255 and 0, with 255 being white and 0 being black.
-    ' It is inverted so that higher numbers indicate "more strength"
-    shadowStrength = 255 - shadowStrength
+    'Note that the shadow strength is just a value between 255 and 0, which will be subtracted from pixel
+    ' color values in order to create a "shadow" illusion.
+    
+    'Create a look-up table of possible drop shadow blend values
+    Dim shadowLookup(0 To 255) As Byte
+    Dim i As Long
+    Dim tmpCalc As Long
+    
+    For i = 0 To 255
+        tmpCalc = Abs(i - shadowStrength)
+        If tmpCalc > 255 Then tmpCalc = 255
+        shadowLookup(i) = CByte(tmpCalc)
+    Next i
 
     Set singleHShadow = New pdLayer
     Set singleVShadow = New pdLayer
@@ -61,13 +71,12 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     'Loop through the image, alpha-blending a drop shadow effect as we go
-    Dim i As Long
     Dim loopSize As Long
     loopSize = shadowRadius - 1
     For i = 0 To loopSize
-        iData(2, i) = BlendColors(iData(2, i), shadowStrength, CSng(i / loopSize))
-        iData(1, i) = BlendColors(iData(1, i), shadowStrength, CSng(i / loopSize))
-        iData(0, i) = BlendColors(iData(0, i), shadowStrength, CSng(i / loopSize))
+        iData(2, i) = BlendColors(iData(2, i), shadowLookup(iData(2, i)), CSng(i / loopSize))
+        iData(1, i) = BlendColors(iData(1, i), shadowLookup(iData(1, i)), CSng(i / loopSize))
+        iData(0, i) = BlendColors(iData(0, i), shadowLookup(iData(0, i)), CSng(i / loopSize))
     Next i
     
     'Release our DIB pointer
@@ -84,9 +93,9 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     'Loop through the image, alpha-blending a drop shadow effect as we go
     For i = 0 To loopSize
         QuickX = i * 3
-        iData(QuickX + 2, 0) = BlendColors(iData(QuickX + 2, 0), shadowStrength, CSng(i / loopSize))
-        iData(QuickX + 1, 0) = BlendColors(iData(QuickX + 1, 0), shadowStrength, CSng(i / loopSize))
-        iData(QuickX, 0) = BlendColors(iData(QuickX, 0), shadowStrength, CSng(i / loopSize))
+        iData(QuickX + 2, 0) = BlendColors(iData(QuickX + 2, 0), shadowLookup(iData(QuickX + 2, 0)), CSng(i / loopSize))
+        iData(QuickX + 1, 0) = BlendColors(iData(QuickX + 1, 0), shadowLookup(iData(QuickX + 1, 0)), CSng(i / loopSize))
+        iData(QuickX, 0) = BlendColors(iData(QuickX, 0), shadowLookup(iData(QuickX, 0)), CSng(i / loopSize))
     Next i
     
     'Release our DIB pointer
@@ -120,9 +129,9 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     For y = 0 To loopSize
         distPixels = distanceTwoPoints(0, 0, x, y) / (shadowRadius - 1)
         If distPixels > 1 Then distPixels = 1
-        iData(QuickX + 2, y) = BlendColors(shadowStrength, iData(QuickX + 2, y), distPixels)
-        iData(QuickX + 1, y) = BlendColors(shadowStrength, iData(QuickX + 1, y), distPixels)
-        iData(QuickX, y) = BlendColors(shadowStrength, iData(QuickX, y), distPixels)
+        iData(QuickX + 2, y) = BlendColors(shadowLookup(iData(QuickX + 2, y)), iData(QuickX + 2, y), distPixels)
+        iData(QuickX + 1, y) = BlendColors(shadowLookup(iData(QuickX + 1, y)), iData(QuickX + 1, y), distPixels)
+        iData(QuickX, y) = BlendColors(shadowLookup(iData(QuickX, y)), iData(QuickX, y), distPixels)
     Next y
     Next x
         
@@ -143,9 +152,9 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     For y = 0 To loopSize
         distPixels = distanceTwoPoints(0, 0, x, y) / (shadowRadius - 1)
         If distPixels > 1 Then distPixels = 1
-        iData(QuickX + 2, y) = BlendColors(shadowStrength, iData(QuickX + 2, y), distPixels)
-        iData(QuickX + 1, y) = BlendColors(shadowStrength, iData(QuickX + 1, y), distPixels)
-        iData(QuickX, y) = BlendColors(shadowStrength, iData(QuickX, y), distPixels)
+        iData(QuickX + 2, y) = BlendColors(shadowLookup(iData(QuickX + 2, y)), iData(QuickX + 2, y), distPixels)
+        iData(QuickX + 1, y) = BlendColors(shadowLookup(iData(QuickX + 1, y)), iData(QuickX + 1, y), distPixels)
+        iData(QuickX, y) = BlendColors(shadowLookup(iData(QuickX, y)), iData(QuickX, y), distPixels)
     Next y
     Next x
         
@@ -166,9 +175,9 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     For y = 0 To loopSize
         distPixels = distanceTwoPoints(0, 0, x, y) / (shadowRadius - 1)
         If distPixels > 1 Then distPixels = 1
-        iData(QuickX + 2, loopSize - y) = BlendColors(shadowStrength, iData(QuickX + 2, loopSize - y), distPixels)
-        iData(QuickX + 1, loopSize - y) = BlendColors(shadowStrength, iData(QuickX + 1, loopSize - y), distPixels)
-        iData(QuickX, loopSize - y) = BlendColors(shadowStrength, iData(QuickX, loopSize - y), distPixels)
+        iData(QuickX + 2, loopSize - y) = BlendColors(shadowLookup(iData(QuickX + 2, loopSize - y)), iData(QuickX + 2, loopSize - y), distPixels)
+        iData(QuickX + 1, loopSize - y) = BlendColors(shadowLookup(iData(QuickX + 1, loopSize - y)), iData(QuickX + 1, loopSize - y), distPixels)
+        iData(QuickX, loopSize - y) = BlendColors(shadowLookup(iData(QuickX, loopSize - y)), iData(QuickX, loopSize - y), distPixels)
     Next y
     Next x
         
@@ -189,9 +198,9 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     For y = 0 To loopSize
         distPixels = distanceTwoPoints(0, 0, x, y) / (shadowRadius - 1)
         If distPixels > 1 Then distPixels = 1
-        iData(QuickX + 2, loopSize - y) = BlendColors(shadowStrength, iData(QuickX + 2, loopSize - y), distPixels)
-        iData(QuickX + 1, loopSize - y) = BlendColors(shadowStrength, iData(QuickX + 1, loopSize - y), distPixels)
-        iData(QuickX, loopSize - y) = BlendColors(shadowStrength, iData(QuickX, loopSize - y), distPixels)
+        iData(QuickX + 2, loopSize - y) = BlendColors(shadowLookup(iData(QuickX + 2, loopSize - y)), iData(QuickX + 2, loopSize - y), distPixels)
+        iData(QuickX + 1, loopSize - y) = BlendColors(shadowLookup(iData(QuickX + 1, loopSize - y)), iData(QuickX + 1, loopSize - y), distPixels)
+        iData(QuickX, loopSize - y) = BlendColors(shadowLookup(iData(QuickX, loopSize - y)), iData(QuickX, loopSize - y), distPixels)
     Next y
     Next x
         

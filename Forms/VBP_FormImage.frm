@@ -3,7 +3,7 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H00FFFFFF&
    Caption         =   "Image Window"
-   ClientHeight    =   2565
+   ClientHeight    =   2580
    ClientLeft      =   60
    ClientTop       =   345
    ClientWidth     =   6015
@@ -22,7 +22,7 @@ Begin VB.Form FormImage
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   171
+   ScaleHeight     =   172
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   401
    ShowInTaskbar   =   0   'False
@@ -31,7 +31,7 @@ Begin VB.Form FormImage
       Height          =   255
       LargeChange     =   10
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       TabStop         =   0   'False
       Top             =   3720
       Visible         =   0   'False
@@ -41,7 +41,7 @@ Begin VB.Form FormImage
       Height          =   3615
       LargeChange     =   10
       Left            =   6240
-      TabIndex        =   3
+      TabIndex        =   2
       TabStop         =   0   'False
       Top             =   120
       Visible         =   0   'False
@@ -70,27 +70,10 @@ Begin VB.Form FormImage
       ScaleHeight     =   16
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   16
-      TabIndex        =   1
-      Top             =   2640
-      Visible         =   0   'False
-      Width           =   240
-   End
-   Begin VB.PictureBox PicCH 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   270
-      Left            =   3480
-      Picture         =   "VBP_FormImage.frx":000C
-      ScaleHeight     =   16
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   16
       TabIndex        =   0
       Top             =   2640
       Visible         =   0   'False
-      Width           =   270
+      Width           =   240
    End
 End
 Attribute VB_Name = "FormImage"

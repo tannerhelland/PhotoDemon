@@ -30,3 +30,7 @@ Public Const REDUCECOLORS_AUTO As Long = 0
 Public Const REDUCECOLORS_MANUAL As Long = 1
 Public Const REDUCECOLORS_MANUAL_ERRORDIFFUSION As Long = 2
 
+'Constants for the drop shadow drawn around the image on the image canvas.  At some point these may become user-editable
+Public Const PD_CANVASSHADOWSIZE As Long = 5
+Public Const PD_CANVASSHADOWSTRENGTH As Long = 70
+

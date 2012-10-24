@@ -185,7 +185,7 @@ Public Sub LoadTheProgram()
     
     'Render various aspects of the UI
     LoadMessage "Initializing user interface..."
-    
+        
     'Manually create multi-line tooltips
     FormMain.cmdOpen.ToolTip = "Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop" & vbCrLf & " or Windows Explorer and dropping them onto PhotoDemon.)"
     If ConfirmClosingUnsaved Then
@@ -201,6 +201,10 @@ Public Sub LoadTheProgram()
     
     'Load the most-recently-used file list (MRU)
     MRU_LoadFromINI
+    
+    'Initialize the drop shadow engine
+    Set canvasShadow = New pdShadow
+    canvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, CanvasBackground
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."

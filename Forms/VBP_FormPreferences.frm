@@ -231,27 +231,10 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   375
          Left            =   240
-         TabIndex        =   41
+         TabIndex        =   40
          ToolTipText     =   " This setting helps images stand out from the canvas behind them"
          Top             =   810
          Width           =   5655
-      End
-      Begin VB.PictureBox picCanvasImg 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         ForeColor       =   &H80000008&
-         Height          =   270
-         Left            =   7920
-         Picture         =   "VBP_FormPreferences.frx":519A
-         ScaleHeight     =   16
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   16
-         TabIndex        =   38
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   270
       End
       Begin VB.CheckBox chkFancyFonts 
          Appearance      =   0  'Flat
@@ -336,7 +319,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":5224
+         MouseIcon       =   "VBP_FormPreferences.frx":519A
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -363,7 +346,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   120
-         TabIndex        =   40
+         TabIndex        =   39
          Top             =   2760
          Width           =   2190
       End
@@ -383,7 +366,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   120
-         TabIndex        =   39
+         TabIndex        =   38
          Top             =   1380
          Width           =   2445
       End
@@ -478,7 +461,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   20
-         ToolTipText     =   $"VBP_FormPreferences.frx":5376
+         ToolTipText     =   $"VBP_FormPreferences.frx":52EC
          Top             =   1080
          Width           =   6735
       End
@@ -598,7 +581,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":5412
+         MouseIcon       =   "VBP_FormPreferences.frx":5388
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -615,7 +598,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":5564
+         MouseIcon       =   "VBP_FormPreferences.frx":54DA
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -810,7 +793,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   25
-         ToolTipText     =   $"VBP_FormPreferences.frx":56B6
+         ToolTipText     =   $"VBP_FormPreferences.frx":562C
          Top             =   600
          Width           =   6975
       End
@@ -959,7 +942,7 @@ Private Sub cmbCanvas_Click()
             CD1.VBChooseColor retColor, True, True, False, Me.HWnd
     
             'If a color was selected, change the picture box and associated combo box to match
-            If retColor > 0 Then CanvasBackground = retColor Else CanvasBackground = picCanvasColor.backColor
+            If retColor >= 0 Then CanvasBackground = retColor Else CanvasBackground = picCanvasColor.backColor
             
     End Select
     
@@ -1023,6 +1006,7 @@ Private Sub CmdOK_Click()
     If chkDropShadow.Value = vbChecked Then
         CanvasDropShadow = True
         WriteToIni "General Preferences", "CanvasDropShadow", 1
+        canvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, CanvasBackground
     Else
         CanvasDropShadow = False
         WriteToIni "General Preferences", "CanvasDropShadow", 0
@@ -1212,7 +1196,6 @@ End Sub
 'Draw a sample of the current background to the PicCanvasColor picture box
 Private Sub DrawSampleCanvasBackground()
     
-    Me.picCanvasColor.Picture = LoadPicture("")
     Me.picCanvasColor.backColor = CanvasBackground
     Me.picCanvasColor.Refresh
     Me.picCanvasColor.Enabled = True
@@ -1287,7 +1270,7 @@ Private Sub picCanvasColor_Click()
     CD1.VBChooseColor retColor, True, True, False, Me.HWnd
     
     'If a color was selected, change the picture box and associated combo box to match
-    If retColor > 0 Then
+    If retColor >= 0 Then
     
         CanvasBackground = retColor
         

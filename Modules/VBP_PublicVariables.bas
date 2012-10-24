@@ -94,6 +94,9 @@ Public CanvasBackground As Long
 'Whether or not to render a drop shadow onto the canvas around the image
 Public CanvasDropShadow As Boolean
 
+'canvasShadow contains a pdShadow object that helps us render a drop shadow around the image, if the user requests it
+Public canvasShadow As pdShadow
+
 'Does the user want us to prompt them when they try to close unsaved images?
 Public ConfirmClosingUnsaved As Boolean
 
