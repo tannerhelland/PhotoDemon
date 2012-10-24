@@ -332,7 +332,7 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "interface preferences"
+         Caption         =   "interface text"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -348,11 +348,11 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   39
          Top             =   2760
-         Width           =   2190
+         Width           =   1365
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "load / save preferences"
+         Caption         =   "load / save behavior"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -368,7 +368,7 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   38
          Top             =   1380
-         Width           =   2445
+         Width           =   2145
       End
       Begin VB.Label lblImgOpen 
          AutoSize        =   -1  'True
@@ -412,7 +412,7 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "canvas preferences"
+         Caption         =   "canvas appearance"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -428,7 +428,7 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   8
          Top             =   0
-         Width           =   1995
+         Width           =   1980
       End
    End
    Begin VB.PictureBox picContainer 

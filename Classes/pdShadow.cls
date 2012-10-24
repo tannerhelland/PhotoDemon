@@ -29,12 +29,12 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Four images are used for the straight stretches of drop shadow - two for vertical, two for horizontal
-Public singleHShadow As pdLayer, singleHShadow2 As pdLayer
-Public singleVShadow As pdLayer, singleVShadow2 As pdLayer
+Private singleHShadow As pdLayer, singleHShadow2 As pdLayer
+Private singleVShadow As pdLayer, singleVShadow2 As pdLayer
 
 'Four more images are used for the corners.
-Public nwShadow As pdLayer, neShadow As pdLayer
-Public swShadow As pdLayer, seShadow As pdLayer
+Private nwShadow As pdLayer, neShadow As pdLayer
+Private swShadow As pdLayer, seShadow As pdLayer
 
 'Create the images necessary for rendering a drop shadow around a square object.
 Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStrength As Byte, ByVal backColor As Long)
@@ -208,3 +208,36 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     
 End Sub
+
+'Return a DC to one of the class's internal shadow images.  Possible values include:
+' 0 - Top edge
+' 1 - Bottom edge
+' 2 - Left edge
+' 3 - Right edge
+' 4 - Top-left corner
+' 5 - Top-right corner
+' 6 - Bottom-left corner
+' 7 - Bottom-right corner
+Public Function getShadowDC(ByVal dcToReturn As Long) As Long
+
+    Select Case dcToReturn
+    
+        Case 0
+            getShadowDC = singleHShadow.getLayerDC
+        Case 1
+            getShadowDC = singleHShadow2.getLayerDC
+        Case 2
+            getShadowDC = singleVShadow.getLayerDC
+        Case 3
+            getShadowDC = singleVShadow2.getLayerDC
+        Case 4
+            getShadowDC = nwShadow.getLayerDC
+        Case 5
+            getShadowDC = neShadow.getLayerDC
+        Case 6
+            getShadowDC = swShadow.getLayerDC
+        Case 7
+            getShadowDC = seShadow.getLayerDC
+    End Select
+
+End Function
