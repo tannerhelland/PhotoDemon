@@ -134,6 +134,56 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
     
 End Sub
 
+'Resize the window so that all four edges are within the current viewport.
+Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = False)
+        
+    If NumOfWindows = 0 Then Exit Sub
+    
+    Dim resizeNeeded As Boolean
+    resizeNeeded = False
+        
+    'Make sure the window isn't minimized or maximized
+    If FormMain.ActiveForm.WindowState = 0 Then
+    
+        'Prevent automatic recalculation of the viewport scroll bars until we finish our calculations here
+        FixScrolling = False
+        
+        'Start by determining if the image's canvas falls outside the viewport area.  Note that we will repeat this process
+        ' twice: once for horizontal, and again for vertical.
+        If FormMain.ActiveForm.Left + FormMain.ActiveForm.Width > FormMain.ScaleWidth Then
+            
+            resizeNeeded = True
+            
+            'This variable determines the difference between the MDI client area's available width and the current child form's
+            ' width, taking into account the .Left position and an arbitrary offset (currently 12 pixels)
+            Dim newWidth As Long
+            newWidth = FormMain.ScaleWidth - FormMain.ActiveForm.Left - (12 * Screen.TwipsPerPixelX)
+            FormMain.ActiveForm.Width = newWidth
+            
+        End If
+        
+        'Now repeat the process for the vertical measurement
+        If FormMain.ActiveForm.Top + FormMain.ActiveForm.Height > FormMain.ScaleHeight Then
+        
+            resizeNeeded = True
+        
+            Dim newHeight As Long
+            newHeight = FormMain.ScaleHeight - FormMain.ActiveForm.Top - (12 * Screen.TwipsPerPixelY)
+            FormMain.ActiveForm.Height = newHeight
+            
+        End If
+            
+        'Re-enable scrolling
+        FixScrolling = True
+        
+    End If
+    
+    'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
+    ' the window was actually fit to the image (unless suppressRendering is specified, obviously)
+    If (suppressRendering = False) And resizeNeeded Then PrepareViewport FormMain.ActiveForm, "FitWindowToViewport"
+    
+End Sub
+
 'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
 Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = False)
     

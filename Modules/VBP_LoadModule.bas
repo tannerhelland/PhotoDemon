@@ -592,6 +592,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 FormMain.ActiveForm.Left = targetImage.WindowLeft
                 FormMain.ActiveForm.Top = targetImage.WindowTop
             End If
+            
+            'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
+            ' bottom edges don't fall outside the MDI client area
+            'If the user wants us to resize the image to fit on-screen, do that now
+            If AutosizeLargeImages = 1 Then FitWindowToViewport
         
         End If
         

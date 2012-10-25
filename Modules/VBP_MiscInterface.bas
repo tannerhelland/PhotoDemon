@@ -86,6 +86,10 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         ' at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
                         
+                        
+        'STEP 4: apply theming.  This is a work in progress, and right now only two themes are available (light and dark).
+        ' There's no reason that more themes couldn't exist, but it's a lot of work to design and test them.
+        
     Next
     
     'Refresh all non-MDI forms after making the changes above
