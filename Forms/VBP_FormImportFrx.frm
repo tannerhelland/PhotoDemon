@@ -250,7 +250,7 @@ Private Sub CmdOK_Click()
     
     'Save this picture to a temporary file
     Dim tmpFRXFile As String
-    tmpFRXFile = TempPath & "PDFRXInterface.tmp"
+    tmpFRXFile = userPreferences.getTempPath & "PDFRXInterface.tmp"
     SavePicture PicLoadImage.Picture, tmpFRXFile
     
     'Because PreLoadImage requires a string array, create one to send it
@@ -284,7 +284,7 @@ Private Sub Form_Load()
     
     'Get the last "open FRX" path from the INI file
     Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "ImportFRX")
+    tempPathString = userPreferences.GetPreference_String("Program Paths", "ImportFRX", "")
     
     'File returned from the CommonDialog
     Dim sFile As String
@@ -304,7 +304,7 @@ TryBinaryImportAgain:
         sFile = Left$(sFile, lstrlen(sFile))
         tempPathString = sFile
         StripDirectory tempPathString
-        WriteToIni "Program Paths", "ImportFRX", tempPathString
+        userPreferences.SetPreference_String "Program Paths", "ImportFRX", tempPathString
    
         'Assign the file (note: this may take some time if the file is invalid)
         m_cff.Path = sFile

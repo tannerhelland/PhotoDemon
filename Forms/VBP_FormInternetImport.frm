@@ -176,7 +176,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     makeValidWindowsFilename tmpFileName
     
     Dim tmpFile As String
-    tmpFile = TempPath & tmpFileName
+    tmpFile = userPreferences.getTempPath & tmpFileName
     
     'Open the temporary file and begin downloading the image to it
     Message "Image URL verified.  Downloading image..."

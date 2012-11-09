@@ -580,7 +580,7 @@ Private Sub cmdLoadList_Click()
     
     'Get the last "open/save image list" path from the INI file
     Dim tempPathString As String
-    tempPathString = GetFromIni("Batch Preferences", "ListFolder")
+    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
     
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -591,7 +591,7 @@ Private Sub cmdLoadList_Click()
         Dim listPath As String
         listPath = sFile
         StripDirectory listPath
-        WriteToIni "Batch Preferences", "ListFolder", listPath
+        userPreferences.SetPreference_String "Batch Preferences", "ListFolder", listPath
         
         Dim fileNum As Integer
         fileNum = FreeFile
@@ -656,7 +656,7 @@ Private Sub cmdSaveList_Click()
     
     'Get the last "open/save image list" path from the INI file
     Dim tempPathString As String
-    tempPathString = GetFromIni("Batch Preferences", "ListFolder")
+    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
     
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -667,7 +667,7 @@ Private Sub cmdSaveList_Click()
         Dim listPath As String
         listPath = sFile
         StripDirectory listPath
-        WriteToIni "Batch Preferences", "ListFolder", listPath
+        userPreferences.SetPreference_String "Batch Preferences", "ListFolder", listPath
         
         If FileExist(sFile) Then Kill sFile
         Dim fileNum As Integer
@@ -694,14 +694,14 @@ Private Sub cmdSelectMacro_Click()
     
     'Get the last macro-related path from the INI file
     Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "Macro")
+    tempPathString = userPreferences.GetPreference_String("Program Paths", "Macro", "")
    
     'If we get a path, load that file
     If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, "Open Macro File", "." & MACRO_EXT, FormMain.HWnd, OFN_HIDEREADONLY) Then
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
-        WriteToIni "Program Paths", "Macro", tempPathString
+        userPreferences.SetPreference_String "Program Paths", "Macro", tempPathString
         
         'Remember this path for the other routines
         LocationOfMacroFile = sFile
@@ -737,8 +737,8 @@ Private Sub CmdOK_Click()
     Me.Visible = False
     
     'Before doing anything, save relevant options to the INI file
-    WriteToIni "Batch Preferences", "DriveBox", Drive1
-    WriteToIni "Batch Preferences", "InputFolder", Dir1.Path
+    userPreferences.SetPreference_String "Batch Preferences", "DriveBox", Drive1
+    userPreferences.SetPreference_String "Batch Preferences", "InputFolder", Dir1.Path
 
     'Let the rest of the program know that batch processing has begun
     MacroStatus = MacroBATCH
@@ -822,7 +822,7 @@ Private Sub CmdOK_Click()
             If curBatchFile > 0 Then Unload pdImages(CurrentImage - 1).containingForm
             
             'If a good number of images have been processed, we can start to estimate the amount of time remaining
-            If curBatchFile > 40 Then
+            If (curBatchFile > 40) And ((curBatchFile And 3) = 0) Then
                 timeElapsed = GetTickCount - timeStarted
                 numFilesProcessed = curBatchFile + 1
                 numFilesRemaining = totalNumOfFiles - numFilesProcessed
@@ -908,7 +908,7 @@ Private Sub cmdSelectOutputPath_Click()
         txtOutputPath.Text = FixPath(tString)
     
         'Save this new directory as the default path for future usage
-        WriteToIni "Batch Preferences", "OutputFolder", tString
+        userPreferences.SetPreference_String "Batch Preferences", "OutputFolder", tString
     End If
 End Sub
 
@@ -1008,12 +1008,12 @@ Private Sub Form_Load()
     
     'Build default paths from INI file values
     Dim tempPathString As String
-    tempPathString = GetFromIni("Batch Preferences", "DriveBox")
+    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "DriveBox", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then Drive1 = tempPathString
-    tempPathString = GetFromIni("Batch Preferences", "InputFolder")
+    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "InputFolder", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
     File1.Path = Dir1
-    tempPathString = GetFromIni("Batch Preferences", "OutputFolder")
+    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "OutputFolder", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = Dir1
     
     'Options for output filenames

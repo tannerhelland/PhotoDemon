@@ -27,13 +27,13 @@ Public Const RECENT_FILE_COUNT = 9
 Public Sub MRU_LoadFromINI()
 
     'Get the number of MRU entries from the INI file
-    numEntries = CLng(GetFromIni("MRU", "NumberOfEntries"))
+    numEntries = userPreferences.GetPreference_Long("MRU", "NumberOfEntries", RECENT_FILE_COUNT)
     
     'Only load entries if MRU data exists
     If numEntries > 0 Then
         ReDim MRUlist(0 To numEntries) As String
         For x = 0 To numEntries - 1
-            MRUlist(x) = GetFromIni("MRU", "f" & x)
+            MRUlist(x) = userPreferences.GetPreference_String("MRU", "f" & x, "")
             If x <> 0 Then
                 Load FormMain.mnuRecDocs(x)
             Else
@@ -56,12 +56,12 @@ End Sub
 Public Sub MRU_SaveToINI()
 
     'Save the number of current entries
-    WriteToIni "MRU", "NumberOfEntries", CStr(numEntries)
+    userPreferences.SetPreference_Long "MRU", "NumberOfEntries", numEntries
     
     'Only save entries if MRU data exists
     If numEntries <> 0 Then
         For x = 0 To numEntries - 1
-            WriteToIni "MRU", "f" & x, MRUlist(x)
+            userPreferences.SetPreference_String "MRU", "f" & x, MRUlist(x)
         Next x
     End If
     
@@ -160,11 +160,11 @@ Public Sub MRU_ClearList()
     
     'Clear all entries in the INI file
     For x = 0 To RECENT_FILE_COUNT - 1
-        WriteToIni "MRU", "f" & x, ""
+        userPreferences.SetPreference_String "MRU", "f" & x, ""
     Next x
     
     'Tell the INI that no files are left
-    WriteToIni "MRU", "NumberOfEntries", 0
+    userPreferences.SetPreference_Long "MRU", "NumberOfEntries", 0
     
     'The icons in the MRU sub-menu need to be reset after this action
     ResetMenuIcons

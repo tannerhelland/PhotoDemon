@@ -34,7 +34,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
     'Get the last "open image" path from the INI file
     Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "MainOpen")
+    tempPathString = userPreferences.GetPreference_String("Program Paths", "MainOpen", "")
     
     Set CC = New cCommonDialog
     Dim cdfStr As String
@@ -123,7 +123,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
             ReDim Preserve listOfFiles(0 To UBound(listOfFiles) - 1)
             
             'Save the new directory as the default path for future usage
-            WriteToIni "Program Paths", "MainOpen", imagesPath
+            userPreferences.SetPreference_String "Program Paths", "MainOpen", imagesPath
             
         'If there is only one file in the array (e.g. the user only opened one image), we don't need to do all
         ' that extra processing - just save the new directory to the INI file
@@ -133,12 +133,12 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
             tempPathString = listOfFiles(0)
             StripDirectory tempPathString
         
-            WriteToIni "Program Paths", "MainOpen", tempPathString
+            userPreferences.SetPreference_String "Program Paths", "MainOpen", tempPathString
             
         End If
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
-        WriteToIni "File Formats", "LastOpenFilter", CStr(LastOpenFilter)
+        userPreferences.SetPreference_Long "File Formats", "LastOpenFilter", LastOpenFilter
         
         'All done!
         PhotoDemon_OpenImageDialog = True
@@ -185,7 +185,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     
     'Get the last "save image" path from the INI file
     Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "MainSave")
+    tempPathString = userPreferences.GetPreference_String("Program Paths", "MainSave", "")
     
     Dim cdfStr As String
     
@@ -227,10 +227,10 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
-        WriteToIni "Program Paths", "MainSave", tempPathString
+        userPreferences.SetPreference_String "Program Paths", "MainSave", tempPathString
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
-        WriteToIni "File Formats", "LastSaveFilter", CStr(LastSaveFilter)
+        userPreferences.SetPreference_Long "File Formats", "LastSaveFilter", LastSaveFilter
         
         pdImages(imageID).containingForm.Caption = sFile
         SaveFileName = sFile

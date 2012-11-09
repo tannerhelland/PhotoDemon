@@ -69,7 +69,7 @@ Public Sub Twain32Scan()
     ScanCheck = -5
     
     'A temporary file is required by the scanner; we will place it in the project folder, then delete it when finished
-    ScannerCaptureFile = TempPath & "PDScanInterface.tmp"
+    ScannerCaptureFile = userPreferences.getTempPath & "PDScanInterface.tmp"
     
     'This line uses the EZTW32.dll file to scan the image and send it to a temporary file
     ScanCheck = TWAIN_AcquireToFilename(FormMain.HWnd, ScannerCaptureFile)

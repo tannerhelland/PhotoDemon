@@ -6,6 +6,9 @@ Attribute VB_Name = "Public_Variables"
 
 Option Explicit
 
+'Main user preferences and settings handler
+Public userPreferences As pdPreferences
+
 'Progress bar class
 Public cProgBar As cProgressBar
 
@@ -48,19 +51,19 @@ Public Zoom As ZoomData
 Public AutosizeLargeImages As Long
 
 'Where is this application located?
-Public ProgramPath As String
+'Public ProgramPath As String
 
 'The path where the program's extra data is kept.  This is currently "ProgramPath\Data\"
-Public DataPath As String
+'Public DataPath As String
 
 'The path where DLLs and related support libraries are kept, currently "ProgramPath\Data\Plugins\"
 Public PluginPath As String
 
 'The default folder for saved macros, currently "ProgramPath\Data\Macros\"
-Public MacroPath As String
+'Public MacroPath As String
 
 'The default folder for saved convolution filters, currently "ProgramPath\Data\Filter\"
-Public FilterPath As String
+'Public FilterPath As String
 
 'Command line (used here for processing purposes)
 Public CommandLine As String

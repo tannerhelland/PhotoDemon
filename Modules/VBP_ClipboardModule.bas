@@ -67,11 +67,11 @@ Public Sub ClipboardPaste()
         'Create a temporary layer and copy the temporary StdPicture object into it
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
-        tmpLayer.createFromPicture tmpPicture
+        tmpLayer.CreateFromPicture tmpPicture
         
         'Ask the layer to write its contents to file in BMP format
         Dim tmpClipboardFile As String
-        tmpClipboardFile = TempPath & "PDClipboard.tmp"
+        tmpClipboardFile = userPreferences.getTempPath & "PDClipboard.tmp"
         tmpLayer.writeToBitmapFile tmpClipboardFile
         
         'Now that the image is saved on the hard drive, we can delete our temporary objects

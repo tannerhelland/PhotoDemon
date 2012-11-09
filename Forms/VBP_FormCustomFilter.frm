@@ -882,8 +882,8 @@ Private Sub CmdOK_Click()
     'Set that we have created a filter during this program session, and save it accordingly
     HasCreatedFilter = True
     
-    SaveCustomFilter TempPath & "~PD_CF.tmp"
-    Process CustomFilter, TempPath & "~PD_CF.tmp"
+    SaveCustomFilter userPreferences.getTempPath & "~PD_CF.tmp"
+    Process CustomFilter, userPreferences.getTempPath & "~PD_CF.tmp"
     
     Unload Me
     
@@ -900,7 +900,7 @@ Private Sub Form_Activate()
     DrawPreviewImage picPreview
     
     'If a filter has been used previously, load it from the temp file
-    If HasCreatedFilter = True Then OpenCustomFilter TempPath & "~PD_CF.tmp"
+    If HasCreatedFilter = True Then OpenCustomFilter userPreferences.getTempPath & "~PD_CF.tmp"
     
     'Draw the right preview
     updatePreview
@@ -913,19 +913,14 @@ End Sub
 Private Sub cmdOpen_Click()
     'Simple open dialog
     Dim CC As cCommonDialog
-    
-    'Get the last "open image" path from the INI file
-    FilterPath = GetFromIni("Program Paths", "CustomFilter")
-    
+        
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , FilterPath, "Open a custom filter", , FormCustomFilter.HWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , userPreferences.getFilterPath, "Open a custom filter", , FormCustomFilter.HWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
             
             'Save the new directory as the default path for future usage
-            FilterPath = sFile
-            StripDirectory FilterPath
-            WriteToIni "Program Paths", "CustomFilter", FilterPath
+            userPreferences.setFilterPath sFile
             
             'Redraw the preview
             updatePreview
@@ -942,19 +937,14 @@ Private Sub cmdSave_Click()
     
     'Simple save dialog
     Dim CC As cCommonDialog
-    
-    'Get the last "open image" path from the INI file
-    FilterPath = GetFromIni("Program Paths", "CustomFilter")
-    
+        
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , FilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , userPreferences.getFilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.HWnd, 0) Then
         
         'Save the new directory as the default path for future usage
-        FilterPath = sFile
-        StripDirectory FilterPath
-        WriteToIni "Program Paths", "CustomFilter", FilterPath
- 
+        userPreferences.setFilterPath sFile
+        
         'Write out the file
         SaveCustomFilter sFile
         

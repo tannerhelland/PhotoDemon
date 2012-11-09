@@ -328,7 +328,7 @@ Option Explicit
 'Do not download the update, but prompt the user again in the future
 Private Sub cmdNoDownload_Click()
     
-    WriteToIni "General Preferences", "CheckForUpdates", 1
+    userPreferences.SetPreference_Boolean "General Preferences", "CheckForUpdates", True
     
     Message "Automatic update canceled."
     
@@ -348,7 +348,7 @@ End Sub
 'Do not download the update, and do not prompt the user again
 Private Sub cmdNoDownloadNoReminder_Click()
     
-    WriteToIni "General Preferences", "CheckForUpdates", 0
+    userPreferences.SetPreference_Boolean "General Preferences", "CheckForUpdates", False
     
     Message "Automatic update canceled."
     

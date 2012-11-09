@@ -22,7 +22,7 @@ Public Function FixPath(ByVal tempString As String) As String
     End If
 End Function
 
-'Pull the directory out of a filename
+'Given a full file name, remove everything but the directory structure
 Public Sub StripDirectory(ByRef sString As String)
     
     Dim x As Long
@@ -35,7 +35,6 @@ Public Sub StripDirectory(ByRef sString As String)
     Next x
     
 End Sub
-
 'Pull the filename ONLY (no directory) off a path
 Public Sub StripFilename(ByRef sString As String)
     

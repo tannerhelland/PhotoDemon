@@ -45,37 +45,40 @@ Public Const MacroCANCEL As Long = 128
 Public MacroMessage As String
 
 Public Sub StartMacro()
-    'Easy - set the flag and start recording
+
+    'Set the program-wide "recording" flag
     MacroStatus = MacroSTART
+    
+    'Resize the array that will hold the macro data
     CurrentCall = 1
-    'Transfer the sub data into an array for tracking
     ReDim Calls(0 To CurrentCall) As ProcessCall
+    
+    'Notify the user that recording has begun
     Message "Macro recording started."
     FormMain.lblRecording.Visible = True
+
 End Sub
 
 Public Sub StopMacro()
+
     MacroStatus = MacroSTOP
+    Message "Macro recording stopped."
+    
     'Automatically launch the save macro data routine
     Dim CC As cCommonDialog
     Dim sFile As String
     Set CC = New cCommonDialog
-    
-    'Get the last macro-related path from the INI file
-    MacroPath = GetFromIni("Program Paths", "Macro")
-        
+            
     'If the user cancels the save dialog, give them another chance to save - just in case
     Dim mReturn As VbMsgBoxResult
      
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , MacroPath, "Save macro data", "." & MACRO_EXT, FormMain.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , userPreferences.getMacroPath, "Save macro data", "." & MACRO_EXT, FormMain.HWnd, 0) Then
         
-        'Save the new directory as the default path for future usage
-        MacroPath = sFile
-        StripDirectory MacroPath
-        WriteToIni "Program Paths", "Macro", MacroPath
+        'Save this macro's directory as the default macro path
+        userPreferences.setMacroPath sFile
 
         'Delete any existing file (overwrite) and dump the info to file
         If FileExist(sFile) = True Then Kill sFile
@@ -92,35 +95,38 @@ SaveMacroAgain:
             ReDim Preserve Calls(CurrentCall) As ProcessCall
             Put #fileNum, , Calls
         Close #fileNum
+        
+        Message "Macro saved successfully."
+        
     Else
         
         mReturn = MsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbCritical + vbYesNo, "Warning: Last Chance to Save Macro")
         If mReturn = vbNo Then GoTo SaveMacroAgain
-            
+        
+        Message "Macro abandoned."
+        
     End If
-    Message "Macro recording stopped."
+    
     FormMain.lblRecording.Visible = False
     CurrentCall = 0
+    
 End Sub
 
 Public Sub PlayMacro()
+
     'Automatically launch the load Macro data routine
     Dim CC As cCommonDialog
     Dim sFile As String
     Set CC = New cCommonDialog
-    
-    'Get the last macro-related path from the INI file
-    MacroPath = GetFromIni("Program Paths", "Macro")
    
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , MacroPath, "Open Macro File", "." & MACRO_EXT, FormMain.HWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , userPreferences.getMacroPath, "Open Macro File", "." & MACRO_EXT, FormMain.HWnd, OFN_HIDEREADONLY) Then
+        
         Message "Loading macro data..."
         
-        'Save the new directory as the default path for future usage
-        MacroPath = sFile
-        StripDirectory MacroPath
-        WriteToIni "Program Paths", "Macro", MacroPath
-        
+        'Save this macro's folder as the default macro path
+        userPreferences.setMacroPath sFile
+                
         PlayMacroFromFile sFile
         
     Else

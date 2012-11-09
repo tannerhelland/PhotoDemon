@@ -362,7 +362,9 @@ Dim dProgBar As cProgressBar
 
 'Do not download the plugins, but prompt the user again in the future
 Private Sub cmdNoDownload_Click()
-    WriteToIni "General Preferences", "PromptForPluginDownload", 1
+
+    userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", True
+    
     If hInternetSession Then InternetCloseHandle hInternetSession
     Message "Automatic update canceled."
     
@@ -381,7 +383,9 @@ End Sub
 
 'Do not download the plugins, and do not prompt the user again
 Private Sub cmdNoDownloadNoReminder_Click()
-    WriteToIni "General Preferences", "PromptForPluginDownload", 0
+
+    userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", False
+    
     If hInternetSession Then InternetCloseHandle hInternetSession
     Message "Automatic update canceled."
     

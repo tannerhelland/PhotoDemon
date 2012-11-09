@@ -35,25 +35,17 @@ Public Sub LoadTheProgram()
     FormSplash.Show 0
     DoEvents
     
-    'First things first: figure out where this .exe was launched from
-    ProgramPath = App.Path
-    If Right(ProgramPath, 1) <> "\" Then ProgramPath = ProgramPath & "\"
+    'Initialize a preferences and settings handler
+    Set userPreferences = New pdPreferences
     
-    'Create a "Data" path based off the ProgramPath - this is where plugins, the INI file, Help, and more are stored.
-    ' Also, make sure the directory exists; if it doesn't, create it.
-    DataPath = ProgramPath & "Data\"
-    If Not DirectoryExist(DataPath) Then MkDir DataPath
+    'Ask the new preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them)
+    LoadMessage "Initializing all program directories..."
+    userPreferences.initializePaths
     
-    'Within the \Data subfolder, check for two more folders - one for saved Macros and another for saved convolution filters
-    MacroPath = DataPath & "Macros\"
-    If Not DirectoryExist(MacroPath) Then MkDir MacroPath
-    
-    FilterPath = DataPath & "Filters\"
-    If Not DirectoryExist(FilterPath) Then MkDir FilterPath
-    
-    'Now, before doing anything else, load the INI file and corresponding data (via the INIProcessor module)
-    LoadINI
-    
+    'Now, ask the preferences handler to load all other user settings from the INI file
+    LoadMessage "Loading all user settings..."
+    userPreferences.loadUserSettings
+        
     'Check for plug-ins (we do this early, because other routines rely on this knowledge)
     ' (Note that this is also the routine that checks GDI+ availability, despite it not really being a "plugin")
     LoadMessage "Loading plugins..."
@@ -69,8 +61,8 @@ Public Sub LoadTheProgram()
     MacroStatus = MacroSTOP
     
     'Set the default common dialog filters
-    LastOpenFilter = CLng(GetFromIni("File Formats", "LastOpenFilter"))
-    LastSaveFilter = CLng(GetFromIni("File Formats", "LastSaveFilter"))
+    LastOpenFilter = userPreferences.GetPreference_Long("File Formats", "LastOpenFilter", 1)
+    LastSaveFilter = userPreferences.GetPreference_Long("File Formats", "LastSaveFilter", 3)
     
     'No images have been loaded yet
     NumOfImagesLoaded = 0
@@ -171,10 +163,7 @@ Public Sub LoadTheProgram()
     
     'Set the zoom box to display "100%"
     FormMain.CmbZoom.ListIndex = zoomIndex100
-    
-    'Get the auto-zoom preference from the INI file
-    AutosizeLargeImages = CLng(GetFromIni("General Preferences", "AutosizeLargeImages"))
-    
+        
     'Initialize the selection box next
     LoadMessage "Initializing selection tool..."
     FormMain.cmbSelRender.AddItem "Lightbox", 0
@@ -821,7 +810,7 @@ End Sub
 Public Sub LoadPlugins()
     
     'Plugin files are located in the \Data\Plugins subdirectory
-    PluginPath = DataPath & "Plugins\"
+    PluginPath = userPreferences.getDataPath & "Plugins\"
     
     'Make sure the plugin path exists
     If Not DirectoryExist(PluginPath) Then MkDir PluginPath
@@ -830,7 +819,7 @@ Public Sub LoadPlugins()
     ' and if plugin-related files are found, copy them to the new directory
     On Error Resume Next
     Dim tmpPluginPath As String
-    tmpPluginPath = ProgramPath & "Plugins\"
+    tmpPluginPath = userPreferences.getProgramPath & "Plugins\"
     
     If DirectoryExist(tmpPluginPath) Then
         LoadMessage "Copying plugin files to new \Data\Plugins subdirectory"
@@ -981,7 +970,11 @@ Public Sub DuplicateCurrentImage()
     Message "Resizing image to fit screen..."
     
     'If the user wants us to resize the image to fit on-screen, do that now
-    If AutosizeLargeImages = 0 Then FitImageToViewport True
+    If AutosizeLargeImages = 0 Then
+        FitImageToViewport True
+    Else
+        FitWindowToViewport True
+    End If
                 
     'If the window is not maximized or minimized, fit the form around the picture box
     If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True

@@ -473,7 +473,7 @@ Private Sub cmdExportHistogram_Click()
     
     'Get the last "save image" path from the INI file
     Dim tempPathString As String
-    tempPathString = GetFromIni("Program Paths", "MainSave")
+    tempPathString = userPreferences.GetPreference_String("Program Paths", "MainSave", "")
     
     Dim cdfStr As String
     
@@ -501,7 +501,7 @@ Private Sub cmdExportHistogram_Click()
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
-        WriteToIni "Program Paths", "MainSave", tempPathString
+        userPreferences.SetPreference_String "Program Paths", "MainSave", tempPathString
         
         Message "Saving histogram to file..."
         

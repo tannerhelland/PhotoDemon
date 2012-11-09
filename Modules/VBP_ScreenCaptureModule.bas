@@ -79,7 +79,7 @@ Public Sub CaptureScreen()
     
     'Set the picture of the form to equal its image
     Dim tmpFileName As String
-    tmpFileName = TempPath & PROGRAMNAME & " Screen Capture.tmp"
+    tmpFileName = userPreferences.getTempPath & PROGRAMNAME & " Screen Capture.tmp"
     
     'Ask the layer to write out its data to file in BMP format
     tmpLayer.writeToBitmapFile tmpFileName

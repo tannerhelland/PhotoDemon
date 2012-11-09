@@ -1405,15 +1405,14 @@ Private Sub MDIForm_Load()
     Dim tmpString As String
     
     'Start by seeing if we're allowed to check for software updates
-    tmpString = GetFromIni("General Preferences", "CheckForUpdates")
     Dim allowedToUpdate As Boolean
-    If Val(tmpString) = 0 Then allowedToUpdate = False Else allowedToUpdate = True
-    
+    allowedToUpdate = userPreferences.GetPreference_Boolean("General Preferences", "CheckForUpdates", True)
+        
     'If updates ARE allowed, see when we last checked.  To be polite, only check once every 10 days.
-    If allowedToUpdate = True Then
+    If allowedToUpdate Then
     
         Dim lastCheckDate As String
-        lastCheckDate = GetFromIni("General Preferences", "LastUpdateCheck")
+        lastCheckDate = userPreferences.GetPreference_String("General Preferences", "LastUpdateCheck", "")
         
         'If the last update check date was not found, request an update check now
         If lastCheckDate = "" Then
@@ -1462,7 +1461,7 @@ Private Sub MDIForm_Load()
                 Message "Software is up-to-date."
                 
                 'Because the software is up-to-date, we can mark this as a successful check in the INI file
-                WriteToIni "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
+                userPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
                 
             Case 2
                 Message "Software update found!  Launching update notifier..."
@@ -1480,10 +1479,9 @@ Private Sub MDIForm_Load()
         Message "Some core plugins could not be found. Preparing updater..."
         
         'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
-        tmpString = GetFromIni("General Preferences", "PromptForPluginDownload")
         Dim promptToDownload As Boolean
-        If Val(tmpString) = 0 Then promptToDownload = False Else promptToDownload = True
-        
+        promptToDownload = userPreferences.GetPreference_Boolean("General Preferences", "PromptForPluginDownload", "")
+                
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
         If promptToDownload = True Then
             FormPluginDownloader.Show 1, FormMain
@@ -1740,7 +1738,7 @@ Private Sub MnuCheckUpdates_Click()
             Message "This copy of PhotoDemon is the newest available.  (Version " & App.Major & "." & App.Minor & "." & App.Revision & ")"
                 
             'Because the software is up-to-date, we can mark this as a successful check in the INI file
-            WriteToIni "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
+            userPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
                 
         Case 2
             Message "Software update found!  Launching update notifier..."

@@ -312,12 +312,12 @@ End Function
 
 'Subroutine for generating an Undo/Redo filename
 Private Function GenerateUndoFile(ByVal uIndex As Integer) As String
-    GenerateUndoFile = TempPath & "~cPDU" & imageID & "_" & uIndex & ".tmp"
+    GenerateUndoFile = userPreferences.getTempPath & "~cPDU" & imageID & "_" & uIndex & ".tmp"
 End Function
 
 'Public routine for getting the filename of the current Undo file
 Public Function GetUndoFile()
-    GetUndoFile = TempPath & "~cPDU" & imageID & "_" & UndoNum & ".tmp"
+    GetUndoFile = userPreferences.getTempPath & "~cPDU" & imageID & "_" & UndoNum & ".tmp"
 End Function
 
 'If the class's size has somehow changed, this can be called to update it.  At present, it simply copies over the size of
