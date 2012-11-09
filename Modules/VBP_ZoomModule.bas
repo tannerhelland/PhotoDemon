@@ -54,6 +54,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If pdImages(formToBuffer.Tag).IsActive = False Then Exit Sub
 
     'Reset the front buffer
+    If Not (frontBuffer Is Nothing) Then frontBuffer.eraseLayer
     Set frontBuffer = New pdLayer
     
     'Copy the current back buffer into the front buffer

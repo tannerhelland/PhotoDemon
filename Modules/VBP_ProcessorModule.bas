@@ -811,7 +811,11 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     
     'Mark the processor as no longer busy and unlock the main form
     FormMain.Enabled = True
-    If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
+    
+    If (MacroStatus <> MacroBATCH) Then
+        If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
+    End If
+    
     Processing = False
     
     Exit Sub

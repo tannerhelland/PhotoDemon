@@ -601,9 +601,21 @@ Private Sub Form_Unload(Cancel As Integer)
     
     NumOfWindows = NumOfWindows - 1
     Me.Visible = False
+    
+    'Erase all image layers (to prevent memory leaks)
     pdImages(Me.Tag).mainLayer.eraseLayer
     Set pdImages(Me.Tag).mainLayer = Nothing
+    pdImages(Me.Tag).backBuffer.eraseLayer
+    Set pdImages(Me.Tag).backBuffer = Nothing
+    If Not (pdImages(Me.Tag).alphaFixLayer Is Nothing) Then
+        pdImages(Me.Tag).alphaFixLayer.eraseLayer
+        Set pdImages(Me.Tag).alphaFixLayer = Nothing
+    End If
+        
+    'Deactivate this layer
     pdImages(Me.Tag).IsActive = False
+    
+    'Remove any undo files associated with this layer
     ClearUndo Me.Tag
     
     Message "Finished."

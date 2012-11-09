@@ -822,7 +822,7 @@ Private Sub CmdOK_Click()
             If curBatchFile > 0 Then Unload pdImages(CurrentImage - 1).containingForm
             
             'If a good number of images have been processed, we can start to estimate the amount of time remaining
-            If (curBatchFile > 40) And ((curBatchFile And 3) = 0) Then
+            If (curBatchFile > 40) Then
                 timeElapsed = GetTickCount - timeStarted
                 numFilesProcessed = curBatchFile + 1
                 numFilesRemaining = totalNumOfFiles - numFilesProcessed
