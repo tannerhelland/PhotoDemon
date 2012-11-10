@@ -588,7 +588,7 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H000000FF&
-         Height          =   615
+         Height          =   660
          Left            =   120
          TabIndex        =   9
          Top             =   8160
@@ -1474,13 +1474,13 @@ Private Sub MDIForm_Load()
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so ignore this request if the user was already notified of an update.)
-    If (updateNeeded = False) And ((zLibEnabled = False) Or (ScanEnabled = False) Or (FreeImageEnabled = False)) Then
+    If (updateNeeded <> 2) And ((zLibEnabled = False) Or (ScanEnabled = False) Or (FreeImageEnabled = False)) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
         
         'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
         Dim promptToDownload As Boolean
-        promptToDownload = userPreferences.GetPreference_Boolean("General Preferences", "PromptForPluginDownload", "")
+        promptToDownload = userPreferences.GetPreference_Boolean("General Preferences", "PromptForPluginDownload", True)
                 
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
         If promptToDownload = True Then
