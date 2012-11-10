@@ -99,7 +99,7 @@ Begin VB.Form FormReduceColors
       Left            =   360
       TabIndex        =   4
       Top             =   4440
-      Width           =   3255
+      Width           =   3495
    End
    Begin VB.TextBox TxtB 
       Alignment       =   2  'Center
@@ -170,7 +170,7 @@ Begin VB.Form FormReduceColors
       TabIndex        =   11
       Top             =   7110
       Value           =   1  'Checked
-      Width           =   2415
+      Width           =   2655
    End
    Begin VB.CheckBox chkSmartColors 
       Appearance      =   0  'Flat
@@ -202,7 +202,7 @@ Begin VB.Form FormReduceColors
       TabIndex        =   2
       Top             =   3720
       Value           =   -1  'True
-      Width           =   2535
+      Width           =   2775
    End
    Begin VB.OptionButton OptQuant 
       Appearance      =   0  'Flat
@@ -222,7 +222,7 @@ Begin VB.Form FormReduceColors
       Left            =   360
       TabIndex        =   3
       Top             =   4080
-      Width           =   3855
+      Width           =   4095
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -240,6 +240,17 @@ Begin VB.Form FormReduceColors
       TabIndex        =   1
       Top             =   7680
       Width           =   1245
+   End
+   Begin VB.Label lblWarning 
+      Caption         =   "Note: some options on this page have been disabled because the FreeImage plugin could not be found."
+      ForeColor       =   &H000000C0&
+      Height          =   1095
+      Left            =   4470
+      TabIndex        =   19
+      Top             =   3600
+      Visible         =   0   'False
+      Width           =   1815
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -280,17 +291,6 @@ Begin VB.Form FormReduceColors
       TabIndex        =   22
       Top             =   2880
       Width           =   480
-   End
-   Begin VB.Label lblWarning 
-      Caption         =   "Note: some options on this page have been disabled because the FreeImage plugin could not be found."
-      ForeColor       =   &H000000C0&
-      Height          =   855
-      Left            =   4320
-      TabIndex        =   19
-      Top             =   3720
-      Visible         =   0   'False
-      Width           =   1935
-      WordWrap        =   -1  'True
    End
    Begin VB.Label lblOptions 
       Appearance      =   0  'Flat
