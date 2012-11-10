@@ -332,7 +332,7 @@ Begin VB.Form FormGrayscale
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00FFFFFF&
-      Height          =   420
+      Height          =   540
       Left            =   0
       TabIndex        =   19
       Top             =   240

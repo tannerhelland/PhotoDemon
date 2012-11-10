@@ -21,9 +21,9 @@ Attribute VB_Exposed = False
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing
 ' all interaction with user settings, which are currently stored in an INI file.  This class is also capable
 ' of generating a default INI file (necessary for first run), determining system folders (also necessary for
-' first run), and saving/loading any user preferences to and from a INI file.
+' first run), and saving/loading any user preferences to and from file.
 '
-'Because the INI file undergoes changes with almost every new version of the software, this class must also
+'Because the INI file receives changes with almost every new version of the software, this class must also
 ' be capable of translating values between INI versions.  Typically these just means having a contingency plan
 ' for values that do not yet exist in the INI file.
 '
@@ -241,8 +241,8 @@ Public Sub loadUserSettings()
     Dim x As Long
     x = GetPreference_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
     
-    'A value of -1 previously indicated a checkerboard background, which is no longer available.
-    ' If that values is found, overwrite it with a pleasant shade of blue.
+    'A value of -1 previously indicated a checkerboard background, which is no longer allowed.
+    ' If that value is found, overwrite it with a pleasant shade of blue.
     If x = -1 Then
         x = RGB(201, 211, 226)
         SetPreference_Long "General Preferences", "CanvasBackground", CStr(RGB(201, 211, 226))
