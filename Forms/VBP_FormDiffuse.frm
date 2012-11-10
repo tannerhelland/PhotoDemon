@@ -491,7 +491,7 @@ Public Sub Diffuse()
     
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    srcLayer.createFromExistingLayer workingLayer
     
     prepSafeArray srcSA, srcLayer
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
@@ -502,14 +502,15 @@ Public Sub Diffuse()
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
-        
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
     
-    Dim MaxX As Long
-    MaxX = finalX * qvDepth
+    Dim xCheck As Long, yCheck As Long
+    xCheck = curLayerValues.MaxX * qvDepth
+    yCheck = curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -537,8 +538,8 @@ Public Sub Diffuse()
         If QuickValDiffuseX < 0 Then QuickValDiffuseX = 0
         If QuickValDiffuseY < 0 Then QuickValDiffuseY = 0
         
-        If QuickValDiffuseX > MaxX Then QuickValDiffuseX = MaxX
-        If QuickValDiffuseY > finalY Then QuickValDiffuseY = finalY
+        If QuickValDiffuseX > xCheck Then QuickValDiffuseX = xCheck
+        If QuickValDiffuseY > yCheck Then QuickValDiffuseY = yCheck
         
         dstImageData(QuickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
         dstImageData(QuickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
@@ -578,7 +579,7 @@ Public Sub DiffuseMore()
     
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    srcLayer.createFromExistingLayer workingLayer
     
     prepSafeArray srcSA, srcLayer
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
