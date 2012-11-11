@@ -536,7 +536,7 @@ End Sub
 Private Sub Form_Resize()
     
     'Redraw this form if certain criteria are met (image loaded, form visible, viewport adjustments allowed)
-    If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And (Me.Visible = True) Then
+    If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And (Me.Visible = True) And (FormMain.WindowState <> vbMinimized) Then
         PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
     End If
     
@@ -544,7 +544,7 @@ Private Sub Form_Resize()
     ' resized to fit on screen, but if an image is loaded into a maximized window, the height value will remain
     ' at 1.  If the user ever un-maximized the window, it will leave a bare title bar behind, which looks
     ' terrible.  Thus, let's check for a height of 1, and if found resize the form to a larger (arbitrary) value.
-    If Me.ScaleHeight <= 1 Then
+    If (Me.WindowState = vbNormal) And (Me.ScaleHeight <= 1) Then
         Me.Height = 6000
         Me.Width = 8000
     End If
