@@ -1059,7 +1059,7 @@ Private Sub CmdOK_Click()
     userPreferences.SetPreference_Long "General Preferences", "CanvasBackground", CanvasBackground
         
     'Store the alpha checkerboard preference
-    userPreferences.SetPreference_Long "General Preferences", "AlphaCheckMode", cmbAlphaCheck.ListIndex
+    userPreferences.SetPreference_Long "General Preferences", "AlphaCheckMode", CLng(cmbAlphaCheck.ListIndex)
     userPreferences.SetPreference_Long "General Preferences", "AlphaCheckOne", CLng(picAlphaOne.backColor)
     userPreferences.SetPreference_Long "General Preferences", "AlphaCheckTwo", CLng(picAlphaTwo.backColor)
     
