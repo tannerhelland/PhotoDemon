@@ -156,10 +156,10 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
     SrcWidth = pdImages(formToBuffer.Tag).targetWidth / ZoomVal
     SrcHeight = pdImages(formToBuffer.Tag).targetHeight / ZoomVal
-    
+        
     'These variables are the offset, as determined by the scroll bar values
-    If formToBuffer.HScroll.Enabled Then srcX = formToBuffer.HScroll.Value Else srcX = 0
-    If formToBuffer.VScroll.Enabled Then srcY = formToBuffer.VScroll.Value Else srcY = 0
+    If formToBuffer.HScroll.Visible Then srcX = formToBuffer.HScroll.Value Else srcX = 0
+    If formToBuffer.VScroll.Visible Then srcY = formToBuffer.VScroll.Value Else srcY = 0
         
     'Paint the image from the back buffer to the front buffer
     If ZoomVal < 1 Then
@@ -237,7 +237,7 @@ End Sub
 ' in non-active windows - in those cases, the calling routine must tell us which viewport it wants rebuilt.
 Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForRedraw As String)
 
-    'Don't attempt to resize the scroll bars if FixScrolling is disabled. Yhis is used to provide a smoother user experience,
+    'Don't attempt to resize the scroll bars if FixScrolling is disabled. This is used to provide a smoother user experience,
     ' especially when images are being loaded. (This routine is triggered on Form_Resize, which is in turn triggered when a
     ' new picture is loaded.  To prevent PrepareViewport from being fired multiple times, FixScrolling is utilized.)
     If FixScrolling = False Then Exit Sub
@@ -282,9 +282,9 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If (vScrollEnabled = True) And (hScrollEnabled = False) And (Int(zWidth) > (FormWidth - formToBuffer.VScroll.Width)) Then hScrollEnabled = True
     
     'We now know which scroll bars need to be enabled.  Before calculating scroll bar stuff, however, let's figure out where our viewport will
-    ' be located - on the edge if scroll bars are enabled, centered in the viewable area if scroll bars are not enabled.
+    ' be located - on the edge if scroll bars are enabled, or centered in the viewable area if scroll bars are NOT enabled.
     
-    'Similarly, calculate viewport size - full form size if scroll bars enabled, full zoom size if they are not
+    'Additionally, calculate viewport size - full form size if scroll bars enabled, full zoom size if they are not
     Dim viewportLeft As Long, viewportTop As Long
     Dim viewportWidth As Long, viewportHeight As Long
     
@@ -350,15 +350,20 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'If we've reached this point, one or both scroll bars are enabled.  The time has come to calculate their values.
     'Horizontal scroll bar comes first.
+    Static newScrollMax As Long
+    
     If hScrollEnabled = True Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
-            formToBuffer.HScroll.Max = pdImages(formToBuffer.Tag).Width - Int(viewportWidth * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(formToBuffer.Tag).Width - Int(viewportWidth * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            formToBuffer.HScroll.Max = pdImages(formToBuffer.Tag).Width - Int(viewportWidth / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(formToBuffer.Tag).Width - Int(viewportWidth / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         End If
+        
+        If formToBuffer.HScroll.Value > newScrollMax Then formToBuffer.HScroll.Value = newScrollMax
+        formToBuffer.HScroll.Max = newScrollMax
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
         If formToBuffer.HScroll.Max > 7 Then formToBuffer.HScroll.LargeChange = formToBuffer.HScroll.Max \ 8
@@ -370,11 +375,14 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
-            formToBuffer.VScroll.Max = pdImages(formToBuffer.Tag).Height - Int(viewportHeight * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(formToBuffer.Tag).Height - Int(viewportHeight * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            formToBuffer.VScroll.Max = pdImages(formToBuffer.Tag).Height - Int(viewportHeight / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(formToBuffer.Tag).Height - Int(viewportHeight / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         End If
+        
+        If formToBuffer.VScroll.Value > newScrollMax Then formToBuffer.VScroll.Value = newScrollMax
+        formToBuffer.VScroll.Max = newScrollMax
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
         If formToBuffer.VScroll.Max > 7 Then formToBuffer.VScroll.LargeChange = formToBuffer.VScroll.Max \ 8
