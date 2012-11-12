@@ -15,11 +15,11 @@ Option Explicit
 
 'Various API calls required for screen capturing
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
-Private Declare Function GetDC Lib "user32" (ByVal HWnd As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hDC As Long) As Long
 Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 
 
@@ -54,9 +54,18 @@ Public Sub CaptureScreen()
     scrhDC = GetDC(scrHwnd)
 
     'Get the screen dimensions in pixels and set the picture box size to that
+    Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
-    screenWidth = Screen.Width \ Screen.TwipsPerPixelX
-    screenHeight = Screen.Height \ Screen.TwipsPerPixelY
+    
+    'UPDATE 12 November 2012: use our new cMonitors object to detect VIRTUAL screen size.  This will capture all monitors
+    ' on a multimonitor arrangement, not just the primary one.
+    screenLeft = cMonitors.DesktopLeft
+    screenTop = cMonitors.DesktopTop
+    screenWidth = cMonitors.DesktopWidth
+    screenHeight = cMonitors.DesktopHeight
+    
+    'screenWidth = Screen.Width \ Screen.TwipsPerPixelX
+    'screenHeight = Screen.Height \ Screen.TwipsPerPixelY
     
     'Convert the hDC into the appropriate bitmap format
     CreateCompatibleBitmap scrhDC, screenWidth, screenHeight
@@ -65,7 +74,7 @@ Public Sub CaptureScreen()
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
     tmpLayer.createBlank screenWidth, screenHeight
-    BitBlt tmpLayer.getLayerDC, 0, 0, screenWidth, screenHeight, scrhDC, 0, 0, vbSrcCopy
+    BitBlt tmpLayer.getLayerDC, 0, 0, screenWidth, screenHeight, scrhDC, screenLeft, screenTop, vbSrcCopy
     
     'Release the object and handle we generated for the capture
     ReleaseDC scrHwnd, scrhDC

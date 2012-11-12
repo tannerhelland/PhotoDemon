@@ -50,20 +50,8 @@ Public Zoom As ZoomData
 'Whether or not to resize large images to fit on-screen (preference is stored in the INI file; 0 means "yes," 1 means "no")
 Public AutosizeLargeImages As Long
 
-'Where is this application located?
-'Public ProgramPath As String
-
-'The path where the program's extra data is kept.  This is currently "ProgramPath\Data\"
-'Public DataPath As String
-
 'The path where DLLs and related support libraries are kept, currently "ProgramPath\Data\Plugins\"
 Public PluginPath As String
-
-'The default folder for saved macros, currently "ProgramPath\Data\Macros\"
-'Public MacroPath As String
-
-'The default folder for saved convolution filters, currently "ProgramPath\Data\Filter\"
-'Public FilterPath As String
 
 'Command line (used here for processing purposes)
 Public CommandLine As String
@@ -143,3 +131,6 @@ Public isVistaOrLater As Boolean
 
 'Render the interface using Segoe UI if the user specifies as much in the Preferences dialog
 Public useFancyFonts As Boolean
+
+'This cMonitors object contains data on all monitors on this system.  It is used to handle multiple monitor situations.
+Public cMonitors As clsMonitors

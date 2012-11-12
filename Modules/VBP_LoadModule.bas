@@ -172,6 +172,11 @@ Public Sub LoadTheProgram()
     FormMain.cmbSelRender.ListIndex = 0
     selectionRenderPreference = 0
     
+    'Analyze the current monitor arrangement to make sure we handle multimonitor setups properly
+    LoadMessage "Analyzing current monitor setup..."
+    Set cMonitors = New clsMonitors
+    cMonitors.Refresh
+    
     'Render various aspects of the UI
     LoadMessage "Initializing user interface..."
         
@@ -197,7 +202,7 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.HWnd, "AAA", True
+    SetIcon FormMain.hwnd, "AAA", True
     
     'Load and draw the menu icons
     ' (Note: as a bonus, this function also checks the current Windows version and updates the "isVistaOrLater" public variable accordingly)
