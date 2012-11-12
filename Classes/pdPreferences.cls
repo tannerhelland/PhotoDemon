@@ -370,8 +370,12 @@ Public Function GetPreference_Boolean(ByRef preferenceSection As String, ByRef p
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
     If tmpString = "" Then
+        
+        'To prevent future blank results, write the default value to the INI file
+        SetPreference_Boolean preferenceSection, preferenceName, defaultValue
+        
         GetPreference_Boolean = defaultValue
-    
+            
     'If the requested value DOES exist, convert it to boolean type and return it
     Else
         
@@ -407,6 +411,10 @@ Public Function GetPreference_Long(ByRef preferenceSection As String, ByRef pref
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
     If tmpString = "" Then
+    
+        'To prevent future blank results, write the default value to the INI file
+        SetPreference_Long preferenceSection, preferenceName, defaultValue
+    
         GetPreference_Long = defaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
@@ -432,6 +440,10 @@ Public Function GetPreference_String(ByRef preferenceSection As String, ByRef pr
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
     If tmpString = "" Then
+        
+        'To prevent future blank results, write the default value to the INI file
+        SetPreference_String preferenceSection, preferenceName, defaultValue
+    
         GetPreference_String = defaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
