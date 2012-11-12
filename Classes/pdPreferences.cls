@@ -332,6 +332,12 @@ Private Sub createNewINIFile()
         Print #fileNum, "LastUpdateCheck="
         Print #fileNum, "LogProgramMessages=0"
         Print #fileNum, "PromptForPluginDownload=1"
+        Print #fileNum, "RememberWindowLocation=1"
+        Print #fileNum, "LastWindowState=0"
+        Print #fileNum, "LastWindowLeft=1"
+        Print #fileNum, "LastWindowTop=1"
+        Print #fileNum, "LastWindowWidth=1"
+        Print #fileNum, "LastWindowHeight=1"
         Print #fileNum, "UseFancyFonts=0"
         Print #fileNum, ""
         

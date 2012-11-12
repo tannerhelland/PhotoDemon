@@ -1328,8 +1328,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These functions are used to scroll through consecutive MDI windows without flickering
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
 
 'Use to prevent scroll bar / text box combos from getting stuck in update loops
 Dim suspendSelTextBoxUpdates As Boolean
@@ -1396,6 +1396,87 @@ Private Sub MDIForm_Load()
     
     'Temporarily exit from here and run the load program subroutine (Loading module)
     LoadTheProgram
+    
+    'Before displaying the main window, see if the user wants to restore last-used window location.  If they do, set up
+    ' those values first.
+    If userPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then
+    
+        'First, check window state.
+        Dim lWindowState As Long
+        lWindowState = userPreferences.GetPreference_Long("General Preferences", "LastWindowState", 0)
+        
+        Dim lWindowLeft As Long, lWindowTop As Long
+        Dim lWindowWidth As Long, lWindowHeight As Long
+        
+        'If the window state was "minimized", reset it to "normal"
+        If lWindowState = vbMinimized Then lWindowState = 0
+        
+        'If the window state was "maximized", set that and ignore the specific width/height values
+        If lWindowState = vbMaximized Then
+            
+            lWindowLeft = userPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
+            lWindowTop = userPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
+            Me.Left = lWindowLeft * Screen.TwipsPerPixelX
+            Me.Top = lWindowTop * Screen.TwipsPerPixelY
+            Me.WindowState = vbMaximized
+        
+        'If the window state is normal, attempt to restore the last-used values
+        Else
+            
+            'Start by pulling the last left/top/width/height values from the INI file
+            lWindowLeft = userPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
+            lWindowTop = userPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
+            lWindowWidth = userPreferences.GetPreference_Long("General Preferences", "LastWindowWidth", 1)
+            lWindowHeight = userPreferences.GetPreference_Long("General Preferences", "LastWindowHeight", 1)
+            
+            'If the left/top/width/height values all equal "1" (the default value), then a previous location has never
+            ' been saved.  Center the form on the current screen at its default size.
+            If (lWindowLeft = 1) And (lWindowTop = 1) And (lWindowWidth = 1) And (lWindowHeight = 1) Then
+            
+                cMonitors.CenterFormOnMonitor Me, Me
+            
+            'If values have been saved, perform a sanity check and then restore them
+            Else
+                
+                'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user
+                ' detached a second monitor that was previously attached and PhotoDemon was being used on that monitor),
+                ' change the values to ensure that the program window appears on-screen.
+                If (lWindowLeft + lWindowWidth) < cMonitors.DesktopLeft Then lWindowLeft = cMonitors.DesktopLeft
+                If lWindowLeft > cMonitors.DesktopLeft + cMonitors.DesktopWidth Then lWindowLeft = cMonitors.DesktopWidth - lWindowWidth
+                If lWindowTop < cMonitors.DesktopTop Then lWindowTop = cMonitors.DesktopTop
+                If lWindowTop > cMonitors.DesktopHeight Then lWindowTop = cMonitors.DesktopHeight - lWindowHeight
+                
+                'Perform a similar sanity check for width and height using arbitrary values (200 pixels at present)
+                If lWindowWidth < 200 Then lWindowWidth = 200
+                If lWindowHeight < 200 Then lWindowHeight = 200
+                
+                'With all values now set to guaranteed-safe values, set the main window's location
+                Me.Left = lWindowLeft * Screen.TwipsPerPixelX
+                Me.Top = lWindowTop * Screen.TwipsPerPixelY
+                Me.Width = lWindowWidth * Screen.TwipsPerPixelX
+                Me.Height = lWindowHeight * Screen.TwipsPerPixelY
+            
+            End If
+            
+        
+        End If
+        
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowLeft", Me.Left / Screen.TwipsPerPixelX
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowTop", Me.Top / Screen.TwipsPerPixelY
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowWidth", Me.Width / Screen.TwipsPerPixelX
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", Me.Height / Screen.TwipsPerPixelY
+    
+    End If
+    
+    
+    'Allow the selection scroll bars to be updated
+    updateSelLeftBar = True
+    updateSelTopBar = True
+    updateSelWidthBar = True
+    updateSelHeightBar = True
+    
+    'Hide the selection tools
+    tInit tSelection, False
     
     'After the program has been successfully loaded, change the focus to the Open Image button
     Me.Visible = True
@@ -1498,16 +1579,7 @@ Private Sub MDIForm_Load()
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
-    
-    'Allow the selection scroll bars to be updated
-    updateSelLeftBar = True
-    updateSelTopBar = True
-    updateSelWidthBar = True
-    updateSelHeightBar = True
-    
-    'Hide the selection tools
-    tInit tSelection, False
-    
+       
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
@@ -1569,6 +1641,17 @@ Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'If the histogram form is open, close it
     Unload FormHistogram
+    
+    'If the user wants us to remember the program's last-used location, store those values to file now
+    If userPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then
+    
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowState", Me.WindowState
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowLeft", Me.Left / Screen.TwipsPerPixelX
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowTop", Me.Top / Screen.TwipsPerPixelY
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowWidth", Me.Width / Screen.TwipsPerPixelX
+        userPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", Me.Height / Screen.TwipsPerPixelY
+    
+    End If
     
 End Sub
 
@@ -1990,7 +2073,7 @@ Private Sub MnuNextImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.HWnd, 5)
+    MDIClient = GetWindow(FormMain.hwnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
@@ -2065,7 +2148,7 @@ Private Sub MnuPreviousImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.HWnd, 5)
+    MDIClient = GetWindow(FormMain.hwnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
@@ -2419,7 +2502,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
         'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
         Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.HWnd, 5)
+        MDIClient = GetWindow(FormMain.hwnd, 5)
         
         'Use the API to instruct the MDI window to move one window forward or back
         If ctlAccelerator.Key(nIndex) = "Prev_Image" Then
