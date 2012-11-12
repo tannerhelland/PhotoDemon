@@ -23,6 +23,14 @@ Begin VB.Form FormPreferences
    ScaleWidth      =   587
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton cmdReset 
+      Caption         =   "&Reset all Preferences"
+      Height          =   495
+      Left            =   360
+      TabIndex        =   44
+      Top             =   6840
+      Width           =   2085
+   End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
@@ -314,6 +322,26 @@ Begin VB.Form FormPreferences
          Top             =   600
          Width           =   6975
       End
+      Begin VB.Label lblAdvancedWarning 
+         BackStyle       =   0  'Transparent
+         Caption         =   $"VBP_FormPreferences.frx":5470
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H000000FF&
+         Height          =   615
+         Left            =   240
+         TabIndex        =   45
+         Top             =   3960
+         Width           =   7815
+         WordWrap        =   -1  'True
+      End
       Begin VB.Label lblRuntimeSettings 
          AutoSize        =   -1  'True
          Caption         =   "run-time testing options (NOTE: these are not saved to the INI file)"
@@ -492,7 +520,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":5470
+         MouseIcon       =   "VBP_FormPreferences.frx":5502
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -634,7 +662,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   20
-         ToolTipText     =   $"VBP_FormPreferences.frx":55C2
+         ToolTipText     =   $"VBP_FormPreferences.frx":5654
          Top             =   1080
          Width           =   6735
       End
@@ -754,7 +782,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":565E
+         MouseIcon       =   "VBP_FormPreferences.frx":56F0
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -771,7 +799,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":57B0
+         MouseIcon       =   "VBP_FormPreferences.frx":5842
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1093,6 +1121,21 @@ Private Sub CmdOK_Click()
     
 End Sub
 
+'Regenerate the INI file from scratch.  This can be an effective way to "reset" a PhotoDemon installation.
+Private Sub cmdReset_Click()
+
+    'Before resetting, warn the user
+    Dim confirmReset As VbMsgBoxResult
+    confirmReset = MsgBox("This action will reset all preferences to their default values.  It cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset all " & PROGRAMNAME & " preferences")
+
+    'If the user gives final permission, rewrite the INI file from scratch and repopulate this form
+    If confirmReset = vbYes Then
+        userPreferences.resetPreferences
+        LoadAllPreferences
+    End If
+
+End Sub
+
 'When the "..." button is clicked, prompt the user with a "browse for folder" dialog
 Private Sub CmdTmpPath_Click()
     Dim tString As String
@@ -1100,15 +1143,12 @@ Private Sub CmdTmpPath_Click()
     If tString <> "" Then TxtTempPath.Text = FixPath(tString)
 End Sub
 
-'When the form is loaded, populate the various checkboxes and textboxes with the values from the INI file
-Private Sub Form_Load()
-    
-    Me.Caption = PROGRAMNAME & " Preferences"
-    
-    'Load all relevant values from the INI file, and populate their corresponding controls with the user's current settings
+'Load all relevant values from the INI file, and populate their corresponding controls with the user's current settings
+Private Sub LoadAllPreferences()
     
     'Start with the canvas background (which also requires populating the canvas background combo box)
     userInitiatedColorSelection = False
+    cmbCanvas.Clear
     cmbCanvas.AddItem "System theme: light", 0
     cmbCanvas.AddItem "System theme: dark", 1
     cmbCanvas.AddItem "Custom color (click box to customize)", 2
@@ -1131,7 +1171,7 @@ Private Sub Form_Load()
     
     'Next, get the values for alpha-channel checkerboard rendering
     userInitiatedAlphaSelection = False
-    
+    cmbAlphaCheck.Clear
     cmbAlphaCheck.AddItem "Highlight checks", 0
     cmbAlphaCheck.AddItem "Midtone checks", 1
     cmbAlphaCheck.AddItem "Shadow checks", 2
@@ -1145,6 +1185,7 @@ Private Sub Form_Load()
     userInitiatedAlphaSelection = True
     
     'Next, get the current alpha-channel checkerboard size value
+    cmbAlphaCheckSize.Clear
     cmbAlphaCheckSize.AddItem "Small (4x4 pixels)", 0
     cmbAlphaCheckSize.AddItem "Medium (8x8 pixels)", 1
     cmbAlphaCheckSize.AddItem "Large (16x16 pixels)", 2
@@ -1171,6 +1212,7 @@ Private Sub Form_Load()
     If userPreferences.GetPreference_Boolean("General Preferences", "CheckForUpdates", True) Then chkProgramUpdates.Value = vbChecked Else chkProgramUpdates.Value = vbUnchecked
     
     'Populate the "what to do when loading large images" combo box
+    cmbLargeImages.Clear
     cmbLargeImages.AddItem "automatically fit the image on-screen", 0
     cmbLargeImages.AddItem "1:1 (100% zoom, or ""actual size"")", 1
     cmbLargeImages.ListIndex = userPreferences.GetPreference_Long("General Preferences", "AutosizeLargeImages", 0)
@@ -1185,6 +1227,20 @@ Private Sub Form_Load()
         chkFancyFonts.Enabled = True
         If useFancyFonts Then chkFancyFonts.Value = vbChecked Else chkFancyFonts.Value = vbUnchecked
     End If
+    
+    'Populate and en/disable the run-time only settings in the "Advanced" panel
+    If FreeImageEnabled Then chkFreeImageTest.Value = vbChecked Else chkFreeImageTest.Value = vbUnchecked
+    If GDIPlusEnabled Then chkGDIPlusTest.Value = vbChecked Else chkGDIPlusTest.Value = vbUnchecked
+
+End Sub
+
+'When the form is loaded, populate the various checkboxes and textboxes with the values from the INI file
+Private Sub Form_Load()
+    
+    Me.Caption = PROGRAMNAME & " Preferences"
+    
+    'Populate all controls with their corresponding values
+    LoadAllPreferences
     
     'Populate the multi-line tooltips for the category command buttons
     'Interface
@@ -1202,11 +1258,7 @@ Private Sub Form_Load()
     lblExplanation.Caption = PROGRAMNAME & " provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins (FreeImage, EZTwain, and ZLib) if they aren't present in the \Data\Plugins subdirectory." _
     & vbCrLf & vbCrLf & "The developers of " & PROGRAMNAME & " take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single ""updates.txt"" file containing the latest PhotoDemon version number. Similarly, downloading missing plugins simply involves downloading one or more of the compressed plugin files from the " & PROGRAMNAME & " server." _
     & vbCrLf & vbCrLf & "If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program."
-    
-    'Populate and en/disable the run-time only settings in the "Advanced" panel
-    If FreeImageEnabled Then chkFreeImageTest.Value = vbChecked Else chkFreeImageTest.Value = vbUnchecked
-    If GDIPlusEnabled Then chkGDIPlusTest.Value = vbChecked Else chkGDIPlusTest.Value = vbUnchecked
-    
+        
     'Finally, hide the inactive category panels
     Dim i As Long
     For i = 1 To picContainer.Count - 1

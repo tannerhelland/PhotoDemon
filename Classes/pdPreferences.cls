@@ -229,7 +229,10 @@ Public Sub loadUserSettings()
     'Extract the temporary path from the INI and make sure it exists. (If it doesn't,
     ' transparently set it to the system temporary path.)
     TempPath = GetPreference_String("Program Paths", "TempPath", "")
-    If Not DirectoryExist(TempPath) Then TempPath = GetTemporaryPath
+    If Not DirectoryExist(TempPath) Then
+        TempPath = GetTemporaryPath
+        SetPreference_String "Program Paths", "TempPath", TempPath
+    End If
     
     'Extract the macro path from the INI
     MacroPath = GetPreference_String("Program Paths", "Macro", MacroPath)
@@ -273,6 +276,17 @@ Public Sub loadUserSettings()
     
 End Sub
 
+'Reset the INI file to its default state.  (Basically, delete any existing file then call createNewINIFile.)
+Public Sub resetPreferences()
+
+    If FileExist(INIPath) Then Kill INIPath
+    
+    createNewINIFile
+
+    loadUserSettings
+
+End Sub
+
 'Create a new INI file from scratch
 Private Sub createNewINIFile()
 
@@ -311,7 +325,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "AlphaCheckTwo=" & RGB(102, 102, 102)
         Print #fileNum, "AlphaCheckSize=1"
         Print #fileNum, "AutosizeLargeImages=0"
-        Print #fileNum, "CanvasBackground=" & RGB(201, 211, 226)
+        Print #fileNum, "CanvasBackground=" & vb3DShadow 'RGB(201, 211, 226)
         Print #fileNum, "CanvasDropShadow=1"
         Print #fileNum, "CheckForUpdates=1"
         Print #fileNum, "ConfirmClosingUnsaved=1"
