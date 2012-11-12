@@ -242,7 +242,7 @@ Begin VB.Form FormPreferences
          TabIndex        =   43
          ToolTipText     =   $"VBP_FormPreferences.frx":519A
          Top             =   3360
-         Width           =   3255
+         Width           =   7815
       End
       Begin VB.CheckBox chkFreeImageTest 
          Appearance      =   0  'Flat
@@ -262,7 +262,7 @@ Begin VB.Form FormPreferences
          TabIndex        =   42
          ToolTipText     =   $"VBP_FormPreferences.frx":528C
          Top             =   2880
-         Width           =   3255
+         Width           =   7815
       End
       Begin VB.TextBox TxtTempPath 
          BeginProperty Font 
@@ -1007,7 +1007,7 @@ Private Sub cmbCanvas_Click()
     
             retColor = picCanvasColor.backColor
     
-            CD1.VBChooseColor retColor, True, True, False, Me.HWnd
+            CD1.VBChooseColor retColor, True, True, False, Me.hwnd
     
             'If a color was selected, change the picture box and associated combo box to match
             If retColor >= 0 Then CanvasBackground = retColor Else CanvasBackground = picCanvasColor.backColor
@@ -1119,7 +1119,7 @@ End Sub
 'When the "..." button is clicked, prompt the user with a "browse for folder" dialog
 Private Sub CmdTmpPath_Click()
     Dim tString As String
-    tString = BrowseForFolder(Me.HWnd)
+    tString = BrowseForFolder(Me.hwnd)
     If tString <> "" Then TxtTempPath.Text = FixPath(tString)
 End Sub
 
@@ -1207,10 +1207,23 @@ Private Sub LoadAllPreferences()
         chkFancyFonts.Enabled = True
         If useFancyFonts Then chkFancyFonts.Value = vbChecked Else chkFancyFonts.Value = vbUnchecked
     End If
-    
+        
     'Populate and en/disable the run-time only settings in the "Advanced" panel
-    If FreeImageEnabled Then chkFreeImageTest.Value = vbChecked Else chkFreeImageTest.Value = vbUnchecked
-    If GDIPlusEnabled Then chkGDIPlusTest.Value = vbChecked Else chkGDIPlusTest.Value = vbUnchecked
+    If FreeImageEnabled Then
+        chkFreeImageTest.Value = vbChecked
+    Else
+        chkFreeImageTest.Enabled = False
+        chkFreeImageTest.Caption = "enable FreeImage support (this is disabled because FreeImage.dll was not found)"
+        chkFreeImageTest.Value = vbUnchecked
+    End If
+    
+    If GDIPlusEnabled Then
+        chkGDIPlusTest.Value = vbChecked
+    Else
+        chkGDIPlusTest.Enabled = False
+        chkGDIPlusTest.Caption = "enable GDI+ support (this is disabled because gdiplus.dll was not found)"
+        chkGDIPlusTest.Value = vbUnchecked
+    End If
 
 End Sub
 
@@ -1283,7 +1296,7 @@ Private Sub picAlphaOne_Click()
     retColor = picAlphaOne.backColor
     
     'Display a Windows color selection box
-    CD1.VBChooseColor retColor, True, True, False, Me.HWnd
+    CD1.VBChooseColor retColor, True, True, False, Me.hwnd
     
     'If a color was selected, change the picture box and associated combo box to match
     If retColor > 0 Then
@@ -1310,7 +1323,7 @@ Private Sub picAlphaTwo_Click()
     retColor = picAlphaTwo.backColor
     
     'Display a Windows color selection box
-    CD1.VBChooseColor retColor, True, True, False, Me.HWnd
+    CD1.VBChooseColor retColor, True, True, False, Me.hwnd
     
     'If a color was selected, change the picture box and associated combo box to match
     If retColor > 0 Then
@@ -1337,7 +1350,7 @@ Private Sub picCanvasColor_Click()
     retColor = picCanvasColor.backColor
     
     'Display a Windows color selection box
-    CD1.VBChooseColor retColor, True, True, False, Me.HWnd
+    CD1.VBChooseColor retColor, True, True, False, Me.hwnd
     
     'If a color was selected, change the picture box and associated combo box to match
     If retColor >= 0 Then
