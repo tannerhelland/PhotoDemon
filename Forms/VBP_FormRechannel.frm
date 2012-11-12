@@ -37,7 +37,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   9
       Left            =   4440
       TabIndex        =   10
@@ -57,7 +57,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   8
       Left            =   4440
       TabIndex        =   9
@@ -77,7 +77,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   7
       Left            =   4440
       TabIndex        =   8
@@ -97,7 +97,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   6
       Left            =   4440
       TabIndex        =   7
@@ -117,7 +117,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   5
       Left            =   2280
       TabIndex        =   6
@@ -137,7 +137,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   4
       Left            =   2280
       TabIndex        =   5
@@ -157,7 +157,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   3
       Left            =   2280
       TabIndex        =   4
@@ -177,7 +177,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   2
       Left            =   240
       TabIndex        =   3
@@ -197,7 +197,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   1
       Left            =   240
       TabIndex        =   2
@@ -263,7 +263,7 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   300
+      Height          =   360
       Index           =   0
       Left            =   240
       TabIndex        =   11

@@ -1283,7 +1283,7 @@ Private Sub Form_Load()
     
     'Populate the multi-line tooltips for the category command buttons
     'Interface
-    cmdCategory(0).ToolTip = "Interface preferences include default setting for canvas backgrounds," & vbCrLf & "transparency checkerboards, and the program's visual theme."
+    cmdCategory(0).ToolTip = "Interface preferences include default setting for canvas backgrounds," & vbCrLf & "image load/save behavior, and the program's visual theme."
     'Tools
     cmdCategory(1).ToolTip = "Tool preferences currently includes customizable options for the selection tool." & vbCrLf & "In the future, PhotoDemon will gain paint tools, and those settings will appear" & vbCrLf & "here as well."
     'Transparency
