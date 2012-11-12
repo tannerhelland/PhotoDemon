@@ -1,4 +1,4 @@
-PhotoDemon v5.1 alpha - Copyright (c) 2012 by Tanner Helland
+PhotoDemon v5.2 beta - Copyright (c) 2012 by Tanner Helland
 =====================================================================================
 A free, open-source photo editor and image processing tool.
 http://tannerhelland.com/photodemon
@@ -11,7 +11,7 @@ What makes PhotoDemon preferable to other photo editing tools?
 	or required.  An INI file is used to store program settings, and if no INI is
 	found, PhotoDemon will generate one for you.  PhotoDemon does not touch the
 	Windows registry, and aside from a temporary file folder – which you can specify
-	in the Preferences menu – it leaves no trace of itself on your hard drive.
+	in the Preferences dialog – it leaves no trace of itself on your hard drive.
 
 :: Powerful macro and batch conversion support
 	PhotoDemon provides full macro support.  Simply hit “Record Macro”, then perform
@@ -25,7 +25,7 @@ What makes PhotoDemon preferable to other photo editing tools?
 :: Emphasis on usability
 	Most free, open-source image editors are usability nightmares.  PhotoDemon tries
 	not to be.  The interface was built with input from professional designers – not
-	just software engineers – and small touches, like unlimited Undo/Redo, “Fade last
+	just software engineers – and small touches like unlimited Undo/Redo, “Fade last
 	effect,” keyboard accelerators, effect previews, mouse wheel and forward-back
 	button support, and descriptive menu icons make PhotoDemon useful to novices and
 	professionals alike.
@@ -43,8 +43,8 @@ What makes PhotoDemon preferable to other photo editing tools?
 What doesn't PhotoDemon do?
 -------------------------------------------------------------------------------------
 :: Painting tools.
-	PhotoDemon does not provide any painting tools.  It only supports actions and
-	filters that operate on an entire image.
+	PhotoDemon does not provide any painting tools.  These are coming, but they will
+	not make the cut for version 5.2.
 		
 :: Advanced color management (ICC profiles)
 	PhotoDemon ignores embedded ICC profiles.  As a tool designed for consumers and
