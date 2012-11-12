@@ -322,26 +322,6 @@ Begin VB.Form FormPreferences
          Top             =   600
          Width           =   6975
       End
-      Begin VB.Label lblAdvancedWarning 
-         BackStyle       =   0  'Transparent
-         Caption         =   $"VBP_FormPreferences.frx":5470
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H000000FF&
-         Height          =   615
-         Left            =   240
-         TabIndex        =   45
-         Top             =   3960
-         Width           =   7815
-         WordWrap        =   -1  'True
-      End
       Begin VB.Label lblRuntimeSettings 
          AutoSize        =   -1  'True
          Caption         =   "run-time testing options (NOTE: these are not saved to the INI file)"
@@ -520,7 +500,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":5502
+         MouseIcon       =   "VBP_FormPreferences.frx":5470
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -662,7 +642,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   20
-         ToolTipText     =   $"VBP_FormPreferences.frx":5654
+         ToolTipText     =   $"VBP_FormPreferences.frx":55C2
          Top             =   1080
          Width           =   6735
       End
@@ -782,7 +762,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":56F0
+         MouseIcon       =   "VBP_FormPreferences.frx":565E
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -799,7 +779,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":5842
+         MouseIcon       =   "VBP_FormPreferences.frx":57B0
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
