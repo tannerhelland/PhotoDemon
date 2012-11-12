@@ -1,15 +1,20 @@
-Attribute VB_Name = "Zoom_Handler"
+Attribute VB_Name = "Viewport_Handler"
 '***************************************************************************
-'Zoom Handler - builds and draws the image viewport and associated scroll bars
+'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 10/September/12
-'Last update: Fixed a scrollbar reset problem when switching between an extremely zoomed-in view and 100% zoom.
-'Still needs: option to draw borders around the image
+'Last updated: 12/November/12
+'Last update: Maintain scroll bar value whenever possible (e.g. when Undo/Redo data is loaded, do not reset the scroll bars unless we absolutely have to)
 '
-'Module for handling the "zoom" feature on the main form.  There are two routines - 'PrepareViewport' for rebuilding all related objects
-' (done only when the zoom value is changed or a new picture is loaded) and 'ScrollViewport' (when the view is scrolled but the zoom
-' variables don't change).  StretchBlt is used for the actual rendering, and its "halftone" mode is explicitly specified for shrinking the image.
+'Module for handling the image viewport.  There are key routines:
+' - PrepareViewport: for recalculating all viewport variables and controls (done only when the zoom value is changed or a new picture is loaded)
+' - ScrollViewport: when the viewport is scrolled (minimal redrawing is done, since the zoom value hasn't changed)
+' - RenderViewport: perform any final compositing, such as the Selection Tool effect, then draw the viewport on-screen
+'
+'PhotoDemon is intelligent about calling the lowest routine in the "render chain", which is how it is able to render the viewport
+' so quickly regardless of zoom or scroll values.
+'
+'Finally, note that StretchBlt is used for the actual rendering, and its "halftone" mode is explicitly specified for shrinking the image.
 '
 '***************************************************************************
 
