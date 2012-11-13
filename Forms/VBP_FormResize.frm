@@ -677,7 +677,7 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
         Dim fi_DIB As Long
         fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
         
-        'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
+        'Use that handle to request an image resize
         If fi_DIB <> 0 Then
             
             Dim returnDIB As Long
@@ -700,6 +700,8 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
             'Fit the new image on-screen and redraw it
             FitOnScreen
             
+        Else
+            FreeLibrary hLib
         End If
         
     End If
