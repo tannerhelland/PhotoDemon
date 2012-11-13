@@ -662,8 +662,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
         Select Case pType
             Case Flip
                 MenuFlip
-            'Case FreeRotate
-            '    FormRotate.Visible = LoadForm
+            Case FreeRotate
+                If LoadForm = True Then
+                    FormRotate.Show 1, FormMain
+                Else
+                    FormRotate.RotateArbitrary pOPCODE, pOPCODE2
+                End If
             Case Mirror
                 MenuMirror
             Case Rotate90Clockwise
@@ -1117,7 +1121,7 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
         Case Rotate270Clockwise
             GetNameOfProcess = "Rotate 90° Counter-Clockwise"
         Case FreeRotate
-            GetNameOfProcess = "Free Rotation"
+            GetNameOfProcess = "Arbitrary Rotation"
         Case Isometric
             GetNameOfProcess = "Isometric Conversion"
         Case Tile

@@ -859,8 +859,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "Rotate 180°"
       End
       Begin VB.Menu MnuRotateArbitrary 
-         Caption         =   "Arbitrary..."
-         Visible         =   0   'False
+         Caption         =   "Arbitrary Rotation..."
       End
       Begin VB.Menu MnuImageSepBar3 
          Caption         =   "-"
@@ -1196,7 +1195,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuSharpenUpper 
          Caption         =   "Sharpen"
          Begin VB.Menu MnuUnsharp 
-            Caption         =   "Remove Blur (Unsharp)"
+            Caption         =   "Remove Blur (Unsharp Mask)"
          End
          Begin VB.Menu MnuSharpenSepBar0 
             Caption         =   "-"

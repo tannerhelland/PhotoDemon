@@ -879,27 +879,27 @@ Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" ( _
 
 'USER32
 Private Declare Function ReleaseDC Lib "user32.dll" ( _
-    ByVal HWnd As Long, _
+    ByVal hwnd As Long, _
     ByVal hDC As Long) As Long
 
 Private Declare Function GetDC Lib "user32.dll" ( _
-    ByVal HWnd As Long) As Long
+    ByVal hwnd As Long) As Long
     
 Private Declare Function GetDesktopWindow Lib "user32.dll" () As Long
     
 Private Declare Function GetDCEx Lib "user32.dll" ( _
-    ByVal HWnd As Long, _
+    ByVal hwnd As Long, _
     ByVal hrgnclip As Long, _
     ByVal fdwOptions As Long) As Long
 
 Private Const DCX_WINDOW As Long = &H1&
    
 Private Declare Function GetWindowRect Lib "user32.dll" ( _
-    ByVal HWnd As Long, _
+    ByVal hwnd As Long, _
     ByRef lpRect As RECT) As Long
 
 Private Declare Function GetClientRect Lib "user32.dll" ( _
-    ByVal HWnd As Long, _
+    ByVal hwnd As Long, _
     ByRef lpRect As RECT) As Long
 
 
@@ -971,8 +971,8 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal y As Long, _
     ByVal dx As Long, _
     ByVal dy As Long, _
-    ByVal SrcX As Long, _
-    ByVal SrcY As Long, _
+    ByVal srcX As Long, _
+    ByVal srcY As Long, _
     ByVal Scan As Long, _
     ByVal NumScans As Long, _
     ByVal Bits As Long, _
@@ -985,8 +985,8 @@ Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal y As Long, _
     ByVal dx As Long, _
     ByVal dy As Long, _
-    ByVal SrcX As Long, _
-    ByVal SrcY As Long, _
+    ByVal srcX As Long, _
+    ByVal srcY As Long, _
     ByVal wSrcWidth As Long, _
     ByVal wSrcHeight As Long, _
     ByVal lpBits As Long, _
@@ -2253,19 +2253,19 @@ Private Declare Function FreeImage_HasBackgroundColorInt Lib "FreeImage.dll" Ali
            
 Private Declare Function FreeImage_GetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As RGBQUAD) As Long
+           ByRef backColor As RGBQUAD) As Long
 
 Private Declare Function FreeImage_GetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As Long) As Long
+           ByRef backColor As Long) As Long
 
 Private Declare Function FreeImage_SetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As RGBQUAD) As Long
+           ByRef backColor As RGBQUAD) As Long
            
 Private Declare Function FreeImage_SetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef BackColor As Long) As Long
+           ByRef backColor As Long) As Long
 
 Public Declare Function FreeImage_GetThumbnail Lib "FreeImage.dll" Alias "_FreeImage_GetThumbnail@4" ( _
            ByVal Bitmap As Long) As Long
@@ -3501,21 +3501,21 @@ Public Function FreeImage_HasBackgroundColor(ByVal Bitmap As Long) As Boolean
 End Function
 
 Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef BackColor As RGBQUAD) As Boolean
+                                             ByRef backColor As RGBQUAD) As Boolean
    
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, BackColor) = 1)
+   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, backColor) = 1)
    
 End Function
 
 Public Function FreeImage_GetBackgroundColorAsLong(ByVal Bitmap As Long, _
-                                                   ByRef BackColor As Long) As Boolean
+                                                   ByRef backColor As Long) As Boolean
    
    ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
    ' provides it's result as a Long value.
 
-   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
+   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, backColor) = 1)
    
 End Function
 
@@ -3541,21 +3541,21 @@ Dim bkcolor As RGBQUAD
 End Function
 
 Public Function FreeImage_SetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef BackColor As RGBQUAD) As Boolean
+                                             ByRef backColor As RGBQUAD) As Boolean
                                              
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(Bitmap, BackColor) = 1)
+   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(Bitmap, backColor) = 1)
                                              
 End Function
 
 Public Function FreeImage_SetBackgroundColorAsLong(ByVal Bitmap As Long, _
-                                                   ByVal BackColor As Long) As Boolean
+                                                   ByVal backColor As Long) As Boolean
                                              
    ' This function sets the background color of an image as FreeImage_SetBackgroundColor() does but
    ' the color value to set must be provided as a Long value.
 
-   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
+   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(Bitmap, backColor) = 1)
                                              
 End Function
 
@@ -4092,12 +4092,10 @@ Public Function FreeImage_RotateEx(ByVal Bitmap As Long, _
                           Optional ByVal OriginY As Double, _
                           Optional ByVal UseMask As Boolean) As Long
 
-Dim lUseMask As Long
+    Dim lUseMask As Long
 
-   If (UseMask) Then
-      lUseMask = 1
-   End If
-   FreeImage_RotateEx = FreeImage_RotateExInt(Bitmap, Angle, ShiftX, ShiftY, OriginX, OriginY, lUseMask)
+    If UseMask Then lUseMask = 1 Else lUseMask = 0
+    FreeImage_RotateEx = FreeImage_RotateExInt(Bitmap, Angle, ShiftX, ShiftY, OriginX, OriginY, lUseMask)
 
 End Function
 
@@ -8590,7 +8588,7 @@ Public Function FreeImage_CreateFromImageContainer(ByRef Container As Object, _
 
 End Function
 
-Public Function FreeImage_CreateFromScreen(Optional ByVal HWnd As Long, _
+Public Function FreeImage_CreateFromScreen(Optional ByVal hwnd As Long, _
                                            Optional ByVal ClientAreaOnly As Boolean) As Long
 
 Dim hDC As Long
@@ -8606,24 +8604,24 @@ Dim tR As RECT
    ' by it's window handle through the 'hWnd' parameter. By omitting this
    ' parameter, the whole screen/desktop window will be captured.
 
-   If (HWnd = 0) Then
-      HWnd = GetDesktopWindow()
-      hDC = GetDCEx(HWnd, 0, 0)
+   If (hwnd = 0) Then
+      hwnd = GetDesktopWindow()
+      hDC = GetDCEx(hwnd, 0, 0)
       ' get desktop's width and height
       lWidth = GetDeviceCaps(hDC, HORZRES)
       lHeight = GetDeviceCaps(hDC, VERTRES)
    
    ElseIf (ClientAreaOnly) Then
       ' get window's client area DC
-      hDC = GetDCEx(HWnd, 0, 0)
-      Call GetClientRect(HWnd, tR)
+      hDC = GetDCEx(hwnd, 0, 0)
+      Call GetClientRect(hwnd, tR)
       lWidth = tR.Right
       lHeight = tR.Bottom
       
    Else
       ' get window DC
-      hDC = GetDCEx(HWnd, 0, DCX_WINDOW)
-      Call GetWindowRect(HWnd, tR)
+      hDC = GetDCEx(hwnd, 0, DCX_WINDOW)
+      Call GetWindowRect(hwnd, tR)
       lWidth = tR.Right - tR.Left
       lHeight = tR.Bottom - tR.Top
 
@@ -8644,7 +8642,7 @@ Dim tR As RECT
    Call SelectObject(hMemDC, hMemOldBMP)
    Call DeleteObject(hMemBMP)
    Call DeleteDC(hMemDC)
-   Call ReleaseDC(HWnd, hDC)
+   Call ReleaseDC(hwnd, hDC)
 
 End Function
 
@@ -9956,7 +9954,7 @@ Const vbObjectOrWithBlockVariableNotSet As Long = 91
    
 
    If (Not Control Is Nothing) Then
-      Call GetClientRect(Control.HWnd, tR)
+      Call GetClientRect(Control.hwnd, tR)
       If ((tR.Right <> Control.Picture.Width) Or _
           (tR.Bottom <> Control.Picture.Height)) Then
          hDIB = FreeImage_CreateFromOlePicture(Control.Picture)

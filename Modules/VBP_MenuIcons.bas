@@ -85,7 +85,7 @@ Dim iconHandles() As Long
 'Private Const PICTYPE_ICON = 3
 
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'clsMenuImage does the heavy lifting for inserting icons into menus
 Dim cMenuImage As clsMenuImage
@@ -105,7 +105,7 @@ Public Sub LoadMenuIcons()
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
         If (Not .IsWindowVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
         
-        .Init FormMain.HWnd, 16, 16
+        .Init FormMain.hwnd, 16, 16
         
         .AddImageFromStream LoadResData("OPENIMG", "CUSTOM")     '0
         .AddImageFromStream LoadResData("OPENREC", "CUSTOM")     '1
@@ -253,6 +253,7 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("SEPIA", "CUSTOM")       '143
         .AddImageFromStream LoadResData("CROPSEL", "CUSTOM")     '144
         .AddImageFromStream LoadResData("HSL", "CUSTOM")         '145
+        .AddImageFromStream LoadResData("ROTATEANY", "CUSTOM")   '146
         
         
         'File Menu
@@ -302,11 +303,18 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 144, 3, 3     'Crop to Selection
         .PutImageToVBMenu 24, 5, 3      'Mirror
         .PutImageToVBMenu 23, 6, 3      'Flip
-        .PutImageToVBMenu 20, 8, 3      'Rotate Clockwise (rotate submenu)
-        .PutImageToVBMenu 21, 9, 3      'Rotate Counter-clockwise (rotate submenu)
-        .PutImageToVBMenu 22, 10, 3      'Rotate 180 (rotate submenu)
-        .PutImageToVBMenu 125, 12, 3     'Isometric
-        .PutImageToVBMenu 132, 13, 3     'Tile
+        .PutImageToVBMenu 20, 8, 3      'Rotate Clockwise
+        .PutImageToVBMenu 21, 9, 3      'Rotate Counter-clockwise
+        .PutImageToVBMenu 22, 10, 3      'Rotate 180
+        'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
+        If FreeImageEnabled Then
+            .PutImageToVBMenu 146, 11, 3     'Rotate Arbitrary
+            .PutImageToVBMenu 125, 13, 3     'Isometric
+            .PutImageToVBMenu 132, 14, 3     'Tile
+        Else
+            .PutImageToVBMenu 125, 12, 3     'Isometric
+            .PutImageToVBMenu 132, 13, 3     'Tile
+        End If
         
         'Color Menu
         .PutImageToVBMenu 46, 0, 4      'Brightness/Contrast
@@ -579,7 +587,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
    
     'If the image isn't square-shaped, the backcolor of the first draft image will need to be made transparent
     If tIcoWidth < icoSize Or tIcoHeight < icoSize Then
-        maskClr = imgForm.picIcon.BackColor
+        maskClr = imgForm.picIcon.backColor
     Else
         maskClr = 0
     End If
@@ -629,7 +637,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     DeleteDC InvertDC
    
     'Use the API to assign this new icon to the specified MDI child form
-    SendMessageLong imgForm.HWnd, &H80, 0, generatedIcon
+    SendMessageLong imgForm.hwnd, &H80, 0, generatedIcon
     
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon

@@ -913,6 +913,7 @@ Public Sub LoadPlugins()
     'Check for FreeImage file interface
     If FileExist(PluginPath & "FreeImage.dll") = False Then
         FreeImageEnabled = False
+        FormMain.MnuRotateArbitrary.Visible = False
     Else
         FreeImageEnabled = True
     End If
