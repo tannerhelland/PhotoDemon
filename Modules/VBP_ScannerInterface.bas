@@ -20,8 +20,8 @@ Attribute VB_Name = "Scanner_Interface"
 
 Option Explicit
 
-Private Declare Function TWAIN_AcquireToFilename Lib "EZTW32.dll" (ByVal hwndApp As Long, ByVal sFile As String) As Long
-Private Declare Function TWAIN_SelectImageSource Lib "EZTW32.dll" (ByVal hwndApp As Long) As Long
+Private Declare Function TWAIN_AcquireToFilename Lib "EZTW32.dll" (ByVal hWndApp As Long, ByVal sFile As String) As Long
+Private Declare Function TWAIN_SelectImageSource Lib "EZTW32.dll" (ByVal hWndApp As Long) As Long
 Private Declare Function TWAIN_IsAvailable Lib "EZTW32.dll" () As Long
 
 'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)
@@ -39,7 +39,7 @@ End Sub
 
 Public Sub Twain32SelectScanner()
     If ScanEnabled = True Then
-        TWAIN_SelectImageSource (FormMain.HWnd)
+        TWAIN_SelectImageSource (FormMain.hWnd)
     Else
     'If the EZTW32.dll file doesn't exist...
         MsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
@@ -72,7 +72,7 @@ Public Sub Twain32Scan()
     ScannerCaptureFile = userPreferences.getTempPath & "PDScanInterface.tmp"
     
     'This line uses the EZTW32.dll file to scan the image and send it to a temporary file
-    ScanCheck = TWAIN_AcquireToFilename(FormMain.HWnd, ScannerCaptureFile)
+    ScanCheck = TWAIN_AcquireToFilename(FormMain.hWnd, ScannerCaptureFile)
     
     'If the image was successfully scanned, load it
     If ScanCheck = 0 Then

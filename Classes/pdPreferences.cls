@@ -49,7 +49,7 @@ Private Declare Function GetSystemTempPath Lib "kernel32" Alias "GetTempPathA" (
 
 '***
 'API call for determining specific system-related folders
-Private Declare Function SHGetFolderPath Lib "shfolder.dll" Alias "SHGetFolderPathA" (ByVal hwndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As String) As Long
+Private Declare Function SHGetFolderPath Lib "shfolder.dll" Alias "SHGetFolderPathA" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As String) As Long
 
 'Windows Folder Constants
 Public Enum CSIDLs

@@ -79,7 +79,7 @@ Private Declare Function GetMonitorInfo Lib "user32" _
         MonInfo As tagMONITORINFO) As Long
 
 Private Declare Function MonitorFromWindow Lib "user32" ( _
-        ByVal hwnd As Long, _
+        ByVal hWnd As Long, _
         dwFlags As Long) As Long
 
 Private Declare Function MonitorFromRect Lib "user32" ( _
@@ -110,14 +110,14 @@ Public Property Get DesktopHeight() As Long
     DesktopHeight = GetSystemMetrics2(SM_CYVIRTUALSCREEN, Screen.Height \ Screen.TwipsPerPixelY)
 End Property
 
-Public Function GetMonitorFromWindow(hwnd As Long, dwFlags As Long) As Long
+Public Function GetMonitorFromWindow(hWnd As Long, dwFlags As Long) As Long
     '=====================================================
-    'Returns a monitor handle that the Window (hwnd) is in
+    'Returns a monitor handle that the Window (hWnd) is in
     '=====================================================
     Dim lReturn As Long
     
     On Error GoTo GetMonitorFromWindow_Err
-    lReturn = MonitorFromWindow(hwnd, dwFlags)
+    lReturn = MonitorFromWindow(hWnd, dwFlags)
     GetMonitorFromWindow = lReturn
     Exit Function
 GetMonitorFromWindow_Err:
@@ -144,7 +144,7 @@ Public Function CenterFormOnMonitor(FormToCenter As Form, Optional ReferenceForm
     If IsMissing(ReferenceForm) Then
         lMonitor = GetMonitorFromXYPoint(1, 1, MONITOR_DEFAULTTOPRIMARY)
     Else
-        lMonitor = GetMonitorFromWindow(ReferenceForm.hwnd, MONITOR_DEFAULTTOPRIMARY)
+        lMonitor = GetMonitorFromWindow(ReferenceForm.hWnd, MONITOR_DEFAULTTOPRIMARY)
     End If
     
     'If we get a valid lMonitor

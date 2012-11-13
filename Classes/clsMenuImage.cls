@@ -33,21 +33,21 @@ Option Explicit
 
 'Tanner's addition 20 September 2012:
 ' We must check if theming is enabled.  On Vista/7, use of the "Classic Theme" disables theming and screws up menu icon placement.
-Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal HWnd As Long, ByVal pszClassList As Long) As Long
+Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
 Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
 
 ' ------------
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal HWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function GetModuleHandle Lib "kernel32.dll" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
 Private Declare Function GetProcAddress Lib "kernel32.dll" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 Private Declare Function VirtualAlloc Lib "kernel32.dll" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32.dll" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
-Private Declare Function GetDC Lib "user32.dll" (ByVal HWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32.dll" (ByVal HWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32.dll" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32.dll" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
@@ -59,11 +59,11 @@ Private Declare Sub CreateStreamOnHGlobal Lib "ole32.dll" (ByRef hGlobal As Any,
 Private Declare Function GetObjectType Lib "gdi32.dll" (ByVal hgdiobj As Long) As Long
 Private Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoA" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, lpmii As MENUITEMINFO) As Long
 Private Declare Function GetMenuItemInfo Lib "user32.dll" Alias "GetMenuItemInfoA" (ByVal hMenu As Long, ByVal un As Long, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Long
-Private Declare Function GetMenu Lib "user32" (ByVal HWnd As Long) As Long
+Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
 Private Declare Function GetMenuInfo Lib "user32.dll" (ByVal hMenu As Long, ByRef LPMENUINFO As MENUINFO) As Long
 Private Declare Function SetMenuInfo Lib "user32.dll" (ByVal hMenu As Long, ByRef LPCMENUINFO As MENUINFO) As Long
-Private Declare Function DrawMenuBar Lib "user32" (ByVal HWnd As Long) As Long
+Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMenuItemID Lib "user32.dll" (ByVal hMenu As Long, ByVal nPos As Long) As Long
 Private Declare Function CreateIconFromResourceEx Lib "user32.dll" (ByRef presbits As Any, ByVal dwResSize As Long, ByVal fIcon As Long, ByVal dwVer As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal Flags As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
@@ -74,7 +74,7 @@ Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As 
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Long
 
 ' ------------------------------------------------------- GDI Plus -------------------------------------------------------------------
-Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal CallbackData As Long = 0) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal CallbackData As Long = 0) As Long
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef Graphics As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal Graphics As Long) As Long
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef Image As Long) As Long
@@ -142,7 +142,7 @@ Private Type DRAWITEMSTRUCT
     itemID          As Long
     itemAction      As Long
     ItemState       As Long
-    hwndItem        As Long
+    hWndItem        As Long
     hDC             As Long
     rcItem          As RECT
     ItemData        As Long
@@ -319,11 +319,11 @@ Private Const PAGE_EXECUTE_READWRITE    As Long = &H40
 Private Const MEM_RELEASE               As Long = &H8000&
 
 
-Public Event MenuMessages(ByVal HWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
+Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 
 Private pASMWrapper         As Long
 Private PrevWndProc         As Long
-Private m_hwnd              As Long
+Private m_hWnd              As Long
 
 Private GdipToken           As Long
 Private m_lWidth            As Long
@@ -334,7 +334,7 @@ Private cColl As Collection
 
 
 
-Public Function WindowProc(ByVal HWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Public Function WindowProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
     On Error Resume Next
     
@@ -343,8 +343,8 @@ Public Function WindowProc(ByVal HWnd As Long, ByVal uMsg As Long, ByVal wParam 
     
         Case WM_MENUSELECT, WM_ENTERIDLE 'put here what you need :)
         
-            RaiseEvent MenuMessages(HWnd, uMsg, wParam, lParam)
-            WindowProc = CallWindowProc(PrevWndProc, HWnd, uMsg, wParam, lParam)
+            RaiseEvent MenuMessages(hWnd, uMsg, wParam, lParam)
+            WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
             
         Case WM_MEASUREITEM
         
@@ -365,7 +365,7 @@ Public Function WindowProc(ByVal HWnd As Long, ByVal uMsg As Long, ByVal wParam 
                 
                 WindowProc = 1
             Else
-                WindowProc = CallWindowProc(PrevWndProc, HWnd, uMsg, wParam, lParam)
+                WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
             End If
         
         
@@ -382,14 +382,14 @@ Public Function WindowProc(ByVal HWnd As Long, ByVal uMsg As Long, ByVal wParam 
 
             If DIS.CtlType = ODT_MENU Then
             
-                If DIS.hwndItem <> GetMenu(HWnd) Then
+                If DIS.hWndItem <> GetMenu(hWnd) Then
                         
                     With MI
                         .cbSize = Len(MI)
                         .fMask = MIM_STYLE
                     End With
     
-                    GetMenuInfo DIS.hwndItem, MI
+                    GetMenuInfo DIS.hWndItem, MI
   
                     IsCheckStyle = (MI.dwStyle And MNS_NOCHECK) <> MNS_NOCHECK
     
@@ -407,22 +407,22 @@ Public Function WindowProc(ByVal HWnd As Long, ByVal uMsg As Long, ByVal wParam 
                     
                 End If
                 
-                DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hwndItem & "-" & DIS.itemID), IsDisabled
+                DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), IsDisabled
                 
                 WindowProc = 1
             Else
-                WindowProc = CallWindowProc(PrevWndProc, HWnd, uMsg, wParam, lParam)
+                WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
             End If
             
         Case WM_DESTROY
         
-            WindowProc = CallWindowProc(PrevWndProc, HWnd, uMsg, wParam, lParam)
+            WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
             
             Call StopSubclassing
             
         Case Else
         
-            WindowProc = CallWindowProc(PrevWndProc, HWnd, uMsg, wParam, lParam)
+            WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
             
     End Select
     
@@ -470,7 +470,7 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     Dim v As Variant
     Dim sKey As String
 
-    hMenu = GetMenu(m_hwnd)
+    hMenu = GetMenu(m_hWnd)
     
     hSubMenu = hMenu
     
@@ -510,7 +510,7 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     
     PutImageToVBMenu = SetMenuItemInfo(hSubMenu, MenuPos, True, MII)
    
-    If hSubMenu = hMenu Then DrawMenuBar m_hwnd
+    If hSubMenu = hMenu Then DrawMenuBar m_hWnd
     
 End Function
 
@@ -568,7 +568,7 @@ Public Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
     Dim hSubMenu As Long
     Dim v As Variant
 
-    hMenu = GetMenu(m_hwnd)
+    hMenu = GetMenu(m_hWnd)
     
     hSubMenu = hMenu
     
@@ -996,22 +996,22 @@ End Function
 
 
 
-Public Function Init(ByVal HWnd As Long, ImgWidth As Long, ByVal ImgHeight As Long, Optional ByVal bRaiseEvent As Boolean) As Boolean
+Public Function Init(ByVal hWnd As Long, ImgWidth As Long, ByVal ImgHeight As Long, Optional ByVal bRaiseEvent As Boolean) As Boolean
 
     If GdipToken Then
     
         m_lWidth = ImgWidth
         m_lHeight = ImgHeight
-        m_hwnd = HWnd
+        m_hWnd = hWnd
         
         If UBound(mDIB) > 0 Then
            Me.Clear
         End If
         
         If Not IsWinVistaOrLater Or bRaiseEvent = True Then
-            If HWnd <> 0 Then
+            If hWnd <> 0 Then
                 Call StopSubclassing
-                Init = SetSubclassing(HWnd)
+                Init = SetSubclassing(hWnd)
             End If
         Else
             Init = True
@@ -1022,13 +1022,13 @@ Public Function Init(ByVal HWnd As Long, ImgWidth As Long, ByVal ImgHeight As Lo
 End Function
 
 
-Private Function SetSubclassing(ByVal HWnd As Long) As Boolean
+Private Function SetSubclassing(ByVal hWnd As Long) As Boolean
 
     If PrevWndProc = 0 Then
     
         If pASMWrapper <> 0 Then
             
-            PrevWndProc = SetWindowLong(HWnd, GWL_WNDPROC, pASMWrapper)
+            PrevWndProc = SetWindowLong(hWnd, GWL_WNDPROC, pASMWrapper)
             
             If PrevWndProc <> 0 Then
                 SetSubclassing = True
@@ -1041,13 +1041,13 @@ End Function
 
 Private Function StopSubclassing() As Boolean
 
-    If m_hwnd <> 0 Then
+    If m_hWnd <> 0 Then
     
         If PrevWndProc <> 0 Then
         
-            Call SetWindowLong(m_hwnd, GWL_WNDPROC, PrevWndProc)
+            Call SetWindowLong(m_hWnd, GWL_WNDPROC, PrevWndProc)
             
-            m_hwnd = 0
+            m_hWnd = 0
             PrevWndProc = 0
             
             StopSubclassing = True
@@ -1084,7 +1084,7 @@ Private Sub Class_Initialize()
     Dim hTheme As Long
     Dim sClass As String
     sClass = "Window"
-    hTheme = OpenThemeData(FormMain.HWnd, StrPtr(sClass))
+    hTheme = OpenThemeData(FormMain.hWnd, StrPtr(sClass))
     If hTheme = 0 Then
         IsWinVistaOrLater = False
     Else

@@ -94,8 +94,8 @@ Option Explicit
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINT) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
@@ -120,37 +120,37 @@ Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Lon
 Private Declare Function CopyRect Lib "user32" (lpDestRect As RECT, lpSourceRect As RECT) As Long
 Private Declare Function DrawEdge Lib "user32" (ByVal hDC As Long, qrc As RECT, ByVal edge As Long, ByVal grfFlags As Long) As Long
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal HWnd As Long, lpRect As RECT) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal HWnd As Long, lpRect As RECT) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function TransparentBlt Lib "MSIMG32.dll" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal crTransparent As Long) As Boolean
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINT) As Long
-Private Declare Function SetWindowRgn Lib "user32" (ByVal HWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
+Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
 Private Declare Function LoadCursor Lib "user32.dll" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function SetCursor Lib "user32.dll" (ByVal hCursor As Long) As Long
 Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal HWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 
 ' --for tooltips
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
-Private Declare Function DestroyWindow Lib "user32" (ByVal HWnd As Long) As Long
-Private Declare Function GetClassLong Lib "user32" Alias "GetClassLongA" (ByVal HWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetWindowPos Lib "user32" (ByVal HWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long) As Long
-Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetClassLong Lib "user32" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 
 ' --Theme Stuff
-Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal HWnd As Long, ByVal pszClassList As Long) As Long
+Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
 Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
 Private Declare Function DrawThemeBackground Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal lHDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pClipRect As RECT) As Long
 Private Declare Function GetThemeBackgroundRegion Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal hDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pRegion As Long) As Long
 Private Declare Function IsAppThemed Lib "uxtheme.dll" () As Long
 
 Private Declare Function ReleaseCapture Lib "user32.dll" () As Long
-Private Declare Function SetCapture Lib "user32" (ByVal HWnd As Long) As Long
+Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetCapture Lib "user32.dll" () As Long
 
 Private Declare Function FillRect Lib "user32.dll" (ByVal hDC As Long, ByRef lpRect As RECT, ByVal hBrush As Long) As Long
@@ -193,13 +193,13 @@ Private Const PATCH_09  As Long = 137                                      'Tabl
 Private Type TRACKMOUSEEVENT_STRUCT
    cbSize               As Long
    dwFlags              As TRACKMOUSEEVENT_FLAGS
-   hwndTrack            As Long
+   hWndTrack            As Long
    dwHoverTime          As Long
 End Type
 
 'for subclass
 Private Type SubClassDatatype
-   HWnd                         As Long
+   hWnd                         As Long
    nAddrSclass                  As Long
    nAddrOrig                    As Long
    nMsgCountA                   As Long
@@ -224,7 +224,7 @@ Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, B
 Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function SetWindowLongA Lib "user32" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function SetWindowLongA Lib "user32" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Long
 
 '  End of Subclassing Declares
@@ -1436,7 +1436,7 @@ Private Sub CreateRegion()
       Case Else
          m_lButtonRgn = CreateRectRgn(0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight)
    End Select
-   SetWindowRgn UserControl.HWnd, m_lButtonRgn, True       'Set Button Region
+   SetWindowRgn UserControl.hWnd, m_lButtonRgn, True       'Set Button Region
    DeleteObject m_lButtonRgn                               'Free memory
 
 End Sub
@@ -1902,11 +1902,11 @@ Private Sub UncheckAllValues()
        ' Is it a jcbutton?
       If TypeOf objButton Is jcbutton Then
          ' Is the button in the same container?
-         If objButton.Container.HWnd = UserControl.ContainerHwnd Then
+         If objButton.Container.hWnd = UserControl.ContainerHwnd Then
             ' is the button type Option?
             If objButton.Mode = [ebmOptionButton] Then
                ' is it not this button
-               If Not objButton.HWnd = UserControl.HWnd Then
+               If Not objButton.hWnd = UserControl.hWnd Then
                   objButton.Value = False
                End If
             End If
@@ -2480,7 +2480,7 @@ Private Sub WindowsThemeButton(ByVal vState As enumButtonStates)
 
    Dim tmpState         As Long
 
-   UserControl.BackColor = GetSysColor(COLOR_BTNFACE)
+   UserControl.backColor = GetSysColor(COLOR_BTNFACE)
 
    If Not m_bEnabled Then
       tmpState = 4
@@ -2516,12 +2516,12 @@ Private Function DrawTheme(sClass As String, ByVal iPart As Long, ByVal vState A
    Dim m_btnRect        As RECT
    Dim hRgn             As Long
 
-   hTheme = OpenThemeData(UserControl.HWnd, StrPtr(sClass))
+   hTheme = OpenThemeData(UserControl.hWnd, StrPtr(sClass))
    If hTheme Then
       ' --Necessary for rounded buttons
       SetRect m_btnRect, m_ButtonRect.Left - 1, m_ButtonRect.Top - 1, m_ButtonRect.Right + 1, m_ButtonRect.Bottom + 2
       GetThemeBackgroundRegion hTheme, hDC, iPart, vState, m_btnRect, hRgn
-      SetWindowRgn HWnd, hRgn, True
+      SetWindowRgn hWnd, hRgn, True
       ' --clean up
       DeleteObject hRgn
       ' --Draw the theme
@@ -2616,7 +2616,7 @@ Private Sub ShowPopupMenu()
       Dim lpPoint          As POINT
       GetCursorPos lpPoint
 
-      If (WindowFromPoint(lpPoint.x, lpPoint.y) = UserControl.HWnd) Then
+      If (WindowFromPoint(lpPoint.x, lpPoint.y) = UserControl.hWnd) Then
          m_bPopupShown = True
       Else
          m_bIsDown = False
@@ -2716,7 +2716,7 @@ Private Sub UserControl_DblClick()
 
    If m_lDownButton = 1 Then                    'React to only Left button
 
-      SetCapture (HWnd)                         'Preserve Hwnd on DoubleClick
+      SetCapture (hWnd)                         'Preserve Hwnd on DoubleClick
       If m_Buttonstate <> eStateDown Then m_Buttonstate = eStateDown
       RedrawButton
       UserControl_MouseDown m_lDownButton, m_lDShift, m_lDX, m_lDY
@@ -2828,9 +2828,9 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
             End If
         End If                                'when spacebar being held
 
-        If (Not GetCapture = UserControl.HWnd) Then
+        If (Not GetCapture = UserControl.hWnd) Then
             ReleaseCapture
-            SetCapture UserControl.HWnd     'No other processing until spacebar is released
+            SetCapture UserControl.hWnd     'No other processing until spacebar is released
         End If                              'Thanks to APIGuide
     
     Case Else
@@ -2981,9 +2981,9 @@ Private Sub CreateToolTip()
    If m_lTooltipType = TooltipBalloon Then lWinStyle = lWinStyle Or TTS_BALLOON
     
    If m_bttRTL Then
-      m_lttHwnd = CreateWindowEx(WS_EX_LAYOUTRTL, TOOLTIPS_CLASSA, vbNullString, lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.HWnd, 0&, App.hInstance, 0&)
+      m_lttHwnd = CreateWindowEx(WS_EX_LAYOUTRTL, TOOLTIPS_CLASSA, vbNullString, lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.hWnd, 0&, App.hInstance, 0&)
    Else
-      m_lttHwnd = CreateWindowEx(0&, TOOLTIPS_CLASSA, vbNullString, lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.HWnd, 0&, App.hInstance, 0&)
+      m_lttHwnd = CreateWindowEx(0&, TOOLTIPS_CLASSA, vbNullString, lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.hWnd, 0&, App.hInstance, 0&)
    End If
    
    SetClassLong m_lttHwnd, GCL_STYLE, GetClassLong(m_lttHwnd, GCL_STYLE) Or CS_DROPSHADOW
@@ -2993,7 +2993,7 @@ Private Sub CreateToolTip()
    'SetWindowPos m_lttHwnd, HWND_TOPMOST, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE
 
    ''get the rect of the parent control
-   GetClientRect UserControl.HWnd, lpRect
+   GetClientRect UserControl.hWnd, lpRect
 
    If m_WindowsNT Then
       ' --set our tooltip info structure  for UNICODE SUPPORT >> WinNT
@@ -3005,9 +3005,9 @@ Private Sub CreateToolTip()
             .lFlags = TTF_SUBCLASS Or TTF_IDISHWND
          End If
 
-         ' --set the hwnd prop to our parent control's hwnd
-         .lHwnd = UserControl.HWnd
-         .lId = HWnd
+         ' --set the hWnd prop to our parent control's hWnd
+         .lHwnd = UserControl.hWnd
+         .lId = hWnd
          .lSize = Len(ttipW)
          .hInstance = App.hInstance
          .lpStrW = StrPtr(m_sTooltipText)
@@ -3025,9 +3025,9 @@ Private Sub CreateToolTip()
             .lFlags = TTF_SUBCLASS
          End If
 
-         ' --set the hwnd prop to our parent control's hwnd
-         .lHwnd = UserControl.HWnd
-         .lId = HWnd
+         ' --set the hWnd prop to our parent control's hWnd
+         .lHwnd = UserControl.hWnd
+         .lId = hWnd
          .lSize = Len(ttip)
          .hInstance = App.hInstance
          .lpStr = m_sTooltipText
@@ -3151,13 +3151,13 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
       SetCursor m_lCursor
    End If
    
-   If Not (WindowFromPoint(lp.x, lp.y) = UserControl.HWnd) Then
+   If Not (WindowFromPoint(lp.x, lp.y) = UserControl.hWnd) Then
       ' --Mouse yet not entered in the control
       m_bMouseInCtl = False
    Else
       m_bMouseInCtl = True
       ' --Check when the Mouse leaves the control
-      TrackMouseLeave HWnd
+      TrackMouseLeave hWnd
       ' --Raise a MouseEnter event(it's Same as mouseMove)
       RaiseEvent MouseEnter
    End If
@@ -3311,7 +3311,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
       SetAccessKey
       lh = UserControl.ScaleHeight
       lw = UserControl.ScaleWidth
-      m_lParenthWnd = UserControl.Parent.HWnd
+      m_lParenthWnd = UserControl.Parent.hWnd
    End With
 
    If m_bHandPointer Then
@@ -3330,12 +3330,12 @@ On Error GoTo h:
          'OS supports mouse leave so subclass for it
          With UserControl
             'Start subclassing the UserControl
-            Subclass_Initialize .HWnd
+            Subclass_Initialize .hWnd
             Subclass_Initialize m_lParenthWnd
-            Subclass_AddMsg .HWnd, WM_MOUSELEAVE, MSG_AFTER
-            Subclass_AddMsg .HWnd, WM_THEMECHANGED, MSG_AFTER
+            Subclass_AddMsg .hWnd, WM_MOUSELEAVE, MSG_AFTER
+            Subclass_AddMsg .hWnd, WM_THEMECHANGED, MSG_AFTER
             If IsThemed Then
-               Subclass_AddMsg .HWnd, WM_SYSCOLORCHANGE, MSG_AFTER
+               Subclass_AddMsg .hWnd, WM_SYSCOLORCHANGE, MSG_AFTER
             End If
             On Error Resume Next
             If UserControl.Parent.MDIChild Then
@@ -3495,7 +3495,7 @@ Private Sub TrackMouseLeave(ByVal lng_hWnd As Long)
       With tme
          .cbSize = Len(tme)
          .dwFlags = TME_LEAVE
-         .hwndTrack = lng_hWnd
+         .hWndTrack = lng_hWnd
       End With
 
       If TrackUser32 Then
@@ -3617,16 +3617,16 @@ Attribute About.VB_UserMemId = -552
 
 End Sub
 
-Public Property Get BackColor() As OLE_COLOR
-Attribute BackColor.VB_Description = "Returns/sets the background color used for the button."
-Attribute BackColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
-Attribute BackColor.VB_UserMemId = -501
+Public Property Get backColor() As OLE_COLOR
+Attribute backColor.VB_Description = "Returns/sets the background color used for the button."
+Attribute backColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute backColor.VB_UserMemId = -501
 
-   BackColor = m_bColors.tBackColor
+   backColor = m_bColors.tBackColor
 
 End Property
 
-Public Property Let BackColor(ByVal New_BackColor As OLE_COLOR)
+Public Property Let backColor(ByVal New_BackColor As OLE_COLOR)
 
    m_bColors.tBackColor = New_BackColor
    If m_ButtonStyle <> eOfficeXP Then
@@ -3838,13 +3838,13 @@ Public Property Let HandPointer(ByVal New_HandPointer As Boolean)
 
 End Property
 
-Public Property Get HWnd() As Long
-Attribute HWnd.VB_Description = "Returns a handle that uniquely identifies the control."
-Attribute HWnd.VB_ProcData.VB_Invoke_Property = ";Misc"
-Attribute HWnd.VB_UserMemId = -515
+Public Property Get hWnd() As Long
+Attribute hWnd.VB_Description = "Returns a handle that uniquely identifies the control."
+Attribute hWnd.VB_ProcData.VB_Invoke_Property = ";Misc"
+Attribute hWnd.VB_UserMemId = -515
 
    ' --Handle that uniquely identifies the control
-   HWnd = UserControl.HWnd
+   hWnd = UserControl.hWnd
 
 End Property
 
@@ -4306,10 +4306,10 @@ End Function
 Private Function Subclass_Index(ByVal lHwnd As Long, Optional ByVal bAdd As Boolean) As Long
 
    For Subclass_Index = UBound(SubclassData) To 0 Step -1
-      If SubclassData(Subclass_Index).HWnd = lHwnd Then
+      If SubclassData(Subclass_Index).hWnd = lHwnd Then
          If Not bAdd Then Exit Function
          
-      ElseIf SubclassData(Subclass_Index).HWnd = 0 Then
+      ElseIf SubclassData(Subclass_Index).hWnd = 0 Then
          If bAdd Then Exit Function
       End If
    Next 'Subclass_Index
@@ -4365,7 +4365,7 @@ Dim strHex                      As String
       strHex = "5589E583C4F85731C08945FC8945F8EB0EE80000000083F802742185C07424E830000000837DF800750AE838000000E84D0000005F8B45FCC9C21000E826000000EBF168000000006AFCFF7508E800000000EBE031D24ABF00000000B900000000E82D000000C3FF7514FF7510FF750CFF75086800000000E8000000008945FCC331D2BF00000000B900000000E801000000C3E33209C978078B450CF2AF75278D4514508D4510508D450C508D4508508D45FC508D45F85052B800000000508B00FF90A4070000C3"
       
       For lngCount = 1 To CODE_LEN
-         bytBuffer(lngCount) = val("&H" & Left(strHex, 2))
+         bytBuffer(lngCount) = Val("&H" & Left(strHex, 2))
          strHex = Mid(strHex, 3)
       Next 'lngCount
       
@@ -4384,9 +4384,9 @@ Dim strHex                      As String
    End If
    
    With SubclassData(lngIndex)
-      .HWnd = lHwnd
+      .hWnd = lHwnd
       .nAddrSclass = GlobalAlloc(GMEM_FIXED, CODE_LEN)
-      .nAddrOrig = SetWindowLongA(.HWnd, GWL_WNDPROC, .nAddrSclass)
+      .nAddrOrig = SetWindowLongA(.hWnd, GWL_WNDPROC, .nAddrSclass)
       
       Call CopyMemory(ByVal .nAddrSclass, bytBuffer(1), CODE_LEN)
       Call Subclass_PatchRel(.nAddrSclass, PATCH_01, lngEbMode)
@@ -4515,13 +4515,13 @@ End Sub
 Private Sub Subclass_Stop(ByVal lHwnd As Long)
 
    With SubclassData(Subclass_Index(lHwnd))
-      SetWindowLongA .HWnd, GWL_WNDPROC, .nAddrOrig
+      SetWindowLongA .hWnd, GWL_WNDPROC, .nAddrOrig
       
       Call Subclass_PatchVal(.nAddrSclass, PATCH_05, 0)
       Call Subclass_PatchVal(.nAddrSclass, PATCH_09, 0)
       
       GlobalFree .nAddrSclass
-      .HWnd = 0
+      .hWnd = 0
       .nMsgCountA = 0
       .nMsgCountB = 0
       Erase .aMsgTabelA, .aMsgTabelB
@@ -4534,7 +4534,7 @@ Private Sub Subclass_Terminate()
 Dim lngCount As Long
 
    For lngCount = UBound(SubclassData) To 0 Step -1
-      If SubclassData(lngCount).HWnd Then Call Subclass_Stop(SubclassData(lngCount).HWnd)
+      If SubclassData(lngCount).hWnd Then Call Subclass_Stop(SubclassData(lngCount).hWnd)
    Next 'lngCount
 
 End Sub
