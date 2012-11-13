@@ -125,10 +125,16 @@ End Function
 
 'Set the current temp directory
 Public Sub setTempPath(ByVal newTempPath As String)
+    
     StripDirectory newTempPath
     newTempPath = FixPath(newTempPath)
     TempPath = newTempPath
+    
+    'Ensure that this directory exists AND that we have write access to it.  If we do not, substitute the default system temp folder.
+    If DirectoryExist(TempPath) = False Then TempPath = GetTemporaryPath()
+    
     SetPreference_String "Program Paths", "TempPath", TempPath
+    
 End Sub
 
 'Return the current program directory

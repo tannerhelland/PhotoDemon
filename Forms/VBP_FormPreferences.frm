@@ -214,6 +214,198 @@ Begin VB.Form FormPreferences
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
+      Height          =   4695
+      Index           =   4
+      Left            =   240
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   23
+      Top             =   1800
+      Width           =   8295
+      Begin VB.CheckBox chkGDIPlusTest 
+         Appearance      =   0  'Flat
+         Caption         =   "enable GDI+ support"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   255
+         Left            =   240
+         TabIndex        =   43
+         ToolTipText     =   $"VBP_FormPreferences.frx":519A
+         Top             =   3840
+         Width           =   7815
+      End
+      Begin VB.CheckBox chkFreeImageTest 
+         Appearance      =   0  'Flat
+         Caption         =   "enable FreeImage support"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   255
+         Left            =   240
+         TabIndex        =   42
+         ToolTipText     =   $"VBP_FormPreferences.frx":528C
+         Top             =   3360
+         Width           =   7815
+      End
+      Begin VB.TextBox TxtTempPath 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   375
+         Left            =   360
+         Locked          =   -1  'True
+         TabIndex        =   27
+         Text            =   "automatically generated at run-time"
+         ToolTipText     =   "Folder used for temporary files"
+         Top             =   1560
+         Width           =   5415
+      End
+      Begin VB.CommandButton CmdTmpPath 
+         Caption         =   "..."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   5880
+         TabIndex        =   26
+         ToolTipText     =   "Click to open a browse-for-folder dialog"
+         Top             =   1560
+         Width           =   405
+      End
+      Begin VB.CheckBox ChkLogMessages 
+         Appearance      =   0  'Flat
+         Caption         =   "log program messages to file (for debugging purposes)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   255
+         Left            =   240
+         TabIndex        =   25
+         ToolTipText     =   $"VBP_FormPreferences.frx":537E
+         Top             =   600
+         Width           =   6975
+      End
+      Begin VB.Label lblTempPathWarning 
+         Caption         =   $"VBP_FormPreferences.frx":5470
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H000000FF&
+         Height          =   495
+         Left            =   360
+         TabIndex        =   47
+         Top             =   2040
+         Width           =   7815
+         WordWrap        =   -1  'True
+      End
+      Begin VB.Label lblRuntimeSettings 
+         AutoSize        =   -1  'True
+         Caption         =   "run-time testing options (NOTE: these are not saved to the INI file)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   41
+         Top             =   2760
+         Width           =   7155
+      End
+      Begin VB.Label lblTempFolder 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "temporary file folder (used to hold Undo/Redo data):"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   28
+         Top             =   1200
+         Width           =   4530
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "advanced settings"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   120
+         TabIndex        =   24
+         Top             =   0
+         Width           =   1875
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
       Height          =   4815
       Index           =   0
       Left            =   240
@@ -347,7 +539,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":519A
+         MouseIcon       =   "VBP_FormPreferences.frx":551F
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -509,7 +701,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   20
-         ToolTipText     =   $"VBP_FormPreferences.frx":52EC
+         ToolTipText     =   $"VBP_FormPreferences.frx":5671
          Top             =   1080
          Width           =   6735
       End
@@ -629,7 +821,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":5388
+         MouseIcon       =   "VBP_FormPreferences.frx":570D
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -646,7 +838,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":54DA
+         MouseIcon       =   "VBP_FormPreferences.frx":585F
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -773,179 +965,6 @@ Begin VB.Form FormPreferences
          Width           =   3510
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   4
-      Left            =   240
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   23
-      Top             =   1800
-      Width           =   8295
-      Begin VB.CheckBox chkGDIPlusTest 
-         Appearance      =   0  'Flat
-         Caption         =   "enable GDI+ support"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Left            =   240
-         TabIndex        =   43
-         ToolTipText     =   $"VBP_FormPreferences.frx":562C
-         Top             =   3360
-         Width           =   7815
-      End
-      Begin VB.CheckBox chkFreeImageTest 
-         Appearance      =   0  'Flat
-         Caption         =   "enable FreeImage support"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Left            =   240
-         TabIndex        =   42
-         ToolTipText     =   $"VBP_FormPreferences.frx":571E
-         Top             =   2880
-         Width           =   7815
-      End
-      Begin VB.TextBox TxtTempPath 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   375
-         Left            =   360
-         Locked          =   -1  'True
-         TabIndex        =   27
-         Text            =   "automatically generated at run-time"
-         ToolTipText     =   "Folder used for temporary files"
-         Top             =   1560
-         Width           =   5415
-      End
-      Begin VB.CommandButton CmdTmpPath 
-         Caption         =   "..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   5880
-         TabIndex        =   26
-         ToolTipText     =   "Click to open a browse-for-folder dialog"
-         Top             =   1560
-         Width           =   405
-      End
-      Begin VB.CheckBox ChkLogMessages 
-         Appearance      =   0  'Flat
-         Caption         =   "log program messages to file (for debugging purposes)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Left            =   240
-         TabIndex        =   25
-         ToolTipText     =   $"VBP_FormPreferences.frx":5810
-         Top             =   600
-         Width           =   6975
-      End
-      Begin VB.Label lblRuntimeSettings 
-         AutoSize        =   -1  'True
-         Caption         =   "run-time testing options (NOTE: these are not saved to the INI file)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   41
-         Top             =   2280
-         Width           =   7155
-      End
-      Begin VB.Label lblTempFolder 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "temporary file folder (used to hold Undo/Redo data):"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   28
-         Top             =   1200
-         Width           =   4530
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "advanced settings"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   4
-         Left            =   120
-         TabIndex        =   24
-         Top             =   0
-         Width           =   1875
-      End
-   End
    Begin VB.Line lneVertical 
       BorderColor     =   &H8000000D&
       X1              =   8
@@ -1047,7 +1066,7 @@ Private Sub cmbCanvas_Click()
     
             retColor = picCanvasColor.backColor
     
-            CD1.VBChooseColor retColor, True, True, False, Me.hwnd
+            CD1.VBChooseColor retColor, True, True, False, Me.hWnd
     
             'If a color was selected, change the picture box and associated combo box to match
             If retColor >= 0 Then CanvasBackground = retColor Else CanvasBackground = picCanvasColor.backColor
@@ -1162,7 +1181,7 @@ End Sub
 'When the "..." button is clicked, prompt the user with a "browse for folder" dialog
 Private Sub CmdTmpPath_Click()
     Dim tString As String
-    tString = BrowseForFolder(Me.hwnd)
+    tString = BrowseForFolder(Me.hWnd)
     If tString <> "" Then TxtTempPath.Text = FixPath(tString)
 End Sub
 
@@ -1342,7 +1361,7 @@ Private Sub picAlphaOne_Click()
     retColor = picAlphaOne.backColor
     
     'Display a Windows color selection box
-    CD1.VBChooseColor retColor, True, True, False, Me.hwnd
+    CD1.VBChooseColor retColor, True, True, False, Me.hWnd
     
     'If a color was selected, change the picture box and associated combo box to match
     If retColor > 0 Then
@@ -1369,7 +1388,7 @@ Private Sub picAlphaTwo_Click()
     retColor = picAlphaTwo.backColor
     
     'Display a Windows color selection box
-    CD1.VBChooseColor retColor, True, True, False, Me.hwnd
+    CD1.VBChooseColor retColor, True, True, False, Me.hWnd
     
     'If a color was selected, change the picture box and associated combo box to match
     If retColor > 0 Then
@@ -1396,7 +1415,7 @@ Private Sub picCanvasColor_Click()
     retColor = picCanvasColor.backColor
     
     'Display a Windows color selection box
-    CD1.VBChooseColor retColor, True, True, False, Me.hwnd
+    CD1.VBChooseColor retColor, True, True, False, Me.hWnd
     
     'If a color was selected, change the picture box and associated combo box to match
     If retColor >= 0 Then
@@ -1421,3 +1440,13 @@ Private Sub picCanvasColor_Click()
     End If
     
 End Sub
+
+'Test to see if we can determine folder access...
+Private Sub TxtTempPath_Change()
+    If Not DirectoryExist(TxtTempPath.Text) Then
+        lblTempPathWarning.Visible = True
+    Else
+        lblTempPathWarning.Visible = False
+    End If
+End Sub
+
