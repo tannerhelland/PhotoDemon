@@ -698,7 +698,8 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
             DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
         
             'Fit the new image on-screen and redraw it
-            FitOnScreen
+            FitImageToViewport
+            FitWindowToImage
             
         Else
             FreeLibrary hLib
