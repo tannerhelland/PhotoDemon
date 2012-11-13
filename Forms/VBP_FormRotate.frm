@@ -319,7 +319,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 Set tmpLayer = Nothing
             
             Else
-                'Resize our main layer in preparation for the transfer
+                
+                'Resize the image's main layer in preparation for the transfer
                 pdImages(CurrentImage).mainLayer.createBlank nWidth, nHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
                 
                 'Copy the bits from the FreeImage DIB to our DIB
@@ -330,7 +331,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
             
                 'Fit the new image on-screen and redraw it
-                FitOnScreen
+                FitImageToViewport
+                FitWindowToImage
             
             End If
             
