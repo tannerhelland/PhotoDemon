@@ -34,9 +34,9 @@ Attribute VB_Name = "Outside_FreeImageV3"
 
 '// ==========================================================
 '// CVS
-'// $Revision: 2.15 $
-'// $Date: 2012/03/12 09:25:05 $
-'// $Id: MFreeImage.bas,v 2.15 2012/03/12 09:25:05 cklein05 Exp $
+'// $Revision: 2.17 $
+'// $Date: 2012/10/01 12:52:22 $
+'// $Id: MFreeImage.bas,v 2.17 2012/10/01 12:52:22 cklein05 Exp $
 '// ==========================================================
 
 
@@ -159,6 +159,21 @@ Option Explicit
 '- : removed
 '! : changed
 '+ : added
+'
+'October 1, 2012 - 2.17
+'- [Carsten Klein] removed temporary workaround for 16-bit standard type bitmaps introduced in version 2.15, which temporarily stored RGB masks directly after the BITMAPINFO structure, when creating a HBITMAP.
+'* [Carsten Klein] fixed a potential overflow bug in both pNormalizeRational and pNormalizeSRational: these now do nothing if any of numerator and denominator is either 1 or 0 (zero).
+'+ [Carsten Klein] added load flag JPEG_GREYSCALE as well as the enum constant FILO_JPEG_GREYSCALE.
+'! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL to 4 to match current version 3.15.4
+'
+'! now FreeImage version 3.15.4
+'
+'
+'March 19, 2012 - 2.16
+'! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL to 3 to match current version 3.15.3
+'
+'! now FreeImage version 3.15.3
+'
 '
 'March 12, 2012 - 2.15
 '+ [Carsten Klein] added function FreeImage_ConvertToUINT16.
@@ -366,7 +381,7 @@ Option Explicit
 '! now FreeImage version 3.10.0
 '
 'February 24, 2007 - 2.0.1
-'* [Carsten Klein] fixed a bug in function FreeImage_CreateFromScreen(): now size of image created is according to window to be captured if parameter 'hwnd' <> 0.
+'* [Carsten Klein] fixed a bug in function FreeImage_CreateFromScreen(): now size of image created is according to window to be captured if parameter 'hWnd' <> 0.
 '+ [Carsten Klein] added parameter 'bClientAreaOnly' to function FreeImage_CreateFromScreen().
 '+ [Carsten Klein] added blitting option 'CAPTUREBLT' when calling function BitBlt() in function FreeImage_CreateFromScreen().
 '- [Carsten Klein] removed unused variable 'hDIB' from functions FreeImage_CreateFromScreen() and FreeImage_LoadEx(). Thanks to Bruce Rusk for pointing that out.
@@ -879,27 +894,27 @@ Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" ( _
 
 'USER32
 Private Declare Function ReleaseDC Lib "user32.dll" ( _
-    ByVal hwnd As Long, _
+    ByVal hWnd As Long, _
     ByVal hDC As Long) As Long
 
 Private Declare Function GetDC Lib "user32.dll" ( _
-    ByVal hwnd As Long) As Long
+    ByVal hWnd As Long) As Long
     
 Private Declare Function GetDesktopWindow Lib "user32.dll" () As Long
     
 Private Declare Function GetDCEx Lib "user32.dll" ( _
-    ByVal hwnd As Long, _
+    ByVal hWnd As Long, _
     ByVal hrgnclip As Long, _
     ByVal fdwOptions As Long) As Long
 
 Private Const DCX_WINDOW As Long = &H1&
    
 Private Declare Function GetWindowRect Lib "user32.dll" ( _
-    ByVal hwnd As Long, _
+    ByVal hWnd As Long, _
     ByRef lpRect As RECT) As Long
 
 Private Declare Function GetClientRect Lib "user32.dll" ( _
-    ByVal hwnd As Long, _
+    ByVal hWnd As Long, _
     ByRef lpRect As RECT) As Long
 
 
@@ -1073,7 +1088,7 @@ Private Const WHITEONBLACK As Long = 2
 Private Const COLORONCOLOR As Long = 3
 
 'MSIMG32
-Private Declare Function AlphaBlend Lib "MSIMG32.dll" ( _
+Private Declare Function AlphaBlend Lib "msimg32.dll" ( _
     ByVal hdcDest As Long, _
     ByVal nXOriginDest As Long, _
     ByVal nYOriginDest As Long, _
@@ -1161,7 +1176,7 @@ End Enum
 ' Version information
 Public Const FREEIMAGE_MAJOR_VERSION As Long = 3
 Public Const FREEIMAGE_MINOR_VERSION As Long = 15
-Public Const FREEIMAGE_RELEASE_SERIAL As Long = 2
+Public Const FREEIMAGE_RELEASE_SERIAL As Long = 4
 
 ' Memory stream pointer operation flags
 Public Const SEEK_SET As Long = 0
@@ -1238,6 +1253,7 @@ Public Const JPEG_FAST As Long = &H1                 ' load the file as fast as 
 Public Const JPEG_ACCURATE As Long = &H2             ' load the file with the best quality, sacrificing some speed
 Public Const JPEG_CMYK As Long = &H4                 ' load separated CMYK "as is" (use 'OR' to combine with other flags)
 Public Const JPEG_EXIFROTATE As Long = &H8           ' load and rotate according to Exif 'Orientation' tag if available
+Public Const JPEG_GREYSCALE As Long = &H10           ' load and convert to a 8-bit greyscale image
 Public Const JPEG_QUALITYSUPERB As Long = &H80       ' save with superb quality (100:1)
 Public Const JPEG_QUALITYGOOD As Long = &H100        ' save with good quality (75:1)
 Public Const JPEG_QUALITYNORMAL As Long = &H200      ' save with normal quality (50:1)
@@ -1390,6 +1406,7 @@ Public Enum FREE_IMAGE_LOAD_OPTIONS
    FILO_JPEG_CMYK = JPEG_CMYK                     ' load separated CMYK "as is" (use 'OR' to combine with other load flags)
    FILO_JPEG_EXIFROTATE = JPEG_EXIFROTATE         ' load and rotate according to Exif 'Orientation' tag if available
    FILO_PCD_DEFAULT = PCD_DEFAULT
+   FILO_JPEG_GREYSCALE = JPEG_GREYSCALE           ' load and convert to a 8-bit greyscale image
    FILO_PCD_BASE = PCD_BASE                       ' load the bitmap sized 768 x 512
    FILO_PCD_BASEDIV4 = PCD_BASEDIV4               ' load the bitmap sized 384 x 256
    FILO_PCD_BASEDIV16 = PCD_BASEDIV16             ' load the bitmap sized 192 x 128
@@ -2804,6 +2821,16 @@ Private Declare Function FreeImage_JPEGTransformUInt Lib "FreeImage.dll" Alias "
 ' Upsampling and downsampling
 Public Declare Function FreeImage_Rescale Lib "FreeImage.dll" Alias "_FreeImage_Rescale@16" ( _
            ByVal Bitmap As Long, _
+           ByVal Width As Long, _
+           ByVal Height As Long, _
+           ByVal Filter As FREE_IMAGE_FILTER) As Long
+           
+Public Declare Function FreeImage_RescaleRect Lib "FreeImage.dll" Alias "_FreeImage_RescaleRect@32" ( _
+           ByVal Bitmap As Long, _
+           ByVal Left As Long, _
+           ByVal Top As Long, _
+           ByVal Right As Long, _
+           ByVal Bottom As Long, _
            ByVal Width As Long, _
            ByVal Height As Long, _
            ByVal Filter As FREE_IMAGE_FILTER) As Long
@@ -6989,8 +7016,6 @@ Public Function FreeImage_PaintDC(ByVal hDC As Long, _
                          Optional ByVal Width As Long, _
                          Optional ByVal Height As Long) As Long
  
-Dim abInfoBuffer() As Byte
-
    ' This function draws a FreeImage DIB directly onto a device context (DC). There
    ' are many (selfexplaining?) parameters that control the visual result.
    
@@ -7017,7 +7042,7 @@ Dim abInfoBuffer() As Byte
       End If
       
       FreeImage_PaintDC = SetDIBitsToDevice(hDC, xDst, yDst - ySrc, Width, Height, xSrc, ySrc, 0, _
-            Height, FreeImage_GetBits(Bitmap), FreeImage_GetInfoEx(Bitmap, abInfoBuffer), DIB_RGB_COLORS)
+            Height, FreeImage_GetBits(Bitmap), FreeImage_GetInfo(Bitmap), DIB_RGB_COLORS)
    End If
 
 End Function
@@ -7037,7 +7062,6 @@ Public Function FreeImage_PaintDCEx(ByVal hDC As Long, _
                            Optional ByVal StretchMode As STRETCH_MODE = SM_COLORONCOLOR) As Long
 
 Dim eLastStretchMode As STRETCH_MODE
-Dim abInfoBuffer() As Byte
 
    ' This function draws a FreeImage DIB directly onto a device context (DC). There
    ' are many (selfexplaining?) parameters that control the visual result.
@@ -7081,7 +7105,7 @@ Dim abInfoBuffer() As Byte
       End If
 
       Call StretchDIBits(hDC, xDst, yDst, WidthDst, HeightDst, xSrc, ySrc, WidthSrc, HeightSrc, _
-            FreeImage_GetBits(Bitmap), FreeImage_GetInfoEx(Bitmap, abInfoBuffer), DIB_RGB_COLORS, _
+            FreeImage_GetBits(Bitmap), FreeImage_GetInfo(Bitmap), DIB_RGB_COLORS, _
             RasterOperator)
       
       ' restore last mode
@@ -7189,8 +7213,8 @@ Dim bIsTransparent As Boolean
             ' original palette
             For i = 0 To UBound(abTT)
                If (abTT(i) = 0) Then
-                  alPalMask(i) = &HFFFFFFFF
-                  alPalMod(i) = &H0
+                  alPalMask(i) = &HFFFFFFFF   ' white
+                  alPalMod(i) = &H0           ' black
                   bIsTransparent = True
                End If
             Next i
@@ -7235,7 +7259,7 @@ Dim bIsTransparent As Boolean
             
             ' create a premultiplied palette
             ' since we have no real per pixel transparency in a palletized
-            ' image, we only need to set all transparent colors to null.
+            ' image, we only need to set all transparent colors to zero.
             For i = 0 To UBound(abTT)
                If (abTT(i) = 0) Then
                   alPalMod(i) = 0
@@ -8186,7 +8210,6 @@ Public Function FreeImage_GetBitmap(ByVal Bitmap As Long, _
                                
 Dim bReleaseDC As Boolean
 Dim ppvBits As Long
-Dim abInfoBuffer() As Byte
    
    ' This function returns an HBITMAP created by the CreateDIBSection() function which
    ' in turn has the same color depth as the original DIB. A reference DC may be provided
@@ -8205,7 +8228,7 @@ Dim abInfoBuffer() As Byte
          bReleaseDC = True
       End If
       If (hDC) Then
-         FreeImage_GetBitmap = CreateDIBSection(hDC, FreeImage_GetInfoEx(Bitmap, abInfoBuffer), _
+         FreeImage_GetBitmap = CreateDIBSection(hDC, FreeImage_GetInfo(Bitmap), _
                DIB_RGB_COLORS, ppvBits, 0, 0)
          If ((FreeImage_GetBitmap <> 0) And (ppvBits <> 0)) Then
             Call CopyMemory(ByVal ppvBits, ByVal FreeImage_GetBits(Bitmap), _
@@ -8227,7 +8250,6 @@ Public Function FreeImage_GetBitmapForDevice(ByVal Bitmap As Long, _
                                     Optional ByVal UnloadSource As Boolean) As Long
                                     
 Dim bReleaseDC As Boolean
-Dim abInfoBuffer() As Byte
 
    ' This function returns an HBITMAP created by the CreateDIBitmap() function which
    ' in turn has always the same color depth as the reference DC, which may be provided
@@ -8248,7 +8270,7 @@ Dim abInfoBuffer() As Byte
       If (hDC) Then
          FreeImage_GetBitmapForDevice = _
                CreateDIBitmap(hDC, FreeImage_GetInfoHeader(Bitmap), CBM_INIT, _
-                     FreeImage_GetBits(Bitmap), FreeImage_GetInfoEx(Bitmap, abInfoBuffer), _
+                     FreeImage_GetBits(Bitmap), FreeImage_GetInfo(Bitmap), _
                            DIB_RGB_COLORS)
          If (UnloadSource) Then
             Call FreeImage_Unload(Bitmap)
@@ -8261,37 +8283,6 @@ Dim abInfoBuffer() As Byte
 
 End Function
 
-Private Function FreeImage_GetInfoEx(ByVal Bitmap As Long, ByRef Buffer() As Byte, _
-                            Optional ByRef BufferUsed As Boolean) As Long
-
-Dim alMasks() As Long
-
-   If (FreeImage_GetBPP(Bitmap) = 16) Then
-      ' Check for 16-bit images with a color mask different to 555.
-      ReDim alMasks(2)
-      alMasks(0) = FreeImage_GetRedMask(Bitmap)
-      alMasks(1) = FreeImage_GetGreenMask(Bitmap)
-      alMasks(2) = FreeImage_GetBlueMask(Bitmap)
-      If ((alMasks(0) <> FI16_555_RED_MASK) Or _
-          (alMasks(1) <> FI16_555_GREEN_MASK) Or _
-          (alMasks(2) <> FI16_555_BLUE_MASK)) Then
-         ReDim Buffer(39 + 12)
-         Call CopyMemory(Buffer(0), ByVal FreeImage_GetInfo(Bitmap), 40)
-         Buffer(16) = BI_BITFIELDS
-         ' Set member biClrUsed to 3 colors (RGBQUAD), which
-         ' is the same size as 3 DWORD masks.
-         Buffer(32) = 3
-         Call CopyMemory(Buffer(40), alMasks(0), 12)
-         FreeImage_GetInfoEx = VarPtr(Buffer(0))
-         BufferUsed = True
-      Else
-         FreeImage_GetInfoEx = FreeImage_GetInfo(Bitmap)
-      End If
-   Else
-      FreeImage_GetInfoEx = FreeImage_GetInfo(Bitmap)
-   End If
-
-End Function
 '--------------------------------------------------------------------------------
 ' OlePicture conversion functions
 '--------------------------------------------------------------------------------
@@ -8588,7 +8579,7 @@ Public Function FreeImage_CreateFromImageContainer(ByRef Container As Object, _
 
 End Function
 
-Public Function FreeImage_CreateFromScreen(Optional ByVal hwnd As Long, _
+Public Function FreeImage_CreateFromScreen(Optional ByVal hWnd As Long, _
                                            Optional ByVal ClientAreaOnly As Boolean) As Long
 
 Dim hDC As Long
@@ -8604,24 +8595,24 @@ Dim tR As RECT
    ' by it's window handle through the 'hWnd' parameter. By omitting this
    ' parameter, the whole screen/desktop window will be captured.
 
-   If (hwnd = 0) Then
-      hwnd = GetDesktopWindow()
-      hDC = GetDCEx(hwnd, 0, 0)
+   If (hWnd = 0) Then
+      hWnd = GetDesktopWindow()
+      hDC = GetDCEx(hWnd, 0, 0)
       ' get desktop's width and height
       lWidth = GetDeviceCaps(hDC, HORZRES)
       lHeight = GetDeviceCaps(hDC, VERTRES)
    
    ElseIf (ClientAreaOnly) Then
       ' get window's client area DC
-      hDC = GetDCEx(hwnd, 0, 0)
-      Call GetClientRect(hwnd, tR)
+      hDC = GetDCEx(hWnd, 0, 0)
+      Call GetClientRect(hWnd, tR)
       lWidth = tR.Right
       lHeight = tR.Bottom
       
    Else
       ' get window DC
-      hDC = GetDCEx(hwnd, 0, DCX_WINDOW)
-      Call GetWindowRect(hwnd, tR)
+      hDC = GetDCEx(hWnd, 0, DCX_WINDOW)
+      Call GetWindowRect(hWnd, tR)
       lWidth = tR.Right - tR.Left
       lHeight = tR.Bottom - tR.Top
 
@@ -8642,7 +8633,7 @@ Dim tR As RECT
    Call SelectObject(hMemDC, hMemOldBMP)
    Call DeleteObject(hMemBMP)
    Call DeleteDC(hMemDC)
-   Call ReleaseDC(hwnd, hDC)
+   Call ReleaseDC(hWnd, hDC)
 
 End Function
 
@@ -8681,16 +8672,17 @@ Dim lOffset As Long
       lPaletteSize = FreeImage_GetColorsUsed(Bitmap) * 4
       
       ' Copy the BITMAPINFOHEADER into the result array.
-      lpInfo = FreeImage_GetInfoEx(Bitmap, abInfoBuffer, bBufferUsed)
-      If (bBufferUsed) Then
-         ReDim abResult(39 + 12 + lPaletteSize + lImageSize)
-         Call CopyMemory(abResult(0), ByVal lpInfo, 40 + 12)
-         lOffset = 40 + 12
-      Else
-         ReDim abResult(39 + lPaletteSize + lImageSize)
-         Call CopyMemory(abResult(0), ByVal lpInfo, 40)
-         lOffset = 40
-      End If
+'''      lpInfo = FreeImage_GetInfoEx(Bitmap, abInfoBuffer, bBufferUsed)
+'''      If (bBufferUsed) Then
+'''         ReDim abResult(39 + 12 + lPaletteSize + lImageSize)
+'''         Call CopyMemory(abResult(0), ByVal lpInfo, 40 + 12)
+'''         lOffset = 40 + 12
+'''      Else
+'''         ReDim abResult(39 + lPaletteSize + lImageSize)
+'''         Call CopyMemory(abResult(0), ByVal lpInfo, 40)
+'''         lOffset = 40
+
+'''      End If
       
       If (lPaletteSize > 0) Then
          ' Copy the image's palette (if any) into the result array.
@@ -9954,7 +9946,7 @@ Const vbObjectOrWithBlockVariableNotSet As Long = 91
    
 
    If (Not Control Is Nothing) Then
-      Call GetClientRect(Control.hwnd, tR)
+      Call GetClientRect(Control.hWnd, tR)
       If ((tR.Right <> Control.Picture.Width) Or _
           (tR.Bottom <> Control.Picture.Height)) Then
          hDIB = FreeImage_CreateFromOlePicture(Control.Picture)
@@ -10544,12 +10536,12 @@ Dim hDIBNew As Long
    ' The optional ColorPtr parameter takes a pointer to (e.g. the address of) an
    ' RGB color value. So, all these assignments are valid for ColorPtr:
    '
-   Dim tColor As RGBQUAD
-   tColor.rgbRed = 255
-   tColor.rgbGreen = 255
-   tColor.rgbBlue = 255
-
-   ColorPtr = VarPtr(tColor)
+   'Dim tColor As RGBQUAD
+   'tColor.rgbRed = 255
+   'tColor.rgbGreen = 255
+   'tColor.rgbBlue = 255
+'
+   'ColorPtr = VarPtr(tColor)
    ' VarPtr(&H33FF80)
    ' VarPtr(vbWhite) ' However, the VB color constants are in BGR format!
 
@@ -12057,10 +12049,12 @@ Dim vntCommon As Long
    ' This function normalizes an unsigned fraction stored in a FIRATIONAL
    ' structure by cancelling down the fraction. This is commonly done
    ' by dividing both numerator and denominator by their greates
-   ' common divisor (gcd)
+   ' common divisor (gcd).
+   ' Does nothing if any of numerator and denominator is 1 or 0.
 
    With Value
-      If ((.Numerator <> 1) And (.Denominator <> 1)) Then
+      If ((.Numerator <> 1) And (.Denominator <> 1) And _
+          (.Numerator <> 0) And (.Denominator <> 0)) Then
          vntCommon = gcd(.Numerator, .Denominator)
          If (vntCommon <> 1) Then
             ' convert values back to an unsigned long (may
@@ -12081,10 +12075,12 @@ Dim lCommon As Long
    ' This function normalizes a signed fraction stored in a FIRATIONAL
    ' structure by cancelling down the fraction. This is commonly done
    ' by dividing both numerator and denominator by their greates
-   ' common divisor (gcd)
+   ' common divisor (gcd).
+   ' Does nothing if any of numerator and denominator is 1 or 0.
    
    With Value
-      If ((.Numerator <> 1) And (.Denominator <> 1)) Then
+      If ((.Numerator <> 1) And (.Denominator <> 1) And _
+          (.Numerator <> 0) And (.Denominator <> 0)) Then
          lCommon = gcd(.Numerator, .Denominator)
          If (lCommon <> 1) Then
             ' using the CLng() function for not to get
