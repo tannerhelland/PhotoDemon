@@ -613,7 +613,8 @@ Private Const DT_MULTILINE = (&H1)
 Private Const DT_MODIFYSTRING = &H10000
 Private Const DT_NOCLIP = &H100
 Private Const DT_RTLREADING = &H20000              ' Right to left
-Private Const DT_DRAWFLAG As Long = DT_CENTER Or DT_WORDBREAK Or DT_END_ELLIPSIS Or DT_MULTILINE Or DT_MODIFYSTRING
+Private Const DT_NOPREFIX = &H800
+Private Const DT_DRAWFLAG As Long = DT_CENTER Or DT_WORDBREAK Or DT_MULTILINE Or DT_NOPREFIX
 
 ' --drawing Icon Constants
 Private Const DI_NORMAL As Long = &H3
@@ -1526,7 +1527,7 @@ Private Sub DrawPicwithCaption()
    If m_WindowsNT Then
       DrawTextW hDC, StrPtr(m_Caption), -1, m_TextRect, DT_CALCRECT Or DT_DRAWFLAG 'Or IIf(m_bRTL, DT_RTLREADING, 0)
    Else
-      DrawText hDC, m_Caption, -1, m_TextRect, DT_CALCRECT Or DT_DRAWFLAG 'Or IIf(m_bRTL, DT_RTLREADING, 0)
+      DrawText hDC, m_Caption, Len(m_Caption), m_TextRect, DT_CALCRECT Or DT_DRAWFLAG 'Or IIf(m_bRTL, DT_RTLREADING, 0)
    End If
 
    ' --Copy rect into temp var
@@ -1702,7 +1703,7 @@ Private Sub CalcPicRects()
          Select Case m_PictureAlign
 
             Case epLeftEdge
-               .Left = 3
+               .Left = 12
                .Top = (lh - picH) \ 2
                If m_PicRect.Left < 0 Then
                   OffsetRect m_PicRect, PicW, 0
@@ -1710,7 +1711,7 @@ Private Sub CalcPicRects()
                End If
 
             Case epLeftOfCaption
-               .Left = m_TextRect.Left - PicW - 4
+               .Left = m_TextRect.Left - PicW - 12
                .Top = (lh - picH) \ 2
 
             Case epRightEdge
@@ -1919,7 +1920,7 @@ End Sub
 Private Sub SetAccessKey()
 
    Dim i                As Long
-
+   
    UserControl.AccessKeys = vbNullString
    If Len(m_Caption) > 1 Then
       i = InStr(1, m_Caption, "&", vbTextCompare)
