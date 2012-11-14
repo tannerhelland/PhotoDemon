@@ -26,7 +26,6 @@ Public NumOfWindows As Long
 'Undo functionality also exists only within these classes.
 Public pdImages() As pdImage
 
-
 'Create a new, blank MDI child
 Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
 
@@ -377,3 +376,20 @@ Public Sub UpdateMDIStatus()
     End If
     
 End Sub
+
+'Present a dialog box to confirm the closing of an unsaved image
+Public Function confirmClose(ByVal formID As Long) As VbMsgBoxResult
+
+    Load FormUnsavedChanges
+    
+    FormUnsavedChanges.formID = formID
+    FormUnsavedChanges.ShowDialog
+    
+    confirmClose = FormUnsavedChanges.DialogResult
+    
+    Unload FormUnsavedChanges
+    
+    Set FormUnsavedChanges = Nothing
+
+End Function
+

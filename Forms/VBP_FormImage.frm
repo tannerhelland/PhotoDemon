@@ -173,7 +173,7 @@ End Sub
 Private Sub Form_Load()
     
     'Add support for scrolling with the mouse wheel
-    If IsProgramCompiled Then Call WheelHook(Me.HWnd)
+    If IsProgramCompiled Then Call WheelHook(Me.hWnd)
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -486,20 +486,24 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         'Check the .HasBeenSaved property of the image associated with this form
         If pdImages(Me.Tag).HasBeenSaved = False Then
             
-            'Generate our save message
-            Dim saveMsg As String
+            'If the MainForm is enabled, bring the image being closed to the foreground
             If FormMain.Enabled Then
                 Me.SetFocus
                 DoEvents
             End If
-            saveMsg = "This image (""" & pdImages(Me.Tag).OriginalFileNameAndExtension & """) has not been saved.  Would you like to save it now?"
+            
+            'Generate a customized save message
+            'Dim saveMsg As String
+            'saveMsg = "This image (""" & pdImages(Me.Tag).OriginalFileNameAndExtension & """) has not been saved.  Would you like to save it now?"
             
             'If this file exists on disk, warn them that this will initiate a SAVE, not a SAVE AS
-            If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then click the File -> Save As menu."
+            'If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then click the File -> Save As menu."
             
             'Get the user's input
             Dim confirmReturn As VbMsgBoxResult
-            confirmReturn = MsgBox(saveMsg, vbYesNoCancel + vbApplicationModal + vbQuestion, "Unsaved image data")
+            confirmReturn = confirmClose(Me.Tag)
+                        
+            'confirmReturn = MsgBox(saveMsg, vbYesNoCancel + vbApplicationModal + vbQuestion, "Unsaved image data")
         
             'There are now three possible courses of action:
             ' 1) The user canceled.  Quit and abandon all notion of closing.
@@ -595,7 +599,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'Release mouse wheel support
-    If IsProgramCompiled Then Call WheelUnHook(Me.HWnd)
+    If IsProgramCompiled Then Call WheelUnHook(Me.hWnd)
     
     Message "Closing image..."
     
