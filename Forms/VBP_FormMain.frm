@@ -1016,7 +1016,7 @@ Begin VB.MDIForm FormMain
       End
    End
    Begin VB.Menu MnuFilter 
-      Caption         =   "Filte&rs"
+      Caption         =   "Effec&ts"
       Begin VB.Menu MnuFadeLastEffect 
          Caption         =   "Fade last effect"
          Enabled         =   0   'False
@@ -1075,21 +1075,6 @@ Begin VB.MDIForm FormMain
             Caption         =   "Grid Blur"
          End
       End
-      Begin VB.Menu MnuDiffuseUpper 
-         Caption         =   "Diffuse"
-         Begin VB.Menu MnuDiffuse 
-            Caption         =   "Diffuse"
-         End
-         Begin VB.Menu MnuDiffuseMore 
-            Caption         =   "Diffuse More"
-         End
-         Begin VB.Menu MnuDiffuseSepBar0 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuCustomDiffuse 
-            Caption         =   "Custom Diffuse..."
-         End
-      End
       Begin VB.Menu MnuEdge 
          Caption         =   "Edge"
          Begin VB.Menu MnuEmbossEngrave 
@@ -1100,6 +1085,30 @@ Begin VB.MDIForm FormMain
          End
          Begin VB.Menu MnuFindEdges 
             Caption         =   "Find Edges..."
+         End
+      End
+      Begin VB.Menu MnuOtherFilters 
+         Caption         =   "Experimental"
+         Begin VB.Menu MnuAlien 
+            Caption         =   "Alien"
+         End
+         Begin VB.Menu MnuBlackLight 
+            Caption         =   "Black Light..."
+         End
+         Begin VB.Menu MnuDream 
+            Caption         =   "Dream"
+         End
+         Begin VB.Menu MnuRadioactive 
+            Caption         =   "Radioactive"
+         End
+         Begin VB.Menu MnuSynthesize 
+            Caption         =   "Synthesize"
+         End
+         Begin VB.Menu MnuHeatmap 
+            Caption         =   "Thermograph (Heat Map)"
+         End
+         Begin VB.Menu MnuVibrate 
+            Caption         =   "Vibrate"
          End
       End
       Begin VB.Menu MnuNaturalFilters 
@@ -1147,33 +1156,6 @@ Begin VB.MDIForm FormMain
             Caption         =   "Remove Orphan Pixels"
          End
       End
-      Begin VB.Menu MnuOtherFilters 
-         Caption         =   "Other filters"
-         Begin VB.Menu MnuAlien 
-            Caption         =   "Alien"
-         End
-         Begin VB.Menu MnuBlackLight 
-            Caption         =   "Black Light..."
-         End
-         Begin VB.Menu MnuDream 
-            Caption         =   "Dream"
-         End
-         Begin VB.Menu MnuRadioactive 
-            Caption         =   "Radioactive"
-         End
-         Begin VB.Menu MnuSolarize 
-            Caption         =   "Solarize..."
-         End
-         Begin VB.Menu MnuSynthesize 
-            Caption         =   "Synthesize"
-         End
-         Begin VB.Menu MnuTwins 
-            Caption         =   "Twins..."
-         End
-         Begin VB.Menu MnuVibrate 
-            Caption         =   "Vibrate"
-         End
-      End
       Begin VB.Menu MnuRank 
          Caption         =   "Rank"
          Begin VB.Menu MnuMaximum 
@@ -1205,6 +1187,27 @@ Begin VB.MDIForm FormMain
          End
          Begin VB.Menu MnuSharpenMore 
             Caption         =   "Sharpen More"
+         End
+      End
+      Begin VB.Menu MnuStylize 
+         Caption         =   "Stylize"
+         Begin VB.Menu MnuDiffuse 
+            Caption         =   "Diffuse"
+         End
+         Begin VB.Menu MnuDiffuseMore 
+            Caption         =   "Diffuse More"
+         End
+         Begin VB.Menu MnuCustomDiffuse 
+            Caption         =   "Custom Diffuse..."
+         End
+         Begin VB.Menu MnuStylizeSepBar0 
+            Caption         =   "-"
+         End
+         Begin VB.Menu MnuSolarize 
+            Caption         =   "Solarize..."
+         End
+         Begin VB.Menu MnuTwins 
+            Caption         =   "Twins..."
          End
       End
       Begin VB.Menu MnuFilterSepBar1 
@@ -1996,6 +1999,10 @@ End Sub
 
 Private Sub MnuGridBlur_Click()
     Process GridBlur
+End Sub
+
+Private Sub MnuHeatmap_Click()
+    Process HeatMap
 End Sub
 
 Private Sub MnuHistogram_Click()

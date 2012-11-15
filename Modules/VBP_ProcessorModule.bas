@@ -213,6 +213,7 @@ Option Explicit
     Public Const Vibrate As Long = 830
     Public Const Despeckle As Long = 831
     Public Const CustomDespeckle As Long = 832
+    Public Const HeatMap As Long = 833
     Public Const Animate As Long = 840
     
     'Relative processes
@@ -787,6 +788,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuAnimate
             Case Sepia
                 MenuSepia
+            Case HeatMap
+                MenuHeatMap
         
         End Select
     End If
@@ -1184,6 +1187,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Animate"
         Case Sepia
             GetNameOfProcess = "Sepia"
+        Case HeatMap
+            GetNameOfProcess = "Thermograph (Heat Map)"
         
         Case LastCommand
             GetNameOfProcess = "Repeat Last Action"

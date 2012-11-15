@@ -85,7 +85,7 @@ Dim iconHandles() As Long
 'Private Const PICTYPE_ICON = 3
 
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'clsMenuImage does the heavy lifting for inserting icons into menus
 Dim cMenuImage As clsMenuImage
@@ -105,7 +105,7 @@ Public Sub LoadMenuIcons()
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
         If (Not .IsWindowVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
         
-        .Init FormMain.hwnd, 16, 16
+        .Init FormMain.hWnd, 16, 16
         
         .AddImageFromStream LoadResData("OPENIMG", "CUSTOM")     '0
         .AddImageFromStream LoadResData("OPENREC", "CUSTOM")     '1
@@ -254,6 +254,8 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("CROPSEL", "CUSTOM")     '144
         .AddImageFromStream LoadResData("HSL", "CUSTOM")         '145
         .AddImageFromStream LoadResData("ROTATEANY", "CUSTOM")   '146
+        .AddImageFromStream LoadResData("HEATMAP", "CUSTOM")     '147
+        .AddImageFromStream LoadResData("STYLIZE", "CUSTOM")     '148
         
         
         'File Menu
@@ -383,16 +385,20 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 93, 6, 5, 3   'Gaussian Blur
             .PutImageToVBMenu 94, 7, 5, 3   'Gaussian Blur More
             .PutImageToVBMenu 95, 9, 5, 3   'Grid Blur
-        .PutImageToVBMenu 76, 4, 5       'Diffuse
-            '--> Diffuse sub-menu
-            .PutImageToVBMenu 76, 0, 5, 4   'Diffuse
-            .PutImageToVBMenu 96, 1, 5, 4   'Diffuse More
-            .PutImageToVBMenu 97, 3, 5, 4   'Diffuse (Custom)
-        .PutImageToVBMenu 77, 5, 5       'Edges
+        .PutImageToVBMenu 77, 4, 5       'Edges
             '--> Edges sub-menu
-            .PutImageToVBMenu 100, 0, 5, 5  'Emboss / Engrave
-            .PutImageToVBMenu 99, 1, 5, 5   'Enhance Edges
-            .PutImageToVBMenu 77, 2, 5, 5   'Find Edges
+            .PutImageToVBMenu 100, 0, 5, 4  'Emboss / Engrave
+            .PutImageToVBMenu 99, 1, 5, 4   'Enhance Edges
+            .PutImageToVBMenu 77, 2, 5, 4   'Find Edges
+        .PutImageToVBMenu 80, 5, 5       'Fun
+            '--> Fun sub-menu
+            .PutImageToVBMenu 126, 0, 5, 5  'Alien
+            .PutImageToVBMenu 127, 1, 5, 5  'Blacklight
+            .PutImageToVBMenu 128, 2, 5, 5  'Dream
+            .PutImageToVBMenu 129, 3, 5, 5  'Radioactive
+            .PutImageToVBMenu 131, 4, 5, 5  'Synthesize
+            .PutImageToVBMenu 147, 5, 5, 5  'Thermograph
+            .PutImageToVBMenu 134, 6, 5, 5  'Vibrate
         .PutImageToVBMenu 78, 6, 5       'Natural
             '--> Natural sub-menu
             .PutImageToVBMenu 107, 0, 5, 6  'Atmosphere
@@ -409,27 +415,24 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 116, 0, 5, 7  'Add Noise
             .PutImageToVBMenu 117, 2, 5, 7  'Despeckle
             .PutImageToVBMenu 118, 3, 5, 7  'Remove Orphan
-        .PutImageToVBMenu 80, 8, 5       'Other
-            '--> Other sub-menu
-            .PutImageToVBMenu 126, 0, 5, 8  'Alien
-            .PutImageToVBMenu 127, 1, 5, 8  'Blacklight
-            .PutImageToVBMenu 128, 2, 5, 8  'Dream
-            .PutImageToVBMenu 129, 3, 5, 8  'Radioactive
-            .PutImageToVBMenu 130, 4, 5, 8  'Solarize
-            .PutImageToVBMenu 131, 5, 5, 8  'Synthesize
-            .PutImageToVBMenu 133, 6, 5, 8  'Twins
-            .PutImageToVBMenu 134, 7, 5, 8  'Vibrate
-        .PutImageToVBMenu 81, 9, 5       'Rank
+        .PutImageToVBMenu 81, 8, 5       'Rank
             '--> Rank sub-menu
-            .PutImageToVBMenu 119, 0, 5, 9  'Dilate
-            .PutImageToVBMenu 120, 1, 5, 9  'Erode
-            .PutImageToVBMenu 121, 2, 5, 9  'Extreme
-            .PutImageToVBMenu 122, 4, 5, 9  'Custom Rank
-        .PutImageToVBMenu 82, 10, 5      'Sharpen
+            .PutImageToVBMenu 119, 0, 5, 8  'Dilate
+            .PutImageToVBMenu 120, 1, 5, 8  'Erode
+            .PutImageToVBMenu 121, 2, 5, 8  'Extreme
+            .PutImageToVBMenu 122, 4, 5, 8  'Custom Rank
+        .PutImageToVBMenu 82, 9, 5       'Sharpen
             '--> Sharpen sub-menu
-            .PutImageToVBMenu 124, 0, 5, 10 'Unsharp
-            .PutImageToVBMenu 82, 2, 5, 10  'Sharpen
-            .PutImageToVBMenu 123, 3, 5, 10 'Sharpen More
+            .PutImageToVBMenu 124, 0, 5, 9  'Unsharp
+            .PutImageToVBMenu 82, 2, 5, 9   'Sharpen
+            .PutImageToVBMenu 123, 3, 5, 9  'Sharpen More
+        .PutImageToVBMenu 148, 10, 5      'Stylize
+            '--> Stylize sub-menu
+            .PutImageToVBMenu 76, 0, 5, 10  'Diffuse
+            .PutImageToVBMenu 96, 1, 5, 10  'Diffuse More
+            .PutImageToVBMenu 97, 2, 5, 10  'Diffuse (Custom)
+            .PutImageToVBMenu 130, 4, 5, 10 'Solarize
+            .PutImageToVBMenu 133, 5, 5, 10 'Twins
         .PutImageToVBMenu 98, 12, 5      'Custom Filter
         
         'Macro Menu
@@ -637,7 +640,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     DeleteDC InvertDC
    
     'Use the API to assign this new icon to the specified MDI child form
-    SendMessageLong imgForm.hwnd, &H80, 0, generatedIcon
+    SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
     
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon
