@@ -120,7 +120,7 @@ Begin VB.Form FormBlackAndWhite
    End
    Begin VB.CheckBox chkAutoThreshold 
       Appearance      =   0  'Flat
-      Caption         =   "have PhotoDemon estimate the ideal threshold for this image"
+      Caption         =   " have PhotoDemon estimate the ideal threshold for this image"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
