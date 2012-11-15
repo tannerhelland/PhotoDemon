@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form FormBlackLight 
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Blacklight Options"
+   Caption         =   " Black Light Options"
    ClientHeight    =   5175
    ClientLeft      =   45
    ClientTop       =   285
