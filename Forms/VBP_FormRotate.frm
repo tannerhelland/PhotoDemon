@@ -29,7 +29,7 @@ Begin VB.Form FormRotate
       Caption         =   "adjust canvas to fit rotated image"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -41,7 +41,7 @@ Begin VB.Form FormRotate
       Index           =   0
       Left            =   360
       TabIndex        =   8
-      Top             =   6960
+      Top             =   6990
       Value           =   -1  'True
       Width           =   5535
    End
@@ -50,7 +50,7 @@ Begin VB.Form FormRotate
       Caption         =   "leave the canvas at its current size"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -62,7 +62,7 @@ Begin VB.Form FormRotate
       Index           =   1
       Left            =   360
       TabIndex        =   7
-      Top             =   7410
+      Top             =   7380
       Width           =   5655
    End
    Begin VB.TextBox txtAngle 
