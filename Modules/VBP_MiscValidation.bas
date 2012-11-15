@@ -65,7 +65,7 @@ Public Function RangeValid(ByVal check As Long, ByVal Min As Long, ByVal Max As 
     If (check >= Min) And (check <= Max) Then
         RangeValid = True
     Else
-        MsgBox check & " is not a valid entry.  Please enter a value between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME
+        MsgBox check & " is not a valid entry.  Please enter a value between " & Min & " and " & Max & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME
         RangeValid = False
     End If
 End Function
@@ -73,7 +73,7 @@ End Function
 'Check a Variant-type value to see if it's numeric
 Public Function NumberValid(ByVal check) As Boolean
     If Not IsNumeric(check) Then
-        MsgBox check & " is not a valid entry.  Please enter a numeric value.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME
+        MsgBox check & " is not a valid entry.  Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME
         NumberValid = False
     Else
         NumberValid = True
@@ -83,13 +83,13 @@ End Function
 'A pleasant combination of RangeValid and NumberValid
 Public Function EntryValid(ByVal check As Variant, ByVal Min As Long, ByVal Max As Long, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
     If Not IsNumeric(check) Then
-        If displayNumError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbCritical + vbOKOnly + vbApplicationModal, "Invalid entry"
+        If displayNumError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry"
         EntryValid = False
     Else
         If (check >= Min) And (check <= Max) Then
             EntryValid = True
         Else
-            If displayRangeError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a value between " & Min & " and " & Max & ".", vbCritical + vbOKOnly + vbApplicationModal, "Invalid entry"
+            If displayRangeError = True Then MsgBox check & " is not a valid entry." & vbCrLf & "Please enter a value between " & Min & " and " & Max & ".", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry"
             EntryValid = False
         End If
     End If

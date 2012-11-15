@@ -557,7 +557,7 @@ Private Function downloadAllPlugins() As Boolean
         
         If hInternetSession = 0 Then
             Message "No Internet connection found."
-            MsgBox "Unfortunately, " & PROGRAMNAME & " could not connect to the Internet.  Please connect to the Internet and try again.", vbApplicationModal + vbOKOnly + vbCritical, "No Internet Connection"
+            MsgBox "Unfortunately, " & PROGRAMNAME & " could not connect to the Internet.  Please connect to the Internet and try again.", vbApplicationModal + vbOKOnly + vbExclamation, "No Internet Connection"
             downloadAllPlugins = False
             Exit Function
         End If
@@ -668,7 +668,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
     hUrl = InternetOpenUrl(hInternetSession, pluginURL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If hUrl = 0 Then
-        MsgBox PROGRAMNAME & " could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.", vbCritical + vbApplicationModal + vbOKOnly, "Plugin Server Not Responding"
+        MsgBox PROGRAMNAME & " could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.", vbExclamation + vbApplicationModal + vbOKOnly, "Plugin Server Not Responding"
         If hInternetSession Then InternetCloseHandle hInternetSession
         downloadPlugin = False
         Message "Plugin download postponed."
@@ -677,16 +677,16 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
     
     'We need a temporary file to house the image; generate it automatically, using the extension of the original image
     lblDownloadInfo.Caption = "Creating temporary file..."
-    Dim tmpFileName As String
-    tmpFileName = pluginURL
-    StripFilename tmpFileName
+    Dim tmpFilename As String
+    tmpFilename = pluginURL
+    StripFilename tmpFilename
     
     Dim tmpFile As String
     If toDecompress = False Then
-        StripOffExtension tmpFileName
-        tmpFile = PluginPath & tmpFileName & ".dll"
+        StripOffExtension tmpFilename
+        tmpFile = PluginPath & tmpFilename & ".dll"
     Else
-        tmpFile = PluginPath & tmpFileName
+        tmpFile = PluginPath & tmpFilename
     End If
     
     'Open the temporary file and begin downloading the image to it
@@ -719,7 +719,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
    
             'If something went wrong, terminate
             If chunkOK = False Then
-                MsgBox PROGRAMNAME & " lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.", vbCritical + vbApplicationModal + vbOKOnly, "Internet Connection Error"
+                MsgBox PROGRAMNAME & " lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error"
                 If FileExist(tmpFile) Then
                     Close #fileNum
                     Kill tmpFile

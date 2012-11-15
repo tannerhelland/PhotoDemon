@@ -21,7 +21,7 @@ Public Sub MenuOpen()
     'String returned from the common dialog wrapper
     Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, FormMain.HWnd) Then PreLoadImage sFile
+    If PhotoDemon_OpenImageDialog(sFile, FormMain.hWnd) Then PreLoadImage sFile
 
 End Sub
 
@@ -222,7 +222,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     End If
     
     
-    If CC.VBGetSaveFileName(sFile, , True, cdfStr, LastSaveFilter, tempPathString, "Save an image", ".bmp|.gif|.jpg|.pcx|.pdi|.png|.ppm|.tga|.tif|.*", FormMain.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, cdfStr, LastSaveFilter, tempPathString, "Save an image", ".bmp|.gif|.jpg|.pcx|.pdi|.png|.ppm|.tga|.tif|.*", FormMain.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         tempPathString = sFile
@@ -309,7 +309,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 updateMRU = True
             Else
             'If zLib doesn't exist...
-                MsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
+                MsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
                 Message "PDI saving disabled."
             End If
         Case "GIF"
@@ -373,12 +373,12 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
         pdImages(imageID).LocationOnDisk = dstPath
         
         'Remember the file's filename
-        Dim tmpFileName As String
-        tmpFileName = dstPath
-        StripFilename tmpFileName
-        pdImages(imageID).OriginalFileNameAndExtension = tmpFileName
-        StripOffExtension tmpFileName
-        pdImages(imageID).OriginalFileName = tmpFileName
+        Dim tmpFilename As String
+        tmpFilename = dstPath
+        StripFilename tmpFilename
+        pdImages(imageID).OriginalFileNameAndExtension = tmpFilename
+        StripOffExtension tmpFilename
+        pdImages(imageID).OriginalFileName = tmpFilename
         
         'Mark this file as having been saved
         pdImages(imageID).UpdateSaveState True

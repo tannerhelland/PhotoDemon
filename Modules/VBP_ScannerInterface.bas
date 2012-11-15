@@ -42,7 +42,7 @@ Public Sub Twain32SelectScanner()
         TWAIN_SelectImageSource (FormMain.hWnd)
     Else
     'If the EZTW32.dll file doesn't exist...
-        MsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
+        MsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
         Message "Scanning disabled "
         Exit Sub
     End If
@@ -54,7 +54,7 @@ Public Sub Twain32Scan()
     Message "Acquiring image..."
     If ScanEnabled = False Then
         'If the EZTW32.dll file doesn't exist...
-        MsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
+        MsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
         Message "Scanner/digital camera import disabled "
         Exit Sub
     End If
@@ -118,7 +118,7 @@ ScanError:
             scanErrMessage = "The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error # " & ScanCheck & ").  Please visit http://www.eztwain.com for more information."
     End Select
     
-    MsgBox scanErrMessage, vbCritical + vbOKOnly + vbApplicationModal, "Scan Canceled"
+    MsgBox scanErrMessage, vbExclamation + vbOKOnly + vbApplicationModal, "Scan Canceled"
 
     Message "Scan canceled. "
 End Sub

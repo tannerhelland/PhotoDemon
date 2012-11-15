@@ -202,7 +202,7 @@ Public Sub LoadTheProgram()
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
-    SetIcon FormMain.hwnd, "AAA", True
+    SetIcon FormMain.hWnd, "AAA", True
     
     'Load and draw the menu icons
     ' (Note: as a bonus, this function also checks the current Windows version and updates the "isVistaOrLater" public variable accordingly)
@@ -342,7 +342,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
     
         If FileExist(sFile(thisImage)) = False Then
             Message "File not found. Image load canceled."
-            MsgBox "Unfortunately, the image '" & sFile(thisImage) & "' could not be found.  If it was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbCritical + vbOKOnly, "File not found"
+            MsgBox "Unfortunately, the image '" & sFile(thisImage) & "' could not be found.  If it was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found"
             Exit Sub
         End If
     
@@ -488,7 +488,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If FreeImageEnabled = True Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
-                    MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will download this plugin for you.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
+                    MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will download this plugin for you.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
                     Message "Image load canceled."
                     pdImages(CurrentImage).IsActive = False
                     Unload FormMain.ActiveForm
@@ -500,7 +500,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'Double-check to make sure the image was loaded successfully
         If loadSuccessful = False Then
             Message "Image load canceled."
-            MsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbCritical + vbOKOnly + vbApplicationModal, "PhotoDemon Import Failed"
+            MsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "PhotoDemon Import Failed"
             targetImage.IsActive = False
             If isThisPrimaryImage Then Unload FormMain.ActiveForm
             GoTo PreloadMoreImages
@@ -528,18 +528,18 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' from disk (e.g. it's a scan, or Internet download, or screen capture, etc.).  Therefore, set the
         ' file name as requested but leave the .LocationOnDisk blank so that a Save command will trigger
         ' the necessary Save As... dialog.
-        Dim tmpFileName As String
+        Dim tmpFilename As String
         
         If imgName = "" Then
             'The calling routine hasn't specified an image name, so assume this is a normal load situation.
             ' That means pulling the filename from the file itself.
             targetImage.LocationOnDisk = sFile(thisImage)
             
-            tmpFileName = sFile(thisImage)
-            StripFilename tmpFileName
-            targetImage.OriginalFileNameAndExtension = tmpFileName
-            StripOffExtension tmpFileName
-            targetImage.OriginalFileName = tmpFileName
+            tmpFilename = sFile(thisImage)
+            StripFilename tmpFilename
+            targetImage.OriginalFileNameAndExtension = tmpFilename
+            StripOffExtension tmpFilename
+            targetImage.OriginalFileName = tmpFilename
             
             'Disable the save button, because this file exists on disk
             targetImage.UpdateSaveState True
@@ -550,9 +550,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             targetImage.LocationOnDisk = ""
             targetImage.OriginalFileNameAndExtension = imgName
             
-            tmpFileName = imgName
-            StripOffExtension tmpFileName
-            targetImage.OriginalFileName = tmpFileName
+            tmpFilename = imgName
+            StripOffExtension tmpFilename
+            targetImage.OriginalFileName = tmpFilename
             
             'Similarly, enable the save button
             targetImage.UpdateSaveState False

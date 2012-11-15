@@ -855,13 +855,13 @@ MainErrHandler:
     If Err.Number = 480 Or Err.Number = 7 Then
         AddInfo = "There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again."
         Message "Out of memory.  Function cancelled."
-        mType = vbCritical + vbOKOnly + vbApplicationModal
+        mType = vbExclamation + vbOKOnly + vbApplicationModal
     
     'Invalid picture error
     ElseIf Err.Number = 481 Then
         AddInfo = "Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it."
         Message "Invalid image.  Image load cancelled."
-        mType = vbCritical + vbOKOnly + vbApplicationModal
+        mType = vbExclamation + vbOKOnly + vbApplicationModal
     
         'Since we know about this error, there's no need to display the extended box.  Display a smaller one, then exit.
         MsgBox AddInfo, mType, "Invalid image file"
@@ -875,7 +875,7 @@ MainErrHandler:
     ElseIf Err.Number = 53 Then
         AddInfo = "The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & "2) the file location provided to " & PROGRAMNAME & " is correct."
         Message "File not found."
-        mType = vbCritical + vbOKOnly + vbApplicationModal
+        mType = vbExclamation + vbOKOnly + vbApplicationModal
         
     'Unknown error
     Else

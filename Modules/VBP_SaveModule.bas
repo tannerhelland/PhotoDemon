@@ -46,7 +46,7 @@ Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
 
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
-        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
     End If
@@ -84,7 +84,7 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional
 
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
-        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
     End If
@@ -132,7 +132,7 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
 
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
-        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
     End If
@@ -176,7 +176,7 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
     
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
-        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
     End If
@@ -224,7 +224,7 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
     
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
-        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
     End If
@@ -268,7 +268,7 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
     
     'Make sure we found the plug-in when we loaded the program
     If FreeImageEnabled = False Then
-        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbCritical + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
     End If

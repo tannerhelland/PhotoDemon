@@ -296,7 +296,7 @@ TryBinaryImportAgain:
     
     Set CC = New cCommonDialog
     
-    If CC.VBGetOpenFileName(sFile, , , , , True, "All VB Binary Files (*.frx,*.ctx,*.dsx,*.dox,*.pgx)|*.frx;*.ctx;*.dsx;*.dox;*.pgx|All files (*.*)|*.*", , tempPathString, "Select a VB Binary File", , FormMain.HWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, "All VB Binary Files (*.frx,*.ctx,*.dsx,*.dox,*.pgx)|*.frx;*.ctx;*.dsx;*.dox;*.pgx|All files (*.*)|*.*", , tempPathString, "Select a VB Binary File", , FormMain.hWnd, 0) Then
     
         Message "Scanning binary file..."
     
@@ -323,7 +323,7 @@ TryBinaryImportAgain:
             Message "Scan complete.  Please select an image to import."
       
         Else
-            MsgBox "Unfortunately, no images were found in " & sFile & ".  Please select a new file.", vbCritical + vbApplicationModal + vbOKOnly, "No Images Found"
+            MsgBox "Unfortunately, no images were found in " & sFile & ".  Please select a new file.", vbExclamation + vbApplicationModal + vbOKOnly, "No Images Found"
             GoTo TryBinaryImportAgain
         End If
         

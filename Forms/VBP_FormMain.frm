@@ -1233,6 +1233,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuStopMacroRecording 
          Caption         =   "Sto&p Recording..."
+         Enabled         =   0   'False
       End
    End
    Begin VB.Menu MnuWindow 

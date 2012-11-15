@@ -33,7 +33,7 @@ Dim zWidth As Single, zHeight As Single
 Dim alphaFixLayer As pdLayer
 
 'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
-Dim SrcWidth As Double, SrcHeight As Double
+Dim srcWidth As Double, srcHeight As Double
 
 'The zoom value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
 Dim ZoomVal As Double
@@ -159,8 +159,8 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     ZoomVal = Zoom.ZoomArray(pdImages(formToBuffer.Tag).CurrentZoomValue)
 
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
-    SrcWidth = pdImages(formToBuffer.Tag).targetWidth / ZoomVal
-    SrcHeight = pdImages(formToBuffer.Tag).targetHeight / ZoomVal
+    srcWidth = pdImages(formToBuffer.Tag).targetWidth / ZoomVal
+    srcHeight = pdImages(formToBuffer.Tag).targetHeight / ZoomVal
         
     'These variables are the offset, as determined by the scroll bar values
     If formToBuffer.HScroll.Visible Then srcX = formToBuffer.HScroll.Value Else srcX = 0
@@ -185,16 +185,16 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
             hackLayer.createBlank pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, 32
             
             SetStretchBltMode hackLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt hackLayer.getLayerDC, 0, 0, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt hackLayer.getLayerDC, 0, 0, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
             
             SetStretchBltMode pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, STRETCHBLT_HALFTONE
-            StretchBlt pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, 0, 0, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, 0, 0, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
             pdImages(formToBuffer.Tag).alphaFixLayer.compositeBackgroundColorSpecial hackLayer
             BitBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
             hackLayer.eraseLayer
         Else
             SetStretchBltMode pdImages(formToBuffer.Tag).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
-            StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     Else
@@ -202,9 +202,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
         Dim bltWidth As Long, bltHeight As Long
         bltWidth = pdImages(formToBuffer.Tag).targetWidth + (Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue)) - (pdImages(formToBuffer.Tag).targetWidth Mod Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue))))
-        SrcWidth = bltWidth / ZoomVal
+        srcWidth = bltWidth / ZoomVal
         bltHeight = pdImages(formToBuffer.Tag).targetHeight + (Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue)) - (pdImages(formToBuffer.Tag).targetHeight Mod Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue))))
-        SrcHeight = bltHeight / ZoomVal
+        srcHeight = bltHeight / ZoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a white background before rendering.
         If pdImages(formToBuffer.Tag).mainLayer.getLayerColorDepth = 32 Then
@@ -214,12 +214,12 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
             'StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC(), 0, 0, SrcWidth, SrcHeight, vbSrcCopy
             pdImages(formToBuffer.Tag).alphaFixLayer.createBlank bltWidth, bltHeight, 32
             SetStretchBltMode pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, 0, 0, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, 0, 0, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
             pdImages(formToBuffer.Tag).alphaFixLayer.compositeBackgroundColor
             BitBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
         Else
             SetStretchBltMode pdImages(formToBuffer.Tag).backBuffer.getLayerDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, SrcWidth, SrcHeight, vbSrcCopy
+            StretchBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, bltWidth, bltHeight, pdImages(formToBuffer.Tag).mainLayer.getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     End If
@@ -435,7 +435,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
 ZoomErrorHandler:
 
     If Err = 480 Then
-        MsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbCritical + vbOKOnly, "Not Enough Memory"
+        MsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation + vbOKOnly, "Not Enough Memory"
         SetProgBarVal 0
         Message "Operation halted."
     ElseIf Err = 13 Then

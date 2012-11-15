@@ -91,7 +91,7 @@ Public Sub ClipboardPaste()
         Message "Clipboard data imported successfully "
     
     Else
-        MsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbCritical + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
+        MsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
     End If
     
 End Sub

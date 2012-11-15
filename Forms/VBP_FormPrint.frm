@@ -434,7 +434,7 @@ Private Sub cmdPaperSize_Click()
     Dim cdReturn As Boolean
     Dim cDialog As cCommonDialog
     Set cDialog = New cCommonDialog
-    cdReturn = cDialog.VBPageSetupDlg2(Me.HWnd, True, True, False, False, , , , , , , , , Printer.PaperSize, cbOrientation.ListIndex + 1, -(cbQuality.ListIndex + 1), epsuinches, Printer)
+    cdReturn = cDialog.VBPageSetupDlg2(Me.hWnd, True, True, False, False, , , , , , , , , Printer.PaperSize, cbOrientation.ListIndex + 1, -(cbQuality.ListIndex + 1), epsuinches, Printer)
     If cdReturn = True Then UpdatePaperSize
 End Sub
 
@@ -540,7 +540,7 @@ Private Sub CmdOK_Click()
           
             'Print the image
             If (PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1, CBool(chkCenter), CBool(chkFit)) = 0) Then
-                MsgBox PROGRAMNAME & " was unable to print the image.  Please make sure that the specified printer (" & Printer.DeviceName & ") is powered-on and ready for printing.", vbCritical + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Printer Error"
+                MsgBox PROGRAMNAME & " was unable to print the image.  Please make sure that the specified printer (" & Printer.DeviceName & ") is powered-on and ready for printing.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Printer Error"
                 Message "Print canceled."
             End If
               

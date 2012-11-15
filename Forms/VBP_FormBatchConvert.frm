@@ -585,7 +585,7 @@ Private Sub cmdLoadList_Click()
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
     
-    If CC.VBGetOpenFileName(sFile, , True, False, False, True, "Batch Image List (.pdl)|*.pdl|All files|*.*", 0, tempPathString, "Load a list of images", ".pdl", FormBatchConvert.HWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , True, False, False, True, "Batch Image List (.pdl)|*.pdl|All files|*.*", 0, tempPathString, "Load a list of images", ".pdl", FormBatchConvert.hWnd, OFN_HIDEREADONLY) Then
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
@@ -600,7 +600,7 @@ Private Sub cmdLoadList_Click()
             Dim tmpLine As String
             Input #fileNum, tmpLine
             If tmpLine <> ("<" & PROGRAMNAME & " BATCH CONVERSION LIST>") Then
-                MsgBox "This is not a valid list of images. Please try a different file.", vbCritical + vbApplicationModal + vbOKOnly, "Invalid list file"
+                MsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
                 Exit Sub
             End If
             
@@ -648,7 +648,7 @@ Private Sub cmdSaveList_Click()
     
     'First, make sure some images have been placed in the list
     If lstFiles.ListCount < 1 Then
-        MsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before attempting to save the list to file." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbCritical + vbOKOnly + vbApplicationModal, "Empty image list"
+        MsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before attempting to save the list to file." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbExclamation + vbOKOnly + vbApplicationModal, "Empty image list"
         Exit Sub
     End If
     
@@ -661,7 +661,7 @@ Private Sub cmdSaveList_Click()
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
     
-    If CC.VBGetSaveFileName(sFile, , True, "Batch Image List (.pdl)|*.pdl|All files|*.*", 0, tempPathString, "Save the current list of images", ".pdl", FormBatchConvert.HWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetSaveFileName(sFile, , True, "Batch Image List (.pdl)|*.pdl|All files|*.*", 0, tempPathString, "Save the current list of images", ".pdl", FormBatchConvert.hWnd, OFN_HIDEREADONLY) Then
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
@@ -697,7 +697,7 @@ Private Sub cmdSelectMacro_Click()
     tempPathString = userPreferences.GetPreference_String("Program Paths", "Macro", "")
    
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, "Open Macro File", "." & MACRO_EXT, FormMain.HWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, "Open Macro File", "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
@@ -715,13 +715,13 @@ Private Sub CmdOK_Click()
     
     'Make sure the user has selected some files to operate on
     If lstFiles.ListCount < 1 Then
-        MsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before continuing." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbCritical + vbOKOnly + vbApplicationModal, "No image files selected"
+        MsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before continuing." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbExclamation + vbOKOnly + vbApplicationModal, "No image files selected"
         Exit Sub
     End If
     
     'Ensure that the macro text box has a macro file loaded
     If optActions(1).Value = True And ((txtMacro.Text = "No macro selected") Or (txtMacro.Text = "")) Then
-        MsgBox "Please select a valid macro file (Step 3!).", vbCritical + vbOKOnly + vbApplicationModal, "No macro file selected"
+        MsgBox "Please select a valid macro file (Step 3!).", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
         AutoSelectText txtMacro
         Exit Sub
     End If
@@ -744,7 +744,7 @@ Private Sub CmdOK_Click()
     MacroStatus = MacroBATCH
     
     Dim curBatchFile As Long
-    Dim tmpFileName As String
+    Dim tmpFilename As String
     
     Dim totalNumOfFiles As Long
     totalNumOfFiles = lstFiles.ListCount
@@ -777,7 +777,7 @@ Private Sub CmdOK_Click()
     
         If MacroStatus = MacroCANCEL Then GoTo MacroCanceled
     
-        tmpFileName = lstFiles.List(curBatchFile)
+        tmpFilename = lstFiles.List(curBatchFile)
         
         'Give the user a progress update
         MacroMessage = "(Batch converting file #" & (curBatchFile + 1) & " of " & totalNumOfFiles & ")" & timeMsg
@@ -785,9 +785,9 @@ Private Sub CmdOK_Click()
         cProgBar.Value = curBatchFile
         
         'As a failsafe, check to make sure the current input file exists before attempting to load it
-        If FileExist(tmpFileName) = True Then
+        If FileExist(tmpFilename) = True Then
             
-            sFile(0) = tmpFileName
+            sFile(0) = tmpFilename
             
             'Load the current image
             PreLoadImage sFile, False
@@ -796,26 +796,26 @@ Private Sub CmdOK_Click()
             If optActions(1).Value = True Then PlayMacroFromFile LocationOfMacroFile
             
             'With the macro complete, prepare the file for saving
-            tmpFileName = lstFiles.List(curBatchFile)
-            StripOffExtension tmpFileName
-            StripFilename tmpFileName
+            tmpFilename = lstFiles.List(curBatchFile)
+            StripOffExtension tmpFilename
+            StripFilename tmpFilename
             
             'Build a full file path using the options the user specified
             If cmbOutputOptions.ListIndex = 0 Then
-                tmpFileName = outputPath & txtAppendFront & tmpFileName
+                tmpFilename = outputPath & txtAppendFront & tmpFilename
             Else
-                tmpFileName = outputPath & txtAppendFront & (curBatchFile + 1)
+                tmpFilename = outputPath & txtAppendFront & (curBatchFile + 1)
             End If
                 
             'Attach the proper image format extension
-            tmpFileName = tmpFileName & "." & outputExtensions(cmbOutputFormat.ListIndex)
+            tmpFilename = tmpFilename & "." & outputExtensions(cmbOutputFormat.ListIndex)
                 
             'Certain file extensions require extra attention.  Check for those formats, and send the PhotoDemon_SaveImage
             ' method a specialized string containing any extra information it may require
             If outputExtensions(cmbOutputFormat.ListIndex) = "jpg" Then
-                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFileName, False, Val(txtQuality)
+                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename, False, Val(txtQuality)
             Else
-                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFileName
+                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename
             End If
             
             'Kill the next-to-last form (better than killing the current one, because of the constant GD flickering)
@@ -903,7 +903,7 @@ End Sub
 'Use "shell32.dll" to select a folder
 Private Sub cmdSelectOutputPath_Click()
     Dim tString As String
-    tString = BrowseForFolder(FormBatchConvert.HWnd)
+    tString = BrowseForFolder(FormBatchConvert.hWnd)
     If tString <> "" Then
         txtOutputPath.Text = FixPath(tString)
     
@@ -918,7 +918,7 @@ Private Sub cmdUseCD_Click()
     'String returned from the common dialog wrapper
     Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, Me.HWnd) Then
+    If PhotoDemon_OpenImageDialog(sFile, Me.hWnd) Then
         
         For x = 0 To UBound(sFile)
             lstFiles.AddItem sFile(x)

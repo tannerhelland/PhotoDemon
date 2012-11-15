@@ -60,7 +60,7 @@ Private Const MAX_FILE = 260
 
 Private Type OPENFILENAME
     lStructSize As Long          ' Filled with UDT size
-    hwndOwner As Long            ' Tied to Owner
+    hWndOwner As Long            ' Tied to Owner
     hInstance As Long            ' Ignored (used only by templates)
     lpstrFilter As String        ' Tied to Filter
     lpstrCustomFilter As String  ' Ignored (exercise for reader)
@@ -116,7 +116,7 @@ End Enum
 
 Private Type TCHOOSECOLOR
     lStructSize As Long
-    hwndOwner As Long
+    hWndOwner As Long
     hInstance As Long
     rgbResult As Long
     lpCustColors As Long
@@ -146,7 +146,7 @@ Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 
 Private Type TCHOOSEFONT
     lStructSize As Long         ' Filled with UDT size
-    hwndOwner As Long           ' Caller's window handle
+    hWndOwner As Long           ' Caller's window handle
     hDC As Long                 ' Printer DC/IC or NULL
     lpLogFont As Long           ' Pointer to LOGFONT
     iPointSize As Long          ' 10 * size in points of font
@@ -230,7 +230,7 @@ End Enum
 
 Private Type TPRINTDLG
     lStructSize As Long
-    hwndOwner As Long
+    hWndOwner As Long
     hDevMode As Long
     hDevNames As Long
     hDC As Long
@@ -338,7 +338,7 @@ End Type
 
 Private Type TPAGESETUPDLG
     lStructSize                 As Long
-    hwndOwner                   As Long
+    hWndOwner                   As Long
     hDevMode                    As Long
     hDevNames                   As Long
     Flags                       As Long
@@ -555,7 +555,7 @@ With opfile
                                   OFN_ENABLETEMPLATE)))
     If MultiSelect Then .Flags = .Flags Or OFN_EXPLORER Or OFN_PATHMUSTEXIST Or OFN_LONGNAMES
     ' Owner can take handle of owning window
-    If Owner <> -1 Then .hwndOwner = Owner
+    If Owner <> -1 Then .hWndOwner = Owner
     ' InitDir can take initial directory string
     .lpstrInitialDir = InitDir
     ' DefaultExt can take default extension
@@ -610,7 +610,7 @@ With opfile
         
         'This only happens when the user selects too many files (as far as I can tell)
         If (MultiSelect = True) And (lstrlen(.lpstrFile) <> 0) Then
-            MsgBox "Unfortunately, the number of images you selected exceeds what Microsoft Windows allows for a single common dialog box.  Please try again with a smaller set of selected images.", vbCritical + vbApplicationModal + vbOKOnly, "Error: too many images"
+            MsgBox "Unfortunately, the number of images you selected exceeds what Microsoft Windows allows for a single common dialog box.  Please try again with a smaller set of selected images.", vbExclamation + vbApplicationModal + vbOKOnly, "Error: too many images"
         End If
             
         ' Cancelled
@@ -662,7 +662,7 @@ With opfile
              (Flags And CLng(Not (OFN_ENABLEHOOK Or _
                                   OFN_ENABLETEMPLATE)))
     ' Owner can take handle of owning window
-    If Owner <> -1 Then .hwndOwner = Owner
+    If Owner <> -1 Then .hWndOwner = Owner
     ' InitDir can take initial directory string
     .lpstrInitialDir = InitDir
     ' DefaultExt can take default extension
@@ -777,7 +777,7 @@ Function VBChooseColor(Color As Long, _
     ' Color must get reference variable to receive result
     ' Flags can get reference variable or constant with bit flags
     ' Owner can take handle of owning window
-    If Owner <> -1 Then chclr.hwndOwner = Owner
+    If Owner <> -1 Then chclr.hWndOwner = Owner
 
     ' Assign color (default uninitialized value of zero is good default)
     chclr.rgbResult = Color
@@ -962,7 +962,7 @@ Dim afFlags As Long, afMask As Long
     Dim psd As TPAGESETUPDLG
     ' Fill in PRINTDLG structure
     psd.lStructSize = Len(psd)
-    psd.hwndOwner = Owner
+    psd.hWndOwner = Owner
     psd.rtMargin.Top = TopMargin * lUnits
     psd.rtMargin.Left = LeftMargin * lUnits
     psd.rtMargin.Bottom = BottomMargin * lUnits

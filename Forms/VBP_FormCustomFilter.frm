@@ -916,7 +916,7 @@ Private Sub cmdOpen_Click()
         
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , userPreferences.getFilterPath, "Open a custom filter", , FormCustomFilter.HWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , userPreferences.getFilterPath, "Open a custom filter", , FormCustomFilter.hWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
             
             'Save the new directory as the default path for future usage
@@ -926,7 +926,7 @@ Private Sub cmdOpen_Click()
             updatePreview
             
         Else
-            MsgBox "An error occurred while attempting to load " & sFile & ".  Please verify that the file is a valid custom filter file.", vbOKOnly + vbCritical + vbApplicationModal, PROGRAMNAME & " Custom Filter Error"
+            MsgBox "An error occurred while attempting to load " & sFile & ".  Please verify that the file is a valid custom filter file.", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Custom Filter Error"
         End If
     End If
     
@@ -940,7 +940,7 @@ Private Sub cmdSave_Click()
         
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , userPreferences.getFilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , userPreferences.getFilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         userPreferences.setFilterPath sFile

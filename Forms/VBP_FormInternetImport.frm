@@ -139,7 +139,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
     
     If hInternetSession = 0 Then
-        MsgBox PROGRAMNAME & " could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbCritical + vbApplicationModal + vbOKOnly, "Internet Connection Error"
+        MsgBox PROGRAMNAME & " could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error"
         ImportImageFromInternet = False
         Screen.MousePointer = 0
         Exit Function
@@ -152,7 +152,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If hUrl = 0 Then
-        MsgBox PROGRAMNAME & " could not locate a valid image at that URL.  Please double-check the path.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbCritical + vbApplicationModal + vbOKOnly, "Online Image Not Found"
+        MsgBox PROGRAMNAME & " could not locate a valid image at that URL.  Please double-check the path.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Online Image Not Found"
         If hInternetSession Then InternetCloseHandle hInternetSession
         ImportImageFromInternet = False
         Screen.MousePointer = 0
@@ -170,13 +170,13 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     
     'We need a temporary file to house the image; generate it automatically, using the extension of the original image
     Message "Creating temporary file..."
-    Dim tmpFileName As String
-    tmpFileName = URL
-    StripFilename tmpFileName
-    makeValidWindowsFilename tmpFileName
+    Dim tmpFilename As String
+    tmpFilename = URL
+    StripFilename tmpFilename
+    makeValidWindowsFilename tmpFilename
     
     Dim tmpFile As String
-    tmpFile = userPreferences.getTempPath & tmpFileName
+    tmpFile = userPreferences.getTempPath & tmpFilename
     
     'Open the temporary file and begin downloading the image to it
     Message "Image URL verified.  Downloading image..."
@@ -205,7 +205,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
    
             'If something went wrong, terminate
             If chunkOK = False Then
-                MsgBox PROGRAMNAME & " lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbCritical + vbApplicationModal + vbOKOnly, "Internet Connection Error"
+                MsgBox PROGRAMNAME & " lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error"
                 If FileExist(tmpFile) Then
                     Close #fileNum
                     Kill tmpFile
@@ -268,11 +268,11 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     Dim sFile(0) As String
     sFile(0) = tmpFile
     
-    PreLoadImage sFile, False, tmpFileName, tmpFileName
+    PreLoadImage sFile, False, tmpFilename, tmpFilename
     
     'Unique to this particular import is remembering the full filename + extension (because this method of import
     ' actually supplies a file extension, unlike scanning or screen capturing or something else)
-    pdImages(CurrentImage).OriginalFileNameAndExtension = tmpFileName
+    pdImages(CurrentImage).OriginalFileNameAndExtension = tmpFilename
     
     SetProgBarVal 0
     
@@ -301,7 +301,7 @@ Private Sub CmdOK_Click()
     fullURL = txtURL
     
     If (Left$(fullURL, 7) <> "http://") And (Left$(fullURL, 6) <> "ftp://") Then
-        MsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://.""", vbApplicationModal + vbOKOnly + vbCritical, "Invalid URL"
+        MsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://.""", vbApplicationModal + vbOKOnly + vbExclamation, "Invalid URL"
         AutoSelectText txtURL
         Exit Sub
     End If
