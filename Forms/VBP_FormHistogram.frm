@@ -371,7 +371,7 @@ Begin VB.Form FormHistogram
       Caption         =   "lblLuminance"
       ForeColor       =   &H80000008&
       Height          =   255
-      Left            =   6840
+      Left            =   6960
       TabIndex        =   4
       Top             =   6000
       Width           =   1215
@@ -496,7 +496,7 @@ Private Sub cmdExportHistogram_Click()
     If (FreeImageEnabled = False) And (GDIPlusEnabled = False) Then defExtension = ".bmp" Else defExtension = ".png"
     
     'Display the save dialog
-    If CC.VBGetSaveFileName(sFile, , True, cdfStr, defFormat, tempPathString, "Save histogram to file", defExtension, FormHistogram.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, cdfStr, defFormat, tempPathString, "Save histogram to file", defExtension, FormHistogram.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         tempPathString = sFile
