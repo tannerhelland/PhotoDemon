@@ -134,3 +134,15 @@ Public useFancyFonts As Boolean
 
 'This cMonitors object contains data on all monitors on this system.  It is used to handle multiple monitor situations.
 Public cMonitors As clsMonitors
+
+'If the user attempts to close the program while multiple unsaved images are present, these values allow us to count
+' a) how many unsaved images are present
+' b) if the user wants to deal with all the images (if the "Repeat this action..." box is checked on the unsaved
+'     image confirmation prompt) in the same fashion
+' c) what the user's preference is for dealing with all the unsaved images
+Public numOfUnsavedImages As Long
+Public dealWithAllUnsavedImages As Boolean
+Public howToDealWithAllUnsavedImages As VbMsgBoxResult
+
+'When the entire program is being shut down, this variable is set
+Public programShuttingDown As Boolean

@@ -492,25 +492,45 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 DoEvents
             End If
             
-            'Generate a customized save message
-            'Dim saveMsg As String
-            'saveMsg = "This image (""" & pdImages(Me.Tag).OriginalFileNameAndExtension & """) has not been saved.  Would you like to save it now?"
+            'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
+            If dealWithAllUnsavedImages = False Then
             
-            'If this file exists on disk, warn them that this will initiate a SAVE, not a SAVE AS
-            'If pdImages(Me.Tag).LocationOnDisk <> "" Then saveMsg = saveMsg & vbCrLf & vbCrLf & "NOTE: if you click 'Yes', PhotoDemon will save this image using its current file name.  If you would like to save it with a different file name, please select 'Cancel', then click the File -> Save As menu."
+                numOfUnsavedImages = 0
+                    
+                'Loop through all images to count how many unsaved images there are in total.
+                ' NOTE: we only need to do this if the entire program is being shut down; otherwise, this close action only
+                '       affects the current image
+                If programShuttingDown Then
+                    Dim i As Long
+                    For i = 1 To NumOfImagesLoaded
+                        If (pdImages(i).IsActive = True) And (pdImages(i).forInternalUseOnly = False) And (pdImages(i).HasBeenSaved = False) Then
+                            numOfUnsavedImages = numOfUnsavedImages + 1
+                        End If
+                    Next i
+                End If
             
-            'Get the user's input
-            Dim confirmReturn As VbMsgBoxResult
-            confirmReturn = confirmClose(Me.Tag)
+                'Show the "do you want to save this image?" dialog.  On that form, the number of unsaved images will be
+                ' displayed and the user will be given an option to apply their choice to all unsaved images.
+                Dim confirmReturn As VbMsgBoxResult
+                confirmReturn = confirmClose(Me.Tag)
                         
-            'confirmReturn = MsgBox(saveMsg, vbYesNoCancel + vbApplicationModal + vbQuestion, "Unsaved image data")
+            Else
+                confirmReturn = howToDealWithAllUnsavedImages
+            End If
         
             'There are now three possible courses of action:
             ' 1) The user canceled.  Quit and abandon all notion of closing.
             ' 2) The user asked us to save this image.  Pass control to MenuSave (which will in turn call SaveAs if necessary)
             ' 3) The user doesn't give a shit.  Exit without saving.
+            
+            'Cancel the close operation
             If confirmReturn = vbCancel Then
+                
                 Cancel = True
+                If programShuttingDown Then programShuttingDown = False
+                dealWithAllUnsavedImages = False
+                
+            'Save the image
             ElseIf confirmReturn = vbYes Then
                 
                 'Attempt to save.  Note that the user can still cancel at this point, and we want to honor their cancellation
@@ -524,12 +544,19 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 If Cancel = False Then
                     Me.Visible = False
                     Unload Me
-                End If
                 
+                '...but if the save was not successful, suspend all unload action
+                Else
+                    If programShuttingDown Then programShuttingDown = False
+                    dealWithAllUnsavedImages = False
+                End If
+            
+            'Do not save the image
             ElseIf confirmReturn = vbNo Then
                 Me.Visible = False
                 Unload Me
-           End If
+            
+            End If
         
         End If
     

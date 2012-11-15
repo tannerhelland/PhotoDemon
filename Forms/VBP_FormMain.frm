@@ -1327,8 +1327,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These functions are used to scroll through consecutive MDI windows without flickering
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 
 'Use to prevent scroll bar / text box combos from getting stuck in update loops
 Dim suspendSelTextBoxUpdates As Boolean
@@ -1651,6 +1651,9 @@ Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         userPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", Me.Height / Screen.TwipsPerPixelY
     
     End If
+    
+    'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
+    programShuttingDown = True
     
 End Sub
 
@@ -2072,7 +2075,7 @@ Private Sub MnuNextImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.hwnd, 5)
+    MDIClient = GetWindow(FormMain.hWnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
@@ -2147,7 +2150,7 @@ Private Sub MnuPreviousImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.hwnd, 5)
+    MDIClient = GetWindow(FormMain.hWnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
@@ -2501,7 +2504,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
         'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
         Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.hwnd, 5)
+        MDIClient = GetWindow(FormMain.hWnd, 5)
         
         'Use the API to instruct the MDI window to move one window forward or back
         If ctlAccelerator.Key(nIndex) = "Prev_Image" Then

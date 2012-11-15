@@ -3,7 +3,7 @@ Begin VB.Form FormUnsavedChanges
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Unsaved Changes"
-   ClientHeight    =   3810
+   ClientHeight    =   4530
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9360
@@ -19,11 +19,21 @@ Begin VB.Form FormUnsavedChanges
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   254
+   ScaleHeight     =   302
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CheckBox chkRepeat 
+      Appearance      =   0  'Flat
+      Caption         =   "Repeat this action for all unsaved images (7 in total)"
+      ForeColor       =   &H00404040&
+      Height          =   390
+      Left            =   3990
+      TabIndex        =   5
+      Top             =   4020
+      Width           =   5175
+   End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -130,6 +140,13 @@ Begin VB.Form FormUnsavedChanges
       TooltipType     =   1
       TooltipTitle    =   "Cancel"
    End
+   Begin VB.Line lineBottom 
+      BorderColor     =   &H8000000D&
+      X1              =   8
+      X2              =   616
+      Y1              =   256
+      Y2              =   256
+   End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
       Caption         =   "This image (filename.jpg) has unsaved changes.  What would you like to do?"
@@ -205,18 +222,22 @@ Public Property Let formID(formID As Long)
     imageBeingClosed = formID
 End Property
 
+'The three choices available to the user correspond to message box responses of "Yes", "No", and "Cancel"
 Private Sub CmdCancel_Click()
     userAnswer = vbCancel
+    updateRepeatToAllUnsavedImages userAnswer
     Me.Hide
 End Sub
 
 Private Sub cmdDontSave_Click()
     userAnswer = vbNo
+    updateRepeatToAllUnsavedImages userAnswer
     Me.Hide
 End Sub
 
 Private Sub cmdSave_Click()
     userAnswer = vbYes
+    updateRepeatToAllUnsavedImages userAnswer
     Me.Hide
 End Sub
 
@@ -224,7 +245,10 @@ End Sub
 Public Sub ShowDialog()
     
     'Automatically draw a warning icon using the system icon set
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 277, 24
+    Dim iconY As Long
+    iconY = 24
+    If useFancyFonts Then iconY = iconY + 2
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 277, iconY
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -233,7 +257,7 @@ Public Sub ShowDialog()
     pdImages(imageBeingClosed).mainLayer.renderToPictureBox picPreview
     
     'Adjust the save message to match this image's name
-    lblWarning.Caption = """" & pdImages(imageBeingClosed).OriginalFileNameAndExtension & """ has unsaved changes.  What would you like to do?"
+    lblWarning.Caption = pdImages(imageBeingClosed).OriginalFileNameAndExtension & " has unsaved changes.  What would you like to do?"
 
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
     If pdImages(imageBeingClosed).LocationOnDisk <> "" Then
@@ -246,8 +270,50 @@ Public Sub ShowDialog()
     cmdDontSave.ToolTip = vbCrLf & "If you do not save this image, any changes you have made will be permanently lost."
     cmdCancel.ToolTip = vbCrLf & "Canceling will return you to the main PhotoDemon window."
 
+    'Make some measurements of the form size.  We need these if we choose to display the check box at the bottom of the form
+    Dim vDifference As Long
+    Me.ScaleMode = vbTwips
+    vDifference = Me.Height - Me.ScaleHeight
+    
+    'If there are multiple unsaved images, give the user a prompt to apply this action to all of them.
+    ' (If there are not multiple unsaved images, hide that section from view.)
+    If numOfUnsavedImages < 2 Then
+        lineBottom.Visible = False
+        chkRepeat.Visible = False
+        Me.Height = vDifference + picPreview.Height + (picPreview.Top * 2)
+    Else
+        lineBottom.Visible = True
+        chkRepeat.Visible = True
+        
+        'Change the text of the "repeat for all unsaved images" check box depending on how many unsaved images are present.
+        If numOfUnsavedImages = 2 Then
+            chkRepeat.Caption = "Repeat this action for both unsaved images."
+        Else
+            chkRepeat.Caption = "Repeat this action for all unsaved images (" & numOfUnsavedImages & " in total)"
+        End If
+        
+        Me.Height = vDifference + (chkRepeat.Top + chkRepeat.Height) + picPreview.Top
+    End If
+
+    Me.ScaleMode = vbPixels
+
+    'Apply any custom styles to the form
+    makeFormPretty Me
+
     'Display the form
     Me.Show vbModal, FormMain
 
+End Sub
+
+'Before this dialog closes, this routine is called to update the user's preference for applying this action to all unsaved images
+Private Sub updateRepeatToAllUnsavedImages(ByVal actionToApply As VbMsgBoxResult)
+    
+    If chkRepeat.Value = vbChecked Then
+        dealWithAllUnsavedImages = True
+        howToDealWithAllUnsavedImages = actionToApply
+    Else
+        dealWithAllUnsavedImages = False
+    End If
+    
 End Sub
 
