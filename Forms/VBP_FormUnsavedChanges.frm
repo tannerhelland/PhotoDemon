@@ -6,7 +6,7 @@ Begin VB.Form FormUnsavedChanges
    ClientHeight    =   3810
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   9495
+   ClientWidth     =   9360
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -21,7 +21,7 @@ Begin VB.Form FormUnsavedChanges
    MinButton       =   0   'False
    ScaleHeight     =   254
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   633
+   ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.PictureBox picPreview 
@@ -49,11 +49,11 @@ Begin VB.Form FormUnsavedChanges
    End
    Begin PhotoDemon.jcbutton cmdSave 
       Height          =   735
-      Left            =   4080
+      Left            =   3960
       TabIndex        =   2
-      Top             =   1080
-      Width           =   5220
-      _ExtentX        =   9208
+      Top             =   1260
+      Width           =   5100
+      _ExtentX        =   8996
       _ExtentY        =   1296
       ButtonStyle     =   13
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -66,7 +66,6 @@ Begin VB.Form FormUnsavedChanges
          Strikethrough   =   0   'False
       EndProperty
       Caption         =   "Save the image before closing it"
-      ForeColor       =   2105376
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":0000
       PictureAlign    =   0
@@ -78,14 +77,13 @@ Begin VB.Form FormUnsavedChanges
    End
    Begin PhotoDemon.jcbutton cmdDontSave 
       Height          =   735
-      Left            =   4080
+      Left            =   3960
       TabIndex        =   3
-      Top             =   1920
-      Width           =   5220
-      _ExtentX        =   9208
+      Top             =   2040
+      Width           =   5100
+      _ExtentX        =   8996
       _ExtentY        =   1296
       ButtonStyle     =   13
-      ShowFocusRect   =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -95,9 +93,7 @@ Begin VB.Form FormUnsavedChanges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      BackColor       =   15199212
       Caption         =   "Do not save the image (discard all changes)"
-      ForeColor       =   2105376
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":1052
       PictureAlign    =   0
@@ -109,14 +105,13 @@ Begin VB.Form FormUnsavedChanges
    Begin PhotoDemon.jcbutton cmdCancel 
       Cancel          =   -1  'True
       Height          =   735
-      Left            =   4080
+      Left            =   3960
       TabIndex        =   4
-      Top             =   2760
-      Width           =   5220
-      _ExtentX        =   9208
+      Top             =   2820
+      Width           =   5100
+      _ExtentX        =   8996
       _ExtentY        =   1296
       ButtonStyle     =   13
-      ShowFocusRect   =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -126,9 +121,7 @@ Begin VB.Form FormUnsavedChanges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      BackColor       =   15199212
       Caption         =   "Cancel, and return to editing"
-      ForeColor       =   2105376
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":20A4
       PictureAlign    =   0
@@ -141,11 +134,11 @@ Begin VB.Form FormUnsavedChanges
       BackStyle       =   0  'Transparent
       Caption         =   "This image (filename.jpg) has unsaved changes.  What would you like to do?"
       ForeColor       =   &H00202020&
-      Height          =   735
-      Left            =   4080
+      Height          =   765
+      Left            =   4830
       TabIndex        =   1
-      Top             =   210
-      Width           =   5175
+      Top             =   360
+      Width           =   4215
       WordWrap        =   -1  'True
    End
 End
@@ -154,13 +147,55 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'***************************************************************************
+'Unsaved Changes Dialog
+'Copyright ©2011-2012 by Tanner Helland
+'Created: 13/November/12
+'Last updated: 14/November/12
+'Last update: added a system "warning" icon to the dialog box.  This is drawn automatically.
+'
+'Custom dialog box for warning the user that they are about to close an image with unsaved changes.
+'
+'This form was built after much usability testing.  There are many bad ways to design a save prompt,
+' and only a few good ones.  I felt that descriptive icons were necessary to help the user quickly
+' determine what choice to make.  A preview of the image in question is also displayed, to make it
+' absolutely certain that the user is not confused about which image they're dealing with.  (This is
+' important for photos from a digital camera, which often have names like "1004701.jpg". Very
+' descriptive tooltip text has also been added, and I genuinely believe that this is one of the best
+' unsaved changes dialogs available.
+'
+'Finally, note that this prompt can be turned off completely from the Edit -> Preferences menu.
+'
+'***************************************************************************
+
+
 Option Explicit
+
+'The following Enum and two API declarations are used to draw the system information icon
+Enum SystemIconConstants
+    IDI_APPLICATION = 32512
+    IDI_HAND = 32513
+    IDI_QUESTION = 32514
+    IDI_EXCLAMATION = 32515
+    IDI_ASTERISK = 32516
+    IDI_WINDOWS = 32517
+End Enum
+
+Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
 'The ID number of the image being closed
 Private imageBeingClosed As Long
 
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
+
+'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
+Private Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
+    Dim hIcon As Long
+    hIcon = LoadIconByID(0, icon)
+    DrawIcon hDC, x, y, hIcon
+End Sub
 
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -170,7 +205,7 @@ Public Property Let formID(formID As Long)
     imageBeingClosed = formID
 End Property
 
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     userAnswer = vbCancel
     Me.Hide
 End Sub
@@ -188,6 +223,9 @@ End Sub
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub ShowDialog()
     
+    'Automatically draw a warning icon using the system icon set
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 277, 24
+    
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
     
@@ -195,7 +233,7 @@ Public Sub ShowDialog()
     pdImages(imageBeingClosed).mainLayer.renderToPictureBox picPreview
     
     'Adjust the save message to match this image's name
-    lblWarning.Caption = """" & pdImages(imageBeingClosed).OriginalFileNameAndExtension & """ has unsaved changes." & vbCrLf & "What would you like to do?"
+    lblWarning.Caption = """" & pdImages(imageBeingClosed).OriginalFileNameAndExtension & """ has unsaved changes.  What would you like to do?"
 
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
     If pdImages(imageBeingClosed).LocationOnDisk <> "" Then
@@ -208,6 +246,7 @@ Public Sub ShowDialog()
     cmdDontSave.ToolTip = vbCrLf & "If you do not save this image, any changes you have made will be permanently lost."
     cmdCancel.ToolTip = vbCrLf & "Canceling will return you to the main PhotoDemon window."
 
+    'Display the form
     Me.Show vbModal, FormMain
 
 End Sub
