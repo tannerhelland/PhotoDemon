@@ -26,10 +26,10 @@ Begin VB.Form FormUnsavedChanges
    StartUpPosition =   1  'CenterOwner
    Begin VB.CheckBox chkRepeat 
       Appearance      =   0  'Flat
-      Caption         =   "Repeat this action for all unsaved images (7 in total)"
+      Caption         =   " Repeat this action for all unsaved images (X in total)"
       ForeColor       =   &H00404040&
       Height          =   390
-      Left            =   3990
+      Left            =   3960
       TabIndex        =   5
       Top             =   4020
       Width           =   5175
@@ -287,9 +287,9 @@ Public Sub ShowDialog()
         
         'Change the text of the "repeat for all unsaved images" check box depending on how many unsaved images are present.
         If numOfUnsavedImages = 2 Then
-            chkRepeat.Caption = "Repeat this action for both unsaved images."
+            chkRepeat.Caption = " Repeat this action for both unsaved images"
         Else
-            chkRepeat.Caption = "Repeat this action for all unsaved images (" & numOfUnsavedImages & " in total)"
+            chkRepeat.Caption = " Repeat this action for all unsaved images (" & numOfUnsavedImages & " in total)"
         End If
         
         Me.Height = vDifference + (chkRepeat.Top + chkRepeat.Height) + picPreview.Top
