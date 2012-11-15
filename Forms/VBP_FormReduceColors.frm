@@ -163,10 +163,10 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.CheckBox chkColorDither 
       Appearance      =   0  'Flat
-      Caption         =   "Use error diffusion dithering"
+      Caption         =   " Use error diffusion dithering"
       ForeColor       =   &H00800000&
       Height          =   255
-      Left            =   720
+      Left            =   840
       TabIndex        =   11
       Top             =   7110
       Value           =   1  'Checked
@@ -174,10 +174,10 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.CheckBox chkSmartColors 
       Appearance      =   0  'Flat
-      Caption         =   "Use realistic coloring"
+      Caption         =   " Use realistic coloring"
       ForeColor       =   &H00800000&
       Height          =   255
-      Left            =   3480
+      Left            =   3600
       TabIndex        =   12
       Top             =   7110
       Value           =   1  'Checked
