@@ -56,6 +56,9 @@ Public Sub StartMacro()
     'Notify the user that recording has begun
     Message "Macro recording started."
     FormMain.lblRecording.Visible = True
+    
+    FormMain.MnuStartMacroRecording.Enabled = False
+    FormMain.MnuStopMacroRecording.Enabled = True
 
 End Sub
 
@@ -63,6 +66,10 @@ Public Sub StopMacro()
 
     MacroStatus = MacroSTOP
     Message "Macro recording stopped."
+    
+    FormMain.lblRecording.Visible = False
+    FormMain.MnuStartMacroRecording.Enabled = True
+    FormMain.MnuStopMacroRecording.Enabled = False
     
     'Automatically launch the save macro data routine
     Dim CC As cCommonDialog
@@ -75,7 +82,7 @@ Public Sub StopMacro()
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , userPreferences.getMacroPath, "Save macro data", "." & MACRO_EXT, FormMain.HWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , userPreferences.getMacroPath, "Save macro data", "." & MACRO_EXT, FormMain.hWnd, 0) Then
         
         'Save this macro's directory as the default macro path
         userPreferences.setMacroPath sFile
@@ -100,14 +107,13 @@ SaveMacroAgain:
         
     Else
         
-        mReturn = MsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbCritical + vbYesNo, "Warning: Last Chance to Save Macro")
+        mReturn = MsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: Last Chance to Save Macro")
         If mReturn = vbNo Then GoTo SaveMacroAgain
         
         Message "Macro abandoned."
         
     End If
-    
-    FormMain.lblRecording.Visible = False
+        
     CurrentCall = 0
     
 End Sub
@@ -120,7 +126,7 @@ Public Sub PlayMacro()
     Set CC = New cCommonDialog
    
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , userPreferences.getMacroPath, "Open Macro File", "." & MACRO_EXT, FormMain.HWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , userPreferences.getMacroPath, "Open Macro File", "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
         
         Message "Loading macro data..."
         
@@ -148,7 +154,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
         If (Macro_ID <> MACRO_IDENTIFIER) Then
             Close #fileNum
             Message "Invalid macro file."
-            MsgBox macroToPlay & " is not a valid macro file.", vbOKOnly + vbCritical + vbApplicationModal, PROGRAMNAME & " Macro Error"
+            MsgBox macroToPlay & " is not a valid macro file.", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Macro Error"
             Exit Sub
         End If
         'Now check to make sure that the version number is supported
@@ -203,7 +209,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
             Else
                 Close #fileNum
                 Message "Invalid macro version."
-                MsgBox macroToPlay & " is no longer a supported macro version (#" & Macro_Version & ").", vbOKOnly + vbCritical + vbApplicationModal, PROGRAMNAME & " Macro Error"
+                MsgBox macroToPlay & " is no longer a supported macro version (#" & Macro_Version & ").", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Macro Error"
                 Exit Sub
             End If
         End If
