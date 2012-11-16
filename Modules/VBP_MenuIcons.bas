@@ -99,7 +99,7 @@ Public Sub LoadMenuIcons()
     With cMenuImage
     
         'Leandro's class automatically detects the current Windows version.  We're only concerned with Vista or later, which lets us
-        ' know that certain system fonts (e.g. Calibri, Segoe UI) are guaranteed to be available.
+        ' know that certain features are guaranteed to be available.
         isVistaOrLater = .IsWindowVistaOrLater
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)

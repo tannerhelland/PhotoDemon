@@ -32,7 +32,7 @@ Option Explicit
 
 
 'Tanner's addition 20 September 2012:
-' We must check if theming is enabled.  On Vista/7, use of the "Classic Theme" disables theming and screws up menu icon placement.
+' We must check if theming is enabled. On Vista/7, use of the "Classic Theme" disables theming and screws up menu icon placement.
 Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
 Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
 
@@ -96,143 +96,143 @@ Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageatt
 Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal imageattr As Long) As Long
 
 Private Type RECT
-    Left            As Long
-    Top             As Long
-    Right           As Long
-    Bottom          As Long
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
 End Type
 
 Private Type MENUINFO
-    cbSize          As Long
-    fMask           As Long
-    dwStyle         As Long
-    cyMax           As Long
-    RhbrBack        As Long
+    cbSize As Long
+    fMask As Long
+    dwStyle As Long
+    cyMax As Long
+    RhbrBack As Long
     dwContextHelpID As Long
-    dwMenuData      As Long
+    dwMenuData As Long
 End Type
 
 Private Type MENUITEMINFO
-    cbSize          As Long
-    fMask           As Long
-    fType           As Long
-    fState          As Long
-    wID             As Long
-    hSubMenu        As Long
-    hbmpChecked     As Long
-    hbmpUnchecked   As Long
-    dwItemData      As Long
-    dwTypeData      As Long
-    cch             As Long
-    hbmpItem        As Long
+    cbSize As Long
+    fMask As Long
+    fType As Long
+    fState As Long
+    wID As Long
+    hSubMenu As Long
+    hbmpChecked As Long
+    hbmpUnchecked As Long
+    dwItemData As Long
+    dwTypeData As Long
+    cch As Long
+    hbmpItem As Long
 End Type
 
 Private Type MEASUREITEMSTRUCT
-    CtlType         As Long
-    CtlID           As Long
-    itemID          As Long
-    itemWidth       As Long
-    itemHeight      As Long
-    ItemData        As Long
+    CtlType As Long
+    CtlID As Long
+    itemID As Long
+    itemWidth As Long
+    itemHeight As Long
+    ItemData As Long
 End Type
 
 Private Type DRAWITEMSTRUCT
-    CtlType         As Long
-    CtlID           As Long
-    itemID          As Long
-    itemAction      As Long
-    ItemState       As Long
-    hWndItem        As Long
-    hDC             As Long
-    rcItem          As RECT
-    ItemData        As Long
+    CtlType As Long
+    CtlID As Long
+    itemID As Long
+    itemAction As Long
+    ItemState As Long
+    hWndItem As Long
+    hDC As Long
+    rcItem As RECT
+    ItemData As Long
 End Type
 
 Private Type ICONINFO
-    fIcon           As Long
-    xHotspot        As Long
-    yHotspot        As Long
-    hbmMask         As Long
-    hbmColor        As Long
+    fIcon As Long
+    xHotspot As Long
+    yHotspot As Long
+    hbmMask As Long
+    hbmColor As Long
 End Type
 
 Private Type IconHeader
-    ihReserved      As Integer
-    ihType          As Integer
-    ihCount         As Integer
+    ihReserved As Integer
+    ihType As Integer
+    ihCount As Integer
 End Type
 
 Private Type IconEntry
-    ieWidth         As Byte
-    ieHeight        As Byte
-    ieColorCount    As Byte
-    ieReserved      As Byte
-    iePlanes        As Integer
-    ieBitCount      As Integer
-    ieBytesInRes    As Long
-    ieImageOffset   As Long
+    ieWidth As Byte
+    ieHeight As Byte
+    ieColorCount As Byte
+    ieReserved As Byte
+    iePlanes As Integer
+    ieBitCount As Integer
+    ieBytesInRes As Long
+    ieImageOffset As Long
 End Type
 
 Private Type ARGB
-    Blue            As Byte
-    Green           As Byte
-    Red             As Byte
-    Alpha           As Byte
+    Blue As Byte
+    Green As Byte
+    Red As Byte
+    Alpha As Byte
 End Type
 
 Private Type BitmapData
-    Width           As Long
-    Height          As Long
-    Stride          As Long
-    PixelFormat     As Long
-    Scan0           As Long
-    Reserved        As Long
+    Width As Long
+    Height As Long
+    Stride As Long
+    PixelFormat As Long
+    Scan0 As Long
+    Reserved As Long
 End Type
 
 Private Type BITMAPINFOHEADER
-    biSize              As Long
-    biWidth             As Long
-    biHeight            As Long
-    biPlanes            As Integer
-    biBitCount          As Integer
-    biCompression       As Long
-    biSizeImage         As Long
-    biXPelsPerMeter     As Long
-    biYPelsPerMeter     As Long
-    biClrUsed           As Long
-    biClrImportant      As Long
+    biSize As Long
+    biWidth As Long
+    biHeight As Long
+    biPlanes As Integer
+    biBitCount As Integer
+    biCompression As Long
+    biSizeImage As Long
+    biXPelsPerMeter As Long
+    biYPelsPerMeter As Long
+    biClrUsed As Long
+    biClrImportant As Long
 End Type
 
 Private Type BITMAPINFO
-    bmiHeader   As BITMAPINFOHEADER
-    bmiColors   As ARGB
+    bmiHeader As BITMAPINFOHEADER
+    bmiColors As ARGB
 End Type
 
 Private Type GDIPlusStartupInput
-    GDIPlusVersion              As Long
-    DebugEventCallback          As Long
-    SuppressBackgroundThread    As Long
-    SuppressExternalCodecs      As Long
+    GDIPlusVersion As Long
+    DebugEventCallback As Long
+    SuppressBackgroundThread As Long
+    SuppressExternalCodecs As Long
 End Type
 
 Private Type COLORMATRIX
-    m(0 To 4, 0 To 4)   As Single
+    m(0 To 4, 0 To 4) As Single
 End Type
 
 Private Type OSVERSIONINFO
-    dwOSVersionInfoSize     As Long
-    dwMajorVersion          As Long
-    dwMinorVersion          As Long
-    dwBuildNumber           As Long
-    dwPlatformId            As Long
-    szCSDVersion            As String * 128
+    dwOSVersionInfoSize As Long
+    dwMajorVersion As Long
+    dwMinorVersion As Long
+    dwBuildNumber As Long
+    dwPlatformId As Long
+    szCSDVersion As String * 128
 End Type
 
 
 Private Type MemoDIB
-    hDC     As Long
-    hDIB    As Long
-    Ptr     As Long
+    hDC As Long
+    hDIB As Long
+    Ptr As Long
 End Type
 
 Private Enum ImageLockMode
@@ -257,80 +257,84 @@ Private Enum ColorMatrixFlags
     ColorMatrixFlagsAltGray = 2
 End Enum
 
-Private Const PixelFormat32bppARGB  As Long = &H26200A
-Private Const PixelFormat32bppRGB   As Long = &H22009
+Private Const PixelFormat32bppARGB As Long = &H26200A
+Private Const PixelFormat32bppRGB As Long = &H22009
 
-Private Const GDIPlusVersion        As Long = 1&
-Private Const IconVersion           As Long = &H30000
+Private Const GDIPlusVersion As Long = 1&
+Private Const IconVersion As Long = &H30000
     
-Private Const BI_RGB                As Long = 0&
-Private Const DIB_RGB_COLORS        As Long = 0&
+Private Const BI_RGB As Long = 0&
+Private Const DIB_RGB_COLORS As Long = 0&
 
-Private Const LR_LOADFROMFILE       As Long = &H10
-Private Const LR_LOADMAP3DCOLORS    As Long = &H1000
-Private Const LR_SHARED             As Long = &H8000&
-Private Const IMAGE_ICON            As Long = 1
+Private Const LR_LOADFROMFILE As Long = &H10
+Private Const LR_LOADMAP3DCOLORS As Long = &H1000
+Private Const LR_SHARED As Long = &H8000&
+Private Const IMAGE_ICON As Long = 1
 
-Private Const MIIM_STATE            As Long = &H1
-Private Const MIIM_ID               As Long = &H2
-Private Const MIIM_SUBMENU          As Long = &H4
-Private Const MIIM_CHECKMARKS       As Long = &H8
-Private Const MIIM_TYPE             As Long = &H10
-Private Const MIIM_DATA             As Long = &H20
-Private Const MIIM_BITMAP           As Long = &H80
+Private Const MIIM_STATE As Long = &H1
+Private Const MIIM_ID As Long = &H2
+Private Const MIIM_SUBMENU As Long = &H4
+Private Const MIIM_CHECKMARKS As Long = &H8
+Private Const MIIM_TYPE As Long = &H10
+Private Const MIIM_DATA As Long = &H20
+Private Const MIIM_BITMAP As Long = &H80
     
-Private Const MIM_STYLE             As Long = &H10
+Private Const MIM_APPLYTOSUBMENUS = &H80000000
+Private Const MIM_STYLE As Long = &H10
 
-Private Const ODT_MENU              As Long = 1
-Private Const ODS_GRAYED            As Long = &H2
-Private Const ODS_CHECKED           As Long = &H8
-Private Const MNS_NOCHECK           As Long = &H80000000
-Private Const HBMMENU_CALLBACK      As Long = -1
+Private Const ODT_MENU As Long = 1
+Private Const ODS_GRAYED As Long = &H2
+Private Const ODS_CHECKED As Long = &H8
+Private Const MNS_CHECKORBMP As Long = &H4000000
+Private Const MNS_NOCHECK As Long = &H80000000
+Private Const HBMMENU_CALLBACK As Long = -1
 
 
-Private Const NULL_BRUSH            As Long = 5
-Private Const COLOR_GRAYTEXT        As Long = 17
-Private Const COLOR_APPWORKSPACE    As Long = 12
-Private Const SM_CXMENUCHECK        As Long = 71
+Private Const NULL_BRUSH As Long = 5
+Private Const COLOR_GRAYTEXT As Long = 17
+Private Const COLOR_APPWORKSPACE As Long = 12
+Private Const SM_CXMENUCHECK As Long = 71
 
-Private Const WM_DESTROY            As Long = &H2
-Private Const WM_MEASUREITEM        As Long = &H2C
-Private Const WM_DRAWITEM           As Long = &H2B
-Private Const WM_MENUSELECT         As Long = &H11F
-Private Const WM_ENTERIDLE          As Long = &H121
-Private Const WM_CONTEXTMENU        As Long = &H7B
-Private Const WM_ENTERMENULOOP      As Long = &H211
-Private Const WM_EXITMENULOOP       As Long = &H212
-Private Const WM_INITMENU           As Long = &H116
-Private Const WM_INITMENUPOPUP      As Long = &H117
-Private Const WM_MDIREFRESHMENU     As Long = &H234
-Private Const WM_MDISETMENU         As Long = &H230
-Private Const WM_MENUCHAR           As Long = &H120
-Private Const WM_MENUCOMMAND        As Long = &H126
-Private Const WM_MENUDRAG           As Long = &H123
-Private Const WM_MENUGETOBJECT      As Long = &H124
-Private Const WM_MENURBUTTONUP      As Long = &H122
-Private Const WM_NEXTMENU           As Long = &H213
-Private Const WM_UNINITMENUPOPUP    As Long = &H125
+Private Const WM_DESTROY As Long = &H2
+Private Const WM_MEASUREITEM As Long = &H2C
+Private Const WM_DRAWITEM As Long = &H2B
+Private Const WM_MENUSELECT As Long = &H11F
+Private Const WM_ENTERIDLE As Long = &H121
+Private Const WM_CONTEXTMENU As Long = &H7B
+Private Const WM_ENTERMENULOOP As Long = &H211
+Private Const WM_EXITMENULOOP As Long = &H212
+Private Const WM_INITMENU As Long = &H116
+Private Const WM_INITMENUPOPUP As Long = &H117
+Private Const WM_MDIREFRESHMENU As Long = &H234
+Private Const WM_MDISETMENU As Long = &H230
+Private Const WM_MENUCHAR As Long = &H120
+Private Const WM_MENUCOMMAND As Long = &H126
+Private Const WM_MENUDRAG As Long = &H123
+Private Const WM_MENUGETOBJECT As Long = &H124
+Private Const WM_MENURBUTTONUP As Long = &H122
+Private Const WM_NEXTMENU As Long = &H213
+Private Const WM_UNINITMENUPOPUP As Long = &H125
 
-Private Const GWL_WNDPROC               As Long = -4
-Private Const MEM_COMMIT                As Long = &H1000
-Private Const PAGE_EXECUTE_READWRITE    As Long = &H40
-Private Const MEM_RELEASE               As Long = &H8000&
+Private Const GWL_WNDPROC As Long = -4
+Private Const MEM_COMMIT As Long = &H1000
+Private Const PAGE_EXECUTE_READWRITE As Long = &H40
+Private Const MEM_RELEASE As Long = &H8000&
 
 
 Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 
-Private pASMWrapper         As Long
-Private PrevWndProc         As Long
-Private m_hWnd              As Long
+Private pASMWrapper As Long
+Private PrevWndProc As Long
+Private m_hWnd As Long
 
-Private GdipToken           As Long
-Private m_lWidth            As Long
-Private m_lHeight           As Long
-Private mDIB()              As MemoDIB
-Private IsWinVistaOrLater   As Boolean
+Private GdipToken As Long
+Private m_lWidth As Long
+Private m_lHeight As Long
+Private mDIB() As MemoDIB
+Private IsWinVistaOrLater As Boolean
 Private cColl As Collection
+
+Private classicThemeWorkaround As Boolean
 
 
 
@@ -407,7 +411,11 @@ Public Function WindowProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam 
                     
                 End If
                 
-                DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), IsDisabled
+                'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
+                ' for users of the "classic theme"
+                If Not (classicThemeWorkaround And IsDisabled) Then
+                    DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), IsDisabled
+                End If
                 
                 WindowProc = 1
             Else
@@ -471,6 +479,15 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     Dim sKey As String
 
     hMenu = GetMenu(m_hWnd)
+    
+    Dim tmpInfo As MENUINFO
+    
+    If classicThemeWorkaround Then
+        tmpInfo.cbSize = Len(tmpInfo)
+        tmpInfo.fMask = MIM_APPLYTOSUBMENUS Or MIM_STYLE
+        tmpInfo.dwStyle = MNS_CHECKORBMP
+        SetMenuInfo hMenu, tmpInfo
+    End If
     
     hSubMenu = hMenu
     
@@ -605,9 +622,9 @@ End Sub
 
 Private Function CreateNewDib() As Long
 
-    Dim tBITMAPINFO     As BITMAPINFO
-    Dim Index           As Long
-    Dim TempDC          As Long
+    Dim tBITMAPINFO As BITMAPINFO
+    Dim Index As Long
+    Dim TempDC As Long
     
     With tBITMAPINFO.bmiHeader
         .biSize = Len(tBITMAPINFO.bmiHeader)
@@ -662,11 +679,11 @@ End Function
 
 Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByVal Index As Long, Disabled As Boolean)
 
-    Dim hGraphics       As Long
-    Dim hImage          As Long
-    Dim hAttributes     As Long
-    Dim tMatrixColor    As COLORMATRIX
-    Dim tMatrixGray     As COLORMATRIX
+    Dim hGraphics As Long
+    Dim hImage As Long
+    Dim hAttributes As Long
+    Dim tMatrixColor As COLORMATRIX
+    Dim tMatrixGray As COLORMATRIX
     
     If Index < 0 Or Index > Me.ImageCount Then Exit Sub
 
@@ -759,8 +776,8 @@ End Function
 
 Public Function AddIconFromHandle(ByVal hIcon As Long, Optional bGhosted As Boolean) As Boolean
 
-    Dim hBmp        As Long
-    Dim hImage      As Long
+    Dim hBmp As Long
+    Dim hImage As Long
     
     On Local Error GoTo AddIconFromHandle_Error
 
@@ -786,10 +803,10 @@ Public Function AddImageFromFile(ByVal FileName As String, Optional bGhosted As 
 
     On Local Error GoTo AddImageFromFile_Error
     
-    Dim hIcon       As Long
-    Dim FileType    As String
-    Dim hBmp        As Long
-    Dim hImage      As Long
+    Dim hIcon As Long
+    Dim FileType As String
+    Dim hBmp As Long
+    Dim hImage As Long
     
     FileType = UCase(Right(FileName, 3))
     
@@ -826,9 +843,9 @@ Public Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As 
     
     On Local Error GoTo AddImageFromStream_Error
     
-    Dim hImage      As Long
-    Dim hIcon       As Long
-    Dim hBmp        As Long
+    Dim hImage As Long
+    Dim hIcon As Long
+    Dim hBmp As Long
 
     If Not IsArrayDim(VarPtrArray(bvData)) Then Exit Function
 
@@ -861,11 +878,11 @@ AddImageFromStream_Error:
 End Function
 
 Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean) As Boolean
-    Dim hGraphics   As Long
-    Dim ImgWidth    As Single
-    Dim ImgHeight   As Single
-    Dim Index       As Long
-    Dim OldhDib     As Long
+    Dim hGraphics As Long
+    Dim ImgWidth As Single
+    Dim ImgHeight As Single
+    Dim Index As Long
+    Dim OldhDib As Long
 
     
     If hImage <> 0 Then
@@ -920,7 +937,7 @@ Private Function LoadImageFromStream(ByRef bvData() As Byte, ByRef hImage As Lon
 
     On Local Error GoTo LoadImageFromStream_Error
     
-    Dim IStream     As IUnknown
+    Dim IStream As IUnknown
     
     Call CreateStreamOnHGlobal(bvData(0), 0&, IStream)
    
@@ -944,14 +961,14 @@ Private Function LoadIconFromStream(ByRef bytIcoData() As Byte) As Long
 
     On Local Error GoTo LoadIconFromStream_Error
     
-    Dim tIconHeader     As IconHeader
-    Dim tIconEntry()    As IconEntry
-    Dim MaxBitCount     As Long
-    Dim maxSize         As Long
-    Dim Aproximate      As Long
-    Dim IconID          As Long
-    Dim hIcon           As Long
-    Dim i               As Long
+    Dim tIconHeader As IconHeader
+    Dim tIconEntry() As IconEntry
+    Dim MaxBitCount As Long
+    Dim maxSize As Long
+    Dim Aproximate As Long
+    Dim IconID As Long
+    Dim hIcon As Long
+    Dim i As Long
   
     
     Call CopyMemory(tIconHeader, bytIcoData(0), Len(tIconHeader))
@@ -1080,13 +1097,14 @@ Private Sub Class_Initialize()
     IsWinVistaOrLater = tOSVI.dwMajorVersion >= 6
     
     'Tanner's addition 20 September 2012:
-    ' Double-check that theming is enabled.  If it isn't, fall back to subclassing (e.g. Windows XP style)
+    ' Double-check that theming is enabled. If it isn't, fall back to subclassing (e.g. Windows XP style)
     Dim hTheme As Long
     Dim sClass As String
     sClass = "Window"
     hTheme = OpenThemeData(FormMain.hWnd, StrPtr(sClass))
     If hTheme = 0 Then
-        IsWinVistaOrLater = False
+    '    IsWinVistaOrLater = False
+        classicThemeWorkaround = True
     Else
         CloseThemeData hTheme
     End If
@@ -1104,8 +1122,8 @@ Private Sub Class_Initialize()
         Call CopyMemory(CallbackFunction, ByVal (pVar + 28), 4)
         pVirtualFree = GetProcAddress(GetModuleHandle("kernel32.dll"), "VirtualFree")
 
-        'TANNER'S NOTE: Don't let this line frighten you.  This ASM code is based off the work of Paul Caton, who pioneered
-        ' the art of using ASM to perform IDE-safe subclassing.  The original version of Paul's code can be found here:
+        'TANNER'S NOTE: Don't let this line frighten you. This ASM code is based off the work of Paul Caton, who pioneered
+        ' the art of using ASM to perform IDE-safe subclassing. The original version of Paul's code can be found here:
         ' http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=42918&lngWId=1
         sCode = "90FF05000000006A0054FF742418FF742418FF742418FF7424186800000000B800000000FFD0FF0D00000000A10000000085C075" & _
                 "0458C21000A10000000085C0740458C2100058595858585868008000006A00680000000051B800000000FFE00000000000000000"

@@ -3,9 +3,9 @@ Begin VB.MDIForm FormMain
    AutoShowChildren=   0   'False
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   9375
-   ClientLeft      =   225
-   ClientTop       =   855
+   ClientHeight    =   9405
+   ClientLeft      =   165
+   ClientTop       =   735
    ClientWidth     =   15045
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
@@ -34,7 +34,7 @@ Begin VB.MDIForm FormMain
       ScaleWidth      =   1003
       TabIndex        =   6
       TabStop         =   0   'False
-      Top             =   9000
+      Top             =   9030
       Width           =   15045
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
@@ -58,9 +58,9 @@ Begin VB.MDIForm FormMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   9000
+      Height          =   9030
       Left            =   0
-      ScaleHeight     =   598
+      ScaleHeight     =   600
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   147
       TabIndex        =   0
@@ -300,6 +300,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15790320
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":B71C
@@ -327,6 +328,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15790320
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":C76E
@@ -355,6 +357,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15790320
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":D7C0
@@ -411,6 +414,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15790320
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":F864
