@@ -223,6 +223,7 @@ Public Sub LoadTheProgram()
     
     With cProgBar
         .DrawObject = FormMain.picProgBar
+        .BarColor = RGB(48, 117, 255)
         .Min = 0
         .Max = 100
         .XpStyle = True
