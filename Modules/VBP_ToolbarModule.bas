@@ -3,8 +3,8 @@ Attribute VB_Name = "Toolbar"
 'Toolbar Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 03/October/12
-'Last update: Added capability for activating/deactivating the Selection tool interface
+'Last updated: 17/November/12
+'Last update: Deactivate Window menu alongside Image/Color/etc.
 '
 'Module for enabling/disabling toolbar buttons and menus.  Note that the toolbar was removed in June 2012 in favor of
 ' the new left-hand bar; this module remains, however, because the code handles menu items and the left-hand bar
@@ -84,12 +84,10 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
         Case tImageOps
             If FormMain.MnuImage.Enabled <> tState Then
                 FormMain.MnuImage.Enabled = tState
-                'Cheat and use the same command to disable the color menu...hey, at least it works
+                'Use this same command to disable other menus
                 FormMain.MnuColor.Enabled = tState
-                'Cheat again and enable/disable the Print menu
                 FormMain.MnuPrint.Enabled = tState
-                'Cheat again and enable/disable the View menu
-                FormMain.MnuView.Enabled = tState
+                FormMain.MnuWindow.Enabled = tState
             End If
         
         'Filter (top-level menu)

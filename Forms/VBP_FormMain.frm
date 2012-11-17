@@ -657,7 +657,7 @@ Begin VB.MDIForm FormMain
          Shortcut        =   ^O
       End
       Begin VB.Menu MnuRecent 
-         Caption         =   "Open &Recent..."
+         Caption         =   "Open &Recent"
          Begin VB.Menu mnuRecDocs 
             Caption         =   "Empty"
             Enabled         =   0   'False
@@ -671,7 +671,7 @@ Begin VB.MDIForm FormMain
          End
       End
       Begin VB.Menu MnuAcquire 
-         Caption         =   "&Import..."
+         Caption         =   "&Import"
          Begin VB.Menu MnuScanImage 
             Caption         =   "From Scanner/Camera..."
             Shortcut        =   ^I
