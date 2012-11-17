@@ -4,8 +4,8 @@ Begin VB.MDIForm FormMain
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
    ClientHeight    =   9405
-   ClientLeft      =   165
-   ClientTop       =   735
+   ClientLeft      =   225
+   ClientTop       =   855
    ClientWidth     =   15045
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
@@ -300,7 +300,6 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   15790320
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":B71C
@@ -328,7 +327,6 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   15790320
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":C76E
@@ -357,7 +355,6 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   15790320
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":D7C0
@@ -414,7 +411,6 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   15790320
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":F864
@@ -657,7 +653,7 @@ Begin VB.MDIForm FormMain
    Begin VB.Menu MnuFile 
       Caption         =   "&File"
       Begin VB.Menu MnuOpen 
-         Caption         =   "&Open"
+         Caption         =   "&Open..."
          Shortcut        =   ^O
       End
       Begin VB.Menu MnuRecent 
@@ -681,7 +677,7 @@ Begin VB.MDIForm FormMain
             Shortcut        =   ^I
          End
          Begin VB.Menu MnuSelectScanner 
-            Caption         =   "Select Scanner/Camera Source..."
+            Caption         =   "Select Scanner/Camera Source"
          End
          Begin VB.Menu MnuImportSepBar0 
             Caption         =   "-"
@@ -730,7 +726,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuPrint 
-         Caption         =   "&Print"
+         Caption         =   "&Print..."
          Shortcut        =   ^P
       End
       Begin VB.Menu MnuFileSepBar4 
@@ -774,7 +770,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuPreferences 
-         Caption         =   "Program Preferences..."
+         Caption         =   "Program Preferences"
       End
    End
    Begin VB.Menu MnuView 
@@ -1283,7 +1279,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuCheckUpdates 
-         Caption         =   "Check for &Updates..."
+         Caption         =   "Check for &Updates"
       End
       Begin VB.Menu MnuEmailAuthor 
          Caption         =   "Submit Feedback..."
