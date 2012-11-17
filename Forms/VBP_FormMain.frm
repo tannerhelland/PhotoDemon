@@ -1971,6 +1971,7 @@ Private Sub MnuFitOnScreen_Click()
 End Sub
 
 Private Sub MnuFitWindowToImage_Click()
+    If (FormMain.ActiveForm.WindowState = vbMaximized) Or (FormMain.ActiveForm.WindowState = vbMinimized) Then FormMain.ActiveForm.WindowState = vbNormal
     FitWindowToImage
 End Sub
 
