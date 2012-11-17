@@ -119,7 +119,7 @@ End Type
 
 'Drawing API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal SrcWidth As Long, ByVal SrcHeight As Long, ByVal rastOp As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
@@ -138,8 +138,8 @@ Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x A
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal HWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 
 'Object API functions
 Private Const OBJ_BITMAP As Long = 7
@@ -161,7 +161,7 @@ Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateCo
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function EmptyClipboard Lib "user32" () As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
-Private Declare Function OpenClipboard Lib "user32" (ByVal HWnd As Long) As Long
+Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function CloseClipboard Lib "user32" () As Long
 Private Declare Function SetClipboardData Lib "user32" (ByVal wFormat As Long, ByVal hMem As Long) As Long
 Private Declare Function RegisterClipboardFormat Lib "user32" Alias "RegisterClipboardFormatA" (ByVal lpString As String) As Long
@@ -477,7 +477,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
 End Function
 
 'Create a blank layer.  If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
-Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite) As Boolean
+Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal backColor As Long = vbWhite) As Boolean
     
     'Erase any existing layer data
     eraseLayer
@@ -488,7 +488,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     End If
         
     'The back color may or may not be a system color, so translate it just in case
-    TranslateColor BackColor, 0, BackColor
+    TranslateColor backColor, 0, backColor
         
     'Remember this color depth, width, and height
     layerColorDepth = colorDepth
@@ -530,7 +530,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
             SetRect layerRect, 0, 0, iWidth, iHeight
             
             Dim hBrush As Long
-            hBrush = CreateSolidBrush(BackColor)
+            hBrush = CreateSolidBrush(backColor)
             FillRect layerDC, layerRect, hBrush
             DeleteObject hBrush
         
@@ -607,20 +607,20 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     dstWidth = dstPicture.ScaleWidth
     dstHeight = dstPicture.ScaleHeight
     
-    Dim SrcWidth As Single, SrcHeight As Single
-    SrcWidth = layerWidth
-    SrcHeight = layerHeight
+    Dim srcWidth As Single, srcHeight As Single
+    srcWidth = layerWidth
+    srcHeight = layerHeight
     
     'Calculate the aspect ratio of this layer and the target picture box
     Dim srcAspect As Single, dstAspect As Single
-    srcAspect = SrcWidth / SrcHeight
+    srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
     
     Dim dWidth As Long, dHeight As Long
     
     If srcAspect > dstAspect Then
         dWidth = dstWidth
-        dHeight = CSng(SrcHeight / SrcWidth) * dWidth + 0.5
+        dHeight = CSng(srcHeight / srcWidth) * dWidth + 0.5
         PreviewY = CInt((dstHeight - dHeight) / 2)
         PreviewX = 0
         'PreviewWidth and PreviewHeight are only generated so that the "Print Preview" function works (it relies on those values
@@ -630,7 +630,7 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         StretchBlt dstPicture.hDC, 0, PreviewY, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
     Else
         dHeight = dstHeight
-        dWidth = CSng(SrcWidth / SrcHeight) * dHeight + 0.5
+        dWidth = CSng(srcWidth / srcHeight) * dHeight + 0.5
         PreviewX = CInt((dstWidth - dWidth) / 2)
         PreviewY = 0
         PreviewWidth = dWidth
