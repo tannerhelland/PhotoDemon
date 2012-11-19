@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences (INI) Interface
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 09/November/12
-'Last update: finished initial build
+'Last updated: 19/November/12
+'Last update: provide an externally accessible function for seeing if a key/pair value exists in the INI file
 '
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing
 ' all interaction with user settings, which are currently stored in an INI file.  This class is also capable
@@ -245,16 +245,16 @@ Public Sub loadUserSettings()
     FilterPath = GetPreference_String("Program Paths", "CustomFilter", FilterPath)
     
     'Get the canvas background preference (color vs checkerboard pattern)
-    Dim x As Long
-    x = GetPreference_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
+    Dim X As Long
+    X = GetPreference_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
     
     'A value of -1 previously indicated a checkerboard background, which is no longer allowed.
     ' If that value is found, overwrite it with a pleasant shade of blue.
-    If x = -1 Then
-        x = RGB(201, 211, 226)
+    If X = -1 Then
+        X = RGB(201, 211, 226)
         SetPreference_Long "General Preferences", "CanvasBackground", CStr(RGB(201, 211, 226))
     End If
-    CanvasBackground = x
+    CanvasBackground = X
     
     'Get the canvas drop shadow preference
     CanvasDropShadow = GetPreference_Boolean("General Preferences", "CanvasDropShadow", False)
@@ -333,6 +333,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "CanvasDropShadow=1"
         Print #fileNum, "CheckForUpdates=1"
         Print #fileNum, "ConfirmClosingUnsaved=1"
+        Print #fileNum, "HasGitHubAccount="
         Print #fileNum, "LastUpdateCheck="
         Print #fileNum, "LogProgramMessages=0"
         Print #fileNum, "PromptForPluginDownload=1"
@@ -469,6 +470,13 @@ Public Sub SetPreference_String(ByRef preferenceSection As String, ByRef prefere
     WriteINIString preferenceSection, preferenceName, stringVal
 
 End Sub
+
+'Sometimes we want to know if a value exists at all.  This function handles that.
+Public Function doesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
+    Dim tmpString As String
+    tmpString = GetINIString(preferenceSection, preferenceName)
+    If tmpString = "" Then doesValueExist = False Else doesValueExist = True
+End Function
 
 'Read a value from an INI file and return it (as a string)
 Private Function GetINIString(ByRef strSectionHeader As String, ByRef strVariableName As String) As String
