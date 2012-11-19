@@ -28,6 +28,7 @@ Begin VB.Form FormPreferences
       Height          =   495
       Left            =   360
       TabIndex        =   44
+      ToolTipText     =   "Use this to reset all preferences to their default state.  This action cannot be undone."
       Top             =   6840
       Width           =   2085
    End
@@ -240,7 +241,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   43
-         ToolTipText     =   $"VBP_FormPreferences.frx":519A
+         ToolTipText     =   "Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines."
          Top             =   3840
          Width           =   7815
       End
@@ -260,7 +261,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   42
-         ToolTipText     =   $"VBP_FormPreferences.frx":528C
+         ToolTipText     =   "Use this to manually disable FreeImage support. This forces PhotoDemon to rely on its GDI+ and internal VB-only routines."
          Top             =   3360
          Width           =   7815
       End
@@ -318,12 +319,12 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   25
-         ToolTipText     =   $"VBP_FormPreferences.frx":537E
+         ToolTipText     =   $"VBP_FormPreferences.frx":519A
          Top             =   600
          Width           =   6975
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":5470
+         Caption         =   $"VBP_FormPreferences.frx":528C
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -539,7 +540,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":551F
+         MouseIcon       =   "VBP_FormPreferences.frx":533B
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -701,7 +702,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   20
-         ToolTipText     =   $"VBP_FormPreferences.frx":5671
+         ToolTipText     =   $"VBP_FormPreferences.frx":548D
          Top             =   1080
          Width           =   6735
       End
@@ -821,7 +822,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":570D
+         MouseIcon       =   "VBP_FormPreferences.frx":5529
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -838,7 +839,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":585F
+         MouseIcon       =   "VBP_FormPreferences.frx":567B
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
