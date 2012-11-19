@@ -141,37 +141,18 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Dim tempPathString As String
     tempPathString = userPreferences.GetPreference_String("Program Paths", "MainSave", "")
     
-    Dim cdfStr As String
-    
-    cdfStr = "BMP - Windows Bitmap|*.bmp"
-    
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then cdfStr = cdfStr & "|GIF - Graphics Interchange Format|*.gif"
-    
-    'JPEG 2000 saving is conditional at the moment.  It needs further testing before becoming a permanent addition.
-    If (imageFormats.FreeImageEnabled And JP2_ENABLED) Then cdfStr = cdfStr & "|JP2 - JPEG 2000 Format|*.jp2"
-    
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then cdfStr = cdfStr & "|JPG - JPEG - JFIF Compliant|*.jpg"
-    
-    If zLibEnabled Then cdfStr = cdfStr & "|PDI - PhotoDemon Image (Lossless)|*.pdi"
-    
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
-    
-    If imageFormats.FreeImageEnabled Then cdfStr = cdfStr & "|PPM - Portable Pixel Map (ASCII)|*.ppm|TGA - Truevision Targa|*.tga"
-    
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then cdfStr = cdfStr & "|TIFF - Tagged Image File Format|*.tif"
-    
     Dim sFile As String
     sFile = pdImages(imageID).OriginalFileName
     
     'This next chunk of code checks to see if an image with this filename appears in the download location.
     ' If it does, PhotoDemon will append ascending numbers (of the format "_(#)") to the filename until it
     ' finds a unique name.
-    If FileExist(tempPathString & sFile & "." & getExtensionFromFilterIndex(LastSaveFilter)) Then
+    If FileExist(tempPathString & sFile & "." & imageFormats.getOutputFormatExtension(LastSaveFilter)) Then
     
         Dim numToAppend As Long
         numToAppend = 2
         
-        Do While FileExist(tempPathString & sFile & " (" & numToAppend & ")" & "." & getExtensionFromFilterIndex(LastSaveFilter))
+        Do While FileExist(tempPathString & sFile & " (" & numToAppend & ")" & "." & imageFormats.getOutputFormatExtension(LastSaveFilter))
             numToAppend = numToAppend + 1
         Loop
         
@@ -179,9 +160,21 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         sFile = sFile & " (" & numToAppend & ")"
     
     End If
+        
+    'LastSaveFilter will be set to "-1" if the user has never saved a file before.  If that happens, default to JPEG
+    If LastSaveFilter = -1 Then
     
+        Dim i As Long
+        For i = 0 To imageFormats.getNumOfOutputFormats
+            If imageFormats.getOutputFormatExtension(i) = "jpg" Then
+                LastSaveFilter = i + 1
+                Exit For
+            End If
+        Next i
+        
+    End If
     
-    If CC.VBGetSaveFileName(sFile, , True, cdfStr, LastSaveFilter, tempPathString, "Save an image", ".bmp|.gif|.jpg|.pcx|.pdi|.png|.ppm|.tga|.tif|.*", FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, imageFormats.getCommonDialogOutputFormats, LastSaveFilter, tempPathString, "Save an image", imageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         tempPathString = sFile
@@ -352,30 +345,4 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
         If loadRelevantForm <> True Then PhotoDemon_SaveImage = False
     End If
 
-End Function
-
-'Return a string containing the expected file extension of the supplied commondialog filter index
-Private Function getExtensionFromFilterIndex(ByVal FilterIndex As Long) As String
-
-    Select Case FilterIndex
-        Case 1
-            getExtensionFromFilterIndex = "bmp"
-        Case 2
-            getExtensionFromFilterIndex = "gif"
-        Case 3
-            getExtensionFromFilterIndex = "jpg"
-        Case 4
-            getExtensionFromFilterIndex = "pdi"
-        Case 5
-            getExtensionFromFilterIndex = "png"
-        Case 6
-            getExtensionFromFilterIndex = "ppm"
-        Case 7
-            getExtensionFromFilterIndex = "tga"
-        Case 8
-            getExtensionFromFilterIndex = "tif"
-        Case Else
-            getExtensionFromFilterIndex = "undefined"
-    End Select
-    
 End Function

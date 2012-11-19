@@ -283,7 +283,7 @@ Public Sub copyLayerToClipboard()
                     
                     'Also, add a PNG-format copy of the image if GDI+ is available
                     
-                    'If GDIPlusEnabled Then
+                    'If imageFormats.GDIPlusEnabled Then
                   '
                   '      Dim tmpStream() As Byte
                   '      Dim tmpIIStream As IUnknown

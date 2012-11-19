@@ -1142,8 +1142,16 @@ Private Sub CmdOK_Click()
     If LCase(TxtTempPath.Text) <> LCase(userPreferences.getTempPath) Then userPreferences.setTempPath TxtTempPath.Text
     
     'Remember the run-time only settings in the "Advanced" panel
-    FreeImageEnabled = CBool(chkFreeImageTest.Value)
-    GDIPlusEnabled = CBool(chkGDIPlusTest.Value)
+    If imageFormats.FreeImageEnabled <> CBool(chkFreeImageTest.Value) Then
+        imageFormats.FreeImageEnabled = CBool(chkFreeImageTest.Value)
+        imageFormats.generateInputFormats
+        imageFormats.generateOutputFormats
+    End If
+    If imageFormats.GDIPlusEnabled <> CBool(chkGDIPlusTest.Value) Then
+        imageFormats.GDIPlusEnabled = CBool(chkGDIPlusTest.Value)
+        imageFormats.generateInputFormats
+        imageFormats.generateOutputFormats
+    End If
     
     'Store the user's preference regarding interface fonts on modern versions of Windows
     userPreferences.SetPreference_Boolean "General Preferences", "UseFancyFonts", useFancyFonts
@@ -1274,7 +1282,7 @@ Private Sub LoadAllPreferences()
     End If
         
     'Populate and en/disable the run-time only settings in the "Advanced" panel
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
         chkFreeImageTest.Value = vbChecked
     Else
         chkFreeImageTest.Enabled = False
@@ -1282,7 +1290,7 @@ Private Sub LoadAllPreferences()
         chkFreeImageTest.Value = vbUnchecked
     End If
     
-    If GDIPlusEnabled Then
+    If imageFormats.GDIPlusEnabled Then
         chkGDIPlusTest.Value = vbChecked
     Else
         chkGDIPlusTest.Enabled = False

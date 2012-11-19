@@ -487,7 +487,7 @@ Private Sub Form_Load()
         
     End If
     
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         If isInternetConnected = True Then
             URL = "http://www.tannerhelland.com/photodemon_files/freeimage.pdc"
             freeImageSize = getPluginSize(hInternetSession, URL)
@@ -627,14 +627,14 @@ Private Function downloadAllPlugins() As Boolean
     End If
             
     'Last is FreeImage
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
         If downloadSuccessful = False Then
             MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
             downloadAllPlugins = False
             Exit Function
         Else
-            FreeImageEnabled = True
+            imageFormats.FreeImageEnabled = True
         End If
     
     End If

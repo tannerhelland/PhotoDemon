@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Preferences (INI) Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2011-2012 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 09/November/12
 'Last update: finished initial build
@@ -25,14 +25,12 @@ Attribute VB_Exposed = False
 '
 'Because the INI file receives changes with almost every new version of the software, this class must also
 ' be capable of translating values between INI versions.  Typically these just means having a contingency plan
-' for values that do not yet exist in the INI file.
+' for values that do not yet exist in the INI.
 '
 'When PhotoDemon is run for the first time, a default INI file is created.  To increase usability, I
 ' autopopulate this file with intelligently selected preferences - such as setting the user's initial Open/Save
 ' folders to the system "Pictures" directory, and automatically setting the "Temp" directory to the system's
 ' specified temp directory.
-'
-'TODO: give the user a way to reset all preferences (e.g. rewrite the INI file from scratch)
 '
 '***************************************************************************
 
@@ -321,7 +319,7 @@ Private Sub createNewINIFile()
         'Write out file format preferences
         Print #fileNum, "[File Formats]"
         Print #fileNum, "LastOpenFilter=1"   'Default to "All Compatible Graphics" filter for loading
-        Print #fileNum, "LastSaveFilter=3"   'Default to JPEG for saving
+        Print #fileNum, "LastSaveFilter=-1"  'Mark the last-used save filter as "unknown"
         Print #fileNum, ""
         
         'Write out general preferences

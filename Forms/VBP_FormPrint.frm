@@ -446,7 +446,7 @@ Private Sub Form_Load()
     'Though it's not really necessary, I'm only enabling print preview if FreeImage is Enabled (we use FreeImage to perform
     ' fast, high-quality rotations of images).  I anticipate that pretty much no one will ever use this printing option, so
     ' I don't mind ignoring a VB-only fallback for such a peripheral feature.
-    If FreeImageEnabled = True Then
+    If imageFormats.FreeImageEnabled = True Then
         RebuildPreview
     Else
         lblWarning.Visible = True
@@ -652,7 +652,7 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         cmbDPI.Enabled = False
     End If
     
-    If FreeImageEnabled = False Then Exit Sub
+    If imageFormats.FreeImageEnabled = False Then Exit Sub
     
     'If the fit-to-page option is selected (which it is by default) this routine is very simple:
     If chkFit.Value = vbChecked Then
@@ -757,7 +757,7 @@ End Sub
 Private Sub RebuildPreview(Optional forceDPI As Boolean = False)
     
     'FreeImage is used to rotate the image; if it's not installed, previewing is automatically disabled
-    If FreeImageEnabled = True Then
+    If imageFormats.FreeImageEnabled = True Then
     
         'Load the FreeImage library from the plugin directory
         Dim hFreeImgLib As Long

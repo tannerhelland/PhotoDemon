@@ -526,14 +526,6 @@ Option Explicit
 'Macro to perform on the batched images
 Dim LocationOfMacroFile As String
 
-'Array of all file format patterns, which are used to the make the file selection box more user-friendly
-Dim filePatterns() As String
-
-'Array of all output image format file extensions.  Because the output format box is populated dynamically, we don't know
-' in advance how many formats will be available.  So we fill this array at the same time as the combo box, and each index
-' in the array provides a string (3-letters) that corresponds to the output combo box index for that format.
-Dim outputExtensions() As String
-
 'For now, we don't launch the typical file save options.  That's coming.  At present, track JPEG specifically since it
 ' is the only format with user-settable options.
 Dim jpegFormatIndex As Long
@@ -550,15 +542,15 @@ End Sub
 
 'Update the file list box to display only images of the selected file format
 Private Sub cmbPattern_Click()
-    File1.Pattern = filePatterns(cmbPattern.ListIndex)
+    File1.Pattern = imageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
 End Sub
 
 Private Sub cmbPattern_KeyUp(KeyCode As Integer, Shift As Integer)
-    File1.Pattern = filePatterns(cmbPattern.ListIndex)
+    File1.Pattern = imageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
 End Sub
 
 Private Sub cmbPattern_Scroll()
-    File1.Pattern = filePatterns(cmbPattern.ListIndex)
+    File1.Pattern = imageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
 End Sub
 
 'Adds selected files from the left list box to the center list box
@@ -808,11 +800,11 @@ Private Sub CmdOK_Click()
             End If
                 
             'Attach the proper image format extension
-            tmpFilename = tmpFilename & "." & outputExtensions(cmbOutputFormat.ListIndex)
+            tmpFilename = tmpFilename & "." & imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
                 
             'Certain file extensions require extra attention.  Check for those formats, and send the PhotoDemon_SaveImage
             ' method a specialized string containing any extra information it may require
-            If outputExtensions(cmbOutputFormat.ListIndex) = "jpg" Then
+            If imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex) = "jpg" Then
                 PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename, False, Val(txtQuality)
             Else
                 PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename
@@ -944,75 +936,21 @@ Private Sub Form_Load()
     'Start without a macro file loaded
     LocationOfMacroFile = "N/A"
     
-    'This variable will be used to track how many output (and later, input) formats are available on this system
-    Dim curFormatIndex As Long
-    curFormatIndex = 0
+    Dim x As Long
     
-    'Prepare a list of possible OUTPUT formats based on the plugins available to us
-    ReDim outputExtensions(0 To 100) As String
-    
-    cmbOutputFormat.AddItem "BMP - Windows Bitmap", curFormatIndex
-    outputExtensions(curFormatIndex) = "bmp"
-    curFormatIndex = curFormatIndex + 1
-    
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
-        cmbOutputFormat.AddItem "GIF - Graphics Interchange Format", curFormatIndex
-        outputExtensions(curFormatIndex) = "gif"
-        curFormatIndex = curFormatIndex + 1
-    End If
-
-    If imageFormats.FreeImageEnabled And JP2_ENABLED Then
-        cmbOutputFormat.AddItem "JP2 - JPEG 2000 Format", curFormatIndex
-        outputExtensions(curFormatIndex) = "jp2"
-        curFormatIndex = curFormatIndex + 1
-    End If
-
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
-        cmbOutputFormat.AddItem "JPG - Joint Photographic Experts Group", curFormatIndex
-        outputExtensions(curFormatIndex) = "jpg"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    If zLibEnabled Then
-        cmbOutputFormat.AddItem "PDI - PhotoDemon Image", curFormatIndex
-        outputExtensions(curFormatIndex) = "pdi"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
-        cmbOutputFormat.AddItem "PNG - Portable Network Graphic", curFormatIndex
-        outputExtensions(curFormatIndex) = "png"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    If imageFormats.FreeImageEnabled Then
-        cmbOutputFormat.AddItem "PPM - Portable Pixel Map", curFormatIndex
-        outputExtensions(curFormatIndex) = "ppm"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbOutputFormat.AddItem "TGA - Truevision Targa", curFormatIndex
-        outputExtensions(curFormatIndex) = "tga"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
-        cmbOutputFormat.AddItem "TIFF - Tagged Image File Format", curFormatIndex
-        outputExtensions(curFormatIndex) = "tif"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    'Resize our extension array to free up any memory it doesn't actually require
-    ReDim Preserve outputExtensions(0 To curFormatIndex) As String
+    'Populate the combo box that displays user-friendly summaries of the various output filetypes
+    For x = 0 To imageFormats.getNumOfOutputFormats
+        cmbOutputFormat.AddItem imageFormats.getOutputFormatDescription(x), x
+    Next x
     
     'Save JPEGs by default
-    Dim i As Long
-    For i = 0 To cmbOutputFormat.ListCount
-        If outputExtensions(i) = "jpg" Then
-            cmbOutputFormat.ListIndex = i
-            jpegFormatIndex = i
+    For x = 0 To cmbOutputFormat.ListCount
+        If imageFormats.getOutputFormatExtension(x) = "jpg" Then
+            cmbOutputFormat.ListIndex = x
+            jpegFormatIndex = x
             Exit For
         End If
-    Next i
+    Next x
     
     'Build default paths from INI file values
     Dim tempPathString As String
@@ -1029,162 +967,11 @@ Private Sub Form_Load()
     cmbOutputOptions.AddItem "Ascending numbers (1, 2, 3, etc.)"
     cmbOutputOptions.ListIndex = 0
     
-    'Build the file pattern box.  Unfortunately, there's no good way to automatically generate this using the code
-    ' that already generates the same thing for common dialog boxes (because the two use completely different formats).
-    ' Thus, this code is a modified version of the File -> Open code, and any changes made there must be manually
-    ' mirrored here.
-    
-    'Note also that the combo box displays user-friendly summaries, while the filePatterns() array stores the actual
-    ' patterns that are applied to the file selection box.
-    ReDim filePatterns(0 To 100) As String
-    
-    curFormatIndex = 0
-    
-    cmbPattern.AddItem "All Compatible Images", curFormatIndex
-    filePatterns(curFormatIndex) = "*.bmp;*.jpg;*.jpeg;*.jpe;*.gif;*.ico"
-    curFormatIndex = curFormatIndex + 1
-    
-    'Only allow PDI loading if the zLib dll was detected at program load
-    If zLibEnabled Then filePatterns(0) = filePatterns(0) & ";*.pdi"
-    
-    'Only allow PNG and TIFF loading if either GDI+ or the FreeImage dll was detected
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then filePatterns(0) = filePatterns(0) & ";*.png;*.tif;*.tiff"
-    
-    'Only allow all other formats if the FreeImage dll was detected
-    If imageFormats.FreeImageEnabled Then filePatterns(0) = filePatterns(0) & ";*.lbm;*.pbm;*.iff;*.jif;*.jfif;*.psd;*.wbmp;*.wbm;*.pgm;*.ppm;*.jng;*.mng;*.koa;*.pcd;*.ras;*.dds;*.pict;*.pct;*.pic;*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
-    
-    'JP2 format is still under heavy testing, so only allow if the public constant is set to "enabled"
-    If imageFormats.FreeImageEnabled And JP2_ENABLED Then filePatterns(0) = filePatterns(0) & ";*.jp2"
-    
-    cmbPattern.AddItem "BMP - OS/2 or Windows Bitmap", curFormatIndex
-    filePatterns(curFormatIndex) = "*.bmp"
-    curFormatIndex = curFormatIndex + 1
-    
-    If imageFormats.FreeImageEnabled Then
-        cmbPattern.AddItem "DDS - DirectDraw Surface", curFormatIndex
-        filePatterns(curFormatIndex) = "*.dds"
-        curFormatIndex = curFormatIndex + 1
-    End If
+    'Populate the combo box that displays user-friendly summaries of the various input filetypes
+    For x = 0 To imageFormats.getNumOfInputFormats
+        cmbPattern.AddItem imageFormats.getInputFormatDescription(x), x
+    Next x
         
-    cmbPattern.AddItem "GIF - Compuserve", curFormatIndex
-    filePatterns(curFormatIndex) = "*.gif"
-    curFormatIndex = curFormatIndex + 1
-    
-    cmbPattern.AddItem "ICO - Windows Icon", curFormatIndex
-    filePatterns(curFormatIndex) = "*.ico"
-    curFormatIndex = curFormatIndex + 1
-    
-    If imageFormats.FreeImageEnabled Then
-        cmbPattern.AddItem "IFF - Amiga Interchange Format", curFormatIndex
-        filePatterns(curFormatIndex) = "*.iff"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "JNG - JPEG Network Graphics", curFormatIndex
-        filePatterns(curFormatIndex) = "*.jng"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    If imageFormats.FreeImageEnabled And JP2_ENABLED Then
-        cmbPattern.AddItem "JP2 - JPEG 2000 Format", curFormatIndex
-        filePatterns(curFormatIndex) = "*.jp2"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    cmbPattern.AddItem "JPG/JPEG - Joint Photographic Experts Group", curFormatIndex
-    filePatterns(curFormatIndex) = "*.jpg;*.jpeg;*.jif;*.jfif"
-    curFormatIndex = curFormatIndex + 1
-    
-    If imageFormats.FreeImageEnabled Then
-        cmbPattern.AddItem "KOA/KOALA - Commodore 64", curFormatIndex
-        filePatterns(curFormatIndex) = "*.koa;*.koala"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "LBM - Deluxe Paint", curFormatIndex
-        filePatterns(curFormatIndex) = "*.lbm"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "MNG - Multiple Network Graphics", curFormatIndex
-        filePatterns(curFormatIndex) = "*.mng"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "PBM - Portable Bitmap", curFormatIndex
-        filePatterns(curFormatIndex) = "*.pbm"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "PCD - Kodak PhotoCD", curFormatIndex
-        filePatterns(curFormatIndex) = "*.pcd"
-        curFormatIndex = curFormatIndex + 1
-    
-        cmbPattern.AddItem "PCX - Zsoft Paintbrush", curFormatIndex
-        filePatterns(curFormatIndex) = "*.pcx"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
-    If zLibEnabled Then
-        cmbPattern.AddItem "PDI - PhotoDemon Image", curFormatIndex
-        filePatterns(curFormatIndex) = "*.pdi"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    If imageFormats.FreeImageEnabled Then
-        cmbPattern.AddItem "PGM - Portable Greymap", curFormatIndex
-        filePatterns(curFormatIndex) = "*.pgm"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "PIC/PICT - Macintosh Picture", curFormatIndex
-        filePatterns(curFormatIndex) = "*.pict;*.pct;*.pic"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    'FreeImage or GDI+ works for loading PNGs
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
-        cmbPattern.AddItem "PNG - Portable Network Graphic", curFormatIndex
-        filePatterns(curFormatIndex) = "*.png"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    If imageFormats.FreeImageEnabled Then
-        cmbPattern.AddItem "PPM - Portable Pixmap", curFormatIndex
-        filePatterns(curFormatIndex) = "*.ppm"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "PSD - Adobe Photoshop", curFormatIndex
-        filePatterns(curFormatIndex) = "*.psd"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "RAS - Sun Raster File", curFormatIndex
-        filePatterns(curFormatIndex) = "*.ras"
-        curFormatIndex = curFormatIndex + 1
-
-        cmbPattern.AddItem "SGI/RGB/BW - Silicon Graphics Image", curFormatIndex
-        filePatterns(curFormatIndex) = "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
-        curFormatIndex = curFormatIndex + 1
-        
-        cmbPattern.AddItem "TGA - Truevision Targa", curFormatIndex
-        filePatterns(curFormatIndex) = "*.tga"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    'FreeImage or GDI+ works for loading TIFFs
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
-        cmbPattern.AddItem "TIF/TIFF - Tagged Image File Format", curFormatIndex
-        filePatterns(curFormatIndex) = "*.tif;*.tiff"
-        curFormatIndex = curFormatIndex + 1
-    End If
-    
-    If imageFormats.FreeImageEnabled Then
-        cmbPattern.AddItem "WBMP - Wireless Bitmap", curFormatIndex
-        filePatterns(curFormatIndex) = "*.wbmp;*.wbm"
-        curFormatIndex = curFormatIndex + 1
-    End If
-        
-    cmbPattern.AddItem "All files", curFormatIndex
-    filePatterns(curFormatIndex) = "*.*"
-    curFormatIndex = curFormatIndex + 1
-    
-    ReDim Preserve filePatterns(0 To curFormatIndex) As String
-    
     cmbPattern.ListIndex = 0
     
     'Assign the system hand cursor to all relevant objects
@@ -1254,7 +1041,7 @@ End Sub
 
 'Display or hide controls associated with the current save file format
 Private Sub UpdateVisibleControls()
-    If outputExtensions(cmbOutputFormat.ListIndex) = "jpg" Then
+    If imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex) = "jpg" Then
         lblQuality.Visible = True
         txtQuality.Visible = True
         hsJpegQuality.Visible = True

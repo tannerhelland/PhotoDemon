@@ -353,7 +353,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
     ElseIf iMethod = RESIZE_BILINEAR Then
     
         'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
-        If FreeImageEnabled Then
+        If imageFormats.FreeImageEnabled Then
         
             FreeImageResize iWidth, iHeight, FILTER_BILINEAR
         
@@ -604,7 +604,7 @@ Private Sub Form_Activate()
     cboResample.ListIndex = 2
     
     'If the FreeImage library is available, add additional resize options to the combo box
-    If FreeImageEnabled = True Then
+    If imageFormats.FreeImageEnabled = True Then
         cboResample.AddItem "B-Spline", 3
         cboResample.AddItem "Bicubic (Mitchell and Netravali)", 4
         cboResample.AddItem "Bicubic (Catmull-Rom)", 5
@@ -665,7 +665,7 @@ End Sub
 Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
     
     'Double-check that FreeImage exists
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
     
         'Load the FreeImage dll into memory
         Dim hLib As Long

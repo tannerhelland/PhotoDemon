@@ -30,7 +30,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     On Error GoTo FreeImageV3_AdvancedError
     
     'Double-check that FreeImage.dll was located at start-up
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         LoadFreeImageV3_Advanced = False
         Exit Function
     End If

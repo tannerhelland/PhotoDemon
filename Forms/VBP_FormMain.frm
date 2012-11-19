@@ -1558,7 +1558,7 @@ Private Sub MDIForm_Load()
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so ignore this request if the user was already notified of an update.)
-    If (updateNeeded <> 2) And ((zLibEnabled = False) Or (ScanEnabled = False) Or (FreeImageEnabled = False)) Then
+    If (updateNeeded <> 2) And ((zLibEnabled = False) Or (ScanEnabled = False) Or (imageFormats.FreeImageEnabled = False)) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
         
@@ -1669,7 +1669,7 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     ClearALLUndo
     
     'Release GDIPlus (if applicable)
-    If GDIPlusEnabled Then releaseGDIPlus
+    If imageFormats.GDIPlusEnabled Then releaseGDIPlus
     
     'Release the scanner (if applicable)
     If ScanEnabled Then UnloadScanner

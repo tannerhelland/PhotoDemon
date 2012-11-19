@@ -474,7 +474,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Only allow AutoReduction stuff if the FreeImage dll was found.
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         OptQuant(0).Enabled = False
         OptQuant(1).Enabled = False
         OptQuant(2).Value = True
@@ -617,7 +617,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     End If
 
     'Make sure we found the FreeImage plug-in when the program was loaded
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
     
         'Load the FreeImage dll into memory
         Dim hLib As Long

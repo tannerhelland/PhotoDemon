@@ -480,7 +480,7 @@ Private Sub cmdExportHistogram_Click()
     cdfStr = "BMP - Windows Bitmap|*.bmp"
     
     'FreeImage allows us to save more filetypes
-    If FreeImageEnabled Or GDIPlusEnabled Then
+    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
         cdfStr = cdfStr & "|GIF - Graphics Interchange Format|*.gif"
         cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
     End If
@@ -490,10 +490,10 @@ Private Sub cmdExportHistogram_Click()
     
     'If FreeImage is enabled, suggest PNG as the default format; otherwise, bitmaps is all they get
     Dim defFormat As Long
-    If (FreeImageEnabled = False) And (GDIPlusEnabled = False) Then defFormat = 1 Else defFormat = 3
+    If (imageFormats.FreeImageEnabled = False) And (imageFormats.GDIPlusEnabled = False) Then defFormat = 1 Else defFormat = 3
     
     Dim defExtension As String
-    If (FreeImageEnabled = False) And (GDIPlusEnabled = False) Then defExtension = ".bmp" Else defExtension = ".png"
+    If (imageFormats.FreeImageEnabled = False) And (imageFormats.GDIPlusEnabled = False) Then defExtension = ".bmp" Else defExtension = ".png"
     
     'Display the save dialog
     If CC.VBGetSaveFileName(sFile, , True, cdfStr, defFormat, tempPathString, "Save histogram to file", defExtension, FormHistogram.hWnd, 0) Then

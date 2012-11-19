@@ -237,7 +237,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     rotationAngle = -rotationAngle
 
     'Double-check that FreeImage exists
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
     
         'If a selection is active, remove it.  (This is not the most elegant solution, but it isn't fixable until masked
         ' selections are implemented.)

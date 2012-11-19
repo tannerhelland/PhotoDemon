@@ -309,7 +309,7 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 21, 9, 3      'Rotate Counter-clockwise
         .PutImageToVBMenu 22, 10, 3      'Rotate 180
         'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
-        If FreeImageEnabled Then
+        If imageFormats.FreeImageEnabled Then
             .PutImageToVBMenu 146, 11, 3     'Rotate Arbitrary
             .PutImageToVBMenu 125, 13, 3     'Isometric
             .PutImageToVBMenu 132, 14, 3     'Tile
