@@ -141,26 +141,6 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Dim tempPathString As String
     tempPathString = userPreferences.GetPreference_String("Program Paths", "MainSave", "")
     
-    Dim sFile As String
-    sFile = pdImages(imageID).OriginalFileName
-    
-    'This next chunk of code checks to see if an image with this filename appears in the download location.
-    ' If it does, PhotoDemon will append ascending numbers (of the format "_(#)") to the filename until it
-    ' finds a unique name.
-    If FileExist(tempPathString & sFile & "." & imageFormats.getOutputFormatExtension(LastSaveFilter)) Then
-    
-        Dim numToAppend As Long
-        numToAppend = 2
-        
-        Do While FileExist(tempPathString & sFile & " (" & numToAppend & ")" & "." & imageFormats.getOutputFormatExtension(LastSaveFilter))
-            numToAppend = numToAppend + 1
-        Loop
-        
-        'If the loop has terminated, a unique filename has been found.  Make that the recommended filename.
-        sFile = sFile & " (" & numToAppend & ")"
-    
-    End If
-        
     'LastSaveFilter will be set to "-1" if the user has never saved a file before.  If that happens, default to JPEG
     If LastSaveFilter = -1 Then
     
@@ -174,6 +154,26 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         
     End If
     
+    Dim sFile As String
+    sFile = pdImages(imageID).OriginalFileName
+    
+    'This next chunk of code checks to see if an image with this filename appears in the download location.
+    ' If it does, PhotoDemon will append ascending numbers (of the format "_(#)") to the filename until it
+    ' finds a unique name.
+    If FileExist(tempPathString & sFile & "." & imageFormats.getOutputFormatExtension(LastSaveFilter - 1)) Then
+    
+        Dim numToAppend As Long
+        numToAppend = 2
+        
+        Do While FileExist(tempPathString & sFile & " (" & numToAppend & ")" & "." & imageFormats.getOutputFormatExtension(LastSaveFilter - 1))
+            numToAppend = numToAppend + 1
+        Loop
+        
+        'If the loop has terminated, a unique filename has been found.  Make that the recommended filename.
+        sFile = sFile & " (" & numToAppend & ")"
+    
+    End If
+        
     If CC.VBGetSaveFileName(sFile, , True, imageFormats.getCommonDialogOutputFormats, LastSaveFilter, tempPathString, "Save an image", imageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
