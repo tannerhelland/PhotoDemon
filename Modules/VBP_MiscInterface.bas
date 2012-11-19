@@ -12,7 +12,7 @@ Option Explicit
 
 'Used to set the cursor for an object to the system's hand cursor
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
-Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal HWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
 
 Public Const IDC_APPSTARTING = 32650&
@@ -140,49 +140,49 @@ End Sub
 Public Sub setHandCursor(ByRef tControl As Control)
     tControl.MouseIcon = LoadPicture("")
     tControl.MousePointer = 0
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Hand
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Hand
 End Sub
 
 'Set a single object to use the arrow cursor
 Public Sub setArrowCursorToObject(ByRef tControl As Control)
     tControl.MouseIcon = LoadPicture("")
     tControl.MousePointer = 0
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Arrow
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
 End Sub
 
 'Set a single form to use the arrow cursor
 Public Sub setArrowCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Arrow
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
 End Sub
 
 'Set a single form to use the cross cursor
 Public Sub setCrossCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_Cross
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Cross
 End Sub
     
 'Set a single form to use the Size All cursor
 Public Sub setSizeAllCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeAll
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeAll
 End Sub
 
 'Set a single form to use the Size NESW cursor
 Public Sub setSizeNESWCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNESW
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNESW
 End Sub
 
 'Set a single form to use the Size NS cursor
 Public Sub setSizeNSCursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNS
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNS
 End Sub
 
 'Set a single form to use the Size NWSE cursor
 Public Sub setSizeNWSECursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeNWSE
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNWSE
 End Sub
 
 'Set a single form to use the Size WE cursor
 Public Sub setSizeWECursor(ByRef tControl As Form)
-    SetClassLong tControl.HWnd, GCL_HCURSOR, hc_Handle_SizeWE
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeWE
 End Sub
 
 'Display the specified size in the main form's status bar
@@ -224,3 +224,8 @@ Public Function AutoSelectText(ByRef tBox As TextBox)
     tBox.SelLength = Len(tBox.Text)
 End Function
 
+'When the mouse is moved outside the primary image, clear the image coordinates display
+Public Sub ClearImageCoordinatesDisplay()
+    FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+    FormMain.lblCoordinates.Refresh
+End Sub
