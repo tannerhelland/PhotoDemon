@@ -30,7 +30,7 @@ Public Sub textValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed A
     cursorPos = srcTextBox.SelStart
     
     'Loop through the text box contents and remove any invalid characters
-    Dim i As Long, j As Long
+    Dim i As Long
     Dim invLoc As Long
     
     For i = 1 To Len(numString)

@@ -1088,7 +1088,7 @@ Private Const WHITEONBLACK As Long = 2
 Private Const COLORONCOLOR As Long = 3
 
 'MSIMG32
-Private Declare Function AlphaBlend Lib "msimg32.dll" ( _
+Private Declare Function AlphaBlend Lib "MSIMG32.dll" ( _
     ByVal hdcDest As Long, _
     ByVal nXOriginDest As Long, _
     ByVal nYOriginDest As Long, _
@@ -8647,9 +8647,6 @@ Public Function FreeImage_GetPictureData(ByVal Bitmap As Long, _
 Dim abResult() As Byte
 Dim lImageSize As Long
 Dim lPaletteSize As Long
-Dim abInfoBuffer() As Byte
-Dim lpInfo As Long
-Dim bBufferUsed As Boolean
 Dim lOffset As Long
 
    ' This function creates an Office PictureData Byte array from a FreeImage DIB.

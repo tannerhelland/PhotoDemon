@@ -483,7 +483,6 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     'Calculationg color variables (including luminance)
     Dim r As Long, g As Long, b As Long
     Dim l As Long, newL As Long
-    Dim lReference As Byte
     Dim xModQuick As Long
     Dim DitherTable() As Byte
     Dim xLeft As Long, xRight As Long, yDown As Long

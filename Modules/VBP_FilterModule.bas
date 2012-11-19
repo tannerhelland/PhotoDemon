@@ -624,7 +624,6 @@ Public Sub FilterGridBlur()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
     Dim rax() As Long, gax() As Long, bax() As Long
     Dim ray() As Long, gay() As Long, bay() As Long
     ReDim rax(0 To iWidth) As Long, gax(0 To iWidth) As Long, bax(0 To iWidth) As Long
@@ -744,7 +743,6 @@ Public Sub FilterIsometric()
     finalY = curLayerValues.Bottom
     
     Dim srcX As Single, srcY As Single
-    Dim srcXInt As Long, srcYInt As Long
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)

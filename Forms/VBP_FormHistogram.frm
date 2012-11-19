@@ -430,7 +430,7 @@ Dim hMax As Single, hMaxLog As Single
 Dim channelMax(0 To 3) As Single
 Dim channelMaxLog(0 To 3) As Single
 Dim channelMaxPosition(0 To 3) As Byte
-Dim maxChannel As Byte, maxPosition As Byte   'These identify the channel with the highest value (red, green, or blue) and the position at which it's located
+Dim maxChannel As Byte          'This identifies the channel with the highest value (red, green, or blue)
 
 'Which histograms does the user want drawn?
 Dim hEnabled(0 To 3) As Boolean

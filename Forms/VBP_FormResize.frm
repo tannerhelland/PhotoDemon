@@ -280,7 +280,7 @@ Private Sub ChkRatio_Click()
     If ChkRatio.Value = vbChecked Then UpdateHeightBox
 End Sub
 
-'Resize an image using bicubic, bilinear, or nearest neighbor resampling
+'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMethod As Byte)
 
     'If the image contains an active selection, automatically resize it to match the new image.
@@ -379,7 +379,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
             
             'These values will help us access locations in the array more quickly.
             ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-            Dim QuickVal As Long, qvDepth As Long
+            Dim qvDepth As Long
             qvDepth = tmpLayer.getLayerColorDepth \ 8
             
             'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value

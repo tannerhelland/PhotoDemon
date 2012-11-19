@@ -1335,7 +1335,6 @@ Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hW
 Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 
 'Use to prevent scroll bar / text box combos from getting stuck in update loops
-Dim suspendSelTextBoxUpdates As Boolean
 Private updateSelLeftBar As Boolean, updateSelTopBar As Boolean
 Private updateSelWidthBar As Boolean, updateSelHeightBar As Boolean
 
@@ -1484,10 +1483,7 @@ Private Sub MDIForm_Load()
     'After the program has been successfully loaded, change the focus to the Open Image button
     Me.Visible = True
     If FormMain.Enabled Then cmdOpen.SetFocus
-    
-    'If the user wants us to check for updates, now's the time to do it
-    Dim tmpString As String
-    
+        
     'Start by seeing if we're allowed to check for software updates
     Dim allowedToUpdate As Boolean
     allowedToUpdate = userPreferences.GetPreference_Boolean("General Preferences", "CheckForUpdates", True)

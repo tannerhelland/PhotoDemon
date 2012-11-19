@@ -627,7 +627,6 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
         
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long
-        Dim tmp_fi_DIB As Long
         
         If toPreview Then
             If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor 255, 255, 255

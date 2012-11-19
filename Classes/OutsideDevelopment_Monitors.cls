@@ -307,7 +307,6 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
     '======================================================
     Dim MonitorInfo As tagMONITORINFO
     Dim lReturn     As Long
-    Dim lMonitor    As Long
     
     On Error GoTo GetMonitorInformation_Err
     MonitorInfo.cbSize = Len(MonitorInfo)
@@ -340,7 +339,6 @@ Private Sub ClearMonitorsCollection()
     '==============================
     'Clears the monitors collection
     '==============================
-    Dim cMonitors   As clsMonitor
     Dim lCount      As Long
     Dim lLoop       As Long
     

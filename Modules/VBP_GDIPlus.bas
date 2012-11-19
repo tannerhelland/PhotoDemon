@@ -526,7 +526,6 @@ Private Function CreateStream(byteContent() As Byte, Optional byteOffset As Long
     ' that expect an IStream interface -- neat hack
      
     On Error GoTo HandleError
-    Dim o_lngLowerBound As Long
     Dim o_lngByteCount  As Long
     Dim o_hMem As Long
     Dim o_lpMem  As Long
