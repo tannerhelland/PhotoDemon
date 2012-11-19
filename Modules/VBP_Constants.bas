@@ -30,7 +30,9 @@ Public Const REDUCECOLORS_AUTO As Long = 0
 Public Const REDUCECOLORS_MANUAL As Long = 1
 Public Const REDUCECOLORS_MANUAL_ERRORDIFFUSION As Long = 2
 
-'Constants for the drop shadow drawn around the image on the image canvas.  At some point these may become user-editable
+'Constants for the drop shadow drawn around the image on the image canvas.  At some point these may become user-editable.
 Public Const PD_CANVASSHADOWSIZE As Long = 5
 Public Const PD_CANVASSHADOWSTRENGTH As Long = 70
 
+'Constant for testing JP2/J2K support.  These may or may not become permanent pending the outcome of some rigorous testing.
+Public Const JP2_ENABLED As Boolean = True

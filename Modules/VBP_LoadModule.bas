@@ -38,6 +38,9 @@ Public Sub LoadTheProgram()
     'Initialize a preferences and settings handler
     Set userPreferences = New pdPreferences
     
+    'Initialize an image format handler
+    Set imageFormats = New pdFormats
+    
     'Ask the new preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them)
     LoadMessage "Initializing all program directories..."
     userPreferences.initializePaths
@@ -46,10 +49,15 @@ Public Sub LoadTheProgram()
     LoadMessage "Loading all user settings..."
     userPreferences.loadUserSettings
         
-    'Check for plug-ins (we do this early, because other routines rely on this knowledge)
+    'Check for plugins (we do this early, because other routines rely on this knowledge)
     ' (Note that this is also the routine that checks GDI+ availability, despite it not really being a "plugin")
     LoadMessage "Loading plugins..."
     LoadPlugins
+    
+    'Based on the list of available plugins, initialize the program's image format handler
+    LoadMessage "Loading import/export libraries..."
+    imageFormats.generateInputFormats
+    imageFormats.generateOutputFormats
     
     'Set default variables
     LoadMessage "Initializing all user settings..."
@@ -395,9 +403,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 'Bitmaps are preferentially loaded by FreeImage (which loads 32bpp bitmaps correctly), then GDI+ (which
                 ' loads 32bpp bitmaps but ignores the alpha channel), then default VB (which fails with 32bpp but will
                 ' load other depths).
-                If FreeImageEnabled Then
+                If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                ElseIf GDIPlusEnabled Then
+                ElseIf imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 0
                 Else
@@ -406,9 +414,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 End If
             Case "GIF"
                 'GIF is preferentially loaded by FreeImage, then GDI+ if available, then default VB.
-                If FreeImageEnabled Then
+                If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                ElseIf GDIPlusEnabled Then
+                ElseIf imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 25
                 Else
@@ -417,13 +425,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 End If
             Case "ICO"
                 'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
-                If FreeImageEnabled Then
+                If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     If loadSuccessful = False Then
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 1
                     End If
-                ElseIf GDIPlusEnabled Then
+                ElseIf imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 1
                 Else
@@ -435,19 +443,19 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 ' midst of a batch conversion - in that case, use GDI+ first because it is significantly faster as it doesn't
                 ' need to make a copy of the image before operating on it.
                 If MacroStatus = MacroBATCH Then
-                    If GDIPlusEnabled Then
+                    If imageFormats.GDIPlusEnabled Then
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 2
-                    ElseIf FreeImageEnabled Then
+                    ElseIf imageFormats.FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     Else
                         loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 2
                     End If
                 Else
-                    If FreeImageEnabled Then
+                    If imageFormats.FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                    ElseIf GDIPlusEnabled Then
+                    ElseIf imageFormats.GDIPlusEnabled Then
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = 2
                     Else
@@ -461,7 +469,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 targetImage.OriginalFileFormat = 100
             Case "PNG"
                 'FreeImage has a more robust (and reliable) PNG implementation than GDI+, so use it if available
-                If FreeImageEnabled Then
+                If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
@@ -469,7 +477,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 End If
             Case "TIF", "TIFF"
                 'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
-                If FreeImageEnabled Then
+                If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
@@ -477,7 +485,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 End If
             Case "TMP"
                 'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too
-                If GDIPlusEnabled Then
+                If imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 2
                 Else
@@ -486,7 +494,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 End If
             'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
             Case Else
-                If FreeImageEnabled = True Then
+                If imageFormats.FreeImageEnabled = True Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
                     MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will download this plugin for you.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
@@ -913,17 +921,17 @@ Public Sub LoadPlugins()
     
     'Check for FreeImage file interface
     If FileExist(PluginPath & "FreeImage.dll") = False Then
-        FreeImageEnabled = False
+        imageFormats.FreeImageEnabled = False
         FormMain.MnuRotateArbitrary.Visible = False
     Else
-        FreeImageEnabled = True
+        imageFormats.FreeImageEnabled = True
     End If
     
     'Finally, check GDI+ availability
     If isGDIPlusAvailable() Then
-        GDIPlusEnabled = True
+        imageFormats.GDIPlusEnabled = True
     Else
-        GDIPlusEnabled = False
+        imageFormats.GDIPlusEnabled = False
     End If
     
 End Sub

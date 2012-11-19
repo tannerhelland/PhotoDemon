@@ -9,6 +9,9 @@ Option Explicit
 'Main user preferences and settings handler
 Public userPreferences As pdPreferences
 
+'Main file format compatibility handler
+Public imageFormats As pdFormats
+
 'Progress bar class
 Public cProgBar As cProgressBar
 
@@ -69,12 +72,6 @@ Public ScanEnabled As Boolean
 
 'Is compression via zLib enabled?
 Public zLibEnabled As Boolean
-
-'Is FreeImage.dll enabled?
-Public FreeImageEnabled As Boolean
-
-'Is GDI+ available?
-Public GDIPlusEnabled As Boolean
 
 'Whether or not the user has created a custom filter
 Public HasCreatedFilter As Boolean

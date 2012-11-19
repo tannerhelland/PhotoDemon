@@ -45,7 +45,7 @@ End Sub
 Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
 
     'Make sure we found the plug-in when we loaded the program
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
@@ -83,7 +83,7 @@ End Sub
 Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional ByVal PNGColorDepth As Long = &H18)
 
     'Make sure we found the plug-in when we loaded the program
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
@@ -131,7 +131,7 @@ End Sub
 Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
 
     'Make sure we found the plug-in when we loaded the program
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
@@ -175,7 +175,7 @@ End Sub
 Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
     
     'Make sure we found the plug-in when we loaded the program
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
@@ -219,11 +219,11 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
 
 End Sub
 
-'Save to JPEG using the FreeImage library.  This is faster and more reliable than using GDI+.
+'Save to JPEG using the FreeImage library.  This is more reliable than using GDI+.
 Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long)
     
     'Make sure we found the plug-in when we loaded the program
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
@@ -267,7 +267,7 @@ End Sub
 Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
     
     'Make sure we found the plug-in when we loaded the program
-    If FreeImageEnabled = False Then
+    If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         Exit Sub
@@ -309,5 +309,49 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
     'Release FreeImage from memory
     FreeLibrary hLib
         
+End Sub
+
+'Save to JPEG-2000 format using the FreeImage library.  This is currently deemed "experimental".
+Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String)
+    
+    'Make sure we found the plug-in when we loaded the program
+    If imageFormats.FreeImageEnabled = False Then
+        MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save could not be completed without FreeImage library access."
+        Exit Sub
+    End If
+
+    'Load FreeImage into memory
+    Dim hLib As Long
+    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    
+    Message "Preparing image..."
+    
+    'Copy the image into a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    
+    'Convert our current layer to a FreeImage-type DIB
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    
+    'Use that handle to save the image to JPEG format
+    If fi_DIB <> 0 Then
+        Dim fi_Check As Long
+        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, JP2_DEFAULT, FICD_24BPP, , , , , True)
+        If fi_Check = False Then
+            Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+        Else
+            Message "Save complete."
+        End If
+    Else
+        Message "Save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+    End If
+    
+    'Release FreeImage from memory
+    FreeLibrary hLib
+    
 End Sub
 

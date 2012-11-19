@@ -948,18 +948,26 @@ Private Sub Form_Load()
     Dim curFormatIndex As Long
     curFormatIndex = 0
     
-    'Prepare a list of possible output formats based on the plugins available to us
+    'Prepare a list of possible OUTPUT formats based on the plugins available to us
     ReDim outputExtensions(0 To 100) As String
     
     cmbOutputFormat.AddItem "BMP - Windows Bitmap", curFormatIndex
     outputExtensions(curFormatIndex) = "bmp"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled Or GDIPlusEnabled Then
+    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
         cmbOutputFormat.AddItem "GIF - Graphics Interchange Format", curFormatIndex
         outputExtensions(curFormatIndex) = "gif"
         curFormatIndex = curFormatIndex + 1
+    End If
 
+    If imageFormats.FreeImageEnabled And JP2_ENABLED Then
+        cmbOutputFormat.AddItem "JP2 - JPEG 2000 Format", curFormatIndex
+        outputExtensions(curFormatIndex) = "jp2"
+        curFormatIndex = curFormatIndex + 1
+    End If
+
+    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
         cmbOutputFormat.AddItem "JPG - Joint Photographic Experts Group", curFormatIndex
         outputExtensions(curFormatIndex) = "jpg"
         curFormatIndex = curFormatIndex + 1
@@ -971,13 +979,13 @@ Private Sub Form_Load()
         curFormatIndex = curFormatIndex + 1
     End If
     
-    If FreeImageEnabled Or GDIPlusEnabled Then
+    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
         cmbOutputFormat.AddItem "PNG - Portable Network Graphic", curFormatIndex
         outputExtensions(curFormatIndex) = "png"
         curFormatIndex = curFormatIndex + 1
     End If
     
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
         cmbOutputFormat.AddItem "PPM - Portable Pixel Map", curFormatIndex
         outputExtensions(curFormatIndex) = "ppm"
         curFormatIndex = curFormatIndex + 1
@@ -987,7 +995,7 @@ Private Sub Form_Load()
         curFormatIndex = curFormatIndex + 1
     End If
     
-    If FreeImageEnabled Or GDIPlusEnabled Then
+    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
         cmbOutputFormat.AddItem "TIFF - Tagged Image File Format", curFormatIndex
         outputExtensions(curFormatIndex) = "tif"
         curFormatIndex = curFormatIndex + 1
@@ -1040,16 +1048,19 @@ Private Sub Form_Load()
     If zLibEnabled Then filePatterns(0) = filePatterns(0) & ";*.pdi"
     
     'Only allow PNG and TIFF loading if either GDI+ or the FreeImage dll was detected
-    If FreeImageEnabled Or GDIPlusEnabled Then filePatterns(0) = filePatterns(0) & ";*.png;*.tif;*.tiff"
+    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then filePatterns(0) = filePatterns(0) & ";*.png;*.tif;*.tiff"
     
     'Only allow all other formats if the FreeImage dll was detected
-    If FreeImageEnabled Then filePatterns(0) = filePatterns(0) & "*.lbm;*.pbm;*.iff;*.jif;*.jfif;*.psd;*.wbmp;*.wbm;*.pgm;*.ppm;*.jng;*.mng;*.koa;*.pcd;*.ras;*.dds;*.pict;*.pct;*.pic;*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
+    If imageFormats.FreeImageEnabled Then filePatterns(0) = filePatterns(0) & ";*.lbm;*.pbm;*.iff;*.jif;*.jfif;*.psd;*.wbmp;*.wbm;*.pgm;*.ppm;*.jng;*.mng;*.koa;*.pcd;*.ras;*.dds;*.pict;*.pct;*.pic;*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
+    
+    'JP2 format is still under heavy testing, so only allow if the public constant is set to "enabled"
+    If imageFormats.FreeImageEnabled And JP2_ENABLED Then filePatterns(0) = filePatterns(0) & ";*.jp2"
     
     cmbPattern.AddItem "BMP - OS/2 or Windows Bitmap", curFormatIndex
     filePatterns(curFormatIndex) = "*.bmp"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
         cmbPattern.AddItem "DDS - DirectDraw Surface", curFormatIndex
         filePatterns(curFormatIndex) = "*.dds"
         curFormatIndex = curFormatIndex + 1
@@ -1063,7 +1074,7 @@ Private Sub Form_Load()
     filePatterns(curFormatIndex) = "*.ico"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
         cmbPattern.AddItem "IFF - Amiga Interchange Format", curFormatIndex
         filePatterns(curFormatIndex) = "*.iff"
         curFormatIndex = curFormatIndex + 1
@@ -1073,11 +1084,17 @@ Private Sub Form_Load()
         curFormatIndex = curFormatIndex + 1
     End If
     
+    If imageFormats.FreeImageEnabled And JP2_ENABLED Then
+        cmbPattern.AddItem "JP2 - JPEG 2000 Format", curFormatIndex
+        filePatterns(curFormatIndex) = "*.jp2"
+        curFormatIndex = curFormatIndex + 1
+    End If
+    
     cmbPattern.AddItem "JPG/JPEG - Joint Photographic Experts Group", curFormatIndex
     filePatterns(curFormatIndex) = "*.jpg;*.jpeg;*.jif;*.jfif"
     curFormatIndex = curFormatIndex + 1
     
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
         cmbPattern.AddItem "KOA/KOALA - Commodore 64", curFormatIndex
         filePatterns(curFormatIndex) = "*.koa;*.koala"
         curFormatIndex = curFormatIndex + 1
@@ -1110,7 +1127,7 @@ Private Sub Form_Load()
         curFormatIndex = curFormatIndex + 1
     End If
     
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
         cmbPattern.AddItem "PGM - Portable Greymap", curFormatIndex
         filePatterns(curFormatIndex) = "*.pgm"
         curFormatIndex = curFormatIndex + 1
@@ -1121,13 +1138,13 @@ Private Sub Form_Load()
     End If
     
     'FreeImage or GDI+ works for loading PNGs
-    If FreeImageEnabled Or GDIPlusEnabled Then
+    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
         cmbPattern.AddItem "PNG - Portable Network Graphic", curFormatIndex
         filePatterns(curFormatIndex) = "*.png"
         curFormatIndex = curFormatIndex + 1
     End If
     
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
         cmbPattern.AddItem "PPM - Portable Pixmap", curFormatIndex
         filePatterns(curFormatIndex) = "*.ppm"
         curFormatIndex = curFormatIndex + 1
@@ -1150,13 +1167,13 @@ Private Sub Form_Load()
     End If
     
     'FreeImage or GDI+ works for loading TIFFs
-    If FreeImageEnabled Or GDIPlusEnabled Then
+    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
         cmbPattern.AddItem "TIF/TIFF - Tagged Image File Format", curFormatIndex
         filePatterns(curFormatIndex) = "*.tif;*.tiff"
         curFormatIndex = curFormatIndex + 1
     End If
     
-    If FreeImageEnabled Then
+    If imageFormats.FreeImageEnabled Then
         cmbPattern.AddItem "WBMP - Wireless Bitmap", curFormatIndex
         filePatterns(curFormatIndex) = "*.wbmp;*.wbm"
         curFormatIndex = curFormatIndex + 1
