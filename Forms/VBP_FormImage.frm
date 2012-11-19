@@ -181,7 +181,7 @@ Private Sub Form_Load()
 End Sub
 
 'Track which mouse buttons are pressed
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'If the main form is disabled, exit
     If FormMain.Enabled = False Then Exit Sub
@@ -198,25 +198,25 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     If Button = vbLeftButton Then
         
         'Check the location of the mouse to see if it's over the image
-        If isMouseOverImage(x, y, Me) Then
+        If isMouseOverImage(X, Y, Me) Then
         
             lMouseDown = True
             
             hasMouseMoved = 0
             
             'Remember this location
-            initMouseX = x
-            initMouseY = y
+            initMouseX = X
+            initMouseY = Y
             
             'Display the image coordinates under the mouse pointer
-            displayImageCoordinates x, y, Me, imgX, imgY
+            displayImageCoordinates X, Y, Me, imgX, imgY
         
             'Check to see if a selection is already active.
             If pdImages(Me.Tag).selectionActive Then
             
                 'Check the mouse coordinates of this click.
                 Static sCheck As Long
-                sCheck = findNearestSelectionCoordinates(x, y, Me)
+                sCheck = findNearestSelectionCoordinates(X, Y, Me)
                 
                 'If that function did not return zero, notify the selection and exit
                 If sCheck <> 0 Then
@@ -253,7 +253,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'If the main form is disabled, exit
     If FormMain.Enabled = False Then Exit Sub
@@ -275,10 +275,10 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         If pdImages(Me.Tag).selectionActive Then
             
             'Check the location of the mouse to see if it's over the image
-            If isMouseOverImage(x, y, Me) Then
+            If isMouseOverImage(X, Y, Me) Then
             
                 'Display the image coordinates under the mouse pointer
-                displayImageCoordinates x, y, Me, imgX, imgY
+                displayImageCoordinates X, Y, Me, imgX, imgY
             
                 'Pass new points to the active selection
                 pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
@@ -286,8 +286,8 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             'If the mouse coordinates are NOT over the image, we need to find the closest points in the image and pass those instead
             Else
         
-                imgX = x
-                imgY = y
+                imgX = X
+                imgY = Y
                 findNearestImageCoordinates imgX, imgY, Me
                 
                 'Pass those points to the active selection
@@ -319,7 +319,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             ' 8 - W edge
             ' 9 - interior of selection, not near a corner or edge
             Static sCheck As Long
-            sCheck = findNearestSelectionCoordinates(x, y, Me)
+            sCheck = findNearestSelectionCoordinates(X, Y, Me)
             
             'Based on that return value, assign a new mouse cursor to the form
             Select Case sCheck
@@ -354,7 +354,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         
             'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
             ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-            If isMouseOverImage(x, y, Me) Then
+            If isMouseOverImage(X, Y, Me) Then
                 setArrowCursor Me
             Else
                 setArrowCursor Me
@@ -365,12 +365,12 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     End If
         
     'Display the image coordinates under the mouse pointer
-    displayImageCoordinates x, y, Me
+    displayImageCoordinates X, Y, Me
     
 End Sub
 
 'Track which mouse buttons are released
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'If the image has not yet been loaded, exit
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
@@ -385,7 +385,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
             
             'Check to see if this mouse location is the same as the initial mouse press.  If it is, and that particular
             ' point falls outside the selection, clear the selection from the image.
-            If ((x = initMouseX) And (y = initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
+            If ((X = initMouseX) And (Y = initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(X, Y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
                 pdImages(Me.Tag).mainSelection.lockRelease
                 pdImages(Me.Tag).selectionActive = False
                 tInit tSelection, False
@@ -422,7 +422,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -459,7 +459,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub

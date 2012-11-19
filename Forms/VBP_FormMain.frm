@@ -48,6 +48,7 @@ Begin VB.MDIForm FormMain
       Align           =   3  'Align Left
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
+      BorderStyle     =   0  'None
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -60,9 +61,9 @@ Begin VB.MDIForm FormMain
       ForeColor       =   &H80000008&
       Height          =   9030
       Left            =   0
-      ScaleHeight     =   600
+      ScaleHeight     =   602
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   147
+      ScaleWidth      =   149
       TabIndex        =   0
       TabStop         =   0   'False
       Top             =   0
@@ -1582,7 +1583,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -1618,7 +1619,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -1769,13 +1770,30 @@ Private Sub MnuBugReport_Click()
     'GitHub requires a login for submitting Issues; check for that first
     Dim msgReturn As VbMsgBoxResult
     
-    msgReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making " & PROGRAMNAME & " better")
+    'If the user has previously been prompted about having a GitHub account, use their previous answer
+    If userPreferences.doesValueExist("General Preferences", "HasGitHubAccount") Then
+    
+        Dim hasGitHub As Boolean
+        hasGitHub = userPreferences.GetPreference_Boolean("General Preferences", "HasGitHubAccount", False)
+        
+        If hasGitHub Then msgReturn = vbYes Else msgReturn = vbNo
+    
+    'If this is the first time they are submitting feedback, ask them if they have a GitHub account
+    Else
+    
+        msgReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for making " & PROGRAMNAME & " better")
+        
+        'If their answer was anything but "Cancel", store that answer to file
+        If msgReturn = vbYes Then userPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", True
+        If msgReturn = vbNo Then userPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", False
+        
+    End If
     
     'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
     If msgReturn = vbYes Then
         'Shell a browser window with the GitHub issue report form
         OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
-    Else
+    ElseIf msgReturn = vbNo Then
         'Shell a browser window with the tannerhelland.com PhotoDemon contact form
         OpenURL "http://www.tannerhelland.com/photodemon-contact/"
     End If
