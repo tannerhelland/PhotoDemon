@@ -442,6 +442,11 @@ Public Property Get IsWindowVistaOrLater() As Boolean
 End Property
 
 
+Public Property Get CanWeTheme() As Boolean
+    CanWeTheme = Not classicThemeWorkaround
+End Property
+
+
 Public Property Get ImageCount() As Long
     ImageCount = UBound(mDIB) - 1
 End Property

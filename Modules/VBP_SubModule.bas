@@ -18,8 +18,6 @@ Private Const mouseSelAccuracy As Single = 8
 
 'Used to convert a system color (such as "button face") to a literal RGB value
 Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
-    
-
 
 'Given an OLE color, return an RGB
 Public Function GetRealColor(ByVal Color As OLE_COLOR) As Long

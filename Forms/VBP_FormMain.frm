@@ -262,8 +262,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -290,8 +289,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -301,6 +299,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":B71C
@@ -317,8 +316,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -328,6 +326,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":C76E
@@ -345,8 +344,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -356,6 +354,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":D7C0
@@ -373,8 +372,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -401,8 +399,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
+         ButtonStyle     =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -412,6 +409,7 @@ Begin VB.MDIForm FormMain
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_FormMain.frx":F864
@@ -831,6 +829,18 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuImageSepBar0 
          Caption         =   "-"
       End
+      Begin VB.Menu MnuImageMode 
+         Caption         =   "Mode"
+         Begin VB.Menu MnuImageMode24bpp 
+            Caption         =   "Photo  (RGB  |  24bpp  |  no transparency)"
+         End
+         Begin VB.Menu MnuImageMode32bpp 
+            Caption         =   "Web  (RGBA  |  32bpp  |  transparency)"
+         End
+      End
+      Begin VB.Menu MnuImageSepBar1 
+         Caption         =   "-"
+      End
       Begin VB.Menu MnuResample 
          Caption         =   "Resize..."
          Shortcut        =   ^R
@@ -838,7 +848,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuCropSelection 
          Caption         =   "Crop to Selection"
       End
-      Begin VB.Menu MnuImageSepBar1 
+      Begin VB.Menu MnuImageSepBar2 
          Caption         =   "-"
       End
       Begin VB.Menu MnuMirror 
@@ -847,7 +857,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuFlip 
          Caption         =   "Flip (Vertical)"
       End
-      Begin VB.Menu MnuImageSepBar2 
+      Begin VB.Menu MnuImageSepBar3 
          Caption         =   "-"
       End
       Begin VB.Menu MnuRotateClockwise 
@@ -862,7 +872,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuRotateArbitrary 
          Caption         =   "Arbitrary Rotation..."
       End
-      Begin VB.Menu MnuImageSepBar3 
+      Begin VB.Menu MnuImageSepBar4 
          Caption         =   "-"
       End
       Begin VB.Menu MnuIsometric 
@@ -1583,7 +1593,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -1619,7 +1629,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If FormMain.Enabled = False Then Exit Sub
@@ -2039,6 +2049,40 @@ End Sub
 
 Private Sub MnuImageLevels_Click()
     Process ImageLevels, , , , , , , , , , True
+End Sub
+
+'Convert the current image to 24bpp mode.  (If it is already in 24bpp mode, clicking this has no effect.)
+Private Sub MnuImageMode24bpp_Click()
+
+    'Ignore clicks if the current image is in 24bpp mode
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then Exit Sub
+    
+    'Ask the current layer to convert itself to 24bpp mode
+    pdImages(CurrentImage).mainLayer.convertTo24bpp
+    
+    'Change the menu entries to match
+    tInit tImgMode32bpp, False
+    
+    'Redraw the main window
+    PrepareViewport FormMain.ActiveForm, "Image mode converted to 24bpp"
+
+End Sub
+
+'Convert the current image to 32bpp mode.  (If it is already in 32bpp mode, clicking this has no effect.)
+Private Sub MnuImageMode32bpp_Click()
+
+    'Ignore clicks if the current image is in 32bpp mode
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then Exit Sub
+    
+    'Ask the current layer to convert itself to 32bpp mode
+    pdImages(CurrentImage).mainLayer.convertTo32bpp
+    
+    'Change the menu entries to match
+    tInit tImgMode32bpp, True
+    
+    'Redraw the main window
+    PrepareViewport FormMain.ActiveForm, "Image mode converted to 32bpp"
+    
 End Sub
 
 'Attempt to import an image from the Internet

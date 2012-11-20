@@ -3,8 +3,8 @@ Attribute VB_Name = "Toolbar"
 'Toolbar Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 17/November/12
-'Last update: Deactivate Window menu alongside Image/Color/etc.
+'Last updated: 20/November/12
+'Last update: Add a constant for toggling an image's color mode between 24bpp and 32bpp
 '
 'Module for enabling/disabling toolbar buttons and menus.  Note that the toolbar was removed in June 2012 in favor of
 ' the new left-hand bar; this module remains, however, because the code handles menu items and the left-hand bar
@@ -28,6 +28,7 @@ Public Const tMacro As Byte = 10
 Public Const tEdit As Byte = 11
 Public Const tRepeatLast As Byte = 12
 Public Const tSelection As Byte = 13
+Public Const tImgMode32bpp As Byte = 14
 
 'tInit enables or disables a specified button and/or menu item
 Public Sub tInit(tButton As Byte, tState As Boolean)
@@ -139,6 +140,28 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
             'Selection enabling/disabling also affects the Crop to Selection command
             If FormMain.MnuCropSelection.Enabled <> tState Then FormMain.MnuCropSelection.Enabled = tState
+            
+        '32bpp color mode
+        Case tImgMode32bpp
+            
+            'NOTE: because the corresponding menu entries are "checkable", added images won't render nicely in unthemed environments.
+            '       Thus, only activate the checked state if theming IS enabled.
+            If isThemingEnabled And isVistaOrLater Then
+            
+                'tState = True indicates 32bpp mode.
+                If tState Then
+                    FormMain.MnuImageMode32bpp.Checked = True
+                    FormMain.MnuImageMode24bpp.Checked = False
+                'tState = False indicates 24bpp mode.
+                Else
+                    FormMain.MnuImageMode24bpp.Checked = True
+                    FormMain.MnuImageMode32bpp.Checked = False
+                End If
+                
+            End If
+            
+            'Update the menu icons to match.  In unthemed environments, this is the only visual clue they will receive about the present mode.
+            updateModeIcon tState
             
     End Select
     

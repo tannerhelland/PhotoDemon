@@ -101,6 +101,9 @@ Public Sub LoadMenuIcons()
         'Leandro's class automatically detects the current Windows version.  We're only concerned with Vista or later, which lets us
         ' know that certain features are guaranteed to be available.
         isVistaOrLater = .IsWindowVistaOrLater
+        
+        'Also, use it to check if the current Windows install supports theming.
+        isThemingEnabled = .CanWeTheme
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
         If (Not .IsWindowVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
@@ -256,7 +259,10 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("ROTATEANY", "CUSTOM")   '146
         .AddImageFromStream LoadResData("HEATMAP", "CUSTOM")     '147
         .AddImageFromStream LoadResData("STYLIZE", "CUSTOM")     '148
-        
+        .AddImageFromStream LoadResData("MODE24", "CUSTOM")      '149
+        .AddImageFromStream LoadResData("MODE32", "CUSTOM")      '150
+        .AddImageFromStream LoadResData("MODE24CHK", "CUSTOM")   '151
+        .AddImageFromStream LoadResData("MODE32CHK", "CUSTOM")   '152
         
         'File Menu
         .PutImageToVBMenu 0, 0, 0       'Open Image
@@ -300,22 +306,26 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 138, 10, 2     'Zoom 100%
         
         'Image Menu
-        .PutImageToVBMenu 42, 0, 3
-        .PutImageToVBMenu 19, 2, 3      'Resize
-        .PutImageToVBMenu 144, 3, 3     'Crop to Selection
-        .PutImageToVBMenu 24, 5, 3      'Mirror
-        .PutImageToVBMenu 23, 6, 3      'Flip
-        .PutImageToVBMenu 20, 8, 3      'Rotate Clockwise
-        .PutImageToVBMenu 21, 9, 3      'Rotate Counter-clockwise
-        .PutImageToVBMenu 22, 10, 3      'Rotate 180
+        .PutImageToVBMenu 42, 0, 3      'Duplicate
+        .PutImageToVBMenu 149, 2, 3     'Image Mode
+            '--> Image Mode sub-menu
+            .PutImageToVBMenu 149, 0, 3, 2   '24bpp
+            .PutImageToVBMenu 150, 1, 3, 2   '32bpp
+        .PutImageToVBMenu 19, 4, 3      'Resize
+        .PutImageToVBMenu 144, 5, 3     'Crop to Selection
+        .PutImageToVBMenu 24, 7, 3      'Mirror
+        .PutImageToVBMenu 23, 8, 3      'Flip
+        .PutImageToVBMenu 20, 10, 3      'Rotate Clockwise
+        .PutImageToVBMenu 21, 11, 3      'Rotate Counter-clockwise
+        .PutImageToVBMenu 22, 12, 3      'Rotate 180
         'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
         If imageFormats.FreeImageEnabled Then
-            .PutImageToVBMenu 146, 11, 3     'Rotate Arbitrary
-            .PutImageToVBMenu 125, 13, 3     'Isometric
-            .PutImageToVBMenu 132, 14, 3     'Tile
+            .PutImageToVBMenu 146, 13, 3     'Rotate Arbitrary
+            .PutImageToVBMenu 125, 15, 3     'Isometric
+            .PutImageToVBMenu 132, 16, 3     'Tile
         Else
-            .PutImageToVBMenu 125, 12, 3     'Isometric
-            .PutImageToVBMenu 132, 13, 3     'Tile
+            .PutImageToVBMenu 125, 14, 3     'Isometric
+            .PutImageToVBMenu 132, 15, 3     'Tile
         End If
         
         'Color Menu
@@ -509,6 +519,23 @@ Public Sub ResetMenuIcons()
     numOfMRUFiles = MRU_ReturnCount()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
     
+End Sub
+
+'As a courtesy to the user, the Image -> Mode icon is dynamically changed to match the current image's mode
+Public Sub updateModeIcon(ByVal nMode As Boolean)
+    If nMode Then
+        'Update the parent menu
+        cMenuImage.PutImageToVBMenu 150, 2, 3
+        
+        'Update the children menus as well
+        cMenuImage.PutImageToVBMenu 149, 0, 3, 2   '24bpp
+        cMenuImage.PutImageToVBMenu 152, 1, 3, 2   '32bpp
+        
+    Else
+        cMenuImage.PutImageToVBMenu 149, 2, 3
+        cMenuImage.PutImageToVBMenu 151, 0, 3, 2
+        cMenuImage.PutImageToVBMenu 150, 1, 3, 2
+    End If
 End Sub
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
