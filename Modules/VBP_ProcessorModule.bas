@@ -177,6 +177,9 @@ Option Explicit
     Public Const Tile As Long = 708
     '-Crop to Selection
     Public Const CropToSelection As Long = 709
+    '-Image Mode (it's a kind of transformation, right?)
+    Public Const ChangeImageMode24 As Long = 710
+    Public Const ChangeImageMode32 As Long = 711
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -693,7 +696,10 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 End If
             Case CropToSelection
                 MenuCropToSelection
-                
+            Case ChangeImageMode24
+                ConvertImageColorDepth 24
+            Case ChangeImageMode32
+                ConvertImageColorDepth 32
         End Select
     End If
     
@@ -1129,6 +1135,10 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Isometric Conversion"
         Case Tile
             GetNameOfProcess = "Tile Image"
+        Case ChangeImageMode24
+            GetNameOfProcess = "Convert to Photo Mode (RGB, 24bpp)"
+        Case ChangeImageMode32
+            GetNameOfProcess = "Convert to Web Mode (RGBA, 32bpp)"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade

@@ -12,6 +12,36 @@ Attribute VB_Name = "Filters_Miscellaneous"
 
 Option Explicit
 
+'Convert the image's color depth to a new value.  (Currently, only 24bpp and 32bpp is allowed.)
+Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long)
+
+    Message "Converting image mode..."
+
+    If newColorDepth = 24 Then
+    
+        'Ask the current layer to convert itself to 24bpp mode
+        pdImages(CurrentImage).mainLayer.convertTo24bpp
+    
+        'Change the menu entries to match
+        tInit tImgMode32bpp, False
+        
+    Else
+    
+        'Ask the current layer to convert itself to 32bpp mode
+        pdImages(CurrentImage).mainLayer.convertTo32bpp
+    
+        'Change the menu entries to match
+        tInit tImgMode32bpp, True
+    
+    End If
+    
+    Message "Finished."
+    
+    'Redraw the main window
+    ScrollViewport FormMain.ActiveForm
+
+End Sub
+
 'Load the last Undo file and alpha-blend it with the current image
 Public Sub MenuFadeLastEffect()
 

@@ -105,6 +105,9 @@ Public Sub RedoImageRestore()
     'Load the Redo bitmap file
     LoadUndo pdImages(CurrentImage).GetUndoFile
     
+    'Finally, check the Redo image's color depth, and check/uncheck the matching Image Mode setting
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
+    
 End Sub
 
 'Subroutine for generating an Undo filename
