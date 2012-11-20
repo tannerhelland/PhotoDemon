@@ -838,6 +838,12 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
     If layerColorDepth <> 32 Then Exit Sub
 
+    'DEBUG: These variables can be used to run timing tests on the composite routine.
+    'Static TotalTime As Long
+    'Dim StartTime As Long
+    'Static numOfRuns As Long
+    'StartTime = GetTickCount
+
     'Start, as always, with a SafeArray
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
@@ -942,11 +948,17 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     'With our compositing complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
 
+    'TotalTime = TotalTime + (GetTickCount - StartTime)
+    'numOfRuns = numOfRuns + 1
+    'Message "Composite average: " & CDbl(TotalTime) / numOfRuns
+
 End Sub
 
 'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
 Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Single) As Byte
     Blend2Colors = (mixRatio * Color1) + ((1 - mixRatio) * Color2)
+    'Alternate blend formula from Robert Rayment - my own testing shows no measurable speed difference between the two methods
+    'Blend2Colors = mixRatio * (CInt(Color1) - Color2) + Color2 '169
 End Function
 
 
