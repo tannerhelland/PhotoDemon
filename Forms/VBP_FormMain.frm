@@ -262,7 +262,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   2
+         ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -289,7 +289,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   2
+         ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -316,7 +316,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   2
+         ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -344,7 +344,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   2
+         ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -372,7 +372,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   2
+         ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -399,7 +399,7 @@ Begin VB.MDIForm FormMain
          Width           =   900
          _ExtentX        =   1588
          _ExtentY        =   1085
-         ButtonStyle     =   2
+         ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
