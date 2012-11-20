@@ -515,6 +515,25 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             GoTo PreloadMoreImages
         End If
         
+        'Before continuing, if the image is 32bpp, verify the alpha channel.  If the alpha channel is all 0's or all 255's,
+        ' we can conserve on resources by transparently converting it to 24bpp.
+        If targetImage.mainLayer.getLayerColorDepth = 32 Then
+            
+            'Verify the alpha channel.  If this function returns FALSE, the alpha channel is unnecessary.
+            If targetImage.mainLayer.verifyAlphaChannel = False Then
+            
+                Message "Alpha channel deemed unnecessary.  Transparently converting image to 24bpp..."
+            
+                'Transparently convert the main layer to 24bpp
+                targetImage.mainLayer.convertTo24bpp
+            
+            Else
+                Message "Alpha channel verified.  Leaving image in 32bpp mode."
+            End If
+        
+        End If
+        
+        
         'Store important data about the image to the pdImages array
         targetImage.updateSize
         targetImage.OriginalFileSize = FileLen(sFile(thisImage))
@@ -574,6 +593,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Update relevant user interface controls
             DisplaySize targetImage.Width, targetImage.Height
             If imgFormTitle = "" Then FormMain.ActiveForm.Caption = sFile(thisImage) Else FormMain.ActiveForm.Caption = imgFormTitle
+            
+            'Check the image's color depth, and check/uncheck the matching Image Mode setting
+            If targetImage.mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
             
             'FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
             FixScrolling = False
