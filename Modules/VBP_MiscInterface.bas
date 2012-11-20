@@ -226,6 +226,6 @@ End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
-    FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+    FormMain.lblCoordinates.Caption = ""
     FormMain.lblCoordinates.Refresh
 End Sub
