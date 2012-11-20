@@ -414,6 +414,113 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 
 End Function
 
+'Convert this layer to 24bpp mode
+Public Function convertTo24bpp() As Boolean
+
+    'Make sure this layer is 32bpp.  If it isn't, running this function pointless.
+    If layerColorDepth = 32 Then
+
+        'Make sure this layer isn't empty
+        If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+    
+            'Create a temporary layer to hold a copy of this layer's data (because it's about to get deleted)
+            Dim tmpLayer As pdLayer
+            Set tmpLayer = New pdLayer
+            tmpLayer.createFromExistingLayer Me
+                        
+            'Composite the temporary layer against a white background, per convention.
+            tmpLayer.compositeBackgroundColor 255, 255, 255
+                        
+            'Now erase our own layer
+            eraseLayer
+    
+            'Create a new layer that's exactly the same size as the old one
+            If createBlank(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, 24) Then
+                
+                'Copy the image data from the temporary layer without modification
+                BitBlt layerDC, 0, 0, layerWidth, layerHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+                
+                'Erase the temporary layer
+                tmpLayer.eraseLayer
+                Set tmpLayer = Nothing
+                
+                'Exit
+                convertTo24bpp = True
+                Exit Function
+                
+            End If
+    
+        End If
+        
+    End If
+    
+    'If we made it to this line, something went horribly wrong
+    convertTo24bpp = False
+
+End Function
+
+'Convert this layer to 32bpp mode
+Public Function convertTo32bpp() As Boolean
+
+    'Make sure this layer is 24bpp.  If it isn't, running this function is pointless.
+    If layerColorDepth = 24 Then
+
+        'Make sure this layer isn't empty
+        If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+    
+            'Create a temporary layer to hold a copy of this layer's data (because it's about to get deleted)
+            Dim tmpLayer As pdLayer
+            Set tmpLayer = New pdLayer
+            tmpLayer.createFromExistingLayer Me
+            
+            'Now erase our own layer
+            eraseLayer
+    
+            'Create a new layer that's exactly the same size as the old one
+            If createBlank(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, 32) Then
+                
+                'Copy the image data from the temporary layer without modification
+                BitBlt layerDC, 0, 0, layerWidth, layerHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+                
+                'Erase the temporary layer
+                tmpLayer.eraseLayer
+                Set tmpLayer = Nothing
+                                
+                'Finally, we need to loop through the image and set all alpha values to 255.  Otherwise the image will
+                ' be completely transparent (and we don't want that!)
+                Dim iData() As Byte
+                Dim tmpSA As SAFEARRAY2D
+                prepInternalSafeArray tmpSA
+                CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+                Dim x As Long, y As Long, QuickX As Long
+                
+                'Loop through the image, setting the alpha of each pixel to 255 (opaque)
+                For x = 0 To layerWidth - 1
+                    QuickX = x * 4
+                For y = 0 To layerHeight - 1
+                    iData(QuickX + 3, y) = 255
+                Next y
+                Next x
+    
+                'With our alpha channel complete, point iData() away from the DIB and deallocate it
+                CopyMemory ByVal VarPtrArray(iData), 0&, 4
+                
+                'Exit
+                convertTo32bpp = True
+                Exit Function
+                
+            End If
+    
+        End If
+        
+    End If
+    
+    'If we made it to this line, something went horribly wrong
+    convertTo32bpp = False
+
+End Function
+
 'Give this layer a picture from a standard VB picture object
 Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
 
@@ -1063,3 +1170,64 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
 
 End Sub
 
+'Check to see if a 32bpp image is really 32bpp. (Basically, scan all pixels in the alpha channel.  If all values are set to
+' 255 or all values are set to 0, remove the alpha channel and rebuild this layer in 24bpp mode.)
+Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1) As Boolean
+
+    'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
+    If layerColorDepth <> 32 Then
+        verifyAlphaChannel = True
+        Exit Function
+    End If
+    
+    'This routine will fail if the width or height of this layer is 0
+    If layerWidth = 0 Or layerHeight = 0 Then
+        verifyAlphaChannel = True
+        Exit Function
+    End If
+
+    'Start, as always, with a SafeArray
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepInternalSafeArray tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    Dim x As Long, y As Long, QuickX As Long
+    Dim checkAlpha As Boolean, initAlpha As Single
+    checkAlpha = False
+    
+    'Determine the alpha value of the top-left pixel.  This will be used as our baseline value.
+    initAlpha = iData(3, 0)
+    
+    'If initAlpha is something other than 255 or 0, we don't need to check the image
+    If (initAlpha <> 0) And (initAlpha <> 255) Then
+        verifyAlphaChannel = True
+        Exit Function
+    End If
+    
+    'Loop through the image, comparing colors as we go
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
+        
+        'Compare the alpha data for this pixel to the initial pixel.  If they DO NOT match, this is a valid alpha channel.
+        If initAlpha <> iData(QuickX + 3, y) Then
+            checkAlpha = True
+            Exit For
+        End If
+        
+    Next y
+    
+        'If the alpha channel has been verified, exit this loop
+        If checkAlpha Then Exit For
+        
+    Next x
+    
+    'With our check complete, point iData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+
+    'Return checkAlpha.  If varying alpha values were found, this function returns TRUE.  If all values were the same,
+    ' this function returns FALSE.
+    verifyAlphaChannel = checkAlpha
+
+End Function
