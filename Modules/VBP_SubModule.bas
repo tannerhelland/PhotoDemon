@@ -19,6 +19,90 @@ Private Const mouseSelAccuracy As Single = 8
 'Used to convert a system color (such as "button face") to a literal RGB value
 Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
 
+Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
+    
+    Message "Verifying image color count..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcImage.mainLayer
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    finalX = srcImage.Width - 1
+    finalY = srcImage.Height - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = (srcImage.mainLayer.getLayerColorDepth) \ 8
+    
+    'This array will track whether or not a given color has been detected in the image.  (I don't know if powers of two
+    ' are allocated more efficiently, but it doesn't hurt to stick to that rule.)
+    Dim UniqueColors() As Long
+    ReDim UniqueColors(0 To 511) As Long
+    
+    Dim i As Long
+    For i = 0 To 255
+        UniqueColors(i) = -1
+    Next i
+    
+    'Total number of unique colors counted so far
+    Dim totalCount As Long
+    totalCount = 0
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    Dim chkValue As Long
+    Dim colorFound As Boolean
+        
+    'Apply the filter
+    For x = 0 To finalX
+        QuickVal = x * qvDepth
+    For y = 0 To finalY
+        
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        chkValue = RGB(r, g, b)
+        colorFound = False
+        
+        'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
+        For i = 0 To totalCount
+            If UniqueColors(i) = chkValue Then
+                colorFound = True
+                Exit For
+            End If
+        Next i
+        
+        'If colorFound is still false, store this value in the array and increment our color counter
+        If Not colorFound Then
+            UniqueColors(totalCount) = chkValue
+            totalCount = totalCount + 1
+            ReDim Preserve UniqueColors(0 To totalCount) As Long
+        End If
+        
+        'If the image has more than 256 colors, treat it as 24/32 bpp
+        If totalCount > 256 Then Exit For
+        
+    Next y
+        If totalCount > 256 Then Exit For
+    Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Also, erase the counting array
+    Erase UniqueColors
+    
+    getQuickColorCount = totalCount
+    
+End Function
+
 'Given an OLE color, return an RGB
 Public Function GetRealColor(ByVal Color As OLE_COLOR) As Long
     TranslateColor Color, 0, GetRealColor
