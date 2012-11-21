@@ -315,7 +315,6 @@ Begin VB.Form FormPreferences
       End
       Begin VB.PictureBox picAlphaOne 
          Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
          BackColor       =   &H00808080&
          ForeColor       =   &H80000008&
          Height          =   360
@@ -333,7 +332,6 @@ Begin VB.Form FormPreferences
       End
       Begin VB.PictureBox picAlphaTwo 
          Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
          BackColor       =   &H00C0C0C0&
          ForeColor       =   &H80000008&
          Height          =   360
@@ -958,7 +956,6 @@ Begin VB.Form FormPreferences
       End
       Begin VB.PictureBox picCanvasColor 
          Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
          BackColor       =   &H80000005&
          ForeColor       =   &H80000008&
          Height          =   360
@@ -1132,10 +1129,7 @@ Private Sub cmbAlphaCheck_Click()
         'Change the picture boxes to match the current selection
         picAlphaOne.backColor = AlphaCheckOne
         picAlphaTwo.backColor = AlphaCheckTwo
-        
-        picAlphaOne.Refresh
-        picAlphaTwo.Refresh
-        
+                
     End If
 
 End Sub
@@ -1161,11 +1155,12 @@ Private Sub cmbCanvas_Click()
         
                 retColor = picCanvasColor.backColor
         
-                CD1.VBChooseColor retColor, True, True, False, Me.hWnd
-        
-                'If a color was selected, change the picture box and associated combo box to match
-                If retColor >= 0 Then CanvasBackground = retColor Else CanvasBackground = picCanvasColor.backColor
-            
+                'If a color is selected, change the picture box and associated combo box to match
+                If CD1.VBChooseColor(retColor, True, True, False, Me.hWnd) Then
+                    CanvasBackground = retColor
+                Else
+                    CanvasBackground = picCanvasColor.backColor
+                End If
         End Select
     
         DrawSampleCanvasBackground
@@ -1222,7 +1217,6 @@ Private Sub CmdOK_Click()
     If CanvasDropShadow Then canvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, CanvasBackground
     
     'Store the canvas background preference
-    CanvasBackground = CLng(picCanvasColor.backColor)
     userPreferences.SetPreference_Long "General Preferences", "CanvasBackground", CanvasBackground
         
     'Store the alpha checkerboard preference
@@ -1457,9 +1451,8 @@ End Sub
 'Draw a sample of the current background to the PicCanvasColor picture box
 Private Sub DrawSampleCanvasBackground()
     
-    Me.picCanvasColor.backColor = CanvasBackground
-    Me.picCanvasColor.Refresh
     Me.picCanvasColor.Enabled = True
+    Me.picCanvasColor.backColor = ConvertSystemColor(CanvasBackground)
     
 End Sub
 

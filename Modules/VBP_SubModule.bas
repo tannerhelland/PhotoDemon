@@ -16,9 +16,11 @@ Option Explicit
 'Distance value for mouse_over events and selections; a literal "radius" below which the mouse cursor is considered "over" a point
 Private Const mouseSelAccuracy As Single = 8
 
-'Used to convert a system color (such as "button face") to a literal RGB value
-Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
+'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
+'When images are loaded, this function is used to quickly determine the image's color count.  It stops once 257 is reached,
+' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
 Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     
     Message "Verifying image color count..."
@@ -104,8 +106,13 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
 End Function
 
 'Given an OLE color, return an RGB
-Public Function GetRealColor(ByVal Color As OLE_COLOR) As Long
-    TranslateColor Color, 0, GetRealColor
+Public Function ConvertSystemColor(ByVal colorRef As OLE_COLOR) As Long
+    
+    'OleTranslateColor returns -1 if it fails; if that happens, default to white
+    If OleTranslateColor(colorRef, 0, ConvertSystemColor) Then
+        ConvertSystemColor = RGB(255, 255, 255)
+    End If
+    
 End Function
 
 'Populate a text box with a given integer value.  This is done constantly across the program, so I use a sub to handle it, as
