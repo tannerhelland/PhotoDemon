@@ -245,16 +245,16 @@ Public Sub loadUserSettings()
     FilterPath = GetPreference_String("Program Paths", "CustomFilter", FilterPath)
     
     'Get the canvas background preference (color vs checkerboard pattern)
-    Dim X As Long
-    X = GetPreference_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
+    Dim x As Long
+    x = GetPreference_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
     
     'A value of -1 previously indicated a checkerboard background, which is no longer allowed.
     ' If that value is found, overwrite it with a pleasant shade of blue.
-    If X = -1 Then
-        X = RGB(201, 211, 226)
+    If x = -1 Then
+        x = RGB(201, 211, 226)
         SetPreference_Long "General Preferences", "CanvasBackground", CStr(RGB(201, 211, 226))
     End If
-    CanvasBackground = X
+    CanvasBackground = x
     
     'Get the canvas drop shadow preference
     CanvasDropShadow = GetPreference_Boolean("General Preferences", "CanvasDropShadow", False)
@@ -325,8 +325,8 @@ Private Sub createNewINIFile()
         'Write out general preferences
         Print #fileNum, "[General Preferences]"
         Print #fileNum, "AlphaCheckMode=1"
-        Print #fileNum, "AlphaCheckOne=" & RGB(153, 153, 153)
-        Print #fileNum, "AlphaCheckTwo=" & RGB(102, 102, 102)
+        Print #fileNum, "AlphaCheckOne=" & RGB(255, 255, 255)
+        Print #fileNum, "AlphaCheckTwo=" & RGB(204, 204, 204)
         Print #fileNum, "AlphaCheckSize=1"
         Print #fileNum, "AutosizeLargeImages=0"
         Print #fileNum, "CanvasBackground=" & vb3DShadow 'RGB(201, 211, 226)
