@@ -73,23 +73,23 @@ Private Enum EncoderValue
     [EncoderValueCompressionCCITT4] = 4
     [EncoderValueCompressionRle] = 5
     [EncoderValueCompressionNone] = 6
-    [EncoderValueScanMethodInterlaced]
-    [EncoderValueScanMethodNonInterlaced]
-    [EncoderValueVersionGif87]
-    [EncoderValueVersionGif89]
-    [EncoderValueRenderProgressive]
-    [EncoderValueRenderNonProgressive]
-    [EncoderValueTransformRotate90]
-    [EncoderValueTransformRotate180]
-    [EncoderValueTransformRotate270]
-    [EncoderValueTransformFlipHorizontal]
-    [EncoderValueTransformFlipVertical]
-    [EncoderValueMultiFrame]
-    [EncoderValueLastFrame]
-    [EncoderValueFlush]
-    [EncoderValueFrameDimensionTime]
-    [EncoderValueFrameDimensionResolution]
-    [EncoderValueFrameDimensionPage]
+    [EncoderValueScanMethodInterlaced] = 7
+    [EncoderValueScanMethodNonInterlaced] = 8
+    [EncoderValueVersionGif87] = 9
+    [EncoderValueVersionGif89] = 10
+    [EncoderValueRenderProgressive] = 11
+    [EncoderValueRenderNonProgressive] = 12
+    [EncoderValueTransformRotate90] = 13
+    [EncoderValueTransformRotate180] = 14
+    [EncoderValueTransformRotate270] = 15
+    [EncoderValueTransformFlipHorizontal] = 16
+    [EncoderValueTransformFlipVertical] = 17
+    [EncoderValueMultiFrame] = 18
+    [EncoderValueLastFrame] = 19
+    [EncoderValueFlush] = 20
+    [EncoderValueFrameDimensionTime] = 21
+    [EncoderValueFrameDimensionResolution] = 22
+    [EncoderValueFrameDimensionPage] = 23
 End Enum
 
 Private Type clsid
@@ -104,7 +104,7 @@ Private Type ImageCodecInfo
     FormatID          As clsid
     CodecName         As Long
     DllName           As Long
-    FormatDescription As Long
+    formatDescription As Long
     FilenameExtension As Long
     MimeType          As Long
     Flags             As Long
