@@ -513,22 +513,33 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             targetImage.IsActive = False
             If isThisPrimaryImage Then Unload FormMain.ActiveForm
             GoTo PreloadMoreImages
+        Else
+            Message "Image data loaded successfully."
         End If
         
         'Before continuing, if the image is 32bpp, verify the alpha channel.  If the alpha channel is all 0's or all 255's,
         ' we can conserve on resources by transparently converting it to 24bpp.
         If targetImage.mainLayer.getLayerColorDepth = 32 Then
             
-            'Verify the alpha channel.  If this function returns FALSE, the alpha channel is unnecessary.
-            If targetImage.mainLayer.verifyAlphaChannel = False Then
+            'Make sure the user hasn't disabled this capability
+            If userPreferences.GetPreference_Boolean("General Preferences", "ValidateAlphaChannels", True) Then
             
-                Message "Alpha channel deemed unnecessary.  Transparently converting image to 24bpp..."
+                Message "Verfiying alpha channel..."
             
-                'Transparently convert the main layer to 24bpp
-                targetImage.mainLayer.convertTo24bpp
-            
+                'Verify the alpha channel.  If this function returns FALSE, the alpha channel is unnecessary.
+                If targetImage.mainLayer.verifyAlphaChannel = False Then
+                
+                    Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
+                
+                    'Transparently convert the main layer to 24bpp
+                    targetImage.mainLayer.convertTo24bpp
+                
+                Else
+                    Message "Alpha channel verified.  Leaving image in 32bpp mode."
+                End If
+                
             Else
-                Message "Alpha channel verified.  Leaving image in 32bpp mode."
+                Message "Alpha channel validation ignored at user's request."
             End If
         
         End If
@@ -561,6 +572,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
         End If
         
+        Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP)"
+                
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then
             

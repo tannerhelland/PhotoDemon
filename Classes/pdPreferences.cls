@@ -344,6 +344,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "LastWindowWidth=1"
         Print #fileNum, "LastWindowHeight=1"
         Print #fileNum, "UseFancyFonts=0"
+        Print #fileNum, "ValidateAlphaChannels=1"
         Print #fileNum, ""
         
         'Write out batch conversion preferences
