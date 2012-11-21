@@ -533,10 +533,33 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         End If
         
-        
         'Store important data about the image to the pdImages array
         targetImage.updateSize
         targetImage.OriginalFileSize = FileLen(sFile(thisImage))
+                
+        'At this point, we now have loaded image data in 24 or 32bpp format.  For future reference, let's count
+        ' the number of colors present in the image.
+        Dim colorCountCheck As Long
+        colorCountCheck = getQuickColorCount(targetImage)
+        
+        'If 256 or less colors were found in the image, mark it as 8bpp.
+        If colorCountCheck <= 256 Then
+            If colorCountCheck > 16 Then
+                targetImage.OriginalColorDepth = 8
+            Else
+                If colorCountCheck > 2 Then
+                    targetImage.OriginalColorDepth = 4
+                Else
+                    targetImage.OriginalColorDepth = 1
+                End If
+            End If
+        Else
+            If targetImage.mainLayer.getLayerColorDepth = 24 Then
+                targetImage.OriginalColorDepth = 24
+            Else
+                targetImage.OriginalColorDepth = 32
+            End If
+        End If
         
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then

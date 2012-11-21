@@ -22,7 +22,7 @@ Attribute VB_Exposed = False
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
 ' in the MDIWindow module.
 '
-'The purpose of this class is to hold a bunch of variables related to a given image - things like size, zoom,
+'The purpose of this class is to store a bunch of variables related to a given image - things like size, zoom,
 ' name, file path, format containing form, Undo/Redo tracking - as well as a reference to a pdLayer object
 ' called "mainLayer", which contains an in-memory copy of the relevant image's data.  In the future,
 ' additional layers may be utilized within each image.
@@ -37,14 +37,15 @@ Option Explicit
 'It currently includes the following information, per image:
 
 'Image ID (the value of NumOfImagesLoaded when the class was initialized - see the CreateNewImageForm routine)
-'Whether or not it is active (e.g., still tied to a form that has not been unloaded)
-'Did the image load successfully (this defaults to false, and must be set to True by the load function)
+'Is it active? (e.g., still associated with a form that has not been unloaded)
+'Did the image load successfully? (this defaults to false, and must be set to True by the load function)
 'Containing form (e.g. upon which FormImage does this pdImage appear?)
 'Original file size
 'Original file name (e.g. the file name used when the image was first loaded)
 'Original file name + extension (e.g. original file name + .***)
 'Location on disk (full path, from the drive all the way to the filename + extension)
 'Original file format (a numerical value corresponding to the relevant FREE_IMAGE_FORMAT enum)
+'Original color depth
 'Undo information, specifically:
     'Current Undo state (e.g. have undo files been created?)
     'Current Redo state (e.g. has the user pressed the undo button, meaning it's possible to redo actions?)
@@ -100,6 +101,9 @@ Option Explicit
     
     'Original image format.  This is derived from the equivalent FreeImage constant - see the enum for FREE_IMAGE_FORMAT for details
     Public OriginalFileFormat As Long
+    
+    'Original color depth (a BPP value, most commonly 24 or 32, may be 8)
+    Public OriginalColorDepth As Long
     
     'Save flags let us save the image using settings the user has already specified (so we don't have to pester
     ' them every time they save)

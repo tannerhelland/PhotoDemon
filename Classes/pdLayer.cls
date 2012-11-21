@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 30/September/12
-'Last update: added a workaround for resizing transparent images using HALFTONE mode
+'Last updated: 20/November/12
+'Last update: added alpha verification and internal 24/32bpp conversion methods
 '
 'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
 ' pdLayer is a powerful DIB class responsible for managing all image data in memory.  Some of the benefits provided by
