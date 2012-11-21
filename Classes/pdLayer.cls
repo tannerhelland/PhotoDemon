@@ -155,7 +155,7 @@ Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long,
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function TranslateColor Lib "olepro32" Alias "OleTranslateColor" (ByVal oColor As OLE_COLOR, ByVal Palette As Long, ByRef crColor As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
 'Clipboard interaction
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
@@ -199,6 +199,14 @@ Public PreviewX As Long
 Public PreviewY As Long
 Public PreviewWidth As Long
 Public PreviewHeight As Long
+
+'Translate an OLE color to an RGB Long
+Private Function translateColor(ByVal colorRef As Long) As Long
+    'OleTranslateColor returns -1 if it fails; if that happens, default to white
+    If OleTranslateColor(colorRef, 0, translateColor) Then
+        translateColor = RGB(255, 255, 255)
+    End If
+End Function
 
 'Return this layer's color depth
 Public Function getLayerColorDepth() As Long
@@ -595,7 +603,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     End If
         
     'The back color may or may not be a system color, so translate it just in case
-    TranslateColor backColor, 0, backColor
+    backColor = translateColor(backColor)
         
     'Remember this color depth, width, and height
     layerColorDepth = colorDepth
