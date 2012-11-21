@@ -216,6 +216,208 @@ Begin VB.Form FormPreferences
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4695
+      Index           =   2
+      Left            =   240
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   29
+      Top             =   1800
+      Width           =   8295
+      Begin VB.ComboBox cmbAlphaCheckSize 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   36
+         Top             =   1875
+         Width           =   5055
+      End
+      Begin VB.ComboBox cmbAlphaCheck 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   33
+         Top             =   915
+         Width           =   5055
+      End
+      Begin VB.PictureBox picAlphaOne 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00808080&
+         ForeColor       =   &H80000008&
+         Height          =   360
+         Left            =   5520
+         MouseIcon       =   "VBP_FormPreferences.frx":519A
+         MousePointer    =   99  'Custom
+         ScaleHeight     =   22
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   37
+         TabIndex        =   32
+         TabStop         =   0   'False
+         ToolTipText     =   "Click to change the second checkerboard background color for alpha channels"
+         Top             =   915
+         Width           =   585
+      End
+      Begin VB.PictureBox picAlphaTwo 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00C0C0C0&
+         ForeColor       =   &H80000008&
+         Height          =   360
+         Left            =   6240
+         MouseIcon       =   "VBP_FormPreferences.frx":52EC
+         MousePointer    =   99  'Custom
+         ScaleHeight     =   22
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   37
+         TabIndex        =   31
+         TabStop         =   0   'False
+         ToolTipText     =   "Click to change the second checkerboard background color for alpha channels"
+         Top             =   915
+         Width           =   585
+      End
+      Begin VB.Label lblAlphaCheckSize 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "transparency checkerboard size:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   37
+         Top             =   1560
+         Width           =   2790
+      End
+      Begin VB.Label lblAlphaCheck 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "transparency checkerboard colors:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   34
+         Top             =   600
+         Width           =   2970
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "transparency preferences"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   120
+         TabIndex        =   30
+         Top             =   0
+         Width           =   2640
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Index           =   1
+      Left            =   240
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   14
+      Top             =   1800
+      Width           =   8295
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "tool preferences"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   120
+         TabIndex        =   16
+         Top             =   0
+         Width           =   1695
+      End
+      Begin VB.Label Label2 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "There are not currently any tool settings."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   15
+         Top             =   645
+         Width           =   3510
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
       Index           =   4
       Left            =   240
       MousePointer    =   1  'Arrow
@@ -319,12 +521,12 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   25
-         ToolTipText     =   $"VBP_FormPreferences.frx":519A
+         ToolTipText     =   $"VBP_FormPreferences.frx":543E
          Top             =   600
          Width           =   6975
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":528C
+         Caption         =   $"VBP_FormPreferences.frx":5530
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -540,7 +742,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":533B
+         MouseIcon       =   "VBP_FormPreferences.frx":55DF
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -702,7 +904,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   20
-         ToolTipText     =   $"VBP_FormPreferences.frx":548D
+         ToolTipText     =   $"VBP_FormPreferences.frx":5731
          Top             =   1080
          Width           =   6735
       End
@@ -766,206 +968,6 @@ Begin VB.Form FormPreferences
          Width           =   7935
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   2
-      Left            =   240
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   29
-      Top             =   1800
-      Width           =   8295
-      Begin VB.ComboBox cmbAlphaCheckSize 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   360
-         Style           =   2  'Dropdown List
-         TabIndex        =   36
-         Top             =   1875
-         Width           =   5055
-      End
-      Begin VB.ComboBox cmbAlphaCheck 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   360
-         Style           =   2  'Dropdown List
-         TabIndex        =   33
-         Top             =   915
-         Width           =   5055
-      End
-      Begin VB.PictureBox picAlphaOne 
-         Appearance      =   0  'Flat
-         BackColor       =   &H00808080&
-         ForeColor       =   &H80000008&
-         Height          =   360
-         Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":5529
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   22
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   37
-         TabIndex        =   32
-         TabStop         =   0   'False
-         ToolTipText     =   "Click to change the second checkerboard background color for alpha channels"
-         Top             =   915
-         Width           =   585
-      End
-      Begin VB.PictureBox picAlphaTwo 
-         Appearance      =   0  'Flat
-         BackColor       =   &H00C0C0C0&
-         ForeColor       =   &H80000008&
-         Height          =   360
-         Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":567B
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   22
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   37
-         TabIndex        =   31
-         TabStop         =   0   'False
-         ToolTipText     =   "Click to change the second checkerboard background color for alpha channels"
-         Top             =   915
-         Width           =   585
-      End
-      Begin VB.Label lblAlphaCheckSize 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "transparency checkerboard size:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   37
-         Top             =   1560
-         Width           =   2790
-      End
-      Begin VB.Label lblAlphaCheck 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "transparency checkerboard colors:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   34
-         Top             =   600
-         Width           =   2970
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "transparency preferences"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         TabIndex        =   30
-         Top             =   0
-         Width           =   2640
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   1
-      Left            =   240
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   14
-      Top             =   1800
-      Width           =   8295
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "tool preferences"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   16
-         Top             =   0
-         Width           =   1695
-      End
-      Begin VB.Label Label2 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "There are not currently any tool settings."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   15
-         Top             =   645
-         Width           =   3510
-      End
-   End
    Begin VB.Line lneVertical 
       BorderColor     =   &H8000000D&
       X1              =   8
@@ -1012,37 +1014,42 @@ End Sub
 Private Sub cmbAlphaCheck_Click()
 
     'Only respond to user-generated events
-    If userInitiatedAlphaSelection = False Then Exit Sub
+    If userInitiatedAlphaSelection = True Then
 
-    'Redraw the sample picture boxes based on the value the user has selected
-    AlphaCheckMode = cmbAlphaCheck.ListIndex
-    Select Case cmbAlphaCheck.ListIndex
+        'Redraw the sample picture boxes based on the value the user has selected
+        AlphaCheckMode = cmbAlphaCheck.ListIndex
+        Select Case cmbAlphaCheck.ListIndex
+        
+            'Case 0 - Highlights
+            Case 0
+                AlphaCheckOne = RGB(255, 255, 255)
+                AlphaCheckTwo = RGB(204, 204, 204)
+            
+            'Case 1 - Midtones
+            Case 1
+                AlphaCheckOne = RGB(153, 153, 153)
+                AlphaCheckTwo = RGB(102, 102, 102)
+            
+            'Case 2 - Shadows
+            Case 2
+                AlphaCheckOne = RGB(51, 51, 51)
+                AlphaCheckTwo = RGB(0, 0, 0)
+            
+            'Case 3 - Custom
+            Case 3
+                AlphaCheckOne = RGB(255, 204, 246)
+                AlphaCheckTwo = RGB(255, 255, 255)
+            
+        End Select
     
-        'Case 0 - Highlights
-        Case 0
-            AlphaCheckOne = RGB(255, 255, 255)
-            AlphaCheckTwo = RGB(204, 204, 204)
+        'Change the picture boxes to match the current selection
+        picAlphaOne.backColor = AlphaCheckOne
+        picAlphaTwo.backColor = AlphaCheckTwo
         
-        'Case 1 - Midtones
-        Case 1
-            AlphaCheckOne = RGB(153, 153, 153)
-            AlphaCheckTwo = RGB(102, 102, 102)
+        picAlphaOne.Refresh
+        picAlphaTwo.Refresh
         
-        'Case 2 - Shadows
-        Case 2
-            AlphaCheckOne = RGB(51, 51, 51)
-            AlphaCheckTwo = RGB(0, 0, 0)
-        
-        'Case 3 - Custom
-        Case 3
-            AlphaCheckOne = RGB(255, 204, 246)
-            AlphaCheckTwo = RGB(255, 255, 255)
-        
-    End Select
-
-    'Change the picture boxes to match the current selection
-    picAlphaOne.backColor = AlphaCheckOne
-    picAlphaTwo.backColor = AlphaCheckTwo
+    End If
 
 End Sub
 
@@ -1050,31 +1057,33 @@ End Sub
 Private Sub cmbCanvas_Click()
     
     'Only respond to user-generated events
-    If userInitiatedColorSelection = False Then Exit Sub
+    If userInitiatedColorSelection = True Then
     
-    'Redraw the sample picture box value based on the value the user has selected
-    Select Case cmbCanvas.ListIndex
-        Case 0
-            CanvasBackground = vb3DLight
-        Case 1
-            CanvasBackground = vb3DShadow
-        Case 2
-            'Prompt with a color selection box
-            Dim retColor As Long
-    
-            Dim CD1 As cCommonDialog
-            Set CD1 = New cCommonDialog
-    
-            retColor = picCanvasColor.backColor
-    
-            CD1.VBChooseColor retColor, True, True, False, Me.hWnd
-    
-            'If a color was selected, change the picture box and associated combo box to match
-            If retColor >= 0 Then CanvasBackground = retColor Else CanvasBackground = picCanvasColor.backColor
+        'Redraw the sample picture box value based on the value the user has selected
+        Select Case cmbCanvas.ListIndex
+            Case 0
+                CanvasBackground = vb3DLight
+            Case 1
+                CanvasBackground = vb3DShadow
+            Case 2
+                'Prompt with a color selection box
+                Dim retColor As Long
+        
+                Dim CD1 As cCommonDialog
+                Set CD1 = New cCommonDialog
+        
+                retColor = picCanvasColor.backColor
+        
+                CD1.VBChooseColor retColor, True, True, False, Me.hWnd
+        
+                'If a color was selected, change the picture box and associated combo box to match
+                If retColor >= 0 Then CanvasBackground = retColor Else CanvasBackground = picCanvasColor.backColor
             
-    End Select
+        End Select
     
-    DrawSampleCanvasBackground
+        DrawSampleCanvasBackground
+    
+    End If
     
 End Sub
 
