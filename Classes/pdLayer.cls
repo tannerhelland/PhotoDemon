@@ -155,7 +155,7 @@ Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long,
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function TranslateColor Lib "OLEPRO32.DLL" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, col As Long) As Long
+Private Declare Function TranslateColor Lib "olepro32" Alias "OleTranslateColor" (ByVal oColor As OLE_COLOR, ByVal Palette As Long, ByRef crColor As Long) As Long
 
 'Clipboard interaction
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
