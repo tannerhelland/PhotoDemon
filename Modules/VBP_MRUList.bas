@@ -34,6 +34,32 @@ Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Lon
 Private Const MAX_PATH As Long = 260
 Private Const maxMRULength As Long = 64
 
+'Return a 16-character hash of a specific MRU entry.  (This is used to generate unique menu icon filenames.)
+Public Function getMRUHash(ByVal mIndex As Long) As String
+
+    If (mIndex <= numEntries) And (mIndex >= 0) Then
+    
+        'Use an SHA-256 hash function on the filename at this entry
+        Dim cSHA2 As CSHA256
+        Set cSHA2 = New CSHA256
+        
+        Dim hString As String
+        hString = cSHA2.SHA256(MRUlist(mIndex))
+    
+        'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
+        ' This is too long for a filename, so take only the first sixteen characters of the hash.
+        
+        hString = Left(hString, 16)
+    
+        'Return this as the hash value
+        getMRUHash = hString
+    
+    Else
+        getMRUHash = ""
+    End If
+    
+End Function
+
 'Return the MRU entry at a specific location (used to load MRU files)
 Public Function getSpecificMRU(ByVal mIndex As Long) As String
 
