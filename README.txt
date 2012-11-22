@@ -166,6 +166,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.everaldo.com/crystal/)
 * The Tango Icon Library for menu and button icons (public-domain)
   (http://tango.freedesktop.org/Tango_Icon_Library)
+* Phil Fresle for a native-VB implementation of SHA-2 hashing
+  (http://www.frez.co.uk/vb6.aspx)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
   * Herman Liu
   * Dave Jamison
