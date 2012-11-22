@@ -2234,13 +2234,14 @@ End Sub
 'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
 Public Sub mnuRecDocs_Click(Index As Integer)
     
+    'Load the MRU path that correlates to this index.  (If one is not found, a null string is returned)
+    Dim tmpString As String
+    tmpString = getSpecificMRU(Index)
+    
     'Check - just in case - to make sure the path isn't empty
-    If mnuRecDocs(Index).Caption <> "" Then
-        Message "Preparing to load MRU entry..."
+    If tmpString <> "" Then
         
-        'Strip the accelerator caption from this recent menu entry
-        Dim tmpString As String
-        tmpString = getSpecificMRU(Index)
+        Message "Preparing to load MRU entry..."
         
         'Because PreLoadImage requires a string array, create an array to pass it
         Dim sFile(0) As String

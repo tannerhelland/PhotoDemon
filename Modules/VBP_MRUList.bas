@@ -3,12 +3,17 @@ Attribute VB_Name = "MRU_List_Handler"
 'MRU (Most Recently Used) List Handler
 'Copyright ©2005-2012 by Tanner Helland
 'Created: 22/May/05
-'Last updated: 4/May/07
-'Last update: MRU entries are kept in the INI file, not the registry.
+'Last updated: 22/November/12
+'Last update: MRU entries are shortened to a max length of 32 (see corresponding CONST) before placing them in
+'              the MRU menu.
 '
 'Handles the creation and maintenance of the program's MRU list.  Originally
 ' this stored our MRU information in the registry, but I have rewritten the
 ' entire thing to use only the INI file. PhotoDemon doesn't touch the registry!
+'
+'Special thanks to Randy Birch for the original version of the path shrinking code.
+' You can download his original version from this link (good as of 22 Nov 2012):
+' http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm
 '
 '***************************************************************************
 
@@ -22,6 +27,12 @@ Private numEntries As Long
 
 'Number of recent files to be tracked
 Public Const RECENT_FILE_COUNT As Long = 9
+
+'This function is used to shrink a long path down to a minimum number of characters
+Private Declare Function PathCompactPathEx Lib "shlwapi.dll" Alias "PathCompactPathExA" (ByVal pszOut As String, ByVal pszSrc As String, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
+Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
+Private Const MAX_PATH As Long = 260
+Private Const maxMRULength As Long = 64
 
 'Return the MRU entry at a specific location (used to load MRU files)
 Public Function getSpecificMRU(ByVal mIndex As Long) As String
@@ -50,7 +61,7 @@ Public Sub MRU_LoadFromINI()
             Else
                 FormMain.mnuRecDocs(x).Enabled = True
             End If
-            FormMain.mnuRecDocs(x).Caption = MRUlist(x) & vbTab & "Ctrl+" & x
+            FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & vbTab & "Ctrl+" & x
         Next x
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
@@ -133,7 +144,7 @@ MRUEntryFound:
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
     End If
-    FormMain.mnuRecDocs(0).Caption = newFile & vbTab & "Ctrl+0"
+    FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile) & vbTab & "Ctrl+0"
     
     If numEntries > 1 Then
         'Unload existing menus...
@@ -144,7 +155,7 @@ MRUEntryFound:
         'Load new menus...
         For x = 1 To numEntries - 1
             Load FormMain.mnuRecDocs(x)
-            FormMain.mnuRecDocs(x).Caption = MRUlist(x) & vbTab & "Ctrl+" & x
+            FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & vbTab & "Ctrl+" & x
         Next x
     End If
     
@@ -186,3 +197,25 @@ End Sub
 Public Function MRU_ReturnCount() As Long
     MRU_ReturnCount = numEntries
 End Function
+
+'Truncates a path to a specified number of characters by replacing path components with ellipses.
+' (Originally written by Randy Birch @ http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm)
+Private Function getShortMRU(ByVal sPath As String) As String
+
+    Dim ret As Long
+    Dim buff As String
+   
+    buff = Space$(MAX_PATH)
+    ret = PathCompactPathEx(buff, sPath, maxMRULength + 1, 0&)
+   
+    getShortMRU = TrimNull(buff)
+   
+End Function
+
+'Remove null characters from a string
+Private Function TrimNull(ByVal sString As String) As String
+
+   TrimNull = Left$(sString, lstrlenW(StrPtr(sString)))
+   
+End Function
+
