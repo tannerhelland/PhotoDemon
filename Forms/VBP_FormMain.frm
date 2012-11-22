@@ -40,9 +40,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -260,18 +260,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   465
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":A6CA
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":A6F2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptype     =   1
-         tooltiptitle    =   "Open"
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":A6CA
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -279,18 +287,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   1560
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":B744
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":B76C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptype     =   1
-         tooltiptitle    =   "Save"
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":B71C
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Save"
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -298,19 +314,27 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   2880
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":C7BE
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":C7E6
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptype     =   1
-         tooltiptitle    =   "Undo"
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":C76E
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Undo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -318,19 +342,27 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   2880
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":D838
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":D860
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptype     =   1
-         tooltiptitle    =   "Redo"
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":D7C0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Redo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
          Height          =   615
@@ -338,18 +370,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   12
          Top             =   465
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":E8B2
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":E8DA
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptype     =   1
-         tooltiptitle    =   "Close"
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":E812
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Close"
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -357,18 +397,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   13
          Top             =   1560
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":F92C
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":F954
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptype     =   1
-         tooltiptitle    =   "Save As"
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":F864
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Save As"
       End
       Begin VB.Label lblSelSize 
          Appearance      =   0  'Flat
@@ -2192,8 +2240,7 @@ Public Sub mnuRecDocs_Click(Index As Integer)
         
         'Strip the accelerator caption from this recent menu entry
         Dim tmpString As String
-        tmpString = mnuRecDocs(Index).Caption
-        StripAcceleratorFromCaption tmpString
+        tmpString = getSpecificMRU(Index)
         
         'Because PreLoadImage requires a string array, create an array to pass it
         Dim sFile(0) As String

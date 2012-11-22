@@ -23,6 +23,17 @@ Private numEntries As Long
 'Number of recent files to be tracked
 Public Const RECENT_FILE_COUNT As Long = 9
 
+'Return the MRU entry at a specific location (used to load MRU files)
+Public Function getSpecificMRU(ByVal mIndex As Long) As String
+
+    If (mIndex <= numEntries) And (mIndex >= 0) Then
+        getSpecificMRU = MRUlist(mIndex)
+    Else
+        getSpecificMRU = ""
+    End If
+
+End Function
+
 'Load the MRU list from the program's INI file
 Public Sub MRU_LoadFromINI()
 
