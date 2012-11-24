@@ -321,8 +321,9 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
     
     'UpdateMRU should only be true if the save was successful
     If updateMRU = True Then
+    
         'Add this file to the MRU list
-        MRU_AddNewFile dstPath
+        MRU_AddNewFile dstPath, pdImages(imageID)
     
         'Remember the file's location for future saves
         pdImages(imageID).LocationOnDisk = dstPath

@@ -404,7 +404,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
             Dim CalcX As Single, CalcY As Single, invCalcX As Single, invCalcY As Single
             
             'Red and green values we'll use to interpolate the new pixel
-            Dim r As Long, r1 As Single, r2 As Single, r3 As Single, r4 As Single
+            Dim R As Long, r1 As Single, r2 As Single, r3 As Single, r4 As Single
             Dim i As Long
             
             'Interpolated red, green, and blue
@@ -456,17 +456,17 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                         ir2 = r2 * invCalcY + r4 * CalcY
                         
                         'Intepolate the value in the X direction
-                        r = ir1 * invCalcX + ir2 * CalcX
+                        R = ir1 * invCalcX + ir2 * CalcX
                         
                         'Make sure that the value is in acceptable byte range
-                        If r > 255 Then
-                            r = 255
-                        ElseIf r < 0 Then
-                            r = 0
+                        If R > 255 Then
+                            R = 255
+                        ElseIf R < 0 Then
+                            R = 0
                         End If
                         
                         'Set this pixel onto the destination image
-                        dstImageData(QuickX + i, y) = r
+                        dstImageData(QuickX + i, y) = R
                         
                     Next i
                 

@@ -390,10 +390,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         Dim FileExtension As String
         FileExtension = UCase(GetExtension(sFile(thisImage)))
-        
-        'Add this file to the MRU list (unless specifically told not to)
-        If ToUpdateMRU = True Then MRU_AddNewFile sFile(thisImage)
-        
+                
         Dim loadSuccessful As Boolean
         loadSuccessful = True
         
@@ -658,6 +655,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             ' bottom edges don't fall outside the MDI client area
             'If the user wants us to resize the image to fit on-screen, do that now
             If AutosizeLargeImages = 1 Then FitWindowToViewport
+        
+            'Finally, add this file to the MRU list (unless specifically told not to)
+            If ToUpdateMRU = True Then MRU_AddNewFile sFile(thisImage), targetImage
         
         End If
         
