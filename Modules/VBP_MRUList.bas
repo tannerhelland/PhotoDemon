@@ -35,28 +35,21 @@ Private Const MAX_PATH As Long = 260
 Private Const maxMRULength As Long = 64
 
 'Return a 16-character hash of a specific MRU entry.  (This is used to generate unique menu icon filenames.)
-Public Function getMRUHash(ByVal mIndex As Long) As String
-
-    If (mIndex <= numEntries) And (mIndex >= 0) Then
+Public Function getMRUHash(ByVal filePath As String) As String
     
-        'Use an SHA-256 hash function on the filename at this entry
-        Dim cSHA2 As CSHA256
-        Set cSHA2 = New CSHA256
+    'Use an SHA-256 hash function on the filename at this entry
+    Dim cSHA2 As CSHA256
+    Set cSHA2 = New CSHA256
+    
+    Dim hString As String
+    hString = cSHA2.SHA256(filePath)
         
-        Dim hString As String
-        hString = cSHA2.SHA256(MRUlist(mIndex))
+    'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
+    ' This is too long for a filename, so take only the first sixteen characters of the hash.
+    hString = Left(hString, 16)
     
-        'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
-        ' This is too long for a filename, so take only the first sixteen characters of the hash.
-        
-        hString = Left(hString, 16)
-    
-        'Return this as the hash value
-        getMRUHash = hString
-    
-    Else
-        getMRUHash = ""
-    End If
+    'Return this as the hash value
+    getMRUHash = hString
     
 End Function
 
@@ -116,7 +109,7 @@ Public Sub MRU_SaveToINI()
 End Sub
 
 'Add another file to the MRU list
-Public Sub MRU_AddNewFile(ByVal newFile As String)
+Public Sub MRU_AddNewFile(ByVal newFile As String, ByRef srcImage As pdImage)
 
     'Locators
     Dim alreadyThere As Boolean, curLocation As Long
@@ -159,7 +152,7 @@ MRUEntryFound:
                 MRUlist(x) = MRUlist(x - 1)
             Next x
         End If
-    
+        
     End If
     
     MRUlist(0) = newFile
@@ -185,8 +178,79 @@ MRUEntryFound:
         Next x
     End If
     
+    'If we are not in the middle of a batch conversion, save a thumbnail of this image to file.
+    saveMRUThumbnail newFile, srcImage
+    
     'The icons in the MRU sub-menu need to be reset after this action
     ResetMenuIcons
+
+End Sub
+
+'Saves a thumbnail PNG of a pdImage object.  The thumbnail is saved to the /Data/Icons directory
+Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
+
+    'Right now, the save process is reliant on FreeImage.  Disable thumbnails if FreeImage is not present
+    If imageFormats.FreeImageEnabled Then
+    
+        Message "Preparing MRU thumbnail..."
+    
+        'First, generate a path at which to save the file in question
+        Dim sFilename As String
+        sFilename = userPreferences.getIconPath & getMRUHash(iPath) & ".png"
+        
+        'Load FreeImage into memory
+        Dim hLib As Long
+        hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    
+        'Calculate thumbnail dimensions of the image in question
+        Dim nWidth As Long, nHeight As Long
+        convertAspectRatio tImage.Width, tImage.Height, 64, 64, nWidth, nHeight
+    
+        'Create a temporary layer that in a square shape
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        
+        If tImage.Width > tImage.Height Then
+            tmpLayer.createBlank tImage.Width, tImage.Width, tImage.mainLayer.getLayerColorDepth, vbButtonFace
+            BitBlt tmpLayer.getLayerDC, 0, (tImage.Width - tImage.Height) \ 2, tImage.Width, tImage.Height, tImage.mainLayer.getLayerDC, 0, 0, vbSrcCopy
+        Else
+            tmpLayer.createBlank tImage.Height, tImage.Height, tImage.mainLayer.getLayerColorDepth, vbButtonFace
+            BitBlt tmpLayer.getLayerDC, (tImage.Height - tImage.Width) \ 2, 0, tImage.Width, tImage.Height, tImage.mainLayer.getLayerDC, 0, 0, vbSrcCopy
+        End If
+        
+        'Convert the temporary layer to a FreeImage-type DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    
+        'Use that handle to save the image to PNG format
+        If fi_DIB <> 0 Then
+            Dim fi_Check As Long
+            
+            'Output the PNG file at the proper color depth
+            Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
+            If tImage.mainLayer.getLayerColorDepth = 24 Then
+                fi_OutputColorDepth = FICD_24BPP
+            Else
+                fi_OutputColorDepth = FICD_32BPP
+            End If
+            
+            fi_Check = FreeImage_SaveEx(fi_DIB, sFilename, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, fi_OutputColorDepth, 64, 64, , , True)
+            If fi_Check = False Then Message "MRU thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            
+            Message "MRU thumbnail saved successfully."
+            
+        Else
+            Message "MRU thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        End If
+        
+        'Release FreeImage from memory
+        FreeLibrary hLib
+        
+        'Delete our temporary layer
+        tmpLayer.eraseLayer
+        Set tmpLayer = Nothing
+    
+    End If
 
 End Sub
 
