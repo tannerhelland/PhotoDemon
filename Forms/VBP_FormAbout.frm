@@ -157,7 +157,7 @@ Private Sub Form_Load()
     GenerateThankyou "Everaldo and The Crystal Project (Crystal icons, LGPL-licensed, click for details)", "http://www.everaldo.com/crystal/"
     GenerateThankyou "Yusuke Kamiyamane (Fugue icon set, CC-BY-3.0)", "http://p.yusukekamiyamane.com/"
     GenerateThankyou "The Tango Icon Library (public-domain)", "http://tango.freedesktop.org/"
-    GenerateThankyou "Phil Fresle (SHA-256 hash function)", "http://www.frez.co.uk/vb6.aspx"
+    GenerateThankyou "Phil Fresle (SHA-256 hash implementation)", "http://www.frez.co.uk/vb6.aspx"
     GenerateThankyou "Johannes B ('Fog')", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42642&lngWId=1"
     GenerateThankyou "Planet Source Code", "http://www.planetsourcecode.com/"
     GenerateThankyou "Dave Jamison", "http://www.modeltrainsoftware.com/"
