@@ -115,6 +115,7 @@ Private MacroPath As String
 Private FilterPath As String
 Private INIPath As String
 Private TempPath As String
+Private IconPath As String
 
 'Return the current temporary directory
 Public Function getTempPath() As String
@@ -171,6 +172,11 @@ Public Sub setFilterPath(ByVal newFilterPath As String)
     SetPreference_String "Program Paths", "Filter", FilterPath
 End Sub
 
+'Return the current MRU icon directory
+Public Function getIconPath() As String
+    getIconPath = IconPath
+End Function
+
 'Initialize key program directories
 Public Sub initializePaths()
     
@@ -189,6 +195,10 @@ Public Sub initializePaths()
     
     FilterPath = DataPath & "Filters\"
     If Not DirectoryExist(FilterPath) Then MkDir FilterPath
+    
+    'Finally, if it does not exist, create a folder to hold the MRU icons
+    IconPath = DataPath & "Icons\"
+    If Not DirectoryExist(IconPath) Then MkDir IconPath
     
     'The INI file is also located in the \Data subdirectory
     INIPath = DataPath & PROGRAMNAME & "_settings.ini"
