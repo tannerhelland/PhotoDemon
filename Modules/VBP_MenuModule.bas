@@ -346,4 +346,6 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
         If loadRelevantForm <> True Then PhotoDemon_SaveImage = False
     End If
 
+    Message "Save complete."
+
 End Function

@@ -201,7 +201,7 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
     'Right now, the save process is reliant on FreeImage.  Disable thumbnails if FreeImage is not present
     If imageFormats.FreeImageEnabled Then
     
-        Message "Preparing MRU thumbnail..."
+        Message "Preparing thumbnail..."
     
         'First, generate a path at which to save the file in question
         Dim sFilename As String
@@ -246,10 +246,10 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
             fi_Check = FreeImage_SaveEx(fi_DIB, sFilename, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, fi_OutputColorDepth, 64, 64, , , True)
             If fi_Check = False Then Message "MRU thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             
-            Message "MRU thumbnail saved successfully."
+            Message "Thumbnail saved successfully."
             
         Else
-            Message "MRU thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+            Message "Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
         End If
         
         'Release FreeImage from memory

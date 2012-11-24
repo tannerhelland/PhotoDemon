@@ -17,19 +17,19 @@ Option Explicit
 'Save the current image to BMP format
 Public Sub SaveBMP(ByVal imageID As Long, ByVal BMPPath As String)
     
-    Message "Saving image..."
+    Message "Saving bitmap..."
     
     'The layer class is capable of doing this without any outside help.
     pdImages(imageID).mainLayer.writeToBitmapFile BMPPath
     
-    Message "Save complete."
+    Message "BMP save complete."
     
 End Sub
 
 'Save the current image to PhotoDemon's native PDI format
 Public Sub SavePhotoDemonImage(ByVal imageID As Long, ByVal PDIPath As String)
     
-    Message "Saving image..."
+    Message "Saving PhotoDemon Image..."
 
     'First, have the layer write itself to file in BMP format
     pdImages(imageID).mainLayer.writeToBitmapFile PDIPath
@@ -37,7 +37,7 @@ Public Sub SavePhotoDemonImage(ByVal imageID As Long, ByVal PDIPath As String)
     'Then compress the file using zLib
     CompressFile PDIPath
     
-    Message "Save complete."
+    Message "PDI Save complete."
     
 End Sub
 
@@ -55,7 +55,7 @@ Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
-    Message "Preparing image..."
+    Message "Preparing GIF image..."
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -66,12 +66,12 @@ Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, FIF_GIF, , FICD_8BPP, , , , , True)
         If fi_Check = False Then
-            Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            Message "GIF save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
-            Message "Save complete."
+            Message "GIF save complete."
         End If
     Else
-        Message "Save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        Message "GIF save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
     End If
     
     'Release FreeImage from memory
@@ -93,7 +93,7 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
-    Message "Preparing image..."
+    Message "Preparing PNG image..."
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -114,12 +114,12 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional
         
         fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, fi_OutputColorDepth, , , , , True)
         If fi_Check = False Then
-            Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            Message "PNG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
-            Message "Save complete."
+            Message "PNG save complete."
         End If
     Else
-        Message "Save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        Message "PNG save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
     End If
     
     'Release FreeImage from memory
@@ -141,7 +141,7 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
-    Message "Preparing image..."
+    Message "Preparing PPM image..."
     
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
@@ -158,12 +158,12 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, FIF_PPM, , FICD_24BPP, , , , , True)
         If fi_Check = False Then
-            Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            Message "PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
-            Message "Save complete."
+            Message "PPM save complete."
         End If
     Else
-        Message "Save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        Message "PPM save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
     End If
     
     'Release FreeImage from memory
@@ -185,7 +185,7 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
-    Message "Preparing image..."
+    Message "Preparing TGA image..."
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -206,12 +206,12 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, FILO_TARGA_DEFAULT, fi_OutputColorDepth, , , , , True)
         If fi_Check = False Then
-            Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            Message "TGA save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
-            Message "Save complete."
+            Message "TGA save complete."
         End If
     Else
-        Message "Save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        Message "TGA save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
     End If
     
     'Release FreeImage from memory
@@ -233,7 +233,7 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
-    Message "Preparing image..."
+    Message "Preparing JPEG image..."
     
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
@@ -250,12 +250,12 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, JPEG_OPTIMIZE + jQuality, FICD_24BPP, , , , , True)
         If fi_Check = False Then
-            Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            Message "JPEG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
-            Message "Save complete."
+            Message "JPEG save complete."
         End If
     Else
-        Message "Save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        Message "JPEG save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
     End If
     
     'Release FreeImage from memory
@@ -277,7 +277,7 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
-    Message "Preparing image..."
+    Message "Preparing TIFF image..."
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -298,12 +298,12 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFF_NONE, fi_OutputColorDepth, , , , , True)
         If fi_Check = False Then
-            Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            Message "TIFF save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
-            Message "Save complete."
+            Message "TIFF save complete."
         End If
     Else
-        Message "Save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        Message "TIFF save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
     End If
     
     'Release FreeImage from memory
@@ -325,7 +325,7 @@ Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String)
     Dim hLib As Long
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
-    Message "Preparing image..."
+    Message "Preparing JPEG-2000 image..."
     
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
@@ -342,12 +342,12 @@ Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String)
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, JP2_DEFAULT, FICD_24BPP, , , , , True)
         If fi_Check = False Then
-            Message "Save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            Message "JPEG-2000 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
-            Message "Save complete."
+            Message "JPEG-2000 save complete."
         End If
     Else
-        Message "Save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        Message "JPEG-2000 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
     End If
     
     'Release FreeImage from memory
