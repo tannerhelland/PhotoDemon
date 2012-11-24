@@ -32,7 +32,7 @@ Public Const RECENT_FILE_COUNT As Long = 9
 Private Declare Function PathCompactPathEx Lib "shlwapi.dll" Alias "PathCompactPathExA" (ByVal pszOut As String, ByVal pszSrc As String, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Const MAX_PATH As Long = 260
-Private Const maxMRULength As Long = 64
+Public Const maxMRULength As Long = 64
 
 'Return the path to an MRU thumbnail file (in PNG format)
 Public Function getMRUThumbnailPath(ByVal mruIndex As Long) As String
@@ -87,7 +87,14 @@ Public Sub MRU_LoadFromINI()
             Else
                 FormMain.mnuRecDocs(x).Enabled = True
             End If
-            FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & vbTab & "Ctrl+" & x
+            
+            'Shortcuts are not displayed on XP, because they end up smashed into the caption itself
+            If isVistaOrLater Then
+                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & vbTab & "Ctrl+" & x
+            Else
+                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & "   "
+            End If
+            
         Next x
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
@@ -172,7 +179,11 @@ MRUEntryFound:
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
     End If
-    FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile) & vbTab & "Ctrl+0"
+    If isVistaOrLater Then
+        FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile) & vbTab & "Ctrl+0"
+    Else
+        FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile) & "   "
+    End If
     
     If numEntries > 1 Then
         'Unload existing menus...
@@ -183,7 +194,14 @@ MRUEntryFound:
         'Load new menus...
         For x = 1 To numEntries - 1
             Load FormMain.mnuRecDocs(x)
-            FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & vbTab & "Ctrl+" & x
+            
+            'Shortcuts are not displayed on XP, because they end up smashed into the caption itself
+            If isVistaOrLater Then
+                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & vbTab & "Ctrl+" & x
+            Else
+                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & "   "
+            End If
+            
         Next x
     End If
     
@@ -313,7 +331,7 @@ Private Function getShortMRU(ByVal sPath As String) As String
 
     Dim ret As Long
     Dim buff As String
-   
+      
     buff = Space$(MAX_PATH)
     ret = PathCompactPathEx(buff, sPath, maxMRULength + 1, 0&)
    
