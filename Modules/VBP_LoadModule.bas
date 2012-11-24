@@ -351,7 +351,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
     
         If FileExist(sFile(thisImage)) = False Then
             Message "File not found. Image load canceled."
-            MsgBox "Unfortunately, the image '" & sFile(thisImage) & "' could not be found.  If it was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found"
+            MsgBox "Unfortunately, the image '" & sFile(thisImage) & "' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found"
             Exit Sub
         End If
     
