@@ -90,12 +90,14 @@ Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVa
 'clsMenuImage does the heavy lifting for inserting icons into menus
 Dim cMenuImage As clsMenuImage
 
+'A second class is used to manage the icons for the MRU list.
+Dim cMRUIcons As clsMenuImage
 
 'Load all the menu icons from PhotoDemon's embedded resource file
 Public Sub LoadMenuIcons()
 
     Set cMenuImage = New clsMenuImage
-
+    
     With cMenuImage
     
         'Leandro's class automatically detects the current Windows version.  We're only concerned with Vista or later, which lets us
@@ -477,11 +479,18 @@ Public Sub LoadMenuIcons()
     numOfMRUFiles = MRU_ReturnCount()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
     
+    'And initialize the MRU icon handler
+    Set cMRUIcons = New clsMenuImage
+    cMRUIcons.Init FormMain.hWnd, 64, 64
+    
 End Sub
 
 'When menu captions are changed, the associated images are lost.  This forces a reset.
 ' At present, it only address the Undo and Redo menu items.
 Public Sub ResetMenuIcons()
+
+    'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
+    If (Not isVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
 
     'The position of menus changes if the MDI child is maximized.  When maximized, the form menu is given index 0, shifting
     ' everything to the right by one.
@@ -518,6 +527,25 @@ Public Sub ResetMenuIcons()
     'Dynamically calculate the position of the Clear Recent Files menu item
     numOfMRUFiles = MRU_ReturnCount()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
+    
+    cMRUIcons.Clear
+    Dim tmpFilename As String
+    
+    'Now, loop through the MRU list, attempting to load previews as we go
+    Dim i As Long
+    For i = 0 To numOfMRUFiles
+        'Start by seeing if an image exists for this MRU entry
+        tmpFilename = userPreferences.getIconPath & getMRUHash(getSpecificMRU(i)) & ".png"
+    
+        'If the file exists, add it to the MRU icon handler
+        If FileExist(tmpFilename) Then
+        
+            cMRUIcons.AddImageFromFile tmpFilename
+            cMRUIcons.PutImageToVBMenu i, i, 0, 1
+        
+        End If
+    
+    Next i
     
 End Sub
 
@@ -676,7 +704,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     'If imgForm.WindowState = vbMaximized Then DoEvents
    
     'The chunk of code below will generate an actual icon object for use within VB. I don't use this mechanism because
-    ' VB will internally convert the icon to 256-colors before assigning it to the form. <sigh> Rather than do that,
+    ' VB will internally convert the icon to 256-colors before assigning it to the form <sigh>.  Rather than do that,
     ' I use an alternate API call above to assign the new icon in its transparent, full color glory.
     
     'Dim iGuid As Guid
