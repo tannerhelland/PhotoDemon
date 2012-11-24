@@ -496,52 +496,40 @@ Public Sub ResetMenuIcons()
     ' everything to the right by one.
     
     'Thus, we must check for that and redraw the Undo/Redo menus accordingly
+    Dim posModifier As Long
+    posModifier = 0
 
-    Dim numOfMRUFiles As Long
-
-    'Make sure children forms are loaded before doing anything
     If NumOfWindows > 0 Then
-    
-        If FormMain.ActiveForm.WindowState = vbMaximized Then
-        
-            With cMenuImage
-                .PutImageToVBMenu 12, 0, 2      'Undo
-                .PutImageToVBMenu 13, 1, 2      'Redo
-            End With
-            
-            'Dynamically calculate the position of the Clear Recent Files menu item
-            numOfMRUFiles = MRU_ReturnCount()
-            cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 1, 1
-        
-            Exit Sub
-            
-        End If
-        
+        If FormMain.ActiveForm.WindowState = vbMaximized Then posModifier = 1
     End If
         
+    'Redraw the Undo/Redo menus
     With cMenuImage
-        .PutImageToVBMenu 12, 0, 1      'Undo
-        .PutImageToVBMenu 13, 1, 1      'Redo
+        .PutImageToVBMenu 12, 0, 1 + posModifier    'Undo
+        .PutImageToVBMenu 13, 1, 1 + posModifier    'Redo
     End With
     
-    'Dynamically calculate the position of the Clear Recent Files menu item
+    'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
+    Dim numOfMRUFiles As Long
     numOfMRUFiles = MRU_ReturnCount()
-    cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
+    cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0 + posModifier, 1
     
+    'Clear the MRU icon holder
     cMRUIcons.Clear
     Dim tmpFilename As String
     
-    'Now, loop through the MRU list, attempting to load previews as we go
+    'Loop through the MRU list, and attempt to load thumbnail images for each entry
     Dim i As Long
     For i = 0 To numOfMRUFiles
+    
         'Start by seeing if an image exists for this MRU entry
-        tmpFilename = userPreferences.getIconPath & getMRUHash(getSpecificMRU(i)) & ".png"
+        tmpFilename = getMRUThumbnailPath(i)
     
         'If the file exists, add it to the MRU icon handler
         If FileExist(tmpFilename) Then
         
             cMRUIcons.AddImageFromFile tmpFilename
-            cMRUIcons.PutImageToVBMenu i, i, 0, 1
+            cMRUIcons.PutImageToVBMenu i, i, 0 + posModifier, 1
         
         End If
     

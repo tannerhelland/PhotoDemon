@@ -34,8 +34,15 @@ Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Lon
 Private Const MAX_PATH As Long = 260
 Private Const maxMRULength As Long = 64
 
+'Return the path to an MRU thumbnail file (in PNG format)
+Public Function getMRUThumbnailPath(ByVal mruIndex As Long) As String
+    If (mruIndex >= 0) And (mruIndex <= numEntries) Then
+        getMRUThumbnailPath = userPreferences.getIconPath & getMRUHash(MRUlist(mruIndex)) & ".png"
+    End If
+End Function
+
 'Return a 16-character hash of a specific MRU entry.  (This is used to generate unique menu icon filenames.)
-Public Function getMRUHash(ByVal filePath As String) As String
+Private Function getMRUHash(ByVal filePath As String) As String
     
     'Use an SHA-256 hash function on the filename at this entry
     Dim cSHA2 As CSHA256
@@ -85,12 +92,14 @@ Public Sub MRU_LoadFromINI()
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
     Else
+        ReDim MRUlist(0) As String
+        MRUlist(0) = ""
         FormMain.mnuRecDocs(0).Caption = "Empty"
         FormMain.mnuRecDocs(0).Enabled = False
         FormMain.MnuRecentSepBar1.Visible = False
         FormMain.MnuClearMRU.Visible = False
     End If
-    
+        
 End Sub
 
 'Save the current MRU list to file (currently done at program close)
@@ -257,23 +266,33 @@ End Sub
 'Empty the entire MRU list and clear the menu of all entries
 Public Sub MRU_ClearList()
     
+    Dim i As Long
+    
     'Delete all menu items
-    For x = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
-        Unload FormMain.mnuRecDocs(x)
-    Next x
+    For i = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
+        Unload FormMain.mnuRecDocs(i)
+    Next i
     FormMain.mnuRecDocs(0).Caption = "Empty"
     FormMain.mnuRecDocs(0).Enabled = False
     FormMain.MnuRecentSepBar1.Visible = False
     FormMain.MnuClearMRU.Visible = False
+    
+    'If thumbnails exist, delete them
+    Dim tmpFilename As String
+    
+    For i = 0 To numEntries
+        tmpFilename = getMRUThumbnailPath(i)
+        If FileExist(tmpFilename) Then Kill tmpFilename
+    Next i
     
     'Reset the number of entries in the MRU list
     numEntries = 0
     ReDim MRUlist(0) As String
     
     'Clear all entries in the INI file
-    For x = 0 To RECENT_FILE_COUNT - 1
-        userPreferences.SetPreference_String "MRU", "f" & x, ""
-    Next x
+    For i = 0 To RECENT_FILE_COUNT - 1
+        userPreferences.SetPreference_String "MRU", "f" & i, ""
+    Next i
     
     'Tell the INI that no files are left
     userPreferences.SetPreference_Long "MRU", "NumberOfEntries", 0
