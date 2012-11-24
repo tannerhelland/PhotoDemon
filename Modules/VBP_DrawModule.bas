@@ -23,31 +23,21 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     dstWidth = dstPicture.ScaleWidth
     dstHeight = dstPicture.ScaleHeight
     
-    Dim SrcWidth As Single, SrcHeight As Single
+    Dim srcWidth As Single, srcHeight As Single
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     If pdImages(CurrentImage).selectionActive Then
-        SrcWidth = pdImages(CurrentImage).mainSelection.selWidth
-        SrcHeight = pdImages(CurrentImage).mainSelection.selHeight
+        srcWidth = pdImages(CurrentImage).mainSelection.selWidth
+        srcHeight = pdImages(CurrentImage).mainSelection.selHeight
     Else
-        SrcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
-        SrcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+        srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+        srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
     End If
-    
-    Dim srcAspect As Single, dstAspect As Single
-    srcAspect = SrcWidth / SrcHeight
-    dstAspect = dstWidth / dstHeight
-        
+            
     'Now, use that aspect ratio to determine a proper size for our temporary layer
     Dim newWidth As Long, newHeight As Long
     
-    If srcAspect > dstAspect Then
-        newWidth = dstWidth
-        newHeight = CSng(SrcHeight / SrcWidth) * newWidth + 0.5
-    Else
-        newHeight = dstHeight
-        newWidth = CSng(SrcWidth / SrcHeight) * newHeight + 0.5
-    End If
+    convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
     
     'Normally this will draw a preview of FormMain.ActiveForm's relevant image.  However, another picture source can be specified.
     If useOtherPictureSrc = False Then
@@ -103,11 +93,11 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     
     'Extract the red, green, and blue values from the gradient colors (which were passed as Longs)
-    r = ExtractR(Color1)
+    R = ExtractR(Color1)
     g = ExtractG(Color1)
     b = ExtractB(Color1)
     r2 = ExtractR(Color2)
@@ -123,31 +113,31 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     'Create a calculation variable, which will be used to determine the interpolation step between
     ' each gradient color
     If drawHorizontal Then
-        VR = Abs(r - r2) / tmpWidth
+        VR = Abs(R - r2) / tmpWidth
         VG = Abs(g - g2) / tmpWidth
         VB = Abs(b - b2) / tmpWidth
     Else
-        VR = Abs(r - r2) / tmpHeight
+        VR = Abs(R - r2) / tmpHeight
         VG = Abs(g - g2) / tmpHeight
         VB = Abs(b - b2) / tmpHeight
     End If
     
     'If the second color is less than the first value, make the step negative
-    If r2 < r Then VR = -VR
+    If r2 < R Then VR = -VR
     If g2 < g Then VG = -VG
     If b2 < b Then VB = -VB
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
         For x = 0 To tmpWidth
-            r2 = r + VR * x
+            r2 = R + VR * x
             g2 = g + VG * x
             b2 = b + VB * x
             DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
         Next x
     Else
         For y = 0 To tmpHeight
-            r2 = r + VR * y
+            r2 = R + VR * y
             g2 = g + VG * y
             b2 = b + VB * y
             DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)

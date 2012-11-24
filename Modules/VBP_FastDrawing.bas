@@ -94,22 +94,12 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
             srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
         End If
-    
-        Dim srcAspect As Single, dstAspect As Single
-        srcAspect = srcWidth / srcHeight
-        dstAspect = dstWidth / dstHeight
-        
+            
         'Now, use that aspect ratio to determine a proper size for our temporary layer
         Dim newWidth As Long, newHeight As Long
     
-        If srcAspect > dstAspect Then
-            newWidth = dstWidth
-            newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
-        Else
-            newHeight = dstHeight
-            newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
-        End If
-                
+        convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
+        
         'And finally, create our workingLayer using these values
         If pdImages(CurrentImage).selectionActive Then
             Dim copyLayer As pdLayer

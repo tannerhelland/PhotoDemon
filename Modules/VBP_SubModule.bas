@@ -19,6 +19,23 @@ Private Const mouseSelAccuracy As Single = 8
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
+'Convert a width and height pair to a new max width and height, while preserving aspect ratio
+Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long)
+    
+    Dim srcAspect As Single, dstAspect As Single
+    srcAspect = srcWidth / srcHeight
+    dstAspect = dstWidth / dstHeight
+    
+    If srcAspect > dstAspect Then
+        newWidth = dstWidth
+        newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
+    Else
+        newHeight = dstHeight
+        newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
+    End If
+
+End Sub
+
 'When images are loaded, this function is used to quickly determine the image's color count.  It stops once 257 is reached,
 ' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
 Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
@@ -56,7 +73,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     totalCount = 0
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim chkValue As Long
     Dim colorFound As Boolean
         
@@ -65,11 +82,11 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         QuickVal = x * qvDepth
     For y = 0 To finalY
         
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        chkValue = RGB(r, g, b)
+        chkValue = RGB(R, g, b)
         colorFound = False
         
         'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
