@@ -108,7 +108,7 @@ Public Sub LoadMenuIcons()
         isThemingEnabled = .CanWeTheme
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-        If (Not .IsWindowVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
+        If (Not isVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
         
         .Init FormMain.hWnd, 16, 16
         
@@ -479,9 +479,12 @@ Public Sub LoadMenuIcons()
     numOfMRUFiles = MRU_ReturnCount()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
     
-    'And initialize the MRU icon handler
-    Set cMRUIcons = New clsMenuImage
-    cMRUIcons.Init FormMain.hWnd, 64, 64
+    'And initialize the MRU icon handler.  (Unfortunately, MRU icons must be disabled on XP.  We can't
+    ' double-subclass the main form, and using a single menu icon class isn't possible at present.)
+    If isVistaOrLater Then
+        Set cMRUIcons = New clsMenuImage
+        cMRUIcons.Init FormMain.hWnd, 64, 64
+    End If
     
 End Sub
 
@@ -513,28 +516,32 @@ Public Sub ResetMenuIcons()
     Dim numOfMRUFiles As Long
     numOfMRUFiles = MRU_ReturnCount()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0 + posModifier, 1
-    
-    'Clear the MRU icon holder
-    cMRUIcons.Clear
-    Dim tmpFilename As String
-    
-    'Loop through the MRU list, and attempt to load thumbnail images for each entry
-    Dim i As Long
-    For i = 0 To numOfMRUFiles
-    
-        'Start by seeing if an image exists for this MRU entry
-        tmpFilename = getMRUThumbnailPath(i)
-    
-        'If the file exists, add it to the MRU icon handler
-        If FileExist(tmpFilename) Then
         
-            cMRUIcons.AddImageFromFile tmpFilename
-            cMRUIcons.PutImageToVBMenu i, i, 0 + posModifier, 1
+    'If the OS is Vista or later, render MRU icons to the Open Recent menu
+    If isVistaOrLater Then
+    
+        cMRUIcons.Clear
+        Dim tmpFilename As String
+    
+        'Loop through the MRU list, and attempt to load thumbnail images for each entry
+        Dim i As Long
+        For i = 0 To numOfMRUFiles
         
-        End If
-    
-    Next i
-    
+            'Start by seeing if an image exists for this MRU entry
+            tmpFilename = getMRUThumbnailPath(i)
+        
+            'If the file exists, add it to the MRU icon handler
+            If FileExist(tmpFilename) Then
+            
+                cMRUIcons.AddImageFromFile tmpFilename
+                cMRUIcons.PutImageToVBMenu i, i, 0 + posModifier, 1
+            
+            End If
+        
+        Next i
+        
+    End If
+        
 End Sub
 
 'As a courtesy to the user, the Image -> Mode icon is dynamically changed to match the current image's mode

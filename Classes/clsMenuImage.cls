@@ -216,7 +216,7 @@ Private Type GDIPlusStartupInput
 End Type
 
 Private Type COLORMATRIX
-    m(0 To 4, 0 To 4) As Single
+    M(0 To 4, 0 To 4) As Single
 End Type
 
 Private Type OSVERSIONINFO
@@ -703,17 +703,17 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
                 GdipCreateImageAttributes hAttributes
                 
                 With tMatrixColor
-                    .m(0, 0) = 0.299
-                    .m(1, 0) = .m(0, 0)
-                    .m(2, 0) = .m(0, 0)
-                    .m(0, 1) = 0.587
-                    .m(1, 1) = .m(0, 1)
-                    .m(2, 1) = .m(0, 1)
-                    .m(0, 2) = 0.114
-                    .m(1, 2) = .m(0, 2)
-                    .m(2, 2) = .m(0, 2)
-                    .m(3, 3) = 0.5
-                    .m(4, 4) = 1
+                    .M(0, 0) = 0.299
+                    .M(1, 0) = .M(0, 0)
+                    .M(2, 0) = .M(0, 0)
+                    .M(0, 1) = 0.587
+                    .M(1, 1) = .M(0, 1)
+                    .M(2, 1) = .M(0, 1)
+                    .M(0, 2) = 0.114
+                    .M(1, 2) = .M(0, 2)
+                    .M(2, 2) = .M(0, 2)
+                    .M(3, 3) = 0.5
+                    .M(4, 4) = 1
                 End With
                 
                 GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, True, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
@@ -910,11 +910,11 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
                 GdipCreateImageAttributes hAttributes
                 
                 With tMatrixColor
-                    .m(0, 0) = 1
-                    .m(1, 1) = 1
-                    .m(2, 2) = 1
-                    .m(3, 3) = 0.7
-                    .m(4, 4) = 1
+                    .M(0, 0) = 1
+                    .M(1, 1) = 1
+                    .M(2, 2) = 1
+                    .M(3, 3) = 0.7
+                    .M(4, 4) = 1
 
                 End With
                 
