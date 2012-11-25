@@ -204,7 +204,7 @@ MRUEntryFound:
     End If
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-    If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) Then
+    If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
         FormMain.mnuRecDocs(0).Caption = getFilename(newFile)
     Else
         FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile)
