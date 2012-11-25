@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 20/November/12
-'Last update: added alpha verification and internal 24/32bpp conversion methods
+'Last updated: 25/November/12
+'Last update: added a function for copying just the alpha values from another layer object
 '
 'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
 ' pdLayer is a powerful DIB class responsible for managing all image data in memory.  Some of the benefits provided by
@@ -1239,3 +1239,45 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
     verifyAlphaChannel = checkAlpha
 
 End Function
+
+'Copy the alpha values from another pdLayer object to this one.  This is useful when the alpha channel for this layer must be lost
+' during a transformation (typically something involving FreeImage or GDI+), and a temporary layer was made to preserve the alpha
+' data.  If the image is currently 24bpp, this function will first convert it to 32bpp before copying the alpha data.
+
+'IMPORTANT NOTE: to keep this function fast, NO ARRAY BOUNDS CHECKING IS DONE.  Make sure that the passed pdLayer object is
+'                 THE SAME SIZE (or larger) than this layer, or you will experience critical errors.
+Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
+
+    'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
+    If layerColorDepth <> 32 Then convertTo32bpp
+
+    'Prepare a SafeArray that points to our own DIB data
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepInternalSafeArray tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    'Now make a second array that points to the source DIB data
+    Dim aData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepExternalSafeArray srcLayer, srcSA
+    CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
+    
+    Dim x As Long, y As Long, QuickX As Long
+    
+    'Loop through the image, copying alpha values as we go
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
+        
+        'Access the alpha data for this pixel
+        iData(QuickX + 3, y) = aData(QuickX + 3, y)
+        
+    Next y
+    Next x
+    
+    'With our alpha transfer complete, point both arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    CopyMemory ByVal VarPtrArray(aData), 0&, 4
+
+End Sub
