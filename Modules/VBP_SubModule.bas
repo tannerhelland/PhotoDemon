@@ -19,6 +19,29 @@ Private Const mouseSelAccuracy As Single = 8
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
+'Type and call necessary for determining the current version of Windows
+Private Type OSVERSIONINFO
+    dwOSVersionInfoSize As Long
+    dwMajorVersion As Long
+    dwMinorVersion As Long
+    dwBuildNumber As Long
+    dwPlatformId As Long
+    szCSDVersion As String * 128
+End Type
+
+Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (ByRef lpVersionInformation As OSVERSIONINFO) As Long
+
+'Check the current Windows version.  In PhotoDemon, we are only concerned with "is it Vista or later?"
+Public Function getVistaOrLaterStatus() As Boolean
+
+    Dim tOSVI As OSVERSIONINFO
+    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
+    GetVersionEx tOSVI
+    
+    getVistaOrLaterStatus = (tOSVI.dwMajorVersion >= 6)
+
+End Function
+
 'Convert a width and height pair to a new max width and height, while preserving aspect ratio
 Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long)
     

@@ -35,6 +35,10 @@ Public Sub LoadTheProgram()
     FormSplash.Show 0
     DoEvents
     
+    'Next, detect the version of Windows we're running on.  PhotoDemon is only concerned with "Vista or later", which lets it
+    ' know that certain features are guaranteed to be available.
+    isVistaOrLater = getVistaOrLaterStatus
+    
     'Initialize a preferences and settings handler
     Set userPreferences = New pdPreferences
     
@@ -198,12 +202,12 @@ Public Sub LoadTheProgram()
     FormMain.cmdSave.ToolTip = "Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file." & vbCrLf & " To save to a different file, use the ""Save As"" button."
     FormMain.cmdSaveAs.ToolTip = "Save the current image to a new file."
     
-    'Create all manual shortcuts (ones VB isn't capable of generating itself)
-    LoadMenuShortcuts
-    
     'Load the most-recently-used file list (MRU)
     MRU_LoadFromINI
     
+    'Create all manual shortcuts (ones VB isn't capable of generating itself)
+    LoadMenuShortcuts
+            
     'Initialize the drop shadow engine
     Set canvasShadow = New pdShadow
     canvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, CanvasBackground
@@ -211,7 +215,7 @@ Public Sub LoadTheProgram()
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
     LoadMessage "Fixing icon..."
     SetIcon FormMain.hWnd, "AAA", True
-    
+        
     'Load and draw the menu icons
     ' (Note: as a bonus, this function also checks the current Windows version and updates the "isVistaOrLater" public variable accordingly)
     LoadMessage "Generating menu icons..."
@@ -224,7 +228,7 @@ Public Sub LoadTheProgram()
     ' whether or not images have been loaded
     LoadMessage "Enabling user interface..."
     UpdateMDIStatus
-    
+        
     'Set up our main progress bar control
     LoadMessage "Initializing progress bar..."
     Set cProgBar = New cProgressBar

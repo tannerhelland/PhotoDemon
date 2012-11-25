@@ -99,12 +99,8 @@ Public Sub LoadMenuIcons()
     Set cMenuImage = New clsMenuImage
     
     With cMenuImage
-    
-        'Leandro's class automatically detects the current Windows version.  We're only concerned with Vista or later, which lets us
-        ' know that certain features are guaranteed to be available.
-        isVistaOrLater = .IsWindowVistaOrLater
-        
-        'Also, use it to check if the current Windows install supports theming.
+            
+        'Use Leandro's class to check if the current Windows install supports theming.
         isThemingEnabled = .CanWeTheme
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
