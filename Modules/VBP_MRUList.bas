@@ -159,7 +159,15 @@ MRUEntryFound:
     Else
 
         numEntries = numEntries + 1
-        If numEntries > RECENT_FILE_COUNT Then numEntries = RECENT_FILE_COUNT
+        
+        'Cap the number of MRU files at a certain value (currently 9)
+        If numEntries > RECENT_FILE_COUNT Then
+            numEntries = RECENT_FILE_COUNT
+            
+            'Also, because we are about to purge the MRU list, we need to delete the last entry's image (if it exists).
+            ' If we don't do this, the icons directory will eventually fill up with icons of old files.
+            If FileExist(getMRUThumbnailPath(numEntries - 1)) Then Kill getMRUThumbnailPath(numEntries - 1)
+        End If
         
         ReDim Preserve MRUlist(0 To numEntries) As String
     
