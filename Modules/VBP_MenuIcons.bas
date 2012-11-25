@@ -519,6 +519,13 @@ Public Sub ResetMenuIcons()
         cMRUIcons.Clear
         Dim tmpFilename As String
     
+        'Load a placeholder image for missing MRU entries
+        cMRUIcons.AddImageFromStream LoadResData("MRUHOLDER", "CUSTOM")
+    
+        'This counter will be used to track the current position of loaded thumbnail images into the icon collection
+        Dim iconLocation As Long
+        iconLocation = 0
+    
         'Loop through the MRU list, and attempt to load thumbnail images for each entry
         Dim i As Long
         For i = 0 To numOfMRUFiles
@@ -528,9 +535,14 @@ Public Sub ResetMenuIcons()
         
             'If the file exists, add it to the MRU icon handler
             If FileExist(tmpFilename) Then
-            
+                
+                iconLocation = iconLocation + 1
                 cMRUIcons.AddImageFromFile tmpFilename
-                cMRUIcons.PutImageToVBMenu i, i, 0 + posModifier, 1
+                cMRUIcons.PutImageToVBMenu iconLocation, i, 0 + posModifier, 1
+            
+            Else
+            
+                cMRUIcons.PutImageToVBMenu 0, i, 0 + posModifier, 1
             
             End If
         
