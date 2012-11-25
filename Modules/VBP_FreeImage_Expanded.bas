@@ -1,17 +1,15 @@
 Attribute VB_Name = "FreeImage_Expanded_Interface"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2011-2012 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 3/September/12
-'Last update: initial build
+'Last updated: 25/November/12
+'Last update: improved tone-mapping for high-bit-depth images with alpha channels
 '
 'This module represents a new - and significantly more complex - approach to loading images via the FreeImage libary.
-' The current FreeImage implementation (LoadFreeImageV3) relies on FreeImage to make its own decisions regarding format,
-' color-depth, and color-space conversion.  The decisions FreeImage typically makes are not always consistent with the
-' way this data is eventually handled in VB, so some explicit coding is necessary on a per-image-format basis.
+' It handles a variety of decisions on a per-format basis to ensure optimal load speed and quality.
 '
-'This module is based heavily on the work of Herman Liu, to whom I owe a large debt of gratitude.
+'Several sections of this module are based on the work of Herman Liu, to whom I am very grateful.
 '
 'Additionally, this module continues to rely heavily on Carsten Klein's FreeImage wrapper for VB (included in this project
 ' as Outside_FreeImageV3; see that file for license details).  Thanks to Carsten for his work on integrating FreeImage
@@ -102,6 +100,15 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     Dim fi_BPP As Long
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
+    'If a high bit-depth image is incoming, we need to use a temporary layer to hold the image's alpha data (which will
+    ' be erased by the tone-mapping algorithm we'll use).  This is that object
+    Dim tmpAlphaRequired As Boolean, tmpAlphaCopySuccess As Boolean
+    tmpAlphaRequired = False
+    tmpAlphaCopySuccess = False
+    
+    Dim tmpAlphaLayer As pdLayer
+    
+    'A number of other variables may be required as we adjust the bit-depth of the image to match PhotoDemon's internal requirements.
     Dim new_hDIB As Long
     
     Dim fi_hasTransparency As Boolean
@@ -109,28 +116,80 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
         
     'First, check source images without an alpha channel.  Convert these using the superior tone mapping method.
     If (fi_BPP = 48) Or (fi_BPP = 96) Then
+    
+        Message "High bit-depth image identified.  Checking for alpha data..."
+        
         'While images with these bit-depths may not have an alpha channel, they can have binary transparency - check for that now.
-        ' (Note: as of FreeImage 3.15 binary bit-depths are not detected correctly.  That said, they may someday be supported - so
-        ' I've implemented two checks to cover both contingencies.
+        ' (Note: as of FreeImage 3.15.3 binary bit-depths are not detected correctly.  That said, they may someday be supported -
+        ' so I've implemented two checks to cover both contingencies.
         fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
         fi_transparentEntries = FreeImage_GetTransparencyCount(fi_hDIB)
         
+        'If the image has transparency, make a copy of the alpha data for future use
         If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
-            new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, True)
-            fi_hDIB = new_hDIB
-        Else
-            new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
-            FreeImage_UnloadEx fi_hDIB
-            fi_hDIB = new_hDIB
+            
+            Message "Alpha data found.  Making temporary copy prior to tone mapping..."
+            
+            new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
+            
+            Set tmpAlphaLayer = New pdLayer
+            tmpAlphaCopySuccess = tmpAlphaLayer.createBlank(FreeImage_GetWidth(new_hDIB), FreeImage_GetHeight(new_hDIB), 32)
+    
+            'Make sure the blank DIB creation worked
+            If tmpAlphaCopySuccess Then tmpAlphaRequired = True
+            
+            'Copy the bits from the FreeImage DIB to our DIB
+            'NOTE: investigate using AlphaBlend to copy the bits, with SourceConstantAlpha set to 255 (per http://msdn.microsoft.com/en-us/library/dd183393%28v=vs.85%29.aspx)
+            ' This may be a way to preserve the alpha channel... assuming that this SetDIBitsToDevice is actually the problem, which it may not be.
+            SetDIBitsToDevice tmpAlphaLayer.getLayerDC, 0, 0, FreeImage_GetWidth(new_hDIB), FreeImage_GetHeight(new_hDIB), 0, 0, 0, FreeImage_GetHeight(new_hDIB), ByVal FreeImage_GetBits(new_hDIB), ByVal FreeImage_GetInfo(new_hDIB), 0&
+     
+            'With the alpha data safely in the care of our temporary object, unload the temporary 32bpp version of this image
+            FreeImage_UnloadEx new_hDIB
+                 
         End If
+        
+        Message "Tone mapping image to preserve tonal range..."
+        
+        new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
+        FreeImage_UnloadEx fi_hDIB
+        fi_hDIB = new_hDIB
+        
+        Message "Tone mapping complete."
+        
     End If
     
     'Because tone mapping may not preserve alpha channels (the FreeImage documentation is unclear on this),
-    ' high-bit-depth images with alpha channels are converted using a traditional method, which is inferior from a
-    ' quality standpoint, but at least guaranteed to preserve the alpha channel data.
+    ' we must do the same as above - manually make a copy of the image's alpha data, then reduce the image using tone mapping.
+    ' Later in the process we will restore the alpha data to the image.
     If (fi_BPP = 64) Or (fi_BPP = 128) Then
-        new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, True)
+    
+        Message "High bit-depth image identified.  Making copy of alpha data..."
+    
+        new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
+            
+        Set tmpAlphaLayer = New pdLayer
+        tmpAlphaCopySuccess = tmpAlphaLayer.createBlank(FreeImage_GetWidth(new_hDIB), FreeImage_GetHeight(new_hDIB), 32)
+            
+        'Make sure the blank DIB creation worked
+        If tmpAlphaCopySuccess Then tmpAlphaRequired = True
+            
+        'Copy the bits from the FreeImage DIB to our DIB
+        'NOTE: investigate using AlphaBlend to copy the bits, with SourceConstantAlpha set to 255 (per http://msdn.microsoft.com/en-us/library/dd183393%28v=vs.85%29.aspx)
+        ' This may be a way to preserve the alpha channel... assuming that this SetDIBitsToDevice is actually the problem, which it may not be.
+        SetDIBitsToDevice tmpAlphaLayer.getLayerDC, 0, 0, FreeImage_GetWidth(new_hDIB), FreeImage_GetHeight(new_hDIB), 0, 0, 0, FreeImage_GetHeight(new_hDIB), ByVal FreeImage_GetBits(new_hDIB), ByVal FreeImage_GetInfo(new_hDIB), 0&
+     
+        'With the alpha data safely in the care of our temporary object, unload the temporary 32bpp version of this image
+        FreeImage_UnloadEx new_hDIB
+    
+        Message "Alpha copy complete.  Tone mapping image to preserve tonal range..."
+    
+        'Now, convert the RGB data using the superior tone-mapping method.
+        new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
+        FreeImage_UnloadEx fi_hDIB
         fi_hDIB = new_hDIB
+        
+        Message "Tone mapping complete."
+        
     End If
         
     'Similarly, check for low-bit-depth images
@@ -201,6 +260,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
         Exit Function
     End If
     
+    Message "Memory secured.  Finalizing image load..."
+    
     'Copy the bits from the FreeImage DIB to our DIB
     'NOTE: investigate using AlphaBlend to copy the bits, with SourceConstantAlpha set to 255 (per http://msdn.microsoft.com/en-us/library/dd183393%28v=vs.85%29.aspx)
     ' This may be a way to preserve the alpha channel... assuming that this SetDIBitsToDevice is actually the problem, which it may not be.
@@ -212,6 +273,22 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     'Release the FreeImage library
     FreeLibrary hFreeImgLib
     
+    Message "Image load successful.  FreeImage released."
+    
+    'We are almost done.  The last thing we need to do is restore the alpha values if this was a high-bit-depth image
+    ' whose alpha data was lost during the tone-mapping phase.
+    If tmpAlphaRequired Then
+    
+        Message "Restoring alpha data..."
+        
+        dstLayer.copyAlphaFromExistingLayer tmpAlphaLayer
+        tmpAlphaLayer.eraseLayer
+        Set tmpAlphaLayer = Nothing
+        
+        Message "Alpha data restored successfully."
+        
+    End If
+        
     'Mark this load as successful
     LoadFreeImageV3_Advanced = True
     
