@@ -95,7 +95,7 @@ Public Sub MRU_LoadFromINI()
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
             End If
             
-            If isVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            If (isVistaOrLater And IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
         FormMain.MnuRecentSepBar1.Visible = True
@@ -230,7 +230,7 @@ MRUEntryFound:
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
             End If
             
-            If isVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+0" Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            If (isVistaOrLater And IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
     End If
