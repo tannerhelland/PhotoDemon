@@ -35,6 +35,7 @@ Public Sub StripDirectory(ByRef sString As String)
     Next x
     
 End Sub
+
 'Pull the filename ONLY (no directory) off a path
 Public Sub StripFilename(ByRef sString As String)
     
@@ -48,6 +49,20 @@ Public Sub StripFilename(ByRef sString As String)
     Next x
     
 End Sub
+
+'Return the filename chunk of a path
+Public Function getFilename(ByVal sString As String) As String
+
+    Dim i As Long
+    
+    For i = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, i, 1) = "/") Or (Mid(sString, i, 1) = "\") Then
+            getFilename = Right(sString, Len(sString) - i)
+            Exit Function
+        End If
+    Next i
+    
+End Function
 
 'Pull the filename & directory out WITHOUT any extension (but with the ".")
 Public Sub StripOffExtension(ByRef sString As String)
@@ -107,20 +122,6 @@ Public Sub makeValidWindowsFilename(ByRef FileName As String)
         End If
     Next x
 
-End Sub
-
-'Remove the accelerator (e.g. "Ctrl+0") from the tail end of a string
-Public Sub StripAcceleratorFromCaption(ByRef sString As String)
-    
-    Dim x As Long
-    
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = vbTab) Then
-            sString = Left(sString, x - 1)
-            Exit Sub
-        End If
-    Next x
-    
 End Sub
 
 'This lovely function comes from "penagate"; it was downloaded from http://www.vbforums.com/showthread.php?t=342995 on 08 June '12
