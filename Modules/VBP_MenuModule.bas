@@ -185,6 +185,12 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         userPreferences.SetPreference_Long "File Formats", "LastSaveFilter", LastSaveFilter
         
         pdImages(imageID).containingForm.Caption = sFile
+        If userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) Then
+            pdImages(imageID).containingForm.Caption = getFilename(sFile)
+        Else
+            pdImages(imageID).containingForm.Caption = sFile
+        End If
+        
         SaveFileName = sFile
         
         'Transfer control to the core SaveImage routine, which will handle file extension analysis and actual saving

@@ -625,7 +625,15 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             'Update relevant user interface controls
             DisplaySize targetImage.Width, targetImage.Height
-            If imgFormTitle = "" Then FormMain.ActiveForm.Caption = sFile(thisImage) Else FormMain.ActiveForm.Caption = imgFormTitle
+            If imgFormTitle = "" Then
+                If userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) = 0 Then
+                    FormMain.ActiveForm.Caption = getFilename(sFile(thisImage))
+                Else
+                    FormMain.ActiveForm.Caption = sFile(thisImage)
+                End If
+            Else
+                FormMain.ActiveForm.Caption = imgFormTitle
+            End If
             
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
             If targetImage.mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False

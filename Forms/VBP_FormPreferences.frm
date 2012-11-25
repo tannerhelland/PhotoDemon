@@ -248,6 +248,292 @@ Begin VB.Form FormPreferences
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   6000
+      Index           =   0
+      Left            =   2040
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   400
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   7
+      Top             =   360
+      Width           =   8295
+      Begin VB.ComboBox cmbMRUCaption 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   3720
+         Style           =   2  'Dropdown List
+         TabIndex        =   55
+         Top             =   2520
+         Width           =   4575
+      End
+      Begin VB.ComboBox cmbImageCaption 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   3720
+         Style           =   2  'Dropdown List
+         TabIndex        =   52
+         Top             =   2040
+         Width           =   4575
+      End
+      Begin VB.CheckBox chkWindowLocation 
+         Appearance      =   0  'Flat
+         Caption         =   " remember the main window's on-screen location between sessions"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   375
+         Left            =   240
+         TabIndex        =   42
+         ToolTipText     =   "If selected, this setting will ensure that PhotoDemon starts up in the on-screen location where you last left it."
+         Top             =   4680
+         Width           =   7815
+      End
+      Begin VB.CheckBox chkDropShadow 
+         Appearance      =   0  'Flat
+         Caption         =   " draw a shadow between the image and the canvas"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   375
+         Left            =   240
+         TabIndex        =   36
+         ToolTipText     =   " This setting helps images stand out from the canvas behind them"
+         Top             =   960
+         Width           =   5655
+      End
+      Begin VB.CheckBox chkFancyFonts 
+         Appearance      =   0  'Flat
+         Caption         =   " render PhotoDemon text with modern typefaces (only available on Vista or newer)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   375
+         Left            =   240
+         TabIndex        =   32
+         ToolTipText     =   "This setting uses ""Segoe UI"" as the PhotoDemon interface font. Leaving it unchecked defaults to ""Tahoma""."
+         Top             =   3600
+         Width           =   7695
+      End
+      Begin VB.ComboBox cmbCanvas 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   2760
+         Style           =   2  'Dropdown List
+         TabIndex        =   10
+         Top             =   480
+         Width           =   4815
+      End
+      Begin VB.PictureBox picCanvasColor 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   360
+         Left            =   7680
+         MouseIcon       =   "VBP_FormPreferences.frx":61EC
+         MousePointer    =   99  'Custom
+         ScaleHeight     =   22
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   37
+         TabIndex        =   9
+         TabStop         =   0   'False
+         ToolTipText     =   "Click to change the image window background color"
+         Top             =   480
+         Width           =   585
+      End
+      Begin VB.Label lblMRUCaption 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "recently used file shortcuts should be: "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   56
+         Top             =   2580
+         Width           =   3315
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "captions"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   120
+         TabIndex        =   54
+         Top             =   1560
+         Width           =   870
+      End
+      Begin VB.Label lblImageCaption 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "image window title bars should be: "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   53
+         Top             =   2100
+         Width           =   3075
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "window location"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   120
+         TabIndex        =   41
+         Top             =   4200
+         Width           =   1725
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "interface text"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   120
+         TabIndex        =   35
+         Top             =   3120
+         Width           =   1365
+      End
+      Begin VB.Label lblCanvasFX 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "image canvas background:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   11
+         Top             =   540
+         Width           =   2295
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "canvas appearance"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   8
+         Top             =   0
+         Width           =   1980
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6000
       Index           =   3
       Left            =   2040
       MousePointer    =   1  'Arrow
@@ -273,7 +559,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   51
-         ToolTipText     =   $"VBP_FormPreferences.frx":61EC
+         ToolTipText     =   $"VBP_FormPreferences.frx":633E
          Top             =   2880
          Width           =   6855
       End
@@ -319,7 +605,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":62BE
+         MouseIcon       =   "VBP_FormPreferences.frx":6410
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -336,7 +622,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":6410
+         MouseIcon       =   "VBP_FormPreferences.frx":6562
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -571,12 +857,12 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   22
-         ToolTipText     =   $"VBP_FormPreferences.frx":6562
+         ToolTipText     =   $"VBP_FormPreferences.frx":66B4
          Top             =   600
          Width           =   6975
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":6654
+         Caption         =   $"VBP_FormPreferences.frx":67A6
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -685,7 +971,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   18
-         ToolTipText     =   $"VBP_FormPreferences.frx":6703
+         ToolTipText     =   $"VBP_FormPreferences.frx":6855
          Top             =   1080
          Width           =   6735
       End
@@ -862,196 +1148,6 @@ Begin VB.Form FormPreferences
          Width           =   1605
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6000
-      Index           =   0
-      Left            =   2040
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   400
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   7
-      Top             =   360
-      Width           =   8295
-      Begin VB.CheckBox chkWindowLocation 
-         Appearance      =   0  'Flat
-         Caption         =   " remember the main window's on-screen location between sessions"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   375
-         Left            =   240
-         TabIndex        =   42
-         ToolTipText     =   "If selected, this setting will ensure that PhotoDemon starts up in the on-screen location where you last left it."
-         Top             =   3120
-         Width           =   7815
-      End
-      Begin VB.CheckBox chkDropShadow 
-         Appearance      =   0  'Flat
-         Caption         =   " draw a shadow between the image and the canvas"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   375
-         Left            =   240
-         TabIndex        =   36
-         ToolTipText     =   " This setting helps images stand out from the canvas behind them"
-         Top             =   960
-         Width           =   5655
-      End
-      Begin VB.CheckBox chkFancyFonts 
-         Appearance      =   0  'Flat
-         Caption         =   " render PhotoDemon text with modern typefaces (only available on Vista or newer)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   375
-         Left            =   240
-         TabIndex        =   32
-         ToolTipText     =   "This setting uses ""Segoe UI"" as the PhotoDemon interface font. Leaving it unchecked defaults to ""Tahoma""."
-         Top             =   2040
-         Width           =   7695
-      End
-      Begin VB.ComboBox cmbCanvas 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   2760
-         Style           =   2  'Dropdown List
-         TabIndex        =   10
-         Top             =   480
-         Width           =   4815
-      End
-      Begin VB.PictureBox picCanvasColor 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         ForeColor       =   &H80000008&
-         Height          =   360
-         Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":679F
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   22
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   37
-         TabIndex        =   9
-         TabStop         =   0   'False
-         ToolTipText     =   "Click to change the image window background color"
-         Top             =   480
-         Width           =   585
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "window location"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   120
-         TabIndex        =   41
-         Top             =   2640
-         Width           =   1725
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "interface text"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         TabIndex        =   35
-         Top             =   1560
-         Width           =   1365
-      End
-      Begin VB.Label lblCanvasFX 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "image canvas background:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   11
-         Top             =   540
-         Width           =   2295
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "canvas appearance"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   8
-         Top             =   0
-         Width           =   1980
-      End
-   End
    Begin VB.Line lneVertical 
       BorderColor     =   &H8000000D&
       X1              =   120
@@ -1187,6 +1283,9 @@ End Sub
 'OK button
 Private Sub CmdOK_Click()
     
+    'We may need to access a generic "form" object multiple times, so I declare it at the top of this sub.
+    Dim tForm As Form
+    
     'Store whether the user wants to be prompted when closing unsaved images
     ConfirmClosingUnsaved = CBool(chkConfirmUnsaved.Value)
     userPreferences.SetPreference_Boolean "General Preferences", "ConfirmClosingUnsaved", ConfirmClosingUnsaved
@@ -1203,6 +1302,28 @@ Private Sub CmdOK_Click()
     'Store whether PhotoDemon is allowed to offer the automatic download of missing core plugins
     userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", CBool(ChkPromptPluginDownload.Value)
     
+    'Check to see if the new caption length setting matches the old one.  If it does not, rewrite all form captions to match
+    If cmbImageCaption.ListIndex <> userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) Then
+        For Each tForm In VB.Forms
+            If tForm.Name = "FormImage" Then
+                If cmbImageCaption.ListIndex = 0 Then
+                    tForm.Caption = pdImages(tForm.Tag).OriginalFileNameAndExtension
+                Else
+                    If pdImages(tForm.Tag).LocationOnDisk <> "" Then tForm.Caption = pdImages(tForm.Tag).LocationOnDisk Else tForm.Caption = pdImages(tForm.Tag).OriginalFileNameAndExtension
+                End If
+            End If
+        Next
+    End If
+    userPreferences.SetPreference_Long "General Preferences", "ImageCaptionSize", cmbImageCaption.ListIndex
+    
+    'Similarly, check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
+    If cmbMRUCaption.ListIndex <> userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) Then
+        userPreferences.SetPreference_Long "General Preferences", "MRUCaptionSize", cmbMRUCaption.ListIndex
+        MRU_SaveToINI
+        MRU_LoadFromINI
+        ResetMenuIcons
+    End If
+        
     'Store whether PhotoDemon should validate incoming alpha channel data
     userPreferences.SetPreference_Boolean "General Preferences", "ValidateAlphaChannels", CBool(chkValidateAlpha.Value)
        
@@ -1254,7 +1375,7 @@ Private Sub CmdOK_Click()
     userPreferences.SetPreference_Boolean "General Preferences", "RememberWindowLocation", CBool(chkWindowLocation.Value)
     
     'Because some settings affect the way image canvases are rendered, redraw every active canvas
-    Dim tForm As Form
+    
     Message "Saving preferences..."
     For Each tForm In VB.Forms
         If tForm.Name = "FormImage" Then PrepareViewport tForm
@@ -1293,9 +1414,9 @@ Private Sub LoadAllPreferences()
     'Start with the canvas background (which also requires populating the canvas background combo box)
     userInitiatedColorSelection = False
     cmbCanvas.Clear
-    cmbCanvas.AddItem "System theme: light", 0
-    cmbCanvas.AddItem "System theme: dark", 1
-    cmbCanvas.AddItem "Custom color (click box to customize)", 2
+    cmbCanvas.AddItem "system theme: light", 0
+    cmbCanvas.AddItem "system theme: dark", 1
+    cmbCanvas.AddItem "custom color (click box to customize)", 2
         
     'Select the proper combo box value based on the CanvasBackground variable
     If CanvasBackground = vb3DLight Then
@@ -1312,6 +1433,17 @@ Private Sub LoadAllPreferences()
     'Draw the current canvas background to the sample picture box
     DrawSampleCanvasBackground
     userInitiatedColorSelection = True
+    
+    'Populate the combo boxes for caption-related preferences
+    cmbImageCaption.Clear
+    cmbImageCaption.AddItem "compact - file name only", 0
+    cmbImageCaption.AddItem "descriptive - full location, including folder(s)", 1
+    cmbImageCaption.ListIndex = userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0)
+    
+    cmbMRUCaption.Clear
+    cmbMRUCaption.AddItem "compact - file names only", 0
+    cmbMRUCaption.AddItem "descriptive - full locations, including folder(s)", 1
+    cmbMRUCaption.ListIndex = userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0)
     
     'Next, get the values for alpha-channel checkerboard rendering
     userInitiatedAlphaSelection = False

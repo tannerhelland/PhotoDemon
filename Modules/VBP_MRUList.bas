@@ -89,11 +89,13 @@ Public Sub MRU_LoadFromINI()
             End If
             
             'Shortcuts are not displayed on XP, because they end up smashed into the caption itself
-            If isVistaOrLater Then
-                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & vbTab & "Ctrl+" & x
+            If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+                FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
-                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & "   "
+                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
             End If
+            
+            If isVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
         FormMain.MnuRecentSepBar1.Visible = True
@@ -115,11 +117,22 @@ Public Sub MRU_SaveToINI()
     'Save the number of current entries
     userPreferences.SetPreference_Long "MRU", "NumberOfEntries", numEntries
     
+    Dim x As Long
+    
     'Only save entries if MRU data exists
     If numEntries <> 0 Then
         For x = 0 To numEntries - 1
             userPreferences.SetPreference_String "MRU", "f" & x, MRUlist(x)
         Next x
+    End If
+    
+    'Unload all corresponding menu entries.  (This doesn't matter when the program is closing, but we also use this
+    ' routine to refresh the MRU list after changing the caption preference - and for that an unload is required.)
+    If numEntries <> 0 Then
+        For x = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
+            Unload FormMain.mnuRecDocs(x)
+        Next x
+        DoEvents
     End If
     
 End Sub
@@ -128,8 +141,10 @@ End Sub
 Public Sub MRU_AddNewFile(ByVal newFile As String, ByRef srcImage As pdImage)
 
     'Locators
-    Dim alreadyThere As Boolean, curLocation As Long
+    Dim alreadyThere As Boolean
     alreadyThere = False
+    
+    Dim curLocation As Long
     curLocation = -1
     
     'First, check to see if our entry currently exists in the MRU list
@@ -187,11 +202,16 @@ MRUEntryFound:
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
     End If
-    If isVistaOrLater Then
-        FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile) & vbTab & "Ctrl+0"
+    
+    'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
+    If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) Then
+        FormMain.mnuRecDocs(0).Caption = getFilename(newFile)
     Else
-        FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile) & "   "
+        FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile)
     End If
+    
+    'On Vista or later, display the corresponding accelerator.  XP truncates this, so just add some blank spaces for aesthetics.
+    If isVistaOrLater Then FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & "Ctrl+0" Else FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & "   "
     
     If numEntries > 1 Then
         'Unload existing menus...
@@ -203,12 +223,14 @@ MRUEntryFound:
         For x = 1 To numEntries - 1
             Load FormMain.mnuRecDocs(x)
             
-            'Shortcuts are not displayed on XP, because they end up smashed into the caption itself
-            If isVistaOrLater Then
-                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & vbTab & "Ctrl+" & x
+            'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
+            If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+                FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
-                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x)) & "   "
+                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
             End If
+            
+            If isVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+0" Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
     End If
