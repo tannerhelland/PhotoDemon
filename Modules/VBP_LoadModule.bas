@@ -789,6 +789,9 @@ End Sub
 'Generates all shortcuts that VB can't; many thanks to Steve McMahon for his accelerator class, which helps a great deal
 Public Sub LoadMenuShortcuts()
 
+    'Don't allow custom shortcuts in the IDE, as they require subclassing and might crash
+    If Not IsProgramCompiled Then Exit Sub
+
     With FormMain.ctlAccelerator
     
         'File menu
