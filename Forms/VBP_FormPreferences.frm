@@ -431,7 +431,7 @@ Begin VB.Form FormPreferences
       Begin VB.Label lblImageCaption 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "image window title bars should be: "
+         Caption         =   "image window titles should be: "
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -446,7 +446,7 @@ Begin VB.Form FormPreferences
          Left            =   240
          TabIndex        =   53
          Top             =   2100
-         Width           =   3075
+         Width           =   2730
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
@@ -1181,6 +1181,14 @@ Option Explicit
 Dim userInitiatedColorSelection As Boolean
 Dim userInitiatedAlphaSelection As Boolean
 
+'Some settings are odd - I want them to update in real-time, so the user can see the effects of the change.  But if the user presses
+' "cancel", the original settings need to be returned.  Thus, remember these settings, and restore them upon canceling
+Dim originalUseFancyFonts As Boolean
+Dim originalAlphaCheckMode As Long
+Dim originalAlphaCheckOne As Long
+Dim originalAlphaCheckTwo As Long
+Dim originalCanvasBackground As Long
+
 'For this particular box, update the interface instantly
 Private Sub chkFancyFonts_Click()
 
@@ -1267,6 +1275,18 @@ End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
+    
+    'Restore any settings that may have been changed in real-time
+    If useFancyFonts <> originalUseFancyFonts Then
+        useFancyFonts = originalUseFancyFonts
+        makeFormPretty FormMain
+    End If
+    
+    AlphaCheckMode = originalAlphaCheckMode
+    AlphaCheckOne = originalAlphaCheckOne
+    AlphaCheckTwo = originalAlphaCheckTwo
+    CanvasBackground = originalCanvasBackground
+    
     Unload Me
 End Sub
 
@@ -1430,6 +1450,8 @@ Private Sub LoadAllPreferences()
         cmbCanvas.ListIndex = 2
     End If
     
+    originalCanvasBackground = CanvasBackground
+    
     'Draw the current canvas background to the sample picture box
     DrawSampleCanvasBackground
     userInitiatedColorSelection = True
@@ -1454,9 +1476,12 @@ Private Sub LoadAllPreferences()
     cmbAlphaCheck.AddItem "Custom (click boxes to customize)", 3
     
     cmbAlphaCheck.ListIndex = AlphaCheckMode
+    originalAlphaCheckMode = AlphaCheckMode
     
     picAlphaOne.backColor = AlphaCheckOne
     picAlphaTwo.backColor = AlphaCheckTwo
+    originalAlphaCheckOne = AlphaCheckOne
+    originalAlphaCheckTwo = AlphaCheckTwo
     
     userInitiatedAlphaSelection = True
     
@@ -1508,6 +1533,7 @@ Private Sub LoadAllPreferences()
         chkFancyFonts.Caption = " render PhotoDemon text with modern typefaces"
         chkFancyFonts.Enabled = True
         If useFancyFonts Then chkFancyFonts.Value = vbChecked Else chkFancyFonts.Value = vbUnchecked
+        originalUseFancyFonts = useFancyFonts
     End If
         
     'Populate and en/disable the run-time only settings in the "Advanced" panel
