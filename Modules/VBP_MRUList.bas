@@ -53,11 +53,10 @@ Public Function getMRUThumbnailPath(ByVal mruIndex As Long) As String
     End If
 End Function
 
-'Return a 16-character hash of a specific MRU entry.  (This is used to generate unique menu icon filenames.)
-Private Function getMRUHash(ByVal filePath As String) As String
-    
-    'Before doing anything, check to see if this file has been requested before.  If it has, return our previous
-    ' hash instead of recalculating one from scratch.
+Private Function doesMRUHashExist(ByVal filePath As String) As String
+
+    'Check to see if this file has been requested before.  If it has, return our previous
+    ' hash instead of recalculating one from scratch.  If it does not exist, return "".
     If numOfMRUHashes > 0 Then
     
         'Loop through all previous hashes from this session
@@ -66,7 +65,7 @@ Private Function getMRUHash(ByVal filePath As String) As String
         
             'If this file path matches one we've already calculated, return that instead of calculating it again
             If StrComp(mruHashes(i).mruInitPath, filePath, vbTextCompare) = 0 Then
-                getMRUHash = mruHashes(i).mruHashPath
+                doesMRUHashExist = mruHashes(i).mruHashPath
                 Exit Function
             End If
         
@@ -74,27 +73,46 @@ Private Function getMRUHash(ByVal filePath As String) As String
     
     End If
     
-    'If we have reached this point, no correlating hash was found.  Calculate one from scratch.
+    doesMRUHashExist = ""
+
+End Function
+
+'Return a 16-character hash of a specific MRU entry.  (This is used to generate unique menu icon filenames.)
+Private Function getMRUHash(ByVal filePath As String) As String
     
-    'Prepare an SHA-256 hash calculator
-    Dim cSHA2 As CSHA256
-    Set cSHA2 = New CSHA256
-        
-    Dim hString As String
-    hString = cSHA2.SHA256(filePath)
+    'Check to see if this hash already exists
+    Dim prevHash As String
+    prevHash = doesMRUHashExist(filePath)
+    
+    'If it does, return it.
+    If prevHash <> "" Then
+        getMRUHash = prevHash
+        Exit Function
+    
+    'If no correlating hash was found, calculate one from scratch.
+    Else
+    
+        'Prepare an SHA-256 hash calculator
+        Dim cSHA2 As CSHA256
+        Set cSHA2 = New CSHA256
             
-    'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
-    ' This is too long for a filename, so take only the first sixteen characters of the hash.
-    hString = Left(hString, 16)
+        Dim hString As String
+        hString = cSHA2.SHA256(filePath)
+                
+        'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
+        ' This is too long for a filename, so take only the first sixteen characters of the hash.
+        hString = Left(hString, 16)
+        
+        'Save this hash to our hashes array
+        mruHashes(numOfMRUHashes).mruInitPath = filePath
+        mruHashes(numOfMRUHashes).mruHashPath = hString
+        numOfMRUHashes = numOfMRUHashes + 1
+        ReDim Preserve mruHashes(0 To numOfMRUHashes) As mruHash
+        
+        'Return this as the hash value
+        getMRUHash = hString
     
-    'Save this hash to our hashes array
-    mruHashes(numOfMRUHashes).mruInitPath = filePath
-    mruHashes(numOfMRUHashes).mruHashPath = hString
-    numOfMRUHashes = numOfMRUHashes + 1
-    ReDim Preserve mruHashes(0 To numOfMRUHashes) As mruHash
-    
-    'Return this as the hash value
-    getMRUHash = hString
+    End If
     
 End Function
 
@@ -184,6 +202,42 @@ Public Sub MRU_SaveToINI()
         Next x
         DoEvents
     End If
+    
+    'Finally, scan the MRU icon directory to make sure there are no orphaned PNG files.  (Multiple instances of PhotoDemon
+    ' running simultaneously can lead to this.)  Delete any PNG files that don't correspond to current MRU entries.
+    Dim chkFile As String
+    chkFile = Dir(userPreferences.getIconPath & "*.png", vbNormal)
+    
+    Dim fileOK As Boolean
+    
+    Do While chkFile <> ""
+        
+        fileOK = False
+        
+        'Compare this file to the hash for all current MRU entries
+        If numEntries <> 0 Then
+            For x = 0 To numEntries - 1
+                
+                'If this hash matches one on file, mark it as OK.
+                If StrComp(userPreferences.getIconPath & chkFile, getMRUThumbnailPath(x), vbTextCompare) = 0 Then
+                    fileOK = True
+                    Exit For
+                End If
+                
+            Next x
+        Else
+            fileOK = False
+        End If
+        
+        'If an MRU hash does not exist for this file, delete it
+        If fileOK = False Then
+            If FileExist(userPreferences.getIconPath & chkFile) Then Kill userPreferences.getIconPath & chkFile
+        End If
+    
+        'Retrieve the next file and repeat
+        chkFile = Dir
+    
+    Loop
     
 End Sub
 
