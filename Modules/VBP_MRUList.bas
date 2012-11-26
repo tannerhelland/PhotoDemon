@@ -33,6 +33,17 @@ Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Lon
 Private Const MAX_PATH As Long = 260
 Public Const maxMRULength As Long = 64
 
+'Because we need to hash MRU names to generate icon save locations, and hashing is computationally expensive, store all
+' calculated hashes in a table.
+Private Type mruHash
+    mruInitPath As String
+    mruHashPath As String
+End Type
+
+Private mruHashes() As mruHash
+
+Private numOfMRUHashes As Long
+
 'Return the path to an MRU thumbnail file (in PNG format)
 Public Function getMRUThumbnailPath(ByVal mruIndex As Long) As String
     If (mruIndex >= 0) And (mruIndex <= numEntries) Then
@@ -45,16 +56,41 @@ End Function
 'Return a 16-character hash of a specific MRU entry.  (This is used to generate unique menu icon filenames.)
 Private Function getMRUHash(ByVal filePath As String) As String
     
-    'Use an SHA-256 hash function on the filename at this entry
+    'Before doing anything, check to see if this file has been requested before.  If it has, return our previous
+    ' hash instead of recalculating one from scratch.
+    If numOfMRUHashes > 0 Then
+    
+        Dim i As Long
+        
+        For i = 0 To numOfMRUHashes - 1
+        
+            If StrComp(mruHashes(i).mruInitPath, filePath, vbTextCompare) = 0 Then
+                getMRUHash = mruHashes(i).mruHashPath
+                Exit Function
+            End If
+        
+        Next i
+    
+    End If
+    
+    'If we have reached this point, no correlating hash was found.  Calculate one from scratch.
+    
+    'Prepare an SHA-256 hash calculator
     Dim cSHA2 As CSHA256
     Set cSHA2 = New CSHA256
-    
+        
     Dim hString As String
     hString = cSHA2.SHA256(filePath)
-        
+            
     'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
     ' This is too long for a filename, so take only the first sixteen characters of the hash.
     hString = Left(hString, 16)
+    
+    'Save this hash to our hashes array
+    mruHashes(numOfMRUHashes).mruInitPath = filePath
+    mruHashes(numOfMRUHashes).mruHashPath = hString
+    numOfMRUHashes = numOfMRUHashes + 1
+    ReDim Preserve mruHashes(0 To numOfMRUHashes) As mruHash
     
     'Return this as the hash value
     getMRUHash = hString
@@ -75,6 +111,10 @@ End Function
 'Load the MRU list from the program's INI file
 Public Sub MRU_LoadFromINI()
 
+    'Reset the hash storage
+    ReDim mruHashes(0) As mruHash
+    numOfMRUHashes = 0
+    
     'Get the number of MRU entries from the INI file
     numEntries = userPreferences.GetPreference_Long("MRU", "NumberOfEntries", RECENT_FILE_COUNT)
     
