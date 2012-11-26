@@ -797,6 +797,7 @@ Public Sub FilterIsometric()
     Erase dstImageData
     
     'dstImageData now contains the isometric image.  We need to transfer that back into the current image.
+    pdImages(CurrentImage).mainLayer.eraseLayer
     pdImages(CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
     'With that transfer complete, we can erase our temporary layer

@@ -328,7 +328,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 
     'Make sure the layer we're passed isn't empty
     If srcLayer.getLayerDC <> 0 Then
-    
+        
         'Prepare new width and height values as requested by the user
         If newWidth = -1 Then newWidth = srcLayer.getLayerWidth
         If newHeight = -1 Then newHeight = srcLayer.getLayerHeight
@@ -399,7 +399,9 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
                     
                     'Decommission both arrays
                     CopyMemory ByVal VarPtrArray(iData), 0&, 4
+                    Erase iData
                     CopyMemory ByVal VarPtrArray(aData), 0&, 4
+                    Erase aData
                     
                     'Release the temporary layer
                     hackLayer.eraseLayer
@@ -760,7 +762,7 @@ End Sub
 
 'Load a layer's DIB information from file.
 Public Sub createFromFile(ByRef SrcFilename As String)
-        
+                
     Dim fileNum As Integer
     fileNum = FreeFile
     
@@ -817,6 +819,7 @@ Public Sub createFromFile(ByRef SrcFilename As String)
     
     'With our work complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    Erase iData
     
 End Sub
 
@@ -862,6 +865,7 @@ Public Sub writeToFile(ByRef DstFilename As String)
     
     'With our work complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    Erase iData
 
 End Sub
 
@@ -917,6 +921,8 @@ Public Sub writeToBitmapFile(ByRef DstFilename As String)
         Put #fileNum, , iData()
         
     Close #fileNum
+    
+    Erase iData
     
 End Sub
 
@@ -1062,7 +1068,8 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     
     'With our compositing complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
-
+    Erase iData
+    
     'TotalTime = TotalTime + (GetTickCount - StartTime)
     'numOfRuns = numOfRuns + 1
     'Message "Composite average: " & CDbl(TotalTime) / numOfRuns
@@ -1174,7 +1181,9 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
     
     'With our compositing complete, point both arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    Erase iData
     CopyMemory ByVal VarPtrArray(aData), 0&, 4
+    Erase aData
 
 End Sub
 
@@ -1233,6 +1242,7 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
     
     'With our check complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    Erase iData
 
     'Return checkAlpha.  If varying alpha values were found, this function returns TRUE.  If all values were the same,
     ' this function returns FALSE.
@@ -1278,7 +1288,9 @@ Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
     
     'With our alpha transfer complete, point both arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    Erase iData
     CopyMemory ByVal VarPtrArray(aData), 0&, 4
+    Erase aData
 
 End Sub
 
@@ -1330,5 +1342,6 @@ Public Sub fixPremultipliedAlpha()
     
     'With our alpha channel complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    Erase iData
 
 End Sub
