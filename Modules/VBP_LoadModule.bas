@@ -342,15 +342,18 @@ Public Sub LoadTheProgram()
 End Sub
 
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
-Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetLayer As pdLayer)
-    
+Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetLayer As pdLayer, Optional ByVal pageNumber As Long = 0)
+        
     Dim thisImage As Long
     
     'Because this routine accepts an array of images, we have to be prepared for the possibility that more than
     ' one image file is being opened.  This loop will execute until all files are loaded.
     For thisImage = 0 To UBound(sFile)
     
-        'First, ensure that the image file actually exists
+        'Before doing anything else, reset the multipage checker
+        imageHasMultiplePages = False
+    
+        'Next, ensure that the image file actually exists
         Message "Verifying that file exists..."
     
         If FileExist(sFile(thisImage)) = False Then
@@ -416,7 +419,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Case "GIF"
                 'GIF is preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If imageFormats.FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
                 ElseIf imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 25
@@ -486,7 +489,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Case "TIF", "TIFF"
                 'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
                 If imageFormats.FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
                 Else
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 18
@@ -685,6 +688,22 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         Message "Image loaded successfully."
         
+        'Before continuing on to the next image (if any), see if the just-loaded image was in multipage format.  If it was, the user
+        ' may have requested that we load all frames from this image.
+        If imageHasMultiplePages Then
+        
+            Dim pageTracker As Long
+            
+            Dim tmpStringArray(0) As String
+            tmpStringArray(0) = sFile(thisImage)
+            
+            'Call PreLoadImage again for each individual frame in the multipage file
+            For pageTracker = 1 To imagePageCount
+                PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+            Next pageTracker
+        
+        End If
+        
 PreloadMoreImages:
 
     'If we have more images to process, now's the time to do it!
@@ -693,9 +712,9 @@ PreloadMoreImages:
 End Sub
 
 'Load any file that hasn't explicitly been sent elsewhere.  FreeImage will automatically determine filetype.
-Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
+Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageNumber As Long = 0) As Boolean
 
-    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstLayer, dstImage)
+    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstLayer, dstImage, pageNumber)
     
 End Function
 
