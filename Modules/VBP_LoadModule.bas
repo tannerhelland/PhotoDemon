@@ -736,6 +736,10 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pd
         'Copy the image returned by GDI+ into the current pdImage object
         LoadGDIPlusImage = dstLayer.CreateFromPicture(tmpPicture)
         
+        'If the load was successful and the image contains an alpha channel, remove the effects of a premultiplied alpha channel
+        ' (which is the GDI+ default)
+        If LoadGDIPlusImage And dstLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha
+                
     Else
         LoadGDIPlusImage = False
     End If

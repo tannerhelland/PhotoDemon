@@ -1281,3 +1281,54 @@ Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
     CopyMemory ByVal VarPtrArray(aData), 0&, 4
 
 End Sub
+
+'Layers created from GDI+ contain pre-multiplied alpha values.  These are great for high-performance blting, but terrible for
+' photo editing.  This routine can be used to restore (well, estimate) the original color values of the image.
+Public Sub fixPremultipliedAlpha()
+
+    'Prepare a SAFEARRAY, which allows us to access the DIB data directly
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepInternalSafeArray tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    Dim x As Long, y As Long, QuickX As Long
+    
+    Dim r As Long, g As Long, b As Long
+    Dim tmpAlpha As Byte, tmpAlphaModifier As Single
+
+    'Loop through the image, removing the effects of pre-multiplication as we go
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
+        
+        tmpAlpha = iData(QuickX + 3, y)
+        
+        'Ignore completely opaque and completely transparent pixels
+        If tmpAlpha <> 255 Then
+            If tmpAlpha <> 0 Then
+            
+                r = iData(QuickX + 2, y)
+                g = iData(QuickX + 1, y)
+                b = iData(QuickX, y)
+            
+                tmpAlphaModifier = 255 / tmpAlpha
+            
+                'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
+                r = r * tmpAlphaModifier
+                g = g * tmpAlphaModifier
+                b = b * tmpAlphaModifier
+                
+                iData(QuickX + 2, y) = CByte(r)
+                iData(QuickX + 1, y) = CByte(g)
+                iData(QuickX, y) = CByte(b)
+            
+            End If
+        End If
+    Next y
+    Next x
+    
+    'With our alpha channel complete, point iData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+
+End Sub
