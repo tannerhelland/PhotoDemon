@@ -170,9 +170,8 @@ MRUEntryFound:
     
     'File already exists in the MRU list somewhere...
     If alreadyThere = True Then
-        If curLocation = 0 Then
-            Exit Sub
-        Else
+        
+        If curLocation <> 0 Then
             'Move every path before this file DOWN
             For x = curLocation To 1 Step -1
                 MRUlist(x) = MRUlist(x - 1)
