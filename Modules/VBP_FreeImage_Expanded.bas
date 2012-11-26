@@ -155,7 +155,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
             
             End If
             
-            Message "Tone mapping image to preserve tonal range..."
+            Message "Tone mapping HDR image to preserve tonal range..."
             
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
             FreeImage_UnloadEx fi_hDIB
@@ -211,7 +211,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
             'With the alpha data safely in the care of our temporary object, unload the temporary 32bpp version of this image
             FreeImage_UnloadEx new_hDIB
         
-            Message "Alpha copy complete.  Tone mapping image to preserve tonal range..."
+            Message "Alpha copy complete.  Tone mapping HDR image to preserve tonal range..."
         
             'Now, convert the RGB data using the superior tone-mapping method.
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
