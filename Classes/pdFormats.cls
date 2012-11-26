@@ -147,7 +147,10 @@ Public Sub generateInputFormats()
     'Bitmap files require no plugins; they are always supported.
     addInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp"
     
-    If FreeImageEnabled Then addInputFormat "DDS - DirectDraw Surface", "*.dds"
+    If FreeImageEnabled Then
+        addInputFormat "DDS - DirectDraw Surface", "*.dds"
+        addInputFormat "EXR - Industrial Light and Magic", "*.exr"
+    End If
     
     addInputFormat "GIF - Compuserve", "*.gif"
     addInputFormat "ICO - Windows Icon", "*.ico"
