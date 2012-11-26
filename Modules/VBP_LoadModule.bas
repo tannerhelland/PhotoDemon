@@ -472,6 +472,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 'FreeImage has a more robust (and reliable) PNG implementation than GDI+, so use it if available
                 If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                    
+                    'If FreeImage fails for some reason (such as it being a 1bpp PNG), offload the image to GDI+
+                    If Not loadSuccessful Then
+                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                        targetImage.OriginalFileFormat = 13
+                    End If
+                    
                 Else
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = 13
