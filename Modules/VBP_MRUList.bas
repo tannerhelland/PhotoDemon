@@ -3,9 +3,8 @@ Attribute VB_Name = "MRU_List_Handler"
 'MRU (Most Recently Used) List Handler
 'Copyright ©2005-2012 by Tanner Helland
 'Created: 22/May/05
-'Last updated: 22/November/12
-'Last update: MRU entries are shortened to a max length of 32 (see corresponding CONST) before placing them in
-'              the MRU menu.
+'Last updated: 25/November/12
+'Last update: finished debugging MRU icons and preferences related to MRU caption length
 '
 'Handles the creation and maintenance of the program's MRU list.  Originally
 ' this stored our MRU information in the registry, but I have rewritten the
@@ -38,6 +37,8 @@ Public Const maxMRULength As Long = 64
 Public Function getMRUThumbnailPath(ByVal mruIndex As Long) As String
     If (mruIndex >= 0) And (mruIndex <= numEntries) Then
         getMRUThumbnailPath = userPreferences.getIconPath & getMRUHash(MRUlist(mruIndex)) & ".png"
+    Else
+        getMRUThumbnailPath = ""
     End If
 End Function
 
@@ -80,6 +81,8 @@ Public Sub MRU_LoadFromINI()
     'Only load entries if MRU data exists
     If numEntries > 0 Then
         ReDim MRUlist(0 To numEntries) As String
+        
+        'Loop through each MRU entry, loading them onto the menu as we go
         For x = 0 To numEntries - 1
             MRUlist(x) = userPreferences.GetPreference_String("MRU", "f" & x, "")
             If x <> 0 Then
@@ -88,18 +91,24 @@ Public Sub MRU_LoadFromINI()
                 FormMain.mnuRecDocs(x).Enabled = True
             End If
             
-            'Shortcuts are not displayed on XP, because they end up smashed into the caption itself
+            'Based on the user's preference for captioning, display either the full path or just the filename
             If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
                 FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
             End If
             
+            'Shortcuts are not displayed on XP, because they end up smashed into the caption itself.
+            ' Also, shortcuts are disabled in the IDE because the VB Accelerator control that handles them requires subclassing.
             If (isVistaOrLater And IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
+        
+        'Make the "Clear MRU" option visible
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
+     
+    'If no MRU entries are available, hide all MRU-related menu entries
     Else
         ReDim MRUlist(0) As String
         MRUlist(0) = ""
@@ -235,7 +244,7 @@ MRUEntryFound:
         Next x
     End If
     
-    'If we are not in the middle of a batch conversion, save a thumbnail of this image to file.
+    'Save a thumbnail of this image to file.
     saveMRUThumbnail newFile, srcImage
     
     'The icons in the MRU sub-menu need to be reset after this action
