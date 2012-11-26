@@ -276,15 +276,17 @@ Public Sub LoadMenuIcons()
         '--> Import Sub-Menu
         'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
         If ScanEnabled = True Then
-            .PutImageToVBMenu 8, 0, 0, 2       'Scan Image
-            .PutImageToVBMenu 45, 1, 0, 2      'Select Scanner
-            .PutImageToVBMenu 9, 3, 0, 2       'Download Image
-            .PutImageToVBMenu 10, 5, 0, 2      'Capture Screen
-            .PutImageToVBMenu 11, 7, 0, 2      'Import from FRX
+            .PutImageToVBMenu 16, 0, 0, 2      'From Clipboard (Paste as New Image)
+            .PutImageToVBMenu 8, 2, 0, 2       'Scan Image
+            .PutImageToVBMenu 45, 3, 0, 2      'Select Scanner
+            .PutImageToVBMenu 9, 5, 0, 2       'Online Image
+            .PutImageToVBMenu 10, 7, 0, 2      'Screen Capture
+            .PutImageToVBMenu 11, 9, 0, 2      'Import from FRX
         Else
-            .PutImageToVBMenu 9, 0, 0, 2       'Download Image
-            .PutImageToVBMenu 10, 2, 0, 2      'Capture Screen
-            .PutImageToVBMenu 11, 4, 0, 2      'Import from FRX
+            .PutImageToVBMenu 16, 0, 0, 2      'From Clipboard (Paste as New Image)
+            .PutImageToVBMenu 9, 2, 0, 2       'Online Image
+            .PutImageToVBMenu 10, 4, 0, 2      'Screen Capture
+            .PutImageToVBMenu 11, 6, 0, 2      'Import from FRX
         End If
         
         'Edit Menu

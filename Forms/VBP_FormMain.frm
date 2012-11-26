@@ -671,30 +671,36 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuAcquire 
          Caption         =   "&Import"
+         Begin VB.Menu MnuImportClipboard 
+            Caption         =   "From Clipboard"
+         End
+         Begin VB.Menu MnuImportSepBar0 
+            Caption         =   "-"
+         End
          Begin VB.Menu MnuScanImage 
-            Caption         =   "From Scanner/Camera..."
+            Caption         =   "From Scanner or Camera..."
             Shortcut        =   ^I
          End
          Begin VB.Menu MnuSelectScanner 
             Caption         =   "Select Scanner/Camera Source"
          End
-         Begin VB.Menu MnuImportSepBar0 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuImportFromInternet 
-            Caption         =   "From Internet..."
-         End
          Begin VB.Menu MnuImportSepBar1 
             Caption         =   "-"
          End
-         Begin VB.Menu MnuScreenCapture 
-            Caption         =   "Capture the Screen..."
+         Begin VB.Menu MnuImportFromInternet 
+            Caption         =   "Online Image..."
          End
          Begin VB.Menu MnuImportSepBar2 
             Caption         =   "-"
          End
+         Begin VB.Menu MnuScreenCapture 
+            Caption         =   "Screen Capture..."
+         End
+         Begin VB.Menu MnuImportSepBar3 
+            Caption         =   "-"
+         End
          Begin VB.Menu MnuImportFrx 
-            Caption         =   "From Visual Basic Binary File..."
+            Caption         =   "Visual Basic Binary File..."
          End
       End
       Begin VB.Menu MnuFileSepBar2 
@@ -2069,6 +2075,11 @@ Private Sub MnuImageMode32bpp_Click()
     
     Process ChangeImageMode32
     
+End Sub
+
+'This is the exact same thing as "Paste as New Image".  It is provided in two locations for convenience.
+Private Sub MnuImportClipboard_Click()
+    Process cPaste
 End Sub
 
 'Attempt to import an image from the Internet

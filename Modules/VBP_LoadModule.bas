@@ -858,6 +858,7 @@ Public Sub LoadMenuShortcuts()
     FormMain.MnuImportFromInternet.Caption = FormMain.MnuImportFromInternet.Caption & vbTab & "Ctrl+Shift+I"
     FormMain.MnuScreenCapture.Caption = FormMain.MnuScreenCapture.Caption & vbTab & "Ctrl+Alt+I"
     FormMain.MnuImportFrx.Caption = FormMain.MnuImportFrx.Caption & vbTab & "Ctrl+Alt+Shift+I"
+    FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & "Ctrl+V"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
 
@@ -971,7 +972,7 @@ Public Sub LoadPlugins()
         ScanEnabled = False
         FormMain.MnuScanImage.Visible = False
         FormMain.MnuSelectScanner.Visible = False
-        FormMain.MnuImportSepBar0.Visible = False
+        FormMain.MnuImportSepBar1.Visible = False
     Else
         ScanEnabled = True
         
@@ -981,11 +982,11 @@ Public Sub LoadPlugins()
         If EnableScanner() = False Then
             FormMain.MnuScanImage.Visible = False
             FormMain.MnuSelectScanner.Visible = False
-            FormMain.MnuImportSepBar0.Visible = False
+            FormMain.MnuImportSepBar1.Visible = False
         Else
             FormMain.MnuScanImage.Visible = True
             FormMain.MnuSelectScanner.Visible = True
-            FormMain.MnuImportSepBar0.Visible = True
+            FormMain.MnuImportSepBar1.Visible = True
         End If
     End If
     
