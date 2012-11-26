@@ -60,10 +60,11 @@ Private Function getMRUHash(ByVal filePath As String) As String
     ' hash instead of recalculating one from scratch.
     If numOfMRUHashes > 0 Then
     
+        'Loop through all previous hashes from this session
         Dim i As Long
-        
         For i = 0 To numOfMRUHashes - 1
         
+            'If this file path matches one we've already calculated, return that instead of calculating it again
             If StrComp(mruHashes(i).mruInitPath, filePath, vbTextCompare) = 0 Then
                 getMRUHash = mruHashes(i).mruHashPath
                 Exit Function
