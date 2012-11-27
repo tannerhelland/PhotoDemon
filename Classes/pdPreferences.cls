@@ -348,6 +348,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "LastUpdateCheck="
         Print #fileNum, "LogProgramMessages=0"
         Print #fileNum, "MRUCaptionSize=0"
+        Print #fileNum, "MultipageImagePrompt=0"
         Print #fileNum, "PromptForPluginDownload=1"
         Print #fileNum, "RememberWindowLocation=1"
         Print #fileNum, "LastWindowState=0"

@@ -128,39 +128,62 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
             Else
                 Message "Multipage TIFF file detected."
             End If
+            
+            'Based on the user's preference for multipage images, we can handle the image one of several ways
+            Select Case userPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0)
+            
+                'Prompt the user for an action
+                Case 0
                 
-            Dim mpImportAnswer As VbMsgBoxResult
-            If fileFIF = FIF_GIF Then
-                mpImportAnswer = MsgBox("This is an animated GIF file (" & chkPageCount & " frames total).  Would you like to import each frame as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each frame as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first frame.", vbInformation + vbYesNo + vbApplicationModal, " Animated GIF Import Options")
-            Else
-                mpImportAnswer = MsgBox("This TIFF file contains multiple pages (" & chkPageCount & " pages total).  Would you like to import each page as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each page as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first page.", vbInformation + vbYesNo + vbApplicationModal, " Multipage TIFF Import Options")
-            End If
-            
-            'If the user said "yes", import each page as its own image
-            If mpImportAnswer = vbYes Then
-            
-                If fileFIF = FIF_GIF Then
-                    Message "All frames will be loaded, per the user's request."
-                Else
-                    Message "All pages will be loaded, per the user's request."
-                End If
-            
-                imageHasMultiplePages = True
-                imagePageCount = chkPageCount - 1
-                            
-            'If the user just wants the first frame, close the image and resume normal loading
-            
-            Else
-            
-                If fileFIF = FIF_GIF Then
-                    Message "Only the first frame will be loaded, per the user's request."
-                Else
-                    Message "Only the first page will be loaded, per the user's request."
-                End If
+                    Dim mpImportAnswer As VbMsgBoxResult
+                    If fileFIF = FIF_GIF Then
+                        mpImportAnswer = MsgBox("This is an animated GIF file (" & chkPageCount & " frames total).  Would you like to import each frame as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each frame as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first frame.", vbInformation + vbYesNo + vbApplicationModal, " Animated GIF Import Options")
+                    Else
+                        mpImportAnswer = MsgBox("This TIFF file contains multiple pages (" & chkPageCount & " pages total).  Would you like to import each page as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each page as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first page.", vbInformation + vbYesNo + vbApplicationModal, " Multipage TIFF Import Options")
+                    End If
+                    
+                    'If the user said "yes", import each page as its own image
+                    If mpImportAnswer = vbYes Then
+                    
+                        If fileFIF = FIF_GIF Then
+                            Message "All frames will be loaded, per the user's request."
+                        Else
+                            Message "All pages will be loaded, per the user's request."
+                        End If
+                    
+                        imageHasMultiplePages = True
+                        imagePageCount = chkPageCount - 1
+                                    
+                    'If the user just wants the first frame, close the image and resume normal loading
+                    
+                    Else
+                        
+                        If fileFIF = FIF_GIF Then
+                            Message "Only the first frame will be loaded, per the user's request."
+                        Else
+                            Message "Only the first page will be loaded, per the user's request."
+                        End If
+                        
+                        imageHasMultiplePages = False
+                        imagePageCount = 0
+                    
+                    End If
                 
-                imageHasMultiplePages = False
-                imagePageCount = 0
-            End If
+                'Ignore additional images, and treat this as a single-image file.  (Load just the first frame or page, basically.)
+                Case 1
+                
+                    Message "Ignoring extra images in the file, per user's saved preference."
+                    imageHasMultiplePages = False
+                    imagePageCount = 0
+                
+                'Load every image in the file.
+                Case 2
+                
+                    Message "Loading all images in the file, per user's saved preference."
+                    imageHasMultiplePages = True
+                    imagePageCount = chkPageCount - 1
+                
+            End Select
             
         End If
         

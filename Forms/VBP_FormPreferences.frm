@@ -257,9 +257,28 @@ Begin VB.Form FormPreferences
       TabIndex        =   45
       Top             =   360
       Width           =   8295
+      Begin VB.ComboBox cmbMultiImage 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   3720
+         Style           =   2  'Dropdown List
+         TabIndex        =   62
+         ToolTipText     =   $"VBP_FormPreferences.frx":61EC
+         Top             =   2790
+         Width           =   4095
+      End
       Begin VB.CheckBox chkToneMapping 
          Appearance      =   0  'Flat
-         Caption         =   "apply tone mapping to imported HDR images (48, 64, 96, 128bpp)"
+         Caption         =   "apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -273,8 +292,8 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   60
-         ToolTipText     =   $"VBP_FormPreferences.frx":61EC
-         Top             =   1950
+         ToolTipText     =   $"VBP_FormPreferences.frx":6294
+         Top             =   870
          Width           =   7455
       End
       Begin VB.ComboBox cmbLargeImages 
@@ -292,7 +311,7 @@ Begin VB.Form FormPreferences
          Left            =   3000
          Style           =   2  'Dropdown List
          TabIndex        =   48
-         Top             =   945
+         Top             =   1815
          Width           =   4815
       End
       Begin VB.CheckBox chkConfirmUnsaved 
@@ -312,19 +331,59 @@ Begin VB.Form FormPreferences
          Left            =   360
          TabIndex        =   47
          ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
-         Top             =   3720
+         Top             =   4560
          Width           =   7215
+      End
+      Begin VB.Label lblMultiImages 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "if a file contains multiple images: "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   720
+         TabIndex        =   63
+         Top             =   2835
+         Width           =   2895
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "multi-image files (animated GIF, multipage TIFF)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   8
+         Left            =   480
+         TabIndex        =   61
+         Top             =   2370
+         Width           =   5205
       End
       Begin VB.Line lineLoadSave 
          BorderColor     =   &H8000000D&
          X1              =   8
          X2              =   544
-         Y1              =   192
-         Y2              =   192
+         Y1              =   248
+         Y2              =   248
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "high-dynamic range (HDR) images"
+         Caption         =   "high-dynamic range (HDR) files"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -339,12 +398,12 @@ Begin VB.Form FormPreferences
          Index           =   6
          Left            =   480
          TabIndex        =   59
-         Top             =   1560
-         Width           =   3675
+         Top             =   480
+         Width           =   3345
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "default actions"
+         Caption         =   "initial viewport"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -359,12 +418,12 @@ Begin VB.Form FormPreferences
          Index           =   5
          Left            =   480
          TabIndex        =   58
-         Top             =   540
-         Width           =   1530
+         Top             =   1425
+         Width           =   1560
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "saving images"
+         Caption         =   "save preferences"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -379,8 +438,8 @@ Begin VB.Form FormPreferences
          Index           =   1
          Left            =   120
          TabIndex        =   50
-         Top             =   3240
-         Width           =   1500
+         Top             =   4080
+         Width           =   1755
       End
       Begin VB.Label lblImgOpen 
          AutoSize        =   -1  'True
@@ -399,12 +458,12 @@ Begin VB.Form FormPreferences
          Height          =   240
          Left            =   720
          TabIndex        =   49
-         Top             =   990
+         Top             =   1860
          Width           =   2235
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "loading images"
+         Caption         =   "load preferences"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -420,7 +479,7 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   46
          Top             =   0
-         Width           =   1605
+         Width           =   1740
       End
    End
    Begin VB.PictureBox picContainer 
@@ -557,7 +616,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":62B6
+         MouseIcon       =   "VBP_FormPreferences.frx":635E
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -739,7 +798,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   51
-         ToolTipText     =   $"VBP_FormPreferences.frx":6408
+         ToolTipText     =   $"VBP_FormPreferences.frx":64B0
          Top             =   3240
          Width           =   7695
       End
@@ -785,7 +844,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":64DA
+         MouseIcon       =   "VBP_FormPreferences.frx":6582
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -802,7 +861,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":662C
+         MouseIcon       =   "VBP_FormPreferences.frx":66D4
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1057,12 +1116,12 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   22
-         ToolTipText     =   $"VBP_FormPreferences.frx":677E
+         ToolTipText     =   $"VBP_FormPreferences.frx":6826
          Top             =   600
          Width           =   6975
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":6870
+         Caption         =   $"VBP_FormPreferences.frx":6918
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -1171,7 +1230,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   18
-         ToolTipText     =   $"VBP_FormPreferences.frx":691F
+         ToolTipText     =   $"VBP_FormPreferences.frx":69C7
          Top             =   1080
          Width           =   6735
       End
@@ -1459,6 +1518,9 @@ Private Sub CmdOK_Click()
     AlphaCheckSize = cmbAlphaCheckSize.ListIndex
     userPreferences.SetPreference_Long "General Preferences", "AlphaCheckSize", AlphaCheckSize
     
+    'Remember how the user wants multipage images to be handled
+    userPreferences.SetPreference_Long "General Preferences", "MultipageImagePrompt", cmbMultiImage.ListIndex
+    
     'Remember whether or not to autozoom large images
     AutosizeLargeImages = cmbLargeImages.ListIndex
     userPreferences.SetPreference_Long "General Preferences", "AutosizeLargeImages", AutosizeLargeImages
@@ -1556,6 +1618,13 @@ Private Sub LoadAllPreferences()
     cmbMRUCaption.AddItem "compact - file names only", 0
     cmbMRUCaption.AddItem "descriptive - full locations, including folder(s)", 1
     cmbMRUCaption.ListIndex = userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0)
+    
+    'Populate the combo box for multipage image handling
+    cmbMultiImage.Clear
+    cmbMultiImage.AddItem "ask me how I want to proceed", 0
+    cmbMultiImage.AddItem "just load the first image", 1
+    cmbMultiImage.AddItem "load all the images in the file", 2
+    cmbMultiImage.ListIndex = userPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0)
     
     'Next, get the values for alpha-channel checkerboard rendering
     userInitiatedAlphaSelection = False
