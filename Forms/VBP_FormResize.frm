@@ -3,7 +3,7 @@ Begin VB.Form FormResize
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
    ClientHeight    =   4230
-   ClientLeft      =   -15
+   ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   4005
    BeginProperty Font 
@@ -280,263 +280,6 @@ Private Sub ChkRatio_Click()
     If ChkRatio.Value = vbChecked Then UpdateHeightBox
 End Sub
 
-'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMethod As Byte)
-
-    'If the image contains an active selection, automatically resize it to match the new image.
-    Dim selActive As Boolean
-    Dim tsLeft As Single, tsTop As Single, tsWidth As Single, tsHeight As Single
-    
-    If pdImages(CurrentImage).selectionActive Then
-        selActive = True
-        
-        'Remember all the current selection values
-        tsLeft = pdImages(CurrentImage).mainSelection.selLeft
-        tsTop = pdImages(CurrentImage).mainSelection.selTop
-        tsWidth = pdImages(CurrentImage).mainSelection.selWidth
-        tsHeight = pdImages(CurrentImage).mainSelection.selHeight
-        
-        'Deactivate the current selection
-        pdImages(CurrentImage).selectionActive = False
-        tInit tSelection, False
-        
-        'Note the ratio between the original width/height values and the new ones
-        wRatio = iWidth / pdImages(CurrentImage).Width
-        hRatio = iHeight / pdImages(CurrentImage).Height
-        
-    Else
-        selActive = False
-    End If
-
-    'Because most resize methods require a temporary layer, create one here
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-
-    'Nearest neighbor...
-    If iMethod = RESIZE_NORMAL Then
-    
-        Message "Resizing image..."
-        
-        'Copy the current layer into this temporary layer at the new size
-        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, iWidth, iHeight, False
-        
-        'Now copy the resized image back into the main layer
-        pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-        
-        'Update the size to match
-        pdImages(CurrentImage).updateSize
-        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
-        
-        'Fit the new image on-screen and redraw it
-        FitOnScreen
-        
-    'Halftone resampling... I'm not sure what to actually call it, but since it seems to be based off the
-    ' StretchBlt mode Microsoft calls "halftone," I'm running with it
-    ElseIf iMethod = RESIZE_HALFTONE Then
-        
-        Message "Resizing image..."
-                
-        'Copy the current layer into this temporary layer at the new size
-        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, iWidth, iHeight, True
-        
-        'Now copy the resized image back into the main layer
-        pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-        
-        'Update the size to match
-        pdImages(CurrentImage).updateSize
-        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
-        
-        'Fit the new image on-screen and redraw it
-        FitOnScreen
-        
-    'True bilinear sampling
-    ElseIf iMethod = RESIZE_BILINEAR Then
-    
-        'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
-        If imageFormats.FreeImageEnabled Then
-        
-            FreeImageResize iWidth, iHeight, FILTER_BILINEAR
-        
-        'If FreeImage is not enabled, we have to do the resample ourselves.
-        Else
-        
-            Message "Resampling image..."
-        
-            'Create a local array and point it at the pixel data of the current image
-            Dim srcImageData() As Byte
-            Dim srcSA As SAFEARRAY2D
-            prepImageData srcSA
-            CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-            'Resize the temporary layer to the target size, and point a second local array at it
-            tmpLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
-            
-            Dim dstImageData() As Byte
-            Dim dstSA As SAFEARRAY2D
-            
-            prepSafeArray dstSA, tmpLayer
-            CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-            
-            'These values will help us access locations in the array more quickly.
-            ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-            Dim qvDepth As Long
-            qvDepth = tmpLayer.getLayerColorDepth \ 8
-            
-            'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-            ' based on the size of the area to be processed.
-            Dim progBarCheck As Long
-            SetProgBarMax iWidth
-            progBarCheck = findBestProgBarValue()
-        
-            'Resampling requires a ton of variables
-        
-            'Scaled ratios between the old x and y values and the new ones
-            Dim xScale As Single, yScale As Single
-            
-            'Coordinate variables for source and destination
-            Dim x As Long, y As Long
-            Dim dstX As Single, dstY As Single
-            
-            'Interpolated X and Y values
-            Dim IntrplX As Integer, IntrplY As Integer
-            
-            'Calculation variables
-            Dim CalcX As Single, CalcY As Single, invCalcX As Single, invCalcY As Single
-            
-            'Red and green values we'll use to interpolate the new pixel
-            Dim R As Long, r1 As Single, r2 As Single, r3 As Single, r4 As Single
-            Dim i As Long
-            
-            'Interpolated red, green, and blue
-            Dim ir1 As Long, ir2 As Long
-            
-            'Shortcut variables for x positions
-            Dim QuickX As Long, QuickXInt As Long, QuickXIntRight As Long
-            
-            'Get the ratio between the old image and the new one
-            xScale = (pdImages(CurrentImage).Width - 1) / iWidth
-            yScale = (pdImages(CurrentImage).Height - 1) / iHeight
-            
-            For x = 0 To iWidth - 1
-                
-                'Generate the x calculation variables
-                dstX = x * xScale
-                IntrplX = Int(dstX)
-                CalcX = dstX - IntrplX
-                invCalcX = 1 - CalcX
-                
-                QuickX = x * qvDepth
-                QuickXInt = IntrplX * qvDepth
-                QuickXIntRight = (IntrplX + 1) * qvDepth
-    
-                'Draw each pixel in the new image
-                For y = 0 To iHeight - 1
-                    
-                    'Generate the y calculation variables
-                    dstY = y * yScale
-                    IntrplY = Int(dstY)
-                    CalcY = dstY - IntrplY
-                    invCalcY = 1 - CalcY
-                    
-                    'Using a loop at this point allows us to handle 24bpp images (qvDepth = 3) and 32bpp images (qvDepth = 4)
-                    ' without modifying our interpolation.  Thus, alpha will be interpolated just like the color channels.
-                    For i = 0 To qvDepth - 1
-                    
-                        'Get the 4 pixels around the interpolated one
-                        r1 = srcImageData(QuickXInt + i, IntrplY)
-                        
-                        r2 = srcImageData(QuickXIntRight + i, IntrplY)
-                        
-                        r3 = srcImageData(QuickXInt + i, IntrplY + 1)
-            
-                        r4 = srcImageData(QuickXIntRight + i, IntrplY + 1)
-            
-                        'Interpolate the value in the Y direction
-                        ir1 = r1 * invCalcY + r3 * CalcY
-                        ir2 = r2 * invCalcY + r4 * CalcY
-                        
-                        'Intepolate the value in the X direction
-                        R = ir1 * invCalcX + ir2 * CalcX
-                        
-                        'Make sure that the value is in acceptable byte range
-                        If R > 255 Then
-                            R = 255
-                        ElseIf R < 0 Then
-                            R = 0
-                        End If
-                        
-                        'Set this pixel onto the destination image
-                        dstImageData(QuickX + i, y) = R
-                        
-                    Next i
-                
-                Next y
-            
-                If (x And progBarCheck) = 0 Then SetProgBarVal x
-                
-            Next x
-        
-            'Now copy the resized image back into the main layer
-            pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-            
-            'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-            Erase srcImageData
-            
-            CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-            Erase dstImageData
-            
-            'Update the size variables
-            pdImages(CurrentImage).updateSize
-            DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
-        
-            SetProgBarVal 0
-        
-            'Fit the new image on-screen and redraw it
-            FitOnScreen
-            
-        End If
-    
-    ElseIf iMethod = RESIZE_BSPLINE Then
-        FreeImageResize iWidth, iHeight, FILTER_BSPLINE
-        
-    ElseIf iMethod = RESIZE_BICUBIC_MITCHELL Then
-        FreeImageResize iWidth, iHeight, FILTER_BICUBIC
-        
-    ElseIf iMethod = RESIZE_BICUBIC_CATMULL Then
-        FreeImageResize iWidth, iHeight, FILTER_CATMULLROM
-    
-    ElseIf iMethod = RESIZE_LANCZOS Then
-        FreeImageResize iWidth, iHeight, FILTER_LANCZOS3
-        
-    End If
-    
-    'Release our temporary layer
-    Set tmpLayer = Nothing
-    
-    'If the image had a selection, recreate it - but make it match the new image size
-    If selActive Then
-                
-        'Populate the selection text boxes (which are now invisible)
-        FormMain.txtSelLeft = Int(tsLeft * wRatio)
-        FormMain.txtSelTop = Int(tsTop * hRatio)
-        FormMain.txtSelWidth = Int(tsWidth * wRatio)
-        FormMain.txtSelHeight = Int(tsHeight * hRatio)
-        
-        'Reactivate the current selection with the new values
-        tInit tSelection, True
-        pdImages(CurrentImage).mainSelection.updateViaTextBox
-        pdImages(CurrentImage).selectionActive = True
-        
-        'Redraw the image
-        RenderViewport pdImages(CurrentImage).containingForm
-        
-    End If
-    
-    Message "Finished."
-    
-End Sub
-
 'Perform a resize operation
 Private Sub CmdResize_Click()
     
@@ -745,4 +488,258 @@ Private Sub ChangeToHeight()
             UpdateWidthBox
         End If
     End If
+End Sub
+
+'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
+Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMethod As Byte)
+
+    'If the image contains an active selection, automatically resize it to match the new image.
+    Dim selActive As Boolean
+    Dim tsLeft As Single, tsTop As Single, tsWidth As Single, tsHeight As Single
+    
+    If pdImages(CurrentImage).selectionActive Then
+        selActive = True
+        
+        'Remember all the current selection values
+        tsLeft = pdImages(CurrentImage).mainSelection.selLeft
+        tsTop = pdImages(CurrentImage).mainSelection.selTop
+        tsWidth = pdImages(CurrentImage).mainSelection.selWidth
+        tsHeight = pdImages(CurrentImage).mainSelection.selHeight
+        
+        'Deactivate the current selection
+        pdImages(CurrentImage).selectionActive = False
+        tInit tSelection, False
+        
+        'Note the ratio between the original width/height values and the new ones
+        wRatio = iWidth / pdImages(CurrentImage).Width
+        hRatio = iHeight / pdImages(CurrentImage).Height
+        
+    Else
+        selActive = False
+    End If
+
+    'Because most resize methods require a temporary layer, create one here
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+
+    Select Case iMethod
+
+        'Nearest neighbor...
+        Case RESIZE_NORMAL
+        
+            Message "Resizing image..."
+            
+            'Copy the current layer into this temporary layer at the new size
+            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, iWidth, iHeight, False
+            
+            'Now copy the resized image back into the main layer
+            pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+            
+            'Update the size to match
+            pdImages(CurrentImage).updateSize
+            DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+            
+            'Fit the new image on-screen and redraw it
+            FitOnScreen
+            
+        'Halftone resampling... I'm not sure what to actually call it, but since it's based off the
+        ' StretchBlt mode Microsoft calls "halftone," I'm sticking with that
+        Case RESIZE_HALFTONE
+            
+            Message "Resizing image..."
+            
+            'Copy the current layer into this temporary layer at the new size
+            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, iWidth, iHeight, True
+                
+            'Now copy the resized image back into the main layer
+            pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+            
+            'Update the size to match
+            pdImages(CurrentImage).updateSize
+            DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+            
+            'Fit the new image on-screen and redraw it
+            FitOnScreen
+            
+        'True bilinear sampling
+        Case RESIZE_BILINEAR
+        
+            'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
+            If imageFormats.FreeImageEnabled Then
+            
+                FreeImageResize iWidth, iHeight, FILTER_BILINEAR
+            
+            'If FreeImage is not enabled, we have to do the resample ourselves.
+            Else
+            
+                Message "Resampling image..."
+        
+                'Create a local array and point it at the pixel data of the current image
+                Dim srcImageData() As Byte
+                Dim srcSA As SAFEARRAY2D
+                prepImageData srcSA
+                CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+                'Resize the temporary layer to the target size, and point a second local array at it
+                tmpLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+                
+                Dim dstImageData() As Byte
+                Dim dstSA As SAFEARRAY2D
+                
+                prepSafeArray dstSA, tmpLayer
+                CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+                
+                'These values will help us access locations in the array more quickly.
+                ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+                Dim qvDepth As Long
+                qvDepth = tmpLayer.getLayerColorDepth \ 8
+                
+                'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+                ' based on the size of the area to be processed.
+                Dim progBarCheck As Long
+                SetProgBarMax iWidth
+                progBarCheck = findBestProgBarValue()
+            
+                'Resampling requires many variables
+                
+                'Scaled ratios between the old x and y values and the new ones
+                Dim xScale As Single, yScale As Single
+                xScale = (pdImages(CurrentImage).Width - 1) / iWidth
+                yScale = (pdImages(CurrentImage).Height - 1) / iHeight
+    
+                'Interpolated X and Y values
+                Dim IntrplX As Long, IntrplY As Long
+                
+                'Calculation variables
+                Dim CalcX As Single, CalcY As Single, invCalcX As Single, invCalcY As Single
+                
+                'Values we'll use to interpolate the new pixel
+                Dim r1 As Single, r2 As Single, r3 As Single, r4 As Single
+                Dim R As Long
+                
+                'Interpolated results (horizontal and vertical)
+                Dim ir1 As Long, ir2 As Long
+                
+                'Shortcut variables for x positions
+                Dim QuickX As Long, QuickXInt As Long, QuickXIntRight As Long
+                            
+                'Coordinate variables for source and destination
+                Dim x As Long, y As Long, i As Long
+                Dim dstX As Single, dstY As Single
+                            
+                For x = 0 To iWidth - 1
+                    
+                    'Generate the x calculation variables
+                    dstX = x * xScale
+                    IntrplX = Int(dstX)
+                    CalcX = dstX - IntrplX
+                    invCalcX = 1 - CalcX
+                    
+                    QuickX = x * qvDepth
+                    QuickXInt = IntrplX * qvDepth
+                    QuickXIntRight = (IntrplX + 1) * qvDepth
+        
+                    'Draw each pixel in the new image
+                    For y = 0 To iHeight - 1
+                        
+                        'Generate the y calculation variables
+                        dstY = y * yScale
+                        IntrplY = Int(dstY)
+                        CalcY = dstY - IntrplY
+                        invCalcY = 1 - CalcY
+                        
+                        'Using a loop at this point allows us to handle 24bpp images (qvDepth = 3) and 32bpp images (qvDepth = 4)
+                        ' without modifying our interpolation.  Thus, alpha will be interpolated just like the color channels.
+                        For i = 0 To qvDepth - 1
+                        
+                            'Get the 4 pixels around the interpolated one
+                            r1 = srcImageData(QuickXInt + i, IntrplY)
+                            
+                            r2 = srcImageData(QuickXIntRight + i, IntrplY)
+                            
+                            r3 = srcImageData(QuickXInt + i, IntrplY + 1)
+                
+                            r4 = srcImageData(QuickXIntRight + i, IntrplY + 1)
+                
+                            'Interpolate the value in the Y direction
+                            ir1 = r1 * invCalcY + r3 * CalcY
+                            ir2 = r2 * invCalcY + r4 * CalcY
+                            
+                            'Interpolate the value in the X direction
+                            R = ir1 * invCalcX + ir2 * CalcX
+                            
+                            'Make sure that the value is in acceptable byte range
+                            If R > 255 Then R = 255
+                            If R < 0 Then R = 0
+                            
+                            'Set this pixel onto the destination image
+                            dstImageData(QuickX + i, y) = R
+                            
+                        Next i
+                    
+                    Next y
+                
+                    If (x And progBarCheck) = 0 Then SetProgBarVal x
+                    
+                Next x
+            
+                'Now copy the resized image back into the main layer
+                pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+                
+                'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+                CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+                Erase srcImageData
+                
+                CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+                Erase dstImageData
+                
+                'Update the size variables
+                pdImages(CurrentImage).updateSize
+                DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+            
+                SetProgBarVal 0
+            
+                'Fit the new image on-screen and redraw it
+                FitOnScreen
+                
+            End If
+        
+        Case RESIZE_BSPLINE
+            FreeImageResize iWidth, iHeight, FILTER_BSPLINE
+            
+        Case RESIZE_BICUBIC_MITCHELL
+            FreeImageResize iWidth, iHeight, FILTER_BICUBIC
+            
+        Case RESIZE_BICUBIC_CATMULL
+            FreeImageResize iWidth, iHeight, FILTER_CATMULLROM
+        
+        Case RESIZE_LANCZOS
+            FreeImageResize iWidth, iHeight, FILTER_LANCZOS3
+            
+    End Select
+    
+    'Release our temporary layer
+    Set tmpLayer = Nothing
+    
+    'If the image had a selection, recreate it - but make it match the new image size
+    If selActive Then
+                
+        'Populate the selection text boxes (which are now invisible)
+        FormMain.txtSelLeft = Int(tsLeft * wRatio)
+        FormMain.txtSelTop = Int(tsTop * hRatio)
+        FormMain.txtSelWidth = Int(tsWidth * wRatio)
+        FormMain.txtSelHeight = Int(tsHeight * hRatio)
+        
+        'Reactivate the current selection with the new values
+        tInit tSelection, True
+        pdImages(CurrentImage).mainSelection.updateViaTextBox
+        pdImages(CurrentImage).selectionActive = True
+        
+        'Redraw the image
+        RenderViewport pdImages(CurrentImage).containingForm
+        
+    End If
+    
+    Message "Finished."
+    
 End Sub
