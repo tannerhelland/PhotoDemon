@@ -106,7 +106,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     If pageToLoad > 0 Then needToCloseMulti = True Else needToCloseMulti = False
     
     'If the image is a GIF, it might be animated.  Check for that now.
-    If ((fileFIF = FIF_GIF) Or (fileFIF = FIF_TIFF)) And (pageToLoad = 0) Then
+    If ((fileFIF = FIF_GIF) Or (fileFIF = FIF_TIFF)) And (pageToLoad = 0) And (MacroStatus <> MacroBATCH) Then
     
         If fileFIF = FIF_GIF Then
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, SrcFilename)
