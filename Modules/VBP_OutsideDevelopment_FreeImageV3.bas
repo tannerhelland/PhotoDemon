@@ -1420,8 +1420,6 @@ Public Enum FREE_IMAGE_LOAD_OPTIONS
    FILO_RAW_HALFSIZE = RAW_HALFSIZE               ' load the file as half-size color image
    FILO_TARGA_DEFAULT = TARGA_LOAD_RGB888
    FILO_TARGA_LOAD_RGB888 = TARGA_LOAD_RGB888     ' if set, the loader converts RGB555 and ARGB8888 -> RGB888
-   FISO_TIFF_DEFAULT = TIFF_DEFAULT
-   FISO_TIFF_CMYK = TIFF_CMYK                     ' reads tags for separated CMYK
 End Enum
 #If False Then
    Const FILO_LOAD_NOPIXELS = &H8000
@@ -1444,8 +1442,6 @@ End Enum
    Const FILO_PNG_IGNOREGAMMA = PNG_IGNOREGAMMA
    Const FILO_TARGA_DEFAULT = TARGA_LOAD_RGB888
    Const FILO_TARGA_LOAD_RGB888 = TARGA_LOAD_RGB888
-   Const FISO_TIFF_DEFAULT = TIFF_DEFAULT
-   Const FISO_TIFF_CMYK = TIFF_CMYK
 #End If
 
 Public Enum FREE_IMAGE_SAVE_OPTIONS
@@ -2016,7 +2012,7 @@ Public Type FIRGBAF
 End Type
 
 Public Type FICOMPLEX
-   r As Double           ' real part
+   R As Double           ' real part
    i As Double           ' imaginary part
 End Type
 

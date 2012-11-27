@@ -699,7 +699,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Call PreLoadImage again for each individual frame in the multipage file
             For pageTracker = 1 To imagePageCount
-                PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                If GetExtension(sFile(thisImage)) = "gif" Then
+                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                Else
+                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (page " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (page " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                End If
             Next pageTracker
         
         End If

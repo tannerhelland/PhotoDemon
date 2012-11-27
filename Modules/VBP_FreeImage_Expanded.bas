@@ -101,35 +101,63 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     '****************************************************************************
     
     Dim fi_multi_hDIB As Long
+    Dim needToCloseMulti As Boolean
+
+    If pageToLoad > 0 Then needToCloseMulti = True Else needToCloseMulti = False
     
     'If the image is a GIF, it might be animated.  Check for that now.
-    If (fileFIF = FIF_GIF) And (pageToLoad = 0) Then
+    If ((fileFIF = FIF_GIF) Or (fileFIF = FIF_TIFF)) And (pageToLoad = 0) Then
     
-        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, SrcFilename)
+        If fileFIF = FIF_GIF Then
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, SrcFilename)
+        Else
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, SrcFilename)
+        End If
         
         'Check the "page count" (e.g. frames) of the loaded GIF
-        Dim gifPageCount As Long
-        gifPageCount = FreeImage_GetPageCount(fi_multi_hDIB)
+        Dim chkPageCount As Long
+        chkPageCount = FreeImage_GetPageCount(fi_multi_hDIB)
         
         FreeImage_CloseMultiBitmap fi_multi_hDIB
         
         'If the page count is more than 1, offer to load each page as an individual image
-        If gifPageCount > 1 Then
+        If chkPageCount > 1 Then
+            
+            If fileFIF = FIF_GIF Then
+                Message "Animated GIF file detected."
+            Else
+                Message "Multipage TIFF file detected."
+            End If
                 
-            Message "Animated GIF file detected.  Loading first frame only."
-                
-            Dim gifImportAnswer As VbMsgBoxResult
-            gifImportAnswer = MsgBox("This GIF file is animated (" & gifPageCount & " frames total).  Would you like to import each frame as its own image?" & vbCrLf & vbCrLf & "(Note: selecting No will result in only the first frame of the animation being loaded.)", vbInformation + vbYesNo + vbApplicationModal, " Animated GIF Import Options")
+            Dim mpImportAnswer As VbMsgBoxResult
+            If fileFIF = FIF_GIF Then
+                mpImportAnswer = MsgBox("This is an animated GIF file (" & chkPageCount & " frames total).  Would you like to import each frame as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each frame as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first frame.", vbInformation + vbYesNo + vbApplicationModal, " Animated GIF Import Options")
+            Else
+                mpImportAnswer = MsgBox("This TIFF file contains multiple pages (" & chkPageCount & " pages total).  Would you like to import each page as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each page as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first page.", vbInformation + vbYesNo + vbApplicationModal, " Multipage TIFF Import Options")
+            End If
             
             'If the user said "yes", import each page as its own image
-            If gifImportAnswer = vbYes Then
+            If mpImportAnswer = vbYes Then
+            
+                If fileFIF = FIF_GIF Then
+                    Message "All frames will be loaded, per the user's request."
+                Else
+                    Message "All pages will be loaded, per the user's request."
+                End If
             
                 imageHasMultiplePages = True
-                imagePageCount = gifPageCount - 1
+                imagePageCount = chkPageCount - 1
                             
             'If the user just wants the first frame, close the image and resume normal loading
             
             Else
+            
+                If fileFIF = FIF_GIF Then
+                    Message "Only the first frame will be loaded, per the user's request."
+                Else
+                    Message "Only the first page will be loaded, per the user's request."
+                End If
+                
                 imageHasMultiplePages = False
                 imagePageCount = 0
             End If
@@ -149,8 +177,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
         Message "Importing image from file..."
         fi_hDIB = FreeImage_Load(fileFIF, SrcFilename, fi_ImportFlags)
     Else
-        Message "Importing frame #" & pageToLoad & " from file..."
-        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, SrcFilename, , , , FILO_GIF_PLAYBACK)
+        If fileFIF = FIF_GIF Then
+            Message "Importing frame #" & pageToLoad & " from animated GIF file..."
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, SrcFilename, , , , FILO_GIF_PLAYBACK)
+        Else
+            Message "Importing page #" & pageToLoad & " from multipage TIFF file..."
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, SrcFilename, , , , 0)
+        End If
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
     End If
     
@@ -241,6 +274,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
             If pageToLoad = 0 Then
                 FreeImage_UnloadEx fi_hDIB
             Else
+                needToCloseMulti = False
                 FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                 FreeImage_CloseMultiBitmap fi_multi_hDIB
             End If
@@ -259,6 +293,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
                 If pageToLoad = 0 Then
                     FreeImage_UnloadEx fi_hDIB
                 Else
+                    needToCloseMulti = False
                     FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                     FreeImage_CloseMultiBitmap fi_multi_hDIB
                 End If
@@ -273,6 +308,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
                 If pageToLoad = 0 Then
                     FreeImage_UnloadEx fi_hDIB
                 Else
+                    needToCloseMulti = False
                     FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                     FreeImage_CloseMultiBitmap fi_multi_hDIB
                 End If
@@ -319,6 +355,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
             If pageToLoad = 0 Then
                 FreeImage_UnloadEx fi_hDIB
             Else
+                needToCloseMulti = False
                 FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                 FreeImage_CloseMultiBitmap fi_multi_hDIB
             End If
@@ -335,6 +372,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
             If pageToLoad = 0 Then
                 FreeImage_UnloadEx fi_hDIB
             Else
+                needToCloseMulti = False
                 FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                 FreeImage_CloseMultiBitmap fi_multi_hDIB
             End If
@@ -374,6 +412,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
                 If pageToLoad = 0 Then
                     FreeImage_UnloadEx fi_hDIB
                 Else
+                    needToCloseMulti = False
                     FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                     FreeImage_CloseMultiBitmap fi_multi_hDIB
                 End If
@@ -385,6 +424,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
                 If pageToLoad = 0 Then
                     FreeImage_UnloadEx fi_hDIB
                 Else
+                    needToCloseMulti = False
                     FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                     FreeImage_CloseMultiBitmap fi_multi_hDIB
                 End If
@@ -404,6 +444,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
                 If pageToLoad = 0 Then
                     FreeImage_UnloadEx fi_hDIB
                 Else
+                    needToCloseMulti = False
                     FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                     FreeImage_CloseMultiBitmap fi_multi_hDIB
                 End If
@@ -415,6 +456,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
                 If pageToLoad = 0 Then
                     FreeImage_UnloadEx fi_hDIB
                 Else
+                    needToCloseMulti = False
                     FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
                     FreeImage_CloseMultiBitmap fi_multi_hDIB
                 End If
@@ -441,7 +483,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     Dim fi_Width As Long, fi_Height As Long
     fi_Width = FreeImage_GetWidth(fi_hDIB)
     fi_Height = FreeImage_GetHeight(fi_hDIB)
-        
+    
     Dim creationSuccess As Boolean
     creationSuccess = dstLayer.createBlank(fi_Width, fi_Height, fi_BPP)
     
@@ -449,7 +491,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     If creationSuccess = False Then
         Message "Import via FreeImage failed (couldn't create DIB)."
         
-        If pageToLoad = 0 Then
+        If (pageToLoad = 0) Or (needToCloseMulti = False) Then
             FreeImage_UnloadEx fi_hDIB
         Else
             FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
@@ -468,12 +510,10 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     Message "Memory secured.  Finalizing image load..."
         
     'Copy the bits from the FreeImage DIB to our DIB
-    'NOTE: investigate using AlphaBlend to copy the bits, with SourceConstantAlpha set to 255 (per http://msdn.microsoft.com/en-us/library/dd183393%28v=vs.85%29.aspx)
-    ' This may be a way to preserve the alpha channel... assuming that this SetDIBitsToDevice is actually the problem, which it may not be.
     SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
               
     'With the image bits now safely in our care, release the FreeImage DIB
-    If pageToLoad = 0 Then
+    If (pageToLoad = 0) Or (needToCloseMulti = False) Then
         FreeImage_UnloadEx fi_hDIB
     Else
         FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
