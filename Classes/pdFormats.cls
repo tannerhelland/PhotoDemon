@@ -15,15 +15,15 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Format Manager
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 18/November/12
-'Last update: initial build
+'Last updated: 26/November/12
+'Last update: added Industrial Light and Magic EXR format support
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
 ' or adjust PhotoDemon's support for individual formats.  To remedy this problem, this class was created.
 '
 'Based on the available plugins, this class generates a list of file formats that PhotoDemon is capable of writing
-' and reading.  These lists of formats are separately maintained, and the presence of a format in one column does not
+' and reading.  These format lists are separately maintained, and the presence of a format in one column does not
 ' have any connection to the other.
 '
 'Most non-standard formats rely on FreeImage for loading and/or saving, and they can additionally be tested against
@@ -33,7 +33,7 @@ Attribute VB_Exposed = False
 'GDIPlus is optionally used as a fallback if FreeImage is not present, but it should be noted that GDI+ interoperability
 ' is not as well-tested as FreeImage.  In some cases, however, it IS faster to use GDI+ due to the need to make a
 ' specialized copy of DIB data for FreeImage's internal handling - so in the case of batch conversions, GDI+ is actually
-' used preferentially over FreeImage for writing JPEGs.
+' used preferentially over FreeImage for reading and writing JPEGs.
 '
 '***************************************************************************
 
@@ -150,9 +150,13 @@ Public Sub generateInputFormats()
     If FreeImageEnabled Then
         addInputFormat "DDS - DirectDraw Surface", "*.dds"
         addInputFormat "EXR - Industrial Light and Magic", "*.exr"
+        addInputFormat "G3 - Digital Fax Format", "*.g3"
     End If
     
     addInputFormat "GIF - Compuserve", "*.gif"
+    
+    If FreeImageEnabled Then addInputFormat "HDR - High Dynamic Range", "*.hdr"
+    
     addInputFormat "ICO - Windows Icon", "*.ico"
     
     If FreeImageEnabled Then
@@ -176,7 +180,7 @@ Public Sub generateInputFormats()
     If zLibEnabled Then addInputFormat "PDI - PhotoDemon Image", "*.pdi"
         
     If FreeImageEnabled Then
-        addInputFormat "PGM - Portable Greymap", "*.pgm"
+        addInputFormat "PGM - Portable Graymap", "*.pgm"
         addInputFormat "PIC/PICT - Macintosh Picture", "*.pict;*.pct;*.pic"
     End If
     
@@ -184,7 +188,7 @@ Public Sub generateInputFormats()
     If FreeImageEnabled Or GDIPlusEnabled Then addInputFormat "PNG - Portable Network Graphic", "*.png"
         
     If FreeImageEnabled Then
-        addInputFormat "PPM - Portable Pixmap", "*.ppm"
+        addInputFormat "PPM - Portable Pixelmap", "*.ppm"
         addInputFormat "PSD - Adobe Photoshop", "*.psd"
         addInputFormat "RAS - Sun Raster File", "*.ras"
         addInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
