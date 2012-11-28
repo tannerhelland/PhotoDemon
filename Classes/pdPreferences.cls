@@ -334,7 +334,7 @@ Private Sub createNewINIFile()
         
         'Write out general preferences
         Print #fileNum, "[General Preferences]"
-        Print #fileNum, "AlphaCheckMode=1"
+        Print #fileNum, "AlphaCheckMode=0"
         Print #fileNum, "AlphaCheckOne=" & RGB(255, 255, 255)
         Print #fileNum, "AlphaCheckTwo=" & RGB(204, 204, 204)
         Print #fileNum, "AlphaCheckSize=1"

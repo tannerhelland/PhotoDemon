@@ -1848,7 +1848,7 @@ Private Sub Form_Load()
     'Load / Save
     cmdCategory(1).ToolTip = "Load/Save preferences allow you to customize the way image files enter and" & vbCrLf & "leave the application."
     'Tools
-    cmdCategory(2).ToolTip = "Tool preferences currently includes customizable options for the selection tool." & vbCrLf & "In the future, PhotoDemon will gain paint tools, and those settings will appear" & vbCrLf & "here as well."
+    cmdCategory(2).ToolTip = "Tool preferences currently include customizable options for the Selection Tool." & vbCrLf & "In the future, PhotoDemon will gain paint tools, and those settings will appear" & vbCrLf & "here as well."
     'Transparency
     cmdCategory(3).ToolTip = "Transparency preferences control how PhotoDemon displays images" & vbCrLf & "that contain alpha channels (e.g. 32bpp images)."
     'Updates
