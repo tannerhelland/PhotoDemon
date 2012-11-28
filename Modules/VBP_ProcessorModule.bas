@@ -1135,6 +1135,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Isometric Conversion"
         Case Tile
             GetNameOfProcess = "Tile Image"
+        Case CropToSelection
+            GetNameOfProcess = "Crop"
         Case ChangeImageMode24
             GetNameOfProcess = "Convert to Photo Mode (RGB, 24bpp)"
         Case ChangeImageMode32
