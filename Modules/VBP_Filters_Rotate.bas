@@ -45,8 +45,23 @@ Public Sub MenuCropToSelection()
     Message "Finished. "
     
     'Deactivate the current selection, as it's no longer needed
-    pdImages(CurrentImage).selectionActive = False
-    tInit tSelection, False
+    'Clear selections after "Crop to Selection"
+    If userPreferences.GetPreference_Boolean("Tool Preferences", "ClearSelectionAfterCrop", True) Then
+        pdImages(CurrentImage).selectionActive = False
+        tInit tSelection, False
+        Message "Crop complete.  (Note: the selected area was automatically unselected.)"
+    Else
+        pdImages(CurrentImage).mainSelection.lockRelease
+        pdImages(CurrentImage).mainSelection.selLeft = 0
+        pdImages(CurrentImage).mainSelection.selTop = 0
+        pdImages(CurrentImage).mainSelection.selWidth = pdImages(CurrentImage).Width
+        pdImages(CurrentImage).mainSelection.selHeight = pdImages(CurrentImage).Height
+        pdImages(CurrentImage).mainSelection.refreshTextBoxes
+        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        selectionRenderPreference = sHighlightRed
+        FormMain.cmbSelRender.ListIndex = 2
+        Message "Crop complete.  Selection drawing mode changed to make selection visible."
+    End If
     
     'Redraw the image
     PrepareViewport FormMain.ActiveForm, "Crop to selection"

@@ -361,6 +361,10 @@ Private Sub createNewINIFile()
         Print #fileNum, "ValidateAlphaChannels=1"
         Print #fileNum, ""
         
+        'Write out tool preferences
+        Print #fileNum, "[Tool Preferences]"
+        Print #fileNum, "ClearSelectionAfterCrop=1"
+        
         'Write out batch conversion preferences
         Print #fileNum, "[Batch Preferences]"
         Print #fileNum, "DriveBox="
