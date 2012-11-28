@@ -1,4 +1,4 @@
-PhotoDemon v5.2 beta - Copyright (c) 2012 by Tanner Helland
+PhotoDemon v5.2 - Copyright (c) 2012 by Tanner Helland
 =====================================================================================
 A free, open-source photo editor and image processing tool.
 http://tannerhelland.com/photodemon
@@ -72,13 +72,13 @@ Contents of this file:
 [1] How to support PhotoDemon:
 =====================================================================================
 
-PhotoDemon is written and maintained by a single individual (with a family to support!).  
-It is provided free-of-charge under an extremely permissive open-source license, and no
-fees or money will ever be charged for its use.
+PhotoDemon is written and maintained by a single individual with a family to support.  
+The program is provided free-of-charge under an extremely permissive open-source license,
+and no fees or money will ever be charged for its use.
 
 That said, donations go a long way toward supporting the development of this powerful
-image editing tool.  If you would like to donate and support PhotoDemon's development,
-please visit:
+image editing tool.  If you would like to donate and support development, please visit:
+
 http://www.tannerhelland.com/donate/
 
 While I can't make any promises, I have been known to give extra attention to feature
