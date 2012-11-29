@@ -825,7 +825,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     'Mark the processor as no longer busy and unlock the main form
     FormMain.Enabled = True
     
-    If (MacroStatus <> MacroBATCH) Then
+    'If a filter or tool was just used, return focus to the active form
+    If (pType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) Then
         If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
     End If
     
