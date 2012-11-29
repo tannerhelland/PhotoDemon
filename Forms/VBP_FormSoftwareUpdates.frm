@@ -381,8 +381,8 @@ End Sub
 Private Sub Form_Load()
     
     'Update the form labels with the version information
-    lblCurrentAppVersion = App.Major & "." & App.Minor
-    lblNewestAppVersion = updateMajor & "." & updateMinor
+    lblCurrentAppVersion = App.Major & "." & App.Minor & "." & App.Revision
+    lblNewestAppVersion = updateMajor & "." & updateMinor & "." & updateBuild
     
     'If available, display a link to the update notice of this software version
     If updateAnnouncement <> "" Then
