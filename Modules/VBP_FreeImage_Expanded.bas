@@ -28,7 +28,7 @@ Public imagePageCount As Long
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageToLoad As Long = 0) As Boolean
+Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageToLoad As Long = 0) As Boolean
 
     On Error GoTo FreeImageV3_AdvancedError
     
@@ -55,11 +55,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     'While we could manually test our extension against the FreeImage database, it is capable of doing so itself.
     'First, check the file header to see if it matches a known head type
     Dim fileFIF As FREE_IMAGE_FORMAT
-    fileFIF = FreeImage_GetFileType(SrcFilename)
+    fileFIF = FreeImage_GetFileType(srcFilename)
     
     'For certain filetypes (CUT, MNG, PCD, TARGA and WBMP, according to the FreeImage documentation), the lack of a reliable
     ' header may prevent GetFileType from working.  As a result, double-check the file using its file extension.
-    If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilename(SrcFilename)
+    If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilename(srcFilename)
     
     'By this point, if the file still doesn't show up in FreeImage's database, abandon the import attempt.
     If Not FreeImage_FIFSupportsReading(fileFIF) Then
@@ -109,9 +109,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     If ((fileFIF = FIF_GIF) Or (fileFIF = FIF_TIFF)) And (pageToLoad = 0) And (MacroStatus <> MacroBATCH) Then
     
         If fileFIF = FIF_GIF Then
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, SrcFilename)
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename)
         Else
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, SrcFilename)
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename)
         End If
         
         'Check the "page count" (e.g. frames) of the loaded GIF
@@ -198,14 +198,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal SrcFilename As String, ByRef dstL
     
     If pageToLoad = 0 Then
         Message "Importing image from file..."
-        fi_hDIB = FreeImage_Load(fileFIF, SrcFilename, fi_ImportFlags)
+        fi_hDIB = FreeImage_Load(fileFIF, srcFilename, fi_ImportFlags)
     Else
         If fileFIF = FIF_GIF Then
             Message "Importing frame #" & pageToLoad & " from animated GIF file..."
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, SrcFilename, , , , FILO_GIF_PLAYBACK)
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
         Else
             Message "Importing page #" & pageToLoad & " from multipage TIFF file..."
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, SrcFilename, , , , 0)
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename, , , , 0)
         End If
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
     End If
@@ -593,4 +593,57 @@ FreeImageV3_AdvancedError:
     'Mark this load as unsuccessful
     LoadFreeImageV3_Advanced = False
     
+End Function
+
+'See if an image file is actually comprised of multiple files (e.g. animated GIFs, multipage TIFs).
+' Input: file name to be checked
+' Returns: 0 if only one image is found.  Page (or frame) count if multiple images are found.
+Public Function isMultiImage(ByVal srcFilename As String) As Long
+
+    On Error GoTo isMultiImage_Error
+    
+    'Double-check that FreeImage.dll was located at start-up
+    If imageFormats.FreeImageEnabled = False Then
+        isMultiImage = 0
+        Exit Function
+    End If
+    
+    'Load the FreeImage library from the plugin directory
+    Dim hFreeImgLib As Long
+    hFreeImgLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    
+    'Determine the file type.  (Currently, this feature only works on animated GIFs and multipage TIFFs.)
+    Dim fileFIF As FREE_IMAGE_FORMAT
+    fileFIF = FreeImage_GetFileType(srcFilename)
+    If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilename(srcFilename)
+    
+    'If FreeImage can't determine the file type, or if the filetype is not GIF or TIF, return False
+    If (Not FreeImage_FIFSupportsReading(fileFIF)) Or ((fileFIF <> FIF_GIF) And (fileFIF <> FIF_TIFF)) Then
+        isMultiImage = 0
+        Exit Function
+    End If
+    
+    'At this point, we are guaranteed that the image is a GIF or TIFF file.
+    ' Open the file using the multipage function
+    Dim fi_multi_hDIB As Long
+    If fileFIF = FIF_GIF Then
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename)
+    Else
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename)
+    End If
+    
+    'Get the page count, then close the file
+    Dim pageCheck As Long
+    pageCheck = FreeImage_GetPageCount(fi_multi_hDIB)
+    FreeImage_CloseMultiBitmap fi_multi_hDIB
+    
+    'Return the page count (which will be zero if only a single page or frame is present)
+    isMultiImage = pageCheck
+    
+    Exit Function
+    
+isMultiImage_Error:
+
+    isMultiImage = 0
+
 End Function

@@ -781,37 +781,59 @@ Private Sub CmdOK_Click()
             
             sFile(0) = tmpFilename
             
-            'Load the current image
-            PreLoadImage sFile, False
+            'Check to see if the image file is a multipage file
+            Static howManyPages As Long
             
-            'If the user has requested a macro, play it now
-            If optActions(1).Value = True Then PlayMacroFromFile LocationOfMacroFile
+            howManyPages = isMultiImage(tmpFilename)
             
-            'With the macro complete, prepare the file for saving
-            tmpFilename = lstFiles.List(curBatchFile)
-            StripOffExtension tmpFilename
-            StripFilename tmpFilename
-            
-            'Build a full file path using the options the user specified
-            If cmbOutputOptions.ListIndex = 0 Then
-                tmpFilename = outputPath & txtAppendFront & tmpFilename
+            'Check the user's preference regarding multipage images.  If they have specifically requested that we load
+            ' only the first page of the image, ignore any subsequent pages.
+            If howManyPages > 0 Then
+                If userPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0) = 1 Then howManyPages = 1
             Else
-                tmpFilename = outputPath & txtAppendFront & (curBatchFile + 1)
-            End If
-                
-            'Attach the proper image format extension
-            tmpFilename = tmpFilename & "." & imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
-                
-            'Certain file extensions require extra attention.  Check for those formats, and send the PhotoDemon_SaveImage
-            ' method a specialized string containing any extra information it may require
-            If imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex) = "jpg" Then
-                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename, False, Val(txtQuality)
-            Else
-                PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename
+                howManyPages = 1
             End If
             
-            'Kill the next-to-last form (better than killing the current one, because of the constant GD flickering)
-            If curBatchFile > 0 Then Unload pdImages(CurrentImage - 1).containingForm
+            'Now, loop through each page or frame (if applicable), load the image, and process it.
+            Static curPage As Long
+            For curPage = 0 To howManyPages - 1
+            
+                'Load the current image
+                PreLoadImage sFile, False, , , , , , curPage
+            
+                'If the user has requested a macro, play it now
+                If optActions(1).Value = True Then PlayMacroFromFile LocationOfMacroFile
+            
+                'With the macro complete, prepare the file for saving
+                tmpFilename = lstFiles.List(curBatchFile)
+                StripOffExtension tmpFilename
+                StripFilename tmpFilename
+            
+                'Build a full file path using the options the user specified
+                If cmbOutputOptions.ListIndex = 0 Then
+                    tmpFilename = outputPath & txtAppendFront & tmpFilename
+                Else
+                    tmpFilename = outputPath & txtAppendFront & (curBatchFile + 1)
+                End If
+                
+                'Add the page number if necessary
+                If curPage > 0 Then tmpFilename = tmpFilename & " (" & curPage & ")"
+                
+                'Attach the proper image format extension
+                tmpFilename = tmpFilename & "." & imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
+                
+                'Certain file extensions require extra attention.  Check for those formats, and send the PhotoDemon_SaveImage
+                ' method a specialized string containing any extra information it may require
+                If imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex) = "jpg" Then
+                    PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename, False, Val(txtQuality)
+                Else
+                    PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename
+                End If
+            
+                'Kill the next-to-last form (better than killing the current one, because of the constant GD flickering)
+                If (curBatchFile > 0) Or (curPage > 0) Then Unload pdImages(CurrentImage - 1).containingForm
+            
+            Next curPage
             
             'If a good number of images have been processed, we can start to estimate the amount of time remaining
             If (curBatchFile > 40) Then
@@ -855,7 +877,7 @@ Private Sub CmdOK_Click()
     Next curBatchFile
     
     'Unload the last form we processed
-    Unload FormMain.ActiveForm
+    If Not FormMain.ActiveForm Is Nothing Then Unload FormMain.ActiveForm
     
     MacroStatus = MacroSTOP
     
