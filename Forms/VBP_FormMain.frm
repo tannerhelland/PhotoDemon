@@ -1595,6 +1595,14 @@ Private Sub MDIForm_Load()
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Because people may be using this code in the IDE, warn them about the consequences of doing so
+    If Not IsProgramCompiled Then
+        Dim ideWarningMessage As String
+        ideWarningMessage = "WARNING: PLEASE DO NOT RUN PHOTODEMON IN THE IDE" & vbCrLf & vbCrLf & "I strongly recommend compiling PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's ""Stop"" button." & vbCrLf & vbCrLf & "Also, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays."
+        ideWarningMessage = ideWarningMessage & " Array performance is severely degraded in the IDE, so some functions will seem extremely slow." & vbCrLf & vbCrLf & "If you insist on running PhotoDemon in the IDE, please do not contact me regarding IDE crashes or freezes.  I can only address issues and bugs that affect the compiled .EXE." & vbCrLf & vbCrLf & "Kind regards," & vbCrLf & "Tanner Helland (PhotoDemon Developer)"
+        MsgBox ideWarningMessage, vbExclamation + vbOKOnly + vbApplicationModal, " IDE Warning"
+    End If
        
 End Sub
 

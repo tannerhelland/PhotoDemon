@@ -75,6 +75,7 @@ Begin VB.Form FormUnsavedChanges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   15790320
       Caption         =   "Save the image before closing it"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":0000
@@ -103,6 +104,7 @@ Begin VB.Form FormUnsavedChanges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   15790320
       Caption         =   "Do not save the image (discard all changes)"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":1052
@@ -131,6 +133,7 @@ Begin VB.Form FormUnsavedChanges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   15790320
       Caption         =   "Cancel, and return to editing"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":20A4
