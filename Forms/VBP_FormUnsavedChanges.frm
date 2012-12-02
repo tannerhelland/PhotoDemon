@@ -235,7 +235,19 @@ Public Sub ShowDialog()
     userAnswer = vbCancel
     
     'Draw the image being closed to the preview box
-    pdImages(imageBeingClosed).mainLayer.renderToPictureBox picPreview
+    If pdImages(imageBeingClosed).mainLayer.getLayerColorDepth = 24 Then
+        pdImages(imageBeingClosed).mainLayer.renderToPictureBox picPreview
+    Else
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        Dim nWidth As Long, nHeight As Long
+        convertAspectRatio pdImages(imageBeingClosed).Width, pdImages(imageBeingClosed).Height, picPreview.ScaleWidth, picPreview.ScaleHeight, nWidth, nHeight
+        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, nWidth, nHeight, True
+        tmpLayer.compositeBackgroundColor
+        tmpLayer.renderToPictureBox picPreview
+        tmpLayer.eraseLayer
+        Set tmpLayer = Nothing
+    End If
     
     'Adjust the save message to match this image's name
     lblWarning.Caption = pdImages(imageBeingClosed).OriginalFileNameAndExtension & " has unsaved changes.  What would you like to do?"
