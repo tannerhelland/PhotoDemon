@@ -395,14 +395,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' LoadFreeImageV3 function.)
         targetImage.OriginalFileFormat = -1
         
-        Dim FileExtension As String
-        FileExtension = UCase(GetExtension(sFile(thisImage)))
+        Dim fileExtension As String
+        fileExtension = UCase(GetExtension(sFile(thisImage)))
                 
         Dim loadSuccessful As Boolean
         loadSuccessful = True
         
         'Dependent on the file's extension, load the appropriate image decoding routine
-        Select Case FileExtension
+        Select Case fileExtension
             Case "BMP"
                 'Bitmaps are preferentially loaded by FreeImage (which loads 32bpp bitmaps correctly), then GDI+ (which
                 ' loads 32bpp bitmaps but ignores the alpha channel), then default VB (which fails with 32bpp but will
@@ -679,7 +679,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If AutosizeLargeImages = 1 Then FitWindowToViewport
         
             'Finally, add this file to the MRU list (unless specifically told not to)
-            If ToUpdateMRU = True Then MRU_AddNewFile sFile(thisImage), targetImage
+            If (ToUpdateMRU = True) And (pageNumber = 0) Then MRU_AddNewFile sFile(thisImage), targetImage
         
         End If
         
