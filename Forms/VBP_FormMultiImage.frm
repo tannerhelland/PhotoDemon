@@ -94,7 +94,7 @@ Begin VB.Form dialog_MultiImage
          Strikethrough   =   0   'False
       EndProperty
       BackColor       =   15790320
-      Caption         =   "Load only the first image"
+      Caption         =   "Load only the first page"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormMultiImage.frx":1052
       PictureAlign    =   0
