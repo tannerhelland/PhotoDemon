@@ -1,10 +1,10 @@
 Attribute VB_Name = "Drawing"
 '***************************************************************************
 'PhotoDemon Drawing Routines
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2001-2012 by Tanner Helland
 'Created: 4/3/01
-'Last updated: 03/October/12
-'Last update: Rewrote DrawPreviewImage to respect selections
+'Last updated: 01/December/12
+'Last update: Added DrawSystemIcon function (previously used for only the "unsaved changes" dialog
 '
 'Miscellaneous drawing routines that don't fit elsewhere.  At present, this includes rendering preview images,
 ' drawing the canvas background of image forms, and a gradient-rendering sub (used primarily on the histogram form).
@@ -12,6 +12,26 @@ Attribute VB_Name = "Drawing"
 '***************************************************************************
 
 Option Explicit
+
+'The following Enum and two API declarations are used to draw the system information icon
+Public Enum SystemIconConstants
+    IDI_APPLICATION = 32512
+    IDI_HAND = 32513
+    IDI_QUESTION = 32514
+    IDI_EXCLAMATION = 32515
+    IDI_ASTERISK = 32516
+    IDI_WINDOWS = 32517
+End Enum
+
+Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
+
+'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
+Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
+    Dim hIcon As Long
+    hIcon = LoadIconByID(0, icon)
+    DrawIcon hDC, x, y, hIcon
+End Sub
 
 'Used to draw the main image onto a preview picture box
 Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdLayer, Optional forceWhiteBackground As Boolean = False)

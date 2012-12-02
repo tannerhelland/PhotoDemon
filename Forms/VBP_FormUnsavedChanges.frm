@@ -1,5 +1,6 @@
 VERSION 5.00
-Begin VB.Form FormUnsavedChanges 
+Begin VB.Form dialog_UnsavedChanges 
+   Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Unsaved Changes"
@@ -162,7 +163,7 @@ Begin VB.Form FormUnsavedChanges
       WordWrap        =   -1  'True
    End
 End
-Attribute VB_Name = "FormUnsavedChanges"
+Attribute VB_Name = "dialog_UnsavedChanges"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -171,8 +172,8 @@ Attribute VB_Exposed = False
 'Unsaved Changes Dialog
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 13/November/12
-'Last updated: 14/November/12
-'Last update: added a system "warning" icon to the dialog box.  This is drawn automatically.
+'Last updated: 01/December/12
+'Last update: removed the DrawSystemIcon sub; now it can be found in the "Drawing" module
 '
 'Custom dialog box for warning the user that they are about to close an image with unsaved changes.
 '
@@ -180,7 +181,7 @@ Attribute VB_Exposed = False
 ' and only a few good ones.  I felt that descriptive icons were necessary to help the user quickly
 ' determine what choice to make.  A preview of the image in question is also displayed, to make it
 ' absolutely certain that the user is not confused about which image they're dealing with.  (This is
-' important for photos from a digital camera, which often have names like "1004701.jpg". Very
+' important for photos from a digital camera, which often have names like "1004701.jpg".) Very
 ' descriptive tooltip text has also been added, and I genuinely believe that this is one of the best
 ' unsaved changes dialogs available.
 '
@@ -191,31 +192,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'The following Enum and two API declarations are used to draw the system information icon
-Enum SystemIconConstants
-    IDI_APPLICATION = 32512
-    IDI_HAND = 32513
-    IDI_QUESTION = 32514
-    IDI_EXCLAMATION = 32515
-    IDI_ASTERISK = 32516
-    IDI_WINDOWS = 32517
-End Enum
-
-Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
-
 'The ID number of the image being closed
 Private imageBeingClosed As Long
 
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
-
-'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Private Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
-    Dim hIcon As Long
-    hIcon = LoadIconByID(0, icon)
-    DrawIcon hDC, x, y, hIcon
-End Sub
 
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -319,4 +300,3 @@ Private Sub updateRepeatToAllUnsavedImages(ByVal actionToApply As VbMsgBoxResult
     End If
     
 End Sub
-
