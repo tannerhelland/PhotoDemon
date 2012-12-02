@@ -346,6 +346,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
     Dim thisImage As Long
     
+    'Display a busy cursor
+    If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
+    
     'Because this routine accepts an array of images, we have to be prepared for the possibility that more than
     ' one image file is being opened.  This loop will execute until all files are loaded.
     For thisImage = 0 To UBound(sFile)
@@ -359,9 +362,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If FileExist(sFile(thisImage)) = False Then
             Message "File not found. Image load canceled."
             MsgBox "Unfortunately, the image '" & sFile(thisImage) & "' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found"
-            Exit Sub
+            GoTo PreloadMoreImages
         End If
-    
+        
         'If this is a standard load (e.g. loading an image via File -> Open), prepare a blank form to receive the image.
         If isThisPrimaryImage Then
             
@@ -712,6 +715,8 @@ PreloadMoreImages:
 
     'If we have more images to process, now's the time to do it!
     Next thisImage
+        
+    If pageNumber = 0 Then Screen.MousePointer = vbNormal
         
 End Sub
 
