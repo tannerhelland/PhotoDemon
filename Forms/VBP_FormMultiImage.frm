@@ -63,7 +63,6 @@ Begin VB.Form dialog_MultiImage
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      BackColor       =   15790320
       Caption         =   "Load each page as its own image"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormMultiImage.frx":0000
@@ -93,7 +92,6 @@ Begin VB.Form dialog_MultiImage
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      BackColor       =   15790320
       Caption         =   "Load only the first page"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormMultiImage.frx":1052
@@ -176,9 +174,9 @@ Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = 16
+    iconY = 18
     If useFancyFonts Then iconY = iconY + 2
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 22, iconY
+    DrawSystemIcon IDI_QUESTION, Me.hDC, 22, iconY
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbNo
