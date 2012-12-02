@@ -136,11 +136,12 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 Case 0
                 
                     Dim mpImportAnswer As VbMsgBoxResult
-                    If fileFIF = FIF_GIF Then
-                        mpImportAnswer = MsgBox("This is an animated GIF file (" & chkPageCount & " frames total).  Would you like to import each frame as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each frame as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first frame.", vbInformation + vbYesNo + vbApplicationModal, " Animated GIF Import Options")
-                    Else
-                        mpImportAnswer = MsgBox("This TIFF file contains multiple pages (" & chkPageCount & " pages total).  Would you like to import each page as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each page as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first page.", vbInformation + vbYesNo + vbApplicationModal, " Multipage TIFF Import Options")
-                    End If
+                    'If fileFIF = FIF_GIF Then
+                    '    mpImportAnswer = MsgBox("This is an animated GIF file (" & chkPageCount & " frames total).  Would you like to import each frame as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each frame as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first frame.", vbInformation + vbYesNo + vbApplicationModal, " Animated GIF Import Options")
+                    'Else
+                    '    mpImportAnswer = MsgBox("This TIFF file contains multiple pages (" & chkPageCount & " pages total).  Would you like to import each page as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each page as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first page.", vbInformation + vbYesNo + vbApplicationModal, " Multipage TIFF Import Options")
+                    'End If
+                    mpImportAnswer = promptMultiImage(srcFilename, chkPageCount)
                     
                     'If the user said "yes", import each page as its own image
                     If mpImportAnswer = vbYes Then
