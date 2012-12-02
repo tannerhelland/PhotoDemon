@@ -486,18 +486,18 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
         'Check the .HasBeenSaved property of the image associated with this form
         If pdImages(Me.Tag).HasBeenSaved = False Then
-            
-            'If the MainForm is enabled, bring the image being closed to the foreground
-            If FormMain.Enabled Then
-                Me.SetFocus
-                DoEvents
-            End If
-            
+                        
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
             If dealWithAllUnsavedImages = False Then
             
                 numOfUnsavedImages = 0
                     
+                'If the MainForm is enabled, bring the image being closed to the foreground
+                If FormMain.Enabled Then
+                    Me.SetFocus
+                    DoEvents
+                End If
+                
                 'Loop through all images to count how many unsaved images there are in total.
                 ' NOTE: we only need to do this if the entire program is being shut down; otherwise, this close action only
                 '       affects the current image
