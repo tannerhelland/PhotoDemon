@@ -38,7 +38,7 @@ Begin VB.Form dialog_UnsavedChanges
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
+      BackColor       =   &H00FFFFFF&
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -76,7 +76,6 @@ Begin VB.Form dialog_UnsavedChanges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      BackColor       =   15790320
       Caption         =   "Save the image before closing it"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":0000
@@ -105,7 +104,6 @@ Begin VB.Form dialog_UnsavedChanges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      BackColor       =   15790320
       Caption         =   "Do not save the image (discard all changes)"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":1052
@@ -134,7 +132,6 @@ Begin VB.Form dialog_UnsavedChanges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      BackColor       =   15790320
       Caption         =   "Cancel, and return to editing"
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_FormUnsavedChanges.frx":20A4
@@ -300,3 +297,4 @@ Private Sub updateRepeatToAllUnsavedImages(ByVal actionToApply As VbMsgBoxResult
     End If
     
 End Sub
+
