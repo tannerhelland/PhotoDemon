@@ -39,7 +39,7 @@ Begin VB.Form dialog_MultiImage
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   390
-      Left            =   270
+      Left            =   300
       TabIndex        =   3
       Top             =   3360
       Width           =   5175
@@ -126,7 +126,7 @@ Begin VB.Form dialog_MultiImage
       Height          =   765
       Left            =   960
       TabIndex        =   0
-      Top             =   240
+      Top             =   270
       Width           =   4335
       WordWrap        =   -1  'True
    End
@@ -178,7 +178,7 @@ Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     Dim iconY As Long
     iconY = 16
     If useFancyFonts Then iconY = iconY + 2
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 20, iconY
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 22, iconY
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbNo
