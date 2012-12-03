@@ -208,18 +208,18 @@ End Function
 'This routine will blindly save the image from the form containing pdImages(imageID) to dstPath.  It is up to
 ' the calling routine to make sure this is what is wanted. (Note: this routine will erase any existing image
 ' at dstPath, so BE VERY CAREFUL with what you send here!)
-Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal optionalSaveParameter0 As Long = -1, Optional ByVal optionalSaveParameter1 As Long = -1) As Boolean
+Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal optionalSaveParameter0 As Long = -1, Optional ByVal optionalSaveParameter1 As Long = 0) As Boolean
 
     'Used to determine what kind of file the user is trying to open
-    Dim FileExtension As String
-    FileExtension = UCase(GetExtension(dstPath))
+    Dim fileExtension As String
+    fileExtension = UCase(GetExtension(dstPath))
     
     'Only update the MRU if 1) no form is shown (because the user may cancel it), 2) a form was shown and the user
     ' successfully navigated it, and 3) no errors occured during the export process.
     Dim updateMRU As Boolean
     updateMRU = False
 
-    Select Case FileExtension
+    Select Case fileExtension
         Case "JPG", "JPEG", "JPE"
             If loadRelevantForm = True Then
                 
@@ -234,6 +234,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             Else
                 'Remember the JPEG quality so we don't have to pester the user for it if they save again
                 pdImages(imageID).saveFlag0 = optionalSaveParameter0
+                pdImages(imageID).saveFlag1 = optionalSaveParameter1
                 
                 'I implement two separate save functions for JPEG images: FreeImage and GDI+.  The system we select is
                 ' contingent on a variety of factors, most important of which is - are we in the midst of a batch conversion.
@@ -242,7 +243,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                     If imageFormats.GDIPlusEnabled Then
                         GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
                     ElseIf imageFormats.FreeImageEnabled Then
-                        SaveJPEGImage imageID, dstPath, optionalSaveParameter0
+                        SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1
                     Else
                         Message "No JPEG encoder found. Save aborted."
                         PhotoDemon_SaveImage = False
@@ -250,7 +251,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                     End If
                 Else
                     If imageFormats.FreeImageEnabled Then
-                        SaveJPEGImage imageID, dstPath, optionalSaveParameter0
+                        SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1
                     ElseIf imageFormats.GDIPlusEnabled Then
                         GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
                     Else

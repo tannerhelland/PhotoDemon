@@ -220,7 +220,7 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
 End Sub
 
 'Save to JPEG using the FreeImage library.  This is more reliable than using GDI+.
-Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long)
+Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long, Optional ByVal jOtherFlags As Long = 0)
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
@@ -245,10 +245,13 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
+    'Combine all received flags into one
+    If jOtherFlags <> 0 Then jQuality = jQuality Or jOtherFlags
+    
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, JPEG_OPTIMIZE + jQuality, FICD_24BPP, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, jQuality, FICD_24BPP, , , , , True)
         If fi_Check = False Then
             Message "JPEG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
