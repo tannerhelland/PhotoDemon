@@ -352,7 +352,7 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
     'Right now, the save process is reliant on FreeImage.  Disable thumbnails if FreeImage is not present
     If imageFormats.FreeImageEnabled Then
     
-        Message "Preparing thumbnail..."
+        Message "Saving recent file menu thumbnail..."
     
         'First, generate a path at which to save the file in question
         Dim sFilename As String
