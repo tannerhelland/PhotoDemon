@@ -409,6 +409,7 @@ Private Sub Form_Load()
         chkThumbnail.Enabled = False
         cmbSubsample.AddItem "n/a", 4
         cmbSubsample.ListIndex = 4
+        cmbSubsample.Enabled = False
         lblTitle(1).Caption = "advanced settings require the FreeImage plugin"
     End If
     
@@ -417,7 +418,7 @@ Private Sub Form_Load()
     
     'Hide the advanced settings
     toggleAdvancedSettings
-            
+                
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
@@ -489,7 +490,7 @@ Private Sub toggleAdvancedSettings()
         lineSeparator.y2 = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 16
         CmdOK.Top = cmdShowHide.Top
-        cmdCancel.Top = CmdOK.Top
+        CmdCancel.Top = CmdOK.Top
     
     Else
     
@@ -509,7 +510,7 @@ Private Sub toggleAdvancedSettings()
         lineSeparator.y2 = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 16
         CmdOK.Top = cmdShowHide.Top
-        cmdCancel.Top = CmdOK.Top
+        CmdCancel.Top = CmdOK.Top
     
     End If
 
