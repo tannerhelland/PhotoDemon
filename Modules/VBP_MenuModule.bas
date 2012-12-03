@@ -229,7 +229,12 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 PhotoDemon_SaveImage = Not saveDialogCanceled
                 
-                If PhotoDemon_SaveImage Then pdImages(imageID).hasSeenJPEGPrompt = True
+                If PhotoDemon_SaveImage Then
+                    pdImages(imageID).hasSeenJPEGPrompt = True
+                Else
+                    Message "Save canceled."
+                    Exit Function
+                End If
                 
             Else
                 'Remember the JPEG quality so we don't have to pester the user for it if they save again
