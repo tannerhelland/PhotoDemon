@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormJPEG 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Export Options"
-   ClientHeight    =   4920
+   ClientHeight    =   5385
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   7245
@@ -18,11 +18,31 @@ Begin VB.Form FormJPEG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   328
+   ScaleHeight     =   359
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   483
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CheckBox chkThumbnail 
+      Appearance      =   0  'Flat
+      Caption         =   " embed thumbnail image"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   375
+      Left            =   600
+      TabIndex        =   11
+      ToolTipText     =   $"VBP_FormJPEG.frx":0000
+      Top             =   2760
+      Width           =   6375
+   End
    Begin VB.ComboBox cmbSubsample 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -35,15 +55,16 @@ Begin VB.Form FormJPEG
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   3480
+      Left            =   3600
       Style           =   2  'Dropdown List
       TabIndex        =   10
-      Top             =   3255
-      Width           =   3495
+      ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+      Top             =   3735
+      Width           =   3375
    End
    Begin VB.CheckBox chkSubsample 
       Appearance      =   0  'Flat
-      Caption         =   " use custom subsampling:"
+      Caption         =   " use specific subsampling:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -55,9 +76,10 @@ Begin VB.Form FormJPEG
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   480
+      Left            =   600
       TabIndex        =   9
-      Top             =   3240
+      ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+      Top             =   3720
       Width           =   2895
    End
    Begin VB.CheckBox chkProgressive 
@@ -74,9 +96,10 @@ Begin VB.Form FormJPEG
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   480
+      Left            =   600
       TabIndex        =   8
-      Top             =   2760
+      ToolTipText     =   $"VBP_FormJPEG.frx":009B
+      Top             =   3240
       Width           =   6375
    End
    Begin VB.CheckBox chkOptimize 
@@ -93,8 +116,9 @@ Begin VB.Form FormJPEG
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   480
+      Left            =   600
       TabIndex        =   7
+      ToolTipText     =   $"VBP_FormJPEG.frx":016B
       Top             =   2280
       Value           =   1  'Checked
       Width           =   6375
@@ -102,14 +126,14 @@ Begin VB.Form FormJPEG
    Begin VB.HScrollBar hsQuality 
       Height          =   285
       LargeChange     =   5
-      Left            =   480
+      Left            =   600
       Max             =   99
       Min             =   1
       TabIndex        =   5
       TabStop         =   0   'False
       Top             =   1200
       Value           =   90
-      Width           =   5655
+      Width           =   5535
    End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
@@ -123,11 +147,11 @@ Begin VB.Form FormJPEG
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   480
+      Left            =   600
       Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   600
-      Width           =   6495
+      Width           =   6375
    End
    Begin VB.TextBox txtQuality 
       Alignment       =   2  'Center
@@ -154,7 +178,7 @@ Begin VB.Form FormJPEG
       Height          =   495
       Left            =   5640
       TabIndex        =   1
-      Top             =   4200
+      Top             =   4680
       Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
@@ -163,15 +187,15 @@ Begin VB.Form FormJPEG
       Height          =   495
       Left            =   4320
       TabIndex        =   0
-      Top             =   4200
+      Top             =   4680
       Width           =   1245
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
       X1              =   8
       X2              =   472
-      Y1              =   264
-      Y2              =   264
+      Y1              =   296
+      Y2              =   296
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -324,11 +348,16 @@ Private Sub CmdOK_Click()
         
     End If
     
+    'Finally, determine whether or not a thumbnail version of the file should be embedded inside
+    Dim JPEGThumbnail As Long
+    
+    If CBool(chkThumbnail) Then JPEGThumbnail = 1 Else JPEGThumbnail = 0
+    
     Me.Visible = False
         
     'Pass control to PhotoDemon_SaveImage
     ' (if the save function fails for some reason, return the save dialog as canceled so the user can try again)
-    saveDialogCanceled = Not PhotoDemon_SaveImage(CurrentImage, SaveFileName, False, JPEGQuality, JPEGFlags)
+    saveDialogCanceled = Not PhotoDemon_SaveImage(CurrentImage, SaveFileName, False, JPEGQuality, JPEGFlags, JPEGThumbnail)
 
     Unload Me
     
@@ -362,6 +391,7 @@ Private Sub Form_Load()
         chkOptimize.Enabled = False
         chkProgressive.Enabled = False
         chkSubsample.Enabled = False
+        chkThumbnail.Enabled = False
         cmbSubsample.AddItem "n/a", 4
         cmbSubsample.ListIndex = 4
         lblTitle(1).Caption = "advanced settings require the FreeImage plugin"

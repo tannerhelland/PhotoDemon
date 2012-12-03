@@ -220,7 +220,7 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
 End Sub
 
 'Save to JPEG using the FreeImage library.  This is more reliable than using GDI+.
-Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long, Optional ByVal jOtherFlags As Long = 0)
+Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long, Optional ByVal jOtherFlags As Long = 0, Optional ByVal jCreateThumbnail As Long = 0)
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
@@ -244,9 +244,24 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
-    
+        
     'Combine all received flags into one
     If jOtherFlags <> 0 Then jQuality = jQuality Or jOtherFlags
+    
+    'If a thumbnail has been requested, generate that now
+    If jCreateThumbnail <> 0 Then
+    
+        'Create the thumbnail using default settings (100x100px)
+        Dim fThumbnail As Long
+        fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100, True)
+        
+        'Embed the thumbnail into the main DIB
+        FreeImage_SetThumbnail fi_DIB, fThumbnail
+        
+        'Erase the thumbnail
+        FreeImage_Unload fThumbnail
+    
+    End If
     
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
