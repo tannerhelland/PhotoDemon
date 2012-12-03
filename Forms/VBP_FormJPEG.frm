@@ -23,6 +23,14 @@ Begin VB.Form FormJPEG
    ScaleWidth      =   483
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton cmdShowHide 
+      Caption         =   "<<  Hide advanced settings"
+      Height          =   495
+      Left            =   360
+      TabIndex        =   12
+      Top             =   4680
+      Width           =   2685
+   End
    Begin VB.CheckBox chkThumbnail 
       Appearance      =   0  'Flat
       Caption         =   " embed thumbnail image"
@@ -98,7 +106,7 @@ Begin VB.Form FormJPEG
       Height          =   375
       Left            =   600
       TabIndex        =   8
-      ToolTipText     =   $"VBP_FormJPEG.frx":009B
+      ToolTipText     =   $"VBP_FormJPEG.frx":008E
       Top             =   3240
       Width           =   6375
    End
@@ -118,7 +126,7 @@ Begin VB.Form FormJPEG
       Height          =   375
       Left            =   600
       TabIndex        =   7
-      ToolTipText     =   $"VBP_FormJPEG.frx":016B
+      ToolTipText     =   $"VBP_FormJPEG.frx":015E
       Top             =   2280
       Value           =   1  'Checked
       Width           =   6375
@@ -150,14 +158,14 @@ Begin VB.Form FormJPEG
       Left            =   600
       Style           =   2  'Dropdown List
       TabIndex        =   3
-      Top             =   600
+      Top             =   630
       Width           =   6375
    End
    Begin VB.TextBox txtQuality 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -190,7 +198,7 @@ Begin VB.Form FormJPEG
       Top             =   4680
       Width           =   1245
    End
-   Begin VB.Line Line1 
+   Begin VB.Line lineSeparator 
       BorderColor     =   &H8000000D&
       X1              =   8
       X2              =   472
@@ -363,6 +371,13 @@ Private Sub CmdOK_Click()
     
 End Sub
 
+'Show or hide the advanced settings per the user's command
+Private Sub cmdShowHide_Click()
+
+    toggleAdvancedSettings
+    
+End Sub
+
 'LOAD form
 Private Sub Form_Load()
     
@@ -399,6 +414,9 @@ Private Sub Form_Load()
     
     'Mark the form as having NOT been canceled
     saveDialogCanceled = False
+    
+    'Hide the advanced settings
+    toggleAdvancedSettings
             
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -448,4 +466,60 @@ Private Sub updateComboBox()
             
     End Select
     
+End Sub
+
+'Show or hide the advanced settings per the user's command
+Private Sub toggleAdvancedSettings()
+
+    If cmdShowHide.Caption = "<<  Hide advanced settings" Then
+    
+        'Re-caption the button
+        cmdShowHide.Caption = "Show advanced settings  >>"
+    
+        'Hide all advanced options
+        lblTitle(1).Visible = False
+        chkOptimize.Visible = False
+        chkThumbnail.Visible = False
+        chkProgressive.Visible = False
+        chkSubsample.Visible = False
+        cmbSubsample.Visible = False
+    
+        'Move all other controls accordingly
+        lineSeparator.y1 = hsQuality.Top + 48
+        lineSeparator.y2 = lineSeparator.y1
+        cmdShowHide.Top = lineSeparator.y1 + 16
+        CmdOK.Top = cmdShowHide.Top
+        cmdCancel.Top = CmdOK.Top
+    
+    Else
+    
+        'Re-caption the button
+        cmdShowHide.Caption = "<<  Hide advanced settings"
+    
+        'Show all advanced options
+        lblTitle(1).Visible = True
+        chkOptimize.Visible = True
+        chkThumbnail.Visible = True
+        chkProgressive.Visible = True
+        chkSubsample.Visible = True
+        cmbSubsample.Visible = True
+        
+        'Move all other controls accordingly
+        lineSeparator.y1 = chkSubsample.Top + 48
+        lineSeparator.y2 = lineSeparator.y1
+        cmdShowHide.Top = lineSeparator.y1 + 16
+        CmdOK.Top = cmdShowHide.Top
+        cmdCancel.Top = CmdOK.Top
+    
+    End If
+
+    'Change the form size to match
+    Dim formSizeDiff As Long
+    FormJPEG.ScaleMode = vbTwips
+    formSizeDiff = FormJPEG.Height - FormJPEG.ScaleHeight
+    
+    FormJPEG.Height = formSizeDiff + cmdShowHide.Top + cmdShowHide.Height + Abs(lineSeparator.y1 - cmdShowHide.Top)
+    
+    FormJPEG.ScaleMode = vbPixels
+
 End Sub
