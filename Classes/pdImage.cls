@@ -107,8 +107,7 @@ Option Explicit
     
     'Save flags let us save the image using settings the user has already specified (so we don't have to pester
     ' them every time they save)
-    Public saveFlag0 As Long
-    Public saveFlag1 As Long
+    Private saveFlags(0 To 9) As Long
     
     'For JPEGs specifically, has a quality value been set?  If it hasn't, the user needs to be prompted at least once.
     Public hasSeenJPEGPrompt As Boolean
@@ -146,6 +145,15 @@ Option Explicit
     'Image's selection data (stored and handled by a mainSelection object)
     Public mainSelection As pdSelection
     Public selectionActive As Boolean
+    
+'Because arrays in a class module cannot be declared as Public, save flags must be read/stored via these two routines
+Public Function getSaveFlag(ByVal fIndex As Long) As Long
+    getSaveFlag = saveFlags(fIndex)
+End Function
+
+Public Sub setSaveFlag(ByVal fIndex As Long, ByVal fValue As Long)
+    saveFlags(fIndex) = fValue
+End Sub
     
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface
