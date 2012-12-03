@@ -761,13 +761,13 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
 End Sub
 
 'Load a layer's DIB information from file.
-Public Sub createFromFile(ByRef SrcFilename As String)
+Public Sub createFromFile(ByRef srcFilename As String)
                 
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open SrcFilename For Binary As #fileNum
+    Open srcFilename For Binary As #fileNum
     
         'Check to make sure this is actually a layer file
         Dim LayerIDCheck As String * 4
@@ -1114,24 +1114,24 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
         r1 = newR
         r2 = newR
     Else
-        r1 = 153
-        r2 = 102
+        r1 = ExtractR(AlphaCheckOne)
+        r2 = ExtractR(AlphaCheckTwo)
     End If
     
     If newG <> -1 Then
         g1 = newG
         g2 = newG
     Else
-        g1 = 153
-        g2 = 102
+        g1 = ExtractG(AlphaCheckOne)
+        g2 = ExtractG(AlphaCheckTwo)
     End If
     
     If newB <> -1 Then
         b1 = newB
         b2 = newB
     Else
-        b1 = 153
-        b2 = 102
+        b1 = ExtractB(AlphaCheckOne)
+        b2 = ExtractB(AlphaCheckTwo)
     End If
     
     'Make sure the user didn't supply us with bad values
@@ -1149,6 +1149,25 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
     If b1 > 255 Then b1 = 255
     If b2 > 255 Then b2 = 255
     
+    'Finally, determine a checkerboard size based on the current user preference
+    Dim checkerSize As Byte
+    
+    Select Case AlphaCheckSize
+    
+        'Small (4x4 checks)
+        Case 0
+            checkerSize = 4
+            
+        'Medium (8x8 checks)
+        Case 1
+            checkerSize = 8
+        
+        'Large (16x16 checks)
+        Case Else
+            checkerSize = 16
+        
+    End Select
+    
     'Loop through the image, blending colors as we go
     For x = 0 To layerWidth - 1
         QuickX = x * 4
@@ -1164,7 +1183,7 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
             tmpAlpha = CSng(checkAlpha) / 255
             
             'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
-            If (((x \ 8) + (y \ 8)) And 1) = 0 Then
+            If (((x \ checkerSize) + (y \ checkerSize)) And 1) = 0 Then
                 iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r1, tmpAlpha)
                 iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g1, tmpAlpha)
                 iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b1, tmpAlpha)
@@ -1306,7 +1325,7 @@ Public Sub fixPremultipliedAlpha()
     
     Dim x As Long, y As Long, QuickX As Long
     
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim tmpAlpha As Byte, tmpAlphaModifier As Single
 
     'Loop through the image, removing the effects of pre-multiplication as we go
@@ -1320,18 +1339,18 @@ Public Sub fixPremultipliedAlpha()
         If tmpAlpha <> 255 Then
             If tmpAlpha <> 0 Then
             
-                r = iData(QuickX + 2, y)
+                R = iData(QuickX + 2, y)
                 g = iData(QuickX + 1, y)
                 b = iData(QuickX, y)
             
                 tmpAlphaModifier = 255 / tmpAlpha
             
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                r = r * tmpAlphaModifier
+                R = R * tmpAlphaModifier
                 g = g * tmpAlphaModifier
                 b = b * tmpAlphaModifier
                 
-                iData(QuickX + 2, y) = CByte(r)
+                iData(QuickX + 2, y) = CByte(R)
                 iData(QuickX + 1, y) = CByte(g)
                 iData(QuickX, y) = CByte(b)
             
