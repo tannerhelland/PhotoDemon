@@ -86,9 +86,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     ' but when performing a batch conversion choose the reverse (speed over accuracy).
     If fileFIF = FIF_JPEG Then
         If MacroStatus = MacroBATCH Then
-            fi_ImportFlags = FILO_JPEG_FAST
+            fi_ImportFlags = FILO_JPEG_FAST Or FILO_JPEG_EXIFROTATE
         Else
-            fi_ImportFlags = FILO_JPEG_ACCURATE
+            fi_ImportFlags = FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE
         End If
     End If
     
