@@ -5,7 +5,7 @@ Begin VB.Form FormJPEG
    ClientHeight    =   5385
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   7245
+   ClientWidth     =   7335
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,13 +20,13 @@ Begin VB.Form FormJPEG
    MinButton       =   0   'False
    ScaleHeight     =   359
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   483
+   ScaleWidth      =   489
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdShowHide 
       Caption         =   "<<  Hide advanced settings"
       Height          =   495
-      Left            =   360
+      Left            =   240
       TabIndex        =   12
       Top             =   4680
       Width           =   2685
@@ -48,7 +48,7 @@ Begin VB.Form FormJPEG
       Left            =   600
       TabIndex        =   11
       ToolTipText     =   $"VBP_FormJPEG.frx":0000
-      Top             =   2760
+      Top             =   2520
       Width           =   6375
    End
    Begin VB.ComboBox cmbSubsample 
@@ -67,7 +67,7 @@ Begin VB.Form FormJPEG
       Style           =   2  'Dropdown List
       TabIndex        =   10
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   3735
+      Top             =   3495
       Width           =   3375
    End
    Begin VB.CheckBox chkSubsample 
@@ -87,7 +87,7 @@ Begin VB.Form FormJPEG
       Left            =   600
       TabIndex        =   9
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   3720
+      Top             =   3480
       Width           =   2895
    End
    Begin VB.CheckBox chkProgressive 
@@ -107,7 +107,7 @@ Begin VB.Form FormJPEG
       Left            =   600
       TabIndex        =   8
       ToolTipText     =   $"VBP_FormJPEG.frx":008E
-      Top             =   3240
+      Top             =   3000
       Width           =   6375
    End
    Begin VB.CheckBox chkOptimize 
@@ -127,21 +127,21 @@ Begin VB.Form FormJPEG
       Left            =   600
       TabIndex        =   7
       ToolTipText     =   $"VBP_FormJPEG.frx":015E
-      Top             =   2280
+      Top             =   2040
       Value           =   1  'Checked
       Width           =   6375
    End
    Begin VB.HScrollBar hsQuality 
-      Height          =   285
+      Height          =   330
       LargeChange     =   5
-      Left            =   600
+      Left            =   2520
       Max             =   99
       Min             =   1
       TabIndex        =   5
       TabStop         =   0   'False
-      Top             =   1200
+      Top             =   645
       Value           =   90
-      Width           =   5535
+      Width           =   3735
    End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
@@ -159,7 +159,7 @@ Begin VB.Form FormJPEG
       Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   630
-      Width           =   6375
+      Width           =   1815
    End
    Begin VB.TextBox txtQuality 
       Alignment       =   2  'Center
@@ -173,18 +173,18 @@ Begin VB.Form FormJPEG
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   345
-      Left            =   6240
+      Height          =   360
+      Left            =   6360
       MaxLength       =   2
       TabIndex        =   2
       Text            =   "90"
-      Top             =   1170
+      Top             =   630
       Width           =   735
    End
    Begin VB.CommandButton CmdCancel 
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   5640
+      Left            =   5880
       TabIndex        =   1
       Top             =   4680
       Width           =   1245
@@ -193,15 +193,15 @@ Begin VB.Form FormJPEG
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   4320
+      Left            =   4560
       TabIndex        =   0
       Top             =   4680
       Width           =   1245
    End
    Begin VB.Line lineSeparator 
-      BorderColor     =   &H8000000D&
+      BorderColor     =   &H8000000F&
       X1              =   8
-      X2              =   472
+      X2              =   480
       Y1              =   296
       Y2              =   296
    End
@@ -223,7 +223,7 @@ Begin VB.Form FormJPEG
       Index           =   1
       Left            =   360
       TabIndex        =   6
-      Top             =   1800
+      Top             =   1560
       Width           =   1965
    End
    Begin VB.Label lblTitle 
@@ -385,20 +385,20 @@ Private Sub Form_Load()
     Screen.MousePointer = 0
     
     'I've found that pre-existing combo box entries are more user-friendly
-    CmbSaveQuality.AddItem "Perfect (99)", 0
-    CmbSaveQuality.AddItem "Excellent (92)", 1
-    CmbSaveQuality.AddItem "Good (80)", 2
-    CmbSaveQuality.AddItem "Average (65)", 3
-    CmbSaveQuality.AddItem "Low (40)", 4
-    CmbSaveQuality.AddItem "Custom value", 5
+    CmbSaveQuality.AddItem " Perfect (99)", 0
+    CmbSaveQuality.AddItem " Excellent (92)", 1
+    CmbSaveQuality.AddItem " Good (80)", 2
+    CmbSaveQuality.AddItem " Average (65)", 3
+    CmbSaveQuality.AddItem " Low (40)", 4
+    CmbSaveQuality.AddItem " Custom value", 5
     CmbSaveQuality.ListIndex = 1
     Message "Waiting for user to specify JPEG export options... "
     
     'Populate the custom subsampling combo box as well
-    cmbSubsample.AddItem "4:4:4 (best quality)", 0
-    cmbSubsample.AddItem "4:2:2 (good quality)", 1
-    cmbSubsample.AddItem "4:2:0 (moderate quality)", 2
-    cmbSubsample.AddItem "4:1:1 (low quality)", 3
+    cmbSubsample.AddItem " 4:4:4 (best quality)", 0
+    cmbSubsample.AddItem " 4:2:2 (good quality)", 1
+    cmbSubsample.AddItem " 4:2:0 (moderate quality)", 2
+    cmbSubsample.AddItem " 4:1:1 (low quality)", 3
     cmbSubsample.ListIndex = 2
     
     'If FreeImage is not available, disable all the advanced settings
@@ -421,6 +421,9 @@ Private Sub Form_Load()
                 
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'If fancy fonts are being used, increase the horizontal scroll bar height by one (to make it fit better)
+    If useFancyFonts Then hsQuality.Height = hsQuality.Height + 1
     
 End Sub
 
