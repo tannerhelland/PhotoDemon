@@ -90,6 +90,16 @@ Public Sub ClipboardPaste()
             
         Message "Clipboard data imported successfully "
     
+    'Next, see if the clipboard contains text.  If it does, it may be a hyperlink - if so, try and load it
+    ElseIf Clipboard.GetFormat(vbCFText) And ((Left$(Trim(CStr(Clipboard.GetText)), 7) <> "http://") Or (Left$(Trim(CStr(Clipboard.GetText)), 6) <> "ftp://")) Then
+        
+        Message "URL found on clipboard.  Attempting to download image at that location..."
+        Dim downloadSuccess As Boolean
+        downloadSuccess = FormInternetImport.ImportImageFromInternet(Trim(CStr(Clipboard.GetText)))
+        
+        'If the download failed, let the user know that hey, at least we tried.
+        If downloadSuccess = False Then Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
+    
     Else
         MsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
     End If

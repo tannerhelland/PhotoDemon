@@ -99,12 +99,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Internet Interface (for importing images directly from a URL)
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2011-2012 by Tanner Helland
 'Created: 08/June/12
-'Last updated: 15/June/12
-'Last update: further hardened error handling.  Image URLs are now checked for invalid Windows filenames
-'             (important since we name our temporary file after the URL to ensure that all the image class
-'             data populates correctly); invalid characters are now replaced by an underscore.
+'Last updated: 03/December/12
+'Last update: made some slight modifications to ImportImageFromInternet so it can be used by external callers.
 '
 'Interface for downloading images directly from the Internet into PhotoDemon.  This code is a heavily
 ' modified version of publicly available code by Alberto Falossi (http://www.devx.com/vb2themax/Tip/19203).
@@ -301,7 +299,7 @@ Private Sub CmdOK_Click()
     fullURL = txtURL
     
     If (Left$(fullURL, 7) <> "http://") And (Left$(fullURL, 6) <> "ftp://") Then
-        MsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://.""", vbApplicationModal + vbOKOnly + vbExclamation, "Invalid URL"
+        MsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://"".", vbApplicationModal + vbOKOnly + vbExclamation, "Invalid URL"
         AutoSelectText txtURL
         Exit Sub
     End If
