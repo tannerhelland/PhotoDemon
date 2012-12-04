@@ -221,53 +221,62 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
 
     Select Case fileExtension
         Case "JPG", "JPEG", "JPE"
+        
             If loadRelevantForm = True Then
                 
-                SaveFileName = dstPath
-                FormJPEG.Show 1, FormMain
+                Dim gotSettings As VbMsgBoxResult
+                gotSettings = promptJPEGSettings
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 PhotoDemon_SaveImage = Not saveDialogCanceled
                 
-                If PhotoDemon_SaveImage Then
+                If gotSettings = vbOK Then
                     pdImages(imageID).hasSeenJPEGPrompt = True
+                    PhotoDemon_SaveImage = True
                 Else
+                    PhotoDemon_SaveImage = False
                     Message "Save canceled."
                     Exit Function
                 End If
                 
-            Else
-                'Remember the JPEG quality so we don't have to pester the user for it if they save again
-                pdImages(imageID).setSaveFlag 0, optionalSaveParameter0
-                pdImages(imageID).setSaveFlag 1, optionalSaveParameter1
-                pdImages(imageID).setSaveFlag 2, optionalSaveParameter2
+                'If the user clicked OK, replace the functions save parameters with the ones set by the user
+                optionalSaveParameter0 = g_JPEGQuality
+                optionalSaveParameter1 = g_JPEGFlags
+                optionalSaveParameter2 = g_JPEGThumbnail
                 
-                'I implement two separate save functions for JPEG images: FreeImage and GDI+.  The system we select is
-                ' contingent on a variety of factors, most important of which is - are we in the midst of a batch conversion.
-                ' If we are, use GDI+ as it does not need to make a copy of the image before saving it (which is much faster).
-                If MacroStatus = MacroBATCH Then
-                    If imageFormats.GDIPlusEnabled Then
-                        GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
-                    ElseIf imageFormats.FreeImageEnabled Then
-                        SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2
-                    Else
-                        Message "No JPEG encoder found. Save aborted."
-                        PhotoDemon_SaveImage = False
-                        Exit Function
-                    End If
-                Else
-                    If imageFormats.FreeImageEnabled Then
-                        SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2
-                    ElseIf imageFormats.GDIPlusEnabled Then
-                        GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
-                    Else
-                        Message "No JPEG encoder found. Save aborted."
-                        PhotoDemon_SaveImage = False
-                        Exit Function
-                    End If
-                End If
-                updateMRU = True
             End If
+                
+            'Store these JPEG settings in the image object so we don't have to pester the user for it if they save again
+            pdImages(imageID).setSaveFlag 0, optionalSaveParameter0
+            pdImages(imageID).setSaveFlag 1, optionalSaveParameter1
+            pdImages(imageID).setSaveFlag 2, optionalSaveParameter2
+                            
+            'I implement two separate save functions for JPEG images: FreeImage and GDI+.  The system we select is
+            ' contingent on a variety of factors, most important of which is - are we in the midst of a batch conversion.
+            ' If we are, use GDI+ as it does not need to make a copy of the image before saving it (which is much faster).
+            If MacroStatus = MacroBATCH Then
+                If imageFormats.GDIPlusEnabled Then
+                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
+                ElseIf imageFormats.FreeImageEnabled Then
+                    SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2
+                Else
+                    Message "No JPEG encoder found. Save aborted."
+                    PhotoDemon_SaveImage = False
+                    Exit Function
+                End If
+            Else
+                If imageFormats.FreeImageEnabled Then
+                    SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2
+                ElseIf imageFormats.GDIPlusEnabled Then
+                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
+                Else
+                    Message "No JPEG encoder found. Save aborted."
+                    PhotoDemon_SaveImage = False
+                    Exit Function
+                End If
+            End If
+            updateMRU = True
+            
         Case "PDI"
             If zLibEnabled Then
                 SavePhotoDemonImage imageID, dstPath

@@ -12,22 +12,32 @@ Public Function confirmClose(ByVal formID As Long) As VbMsgBoxResult
     confirmClose = dialog_UnsavedChanges.DialogResult
     
     Unload dialog_UnsavedChanges
-    
     Set dialog_UnsavedChanges = Nothing
 
 End Function
 
-'Present a dialog box, asking the user how they want to deal with a multipage image.
+'Present a dialog box to ask the user how they want to deal with a multipage image.
 Public Function promptMultiImage(ByVal srcFilename As String, ByVal numOfPages As Long) As VbMsgBoxResult
 
     Load dialog_MultiImage
-    
     dialog_MultiImage.ShowDialog srcFilename, numOfPages
     
     promptMultiImage = dialog_MultiImage.DialogResult
     
     Unload dialog_MultiImage
-    
     Set dialog_MultiImage = Nothing
+
+End Function
+
+'Present a dialog box to ask the user for various JPEG export settings
+Public Function promptJPEGSettings() As VbMsgBoxResult
+
+    Load dialog_ExportJPEG
+    dialog_ExportJPEG.ShowDialog
+
+    promptJPEGSettings = dialog_ExportJPEG.DialogResult
+    
+    Unload dialog_ExportJPEG
+    Set dialog_ExportJPEG = Nothing
 
 End Function

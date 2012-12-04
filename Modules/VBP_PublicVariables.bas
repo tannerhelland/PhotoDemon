@@ -146,3 +146,8 @@ Public howToDealWithAllUnsavedImages As VbMsgBoxResult
 
 'When the entire program is being shut down, this variable is set
 Public programShuttingDown As Boolean
+
+'JPEG export options; these are set by the JPEG export dialog if the user clicks "OK" (not Cancel)
+Public g_JPEGQuality As Long
+Public g_JPEGFlags As Long
+Public g_JPEGThumbnail As Long

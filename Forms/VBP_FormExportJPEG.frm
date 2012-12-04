@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormJPEG 
+Begin VB.Form dialog_ExportJPEG 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Export Options"
    ClientHeight    =   5385
@@ -47,7 +47,7 @@ Begin VB.Form FormJPEG
       Height          =   375
       Left            =   600
       TabIndex        =   11
-      ToolTipText     =   $"VBP_FormJPEG.frx":0000
+      ToolTipText     =   $"VBP_FormExportJPEG.frx":0000
       Top             =   2520
       Width           =   6375
    End
@@ -106,7 +106,7 @@ Begin VB.Form FormJPEG
       Height          =   375
       Left            =   600
       TabIndex        =   8
-      ToolTipText     =   $"VBP_FormJPEG.frx":008E
+      ToolTipText     =   $"VBP_FormExportJPEG.frx":008E
       Top             =   3000
       Width           =   6375
    End
@@ -126,7 +126,7 @@ Begin VB.Form FormJPEG
       Height          =   375
       Left            =   600
       TabIndex        =   7
-      ToolTipText     =   $"VBP_FormJPEG.frx":015E
+      ToolTipText     =   $"VBP_FormExportJPEG.frx":015E
       Top             =   2040
       Value           =   1  'Checked
       Width           =   6375
@@ -208,7 +208,7 @@ Begin VB.Form FormJPEG
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "advanced settings:"
+      Caption         =   "advanced JPEG settings:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -224,7 +224,7 @@ Begin VB.Form FormJPEG
       Left            =   360
       TabIndex        =   6
       Top             =   1560
-      Width           =   1965
+      Width           =   2580
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -248,25 +248,43 @@ Begin VB.Form FormJPEG
       Width           =   1515
    End
 End
-Attribute VB_Name = "FormJPEG"
+Attribute VB_Name = "dialog_ExportJPEG"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'JPEG Export interface
+'JPEG Export Dialog
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 5/8/00
-'Last updated: 09/September/12
-'Last update: moved decision-making about which JPEG export method to use to the PhotoDemon_SaveImage function.
-'              It makes more sense there, because then ANY function that needs to save can benefit from the wisdom of
-'              the automatic JPEG export mechanism selection.
+'Last updated: 03/December/12
+'Last update: converted this into a true "dialog", in that it can be called from anywhere, and it will return
+'              "OK" or "Cancel" (as type VBMsgBoxResult) if the user hit OK or Cancel.  If OK was pressed, three
+'              global variables - g_JPEGQuality, g_JPEGFlags, and g_JPEGThumbnail - will be set with the user's
+'              answers.  These can then be queried by the calling function as needed.
 '
-'Form for giving the user a couple options for exporting JPEGs.
+'Dialog for preseting the user a number of options for related to JPEG exporting.  The various advanced features
+' rely on FreeImage for implementation, and will be disabled if FreeImage cannot be found.
 '
 '***************************************************************************
 
 Option Explicit
+
+'The user input from the dialog
+Private userAnswer As VbMsgBoxResult
+
+'The pdImage object being exported
+Private imageBeingExported As pdImage
+
+'The user's answer is returned via this property
+Public Property Get DialogResult() As VbMsgBoxResult
+    DialogResult = userAnswer
+End Property
+
+'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
+Public Property Let srcImage(srcImage As pdImage)
+    imageBeingExported = srcImage
+End Property
 
 'QUALITY combo box - when adjusted, change the scroll bar to match
 Private Sub CmbSaveQuality_Click()
@@ -294,34 +312,30 @@ End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
-    saveDialogCanceled = True
-    Message "Image save canceled. "
-    Unload Me
+    
+    userAnswer = vbCancel
+    Me.Hide
+    
 End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-    
-    Me.Visible = False
-    
-    Message "Preparing image..."
-
+        
     'Determine the compression quality for the quantization tables
-    Dim JPEGQuality As Long
     Select Case CmbSaveQuality.ListIndex
         Case 0
-            JPEGQuality = 99
+            g_JPEGQuality = 99
         Case 1
-            JPEGQuality = 92
+            g_JPEGQuality = 92
         Case 2
-            JPEGQuality = 80
+            g_JPEGQuality = 80
         Case 3
-            JPEGQuality = 65
+            g_JPEGQuality = 65
         Case 4
-            JPEGQuality = 40
+            g_JPEGQuality = 40
         Case 5
             If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max) Then
-                JPEGQuality = hsQuality.Value
+                g_JPEGQuality = hsQuality.Value
             Else
                 AutoSelectText txtQuality
                 Exit Sub
@@ -329,14 +343,13 @@ Private Sub CmdOK_Click()
     End Select
     
     'Determine any extra flags based on the advanced settings
-    Dim JPEGFlags As Long
-    JPEGFlags = 0
+    g_JPEGFlags = 0
     
     'Optimize
-    If CBool(chkOptimize) Then JPEGFlags = JPEGFlags Or JPEG_OPTIMIZE
+    If CBool(chkOptimize) Then g_JPEGFlags = g_JPEGFlags Or JPEG_OPTIMIZE
     
     'Progressive scan
-    If CBool(chkProgressive) Then JPEGFlags = JPEGFlags Or JPEG_PROGRESSIVE
+    If CBool(chkProgressive) Then g_JPEGFlags = g_JPEGFlags Or JPEG_PROGRESSIVE
     
     'Subsampling
     If CBool(chkSubsample) Then
@@ -344,30 +357,23 @@ Private Sub CmdOK_Click()
         Select Case cmbSubsample.ListIndex
         
             Case 0
-                JPEGFlags = JPEGFlags Or JPEG_SUBSAMPLING_444
+                g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_444
             Case 1
-                JPEGFlags = JPEGFlags Or JPEG_SUBSAMPLING_422
+                g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_422
             Case 2
-                JPEGFlags = JPEGFlags Or JPEG_SUBSAMPLING_420
+                g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_420
             Case 3
-                JPEGFlags = JPEGFlags Or JPEG_SUBSAMPLING_411
+                g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_411
                 
         End Select
         
     End If
     
     'Finally, determine whether or not a thumbnail version of the file should be embedded inside
-    Dim JPEGThumbnail As Long
-    
-    If CBool(chkThumbnail) Then JPEGThumbnail = 1 Else JPEGThumbnail = 0
-    
-    Me.Visible = False
-        
-    'Pass control to PhotoDemon_SaveImage
-    ' (if the save function fails for some reason, return the save dialog as canceled so the user can try again)
-    saveDialogCanceled = Not PhotoDemon_SaveImage(CurrentImage, SaveFileName, False, JPEGQuality, JPEGFlags, JPEGThumbnail)
-
-    Unload Me
+    If CBool(chkThumbnail) Then g_JPEGThumbnail = 1 Else g_JPEGThumbnail = 0
+     
+    userAnswer = vbOK
+    Me.Hide
     
 End Sub
 
@@ -375,55 +381,6 @@ End Sub
 Private Sub cmdShowHide_Click()
 
     toggleAdvancedSettings
-    
-End Sub
-
-'LOAD form
-Private Sub Form_Load()
-    
-    'Make sure that the proper cursor is set
-    Screen.MousePointer = 0
-    
-    'I've found that pre-existing combo box entries are more user-friendly
-    CmbSaveQuality.AddItem " Perfect (99)", 0
-    CmbSaveQuality.AddItem " Excellent (92)", 1
-    CmbSaveQuality.AddItem " Good (80)", 2
-    CmbSaveQuality.AddItem " Average (65)", 3
-    CmbSaveQuality.AddItem " Low (40)", 4
-    CmbSaveQuality.AddItem " Custom value", 5
-    CmbSaveQuality.ListIndex = 1
-    Message "Waiting for user to specify JPEG export options... "
-    
-    'Populate the custom subsampling combo box as well
-    cmbSubsample.AddItem " 4:4:4 (best quality)", 0
-    cmbSubsample.AddItem " 4:2:2 (good quality)", 1
-    cmbSubsample.AddItem " 4:2:0 (moderate quality)", 2
-    cmbSubsample.AddItem " 4:1:1 (low quality)", 3
-    cmbSubsample.ListIndex = 2
-    
-    'If FreeImage is not available, disable all the advanced settings
-    If Not imageFormats.FreeImageEnabled Then
-        chkOptimize.Enabled = False
-        chkProgressive.Enabled = False
-        chkSubsample.Enabled = False
-        chkThumbnail.Enabled = False
-        cmbSubsample.AddItem "n/a", 4
-        cmbSubsample.ListIndex = 4
-        cmbSubsample.Enabled = False
-        lblTitle(1).Caption = "advanced settings require the FreeImage plugin"
-    End If
-    
-    'Mark the form as having NOT been canceled
-    saveDialogCanceled = False
-    
-    'Hide the advanced settings
-    toggleAdvancedSettings
-                
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
-    
-    'If fancy fonts are being used, increase the horizontal scroll bar height by one (to make it fit better)
-    If useFancyFonts Then hsQuality.Height = hsQuality.Height + 1
     
 End Sub
 
@@ -519,11 +476,66 @@ Private Sub toggleAdvancedSettings()
 
     'Change the form size to match
     Dim formSizeDiff As Long
-    FormJPEG.ScaleMode = vbTwips
-    formSizeDiff = FormJPEG.Height - FormJPEG.ScaleHeight
+    Me.ScaleMode = vbTwips
+    formSizeDiff = Me.Height - Me.ScaleHeight
     
-    FormJPEG.Height = formSizeDiff + cmdShowHide.Top + cmdShowHide.Height + Abs(lineSeparator.y1 - cmdShowHide.Top)
+    Me.Height = formSizeDiff + cmdShowHide.Top + cmdShowHide.Height + Abs(lineSeparator.y1 - cmdShowHide.Top)
     
-    FormJPEG.ScaleMode = vbPixels
+    Me.ScaleMode = vbPixels
+
+End Sub
+
+'The ShowDialog routine presents the user with this form.
+Public Sub ShowDialog()
+
+    'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
+    userAnswer = vbCancel
+    
+    'Make sure that the proper cursor is set
+    Screen.MousePointer = 0
+    
+    'I've found that pre-existing combo box entries are more user-friendly
+    CmbSaveQuality.AddItem " Perfect (99)", 0
+    CmbSaveQuality.AddItem " Excellent (92)", 1
+    CmbSaveQuality.AddItem " Good (80)", 2
+    CmbSaveQuality.AddItem " Average (65)", 3
+    CmbSaveQuality.AddItem " Low (40)", 4
+    CmbSaveQuality.AddItem " Custom value", 5
+    CmbSaveQuality.ListIndex = 1
+    Message "Waiting for user to specify JPEG export options... "
+    
+    'Populate the custom subsampling combo box as well
+    cmbSubsample.AddItem " 4:4:4 (best quality)", 0
+    cmbSubsample.AddItem " 4:2:2 (good quality)", 1
+    cmbSubsample.AddItem " 4:2:0 (moderate quality)", 2
+    cmbSubsample.AddItem " 4:1:1 (low quality)", 3
+    cmbSubsample.ListIndex = 2
+    
+    'If FreeImage is not available, disable all the advanced settings
+    If Not imageFormats.FreeImageEnabled Then
+        chkOptimize.Enabled = False
+        chkProgressive.Enabled = False
+        chkSubsample.Enabled = False
+        chkThumbnail.Enabled = False
+        cmbSubsample.AddItem "n/a", 4
+        cmbSubsample.ListIndex = 4
+        cmbSubsample.Enabled = False
+        lblTitle(1).Caption = "advanced settings require the FreeImage plugin"
+    End If
+    
+    'Mark the form as having NOT been canceled
+    saveDialogCanceled = False
+    
+    'Hide the advanced settings
+    toggleAdvancedSettings
+                
+    'Assign the system hand cursor to all relevant objects
+    makeFormPretty Me
+    
+    'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
+    If useFancyFonts Then hsQuality.Height = 23 Else hsQuality.Height = 22
+
+    'Display the dialog
+    Me.Show vbModal, FormMain
 
 End Sub
