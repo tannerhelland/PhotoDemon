@@ -89,6 +89,7 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 FormMain.MnuColor.Enabled = tState
                 FormMain.MnuPrint.Enabled = tState
                 FormMain.MnuWindow.Enabled = tState
+                FormMain.MnuView.Enabled = tState
             End If
         
         'Filter (top-level menu)
