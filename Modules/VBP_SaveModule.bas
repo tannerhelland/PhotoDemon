@@ -239,7 +239,7 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
-    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -253,7 +253,7 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
     
         'Create the thumbnail using default settings (100x100px)
         Dim fThumbnail As Long
-        fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100, True)
+        fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
         
         'Embed the thumbnail into the main DIB
         FreeImage_SetThumbnail fi_DIB, fThumbnail
