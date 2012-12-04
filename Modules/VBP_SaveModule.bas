@@ -147,7 +147,7 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
-    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -349,7 +349,7 @@ Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String)
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
-    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long

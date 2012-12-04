@@ -64,9 +64,6 @@ Public x As Long
 Public y As Long
 Public z As Long
 
-'Name of file to save (necessary because forms may take control and we need something to track the file in question)
-Public SaveFileName As String
-
 'Is scanner/digital camera support enabled?
 Public ScanEnabled As Boolean
 

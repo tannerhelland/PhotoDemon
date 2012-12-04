@@ -190,9 +190,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         Else
             pdImages(imageID).containingForm.Caption = sFile
         End If
-        
-        SaveFileName = sFile
-        
+                
         'Transfer control to the core SaveImage routine, which will handle file extension analysis and actual saving
         MenuSaveAs = PhotoDemon_SaveImage(imageID, sFile, True)
         
