@@ -58,8 +58,10 @@ Begin VB.Form dialog_UnsavedChanges
       Top             =   120
       Width           =   3495
    End
-   Begin PhotoDemon.jcbutton cmdSave 
+   Begin PhotoDemon.jcbutton cmdAnswer 
+      Default         =   -1  'True
       Height          =   735
+      Index           =   0
       Left            =   3960
       TabIndex        =   2
       Top             =   1260
@@ -86,8 +88,9 @@ Begin VB.Form dialog_UnsavedChanges
       TooltipType     =   1
       TooltipTitle    =   "Save"
    End
-   Begin PhotoDemon.jcbutton cmdDontSave 
+   Begin PhotoDemon.jcbutton cmdAnswer 
       Height          =   735
+      Index           =   1
       Left            =   3960
       TabIndex        =   3
       Top             =   2040
@@ -113,9 +116,10 @@ Begin VB.Form dialog_UnsavedChanges
       TooltipType     =   1
       TooltipTitle    =   "Do Not Save"
    End
-   Begin PhotoDemon.jcbutton cmdCancel 
+   Begin PhotoDemon.jcbutton cmdAnswer 
       Cancel          =   -1  'True
       Height          =   735
+      Index           =   2
       Left            =   3960
       TabIndex        =   4
       Top             =   2820
@@ -203,25 +207,6 @@ Public Property Let formID(formID As Long)
     imageBeingClosed = formID
 End Property
 
-'The three choices available to the user correspond to message box responses of "Yes", "No", and "Cancel"
-Private Sub CmdCancel_Click()
-    userAnswer = vbCancel
-    updateRepeatToAllUnsavedImages userAnswer
-    Me.Hide
-End Sub
-
-Private Sub cmdDontSave_Click()
-    userAnswer = vbNo
-    updateRepeatToAllUnsavedImages userAnswer
-    Me.Hide
-End Sub
-
-Private Sub cmdSave_Click()
-    userAnswer = vbYes
-    updateRepeatToAllUnsavedImages userAnswer
-    Me.Hide
-End Sub
-
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub ShowDialog()
     
@@ -254,14 +239,14 @@ Public Sub ShowDialog()
 
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
     If pdImages(imageBeingClosed).LocationOnDisk <> "" Then
-        cmdSave.ToolTip = vbCrLf & "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the" & vbCrLf & " File -> Save As menu item."
+        cmdAnswer(0).ToolTip = vbCrLf & "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the" & vbCrLf & " File -> Save As menu item."
     Else
-        cmdSave.ToolTip = vbCrLf & "Because this image has not been saved before, you will be presented with a full Save As dialog."
+        cmdAnswer(0).ToolTip = vbCrLf & "Because this image has not been saved before, you will be presented with a full Save As dialog."
     End If
     
     'Update the other tooltip buttons as well
-    cmdDontSave.ToolTip = vbCrLf & "If you do not save this image, any changes you have made will be permanently lost."
-    cmdCancel.ToolTip = vbCrLf & "Canceling will return you to the main PhotoDemon window."
+    cmdAnswer(1).ToolTip = vbCrLf & "If you do not save this image, any changes you have made will be permanently lost."
+    cmdAnswer(2).ToolTip = vbCrLf & "Canceling will return you to the main PhotoDemon window."
 
     'Make some measurements of the form size.  We need these if we choose to display the check box at the bottom of the form
     Dim vDifference As Long
@@ -310,3 +295,23 @@ Private Sub updateRepeatToAllUnsavedImages(ByVal actionToApply As VbMsgBoxResult
     
 End Sub
 
+'The three choices available to the user correspond to message box responses of "Yes", "No", and "Cancel"
+Private Sub cmdAnswer_Click(Index As Integer)
+
+    Select Case Index
+    
+        Case 0
+            userAnswer = vbYes
+        
+        Case 1
+            userAnswer = vbNo
+            
+        Case 2
+            userAnswer = vbCancel
+        
+    End Select
+    
+    updateRepeatToAllUnsavedImages userAnswer
+    Me.Hide
+
+End Sub
