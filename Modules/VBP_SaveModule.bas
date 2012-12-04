@@ -344,21 +344,25 @@ Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String)
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
     Message "Preparing JPEG-2000 image..."
-    
-    'Copy the image into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
-    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
-    
+        
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
     
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
+        
+        'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
+        ' the color depth of the current image
+        Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
+        If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+            fi_OutputColorDepth = FICD_24BPP
+        Else
+            fi_OutputColorDepth = FICD_32BPP
+        End If
+        
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, JP2_DEFAULT, FICD_24BPP, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, JP2_DEFAULT, fi_OutputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "JPEG-2000 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
