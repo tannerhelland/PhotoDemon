@@ -176,7 +176,7 @@ End Sub
 Private Sub Form_Load()
     
     'Add support for scrolling with the mouse wheel
-    If IsProgramCompiled Then Call WheelHook(Me.hWnd)
+    If isProgramCompiled Then Call WheelHook(Me.hWnd)
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -499,9 +499,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 End If
                 
                 'Loop through all images to count how many unsaved images there are in total.
-                ' NOTE: we only need to do this if the entire program is being shut down; otherwise, this close action only
-                '       affects the current image
-                If programShuttingDown Then
+                ' NOTE: we only need to do this if the entire program is being shut down or if the user has selected "close all";
+                ' otherwise, this close action only affects the current image, so we shouldn't present a "repeat for all images" option
+                If programShuttingDown Or closingAllImages Then
                     Dim i As Long
                     For i = 1 To NumOfImagesLoaded
                         If (pdImages(i).IsActive = True) And (pdImages(i).forInternalUseOnly = False) And (pdImages(i).HasBeenSaved = False) Then
@@ -529,6 +529,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 
                 Cancel = True
                 If programShuttingDown Then programShuttingDown = False
+                If closingAllImages Then closingAllImages = False
                 dealWithAllUnsavedImages = False
                 
             'Save the image
@@ -549,6 +550,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 '...but if the save was not successful, suspend all unload action
                 Else
                     If programShuttingDown Then programShuttingDown = False
+                    If closingAllImages Then closingAllImages = False
                     dealWithAllUnsavedImages = False
                 End If
             
@@ -627,7 +629,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'Release mouse wheel support
-    If IsProgramCompiled Then Call WheelUnHook(Me.hWnd)
+    If isProgramCompiled Then Call WheelUnHook(Me.hWnd)
     
     Message "Closing image..."
     

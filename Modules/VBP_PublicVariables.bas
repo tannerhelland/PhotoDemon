@@ -89,7 +89,7 @@ Public ConfirmClosingUnsaved As Boolean
 Public LogProgramMessages As Boolean
 
 'Whether or not we are running in the IDE or compiled
-Public IsProgramCompiled As Boolean
+Public isProgramCompiled As Boolean
 
 'Temporary loading variable to disable Autozoom feature
 Public FixScrolling As Boolean
@@ -143,6 +143,9 @@ Public howToDealWithAllUnsavedImages As VbMsgBoxResult
 
 'When the entire program is being shut down, this variable is set
 Public programShuttingDown As Boolean
+
+'The user is attempting to close all images (necessary for handling the "repeat for all images" check box)
+Public closingAllImages As Boolean
 
 'JPEG export options; these are set by the JPEG export dialog if the user clicks "OK" (not Cancel)
 Public g_JPEGQuality As Long

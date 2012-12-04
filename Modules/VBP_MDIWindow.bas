@@ -333,6 +333,7 @@ Public Sub UpdateMDIStatus()
         tInit tRepeatLast, False
         tInit tSelection, False
         FormMain.MnuClose.Enabled = False
+        FormMain.MnuCloseAll.Enabled = False
         FormMain.cmdClose.Enabled = False
         FormMain.MnuFitWindowToImage.Enabled = False
         FormMain.MnuFitOnScreen.Enabled = False
@@ -365,6 +366,7 @@ Public Sub UpdateMDIStatus()
         tInit tRepeatLast, pdImages(CurrentImage).RedoState
         FormMain.MnuClose.Enabled = True
         FormMain.cmdClose.Enabled = True
+        FormMain.MnuCloseAll.Enabled = True
         FormMain.MnuFitWindowToImage.Enabled = True
         FormMain.MnuFitOnScreen.Enabled = True
         FormMain.lblImgSize.ForeColor = &H544E43

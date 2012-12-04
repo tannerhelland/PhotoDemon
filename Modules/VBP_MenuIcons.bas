@@ -268,10 +268,11 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 2, 2, 0       'Import
         .PutImageToVBMenu 3, 4, 0       'Save
         .PutImageToVBMenu 4, 5, 0       'Save As...
-        .PutImageToVBMenu 5, 7, 0       'Close...
-        .PutImageToVBMenu 6, 9, 0       'Batch conversion
-        .PutImageToVBMenu 7, 11, 0      'Print
-        .PutImageToVBMenu 43, 13, 0     'Exit
+        .PutImageToVBMenu 5, 7, 0       'Close
+        .PutImageToVBMenu 5, 8, 0       'Close All
+        .PutImageToVBMenu 6, 10, 0       'Batch conversion
+        .PutImageToVBMenu 7, 12, 0      'Print
+        .PutImageToVBMenu 43, 14, 0     'Exit
         
         '--> Import Sub-Menu
         'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.

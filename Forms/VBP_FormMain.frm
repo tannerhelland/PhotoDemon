@@ -720,6 +720,9 @@ Begin VB.MDIForm FormMain
          Caption         =   "&Close"
          Shortcut        =   ^{F4}
       End
+      Begin VB.Menu MnuCloseAll 
+         Caption         =   "Close All"
+      End
       Begin VB.Menu MnuFileSepBar5 
          Caption         =   "-"
       End
@@ -1597,7 +1600,7 @@ Private Sub MDIForm_Load()
     makeFormPretty Me
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
-    If Not IsProgramCompiled Then
+    If Not isProgramCompiled Then
         Dim ideWarningMessage As String
         ideWarningMessage = "WARNING: PLEASE DO NOT RUN PHOTODEMON IN THE IDE" & vbCrLf & vbCrLf & "I strongly recommend compiling PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's ""Stop"" button." & vbCrLf & vbCrLf & "Also, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays."
         ideWarningMessage = ideWarningMessage & " Array performance is severely degraded in the IDE, so some functions will seem extremely slow." & vbCrLf & vbCrLf & "If you insist on running PhotoDemon in the IDE, please do not contact me regarding IDE crashes or freezes.  I can only address issues and bugs that affect the compiled .exe." & vbCrLf & vbCrLf & "Kind regards," & vbCrLf & "Tanner Helland (PhotoDemon Developer)"
@@ -1880,7 +1883,27 @@ Private Sub MnuClearMRU_Click()
 End Sub
 
 Private Sub MnuClose_Click()
+    
+    'Note that we are not closing ALL images - just one of them
+    closingAllImages = False
     Unload Me.ActiveForm
+    
+End Sub
+
+Private Sub MnuCloseAll_Click()
+
+    'Note that the user has opted to close ALL open images
+    closingAllImages = True
+
+    'Go through each image object and close the containing form
+    Dim i As Long
+    For i = 1 To NumOfImagesLoaded
+        If pdImages(i).IsActive = True Then Unload pdImages(i).containingForm
+    Next i
+
+    'Reset the "closing all images" flag
+    closingAllImages = False
+    
 End Sub
 
 Private Sub MnuColorize_Click()
