@@ -102,6 +102,10 @@ Option Explicit
     'Original image format.  This is derived from the equivalent FreeImage constant - see the enum for FREE_IMAGE_FORMAT for details
     Public OriginalFileFormat As Long
     
+    'Current file format.  For example, if the user loads a .BMP file and uses "Save As" to save it as a .JPG, this variable will
+    ' represent "JPG" - while OriginalFileFormat will still represent "BMP".  (OriginalFileFormat is only set once, at load-time.)
+    Public CurrentFileFormat As Long
+    
     'Original color depth (a BPP value, most commonly 24 or 32, may be 8)
     Public OriginalColorDepth As Long
     
@@ -111,6 +115,9 @@ Option Explicit
     
     'For JPEGs specifically, has a quality value been set?  If it hasn't, the user needs to be prompted at least once.
     Public hasSeenJPEGPrompt As Boolean
+    
+    'For JPEG-2000 files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
+    Public hasSeenJP2Prompt As Boolean
     
     'Has this image been saved?
     Public HasBeenSaved As Boolean
