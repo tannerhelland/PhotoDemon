@@ -321,6 +321,25 @@ Begin VB.Form FormPreferences
       TabIndex        =   66
       Top             =   345
       Width           =   8295
+      Begin VB.ComboBox cmbPPMFormat 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   3000
+         Style           =   2  'Dropdown List
+         TabIndex        =   79
+         ToolTipText     =   $"VBP_FormPreferences.frx":8290
+         Top             =   3660
+         Width           =   5055
+      End
       Begin VB.ComboBox cmbDefaultSaveFormat 
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -336,7 +355,7 @@ Begin VB.Form FormPreferences
          Left            =   840
          Style           =   2  'Dropdown List
          TabIndex        =   74
-         ToolTipText     =   $"VBP_FormPreferences.frx":8290
+         ToolTipText     =   $"VBP_FormPreferences.frx":834A
          Top             =   2070
          Width           =   7215
       End
@@ -357,8 +376,48 @@ Begin VB.Form FormPreferences
          Left            =   840
          TabIndex        =   67
          ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
-         Top             =   840
+         Top             =   855
          Width           =   7215
+      End
+      Begin VB.Label lblPPMEncoding 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "export PPM files using:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   840
+         TabIndex        =   80
+         Top             =   3720
+         Width           =   1950
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "portable pixmap (PPM) format encoding"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   12
+         Left            =   480
+         TabIndex        =   78
+         Top             =   3240
+         Width           =   4245
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
@@ -380,7 +439,7 @@ Begin VB.Form FormPreferences
          Top             =   480
          Width           =   2505
       End
-      Begin VB.Label Label1 
+      Begin VB.Label lblSaveAsFormat 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "when using the ""Save As"" command, set the default file format according to:"
@@ -417,7 +476,7 @@ Begin VB.Form FormPreferences
          Index           =   10
          Left            =   360
          TabIndex        =   75
-         Top             =   1320
+         Top             =   1335
          Width           =   3285
       End
       Begin VB.Label lblInterfaceTitle 
@@ -490,7 +549,7 @@ Begin VB.Form FormPreferences
          Left            =   3360
          Style           =   2  'Dropdown List
          TabIndex        =   57
-         ToolTipText     =   $"VBP_FormPreferences.frx":834A
+         ToolTipText     =   $"VBP_FormPreferences.frx":8404
          Top             =   2340
          Width           =   4095
       End
@@ -510,7 +569,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   360
          TabIndex        =   55
-         ToolTipText     =   $"VBP_FormPreferences.frx":83F2
+         ToolTipText     =   $"VBP_FormPreferences.frx":84AC
          Top             =   405
          Width           =   7455
       End
@@ -529,12 +588,12 @@ Begin VB.Form FormPreferences
          Left            =   2640
          Style           =   2  'Dropdown List
          TabIndex        =   44
-         ToolTipText     =   $"VBP_FormPreferences.frx":84BC
+         ToolTipText     =   $"VBP_FormPreferences.frx":8576
          Top             =   1350
          Width           =   4815
       End
       Begin VB.Label lblFreeImageWarning 
-         Caption         =   $"VBP_FormPreferences.frx":8576
+         Caption         =   $"VBP_FormPreferences.frx":8630
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9
@@ -682,7 +741,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   64
-         ToolTipText     =   $"VBP_FormPreferences.frx":868B
+         ToolTipText     =   $"VBP_FormPreferences.frx":8745
          Top             =   480
          Width           =   7455
       End
@@ -781,7 +840,7 @@ Begin VB.Form FormPreferences
          Top             =   4320
          Width           =   6975
       End
-      Begin VB.CommandButton CmdTmpPath 
+      Begin VB.CommandButton cmdTmpPath 
          Caption         =   "..."
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -799,7 +858,7 @@ Begin VB.Form FormPreferences
          Top             =   4320
          Width           =   405
       End
-      Begin VB.CheckBox ChkLogMessages 
+      Begin VB.CheckBox chkLogMessages 
          Appearance      =   0  'Flat
          Caption         =   " log all program messages to file "
          BeginProperty Font 
@@ -815,7 +874,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   21
-         ToolTipText     =   $"VBP_FormPreferences.frx":877D
+         ToolTipText     =   $"VBP_FormPreferences.frx":8837
          Top             =   480
          Width           =   6975
       End
@@ -900,7 +959,7 @@ Begin VB.Form FormPreferences
          Width           =   2130
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":886F
+         Caption         =   $"VBP_FormPreferences.frx":8929
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -973,7 +1032,7 @@ Begin VB.Form FormPreferences
       TabIndex        =   14
       Top             =   345
       Width           =   8295
-      Begin VB.CheckBox ChkPromptPluginDownload 
+      Begin VB.CheckBox chkPromptPluginDownload 
          Appearance      =   0  'Flat
          Caption         =   " if core plugins cannot be located, offer to download them"
          BeginProperty Font 
@@ -989,7 +1048,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   17
-         ToolTipText     =   $"VBP_FormPreferences.frx":891E
+         ToolTipText     =   $"VBP_FormPreferences.frx":89D8
          Top             =   1080
          Width           =   6735
       End
@@ -1082,7 +1141,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   50
-         ToolTipText     =   $"VBP_FormPreferences.frx":89BA
+         ToolTipText     =   $"VBP_FormPreferences.frx":8A74
          Top             =   2520
          Width           =   4575
       End
@@ -1180,7 +1239,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   10
-         ToolTipText     =   $"VBP_FormPreferences.frx":8A63
+         ToolTipText     =   $"VBP_FormPreferences.frx":8B1D
          Top             =   480
          Width           =   4815
       End
@@ -1190,7 +1249,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":8AFC
+         MouseIcon       =   "VBP_FormPreferences.frx":8BB6
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1372,7 +1431,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   46
-         ToolTipText     =   $"VBP_FormPreferences.frx":8C4E
+         ToolTipText     =   $"VBP_FormPreferences.frx":8D08
          Top             =   3240
          Width           =   7695
       End
@@ -1391,7 +1450,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   31
-         ToolTipText     =   $"VBP_FormPreferences.frx":8D20
+         ToolTipText     =   $"VBP_FormPreferences.frx":8DDA
          Top             =   2010
          Width           =   5055
       End
@@ -1410,7 +1469,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   28
-         ToolTipText     =   $"VBP_FormPreferences.frx":8DB3
+         ToolTipText     =   $"VBP_FormPreferences.frx":8E6D
          Top             =   900
          Width           =   5055
       End
@@ -1420,7 +1479,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":8E48
+         MouseIcon       =   "VBP_FormPreferences.frx":8F02
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1437,7 +1496,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":8F9A
+         MouseIcon       =   "VBP_FormPreferences.frx":9054
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1755,11 +1814,14 @@ Private Sub CmdOK_Click()
     'Store the user's preferred behavior for the "Save As" dialog's suggested file format
     userPreferences.SetPreference_Long "General Preferences", "DefaultSaveFormat", cmbDefaultSaveFormat.ListIndex
     
+    'Store the user's preference for PPM encoding format
+    userPreferences.SetPreference_Long "General Preferences", "PPMExportFormat", cmbPPMFormat.ListIndex
+    
     'Store whether PhotoDemon is allowed to check for updates
     userPreferences.SetPreference_Boolean "General Preferences", "CheckForUpdates", CBool(chkProgramUpdates.Value)
     
     'Store whether PhotoDemon is allowed to offer the automatic download of missing core plugins
-    userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", CBool(ChkPromptPluginDownload.Value)
+    userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", CBool(chkPromptPluginDownload.Value)
     
     'Check to see if the new caption length setting matches the old one.  If it does not, rewrite all form captions to match
     If cmbImageCaption.ListIndex <> userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) Then
@@ -1790,7 +1852,7 @@ Private Sub CmdOK_Click()
     userPreferences.SetPreference_Boolean "General Preferences", "UseToneMapping", CBool(chkToneMapping.Value)
     
     'Store whether we'll log system messages or not
-    LogProgramMessages = CBool(ChkLogMessages.Value)
+    LogProgramMessages = CBool(chkLogMessages.Value)
     userPreferences.SetPreference_Boolean "General Preferences", "LogProgramMessages", LogProgramMessages
     
     'Store the preference for rendering a drop shadow onto the canvas surrounding an image
@@ -1883,9 +1945,9 @@ Private Sub LoadAllPreferences()
     'Start with the canvas background (which also requires populating the canvas background combo box)
     userInitiatedColorSelection = False
     cmbCanvas.Clear
-    cmbCanvas.AddItem "system theme: light", 0
-    cmbCanvas.AddItem "system theme: dark", 1
-    cmbCanvas.AddItem "custom color (click box to customize)", 2
+    cmbCanvas.AddItem " system theme: light", 0
+    cmbCanvas.AddItem " system theme: dark", 1
+    cmbCanvas.AddItem " custom color (click box to customize)", 2
         
     'Select the proper combo box value based on the CanvasBackground variable
     If CanvasBackground = vb3DLight Then
@@ -1911,31 +1973,37 @@ Private Sub LoadAllPreferences()
     cmbDefaultSaveFormat.AddItem " the last image format I used in the ""Save As"" screen", 1
     cmbDefaultSaveFormat.ListIndex = userPreferences.GetPreference_Long("General Preferences", "DefaultSaveFormat", 0)
     
+    'Populate the combo box for PPM export
+    cmbPPMFormat.Clear
+    cmbPPMFormat.AddItem " binary encoding (faster, smaller file size)", 0
+    cmbPPMFormat.AddItem " ASCII encoding (human-readable, multi-platform)", 1
+    cmbPPMFormat.ListIndex = userPreferences.GetPreference_Long("General Preferences", "PPMExportFormat", 0)
+    
     'Populate the combo boxes for caption-related preferences
     cmbImageCaption.Clear
-    cmbImageCaption.AddItem "compact - file name only", 0
-    cmbImageCaption.AddItem "descriptive - full location, including folder(s)", 1
+    cmbImageCaption.AddItem " compact - file name only", 0
+    cmbImageCaption.AddItem " descriptive - full location, including folder(s)", 1
     cmbImageCaption.ListIndex = userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0)
     
     cmbMRUCaption.Clear
-    cmbMRUCaption.AddItem "compact - file names only", 0
-    cmbMRUCaption.AddItem "descriptive - full locations, including folder(s)", 1
+    cmbMRUCaption.AddItem " compact - file names only", 0
+    cmbMRUCaption.AddItem " descriptive - full locations, including folder(s)", 1
     cmbMRUCaption.ListIndex = userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0)
     
     'Populate the combo box for multipage image handling
     cmbMultiImage.Clear
-    cmbMultiImage.AddItem "ask me how I want to proceed", 0
-    cmbMultiImage.AddItem "load only the first image", 1
-    cmbMultiImage.AddItem "load all the images in the file", 2
+    cmbMultiImage.AddItem " ask me how I want to proceed", 0
+    cmbMultiImage.AddItem " load only the first image", 1
+    cmbMultiImage.AddItem " load all the images in the file", 2
     cmbMultiImage.ListIndex = userPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0)
     
     'Next, get the values for alpha-channel checkerboard rendering
     userInitiatedAlphaSelection = False
     cmbAlphaCheck.Clear
-    cmbAlphaCheck.AddItem "Highlight checks", 0
-    cmbAlphaCheck.AddItem "Midtone checks", 1
-    cmbAlphaCheck.AddItem "Shadow checks", 2
-    cmbAlphaCheck.AddItem "Custom (click boxes to customize)", 3
+    cmbAlphaCheck.AddItem " Highlight checks", 0
+    cmbAlphaCheck.AddItem " Midtone checks", 1
+    cmbAlphaCheck.AddItem " Shadow checks", 2
+    cmbAlphaCheck.AddItem " Custom (click boxes to customize)", 3
     
     cmbAlphaCheck.ListIndex = AlphaCheckMode
     originalAlphaCheckMode = AlphaCheckMode
@@ -1949,9 +2017,9 @@ Private Sub LoadAllPreferences()
     
     'Next, get the current alpha-channel checkerboard size value
     cmbAlphaCheckSize.Clear
-    cmbAlphaCheckSize.AddItem "Small (4x4 pixels)", 0
-    cmbAlphaCheckSize.AddItem "Medium (8x8 pixels)", 1
-    cmbAlphaCheckSize.AddItem "Large (16x16 pixels)", 2
+    cmbAlphaCheckSize.AddItem " Small (4x4 pixels)", 0
+    cmbAlphaCheckSize.AddItem " Medium (8x8 pixels)", 1
+    cmbAlphaCheckSize.AddItem " Large (16x16 pixels)", 2
     
     cmbAlphaCheckSize.ListIndex = AlphaCheckSize
     
@@ -1962,7 +2030,7 @@ Private Sub LoadAllPreferences()
     If userPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then chkToneMapping.Value = vbChecked Else chkToneMapping.Value = vbUnchecked
     
     'Assign the check box for logging program messages
-    If LogProgramMessages Then ChkLogMessages.Value = vbChecked Else ChkLogMessages.Value = vbUnchecked
+    If LogProgramMessages Then chkLogMessages.Value = vbChecked Else chkLogMessages.Value = vbUnchecked
     
     'Assign the check box for prompting about unsaved images
     If ConfirmClosingUnsaved Then chkConfirmUnsaved.Value = vbChecked Else chkConfirmUnsaved.Value = vbUnchecked
@@ -1975,7 +2043,7 @@ Private Sub LoadAllPreferences()
     
     'We have to pull the "offer to download plugins" value from the INI file, since we don't track
     ' it internally (it's only accessed when PhotoDemon is first loaded)
-    If userPreferences.GetPreference_Boolean("General Preferences", "PromptForPluginDownload", True) Then ChkPromptPluginDownload.Value = vbChecked Else ChkPromptPluginDownload.Value = vbUnchecked
+    If userPreferences.GetPreference_Boolean("General Preferences", "PromptForPluginDownload", True) Then chkPromptPluginDownload.Value = vbChecked Else chkPromptPluginDownload.Value = vbUnchecked
     
     'Same for checking for software updates
     If userPreferences.GetPreference_Boolean("General Preferences", "CheckForUpdates", True) Then chkProgramUpdates.Value = vbChecked Else chkProgramUpdates.Value = vbUnchecked
@@ -1985,8 +2053,8 @@ Private Sub LoadAllPreferences()
     
     'Populate the "what to do when loading large images" combo box
     cmbLargeImages.Clear
-    cmbLargeImages.AddItem "automatically fit the image on-screen", 0
-    cmbLargeImages.AddItem "1:1 (100% zoom, or ""actual size"")", 1
+    cmbLargeImages.AddItem " automatically fit the image on-screen", 0
+    cmbLargeImages.AddItem " 1:1 (100% zoom, or ""actual size"")", 1
     cmbLargeImages.ListIndex = userPreferences.GetPreference_Long("General Preferences", "AutosizeLargeImages", 0)
     
     'Hide the modern typefaces box if the user in on XP.  If the user is on Vista or later, set the box according
@@ -2003,18 +2071,18 @@ Private Sub LoadAllPreferences()
         
     'Populate and en/disable the run-time only settings in the "Advanced" panel
     If imageFormats.FreeImageEnabled Then
-        chkFreeImageTest.Caption = "enable FreeImage support"
+        chkFreeImageTest.Caption = " enable FreeImage support"
         chkFreeImageTest.Value = vbChecked
     Else
-        chkFreeImageTest.Caption = "enable FreeImage support (do not activate this if FreeImage.dll is not available)"
+        chkFreeImageTest.Caption = " enable FreeImage support (do not activate this if FreeImage.dll is not available)"
         chkFreeImageTest.Value = vbUnchecked
     End If
     
     If imageFormats.GDIPlusEnabled Then
-        chkGDIPlusTest.Caption = "enable GDI+ support"
+        chkGDIPlusTest.Caption = " enable GDI+ support"
         chkGDIPlusTest.Value = vbChecked
     Else
-        chkGDIPlusTest.Caption = "enable GDI+ support (do not enable this if gdiplus.dll is not available)"
+        chkGDIPlusTest.Caption = " enable GDI+ support (do not enable this if gdiplus.dll is not available)"
         chkGDIPlusTest.Value = vbUnchecked
     End If
     
@@ -2026,10 +2094,10 @@ Private Sub LoadAllPreferences()
     'If any preferences rely on FreeImage to operate, en/disable them as necessary
     If imageFormats.FreeImageEnabled = False Then
         chkToneMapping.Value = vbUnchecked
-        chkToneMapping.Caption = "feature disabled due to missing plungin"
+        chkToneMapping.Caption = " feature disabled due to missing plungin"
         chkToneMapping.Enabled = False
         cmbMultiImage.Clear
-        cmbMultiImage.AddItem "feature disabled due to missing plugin", 0
+        cmbMultiImage.AddItem " feature disabled due to missing plugin", 0
         cmbMultiImage.ListIndex = 0
         cmbMultiImage.Enabled = False
         lblFreeImageWarning.Visible = True

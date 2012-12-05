@@ -143,20 +143,24 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
     
     Message "Preparing PPM image..."
     
+    'Based on the user's preference, select binary or ASCII encoding for the PPM file
+    Dim ppm_Encoding As FREE_IMAGE_SAVE_OPTIONS
+    If userPreferences.GetPreference_Long("General Preferences", "PPMExportFormat", 0) = 0 Then ppm_Encoding = FISO_PNM_SAVE_RAW Else ppm_Encoding = FISO_PNM_SAVE_ASCII
+    
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
     If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
-    
+        
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
-    
+        
     'Use that handle to save the image to PPM format (ASCII)
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, FIF_PPM, , FICD_24BPP, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, FIF_PPM, ppm_Encoding, FICD_24BPP, , , , , True)
         If fi_Check = False Then
             Message "PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
