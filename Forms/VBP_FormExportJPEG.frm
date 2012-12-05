@@ -290,22 +290,22 @@ End Property
 Private Sub CmbSaveQuality_Click()
     
     Select Case CmbSaveQuality.ListIndex
-    
+        
         Case 0
             hsQuality.Value = 99
-            
+                
         Case 1
             hsQuality.Value = 92
-            
+                
         Case 2
             hsQuality = 80
-            
+                
         Case 3
             hsQuality = 65
-            
+                
         Case 4
             hsQuality = 40
-            
+                
     End Select
     
 End Sub
@@ -341,21 +341,21 @@ Private Sub CmdOK_Click()
                 Exit Sub
             End If
     End Select
-    
+        
     'Determine any extra flags based on the advanced settings
     g_JPEGFlags = 0
-    
+        
     'Optimize
     If CBool(chkOptimize) Then g_JPEGFlags = g_JPEGFlags Or JPEG_OPTIMIZE
-    
+        
     'Progressive scan
     If CBool(chkProgressive) Then g_JPEGFlags = g_JPEGFlags Or JPEG_PROGRESSIVE
-    
+        
     'Subsampling
     If CBool(chkSubsample) Then
     
         Select Case cmbSubsample.ListIndex
-        
+            
             Case 0
                 g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_444
             Case 1
@@ -364,11 +364,11 @@ Private Sub CmdOK_Click()
                 g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_420
             Case 3
                 g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_411
-                
+                    
         End Select
-        
+            
     End If
-    
+        
     'Finally, determine whether or not a thumbnail version of the file should be embedded inside
     If CBool(chkThumbnail) Then g_JPEGThumbnail = 1 Else g_JPEGThumbnail = 0
      
@@ -404,27 +404,27 @@ End Sub
 
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync
 Private Sub updateComboBox()
-
-    Select Case hsQuality.Value
     
+    Select Case hsQuality.Value
+        
         Case 40
             If CmbSaveQuality.ListIndex <> 4 Then CmbSaveQuality.ListIndex = 4
-            
+                            
         Case 65
             If CmbSaveQuality.ListIndex <> 3 Then CmbSaveQuality.ListIndex = 3
-            
+                
         Case 80
             If CmbSaveQuality.ListIndex <> 2 Then CmbSaveQuality.ListIndex = 2
-            
+                
         Case 92
             If CmbSaveQuality.ListIndex <> 1 Then CmbSaveQuality.ListIndex = 1
-            
+                
         Case 99
             If CmbSaveQuality.ListIndex <> 0 Then CmbSaveQuality.ListIndex = 0
-            
+                
         Case Else
             If CmbSaveQuality.ListIndex <> 5 Then CmbSaveQuality.ListIndex = 5
-            
+                
     End Select
     
 End Sub
@@ -486,7 +486,7 @@ Private Sub toggleAdvancedSettings()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog()
+Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -494,7 +494,8 @@ Public Sub ShowDialog()
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
     
-    'I've found that pre-existing combo box entries are more user-friendly
+    'Populate the quality drop-down box with presets corresponding to the JPEG format
+    CmbSaveQuality.Clear
     CmbSaveQuality.AddItem " Perfect (99)", 0
     CmbSaveQuality.AddItem " Excellent (92)", 1
     CmbSaveQuality.AddItem " Good (80)", 2
@@ -503,8 +504,9 @@ Public Sub ShowDialog()
     CmbSaveQuality.AddItem " Custom value", 5
     CmbSaveQuality.ListIndex = 1
     Message "Waiting for user to specify JPEG export options... "
-    
+        
     'Populate the custom subsampling combo box as well
+    cmbSubsample.Clear
     cmbSubsample.AddItem " 4:4:4 (best quality)", 0
     cmbSubsample.AddItem " 4:2:2 (good quality)", 1
     cmbSubsample.AddItem " 4:2:0 (moderate quality)", 2
@@ -522,12 +524,9 @@ Public Sub ShowDialog()
         cmbSubsample.Enabled = False
         lblTitle(1).Caption = "advanced settings require the FreeImage plugin"
     End If
-    
-    'Mark the form as having NOT been canceled
-    saveDialogCanceled = False
-    
-    'Hide the advanced settings
-    toggleAdvancedSettings
+        
+    'Hide the advanced settings unless the user has specifically requested otherwise
+    If Not showAdvanced Then toggleAdvancedSettings
                 
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
