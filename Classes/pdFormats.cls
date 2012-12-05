@@ -33,7 +33,7 @@ Attribute VB_Exposed = False
 'GDIPlus is optionally used as a fallback if FreeImage is not present, but it should be noted that GDI+ interoperability
 ' is not as well-tested as FreeImage.  In some cases, however, it IS faster to use GDI+ due to the need to make a
 ' specialized copy of DIB data for FreeImage's internal handling - so in the case of batch conversions, GDI+ is actually
-' used preferentially over FreeImage for reading and writing JPEGs.
+' used preferentially over FreeImage for reading and writing certain filetypes.
 '
 '***************************************************************************
 
@@ -56,6 +56,10 @@ Private outputExtensions() As String
 Private inputDescriptions() As String
 Private outputDescriptions() As String
 
+'Array of corresponding image format constants (using the FreeImage convention)
+Private inputFIFs() As Long
+Private outputFIFs() As Long
+
 'Array of common-dialog-formatted input/output filetypes
 Private commonDialogInputs As String, commonDialogOutputs As String
 
@@ -64,6 +68,31 @@ Private cdOutputDefaultExtensions As String
 
 'This value is used to track the number of currently used input/output formats
 Private curFormatIndex As Long
+
+'Return the index of given input FIF
+Public Function getIndexOfInputFIF(ByVal srcFIF As Long) As Long
+    
+    Dim i As Long
+    For i = 0 To getNumOfInputFormats
+        If inputFIFs(i) = srcFIF Then
+            getIndexOfInputFIF = i
+            Exit Function
+        End If
+    Next i
+    
+    'If we reach this line of code, no match was found.  Return -1.
+    getIndexOfInputFIF = -1
+    
+End Function
+
+'Return the FIF (image format constant) at a given index
+Public Function getInputFIF(ByVal dIndex As Long) As Long
+    If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
+        getInputFIF = inputFIFs(dIndex)
+    Else
+        getInputFIF = FIF_UNKNOWN
+    End If
+End Function
 
 'Return the friendly input format description at a given index
 Public Function getInputFormatDescription(ByVal dIndex As Long) As String
@@ -91,6 +120,31 @@ End Function
 'Return a list of input filetypes formatted for use with a common dialog box
 Public Function getCommonDialogInputFormats() As String
     getCommonDialogInputFormats = commonDialogInputs
+End Function
+
+'Return the index of given output FIF
+Public Function getIndexOfOutputFIF(ByVal srcFIF As Long) As Long
+    
+    Dim i As Long
+    For i = 0 To getNumOfOutputFormats
+        If outputFIFs(i) = srcFIF Then
+            getIndexOfOutputFIF = i
+            Exit Function
+        End If
+    Next i
+    
+    'If we reach this line of code, no match was found.  Return -1.
+    getIndexOfOutputFIF = -1
+    
+End Function
+
+'Return the FIF (image format constant) at a given index
+Public Function getOutputFIF(ByVal dIndex As Long) As Long
+    If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
+        getOutputFIF = outputFIFs(dIndex)
+    Else
+        getOutputFIF = FIF_UNKNOWN
+    End If
 End Function
 
 'Return the friendly output format description at a given index
@@ -130,8 +184,9 @@ End Function
 Public Sub generateInputFormats()
 
     'Prepare a list of possible INPUT formats based on the plugins available to us
-    ReDim inputExtensions(0 To 100) As String
-    ReDim inputDescriptions(0 To 100) As String
+    ReDim inputExtensions(0 To 50) As String
+    ReDim inputDescriptions(0 To 50) As String
+    ReDim inputFIFs(0 To 50) As Long
 
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
 
@@ -145,70 +200,71 @@ Public Sub generateInputFormats()
     curFormatIndex = 0
     
     'Bitmap files require no plugins; they are always supported.
-    addInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp"
+    addInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", FIF_BMP
     
     If FreeImageEnabled Then
-        addInputFormat "DDS - DirectDraw Surface", "*.dds"
-        addInputFormat "EXR - Industrial Light and Magic", "*.exr"
-        addInputFormat "G3 - Digital Fax Format", "*.g3"
+        addInputFormat "DDS - DirectDraw Surface", "*.dds", FIF_DDS
+        addInputFormat "EXR - Industrial Light and Magic", "*.exr", FIF_EXR
+        addInputFormat "G3 - Digital Fax Format", "*.g3", FIF_FAXG3
     End If
     
-    addInputFormat "GIF - Compuserve", "*.gif"
+    addInputFormat "GIF - Compuserve", "*.gif", FIF_GIF
     
-    If FreeImageEnabled Then addInputFormat "HDR - High Dynamic Range", "*.hdr"
+    If FreeImageEnabled Then addInputFormat "HDR - High Dynamic Range", "*.hdr", FIF_HDR
     
-    addInputFormat "ICO - Windows Icon", "*.ico"
+    addInputFormat "ICO - Windows Icon", "*.ico", FIF_ICO
     
     If FreeImageEnabled Then
-        addInputFormat "IFF - Amiga Interchange Format", "*.iff"
-        addInputFormat "JNG - JPEG Network Graphics", "*.jng"
-        addInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k"
+        addInputFormat "IFF - Amiga Interchange Format", "*.iff", FIF_IFF
+        addInputFormat "JNG - JPEG Network Graphics", "*.jng", FIF_JNG
+        addInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k", FIF_JP2
         ' At present, the batch convert box gets overwhelmed by too many file formats - so I've shrunk the list to cut a few rare JPG2000 extensions.
-        ' addInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf"
+        ' addInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", FIF_JP2
     End If
     
-    addInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jif;*.jfif"
+    addInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jif;*.jfif", FIF_JPEG
     
     If FreeImageEnabled Then
-        addInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala"
-        addInputFormat "LBM - Deluxe Paint", "*.lbm"
-        addInputFormat "MNG - Multiple Network Graphics", "*.mng"
-        addInputFormat "PBM - Portable Bitmap", "*.pbm"
-        addInputFormat "PCD - Kodak PhotoCD", "*.pcd"
-        addInputFormat "PCX - Zsoft Paintbrush", "*.pcx"
+        addInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", FIF_KOALA
+        addInputFormat "LBM - Deluxe Paint", "*.lbm", FIF_LBM
+        addInputFormat "MNG - Multiple Network Graphics", "*.mng", FIF_MNG
+        addInputFormat "PBM - Portable Bitmap", "*.pbm", FIF_PBM
+        addInputFormat "PCD - Kodak PhotoCD", "*.pcd", FIF_PCD
+        addInputFormat "PCX - Zsoft Paintbrush", "*.pcx", FIF_PCX
     End If
     
     'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
-    If zLibEnabled Then addInputFormat "PDI - PhotoDemon Image", "*.pdi"
+    If zLibEnabled Then addInputFormat "PDI - PhotoDemon Image", "*.pdi", 100
         
     If FreeImageEnabled Then
-        addInputFormat "PGM - Portable Graymap", "*.pgm"
-        addInputFormat "PIC/PICT - Macintosh Picture", "*.pict;*.pct;*.pic"
+        addInputFormat "PGM - Portable Graymap", "*.pgm", FIF_PGM
+        addInputFormat "PIC/PICT - Macintosh Picture", "*.pict;*.pct;*.pic", FIF_PICT
     End If
     
     'FreeImage or GDI+ works for loading PNGs
-    If FreeImageEnabled Or GDIPlusEnabled Then addInputFormat "PNG - Portable Network Graphic", "*.png"
+    If FreeImageEnabled Or GDIPlusEnabled Then addInputFormat "PNG - Portable Network Graphic", "*.png", FIF_PNG
         
     If FreeImageEnabled Then
-        addInputFormat "PPM - Portable Pixelmap", "*.ppm"
-        addInputFormat "PSD - Adobe Photoshop", "*.psd"
-        addInputFormat "RAS - Sun Raster File", "*.ras"
-        addInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta"
-        addInputFormat "TGA - Truevision Targa", "*.tga"
+        addInputFormat "PPM - Portable Pixelmap", "*.ppm", FIF_PPM
+        addInputFormat "PSD - Adobe Photoshop", "*.psd", FIF_PSD
+        addInputFormat "RAS - Sun Raster File", "*.ras", FIF_RAS
+        addInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta", FIF_SGI
+        addInputFormat "TGA - Truevision Targa", "*.tga", FIF_TARGA
     End If
     
     'FreeImage or GDI+ works for loading TIFFs
-    If FreeImageEnabled Or GDIPlusEnabled Then addInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff"
+    If FreeImageEnabled Or GDIPlusEnabled Then addInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", FIF_TIFF
         
-    If FreeImageEnabled Then addInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm"
+    If FreeImageEnabled Then addInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", FIF_WBMP
         
     'Finish out the list with an obligatory "All files" option
-    addInputFormat "All files", "*.*"
+    addInputFormat "All files", "*.*", -1
     
     'Resize our description and extension arrays to match their final size
     numOfInputFormats = curFormatIndex
     ReDim Preserve inputDescriptions(0 To numOfInputFormats) As String
     ReDim Preserve inputExtensions(0 To numOfInputFormats) As String
+    ReDim Preserve inputFIFs(0 To numOfInputFormats) As Long
     
     'Now that all input files have been added, we can compile a common-dialog-friendly version of this index
     
@@ -230,16 +286,19 @@ Public Sub generateInputFormats()
 End Sub
 
 'Add support for another input format.  A descriptive string and extension list are required.
-Private Sub addInputFormat(ByVal formatDescription As String, ByVal extensionList As String)
+Private Sub addInputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingFIF As Long)
     
     'Increment the counter
     curFormatIndex = curFormatIndex + 1
     
-    'Add the descriptive text to our array
+    'Add the descriptive text to our collection
     inputDescriptions(curFormatIndex) = formatDescription
     
-    'Add the extension list to our VB-specific array
+    'Add any relevant extension(s) to our collection
     inputExtensions(curFormatIndex) = extensionList
+    
+    'Add the FIF constant
+    inputFIFs(curFormatIndex) = correspondingFIF
     
     'If applicable, add these extensions to the "All Compatible Images" list
     If extensionList <> "*.*" Then
@@ -255,37 +314,39 @@ End Sub
 'Generate a list of available export formats
 Public Sub generateOutputFormats()
 
-    ReDim outputExtensions(0 To 100) As String
-    ReDim outputDescriptions(0 To 100) As String
+    ReDim outputExtensions(0 To 50) As String
+    ReDim outputDescriptions(0 To 50) As String
+    ReDim outputFIFs(0 To 50) As Long
 
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
     
     'Start by effectively setting the location tracker to "0".  Beyond this point, it will be automatically updated.
     curFormatIndex = -1
 
-    addOutputFormat "BMP - Windows Bitmap", "bmp"
+    addOutputFormat "BMP - Windows Bitmap", "bmp", FIF_BMP
     
-    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "GIF - Graphics Interchange Format", "gif"
+    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "GIF - Graphics Interchange Format", "gif", FIF_GIF
         
-    If FreeImageEnabled Then addOutputFormat "JP2 - JPEG 2000", "jp2"
+    If FreeImageEnabled Then addOutputFormat "JP2 - JPEG 2000", "jp2", FIF_JP2
         
-    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "JPG - Joint Photographic Experts Group", "jpg"
+    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "JPG - Joint Photographic Experts Group", "jpg", FIF_JPEG
         
-    If zLibEnabled Then addOutputFormat "PDI - PhotoDemon Image", "pdi"
+    If zLibEnabled Then addOutputFormat "PDI - PhotoDemon Image", "pdi", 100
     
-    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "PNG - Portable Network Graphic", "png"
+    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "PNG - Portable Network Graphic", "png", FIF_PNG
         
     If FreeImageEnabled Then
-        addOutputFormat "PPM - Portable Pixel Map", "ppm"
-        addOutputFormat "TGA - Truevision Targa", "tga"
+        addOutputFormat "PPM - Portable Pixel Map", "ppm", FIF_PPM
+        addOutputFormat "TGA - Truevision Targa", "tga", FIF_TARGA
     End If
     
-    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "TIFF - Tagged Image File Format", "tif"
+    If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "TIFF - Tagged Image File Format", "tif", FIF_TIFF
         
     'Resize our description and extension arrays to match their final size
     numOfOutputFormats = curFormatIndex
     ReDim Preserve outputDescriptions(0 To numOfOutputFormats) As String
     ReDim Preserve outputExtensions(0 To numOfOutputFormats) As String
+    ReDim Preserve outputFIFs(0 To numOfOutputFormats) As Long
     
     'Now that all output files have been added, we can compile a common-dialog-friendly version of this index
     
@@ -309,15 +370,102 @@ Public Sub generateOutputFormats()
 End Sub
 
 'Add support for another output format.  A descriptive string and extension list are required.
-Private Sub addOutputFormat(ByVal formatDescription As String, ByVal extensionList As String)
+Private Sub addOutputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingFIF As Long)
     
     'Increment the counter
     curFormatIndex = curFormatIndex + 1
     
-    'Add the descriptive text to our array
+    'Add the descriptive text to our collection
     outputDescriptions(curFormatIndex) = formatDescription
     
-    'Add the extension list to our VB-specific array
+    'Add the primary extension for this format type
     outputExtensions(curFormatIndex) = extensionList
+    
+    'Add the corresponding FIF
+    outputFIFs(curFormatIndex) = correspondingFIF
             
 End Sub
+
+'Given an FIF (image format constant), return the default extension.
+Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
+
+    Select Case srcFIF
+    
+        Case FIF_BMP
+            getExtensionFromFIF = "bmp"
+        Case FIF_ICO
+            getExtensionFromFIF = "ico"
+        Case FIF_JPEG
+            getExtensionFromFIF = "jpg"
+        Case FIF_JNG
+            getExtensionFromFIF = "jng"
+        Case FIF_KOALA
+            getExtensionFromFIF = "koa"
+        Case FIF_LBM
+            getExtensionFromFIF = "lbm"
+        Case FIF_IFF
+            getExtensionFromFIF = "iff"
+        Case FIF_MNG
+            getExtensionFromFIF = "mng"
+        Case FIF_PBM
+            getExtensionFromFIF = "pbm"
+        Case FIF_PBMRAW
+            getExtensionFromFIF = "pbm"
+        Case FIF_PCD
+            getExtensionFromFIF = "pcd"
+        Case FIF_PCX
+            getExtensionFromFIF = "pcx"
+        Case FIF_PGM
+            getExtensionFromFIF = "pgm"
+        Case FIF_PGMRAW
+            getExtensionFromFIF = "pgm"
+        Case FIF_PNG
+            getExtensionFromFIF = "png"
+        Case FIF_PPM
+            getExtensionFromFIF = "ppm"
+        Case FIF_PPMRAW
+            getExtensionFromFIF = "ppm"
+        Case FIF_RAS
+            getExtensionFromFIF = "ras"
+        Case FIF_TARGA
+            getExtensionFromFIF = "tga"
+        Case FIF_TIFF
+            getExtensionFromFIF = "tif"
+        Case FIF_WBMP
+            getExtensionFromFIF = "wbm"
+        Case FIF_PSD
+            getExtensionFromFIF = "psd"
+        Case FIF_CUT
+            getExtensionFromFIF = "cut"
+        Case FIF_XBM
+            getExtensionFromFIF = "xbm"
+        Case FIF_XPM
+            getExtensionFromFIF = "xpm"
+        Case FIF_DDS
+            getExtensionFromFIF = "dds"
+        Case FIF_GIF
+            getExtensionFromFIF = "gif"
+        Case FIF_HDR
+            getExtensionFromFIF = "hdr"
+        Case FIF_FAXG3
+            getExtensionFromFIF = "g3"
+        Case FIF_SGI
+            getExtensionFromFIF = "sgi"
+        Case FIF_EXR
+            getExtensionFromFIF = "exr"
+        Case FIF_J2K
+            getExtensionFromFIF = "j2k"
+        Case FIF_JP2
+            getExtensionFromFIF = "jp2"
+        Case FIF_PFM
+            getExtensionFromFIF = "pfm"
+        Case FIF_PICT
+            getExtensionFromFIF = "pct"
+        Case FIF_RAW = 34
+            getExtensionFromFIF = "raw"
+        Case Else
+            getExtensionFromFIF = ""
+    
+    End Select
+
+End Function
