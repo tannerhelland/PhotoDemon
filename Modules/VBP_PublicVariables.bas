@@ -100,9 +100,6 @@ Public FixScrolling As Boolean
 Public LastOpenFilter As Long
 Public LastSaveFilter As Long
 
-'Was the save dialog canceled?
-Public saveDialogCanceled As Boolean
-
 'Checkerboard mode for rendering transparency.  Possible values are:
 ' 0 - Light
 ' 1 - Midtones
@@ -151,3 +148,6 @@ Public closingAllImages As Boolean
 Public g_JPEGQuality As Long
 Public g_JPEGFlags As Long
 Public g_JPEGThumbnail As Long
+
+'JPEG-2000 export compression ratio; this is set by the JP2 export dialog if the user clicks "OK" (not Cancel)
+Public g_JP2Compression As Long

@@ -121,9 +121,18 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
     Else
         'This image has been saved before.
         
-        'Check to see if the image is a JPEG.  If it is, the user needs to be prompted at least once for a quality setting.
-        If (pdImages(imageID).OriginalFileFormat = 2) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
+        'Check to see if the image is in a format that potentially provides an "additional settings" prompt.
+        ' If it is, the user needs to be prompted at least once for those settings.
+        
+        'JPEG
+        If (pdImages(imageID).CurrentFileFormat = FIF_JPEG) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
             MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, True)
+        
+        'JPEG-2000
+        ElseIf (pdImages(imageID).CurrentFileFormat = FIF_JP2) And (pdImages(imageID).hasSeenJP2Prompt = False) Then
+            MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, False, pdImages(imageID).getSaveFlag(0))
+        
+        'All other formats
         Else
             MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, False, pdImages(imageID).getSaveFlag(0), pdImages(imageID).getSaveFlag(1), pdImages(imageID).getSaveFlag(2))
         End If
@@ -140,18 +149,32 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     'Get the last "save image" path from the INI file
     Dim tempPathString As String
     tempPathString = userPreferences.GetPreference_String("Program Paths", "MainSave", "")
-    
+        
     'LastSaveFilter will be set to "-1" if the user has never saved a file before.  If that happens, default to JPEG
     If LastSaveFilter = -1 Then
     
-        Dim i As Long
-        For i = 0 To imageFormats.getNumOfOutputFormats
-            If imageFormats.getOutputFormatExtension(i) = "jpg" Then
-                LastSaveFilter = i + 1
-                Exit For
-            End If
-        Next i
+        LastSaveFilter = imageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
+    
+    'Otherwise, set LastSaveFilter to this image's current file format
+    Else
+    
+        LastSaveFilter = imageFormats.getIndexOfOutputFIF(pdImages(imageID).CurrentFileFormat) + 1
+    
+        'The user may have loaded a file format where INPUT is supported but OUTPUT is not.  If this happens,
+        ' we need to suggest an alternative format.  Use the color-depth of the current image as our guide.
+        If LastSaveFilter = -1 Then
         
+            '24bpp layers default to JPEG
+            If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+                LastSaveFilter = imageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
+            
+            '32bpp layers default to PNG
+            Else
+                LastSaveFilter = imageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
+            End If
+        
+        End If
+    
     End If
     
     Dim sFile As String
@@ -175,6 +198,9 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     End If
         
     If CC.VBGetSaveFileName(sFile, , True, imageFormats.getCommonDialogOutputFormats, LastSaveFilter, tempPathString, "Save an image", imageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
+                
+        'Store the selected file format to the image object
+        pdImages(imageID).CurrentFileFormat = imageFormats.getOutputFIF(LastSaveFilter - 1)
         
         'Save the new directory as the default path for future usage
         tempPathString = sFile
@@ -183,16 +209,20 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
         userPreferences.SetPreference_Long "File Formats", "LastSaveFilter", LastSaveFilter
-        
-        pdImages(imageID).containingForm.Caption = sFile
-        If userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) Then
-            pdImages(imageID).containingForm.Caption = getFilename(sFile)
-        Else
-            pdImages(imageID).containingForm.Caption = sFile
-        End If
-                
+                        
         'Transfer control to the core SaveImage routine, which will handle file extension analysis and actual saving
         MenuSaveAs = PhotoDemon_SaveImage(imageID, sFile, True)
+        
+        'If the save was successful, update the associated window caption to reflect the new name and/or location
+        If MenuSaveAs Then
+            
+            If userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) Then
+                pdImages(imageID).containingForm.Caption = getFilename(sFile)
+            Else
+                pdImages(imageID).containingForm.Caption = sFile
+            End If
+            
+        End If
         
     Else
         MenuSaveAs = False
@@ -207,27 +237,29 @@ End Function
 ' the calling routine to make sure this is what is wanted. (Note: this routine will erase any existing image
 ' at dstPath, so BE VERY CAREFUL with what you send here!)
 Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal optionalSaveParameter0 As Long = -1, Optional ByVal optionalSaveParameter1 As Long = 0, Optional ByVal optionalSaveParameter2 As Long = 0) As Boolean
-
-    'Used to determine what kind of file the user is trying to open
-    Dim fileExtension As String
-    fileExtension = UCase(GetExtension(dstPath))
     
-    'Only update the MRU if 1) no form is shown (because the user may cancel it), 2) a form was shown and the user
-    ' successfully navigated it, and 3) no errors occured during the export process.
+    'Only update the MRU list if 1) no form is shown (because the user may cancel it), 2) a form was shown and the user
+    ' successfully navigated it, and 3) no errors occured during the export process.  By default, this is set to "do not update."
     Dim updateMRU As Boolean
     updateMRU = False
+    
+    'Based on the format for this image (via either a "Save As" common dialog box, or the image's original format),
+    ' send a "save" request to the proper save routine.
+    Dim saveFormat As Long
+    saveFormat = pdImages(imageID).CurrentFileFormat
 
-    Select Case fileExtension
-        Case "JPG", "JPEG", "JPE"
+    Select Case saveFormat
         
+        'JPEG
+        Case FIF_JPEG
+        
+            'JPEG files may display a form
             If loadRelevantForm = True Then
                 
                 Dim gotSettings As VbMsgBoxResult
                 gotSettings = promptJPEGSettings
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
-                PhotoDemon_SaveImage = Not saveDialogCanceled
-                
                 If gotSettings = vbOK Then
                     pdImages(imageID).hasSeenJPEGPrompt = True
                     PhotoDemon_SaveImage = True
@@ -275,7 +307,8 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             End If
             updateMRU = True
             
-        Case "PDI"
+        'PDI, PhotoDemon's internal format
+        Case 100
             If zLibEnabled Then
                 SavePhotoDemonImage imageID, dstPath
                 updateMRU = True
@@ -284,7 +317,9 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 MsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
                 Message "PDI saving disabled."
             End If
-        Case "GIF"
+        
+        'GIF
+        Case FIF_GIF
             'GIFs are preferentially exported by FreeImage, then GDI+ (if available)
             If imageFormats.FreeImageEnabled Then
                 SaveGIFImage imageID, dstPath
@@ -296,7 +331,9 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 Exit Function
             End If
             updateMRU = True
-        Case "PNG"
+        
+        'PNG
+        Case FIF_PNG
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
             If imageFormats.FreeImageEnabled Then
                 If optionalSaveParameter0 = -1 Then
@@ -312,16 +349,45 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 Exit Function
             End If
             updateMRU = True
-        Case "PPM"
+        
+        'PPM
+        Case FIF_PPM
             SavePPMImage imageID, dstPath
             updateMRU = True
-        Case "TGA"
+                
+        'TGA
+        Case FIF_TARGA
             SaveTGAImage imageID, dstPath
             updateMRU = True
-        Case "JP2"
-            SaveJP2Image imageID, dstPath
+        
+        'JPEG-2000
+        Case FIF_JP2
+        
+            If loadRelevantForm = True Then
+                
+                Dim gotJP2Settings As VbMsgBoxResult
+                gotJP2Settings = promptJP2Settings()
+                
+                'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
+                If gotJP2Settings = vbOK Then
+                    pdImages(imageID).hasSeenJP2Prompt = True
+                    PhotoDemon_SaveImage = True
+                Else
+                    PhotoDemon_SaveImage = False
+                    Message "Save canceled."
+                    Exit Function
+                End If
+                
+                'If the user clicked OK, replace the functions save parameters with the ones set by the user
+                optionalSaveParameter0 = g_JP2Compression
+                
+            End If
+        
+            SaveJP2Image imageID, dstPath, optionalSaveParameter0
             updateMRU = True
-        Case "TIF", "TIFF"
+            
+        'TIFF
+        Case FIF_TIFF
             'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
             If imageFormats.FreeImageEnabled Then
                 SaveTIFImage imageID, dstPath
@@ -333,6 +399,8 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 PhotoDemon_SaveImage = False
                 Exit Function
             End If
+        
+        'Anything else must be a bitmap
         Case Else
             SaveBMP imageID, dstPath
             updateMRU = True

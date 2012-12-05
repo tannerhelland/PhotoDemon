@@ -330,7 +330,7 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
 End Sub
 
 'Save to JPEG-2000 format using the FreeImage library.  This is currently deemed "experimental".
-Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String)
+Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, Optional ByVal jp2Quality As Long = 16)
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
@@ -362,7 +362,7 @@ Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String)
         End If
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, JP2_DEFAULT, fi_OutputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, jp2Quality, fi_OutputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "JPEG-2000 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
