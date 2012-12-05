@@ -343,6 +343,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "CanvasDropShadow=1"
         Print #fileNum, "CheckForUpdates=1"
         Print #fileNum, "ConfirmClosingUnsaved=1"
+        Print #fileNum, "DefaultSaveFormat=0"
         Print #fileNum, "HasGitHubAccount="
         Print #fileNum, "ImageCaptionSize=0"
         Print #fileNum, "LastUpdateCheck="

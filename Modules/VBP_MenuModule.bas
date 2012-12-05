@@ -155,24 +155,33 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     
         LastSaveFilter = imageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
     
-    'Otherwise, set LastSaveFilter to this image's current file format
+    'Otherwise, set LastSaveFilter to this image's current file format, or optionally the last-used format
     Else
     
-        LastSaveFilter = imageFormats.getIndexOfOutputFIF(pdImages(imageID).CurrentFileFormat) + 1
+        'There is a user preference for defaulting to either:
+        ' 1) The current image's format (standard behavior)
+        ' 2) The last format the user specified in the Save As screen (my preferred behavior)
+        ' Use that preference to determine which save filter we select.
+        If userPreferences.GetPreference_Long("General Preferences", "DefaultSaveFormat", 0) = 0 Then
+        
+            LastSaveFilter = imageFormats.getIndexOfOutputFIF(pdImages(imageID).CurrentFileFormat) + 1
     
-        'The user may have loaded a file format where INPUT is supported but OUTPUT is not.  If this happens,
-        ' we need to suggest an alternative format.  Use the color-depth of the current image as our guide.
-        If LastSaveFilter = -1 Then
-        
-            '24bpp layers default to JPEG
-            If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-                LastSaveFilter = imageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
+            'The user may have loaded a file format where INPUT is supported but OUTPUT is not.  If this happens,
+            ' we need to suggest an alternative format.  Use the color-depth of the current image as our guide.
+            If LastSaveFilter = -1 Then
             
-            '32bpp layers default to PNG
-            Else
-                LastSaveFilter = imageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
+                '24bpp layers default to JPEG
+                If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+                    LastSaveFilter = imageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
+                
+                '32bpp layers default to PNG
+                Else
+                    LastSaveFilter = imageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
+                End If
+            
             End If
-        
+                    
+        'Note that we don't need an "Else" here - the LastSaveFilter value will already be present
         End If
     
     End If
