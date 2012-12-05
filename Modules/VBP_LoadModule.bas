@@ -414,10 +414,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 ElseIf imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 0
+                    targetImage.OriginalFileFormat = FIF_BMP
                 Else
                     loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 0
+                    targetImage.OriginalFileFormat = FIF_BMP
                 End If
             Case "GIF"
                 'GIF is preferentially loaded by FreeImage, then GDI+ if available, then default VB.
@@ -425,10 +425,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
                 ElseIf imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 25
+                    targetImage.OriginalFileFormat = FIF_GIF
                 Else
                     loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 25
+                    targetImage.OriginalFileFormat = FIF_GIF
                 End If
             Case "ICO"
                 'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
@@ -436,14 +436,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     If loadSuccessful = False Then
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = 1
+                        targetImage.OriginalFileFormat = FIF_ICO
                     End If
                 ElseIf imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 1
+                    targetImage.OriginalFileFormat = FIF_ICO
                 Else
                     loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 1
+                    targetImage.OriginalFileFormat = FIF_ICO
                 End If
             Case "JIF", "JPG", "JPEG", "JPE"
                 'JPEGs are preferentially loaded by FreeImage, then GDI+ if available, then default VB, unless we are in the
@@ -452,22 +452,22 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If MacroStatus = MacroBATCH Then
                     If imageFormats.GDIPlusEnabled Then
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = 2
+                        targetImage.OriginalFileFormat = FIF_JPEG
                     ElseIf imageFormats.FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     Else
                         loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = 2
+                        targetImage.OriginalFileFormat = FIF_JPEG
                     End If
                 Else
                     If imageFormats.FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     ElseIf imageFormats.GDIPlusEnabled Then
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = 2
+                        targetImage.OriginalFileFormat = FIF_JPEG
                     Else
                         loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = 2
+                        targetImage.OriginalFileFormat = FIF_JPEG
                     End If
                 End If
             Case "PDI"
@@ -482,12 +482,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     'If FreeImage fails for some reason (such as it being a 1bpp PNG), offload the image to GDI+
                     If Not loadSuccessful Then
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = 13
+                        targetImage.OriginalFileFormat = FIF_PNG
                     End If
                     
                 Else
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 13
+                    targetImage.OriginalFileFormat = FIF_PNG
                 End If
             Case "TIF", "TIFF"
                 'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
@@ -495,16 +495,16 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
                 Else
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 18
+                    targetImage.OriginalFileFormat = FIF_TIFF
                 End If
             Case "TMP"
                 'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too
                 If imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 2
+                    targetImage.OriginalFileFormat = FIF_BMP
                 Else
                     loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = 2
+                    targetImage.OriginalFileFormat = FIF_BMP
                 End If
             'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
             Case Else
@@ -561,6 +561,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'Store important data about the image to the pdImages array
         targetImage.updateSize
         targetImage.OriginalFileSize = FileLen(sFile(thisImage))
+        targetImage.CurrentFileFormat = targetImage.OriginalFileFormat
                 
         'At this point, we now have loaded image data in 24 or 32bpp format.  For future reference, let's count
         ' the number of colors present in the image.
@@ -829,7 +830,7 @@ End Sub
 Public Sub LoadMenuShortcuts()
 
     'Don't allow custom shortcuts in the IDE, as they require subclassing and might crash
-    If Not IsProgramCompiled Then Exit Sub
+    If Not isProgramCompiled Then Exit Sub
 
     With FormMain.ctlAccelerator
     
