@@ -344,17 +344,25 @@ End Sub
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
 Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetLayer As pdLayer, Optional ByVal pageNumber As Long = 0)
         
-    Dim thisImage As Long
-    
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
-    
+            
+    'One of the things we'll be doing in this routine is establishing an original color depth for this image.
+    ' FreeImage will return this automatically; GDI+ may not.  Use this tracking variable to notify us that
+    ' a manual color count needs to be performed.
+    Dim mustCountColors As Boolean
+    Dim colorCountCheck As Long
+            
     'Because this routine accepts an array of images, we have to be prepared for the possibility that more than
     ' one image file is being opened.  This loop will execute until all files are loaded.
+    Dim thisImage As Long
     For thisImage = 0 To UBound(sFile)
     
         'Before doing anything else, reset the multipage checker
         imageHasMultiplePages = False
+        
+        '...and reset the "need to check colors" variable
+        mustCountColors = False
     
         'Next, ensure that the image file actually exists
         Message "Verifying that file exists..."
@@ -406,108 +414,159 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         'Dependent on the file's extension, load the appropriate image decoding routine
         Select Case fileExtension
+        
+            'BMP
             Case "BMP"
                 'Bitmaps are preferentially loaded by FreeImage (which loads 32bpp bitmaps correctly), then GDI+ (which
-                ' loads 32bpp bitmaps but ignores the alpha channel), then default VB (which fails with 32bpp but will
+                ' loads 32bpp bitmaps but may ignore the alpha channel), then default VB (which fails with 32bpp but will
                 ' load other depths).
                 If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                ElseIf imageFormats.GDIPlusEnabled Then
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = FIF_BMP
                 Else
-                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                    
+                    If imageFormats.GDIPlusEnabled Then
+                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                    Else
+                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                    End If
+                    
                     targetImage.OriginalFileFormat = FIF_BMP
+                    mustCountColors = True
+                    
                 End If
+                
+            'GIF
             Case "GIF"
                 'GIF is preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
-                ElseIf imageFormats.GDIPlusEnabled Then
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = FIF_GIF
                 Else
-                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                
+                    If imageFormats.GDIPlusEnabled Then
+                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                    Else
+                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                    End If
+                    
                     targetImage.OriginalFileFormat = FIF_GIF
+                    targetImage.OriginalColorDepth = 8
+                    
                 End If
+                
+            'ICONS
             Case "ICO"
                 'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
+                loadSuccessful = False
                 If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                    If loadSuccessful = False Then
-                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = FIF_ICO
-                    End If
-                ElseIf imageFormats.GDIPlusEnabled Then
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = FIF_ICO
-                Else
-                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = FIF_ICO
                 End If
+                
+                'If FreeImage failed (not likely, but not impossible) or is otherwise unavailable, attempt to load
+                ' the icon file with GDI+ or VB.
+                If loadSuccessful = False Then
+                    
+                    If imageFormats.GDIPlusEnabled Then
+                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                    Else
+                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                    End If
+                    
+                    targetImage.OriginalFileFormat = FIF_ICO
+                    mustCountColors = True
+                    
+                End If
+                
+            'JPEG
             Case "JIF", "JPG", "JPEG", "JPE"
+            
                 'JPEGs are preferentially loaded by FreeImage, then GDI+ if available, then default VB, unless we are in the
                 ' midst of a batch conversion - in that case, use GDI+ first because it is significantly faster as it doesn't
                 ' need to make a copy of the image before operating on it.
+                
+                'Yes, this system is complicated - but it yields quite good results, including for edge cases like CMYK-encoded JPEGs.
                 If MacroStatus = MacroBATCH Then
+                
                     If imageFormats.GDIPlusEnabled Then
                         loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = FIF_JPEG
+                        targetImage.OriginalColorDepth = 24
                     ElseIf imageFormats.FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                     Else
                         loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                         targetImage.OriginalFileFormat = FIF_JPEG
+                        targetImage.OriginalColorDepth = 24
                     End If
+                    
                 Else
+                
                     If imageFormats.FreeImageEnabled Then
                         loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                    ElseIf imageFormats.GDIPlusEnabled Then
-                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = FIF_JPEG
                     Else
-                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                        If imageFormats.GDIPlusEnabled Then
+                            loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                        Else
+                            loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                        End If
+                        
                         targetImage.OriginalFileFormat = FIF_JPEG
+                        targetImage.OriginalColorDepth = 24
+                            
                     End If
+                    
                 End If
+                    
+            'Internal PhotoDemon format
             Case "PDI"
+            
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
                 loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetLayer)
                 targetImage.OriginalFileFormat = 100
+                mustCountColors = True
+                
             Case "PNG"
+            
                 'FreeImage has a more robust (and reliable) PNG implementation than GDI+, so use it if available
+                loadSuccessful = False
                 If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                End If
+                
+                'If FreeImage fails for some reason (such as it being a 1bpp PNG), offload the image to GDI+
+                If loadSuccessful = False Then
                     
-                    'If FreeImage fails for some reason (such as it being a 1bpp PNG), offload the image to GDI+
-                    If Not loadSuccessful Then
-                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = FIF_PNG
-                    End If
-                    
-                Else
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = FIF_PNG
+                    mustCountColors = True
+                    
                 End If
+                
             Case "TIF", "TIFF"
+            
                 'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
                 If imageFormats.FreeImageEnabled Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
                 Else
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = FIF_TIFF
+                    mustCountColors = True
                 End If
+                
             Case "TMP"
+            
                 'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too
                 If imageFormats.GDIPlusEnabled Then
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = FIF_BMP
                 Else
                     loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = FIF_BMP
                 End If
+                
+                targetImage.OriginalFileFormat = FIF_BMP
+                mustCountColors = True
+                
             'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
             Case Else
+            
                 If imageFormats.FreeImageEnabled = True Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
@@ -564,30 +623,36 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         targetImage.CurrentFileFormat = targetImage.OriginalFileFormat
                 
         'At this point, we now have loaded image data in 24 or 32bpp format.  For future reference, let's count
-        ' the number of colors present in the image.
-        Dim colorCountCheck As Long
-        colorCountCheck = getQuickColorCount(targetImage)
+        ' the number of colors present in the image (if the user has allowed it).  If the user HASN'T allowed
+        ' it, we have no choice but to rely on whatever color depth was returned by FreeImage or GDI+ (or was
+        ' inferred by us for this format, e.g. we know that GIFs are 8bpp).
         
-        'If 256 or less colors were found in the image, mark it as 8bpp.
-        If colorCountCheck <= 256 Then
-            If colorCountCheck > 16 Then
-                targetImage.OriginalColorDepth = 8
-            Else
-                If colorCountCheck > 2 Then
-                    targetImage.OriginalColorDepth = 4
+        If userPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors Then
+            
+            colorCountCheck = getQuickColorCount(targetImage)
+        
+            'If 256 or less colors were found in the image, mark it as 8bpp.
+            If colorCountCheck <= 256 Then
+                If colorCountCheck > 16 Then
+                    targetImage.OriginalColorDepth = 8
                 Else
-                    targetImage.OriginalColorDepth = 1
+                    If colorCountCheck > 2 Then
+                        targetImage.OriginalColorDepth = 4
+                    Else
+                        targetImage.OriginalColorDepth = 1
+                    End If
+                End If
+            Else
+                If targetImage.mainLayer.getLayerColorDepth = 24 Then
+                    targetImage.OriginalColorDepth = 24
+                Else
+                    targetImage.OriginalColorDepth = 32
                 End If
             End If
-        Else
-            If targetImage.mainLayer.getLayerColorDepth = 24 Then
-                targetImage.OriginalColorDepth = 24
-            Else
-                targetImage.OriginalColorDepth = 32
-            End If
-        End If
         
-        Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP)"
+            Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP)"
+            
+        End If
                 
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then

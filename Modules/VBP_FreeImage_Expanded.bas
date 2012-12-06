@@ -408,6 +408,12 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
     
     '****************************************************************************
+    ' Now that we have filtered out > 32bpp images, store the current color depth of the image.
+    '****************************************************************************
+    
+    dstImage.OriginalColorDepth = FreeImage_GetBPP(fi_hDIB)
+    
+    '****************************************************************************
     ' If the image is < 24bpp, upsample it to 24bpp or 32bpp
     '****************************************************************************
     
