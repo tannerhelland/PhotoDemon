@@ -361,6 +361,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "UseFancyFonts=0"
         Print #fileNum, "UseToneMapping=1"
         Print #fileNum, "ValidateAlphaChannels=1"
+        Print #fileNum, "VerifyInitialColorDepth=1"
         Print #fileNum, ""
         
         'Write out tool preferences
