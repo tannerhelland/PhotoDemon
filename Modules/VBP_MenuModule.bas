@@ -116,25 +116,53 @@ End Function
 Public Function MenuSave(ByVal imageID As Long) As Boolean
 
     If pdImages(imageID).LocationOnDisk = "" Then
+    
         'This image hasn't been saved before.  Launch the Save As... dialog
         MenuSave = MenuSaveAs(imageID)
+        
     Else
+    
         'This image has been saved before.
+        
+        'If the user has requested that we only save copies of current images, we need to come up with a new filename
+        Dim dstFilename As String
+                
+        If userPreferences.GetPreference_Long("General Preferences", "SaveBehavior", 0) = 0 Then
+            dstFilename = pdImages(imageID).LocationOnDisk
+        Else
+        
+            'Determine the destination directory
+            Dim tempPathString As String
+            tempPathString = pdImages(imageID).LocationOnDisk
+            StripDirectory tempPathString
+            
+            'Next, determine the target filename
+            Dim tempFilename As String
+            tempFilename = pdImages(imageID).OriginalFileName
+            
+            'Finally, determine the target file extension
+            Dim tempExtension As String
+            tempExtension = GetExtension(pdImages(imageID).LocationOnDisk)
+            
+            'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
+            dstFilename = tempPathString & incrementFilename(tempPathString, tempFilename, tempExtension) & "." & tempExtension
+        
+        End If
         
         'Check to see if the image is in a format that potentially provides an "additional settings" prompt.
         ' If it is, the user needs to be prompted at least once for those settings.
         
         'JPEG
         If (pdImages(imageID).CurrentFileFormat = FIF_JPEG) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
-            MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, True)
+            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, True)
         
         'JPEG-2000
         ElseIf (pdImages(imageID).CurrentFileFormat = FIF_JP2) And (pdImages(imageID).hasSeenJP2Prompt = False) Then
-            MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, False, pdImages(imageID).getSaveFlag(0))
+            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, True)
         
         'All other formats
         Else
-            MenuSave = PhotoDemon_SaveImage(imageID, pdImages(imageID).LocationOnDisk, False, pdImages(imageID).getSaveFlag(0), pdImages(imageID).getSaveFlag(1), pdImages(imageID).getSaveFlag(2))
+            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, False, pdImages(imageID).getSaveFlag(0), pdImages(imageID).getSaveFlag(1), pdImages(imageID).getSaveFlag(2))
         End If
     End If
 
