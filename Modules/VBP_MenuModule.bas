@@ -186,25 +186,10 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     
     End If
     
+    'Check to see if an image with this filename appears in the save location. If it does, use the incrementFilename
+    ' function to append ascending numbers (of the format "_(#)") to the filename until a unique filename is found.
     Dim sFile As String
-    sFile = pdImages(imageID).OriginalFileName
-    
-    'This next chunk of code checks to see if an image with this filename appears in the download location.
-    ' If it does, PhotoDemon will append ascending numbers (of the format "_(#)") to the filename until it
-    ' finds a unique name.
-    If FileExist(tempPathString & sFile & "." & imageFormats.getOutputFormatExtension(LastSaveFilter - 1)) Then
-    
-        Dim numToAppend As Long
-        numToAppend = 2
-        
-        Do While FileExist(tempPathString & sFile & " (" & numToAppend & ")" & "." & imageFormats.getOutputFormatExtension(LastSaveFilter - 1))
-            numToAppend = numToAppend + 1
-        Loop
-        
-        'If the loop has terminated, a unique filename has been found.  Make that the recommended filename.
-        sFile = sFile & " (" & numToAppend & ")"
-    
-    End If
+    sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).OriginalFileName, imageFormats.getOutputFormatExtension(LastSaveFilter - 1))
         
     If CC.VBGetSaveFileName(sFile, , True, imageFormats.getCommonDialogOutputFormats, LastSaveFilter, tempPathString, "Save an image", imageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
                 

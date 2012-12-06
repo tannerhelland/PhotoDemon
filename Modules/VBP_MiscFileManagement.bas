@@ -14,6 +14,72 @@ Option Explicit
 Private Const ERROR_SHARING_VIOLATION As Long = 32
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
 
+'If a file exists, this function can be used to intelligently increment the file name (e.g. "filename (n+1).ext")
+' Note that the function returns the filename WITHOUT an extension so that it can be passed to a common dialog without
+' further parsing. However, an initial extension is required, because this function should only be used if a file name
+' with that extension exists (as it is perfectly fine to have the same filename with DIFFERENT extensions in the
+' same directory).
+Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As String, ByRef desiredExtension As String) As String
+
+    'First, check to see if a file with that name and extension appears in the destination directory.
+    ' If it does, just return the filename we were passed.
+    If Not FileExist(dstDirectory & fName & "." & desiredExtension) Then
+        incrementFilename = fName
+        Exit Function
+    End If
+
+    'If we made it to this line of code, a file with that name and extension appears in the destination directory.
+    
+    'Start by figuring out if the file is already in the format: "filename (#).ext"
+    Dim tmpFilename As String
+    tmpFilename = Trim(fName)
+    
+    Dim numToAppend As Long
+    
+    'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
+    If Right(tmpFilename, 1) = ")" Then
+    
+        Dim i As Long
+        For i = Len(tmpFilename) - 2 To 1 Step -1
+            
+            ' If it isn't a number, see if it's an initial parentheses: "("
+            If Not (IsNumeric(Mid(tmpFilename, i, 1))) Then
+                
+                'If it is a parentheses, then this file already has a "( #)" appended to it.  Figure out what the
+                ' number inside the parentheses is, and strip that entire block from the filename.
+                If Mid(tmpFilename, i, 1) = "(" Then
+                
+                    numToAppend = CLng(Val(Mid(tmpFilename, i + 1, Len(tmpFilename) - i - 1)))
+                    tmpFilename = Left(tmpFilename, i - 2)
+                    Exit For
+                
+                'If this character is non-numeric and NOT an initial parentheses, this filename is not in the format we want.
+                ' Treat it like any other filename and start by appending " (2)" to it
+                Else
+                    numToAppend = 2
+                    Exit For
+                End If
+                
+            End If
+        
+        'If this character IS a number, keep scanning.
+        Next i
+    
+    'If this is not already a copy of the format "filename (#).ext", start scanning at # = 2
+    Else
+        numToAppend = 2
+    End If
+            
+    'Loop through
+    Do While FileExist(dstDirectory & tmpFilename & " (" & CStr(numToAppend) & ")" & "." & desiredExtension)
+        numToAppend = numToAppend + 1
+    Loop
+        
+    'If the loop has terminated, a unique filename has been found.  Make that the recommended filename.
+    incrementFilename = tmpFilename & " (" & CStr(numToAppend) & ")"
+
+End Function
+
 'Returns a boolean as to whether or not a given file exists
 Public Function FileExist(ByRef fName As String) As Boolean
     Select Case (GetFileAttributesW(StrPtr(fName)) And vbDirectory) = 0
