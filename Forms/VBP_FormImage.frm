@@ -491,13 +491,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             If dealWithAllUnsavedImages = False Then
             
                 numOfUnsavedImages = 0
-                    
-                'If the MainForm is enabled, bring the image being closed to the foreground
-                If FormMain.Enabled Then
-                    Me.SetFocus
-                    DoEvents
-                End If
-                
+                                
                 'Loop through all images to count how many unsaved images there are in total.
                 ' NOTE: we only need to do this if the entire program is being shut down or if the user has selected "close all";
                 ' otherwise, this close action only affects the current image, so we shouldn't present a "repeat for all images" option
@@ -534,6 +528,13 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 
             'Save the image
             ElseIf confirmReturn = vbYes Then
+                
+                'If the form being saved is enabled, bring that image to the foreground.  (If a "Save As" is required, this
+                ' is the only way to show the user which image the Save As form is referencing.)
+                If FormMain.Enabled Then
+                    Me.SetFocus
+                    DoEvents
+                End If
                 
                 'Attempt to save.  Note that the user can still cancel at this point, and we want to honor their cancellation
                 Dim saveSuccessful As Boolean
