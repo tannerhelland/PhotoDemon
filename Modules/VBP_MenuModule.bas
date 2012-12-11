@@ -485,7 +485,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 SaveTIFImage imageID, dstPath, outputColorDepth
                 updateMRU = True
             ElseIf imageFormats.GDIPlusEnabled Then
-                GDIPlusSavePicture imageID, dstPath, outputColorDepth, ImageTIFF
+                GDIPlusSavePicture imageID, dstPath, ImageTIFF, outputColorDepth
             Else
                 Message "No TIFF encoder found. Save aborted."
                 PhotoDemon_SaveImage = False

@@ -10079,7 +10079,7 @@ Public Function FreeImage_SaveEx(ByVal Bitmap As Long, _
                                  ByVal FileName As String, _
                         Optional ByVal Format As FREE_IMAGE_FORMAT = FIF_UNKNOWN, _
                         Optional ByVal Options As FREE_IMAGE_SAVE_OPTIONS, _
-                        Optional ByVal colorDepth As FREE_IMAGE_COLOR_DEPTH, _
+                        Optional ByVal ColorDepth As FREE_IMAGE_COLOR_DEPTH, _
                         Optional ByVal Width As Variant, _
                         Optional ByVal Height As Variant, _
                         Optional ByVal InPercent As Boolean, _
@@ -10169,20 +10169,20 @@ Dim strExtension As String
             End If
             
             ' check color depth
-            If (colorDepth <> FICD_AUTO) Then
+            If (ColorDepth <> FICD_AUTO) Then
                ' mask out bit 1 (0x02) for the case ColorDepth is FICD_MONOCHROME_DITHER (0x03)
                ' FREE_IMAGE_COLOR_DEPTH values are true bit depths in general expect FICD_MONOCHROME_DITHER
                ' by masking out bit 1, 'FreeImage_FIFSupportsExportBPP()' tests for bitdepth 1
                ' what is correct again for dithered images.
-               colorDepth = (colorDepth And (Not &H2))
-               If (Not FreeImage_FIFSupportsExportBPP(Format, colorDepth)) Then
+               ColorDepth = (ColorDepth And (Not &H2))
+               If (Not FreeImage_FIFSupportsExportBPP(Format, ColorDepth)) Then
                   Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                                  "FreeImage Library plugin '" & FreeImage_GetFormatFromFIF(Format) & "' " & _
                                  "is unable to write images with a color depth " & _
-                                 "of " & colorDepth & " bpp.")
+                                 "of " & ColorDepth & " bpp.")
                
-               ElseIf (FreeImage_GetBPP(Bitmap) <> colorDepth) Then
-                  Bitmap = FreeImage_ConvertColorDepth(Bitmap, colorDepth, (UnloadSource Or bIsNewDIB))
+               ElseIf (FreeImage_GetBPP(Bitmap) <> ColorDepth) Then
+                  Bitmap = FreeImage_ConvertColorDepth(Bitmap, ColorDepth, (UnloadSource Or bIsNewDIB))
                   bIsNewDIB = True
                
                End If
@@ -10243,7 +10243,7 @@ Public Function SavePictureEx(ByRef Picture As IPicture, _
                               ByRef FileName As String, _
                      Optional ByRef Format As FREE_IMAGE_FORMAT, _
                      Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
-                     Optional ByRef colorDepth As FREE_IMAGE_COLOR_DEPTH, _
+                     Optional ByRef ColorDepth As FREE_IMAGE_COLOR_DEPTH, _
                      Optional ByRef Width As Variant, _
                      Optional ByRef Height As Variant, _
                      Optional ByRef InPercent As Boolean, _
@@ -10267,7 +10267,7 @@ Const vbInvalidPictureError As Long = 481
       hDIB = FreeImage_CreateFromOlePicture(Picture)
       If (hDIB) Then
          SavePictureEx = FreeImage_SaveEx(hDIB, FileName, Format, Options, _
-                                          colorDepth, Width, Height, InPercent, _
+                                          ColorDepth, Width, Height, InPercent, _
                                           FILTER_BICUBIC, True)
       Else
          Call Err.Raise(vbInvalidPictureError)
@@ -10283,7 +10283,7 @@ Public Function SaveImageContainerEx(ByRef Container As Object, _
                             Optional ByVal IncludeDrawings As Boolean, _
                             Optional ByRef Format As FREE_IMAGE_FORMAT, _
                             Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
-                            Optional ByRef colorDepth As FREE_IMAGE_COLOR_DEPTH, _
+                            Optional ByRef ColorDepth As FREE_IMAGE_COLOR_DEPTH, _
                             Optional ByRef Width As Variant, _
                             Optional ByRef Height As Variant, _
                             Optional ByRef InPercent As Boolean, _
@@ -10302,7 +10302,7 @@ Public Function SaveImageContainerEx(ByRef Container As Object, _
    ' more detailed description.
                             
    Call SavePictureEx(pGetIOlePictureFromContainer(Container, IncludeDrawings), _
-            FileName, Format, Options, colorDepth, Width, Height, InPercent, Filter)
+            FileName, Format, Options, ColorDepth, Width, Height, InPercent, Filter)
 
 End Function
 

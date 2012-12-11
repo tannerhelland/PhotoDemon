@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 04/September/12
-'Last update: Rewrote all save code against the new layer class.  No more intermediary picture boxes!
+'Last updated: 11/December/12
+'Last update: Rewrote all save functions to handle variable color depths properly
 '
 'Module for handling all image saving.  It contains pretty much every routine that I find useful;
 ' the majority of the functions are simply interfaces to FreeImage, so if that is not enabled than
@@ -15,14 +15,55 @@ Attribute VB_Name = "Saving"
 Option Explicit
 
 'Save the current image to BMP format
-Public Sub SaveBMP(ByVal imageID As Long, ByVal BMPPath As String)
+Public Sub SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal outputColorDepth As Long)
+   
+    'If the output color depth is 24 or 32bpp, or if both GDI+ and FreeImage are missing, use our own internal methods
+    ' to save a BMP file
+    If (outputColorDepth = 24) Or (outputColorDepth = 32) Or ((Not imageFormats.GDIPlusEnabled) And (Not imageFormats.FreeImageEnabled)) Then
     
-    Message "Saving bitmap..."
+        Message "Saving bitmap..."
     
-    'The layer class is capable of doing this without any outside help.
-    pdImages(imageID).mainLayer.writeToBitmapFile BMPPath
+        'The layer class is capable of doing this without any outside help.
+        pdImages(imageID).mainLayer.writeToBitmapFile BMPPath
     
-    Message "BMP save complete."
+        Message "BMP save complete."
+        
+    'If some other color depth is specified, use FreeImage or GDI+ to write the file
+    Else
+    
+        If imageFormats.FreeImageEnabled Then
+            
+            'Load FreeImage into memory
+            Dim hLib As Long
+            hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+            
+            Message "Preparing BMP image..."
+            
+            'Convert our current layer to a FreeImage-type DIB
+            Dim fi_DIB As Long
+            fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+            
+            'Use that handle to save the image to GIF format, with required color conversion based on the outgoing color depth
+            If fi_DIB <> 0 Then
+                Dim fi_Check As Long
+                fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, FIF_BMP, , outputColorDepth, , , , , True)
+                If fi_Check = False Then
+                    Message "BMP save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+                Else
+                    Message "BMP save complete."
+                End If
+            Else
+                Message "BMP save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+            End If
+    
+            'Release FreeImage from memory
+            FreeLibrary hLib
+            
+        Else
+            GDIPlusSavePicture imageID, BMPPath, ImageBMP, outputColorDepth
+        End If
+    
+    End If
     
 End Sub
 
@@ -80,7 +121,7 @@ Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
 End Sub
 
 'Save a PNG (Portable Network Graphic) file.  GDI+ can also do this.
-Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional ByVal PNGColorDepth As Long = &H18)
+Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByVal outputColorDepth As Long)
 
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
@@ -105,14 +146,14 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional
         
         'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
         ' the color depth of the current image
-        Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-        If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-            fi_OutputColorDepth = FICD_24BPP
-        Else
-            fi_OutputColorDepth = FICD_32BPP
-        End If
+        'Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
+        'If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+        '    fi_OutputColorDepth = FICD_24BPP
+        'Else
+        '    fi_OutputColorDepth = FICD_32BPP
+        'End If
         
-        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, fi_OutputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "PNG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -127,7 +168,7 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, Optional
 
 End Sub
 
-'IMPORTANT NOTE: Only ASCII format PPM is currently enabled.  RAW IS NOT YET SUPPORTED!
+'Save a PPM (Portable Pixmap) image
 Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
 
     'Make sure we found the plug-in when we loaded the program
@@ -176,7 +217,7 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
 End Sub
 
 'Save to Targa (TGA) format.
-Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
+Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByVal outputColorDepth As Long)
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
@@ -200,15 +241,15 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String)
     
         'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
         ' the color depth of the current image
-        Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-        If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-            fi_OutputColorDepth = FICD_24BPP
-        Else
-            fi_OutputColorDepth = FICD_32BPP
-        End If
+        'Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
+        'If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+        '    fi_OutputColorDepth = FICD_24BPP
+        'Else
+        '    fi_OutputColorDepth = FICD_32BPP
+        'End If
     
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, FILO_TARGA_DEFAULT, fi_OutputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, FILO_TARGA_DEFAULT, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "TGA save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -286,7 +327,7 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
 End Sub
 
 'Save a TIFF (Tagged Image File Format) image via FreeImage.  GDI+ can also do this.
-Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
+Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByVal outputColorDepth As Long)
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
@@ -310,15 +351,15 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
     
         'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
         ' the color depth of the current image
-        Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-        If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-            fi_OutputColorDepth = FICD_24BPP
-        Else
-            fi_OutputColorDepth = FICD_32BPP
-        End If
+        'Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
+        'If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+        '    fi_OutputColorDepth = FICD_24BPP
+        'Else
+        '    fi_OutputColorDepth = FICD_32BPP
+        'End If
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFF_NONE, fi_OutputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFF_NONE, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "TIFF save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -334,7 +375,7 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String)
 End Sub
 
 'Save to JPEG-2000 format using the FreeImage library.  This is currently deemed "experimental".
-Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, Optional ByVal jp2Quality As Long = 16)
+Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, ByVal outputColorDepth As Long, Optional ByVal jp2Quality As Long = 16)
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
@@ -358,15 +399,15 @@ Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, Optional
         
         'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
         ' the color depth of the current image
-        Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-        If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-            fi_OutputColorDepth = FICD_24BPP
-        Else
-            fi_OutputColorDepth = FICD_32BPP
-        End If
+        'Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
+        'If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+        '    fi_OutputColorDepth = FICD_24BPP
+        'Else
+        '    fi_OutputColorDepth = FICD_32BPP
+        'End If
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, jp2Quality, fi_OutputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, jp2Quality, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "JPEG-2000 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
