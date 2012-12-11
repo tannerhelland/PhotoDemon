@@ -24,10 +24,11 @@ Option Explicit
 
 'GDI+ Enums
 Public Enum GDIPlusImageFormat
-    [ImageGIF] = 0
-    [ImageJPEG] = 1
-    [ImagePNG] = 2
-    [ImageTIFF] = 3
+    [ImageBMP] = 0
+    [ImageGIF] = 1
+    [ImageJPEG] = 2
+    [ImagePNG] = 3
+    [ImageTIFF] = 4
 End Enum
 
 Public Enum GDIPlusStatus
@@ -222,14 +223,14 @@ Private GDIPlusToken As Long
 
 'Use GDI+ to load a picture into a StdPicture object - not ideal, as some information will be lost in the transition, but since
 ' this is only a fallback from FreeImage I'm not going out of my way to improve it.
-Public Function GDIPlusLoadPicture(ByVal SrcFilename As String, ByRef targetPicture As StdPicture) As Boolean
+Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef targetPicture As StdPicture) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As Long
       
     'Use GDI+ to load the image
     Dim hImage As Long
-    GDIPlusReturn = GdipLoadImageFromFile(StrPtr(SrcFilename), hImage)
+    GDIPlusReturn = GdipLoadImageFromFile(StrPtr(srcFilename), hImage)
     
     If (GDIPlusReturn <> [OK]) Then
         GdipDisposeImage hImage
@@ -282,7 +283,7 @@ End Function
 
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
 ' Additional save options are currently available for JPEG format (save quality, range [1,100]).
-Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As String, ByVal imgFormat As GDIPlusImageFormat, Optional ByVal JPEGQuality As Long = 92) As Boolean
+Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, ByVal outputColorDepth As Long, Optional ByVal JPEGQuality As Long = 92) As Boolean
 
     Message "Initializing GDI+..."
 
@@ -307,7 +308,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As S
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
-    If tmpLayer.getLayerColorDepth = 32 And imgFormat = [ImageJPEG] Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    If tmpLayer.getLayerColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpLayer.compositeBackgroundColor 255, 255, 255
     
     GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
     
@@ -315,11 +316,10 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As S
     Dim GIF_EncoderVersion As Long
     GIF_EncoderVersion = [EncoderValueVersionGif89]
     
-    Dim PNG_ColorDepth As Long
-    PNG_ColorDepth = pdImages(imageID).mainLayer.getLayerColorDepth
+    Dim gdipColorDepth As Long
+    gdipColorDepth = outputColorDepth
     
     Dim TIFF_ColorDepth As Long, TIFF_Compression As Long
-    TIFF_ColorDepth = pdImages(imageID).mainLayer.getLayerColorDepth
     TIFF_Compression = [EncoderValueCompressionLZW]
     
     'Request an encoder from GDI+ based on the type passed to this routine
@@ -330,6 +330,21 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As S
     Message "Preparing GDI+ encoder for this filetype..."
 
     Select Case imgFormat
+        
+        'BMP export
+        Case [ImageBMP]
+            pvGetEncoderClsID "image/bmp", uEncCLSID
+            uEncParams.Count = 1
+            ReDim aEncParams(1 To Len(uEncParams))
+            
+            With uEncParams.Parameter
+                .NumberOfValues = 1
+                .Type = EncoderParameterValueTypeLong
+                .Guid = pvDEFINE_GUID(EncoderColorDepth)
+                .Value = VarPtr(gdipColorDepth)
+            End With
+            
+            CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
     
         'GIF export
         Case [ImageGIF]
@@ -371,7 +386,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As S
                 .NumberOfValues = 1
                 .Type = EncoderParameterValueTypeLong
                 .Guid = pvDEFINE_GUID(EncoderColorDepth)
-                .Value = VarPtr(PNG_ColorDepth)
+                .Value = VarPtr(gdipColorDepth)
             End With
             
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
@@ -395,7 +410,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As S
                 .NumberOfValues = 1
                 .Type = [EncoderParameterValueTypeLong]
                 .Guid = pvDEFINE_GUID(EncoderColorDepth)
-                .Value = VarPtr(TIFF_ColorDepth)
+                .Value = VarPtr(gdipColorDepth)
             End With
             
             CopyMemory aEncParams(Len(uEncParams) + 1), uEncParams.Parameter, Len(uEncParams.Parameter)
@@ -405,12 +420,12 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal DstFilename As S
     'With our encoder prepared, we can finally continue with the save
     
     'Check to see if a file already exists at this location
-    If FileExist(DstFilename) Then Kill DstFilename
+    If FileExist(dstFilename) Then Kill dstFilename
     
     Message "Saving the file..."
     
     'Perform the encode and save
-    GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(DstFilename, vbUnicode), uEncCLSID, aEncParams(1))
+    GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))
     
     Message "Releasing all temporary image copies..."
     
