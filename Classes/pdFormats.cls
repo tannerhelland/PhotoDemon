@@ -521,8 +521,6 @@ Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColo
             
                 Select Case desiredColorDepth
                 
-                    Case 8
-                        isColorDepthSupported = True
                     Case 24
                         isColorDepthSupported = True
                     Case 32
@@ -732,11 +730,9 @@ Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColor
         Case FIF_GIF
             getClosestColorDepth = 8
             
-        'JP2 (JPEG 2000) supports 8/24/32bpp
+        'JP2 (JPEG 2000) supports 24/32bpp
         Case FIF_JP2
-            If desiredColorDepth <= 8 Then
-                getClosestColorDepth = 8
-            ElseIf desiredColorDepth <= 24 Then
+            If desiredColorDepth <= 24 Then
                 getClosestColorDepth = 24
             Else
                 getClosestColorDepth = 32
