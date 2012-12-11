@@ -631,25 +631,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             colorCountCheck = getQuickColorCount(targetImage)
         
-            'If 256 or less colors were found in the image, mark it as 8bpp.
-            If colorCountCheck <= 256 Then
-                If colorCountCheck > 16 Then
-                    targetImage.OriginalColorDepth = 8
-                Else
-                    If colorCountCheck > 2 Then
-                        targetImage.OriginalColorDepth = 4
-                    Else
-                        targetImage.OriginalColorDepth = 1
-                    End If
-                End If
-            Else
-                If targetImage.mainLayer.getLayerColorDepth = 24 Then
-                    targetImage.OriginalColorDepth = 24
-                Else
-                    targetImage.OriginalColorDepth = 32
-                End If
-            End If
-        
+            'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
+            targetImage.OriginalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.mainLayer)
+            
             Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP)"
             
         End If
