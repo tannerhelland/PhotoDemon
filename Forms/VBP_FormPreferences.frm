@@ -321,6 +321,25 @@ Begin VB.Form FormPreferences
       TabIndex        =   63
       Top             =   345
       Width           =   8295
+      Begin VB.ComboBox cmbExportColorDepth 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   3180
+         Style           =   2  'Dropdown List
+         TabIndex        =   88
+         ToolTipText     =   $"VBP_FormPreferences.frx":8290
+         Top             =   1680
+         Width           =   4995
+      End
       Begin VB.ComboBox cmbSaveBehavior 
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -336,8 +355,8 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   85
-         ToolTipText     =   $"VBP_FormPreferences.frx":8290
-         Top             =   3000
+         ToolTipText     =   $"VBP_FormPreferences.frx":8353
+         Top             =   3840
          Width           =   5415
       End
       Begin VB.ComboBox cmbPPMFormat 
@@ -355,8 +374,8 @@ Begin VB.Form FormPreferences
          Left            =   3000
          Style           =   2  'Dropdown List
          TabIndex        =   76
-         ToolTipText     =   $"VBP_FormPreferences.frx":835D
-         Top             =   4980
+         ToolTipText     =   $"VBP_FormPreferences.frx":8420
+         Top             =   5460
          Width           =   5175
       End
       Begin VB.ComboBox cmbDefaultSaveFormat 
@@ -374,8 +393,8 @@ Begin VB.Form FormPreferences
          Left            =   840
          Style           =   2  'Dropdown List
          TabIndex        =   71
-         ToolTipText     =   $"VBP_FormPreferences.frx":8400
-         Top             =   2070
+         ToolTipText     =   $"VBP_FormPreferences.frx":84C3
+         Top             =   2910
          Width           =   7335
       End
       Begin VB.CheckBox chkConfirmUnsaved 
@@ -398,6 +417,46 @@ Begin VB.Form FormPreferences
          Top             =   855
          Width           =   7215
       End
+      Begin VB.Label lblExportColorDepth 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "set outgoing color depth:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   840
+         TabIndex        =   90
+         Top             =   1740
+         Width           =   2145
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "color depth of saved images"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   17
+         Left            =   360
+         TabIndex        =   89
+         Top             =   1320
+         Width           =   2985
+      End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
          Caption         =   "save behavior: overwrite vs make a copy"
@@ -415,7 +474,7 @@ Begin VB.Form FormPreferences
          Index           =   16
          Left            =   360
          TabIndex        =   87
-         Top             =   2640
+         Top             =   3480
          Width           =   4320
       End
       Begin VB.Label lblSaveBehavior 
@@ -435,7 +494,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Left            =   840
          TabIndex        =   86
-         Top             =   3060
+         Top             =   3900
          Width           =   1830
       End
       Begin VB.Label lblPPMEncoding 
@@ -455,7 +514,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Left            =   840
          TabIndex        =   77
-         Top             =   5040
+         Top             =   5520
          Width           =   1950
       End
       Begin VB.Label lblInterfaceTitle 
@@ -475,7 +534,7 @@ Begin VB.Form FormPreferences
          Index           =   12
          Left            =   480
          TabIndex        =   75
-         Top             =   4560
+         Top             =   5040
          Width           =   4245
       End
       Begin VB.Label lblInterfaceTitle 
@@ -515,7 +574,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Left            =   840
          TabIndex        =   73
-         Top             =   1740
+         Top             =   2580
          Width           =   6585
       End
       Begin VB.Label lblInterfaceTitle 
@@ -535,7 +594,7 @@ Begin VB.Form FormPreferences
          Index           =   10
          Left            =   360
          TabIndex        =   72
-         Top             =   1335
+         Top             =   2175
          Width           =   3285
       End
       Begin VB.Label lblInterfaceTitle 
@@ -555,7 +614,7 @@ Begin VB.Form FormPreferences
          Index           =   7
          Left            =   120
          TabIndex        =   70
-         Top             =   4080
+         Top             =   4560
          Width           =   4320
       End
       Begin VB.Label lblInterfaceTitle 
@@ -609,7 +668,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   81
-         ToolTipText     =   $"VBP_FormPreferences.frx":84F5
+         ToolTipText     =   $"VBP_FormPreferences.frx":85B8
          Top             =   825
          Width           =   7455
       End
@@ -628,7 +687,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   57
-         ToolTipText     =   $"VBP_FormPreferences.frx":85DA
+         ToolTipText     =   $"VBP_FormPreferences.frx":869D
          Top             =   4125
          Width           =   4095
       End
@@ -648,7 +707,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   55
-         ToolTipText     =   $"VBP_FormPreferences.frx":8682
+         ToolTipText     =   $"VBP_FormPreferences.frx":8745
          Top             =   3150
          Width           =   7455
       End
@@ -667,7 +726,7 @@ Begin VB.Form FormPreferences
          Left            =   3000
          Style           =   2  'Dropdown List
          TabIndex        =   44
-         ToolTipText     =   $"VBP_FormPreferences.frx":874C
+         ToolTipText     =   $"VBP_FormPreferences.frx":880F
          Top             =   1695
          Width           =   4815
       End
@@ -732,7 +791,7 @@ Begin VB.Form FormPreferences
          Width           =   4305
       End
       Begin VB.Label lblFreeImageWarning 
-         Caption         =   $"VBP_FormPreferences.frx":8806
+         Caption         =   $"VBP_FormPreferences.frx":88C9
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9
@@ -880,7 +939,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   61
-         ToolTipText     =   $"VBP_FormPreferences.frx":891B
+         ToolTipText     =   $"VBP_FormPreferences.frx":89DE
          Top             =   480
          Width           =   7455
       End
@@ -1013,7 +1072,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   21
-         ToolTipText     =   $"VBP_FormPreferences.frx":89FF
+         ToolTipText     =   $"VBP_FormPreferences.frx":8AC2
          Top             =   480
          Width           =   6975
       End
@@ -1038,7 +1097,7 @@ Begin VB.Form FormPreferences
          Width           =   2385
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":8AF1
+         Caption         =   $"VBP_FormPreferences.frx":8BB4
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -1127,7 +1186,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   17
-         ToolTipText     =   $"VBP_FormPreferences.frx":8BA0
+         ToolTipText     =   $"VBP_FormPreferences.frx":8C63
          Top             =   1080
          Width           =   6735
       End
@@ -1220,7 +1279,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   50
-         ToolTipText     =   $"VBP_FormPreferences.frx":8C3C
+         ToolTipText     =   $"VBP_FormPreferences.frx":8CFF
          Top             =   2520
          Width           =   4575
       End
@@ -1318,7 +1377,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   10
-         ToolTipText     =   $"VBP_FormPreferences.frx":8CE5
+         ToolTipText     =   $"VBP_FormPreferences.frx":8DA8
          Top             =   480
          Width           =   4815
       End
@@ -1328,7 +1387,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":8D7E
+         MouseIcon       =   "VBP_FormPreferences.frx":8E41
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1510,7 +1569,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   46
-         ToolTipText     =   $"VBP_FormPreferences.frx":8ED0
+         ToolTipText     =   $"VBP_FormPreferences.frx":8F93
          Top             =   3240
          Width           =   7695
       End
@@ -1529,7 +1588,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   31
-         ToolTipText     =   $"VBP_FormPreferences.frx":8FA2
+         ToolTipText     =   $"VBP_FormPreferences.frx":9065
          Top             =   2010
          Width           =   5055
       End
@@ -1548,7 +1607,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   28
-         ToolTipText     =   $"VBP_FormPreferences.frx":9035
+         ToolTipText     =   $"VBP_FormPreferences.frx":90F8
          Top             =   900
          Width           =   5055
       End
@@ -1558,7 +1617,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":90CA
+         MouseIcon       =   "VBP_FormPreferences.frx":918D
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1575,7 +1634,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":921C
+         MouseIcon       =   "VBP_FormPreferences.frx":92DF
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1908,7 +1967,7 @@ Private Sub cmbCanvas_Click()
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     'Restore any settings that may have been changed in real-time
     If useFancyFonts <> originalUseFancyFonts Then
@@ -1935,7 +1994,7 @@ Private Sub cmdCategory_Click(Index As Integer)
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'We may need to access a generic "form" object multiple times, so I declare it at the top of this sub.
     Dim tForm As Form
@@ -1949,6 +2008,9 @@ Private Sub cmdOK_Click()
     Else
         FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences)," & vbCrLf & " you WILL NOT receive a prompt to save this image before it closes."
     End If
+    
+    'Store the user's preferred behavior for outgoing color depth
+    userPreferences.SetPreference_Long "General Preferences", "OutgoingColorDepth", cmbExportColorDepth.ListIndex
     
     'Store the user's preferred behavior for the "Save" command's behavior
     userPreferences.SetPreference_Long "General Preferences", "SaveBehavior", cmbSaveBehavior.ListIndex
@@ -2112,10 +2174,17 @@ Private Sub LoadAllPreferences()
     DrawSampleCanvasBackground
     userInitiatedColorSelection = True
     
+    'Populate the combo box for exported color depth
+    cmbExportColorDepth.Clear
+    cmbExportColorDepth.AddItem " to match the image file's original color depth", 0
+    cmbExportColorDepth.AddItem " automatically (by counting unique colors)", 1
+    cmbExportColorDepth.AddItem " by presenting me with a color depth dialog", 2
+    cmbExportColorDepth.ListIndex = userPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
+    
     'Populate the combo box for default save behavior
     cmbSaveBehavior.Clear
     cmbSaveBehavior.AddItem " overwrite the current file (standard behavior)", 0
-    cmbSaveBehavior.AddItem " save a new copy, e.g. ""filename (2).jpg"" (safe behavior)"
+    cmbSaveBehavior.AddItem " save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
     cmbSaveBehavior.ListIndex = userPreferences.GetPreference_Long("General Preferences", "SaveBehavior", 0)
     
     'Populate the combo box for default save file format
