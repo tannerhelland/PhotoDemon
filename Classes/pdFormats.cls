@@ -461,11 +461,336 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
             getExtensionFromFIF = "pfm"
         Case FIF_PICT
             getExtensionFromFIF = "pct"
-        Case FIF_RAW = 34
+        Case FIF_RAW
             getExtensionFromFIF = "raw"
+        Case 100
+            getExtensionFromFIF = "pdi"
         Case Else
             getExtensionFromFIF = ""
     
     End Select
 
 End Function
+
+'Given a file format and color depth, are the two compatible?  (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
+Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColorDepth As Long) As Boolean
+    
+    'Check the special case of PDI (internal PhotoDemon images)
+    If outputFIF = 100 Then
+        isColorDepthSupported = True
+        Exit Function
+    End If
+
+    'By default, report that a given color depth is NOT supported
+    isColorDepthSupported = False
+    
+    'First, address formats handled only by FreeImage
+    If FreeImageEnabled Then
+        
+        Select Case outputFIF
+        
+            'BMP
+            Case FIF_BMP
+            
+                Select Case desiredColorDepth
+        
+                    Case 1
+                        isColorDepthSupported = True
+                    Case 4
+                        isColorDepthSupported = True
+                    Case 8
+                        isColorDepthSupported = True
+                    Case 16
+                        isColorDepthSupported = True
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
+        
+            'GIF
+            Case FIF_GIF
+            
+                If desiredColorDepth = 8 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                
+            'JP2 (JPEG 2000)
+            Case FIF_JP2
+            
+                Select Case desiredColorDepth
+                
+                    Case 8
+                        isColorDepthSupported = True
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
+                
+            'JPEG
+            Case FIF_JPEG
+            
+                If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                                        
+            'PNG
+            Case FIF_PNG
+        
+                Select Case desiredColorDepth
+        
+                    Case 1
+                        isColorDepthSupported = True
+                    Case 4
+                        isColorDepthSupported = True
+                    Case 8
+                        isColorDepthSupported = True
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
+                
+            'PPM (Portable Pixmap)
+            Case FIF_PPM
+            
+                If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                
+            'TGA (Targa)
+            Case FIF_TARGA
+            
+                Select Case desiredColorDepth
+                
+                    Case 8
+                        isColorDepthSupported = True
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                
+                End Select
+                
+            'TIFF
+            Case FIF_TIFF
+            
+                Select Case desiredColorDepth
+        
+                    Case 1
+                        isColorDepthSupported = True
+                    Case 4
+                        isColorDepthSupported = True
+                    Case 8
+                        isColorDepthSupported = True
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
+        
+        End Select
+        
+        'Because FreeImage covers every available file type, we can now exit the function with whatever value has been set
+        Exit Function
+        
+    End If
+    
+    'If we have reached this line of code, FreeImage is not available.
+    
+    'So check to see what color depths GDI+ can offer
+    If GDIPlusEnabled Then
+    
+        Select Case outputFIF
+        
+            'GIF
+            Case FIF_GIF
+            
+                If desiredColorDepth = 8 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                
+            'JPEG
+            Case FIF_JPEG
+            
+                If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                
+            'PNG
+            Case FIF_PNG
+        
+                Select Case desiredColorDepth
+        
+                    Case 1
+                        isColorDepthSupported = True
+                    Case 4
+                        isColorDepthSupported = True
+                    Case 8
+                        isColorDepthSupported = True
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
+                
+            'TIFF
+            Case FIF_TIFF
+            
+                Select Case desiredColorDepth
+        
+                    Case 1
+                        isColorDepthSupported = True
+                    Case 4
+                        isColorDepthSupported = True
+                    Case 8
+                        isColorDepthSupported = True
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
+        
+        End Select
+        
+        'Because GDI+ covers every available file type (if FreeImage can't be found), we can now exit the function with whatever value has been set
+        Exit Function
+    
+    End If
+    
+    'Finally, if FreeImage can't be found, and GDI+ can't be found, the user better like outputting BMP files, because that's all they've got.
+    If outputFIF = FIF_BMP Then
+    
+        If (desiredColorDepth = 24) Or (desiredColorDepth = 32) Then isColorDepthSupported = True Else isColorDepthSupported = False
+        
+    End If
+
+End Function
+
+'Given a file format and desired color depth, return the next-best color depth that can be used (assuming the desired one is not available)
+' (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
+Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColorDepth As Long) As Long
+    
+    'Check the special case of PDI (internal PhotoDemon images)
+    If outputFIF = 100 Then
+        getClosestColorDepth = desiredColorDepth
+        Exit Function
+    End If
+
+    'By default, report that 24bpp is the preferred alternative
+    getClosestColorDepth = 24
+
+    'Certain file formats only support one output color depth, so they are easily handled - these include JPEG, GIF, PPM
+    
+    'Some file formats support many color depths (PNG, for example, can handle 1/4/8/24/32)
+    
+    'Some file formats offer different color depths based on what encoders are available (BMP, for example, has access to 1/4/8 bpp
+    ' if either of FreeImage or GDI+ is enabled)
+    
+    'Based on all these factors, return the nearest color depth to the one the user would like to use (but can't, presumably)
+    Select Case outputFIF
+    
+        'BMP support changes based on the available encoder
+        Case FIF_BMP
+        
+            'FreeImage and GDI+ offer identical bpp support
+            If FreeImageEnabled Or GDIPlusEnabled Then
+            
+                If desiredColorDepth <= 1 Then
+                    getClosestColorDepth = 1
+                ElseIf desiredColorDepth <= 4 Then
+                    getClosestColorDepth = 4
+                ElseIf desiredColorDepth <= 8 Then
+                    getClosestColorDepth = 8
+                ElseIf desiredColorDepth <= 24 Then
+                    getClosestColorDepth = 24
+                Else
+                    getClosestColorDepth = 32
+                End If
+            
+            'If both FreeImage and GDI+ are missing, we can only write 24 and 32bpp bitmaps
+            Else
+                If desiredColorDepth <= 24 Then
+                    getClosestColorDepth = 24
+                Else
+                    getClosestColorDepth = 32
+                End If
+            End If
+        
+        'GIF only supports 8bpp
+        Case FIF_GIF
+            getClosestColorDepth = 8
+            
+        'JP2 (JPEG 2000) supports 8/24/32bpp
+        Case FIF_JP2
+            If desiredColorDepth <= 8 Then
+                getClosestColorDepth = 8
+            ElseIf desiredColorDepth <= 24 Then
+                getClosestColorDepth = 24
+            Else
+                getClosestColorDepth = 32
+            End If
+        
+        'JPEG only supports 24bpp (8bpp grayscale is not currently handled)
+        Case FIF_JPEG
+            getClosestColorDepth = 24
+        
+        'PNG supports all available color depths
+        Case FIF_PNG
+        
+            If desiredColorDepth <= 1 Then
+                getClosestColorDepth = 1
+            ElseIf desiredColorDepth <= 4 Then
+                getClosestColorDepth = 4
+            ElseIf desiredColorDepth <= 8 Then
+                getClosestColorDepth = 8
+            ElseIf desiredColorDepth <= 24 Then
+                getClosestColorDepth = 24
+            Else
+                getClosestColorDepth = 32
+            End If
+        
+        'PPM only supports 24bpp
+        Case FIF_PPM
+            getClosestColorDepth = 24
+        
+        'TGA supports 8/24/32
+        Case FIF_TARGA
+            If desiredColorDepth <= 8 Then
+                getClosestColorDepth = 8
+            ElseIf desiredColorDepth <= 24 Then
+                getClosestColorDepth = 24
+            Else
+                getClosestColorDepth = 32
+            End If
+        
+        'TIFF supports all available color depths
+        Case FIF_TIFF
+            
+            If desiredColorDepth <= 1 Then
+                getClosestColorDepth = 1
+            ElseIf desiredColorDepth <= 4 Then
+                getClosestColorDepth = 4
+            ElseIf desiredColorDepth <= 8 Then
+                getClosestColorDepth = 8
+            ElseIf desiredColorDepth <= 24 Then
+                getClosestColorDepth = 24
+            Else
+                getClosestColorDepth = 32
+            End If
+        
+    End Select
+    
+End Function
+
