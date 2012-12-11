@@ -36,6 +36,30 @@ Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, B
 
 End Sub
 
+'Given the number of colors in an image (as supplied by getQuickColorCount, below), return the highest color depth
+' that includes all those colors and is supported by PhotoDemon (1/4/8/24/32)
+Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLayer As pdLayer) As Long
+    
+    If srcColors <= 256 Then
+        If srcColors > 16 Then
+            getColorDepthFromColorCount = 8
+        Else
+            If srcColors > 2 Then
+                getColorDepthFromColorCount = 4
+            Else
+                getColorDepthFromColorCount = 1
+            End If
+        End If
+    Else
+        If refLayer.getLayerColorDepth = 24 Then
+            getColorDepthFromColorCount = 24
+        Else
+            getColorDepthFromColorCount = 32
+        End If
+    End If
+
+End Function
+
 'When images are loaded, this function is used to quickly determine the image's color count.  It stops once 257 is reached,
 ' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
 Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
