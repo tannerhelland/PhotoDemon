@@ -124,9 +124,9 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
     
         'This image has been saved before.
         
-        'If the user has requested that we only save copies of current images, we need to come up with a new filename
         Dim dstFilename As String
                 
+        'If the user has requested that we only save copies of current images, we need to come up with a new filename
         If userPreferences.GetPreference_Long("General Preferences", "SaveBehavior", 0) = 0 Then
             dstFilename = pdImages(imageID).LocationOnDisk
         Else
@@ -232,7 +232,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
         userPreferences.SetPreference_Long "File Formats", "LastSaveFilter", LastSaveFilter
                         
-        'Transfer control to the core SaveImage routine, which will handle file extension analysis and actual saving
+        'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         MenuSaveAs = PhotoDemon_SaveImage(imageID, sFile, True)
         
         'If the save was successful, update the associated window caption to reflect the new name and/or location
@@ -265,17 +265,87 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
     Dim updateMRU As Boolean
     updateMRU = False
     
-    'Based on the format for this image (via either a "Save As" common dialog box, or the image's original format),
-    ' send a "save" request to the proper save routine.
+    'Start by determining the output format for this image (which was set either by a "Save As" common dialog box,
+    ' or by copying the image's original format).
     Dim saveFormat As Long
     saveFormat = pdImages(imageID).CurrentFileFormat
+
+    '****************************************************************************************************
+    ' Determine exported color depth
+    '****************************************************************************************************
+
+    'The user is allowed to set a persistent preference for output color depth.  This setting affects a "color depth"
+    ' parameter that will be sent to our various format-specific save file routines.  The preferences are:
+    ' 0) Mimic the file's original color depth (if available; this may not always be possible, e.g. saving a 32bpp PNG as JPEG)
+    ' 1) Count the number of colors used, and save the file based on that (again, if possible)
+    ' 2) Prompt the user for their desired export color depth
+    Dim outputColorDepth As Long
+    
+    Select Case userPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
+    
+        'Maintain the file's original color depth (if possible)
+        Case 0
+            
+            'Check to see if this format supports the image's original color depth
+            If imageFormats.isColorDepthSupported(saveFormat, pdImages(imageID).OriginalColorDepth) Then
+                
+                'If it IS supported, set the original color depth as the output color depth for this save
+                outputColorDepth = pdImages(imageID).OriginalColorDepth
+                Message "Original color depth of " & outputColorDepth & " bpp is supported by this format.  Proceeding with save..."
+            
+            'If it IS NOT supported, we need to find the closest available color depth for this format.
+            Else
+                outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, pdImages(imageID).OriginalColorDepth)
+                Message "Original color depth of " & pdImages(imageID).OriginalColorDepth & " bpp is not supported by this format.  Proceeding to save as " & outputColorDepth & " bpp..."
+            
+            End If
+        
+        'Count colors used
+        Case 1
+        
+            'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
+            ' as anything above 256 colors is treated as 24bpp.)
+            Dim colorCountCheck As Long
+            Message "Counting image colors to determine optimal exported color depth..."
+            colorCountCheck = getQuickColorCount(pdImages(imageID))
+            
+            'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
+            outputColorDepth = getColorDepthFromColorCount(colorCountCheck, pdImages(imageID).mainLayer)
+            
+            Message "Color count successful (" & outputColorDepth & " bpp recommended)"
+            
+            'As with case 0, we now need to see if this format supports the suggested color depth
+            If imageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
+                
+                'If it IS supported, set the original color depth as the output color depth for this save
+                Message "Recommended color depth of " & outputColorDepth & " bpp is supported by this format.  Proceeding with save..."
+            
+            'If it IS NOT supported, we need to find the closest available color depth for this format.
+            Else
+                outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
+                Message "Recommended color depth of " & pdImages(imageID).OriginalColorDepth & " bpp is not supported by this format.  Proceeding to save as " & outputColorDepth & " bpp..."
+            
+            End If
+        
+        'Prompt the user
+        Case 2
+        
+            'CODE FORTHCOMING...
+            outputColorDepth = 24
+        
+    End Select
+    
+    
+    '****************************************************************************************************
+    ' Based on the requested file type and color depth, call the appropriate save function
+    '****************************************************************************************************
 
     Select Case saveFormat
         
         'JPEG
         Case FIF_JPEG
         
-            'JPEG files may display a form
+            'JPEG files may need to display a dialog box so the user can set compression quality
             If loadRelevantForm = True Then
                 
                 Dim gotSettings As VbMsgBoxResult
@@ -308,7 +378,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             ' If we are, use GDI+ as it does not need to make a copy of the image before saving it (which is much faster).
             If MacroStatus = MacroBATCH Then
                 If imageFormats.GDIPlusEnabled Then
-                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
+                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, 24, optionalSaveParameter0
                 ElseIf imageFormats.FreeImageEnabled Then
                     SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2
                 Else
@@ -320,7 +390,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 If imageFormats.FreeImageEnabled Then
                     SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2
                 ElseIf imageFormats.GDIPlusEnabled Then
-                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, optionalSaveParameter0
+                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, 24, optionalSaveParameter0
                 Else
                     Message "No JPEG encoder found. Save aborted."
                     PhotoDemon_SaveImage = False
@@ -346,7 +416,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             If imageFormats.FreeImageEnabled Then
                 SaveGIFImage imageID, dstPath
             ElseIf imageFormats.GDIPlusEnabled Then
-                GDIPlusSavePicture imageID, dstPath, ImageGIF
+                GDIPlusSavePicture imageID, dstPath, ImageGIF, 8
             Else
                 Message "No GIF encoder found. Save aborted."
                 PhotoDemon_SaveImage = False
@@ -359,12 +429,12 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
             If imageFormats.FreeImageEnabled Then
                 If optionalSaveParameter0 = -1 Then
-                    SavePNGImage imageID, dstPath
+                    SavePNGImage imageID, dstPath, outputColorDepth
                 Else
-                    SavePNGImage imageID, dstPath, optionalSaveParameter0
+                    SavePNGImage imageID, dstPath, outputColorDepth
                 End If
             ElseIf imageFormats.GDIPlusEnabled Then
-                GDIPlusSavePicture imageID, dstPath, ImagePNG
+                GDIPlusSavePicture imageID, dstPath, ImagePNG, outputColorDepth
             Else
                 Message "No PNG encoder found. Save aborted."
                 PhotoDemon_SaveImage = False
@@ -379,7 +449,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 
         'TGA
         Case FIF_TARGA
-            SaveTGAImage imageID, dstPath
+            SaveTGAImage imageID, dstPath, outputColorDepth
             updateMRU = True
         
         'JPEG-2000
@@ -405,17 +475,17 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 
             End If
         
-            SaveJP2Image imageID, dstPath, optionalSaveParameter0
+            SaveJP2Image imageID, dstPath, outputColorDepth, optionalSaveParameter0
             updateMRU = True
             
         'TIFF
         Case FIF_TIFF
             'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
             If imageFormats.FreeImageEnabled Then
-                SaveTIFImage imageID, dstPath
+                SaveTIFImage imageID, dstPath, outputColorDepth
                 updateMRU = True
             ElseIf imageFormats.GDIPlusEnabled Then
-                GDIPlusSavePicture imageID, dstPath, ImageTIFF
+                GDIPlusSavePicture imageID, dstPath, outputColorDepth, ImageTIFF
             Else
                 Message "No TIFF encoder found. Save aborted."
                 PhotoDemon_SaveImage = False
@@ -423,9 +493,14 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             End If
         
         'Anything else must be a bitmap
-        Case Else
-            SaveBMP imageID, dstPath
+        Case FIF_BMP
+            SaveBMP imageID, dstPath, outputColorDepth
             updateMRU = True
+            
+        Case Else
+            Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
+            PhotoDemon_SaveImage = False
+            Exit Function
         
     End Select
     
