@@ -327,12 +327,31 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             
             End If
         
-        'Prompt the user
+        'Prompt the user (but only if necessary)
         Case 2
         
-            'CODE FORTHCOMING...
-            outputColorDepth = 24
+            'First, check to see if the save format in question supports multiple color depths
+            If imageFormats.doesFIFSupportMultipleColorDepths(saveFormat) Then
+                
+                'If it does, provide the user with a prompt to choose whatever color depth they'd like
+                Dim dCheck As VbMsgBoxResult
+                dCheck = promptColorDepth(saveFormat)
+                
+                If dCheck = vbOK Then
+                    outputColorDepth = g_ColorDepth
+                Else
+                    PhotoDemon_SaveImage = False
+                    Message "Save canceled."
+                    Exit Function
+                End If
+            
+            'If this format only supports a single output color depth, don't bother the user with a prompt
+            Else
         
+                outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, pdImages(imageID).OriginalColorDepth)
+        
+            End If
+            
     End Select
     
     

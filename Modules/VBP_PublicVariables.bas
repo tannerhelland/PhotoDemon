@@ -151,3 +151,6 @@ Public g_JPEGThumbnail As Long
 
 'JPEG-2000 export compression ratio; this is set by the JP2 export dialog if the user clicks "OK" (not Cancel)
 Public g_JP2Compression As Long
+
+'Exported color depth
+Public g_ColorDepth As Long

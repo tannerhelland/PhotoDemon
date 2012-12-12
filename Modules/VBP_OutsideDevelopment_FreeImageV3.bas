@@ -10171,7 +10171,7 @@ Dim strExtension As String
             ' check color depth
             If (ColorDepth <> FICD_AUTO) Then
                ' mask out bit 1 (0x02) for the case ColorDepth is FICD_MONOCHROME_DITHER (0x03)
-               ' FREE_IMAGE_COLOR_DEPTH values are true bit depths in general expect FICD_MONOCHROME_DITHER
+               ' FREE_IMAGE_COLOR_DEPTH values are true bit depths in general except FICD_MONOCHROME_DITHER
                ' by masking out bit 1, 'FreeImage_FIFSupportsExportBPP()' tests for bitdepth 1
                ' what is correct again for dithered images.
                ColorDepth = (ColorDepth And (Not &H2))
