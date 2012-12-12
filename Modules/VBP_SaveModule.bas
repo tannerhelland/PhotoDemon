@@ -39,9 +39,17 @@ Public Sub SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal outputC
             
             Message "Preparing BMP image..."
             
+            'Copy the image into a temporary layer
+            Dim tmpLayer As pdLayer
+            Set tmpLayer = New pdLayer
+            tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+            
+            'If the output color depth is 24 but the current image is 32, composite the image against a white background
+            If (outputColorDepth < 32) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+            
             'Convert our current layer to a FreeImage-type DIB
             Dim fi_DIB As Long
-            fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+            fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
             
             'Use that handle to save the image to GIF format, with required color conversion based on the outgoing color depth
             If fi_DIB <> 0 Then
@@ -98,9 +106,17 @@ Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
     
     Message "Preparing GIF image..."
     
+    'Copy the image into a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    
+    'If the current image is 32bpp, composite the image against a white background
+    If pdImages(imageID).mainLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
+    
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
     'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
     If fi_DIB <> 0 Then
@@ -136,23 +152,22 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByVal ou
     
     Message "Preparing PNG image..."
     
+    'Copy the image into a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    
+    'If the output color depth is 24 but the current image is 32, composite the image against a white background
+    If (outputColorDepth < 32) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
     'Use that handle to save the image to PNG format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        
-        'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
-        ' the color depth of the current image
-        'Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-        'If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-        '    fi_OutputColorDepth = FICD_24BPP
-        'Else
-        '    fi_OutputColorDepth = FICD_32BPP
-        'End If
-        
+                
         fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "PNG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
@@ -232,22 +247,21 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByVal ou
     
     Message "Preparing TGA image..."
     
+    'Copy the image into a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    
+    'If the output color depth is 24 but the current image is 32, composite the image against a white background
+    If (outputColorDepth < 32) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
     'Use that handle to save the image to TGA format
     If fi_DIB <> 0 Then
-    
-        'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
-        ' the color depth of the current image
-        'Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-        'If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-        '    fi_OutputColorDepth = FICD_24BPP
-        'Else
-        '    fi_OutputColorDepth = FICD_32BPP
-        'End If
-    
+        
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, FILO_TARGA_DEFAULT, outputColorDepth, , , , , True)
         If fi_Check = False Then
@@ -342,24 +356,23 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByVal ou
     
     Message "Preparing TIFF image..."
     
+    'Copy the image into a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    
+    'If the output color depth is 24 but the current image is 32, composite the image against a white background
+    If (outputColorDepth < 32) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
     'Use that handle to save the image to TIFF format
     If fi_DIB <> 0 Then
-    
-        'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
-        ' the color depth of the current image
-        'Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-        'If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-        '    fi_OutputColorDepth = FICD_24BPP
-        'Else
-        '    fi_OutputColorDepth = FICD_32BPP
-        'End If
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFF_NONE, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, FISO_TIFF_DEFAULT, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "TIFF save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
         Else
@@ -389,23 +402,22 @@ Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, ByVal ou
     hLib = LoadLibrary(PluginPath & "FreeImage.dll")
     
     Message "Preparing JPEG-2000 image..."
-        
+    
+    'Copy the image into a temporary layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    
+    'If the output color depth is 24 but the current image is 32, composite the image against a white background
+    If (outputColorDepth < 32) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(imageID).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
-        
-        'In the future, the color depth of the output file should be user-controllable via a form.  Right now, however, just use
-        ' the color depth of the current image
-        'Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-        'If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
-        '    fi_OutputColorDepth = FICD_24BPP
-        'Else
-        '    fi_OutputColorDepth = FICD_32BPP
-        'End If
-        
+                
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, jp2Quality, outputColorDepth, , , , , True)
         If fi_Check = False Then
