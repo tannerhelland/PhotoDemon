@@ -160,13 +160,13 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG-2000 (JP2) Export Dialog
 'Copyright ©2011-2012 by Tanner Helland
-'Created: 04/Decembert/12
+'Created: 04/December/12
 'Last updated: 04/December/12
 'Last update: abandoned my attempt to merge this with the JPEG export form; it's way easier (and less code, surprisingly)
 '             to just give this its own dialog.
 '
-'Dialog for preseting the user a number of options for related to JPEG-2000 exporting.  Obviously this feature
-' relies on FreeImage, and it JPEG-2000 support will be disabled if FreeImage cannot be found.
+'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
+' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
 '
 '***************************************************************************
 
@@ -223,7 +223,7 @@ End Sub
 'OK button
 Private Sub CmdOK_Click()
         
-    'Determine the compression ration for the JPEG2000 wavelet transformation
+    'Determine the compression ratio for the JPEG2000 wavelet transformation
     Select Case CmbSaveQuality.ListIndex
             
         Case 0
@@ -268,7 +268,7 @@ Private Sub txtQuality_GotFocus()
     AutoSelectText txtQuality
 End Sub
 
-'Used to keep the "image quality" text box, scroll bar, and combo box in sync
+'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
 Private Sub updateComboBox()
     
     Select Case hsQuality.Value
