@@ -472,6 +472,27 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
 
 End Function
 
+'This can be used to see if an output format supports multiple color depths.
+Public Function doesFIFSupportMultipleColorDepths(ByVal outputFIF As Long) As Boolean
+
+    Select Case outputFIF
+    
+        Case FIF_GIF
+            doesFIFSupportMultipleColorDepths = False
+            
+        Case FIF_JPEG
+            doesFIFSupportMultipleColorDepths = False
+            
+        Case FIF_PPM
+            doesFIFSupportMultipleColorDepths = False
+            
+        Case Else
+            doesFIFSupportMultipleColorDepths = True
+    
+    End Select
+
+End Function
+
 'Given a file format and color depth, are the two compatible?  (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
 Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColorDepth As Long) As Boolean
     
