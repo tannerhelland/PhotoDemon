@@ -3,8 +3,8 @@ Attribute VB_Name = "Custom_Dialog_Handler"
 'Custom Dialog Interface
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 04/December/12
-'Last update: added support for the JPEG-2000 (JP2) dialog
+'Last updated: 11/December/12
+'Last update: added support for the custom export color depth dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and eye-catching)
@@ -71,5 +71,19 @@ Public Function promptJP2Settings() As VbMsgBoxResult
     
     Unload dialog_ExportJP2
     Set dialog_ExportJP2 = Nothing
+
+End Function
+
+'Present a dialog box to ask the user for desired output color depth
+Public Function promptColorDepth(ByVal outputFormat As Long) As VbMsgBoxResult
+
+    Load dialog_ExportColorDepth
+    dialog_ExportColorDepth.imageFormat = outputFormat
+    dialog_ExportColorDepth.ShowDialog
+
+    promptColorDepth = dialog_ExportColorDepth.DialogResult
+    
+    Unload dialog_ExportColorDepth
+    Set dialog_ExportColorDepth = Nothing
 
 End Function

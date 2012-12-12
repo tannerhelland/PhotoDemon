@@ -2178,7 +2178,7 @@ Private Sub LoadAllPreferences()
     cmbExportColorDepth.Clear
     cmbExportColorDepth.AddItem " to match the image file's original color depth", 0
     cmbExportColorDepth.AddItem " automatically (by counting unique colors)", 1
-    cmbExportColorDepth.AddItem " by presenting me with a color depth dialog", 2
+    cmbExportColorDepth.AddItem " by asking me what color depth I want to use", 2
     cmbExportColorDepth.ListIndex = userPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
     
     'Populate the combo box for default save behavior
