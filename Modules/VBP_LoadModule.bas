@@ -635,8 +635,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
             targetImage.OriginalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.mainLayer)
             
-            Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP)"
-            
+            If g_IsImageGray Then
+                Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP, grayscale)"
+            Else
+                Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP, indexed color)"
+            End If
+                        
         End If
                 
         'If this is a primary image, it needs to be rendered to the screen

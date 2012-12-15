@@ -66,7 +66,7 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
-      Caption         =   " 8 bpp (256 colors)"
+      Caption         =   " 8 bpp (256 colors or shades of gray)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -82,11 +82,11 @@ Begin VB.Form dialog_ExportColorDepth
       Left            =   600
       TabIndex        =   5
       Top             =   1680
-      Width           =   3135
+      Width           =   5175
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
-      Caption         =   " 4 bpp (16 colors)"
+      Caption         =   " 4 bpp (16 shades of gray)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -102,7 +102,7 @@ Begin VB.Form dialog_ExportColorDepth
       Left            =   600
       TabIndex        =   4
       Top             =   1200
-      Width           =   3135
+      Width           =   3975
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat

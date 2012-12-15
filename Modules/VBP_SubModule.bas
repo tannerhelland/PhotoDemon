@@ -150,7 +150,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     Erase ImageData
     
     'Also, erase the counting array
-    Erase UniqueColors
+    'Erase UniqueColors
     
     'If we've made it this far, the color count has a maximum value of 257.
     ' If it is less than 257, analyze it to see if it contains all gray values.
@@ -159,7 +159,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         g_IsImageGray = True
     
         'Loop through all available colors
-        For i = 0 To totalCount
+        For i = 0 To totalCount - 1
         
             r = ExtractR(UniqueColors(i))
             g = ExtractG(UniqueColors(i))
