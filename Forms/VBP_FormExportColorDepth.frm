@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form dialog_ExportColorDepth 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Please Choose Exported Color Depth"
-   ClientHeight    =   4335
+   ClientHeight    =   4500
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6510
@@ -18,7 +18,7 @@ Begin VB.Form dialog_ExportColorDepth
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   289
+   ScaleHeight     =   300
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   434
    ShowInTaskbar   =   0   'False
@@ -40,7 +40,7 @@ Begin VB.Form dialog_ExportColorDepth
       Index           =   4
       Left            =   600
       TabIndex        =   7
-      Top             =   2640
+      Top             =   2760
       Value           =   -1  'True
       Width           =   5775
    End
@@ -61,12 +61,12 @@ Begin VB.Form dialog_ExportColorDepth
       Index           =   3
       Left            =   600
       TabIndex        =   6
-      Top             =   2160
+      Top             =   2280
       Width           =   3615
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
-      Caption         =   " 8 bpp (256 colors or shades of gray)"
+      Caption         =   " 8 bpp (256 colors or full grayscale)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -81,7 +81,7 @@ Begin VB.Form dialog_ExportColorDepth
       Index           =   2
       Left            =   600
       TabIndex        =   5
-      Top             =   1680
+      Top             =   1800
       Width           =   5175
    End
    Begin VB.OptionButton optColorDepth 
@@ -101,7 +101,7 @@ Begin VB.Form dialog_ExportColorDepth
       Index           =   1
       Left            =   600
       TabIndex        =   4
-      Top             =   1200
+      Top             =   1320
       Width           =   3975
    End
    Begin VB.OptionButton optColorDepth 
@@ -121,7 +121,7 @@ Begin VB.Form dialog_ExportColorDepth
       Index           =   0
       Left            =   600
       TabIndex        =   3
-      Top             =   720
+      Top             =   840
       Width           =   3135
    End
    Begin VB.CommandButton CmdCancel 
@@ -129,7 +129,7 @@ Begin VB.Form dialog_ExportColorDepth
       Height          =   495
       Left            =   4920
       TabIndex        =   1
-      Top             =   3600
+      Top             =   3720
       Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
@@ -138,13 +138,13 @@ Begin VB.Form dialog_ExportColorDepth
       Height          =   495
       Left            =   3600
       TabIndex        =   0
-      Top             =   3600
+      Top             =   3720
       Width           =   1245
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "available color depths for this format:"
+      Caption         =   "please choose an output color depth:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -160,7 +160,7 @@ Begin VB.Form dialog_ExportColorDepth
       Left            =   360
       TabIndex        =   2
       Top             =   240
-      Width           =   3990
+      Width           =   3930
    End
 End
 Attribute VB_Name = "dialog_ExportColorDepth"
