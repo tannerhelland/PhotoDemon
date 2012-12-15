@@ -285,6 +285,8 @@ End Function
 ' Additional save options are currently available for JPEG format (save quality, range [1,100]).
 Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, ByVal outputColorDepth As Long, Optional ByVal JPEGQuality As Long = 92) As Boolean
 
+    On Error GoTo GDIPlusSaveError
+
     Message "Initializing GDI+..."
 
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
@@ -311,6 +313,12 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     Message "Creating GDI+ compatible image copy..."
         
     GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
+    
+    If (GDIPlusReturn <> [OK]) Then
+        GdipDisposeImage hImage
+        GDIPlusSavePicture = False
+        Exit Function
+    End If
     
     'Certain image formats require extra parameters, and because the values are passed ByRef, they can't be constants
     Dim GIF_EncoderVersion As Long
@@ -427,6 +435,12 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     'Perform the encode and save
     GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))
     
+    If (GDIPlusReturn <> [OK]) Then
+        GdipDisposeImage hImage
+        GDIPlusSavePicture = False
+        Exit Function
+    End If
+    
     Message "Releasing all temporary image copies..."
     
     'Release the GDI+ copy of the image
@@ -435,7 +449,12 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     Message "Save complete."
     
     GDIPlusSavePicture = True
+    Exit Function
+    
+GDIPlusSaveError:
 
+    GDIPlusSavePicture = False
+    
 End Function
 
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.

@@ -397,9 +397,9 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             ' If we are, use GDI+ as it does not need to make a copy of the image before saving it (which is much faster).
             If MacroStatus = MacroBATCH Then
                 If imageFormats.GDIPlusEnabled Then
-                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, 24, optionalSaveParameter0
+                    updateMRU = GDIPlusSavePicture(imageID, dstPath, ImageJPEG, 24, optionalSaveParameter0)
                 ElseIf imageFormats.FreeImageEnabled Then
-                    SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2
+                    updateMRU = SaveJPEGImage(imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2)
                 Else
                     Message "No JPEG encoder found. Save aborted."
                     PhotoDemon_SaveImage = False
@@ -407,22 +407,20 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 End If
             Else
                 If imageFormats.FreeImageEnabled Then
-                    SaveJPEGImage imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2
+                    updateMRU = SaveJPEGImage(imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2)
                 ElseIf imageFormats.GDIPlusEnabled Then
-                    GDIPlusSavePicture imageID, dstPath, ImageJPEG, 24, optionalSaveParameter0
+                    updateMRU = GDIPlusSavePicture(imageID, dstPath, ImageJPEG, 24, optionalSaveParameter0)
                 Else
                     Message "No JPEG encoder found. Save aborted."
                     PhotoDemon_SaveImage = False
                     Exit Function
                 End If
             End If
-            updateMRU = True
             
         'PDI, PhotoDemon's internal format
         Case 100
             If zLibEnabled Then
-                SavePhotoDemonImage imageID, dstPath
-                updateMRU = True
+                updateMRU = SavePhotoDemonImage(imageID, dstPath)
             Else
             'If zLib doesn't exist...
                 MsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
@@ -433,44 +431,36 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
         Case FIF_GIF
             'GIFs are preferentially exported by FreeImage, then GDI+ (if available)
             If imageFormats.FreeImageEnabled Then
-                SaveGIFImage imageID, dstPath
+                updateMRU = SaveGIFImage(imageID, dstPath)
             ElseIf imageFormats.GDIPlusEnabled Then
-                GDIPlusSavePicture imageID, dstPath, ImageGIF, 8
+                updateMRU = GDIPlusSavePicture(imageID, dstPath, ImageGIF, 8)
             Else
                 Message "No GIF encoder found. Save aborted."
                 PhotoDemon_SaveImage = False
                 Exit Function
             End If
-            updateMRU = True
-        
+            
         'PNG
         Case FIF_PNG
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
             If imageFormats.FreeImageEnabled Then
-                If optionalSaveParameter0 = -1 Then
-                    SavePNGImage imageID, dstPath, outputColorDepth
-                Else
-                    SavePNGImage imageID, dstPath, outputColorDepth
-                End If
+                updateMRU = SavePNGImage(imageID, dstPath, outputColorDepth)
             ElseIf imageFormats.GDIPlusEnabled Then
-                GDIPlusSavePicture imageID, dstPath, ImagePNG, outputColorDepth
+                updateMRU = GDIPlusSavePicture(imageID, dstPath, ImagePNG, outputColorDepth)
             Else
                 Message "No PNG encoder found. Save aborted."
                 PhotoDemon_SaveImage = False
                 Exit Function
             End If
-            updateMRU = True
-        
+            
         'PPM
         Case FIF_PPM
-            SavePPMImage imageID, dstPath
-            updateMRU = True
+            updateMRU = SavePPMImage(imageID, dstPath)
                 
         'TGA
         Case FIF_TARGA
-            SaveTGAImage imageID, dstPath, outputColorDepth
-            updateMRU = True
-        
+            updateMRU = SaveTGAImage(imageID, dstPath, outputColorDepth)
+            
         'JPEG-2000
         Case FIF_JP2
         
@@ -494,17 +484,15 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 
             End If
         
-            SaveJP2Image imageID, dstPath, outputColorDepth, optionalSaveParameter0
-            updateMRU = True
+            updateMRU = SaveJP2Image(imageID, dstPath, outputColorDepth, optionalSaveParameter0)
             
         'TIFF
         Case FIF_TIFF
             'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
             If imageFormats.FreeImageEnabled Then
-                SaveTIFImage imageID, dstPath, outputColorDepth
-                updateMRU = True
+                updateMRU = SaveTIFImage(imageID, dstPath, outputColorDepth)
             ElseIf imageFormats.GDIPlusEnabled Then
-                GDIPlusSavePicture imageID, dstPath, ImageTIFF, outputColorDepth
+                updateMRU = GDIPlusSavePicture(imageID, dstPath, ImageTIFF, outputColorDepth)
             Else
                 Message "No TIFF encoder found. Save aborted."
                 PhotoDemon_SaveImage = False
@@ -513,8 +501,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
         
         'Anything else must be a bitmap
         Case FIF_BMP
-            SaveBMP imageID, dstPath, outputColorDepth
-            updateMRU = True
+            updateMRU = SaveBMP(imageID, dstPath, outputColorDepth)
             
         Case Else
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
@@ -524,7 +511,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
     End Select
     
     'UpdateMRU should only be true if the save was successful
-    If updateMRU = True Then
+    If updateMRU Then
     
         'Add this file to the MRU list
         MRU_AddNewFile dstPath, pdImages(imageID)
