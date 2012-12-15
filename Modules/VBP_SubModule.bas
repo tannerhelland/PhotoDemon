@@ -44,11 +44,21 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLa
         If srcColors > 16 Then
             getColorDepthFromColorCount = 8
         Else
-            If srcColors > 2 Then
-                getColorDepthFromColorCount = 4
+            
+            If (srcColors > 2) Then
+                
+                'FreeImage only supports the writing of 4bpp images if they are grayscale.  Thus, only mark an
+                ' image as 4bpp if it's all gray - otherwise, consider it 8bpp indexed color.
+                If g_IsImageGray Then
+                    getColorDepthFromColorCount = 4
+                Else
+                    getColorDepthFromColorCount = 8
+                End If
+                
             Else
                 getColorDepthFromColorCount = 1
             End If
+            
         End If
     Else
         If refLayer.getLayerColorDepth = 24 Then
@@ -97,7 +107,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     totalCount = 0
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim chkValue As Long
     Dim colorFound As Boolean
         
@@ -106,11 +116,11 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         QuickVal = x * qvDepth
     For y = 0 To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        chkValue = RGB(R, g, b)
+        chkValue = RGB(r, g, b)
         colorFound = False
         
         'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
@@ -125,7 +135,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         If Not colorFound Then
             UniqueColors(totalCount) = chkValue
             totalCount = totalCount + 1
-            ReDim Preserve UniqueColors(0 To totalCount) As Long
+            'ReDim Preserve UniqueColors(0 To totalCount) As Long
         End If
         
         'If the image has more than 256 colors, treat it as 24/32 bpp
@@ -141,6 +151,32 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     
     'Also, erase the counting array
     Erase UniqueColors
+    
+    'If we've made it this far, the color count has a maximum value of 257.
+    ' If it is less than 257, analyze it to see if it contains all gray values.
+    If totalCount <= 256 Then
+    
+        g_IsImageGray = True
+    
+        'Loop through all available colors
+        For i = 0 To totalCount
+        
+            r = ExtractR(UniqueColors(i))
+            g = ExtractG(UniqueColors(i))
+            b = ExtractB(UniqueColors(i))
+            
+            'If any of the components do not match, this is not a grayscale image
+            If (r <> g) Or (g <> b) Or (r <> b) Then
+                g_IsImageGray = False
+                Exit For
+            End If
+            
+        Next i
+    
+    'If the image contains more than 256 colors, it is not grayscale
+    Else
+        g_IsImageGray = False
+    End If
     
     getQuickColorCount = totalCount
     

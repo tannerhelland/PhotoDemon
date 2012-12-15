@@ -154,3 +154,7 @@ Public g_JP2Compression As Long
 
 'Exported color depth
 Public g_ColorDepth As Long
+
+'Is the current image grayscale?  This variable is set by the quick count colors routine.  Do not trust its
+' state unless you have just called the quick count colors routine (otherwise it may be outdated).
+Public g_IsImageGray As Boolean
