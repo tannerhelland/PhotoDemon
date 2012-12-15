@@ -344,6 +344,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "CheckForUpdates=1"
         Print #fileNum, "ConfirmClosingUnsaved=1"
         Print #fileNum, "DefaultSaveFormat=0"
+        Print #fileNum, "DisplayIDEWarning=1"
         Print #fileNum, "HasGitHubAccount="
         Print #fileNum, "ImageCaptionSize=0"
         Print #fileNum, "LastUpdateCheck="

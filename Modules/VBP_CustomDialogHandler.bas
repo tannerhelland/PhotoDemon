@@ -103,3 +103,16 @@ Public Function promptAlphaCutoff(ByRef srcLayer As pdLayer) As VbMsgBoxResult
 
 End Function
 
+'If the user is running in the IDE, warn them of the consequences of doing so
+Public Function displayIDEWarning() As VbMsgBoxResult
+
+    Load dialog_IDEWarning
+
+    dialog_IDEWarning.ShowDialog
+
+    displayIDEWarning = dialog_IDEWarning.DialogResult
+    
+    Unload dialog_IDEWarning
+    Set dialog_IDEWarning = Nothing
+
+End Function
