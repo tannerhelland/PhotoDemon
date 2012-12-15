@@ -275,7 +275,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
     '****************************************************************************************************
 
     'The user is allowed to set a persistent preference for output color depth.  This setting affects a "color depth"
-    ' parameter that will be sent to our various format-specific save file routines.  The preferences are:
+    ' parameter that will be sent to the various format-specific save file routines.  The available preferences are:
     ' 0) Mimic the file's original color depth (if available; this may not always be possible, e.g. saving a 32bpp PNG as JPEG)
     ' 1) Count the number of colors used, and save the file based on that (again, if possible)
     ' 2) Prompt the user for their desired export color depth

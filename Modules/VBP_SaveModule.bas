@@ -15,7 +15,9 @@ Attribute VB_Name = "Saving"
 Option Explicit
 
 'Save the current image to BMP format
-Public Sub SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal outputColorDepth As Long)
+Public Function SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal outputColorDepth As Long) As Boolean
+   
+    On Error GoTo SaveBMPError
    
     'If the output color depth is 24 or 32bpp, or if both GDI+ and FreeImage are missing, use our own internal methods
     ' to save a BMP file
@@ -57,11 +59,17 @@ Public Sub SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal outputC
                 fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, FIF_BMP, , outputColorDepth, , , , , True)
                 If fi_Check = False Then
                     Message "BMP save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+                    FreeLibrary hLib
+                    SaveBMP = False
+                    Exit Function
                 Else
                     Message "BMP save complete."
                 End If
             Else
                 Message "BMP save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+                SaveBMP = False
+                FreeLibrary hLib
+                Exit Function
             End If
     
             'Release FreeImage from memory
@@ -73,10 +81,21 @@ Public Sub SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal outputC
     
     End If
     
-End Sub
+    SaveBMP = True
+    Exit Function
+    
+SaveBMPError:
+
+    If hLib <> 0 Then FreeLibrary hLib
+
+    SaveBMP = False
+    
+End Function
 
 'Save the current image to PhotoDemon's native PDI format
-Public Sub SavePhotoDemonImage(ByVal imageID As Long, ByVal PDIPath As String)
+Public Function SavePhotoDemonImage(ByVal imageID As Long, ByVal PDIPath As String) As Boolean
+    
+    On Error GoTo SavePDIError
     
     Message "Saving PhotoDemon Image..."
 
@@ -88,16 +107,26 @@ Public Sub SavePhotoDemonImage(ByVal imageID As Long, ByVal PDIPath As String)
     
     Message "PDI Save complete."
     
-End Sub
+    SavePhotoDemonImage = True
+    Exit Function
+    
+SavePDIError:
+
+    SavePhotoDemonImage = False
+    
+End Function
 
 'Save a GIF (Graphics Interchange Format) image.  GDI+ can also do this.
-Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
+Public Function SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String) As Boolean
+
+    On Error GoTo SaveGIFError
 
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
-        Exit Sub
+        SaveGIFImage = False
+        Exit Function
     End If
     
     'Load FreeImage into memory
@@ -124,26 +153,44 @@ Public Sub SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String)
         fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, FIF_GIF, , FICD_8BPP, , , , , True)
         If fi_Check = False Then
             Message "GIF save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            FreeLibrary hLib
+            SaveGIFImage = False
+            Exit Function
         Else
             Message "GIF save complete."
         End If
     Else
         Message "GIF save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        SaveGIFImage = False
+        FreeLibrary hLib
+        Exit Function
     End If
     
     'Release FreeImage from memory
     FreeLibrary hLib
     
-End Sub
+    SaveGIFImage = True
+    Exit Function
+    
+SaveGIFError:
+
+    If hLib <> 0 Then FreeLibrary hLib
+
+    SaveGIFImage = False
+    
+End Function
 
 'Save a PNG (Portable Network Graphic) file.  GDI+ can also do this.
-Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByVal outputColorDepth As Long)
+Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByVal outputColorDepth As Long) As Boolean
+
+    On Error GoTo SavePNGError
 
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
-        Exit Sub
+        SavePNGImage = False
+        Exit Function
     End If
     
     'Load FreeImage into memory
@@ -171,26 +218,44 @@ Public Sub SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByVal ou
         fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "PNG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            FreeLibrary hLib
+            SavePNGImage = False
+            Exit Function
         Else
             Message "PNG save complete."
         End If
     Else
         Message "PNG save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        SavePNGImage = False
+        FreeLibrary hLib
+        Exit Function
     End If
     
     'Release FreeImage from memory
     FreeLibrary hLib
+    
+    SavePNGImage = True
+    Exit Function
+    
+SavePNGError:
 
-End Sub
+    If hLib <> 0 Then FreeLibrary hLib
+
+    SavePNGImage = False
+    
+End Function
 
 'Save a PPM (Portable Pixmap) image
-Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
+Public Function SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String) As Boolean
+
+    On Error GoTo SavePPMError
 
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
-        Exit Sub
+        SavePPMImage = False
+        Exit Function
     End If
 
     'Load FreeImage into memory
@@ -219,26 +284,43 @@ Public Sub SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String)
         fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, FIF_PPM, ppm_Encoding, FICD_24BPP, , , , , True)
         If fi_Check = False Then
             Message "PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            FreeLibrary hLib
+            SavePPMImage = False
+            Exit Function
         Else
             Message "PPM save complete."
         End If
     Else
         Message "PPM save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        FreeLibrary hLib
+        SavePPMImage = False
+        Exit Function
     End If
     
     'Release FreeImage from memory
     FreeLibrary hLib
+    
+    SavePPMImage = True
+    Exit Function
         
-End Sub
+SavePPMError:
+
+    If hLib <> 0 Then FreeLibrary hLib
+    SavePPMImage = False
+        
+End Function
 
 'Save to Targa (TGA) format.
-Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByVal outputColorDepth As Long)
+Public Function SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByVal outputColorDepth As Long) As Boolean
+    
+    On Error GoTo SaveTGAError
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
-        Exit Sub
+        SaveTGAImage = False
+        Exit Function
     End If
 
     'Load FreeImage into memory
@@ -266,26 +348,43 @@ Public Sub SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByVal ou
         fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, FILO_TARGA_DEFAULT, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "TGA save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            FreeLibrary hLib
+            SaveTGAImage = False
+            Exit Function
         Else
             Message "TGA save complete."
         End If
     Else
         Message "TGA save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        FreeLibrary hLib
+        SaveTGAImage = False
+        Exit Function
     End If
     
     'Release FreeImage from memory
     FreeLibrary hLib
+    
+    SaveTGAImage = True
+    Exit Function
+    
+SaveTGAError:
 
-End Sub
+    If hLib <> 0 Then FreeLibrary hLib
+    SaveTGAImage = False
+
+End Function
 
 'Save to JPEG using the FreeImage library.  This is more reliable than using GDI+.
-Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long, Optional ByVal jOtherFlags As Long = 0, Optional ByVal jCreateThumbnail As Long = 0)
+Public Function SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal jQuality As Long, Optional ByVal jOtherFlags As Long = 0, Optional ByVal jCreateThumbnail As Long = 0) As Boolean
+    
+    On Error GoTo SaveJPEGError
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
-        Exit Sub
+        SaveJPEGImage = False
+        Exit Function
     End If
 
     'Load FreeImage into memory
@@ -328,26 +427,43 @@ Public Sub SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, ByVal 
         fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, jQuality, FICD_24BPP, , , , , True)
         If fi_Check = False Then
             Message "JPEG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            FreeLibrary hLib
+            SaveJPEGImage = False
+            Exit Function
         Else
             Message "JPEG save complete."
         End If
     Else
         Message "JPEG save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        FreeLibrary hLib
+        SaveJPEGImage = False
+        Exit Function
     End If
     
     'Release FreeImage from memory
     FreeLibrary hLib
     
-End Sub
+    SaveJPEGImage = True
+    Exit Function
+    
+SaveJPEGError:
+
+    If hLib <> 0 Then FreeLibrary hLib
+    SaveJPEGImage = False
+    
+End Function
 
 'Save a TIFF (Tagged Image File Format) image via FreeImage.  GDI+ can also do this.
-Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByVal outputColorDepth As Long)
+Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByVal outputColorDepth As Long) As Boolean
+    
+    On Error GoTo SaveTIFError
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
-        Exit Sub
+        SaveTIFImage = False
+        Exit Function
     End If
 
     'Load FreeImage into memory
@@ -375,26 +491,43 @@ Public Sub SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByVal ou
         fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, FISO_TIFF_DEFAULT, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "TIFF save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            FreeLibrary hLib
+            SaveTIFImage = False
+            Exit Function
         Else
             Message "TIFF save complete."
         End If
     Else
         Message "TIFF save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        FreeLibrary hLib
+        SaveTIFImage = False
+        Exit Function
     End If
     
     'Release FreeImage from memory
     FreeLibrary hLib
+    
+    SaveTIFImage = True
+    Exit Function
+    
+SaveTIFError:
+
+    If hLib <> 0 Then FreeLibrary hLib
+    SaveTIFImage = False
         
-End Sub
+End Function
 
 'Save to JPEG-2000 format using the FreeImage library.  This is currently deemed "experimental".
-Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, ByVal outputColorDepth As Long, Optional ByVal jp2Quality As Long = 16)
+Public Function SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, ByVal outputColorDepth As Long, Optional ByVal jp2Quality As Long = 16) As Boolean
+    
+    On Error GoTo SaveJP2Error
     
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
-        Exit Sub
+        SaveJP2Image = False
+        Exit Function
     End If
 
     'Load FreeImage into memory
@@ -422,15 +555,29 @@ Public Sub SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, ByVal ou
         fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, jp2Quality, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "JPEG-2000 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            FreeLibrary hLib
+            SaveJP2Image = False
+            Exit Function
         Else
             Message "JPEG-2000 save complete."
         End If
     Else
         Message "JPEG-2000 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        FreeLibrary hLib
+        SaveJP2Image = False
+        Exit Function
     End If
     
     'Release FreeImage from memory
     FreeLibrary hLib
     
-End Sub
+    SaveJP2Image = True
+    Exit Function
+    
+SaveJP2Error:
+
+    If hLib <> 0 Then FreeLibrary hLib
+    SaveJP2Image = False
+    
+End Function
 
