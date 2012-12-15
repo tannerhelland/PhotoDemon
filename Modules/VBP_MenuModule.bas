@@ -124,11 +124,11 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
     
         'This image has been saved before.
         
-        Dim dstFilename As String
+        Dim DstFilename As String
                 
         'If the user has requested that we only save copies of current images, we need to come up with a new filename
         If userPreferences.GetPreference_Long("General Preferences", "SaveBehavior", 0) = 0 Then
-            dstFilename = pdImages(imageID).LocationOnDisk
+            DstFilename = pdImages(imageID).LocationOnDisk
         Else
         
             'Determine the destination directory
@@ -145,7 +145,7 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
             tempExtension = GetExtension(pdImages(imageID).LocationOnDisk)
             
             'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
-            dstFilename = tempPathString & incrementFilename(tempPathString, tempFilename, tempExtension) & "." & tempExtension
+            DstFilename = tempPathString & incrementFilename(tempPathString, tempFilename, tempExtension) & "." & tempExtension
         
         End If
         
@@ -154,15 +154,15 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         
         'JPEG
         If (pdImages(imageID).CurrentFileFormat = FIF_JPEG) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
-            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, True)
+            MenuSave = PhotoDemon_SaveImage(imageID, DstFilename, True)
         
         'JPEG-2000
         ElseIf (pdImages(imageID).CurrentFileFormat = FIF_JP2) And (pdImages(imageID).hasSeenJP2Prompt = False) Then
-            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, True)
+            MenuSave = PhotoDemon_SaveImage(imageID, DstFilename, True)
         
         'All other formats
         Else
-            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, False, pdImages(imageID).getSaveFlag(0), pdImages(imageID).getSaveFlag(1), pdImages(imageID).getSaveFlag(2))
+            MenuSave = PhotoDemon_SaveImage(imageID, DstFilename, False, pdImages(imageID).getSaveFlag(0), pdImages(imageID).getSaveFlag(1), pdImages(imageID).getSaveFlag(2))
         End If
     End If
 
@@ -533,8 +533,12 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
         PhotoDemon_SaveImage = True
     
     Else
-        'Was a save dialog called?  If it was, use that value to return "success" or not
-        If loadRelevantForm <> True Then PhotoDemon_SaveImage = False
+        
+        'If we aren't updating the MRU, something went wrong.  Display that the save was canceled and exit.
+        Message "Save canceled."
+        PhotoDemon_SaveImage = False
+        Exit Function
+        
     End If
 
     Message "Save complete."
