@@ -158,3 +158,7 @@ Public g_ColorDepth As Long
 'Is the current image grayscale?  This variable is set by the quick count colors routine.  Do not trust its
 ' state unless you have just called the quick count colors routine (otherwise it may be outdated).
 Public g_IsImageGray As Boolean
+
+'What threshold should be used for simplifying an image's complex alpha channel?
+' (This is set by the custom alpha cutoff dialog.)
+Public g_AlphaCutoff As Byte

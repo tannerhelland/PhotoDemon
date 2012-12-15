@@ -3,8 +3,8 @@ Attribute VB_Name = "Custom_Dialog_Handler"
 'Custom Dialog Interface
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 11/December/12
-'Last update: added support for the custom export color depth dialog
+'Last updated: 15/December/12
+'Last update: added support for the custom alpha cut-off dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and eye-catching)
@@ -87,3 +87,19 @@ Public Function promptColorDepth(ByVal outputFormat As Long) As VbMsgBoxResult
     Set dialog_ExportColorDepth = Nothing
 
 End Function
+
+'Present a dialog box to ask the user for an alpha-cutoff value.  This is used when reducing a complex (32bpp)
+' alpha channel to a simple (8bpp) one.
+Public Function promptAlphaCutoff(ByRef srcLayer As pdLayer) As VbMsgBoxResult
+
+    Load dialog_AlphaCutoff
+    dialog_AlphaCutoff.refLayer = srcLayer
+    dialog_AlphaCutoff.ShowDialog
+
+    promptAlphaCutoff = dialog_AlphaCutoff.DialogResult
+    
+    Unload dialog_AlphaCutoff
+    Set dialog_AlphaCutoff = Nothing
+
+End Function
+
