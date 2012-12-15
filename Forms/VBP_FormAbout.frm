@@ -164,7 +164,7 @@ Private Sub Form_Load()
     GenerateThankyou "Herman Liu"
     GenerateThankyou "Robert Rayment"
     GenerateThankyou "Alfred Hellmueller"
-    
+    GenerateThankyou "Zhu JinYong"
     
     lblThanks(0).MousePointer = vbDefault
     
