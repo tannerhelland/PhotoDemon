@@ -533,8 +533,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 End If
                 
                 'If FreeImage fails for some reason (such as it being a 1bpp PNG), offload the image to GDI+
-                If loadSuccessful = False Then
+                If Not loadSuccessful And imageFormats.GDIPlusEnabled Then
                     
+                    Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     targetImage.OriginalFileFormat = FIF_PNG
                     mustCountColors = True
