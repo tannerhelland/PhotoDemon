@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 11/December/12
-'Last update: Rewrote all save functions to handle variable color depths properly
+'Last updated: 15/December/12
+'Last update: Rewrote all save subs as functions.  They now report success or not to the calling routine.
 '
 'Module for handling all image saving.  It contains pretty much every routine that I find useful;
 ' the majority of the functions are simply interfaces to FreeImage, so if that is not enabled than
@@ -140,15 +140,34 @@ Public Function SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String) As 
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
     
-    'If the current image is 32bpp, composite the image against a white background
-    'If pdImages(imageID).mainLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
+    'If the current image is 32bpp, we will need to apply some additional actions to the image to prepare the
+    ' transparency.  Mark a bool value, because we will reference it in multiple places throughout the save function.
+    Dim handleAlpha As Boolean
+    If pdImages(imageID).mainLayer.getLayerColorDepth = 32 Then handleAlpha = True Else handleAlpha = False
     
     'If the current image contains transparency, we need to modify it in order to retain the alpha channel.
-    If tmpLayer.getLayerColorDepth = 32 Then
+    If handleAlpha Then
     
         'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
         If tmpLayer.isAlphaBinary Then
-        
+            tmpLayer.applyAlphaCutoff
+        Else
+            Dim alphaCheck As VbMsgBoxResult
+            alphaCheck = promptAlphaCutoff(tmpLayer)
+            
+            'If the alpha dialog is canceled, abandon the entire save
+            If alphaCheck = vbCancel Then
+            
+                tmpLayer.eraseLayer
+                Set tmpLayer = Nothing
+                SaveGIFImage = False
+                Exit Function
+            
+            'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+            Else
+                tmpLayer.applyAlphaCutoff g_AlphaCutoff
+            End If
+            
         End If
     
     End If
@@ -156,6 +175,30 @@ Public Function SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String) As 
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    
+    'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
+    If handleAlpha Then
+        fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
+        
+        'We now need to find the palette index of a known transparent pixel
+        Dim transpX As Long, transpY As Long
+        tmpLayer.getTransparentLocation transpX, transpY
+        
+        Dim palIndex As Byte
+        FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
+        
+        'Request that FreeImage set that palette entry as the transparent index
+        FreeImage_SetTransparentIndex fi_DIB, palIndex
+        
+        'Finally, because some software may not display the transparency correctly, we need to set that
+        ' palette index to some normal color instead of bright magenta.  To do that, we must make a
+        ' copy of the palette and update the transparency index accordingly.
+        Dim fi_Palette() As Long
+        fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
+        
+        fi_Palette(palIndex) = RGB(255, 255, 255)
+        
+    End If
     
     'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
     If fi_DIB <> 0 Then
@@ -215,13 +258,71 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
     
-    'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
+    Dim handleAlpha As Boolean
+    If (pdImages(imageID).mainLayer.getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    
+    'If this image is 32bpp but the output color depth is less than that, make necessary preparations
+    If handleAlpha Then
+        
+        'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+        If tmpLayer.isAlphaBinary Then
+            tmpLayer.applyAlphaCutoff
+        Else
+            Dim alphaCheck As VbMsgBoxResult
+            alphaCheck = promptAlphaCutoff(tmpLayer)
+            
+            'If the alpha dialog is canceled, abandon the entire save
+            If alphaCheck = vbCancel Then
+            
+                tmpLayer.eraseLayer
+                Set tmpLayer = Nothing
+                SavePNGImage = False
+                Exit Function
+            
+            'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+            Else
+                tmpLayer.applyAlphaCutoff g_AlphaCutoff
+            End If
+            
+        End If
+    
+    Else
+    
+        'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
+        ' If we are, composite the image against a white background.
+        If (pdImages(imageID).mainLayer.getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    
+    End If
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
+    'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
+    If handleAlpha Then
+        fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
+        
+        'We now need to find the palette index of a known transparent pixel
+        Dim transpX As Long, transpY As Long
+        tmpLayer.getTransparentLocation transpX, transpY
+        
+        Dim palIndex As Byte
+        FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
+        
+        'Request that FreeImage set that palette entry as the transparent index
+        FreeImage_SetTransparentIndex fi_DIB, palIndex
+        
+        'Finally, because some software may not display the transparency correctly, we need to set that
+        ' palette index to some normal color instead of bright magenta.  To do that, we must make a
+        ' copy of the palette and update the transparency index accordingly.
+        Dim fi_Palette() As Long
+        fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
+        
+        fi_Palette(palIndex) = RGB(255, 255, 255)
+        
+    End If
+        
     'Use that handle to save the image to PNG format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
@@ -345,12 +446,70 @@ Public Function SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByV
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
     
-    'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
+    Dim handleAlpha As Boolean
+    If (pdImages(imageID).mainLayer.getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    
+    'If this image is 32bpp but the output color depth is less than that, make necessary preparations
+    If handleAlpha Then
+        
+        'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+        If tmpLayer.isAlphaBinary Then
+            tmpLayer.applyAlphaCutoff
+        Else
+            Dim alphaCheck As VbMsgBoxResult
+            alphaCheck = promptAlphaCutoff(tmpLayer)
+            
+            'If the alpha dialog is canceled, abandon the entire save
+            If alphaCheck = vbCancel Then
+            
+                tmpLayer.eraseLayer
+                Set tmpLayer = Nothing
+                SaveTGAImage = False
+                Exit Function
+            
+            'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+            Else
+                tmpLayer.applyAlphaCutoff g_AlphaCutoff
+            End If
+            
+        End If
+    
+    Else
+    
+        'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
+        ' If we are, composite the image against a white background.
+        If (pdImages(imageID).mainLayer.getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    
+    End If
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    
+    'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
+    If handleAlpha Then
+        fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
+        
+        'We now need to find the palette index of a known transparent pixel
+        Dim transpX As Long, transpY As Long
+        tmpLayer.getTransparentLocation transpX, transpY
+        
+        Dim palIndex As Byte
+        FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
+        
+        'Request that FreeImage set that palette entry as the transparent index
+        FreeImage_SetTransparentIndex fi_DIB, palIndex
+        
+        'Finally, because some software may not display the transparency correctly, we need to set that
+        ' palette index to some normal color instead of bright magenta.  To do that, we must make a
+        ' copy of the palette and update the transparency index accordingly.
+        Dim fi_Palette() As Long
+        fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
+        
+        fi_Palette(palIndex) = RGB(255, 255, 255)
+        
+    End If
     
     'Use that handle to save the image to TGA format
     If fi_DIB <> 0 Then
@@ -488,12 +647,70 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
     
-    'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
+    Dim handleAlpha As Boolean
+    If (pdImages(imageID).mainLayer.getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    
+    'If this image is 32bpp but the output color depth is less than that, make necessary preparations
+    If handleAlpha Then
+        
+        'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+        If tmpLayer.isAlphaBinary Then
+            tmpLayer.applyAlphaCutoff
+        Else
+            Dim alphaCheck As VbMsgBoxResult
+            alphaCheck = promptAlphaCutoff(tmpLayer)
+            
+            'If the alpha dialog is canceled, abandon the entire save
+            If alphaCheck = vbCancel Then
+            
+                tmpLayer.eraseLayer
+                Set tmpLayer = Nothing
+                SaveTIFImage = False
+                Exit Function
+            
+            'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+            Else
+                tmpLayer.applyAlphaCutoff g_AlphaCutoff
+            End If
+            
+        End If
+    
+    Else
+    
+        'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
+        ' If we are, composite the image against a white background.
+        If (pdImages(imageID).mainLayer.getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    
+    End If
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    
+    'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
+    If handleAlpha Then
+        fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
+        
+        'We now need to find the palette index of a known transparent pixel
+        Dim transpX As Long, transpY As Long
+        tmpLayer.getTransparentLocation transpX, transpY
+        
+        Dim palIndex As Byte
+        FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
+        
+        'Request that FreeImage set that palette entry as the transparent index
+        FreeImage_SetTransparentIndex fi_DIB, palIndex
+        
+        'Finally, because some software may not display the transparency correctly, we need to set that
+        ' palette index to some normal color instead of bright magenta.  To do that, we must make a
+        ' copy of the palette and update the transparency index accordingly.
+        Dim fi_Palette() As Long
+        fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
+        
+        fi_Palette(palIndex) = RGB(255, 255, 255)
+        
+    End If
     
     'Use that handle to save the image to TIFF format
     If fi_DIB <> 0 Then
