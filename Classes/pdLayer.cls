@@ -155,7 +155,7 @@ Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long,
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
 'Clipboard interaction
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
@@ -200,11 +200,103 @@ Public PreviewY As Long
 Public PreviewWidth As Long
 Public PreviewHeight As Long
 
+'When converting a 32bpp layer to 8bpp with transparency, we need to know the location of a transparent pixel.
+' This location is passed to FreeImage, and it designates the palette index at that location as the transparent index.
+Private trnsX As Long, trnsY As Long
+
+'Return the location of a transparent pixel.  This will be set as part of the MarkAlpha routine.
+Public Sub getTransparentLocation(ByRef srcX As Long, ByRef srcY As Long)
+    srcX = trnsX
+    srcY = trnsY
+End Sub
+
+'This function will apply an "alpha-cutoff" to a 32bpp image.  Any alpha values above the cutoff will be replaced with
+' magic magenta (253,0,253) and the location of a transparent pixel (trnsX, trnsY) will be marked.
+Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True)
+
+    'Make sure this layer is 32bpp.  If it isn't, running this function is pointless.
+    If layerColorDepth = 32 Then
+
+        'Make sure this layer isn't empty
+        If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+    
+            'Loop through the image and force each alpha value to 0 and 255 based on the supplied cutoff.
+            Dim iData() As Byte
+            Dim tmpSA As SAFEARRAY2D
+            prepInternalSafeArray tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+            Dim x As Long, y As Long, QuickX As Long
+            
+            Dim chkAlpha As Byte
+            Dim tmpAlpha As Single
+            
+            trnsX = -1
+                
+            'Loop through the image, checking alphas as we go
+            For x = 0 To layerWidth - 1
+                QuickX = x * 4
+            For y = 0 To layerHeight - 1
+                
+                chkAlpha = iData(QuickX + 3, y)
+                
+                'If the alpha value is less than the cutoff, mark this pixel
+                If chkAlpha < cutOff Then
+                
+                    'Remember this location if we haven't already
+                    If trnsX = -1 Then
+                        trnsX = x
+                        trnsY = y
+                    End If
+                    
+                    'When previewing this effect, we don't actually want to change pixel colors.  Otherwise,
+                    ' HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
+                    If forceColor Then
+                        'Color this pixel with magic magenta (253,0,253)
+                        iData(QuickX + 2, y) = 253
+                        iData(QuickX + 1, y) = 0
+                        iData(QuickX, y) = 253
+                    End If
+                    
+                    'Blank the alpha channel
+                    iData(QuickX + 3, y) = 0
+                    
+                'If the pixel is not beneath the cut-off, and not full opaque, composite it against white
+                ElseIf chkAlpha <> 255 Then
+                
+                    'Convert the alpha value to a floating-point variable
+                    tmpAlpha = CSng(chkAlpha) / 255
+            
+                    'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
+                    iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), 255, tmpAlpha)
+                    iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), 255, tmpAlpha)
+                    iData(QuickX, y) = Blend2Colors(iData(QuickX, y), 255, tmpAlpha)
+                    
+                    'Opaque-ify the alpha channel
+                    iData(QuickX + 3, y) = 255
+                
+                End If
+                
+            Next y
+                
+            Next x
+    
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            
+            Erase iData
+                
+        End If
+        
+    End If
+    
+End Sub
+
 'Translate an OLE color to an RGB Long
-Private Function translateColor(ByVal colorRef As Long) As Long
+Private Function TranslateColor(ByVal colorRef As Long) As Long
     'OleTranslateColor returns -1 if it fails; if that happens, default to white
-    If OleTranslateColor(colorRef, 0, translateColor) Then
-        translateColor = RGB(255, 255, 255)
+    If OleTranslateColor(colorRef, 0, TranslateColor) Then
+        TranslateColor = RGB(255, 255, 255)
     End If
 End Function
 
@@ -659,21 +751,21 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
 End Function
 
 'Create a blank layer.  If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
-Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal ColorDepth As Long = 24, Optional ByVal backColor As Long = vbWhite) As Boolean
+Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal backColor As Long = vbWhite) As Boolean
     
     'Erase any existing layer data
     eraseLayer
     
     'PhotoDemon only supports 24 and 32 BPP at present
-    If ColorDepth <> 32 And ColorDepth <> 24 Then
-        ColorDepth = 24
+    If colorDepth <> 32 And colorDepth <> 24 Then
+        colorDepth = 24
     End If
         
     'The back color may or may not be a system color, so translate it just in case
-    backColor = translateColor(backColor)
+    backColor = TranslateColor(backColor)
         
     'Remember this color depth, width, and height
-    layerColorDepth = ColorDepth
+    layerColorDepth = colorDepth
     layerWidth = iWidth
     layerHeight = iHeight
     
@@ -681,11 +773,11 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     With layerDIBHeader
         .Size = Len(layerDIBHeader)
         .Planes = 1
-        .BitCount = ColorDepth
+        .BitCount = colorDepth
         .Width = iWidth
         .Height = -iHeight
         'As always, this value needs to be a multiple of four; with 32bpp that's automatic, with 24bpp it is not
-        If ColorDepth = 32 Then
+        If colorDepth = 32 Then
             layerArrayWidth = 4 * iWidth
         Else
             layerArrayWidth = (iWidth * 3 + 3) And &HFFFFFFFC
@@ -889,16 +981,16 @@ Public Sub createFromFile(ByRef srcFilename As String)
 End Sub
 
 'Write this layer's DIB information to file.
-Public Sub writeToFile(ByRef dstFilename As String)
+Public Sub writeToFile(ByRef DstFilename As String)
 
     'Delete any existing file (overwrite)
-    If FileExist(dstFilename) = True Then Kill dstFilename
+    If FileExist(DstFilename) = True Then Kill DstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open dstFilename For Binary As #fileNum
+    Open DstFilename For Binary As #fileNum
     
         'Identifiers
         Put #fileNum, 1, LAYER_IDENTIFIER
@@ -935,7 +1027,7 @@ Public Sub writeToFile(ByRef dstFilename As String)
 End Sub
 
 'Write this layer's DIB information to a valid BMP file.
-Public Sub writeToBitmapFile(ByRef dstFilename As String)
+Public Sub writeToBitmapFile(ByRef DstFilename As String)
 
     'First, make sure this layer actually contains image data
     If Not Me.hasImage() Then Exit Sub
@@ -970,13 +1062,13 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
     
     'With all our information in place, check to see if that file already exists.  Delete it if necessary.
-    If FileExist(dstFilename) = True Then Kill dstFilename
+    If FileExist(DstFilename) = True Then Kill DstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump the two headers and image data into it
-    Open dstFilename For Binary As #fileNum
+    Open DstFilename For Binary As #fileNum
     
         'Headers
         Put #fileNum, 1, bmpFileHeader
@@ -1390,7 +1482,7 @@ Public Sub fixPremultipliedAlpha()
     
     Dim x As Long, y As Long, QuickX As Long
     
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim tmpAlpha As Byte, tmpAlphaModifier As Single
 
     'Loop through the image, removing the effects of pre-multiplication as we go
@@ -1404,18 +1496,18 @@ Public Sub fixPremultipliedAlpha()
         If tmpAlpha <> 255 Then
             If tmpAlpha <> 0 Then
             
-                r = iData(QuickX + 2, y)
+                R = iData(QuickX + 2, y)
                 g = iData(QuickX + 1, y)
                 b = iData(QuickX, y)
             
                 tmpAlphaModifier = 255 / tmpAlpha
             
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                r = r * tmpAlphaModifier
+                R = R * tmpAlphaModifier
                 g = g * tmpAlphaModifier
                 b = b * tmpAlphaModifier
                 
-                iData(QuickX + 2, y) = CByte(r)
+                iData(QuickX + 2, y) = CByte(R)
                 iData(QuickX + 1, y) = CByte(g)
                 iData(QuickX, y) = CByte(b)
             
