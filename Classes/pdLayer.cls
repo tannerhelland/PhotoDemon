@@ -531,6 +531,71 @@ Public Function convertTo32bpp() As Boolean
 
 End Function
 
+'Does this layer have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
+' (This is used to determine how transparency is handled when exporting to lower color depths.)
+Public Function isAlphaBinary() As Boolean
+
+    'Make sure this layer is 32bpp.  If it isn't, running this function is pointless.
+    If layerColorDepth = 32 Then
+
+        'Make sure this layer isn't empty
+        If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+    
+            'Loop through the image and compare each alpha value against 0 and 255.  If a value doesn't
+            ' match either of this, this is a non-binary alpha channel and it must be handled specially.
+            Dim iData() As Byte
+            Dim tmpSA As SAFEARRAY2D
+            prepInternalSafeArray tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+            Dim x As Long, y As Long, QuickX As Long
+                
+            'By default, assume that the image does not have a binary alpha channel.  (This is the preferable
+            ' default, as we will exit the loop IFF a non-0 or non-255 value is found.)
+            Dim notBinary As Boolean
+            notBinary = False
+            
+            Dim chkAlpha As Byte
+                
+            'Loop through the image, checking alphas as we go
+            For x = 0 To layerWidth - 1
+                QuickX = x * 4
+            For y = 0 To layerHeight - 1
+                chkAlpha = iData(QuickX + 3, y)
+                
+                'For optimization reasons, this is stated as two IFs instead of an OR.  I'm not sure if VB
+                ' short-circuits OR statements, but I know nested IF statements work.  :)
+                If chkAlpha <> 255 Then
+                
+                    If chkAlpha <> 0 Then
+                        notBinary = True
+                        Exit For
+                    End If
+                
+                End If
+                
+            Next y
+                If notBinary = True Then Exit For
+            Next x
+    
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            
+            Erase iData
+                
+            'Exit
+            isAlphaBinary = Not notBinary
+            Exit Function
+                
+        End If
+        
+    End If
+    
+    'If we made it to this line, something went horribly wrong
+    isAlphaBinary = False
+
+End Function
+
 'Give this layer a picture from a standard VB picture object
 Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
 
@@ -594,21 +659,21 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
 End Function
 
 'Create a blank layer.  If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
-Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal backColor As Long = vbWhite) As Boolean
+Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal ColorDepth As Long = 24, Optional ByVal backColor As Long = vbWhite) As Boolean
     
     'Erase any existing layer data
     eraseLayer
     
     'PhotoDemon only supports 24 and 32 BPP at present
-    If colorDepth <> 32 And colorDepth <> 24 Then
-        colorDepth = 24
+    If ColorDepth <> 32 And ColorDepth <> 24 Then
+        ColorDepth = 24
     End If
         
     'The back color may or may not be a system color, so translate it just in case
     backColor = translateColor(backColor)
         
     'Remember this color depth, width, and height
-    layerColorDepth = colorDepth
+    layerColorDepth = ColorDepth
     layerWidth = iWidth
     layerHeight = iHeight
     
@@ -616,11 +681,11 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     With layerDIBHeader
         .Size = Len(layerDIBHeader)
         .Planes = 1
-        .BitCount = colorDepth
+        .BitCount = ColorDepth
         .Width = iWidth
         .Height = -iHeight
         'As always, this value needs to be a multiple of four; with 32bpp that's automatic, with 24bpp it is not
-        If colorDepth = 32 Then
+        If ColorDepth = 32 Then
             layerArrayWidth = 4 * iWidth
         Else
             layerArrayWidth = (iWidth * 3 + 3) And &HFFFFFFFC
@@ -824,16 +889,16 @@ Public Sub createFromFile(ByRef srcFilename As String)
 End Sub
 
 'Write this layer's DIB information to file.
-Public Sub writeToFile(ByRef DstFilename As String)
+Public Sub writeToFile(ByRef dstFilename As String)
 
     'Delete any existing file (overwrite)
-    If FileExist(DstFilename) = True Then Kill DstFilename
+    If FileExist(dstFilename) = True Then Kill dstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open DstFilename For Binary As #fileNum
+    Open dstFilename For Binary As #fileNum
     
         'Identifiers
         Put #fileNum, 1, LAYER_IDENTIFIER
@@ -870,7 +935,7 @@ Public Sub writeToFile(ByRef DstFilename As String)
 End Sub
 
 'Write this layer's DIB information to a valid BMP file.
-Public Sub writeToBitmapFile(ByRef DstFilename As String)
+Public Sub writeToBitmapFile(ByRef dstFilename As String)
 
     'First, make sure this layer actually contains image data
     If Not Me.hasImage() Then Exit Sub
@@ -905,13 +970,13 @@ Public Sub writeToBitmapFile(ByRef DstFilename As String)
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
     
     'With all our information in place, check to see if that file already exists.  Delete it if necessary.
-    If FileExist(DstFilename) = True Then Kill DstFilename
+    If FileExist(dstFilename) = True Then Kill dstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump the two headers and image data into it
-    Open DstFilename For Binary As #fileNum
+    Open dstFilename For Binary As #fileNum
     
         'Headers
         Put #fileNum, 1, bmpFileHeader
@@ -1325,7 +1390,7 @@ Public Sub fixPremultipliedAlpha()
     
     Dim x As Long, y As Long, QuickX As Long
     
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim tmpAlpha As Byte, tmpAlphaModifier As Single
 
     'Loop through the image, removing the effects of pre-multiplication as we go
@@ -1339,18 +1404,18 @@ Public Sub fixPremultipliedAlpha()
         If tmpAlpha <> 255 Then
             If tmpAlpha <> 0 Then
             
-                R = iData(QuickX + 2, y)
+                r = iData(QuickX + 2, y)
                 g = iData(QuickX + 1, y)
                 b = iData(QuickX, y)
             
                 tmpAlphaModifier = 255 / tmpAlpha
             
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                R = R * tmpAlphaModifier
+                r = r * tmpAlphaModifier
                 g = g * tmpAlphaModifier
                 b = b * tmpAlphaModifier
                 
-                iData(QuickX + 2, y) = CByte(R)
+                iData(QuickX + 2, y) = CByte(r)
                 iData(QuickX + 1, y) = CByte(g)
                 iData(QuickX, y) = CByte(b)
             
