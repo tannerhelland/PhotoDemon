@@ -141,7 +141,17 @@ Public Function SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String) As 
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
     
     'If the current image is 32bpp, composite the image against a white background
-    If pdImages(imageID).mainLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
+    'If pdImages(imageID).mainLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
+    
+    'If the current image contains transparency, we need to modify it in order to retain the alpha channel.
+    If tmpLayer.getLayerColorDepth = 32 Then
+    
+        'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+        If tmpLayer.isAlphaBinary Then
+        
+        End If
+    
+    End If
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -149,6 +159,7 @@ Public Function SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String) As 
     
     'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
     If fi_DIB <> 0 Then
+        
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, FIF_GIF, , FICD_8BPP, , , , , True)
         If fi_Check = False Then
