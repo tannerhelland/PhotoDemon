@@ -287,15 +287,21 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
 
     Message "Initializing GDI+..."
 
+    'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    If tmpLayer.getLayerColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpLayer.compositeBackgroundColor 255, 255, 255
+
     'Begin by creating a generic bitmap header for the current layer
     Dim imgHeader As BITMAPINFO
     
     With imgHeader.Header
         .Size = Len(imgHeader.Header)
         .Planes = 1
-        .BitCount = pdImages(imageID).mainLayer.getLayerColorDepth
-        .Width = pdImages(imageID).mainLayer.getLayerWidth
-        .Height = -pdImages(imageID).mainLayer.getLayerHeight
+        .BitCount = tmpLayer.getLayerColorDepth
+        .Width = tmpLayer.getLayerWidth
+        .Height = -tmpLayer.getLayerHeight
     End With
 
     'Use GDI+ to create a GDI+-compatible bitmap
@@ -303,13 +309,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     Dim hImage As Long
     
     Message "Creating GDI+ compatible image copy..."
-    
-    'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
-    If tmpLayer.getLayerColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpLayer.compositeBackgroundColor 255, 255, 255
-    
+        
     GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
     
     'Certain image formats require extra parameters, and because the values are passed ByRef, they can't be constants
