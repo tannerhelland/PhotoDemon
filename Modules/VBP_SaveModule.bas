@@ -196,7 +196,7 @@ Public Function SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String) As 
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = RGB(255, 255, 255)
+        fi_Palette(palIndex) = tmpLayer.getOriginalTransparentColor()
         
     End If
     
@@ -319,7 +319,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = RGB(255, 255, 255)
+        fi_Palette(palIndex) = tmpLayer.getOriginalTransparentColor()
         
     End If
         
@@ -507,7 +507,7 @@ Public Function SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByV
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = RGB(255, 255, 255)
+        fi_Palette(palIndex) = tmpLayer.getOriginalTransparentColor()
         
     End If
     
@@ -708,7 +708,7 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = RGB(255, 255, 255)
+        fi_Palette(palIndex) = tmpLayer.getOriginalTransparentColor()
         
     End If
     

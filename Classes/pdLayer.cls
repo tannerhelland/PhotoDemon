@@ -204,6 +204,14 @@ Public PreviewHeight As Long
 ' This location is passed to FreeImage, and it designates the palette index at that location as the transparent index.
 Private trnsX As Long, trnsY As Long
 
+'Remember the original color of the pixels made transparent, then restore it after the "magic magenta" has served its purpose
+Private originalTransparentColor As Long
+
+'Return the original transparent color (set as part of the MarkAlpha routine).
+Public Function getOriginalTransparentColor() As Long
+    getOriginalTransparentColor = originalTransparentColor
+End Function
+
 'Return the location of a transparent pixel.  This will be set as part of the MarkAlpha routine.
 Public Sub getTransparentLocation(ByRef srcX As Long, ByRef srcY As Long)
     srcX = trnsX
@@ -247,6 +255,7 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                     If trnsX = -1 Then
                         trnsX = x
                         trnsY = y
+                        originalTransparentColor = RGB(iData(QuickX + 2, y), iData(QuickX + 1, y), iData(QuickX, y))
                     End If
                     
                     'When previewing this effect, we don't actually want to change pixel colors.  Otherwise,
@@ -981,16 +990,16 @@ Public Sub createFromFile(ByRef srcFilename As String)
 End Sub
 
 'Write this layer's DIB information to file.
-Public Sub writeToFile(ByRef DstFilename As String)
+Public Sub writeToFile(ByRef dstFilename As String)
 
     'Delete any existing file (overwrite)
-    If FileExist(DstFilename) = True Then Kill DstFilename
+    If FileExist(dstFilename) = True Then Kill dstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump out only the essential information
-    Open DstFilename For Binary As #fileNum
+    Open dstFilename For Binary As #fileNum
     
         'Identifiers
         Put #fileNum, 1, LAYER_IDENTIFIER
@@ -1027,7 +1036,7 @@ Public Sub writeToFile(ByRef DstFilename As String)
 End Sub
 
 'Write this layer's DIB information to a valid BMP file.
-Public Sub writeToBitmapFile(ByRef DstFilename As String)
+Public Sub writeToBitmapFile(ByRef dstFilename As String)
 
     'First, make sure this layer actually contains image data
     If Not Me.hasImage() Then Exit Sub
@@ -1062,13 +1071,13 @@ Public Sub writeToBitmapFile(ByRef DstFilename As String)
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
     
     'With all our information in place, check to see if that file already exists.  Delete it if necessary.
-    If FileExist(DstFilename) = True Then Kill DstFilename
+    If FileExist(dstFilename) = True Then Kill dstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
     
     'Open the file and dump the two headers and image data into it
-    Open DstFilename For Binary As #fileNum
+    Open dstFilename For Binary As #fileNum
     
         'Headers
         Put #fileNum, 1, bmpFileHeader
