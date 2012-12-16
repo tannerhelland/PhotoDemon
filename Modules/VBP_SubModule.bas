@@ -17,7 +17,7 @@ Option Explicit
 Private Const mouseSelAccuracy As Single = 8
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
 'Convert a width and height pair to a new max width and height, while preserving aspect ratio
 Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long)
@@ -45,10 +45,10 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLa
             getColorDepthFromColorCount = 8
         Else
             
+            'FreeImage only supports the writing of 4bpp and 1bpp images if they are grayscale.  Thus, only
+            ' mark images as 4bpp or 1bpp if they are gray/b&w - otherwise, consider them 8bpp indexed color.
             If (srcColors > 2) Then
-                
-                'FreeImage only supports the writing of 4bpp images if they are grayscale.  Thus, only mark an
-                ' image as 4bpp if it's all gray - otherwise, consider it 8bpp indexed color.
+                                
                 If g_IsImageGray Then
                     getColorDepthFromColorCount = 4
                 Else
@@ -56,7 +56,11 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLa
                 End If
                 
             Else
-                getColorDepthFromColorCount = 1
+                If g_IsImageGray Then
+                    getColorDepthFromColorCount = 1
+                Else
+                    getColorDepthFromColorCount = 8
+                End If
             End If
             
         End If
@@ -107,7 +111,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     totalCount = 0
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim chkValue As Long
     Dim colorFound As Boolean
         
@@ -116,11 +120,11 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         QuickVal = x * qvDepth
     For y = 0 To finalY
         
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        chkValue = RGB(r, g, b)
+        chkValue = RGB(R, g, b)
         colorFound = False
         
         'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
@@ -161,12 +165,12 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         'Loop through all available colors
         For i = 0 To totalCount - 1
         
-            r = ExtractR(UniqueColors(i))
+            R = ExtractR(UniqueColors(i))
             g = ExtractG(UniqueColors(i))
             b = ExtractB(UniqueColors(i))
             
             'If any of the components do not match, this is not a grayscale image
-            If (r <> g) Or (g <> b) Or (r <> b) Then
+            If (R <> g) Or (g <> b) Or (R <> b) Then
                 g_IsImageGray = False
                 Exit For
             End If
