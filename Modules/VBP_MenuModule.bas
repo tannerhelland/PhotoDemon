@@ -124,11 +124,11 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
     
         'This image has been saved before.
         
-        Dim DstFilename As String
+        Dim dstFilename As String
                 
         'If the user has requested that we only save copies of current images, we need to come up with a new filename
         If userPreferences.GetPreference_Long("General Preferences", "SaveBehavior", 0) = 0 Then
-            DstFilename = pdImages(imageID).LocationOnDisk
+            dstFilename = pdImages(imageID).LocationOnDisk
         Else
         
             'Determine the destination directory
@@ -145,7 +145,7 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
             tempExtension = GetExtension(pdImages(imageID).LocationOnDisk)
             
             'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
-            DstFilename = tempPathString & incrementFilename(tempPathString, tempFilename, tempExtension) & "." & tempExtension
+            dstFilename = tempPathString & incrementFilename(tempPathString, tempFilename, tempExtension) & "." & tempExtension
         
         End If
         
@@ -154,15 +154,15 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         
         'JPEG
         If (pdImages(imageID).CurrentFileFormat = FIF_JPEG) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
-            MenuSave = PhotoDemon_SaveImage(imageID, DstFilename, True)
+            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, True)
         
         'JPEG-2000
         ElseIf (pdImages(imageID).CurrentFileFormat = FIF_JP2) And (pdImages(imageID).hasSeenJP2Prompt = False) Then
-            MenuSave = PhotoDemon_SaveImage(imageID, DstFilename, True)
+            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, True)
         
         'All other formats
         Else
-            MenuSave = PhotoDemon_SaveImage(imageID, DstFilename, False, pdImages(imageID).getSaveFlag(0), pdImages(imageID).getSaveFlag(1), pdImages(imageID).getSaveFlag(2))
+            MenuSave = PhotoDemon_SaveImage(imageID, dstFilename, False, pdImages(imageID).getSaveFlag(0), pdImages(imageID).getSaveFlag(1), pdImages(imageID).getSaveFlag(2))
         End If
     End If
 
@@ -281,79 +281,85 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
     ' 2) Prompt the user for their desired export color depth
     Dim outputColorDepth As Long
     
-    Select Case userPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
+    'Note that JPEG exporting, on account of it being somewhat specialized, ignores this step completely.
+    ' The JPEG routine will do its own scan for grayscale/color and save the file out accordingly.
     
-        'Maintain the file's original color depth (if possible)
-        Case 0
-            
-            'Check to see if this format supports the image's original color depth
-            If imageFormats.isColorDepthSupported(saveFormat, pdImages(imageID).OriginalColorDepth) Then
-                
-                'If it IS supported, set the original color depth as the output color depth for this save
-                outputColorDepth = pdImages(imageID).OriginalColorDepth
-                Message "Original color depth of " & outputColorDepth & " bpp is supported by this format.  Proceeding with save..."
-            
-            'If it IS NOT supported, we need to find the closest available color depth for this format.
-            Else
-                outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, pdImages(imageID).OriginalColorDepth)
-                Message "Original color depth of " & pdImages(imageID).OriginalColorDepth & " bpp is not supported by this format.  Proceeding to save as " & outputColorDepth & " bpp..."
-            
-            End If
+    If saveFormat <> FIF_JPEG Then
+    
+        Select Case userPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
         
-        'Count colors used
-        Case 1
-        
-            'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
-            ' as anything above 256 colors is treated as 24bpp.)
-            Dim colorCountCheck As Long
-            Message "Counting image colors to determine optimal exported color depth..."
-            colorCountCheck = getQuickColorCount(pdImages(imageID))
-            
-            'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-            outputColorDepth = getColorDepthFromColorCount(colorCountCheck, pdImages(imageID).mainLayer)
-            
-            Message "Color count successful (" & outputColorDepth & " bpp recommended)"
-            
-            'As with case 0, we now need to see if this format supports the suggested color depth
-            If imageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
+            'Maintain the file's original color depth (if possible)
+            Case 0
                 
-                'If it IS supported, set the original color depth as the output color depth for this save
-                Message "Recommended color depth of " & outputColorDepth & " bpp is supported by this format.  Proceeding with save..."
-            
-            'If it IS NOT supported, we need to find the closest available color depth for this format.
-            Else
-                outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
-                Message "Recommended color depth of " & pdImages(imageID).OriginalColorDepth & " bpp is not supported by this format.  Proceeding to save as " & outputColorDepth & " bpp..."
-            
-            End If
-        
-        'Prompt the user (but only if necessary)
-        Case 2
-        
-            'First, check to see if the save format in question supports multiple color depths
-            If imageFormats.doesFIFSupportMultipleColorDepths(saveFormat) Then
+                'Check to see if this format supports the image's original color depth
+                If imageFormats.isColorDepthSupported(saveFormat, pdImages(imageID).OriginalColorDepth) Then
+                    
+                    'If it IS supported, set the original color depth as the output color depth for this save
+                    outputColorDepth = pdImages(imageID).OriginalColorDepth
+                    Message "Original color depth of " & outputColorDepth & " bpp is supported by this format.  Proceeding with save..."
                 
-                'If it does, provide the user with a prompt to choose whatever color depth they'd like
-                Dim dCheck As VbMsgBoxResult
-                dCheck = promptColorDepth(saveFormat)
-                
-                If dCheck = vbOK Then
-                    outputColorDepth = g_ColorDepth
+                'If it IS NOT supported, we need to find the closest available color depth for this format.
                 Else
-                    PhotoDemon_SaveImage = False
-                    Message "Save canceled."
-                    Exit Function
+                    outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, pdImages(imageID).OriginalColorDepth)
+                    Message "Original color depth of " & pdImages(imageID).OriginalColorDepth & " bpp is not supported by this format.  Proceeding to save as " & outputColorDepth & " bpp..."
+                
                 End If
             
-            'If this format only supports a single output color depth, don't bother the user with a prompt
-            Else
-        
-                outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, pdImages(imageID).OriginalColorDepth)
-        
-            End If
+            'Count colors used
+            Case 1
             
-    End Select
+                'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
+                ' as anything above 256 colors is treated as 24bpp.)
+                Dim colorCountCheck As Long
+                Message "Counting image colors to determine optimal exported color depth..."
+                colorCountCheck = getQuickColorCount(pdImages(imageID))
+                
+                'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
+                outputColorDepth = getColorDepthFromColorCount(colorCountCheck, pdImages(imageID).mainLayer)
+                
+                Message "Color count successful (" & outputColorDepth & " bpp recommended)"
+                
+                'As with case 0, we now need to see if this format supports the suggested color depth
+                If imageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
+                    
+                    'If it IS supported, set the original color depth as the output color depth for this save
+                    Message "Recommended color depth of " & outputColorDepth & " bpp is supported by this format.  Proceeding with save..."
+                
+                'If it IS NOT supported, we need to find the closest available color depth for this format.
+                Else
+                    outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
+                    Message "Recommended color depth of " & pdImages(imageID).OriginalColorDepth & " bpp is not supported by this format.  Proceeding to save as " & outputColorDepth & " bpp..."
+                
+                End If
+            
+            'Prompt the user (but only if necessary)
+            Case 2
+            
+                'First, check to see if the save format in question supports multiple color depths
+                If imageFormats.doesFIFSupportMultipleColorDepths(saveFormat) Then
+                    
+                    'If it does, provide the user with a prompt to choose whatever color depth they'd like
+                    Dim dCheck As VbMsgBoxResult
+                    dCheck = promptColorDepth(saveFormat)
+                    
+                    If dCheck = vbOK Then
+                        outputColorDepth = g_ColorDepth
+                    Else
+                        PhotoDemon_SaveImage = False
+                        Message "Save canceled."
+                        Exit Function
+                    End If
+                
+                'If this format only supports a single output color depth, don't bother the user with a prompt
+                Else
+            
+                    outputColorDepth = imageFormats.getClosestColorDepth(saveFormat, pdImages(imageID).OriginalColorDepth)
+            
+                End If
+            
+        End Select
     
+    End If
     
     '****************************************************************************************************
     ' Based on the requested file type and color depth, call the appropriate save function
