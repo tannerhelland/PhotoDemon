@@ -568,10 +568,22 @@ Public Function SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, B
     Set tmpLayer = New pdLayer
     tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
     If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
-    
+        
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+        
+    'If the image is grayscale, instruct FreeImage to internally mark the image as such
+    Dim outputColorDepth As Long
+    Message "Analyzing image color content..."
+    If tmpLayer.isLayerGrayscale Then
+        Message "No color found.  Saving 8bpp grayscale JPEG."
+        outputColorDepth = 8
+        fi_DIB = FreeImage_ConvertToGreyscale(fi_DIB)
+    Else
+        Message "Color found.  Saving 24bpp full-color JPEG."
+        outputColorDepth = 24
+    End If
         
     'Combine all received flags into one
     If jOtherFlags <> 0 Then jQuality = jQuality Or jOtherFlags
@@ -594,7 +606,7 @@ Public Function SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, B
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, jQuality, FICD_24BPP, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, jQuality, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "JPEG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             FreeLibrary hLib

@@ -632,6 +632,81 @@ Public Function convertTo32bpp() As Boolean
 
 End Function
 
+'Is this layer grayscale?  Determination is made by scanning each pixel and comparing RGB values to see if they match.
+Public Function isLayerGrayscale() As Boolean
+    
+    'Make sure this layer isn't empty
+    If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+    
+        'Loop through the image and compare RGB values to determine grayscale or not.
+        Dim iData() As Byte
+        Dim tmpSA As SAFEARRAY2D
+        prepInternalSafeArray tmpSA
+        CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+        
+        Dim x As Long, y As Long, QuickX As Long
+                        
+        Dim R As Long, g As Long, b As Long
+        
+        Dim qvDepth As Long
+        qvDepth = layerColorDepth \ 8
+                        
+        'Loop through the image, checking alphas as we go
+        For x = 0 To layerWidth - 1
+            QuickX = x * qvDepth
+        For y = 0 To layerHeight - 1
+            
+            R = iData(QuickX + 2, y)
+            g = iData(QuickX + 1, y)
+            b = iData(QuickX, y)
+            
+            'For optimization reasons, this is stated as multiple IFs instead of an OR.  I'm not sure if VB
+            ' short-circuits OR statements, but I know multiple IF statements work.  :)
+            If R <> g Then
+                
+                CopyMemory ByVal VarPtrArray(iData), 0&, 4
+                Erase iData
+        
+                isLayerGrayscale = False
+                Exit Function
+                
+            ElseIf g <> b Then
+            
+                CopyMemory ByVal VarPtrArray(iData), 0&, 4
+                Erase iData
+            
+                isLayerGrayscale = False
+                Exit Function
+                
+            ElseIf R <> b Then
+            
+                CopyMemory ByVal VarPtrArray(iData), 0&, 4
+                Erase iData
+            
+                isLayerGrayscale = False
+                Exit Function
+                
+            End If
+                
+        Next y
+        Next x
+    
+        'With our alpha channel complete, point iData() away from the DIB and deallocate it
+        CopyMemory ByVal VarPtrArray(iData), 0&, 4
+        
+        Erase iData
+                        
+        'Exit
+        isLayerGrayscale = True
+        Exit Function
+        
+    End If
+    
+    'If we made it to this line, the layer is blank, so it doesn't matter what value we return
+    isLayerGrayscale = False
+
+End Function
+
 'Does this layer have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
 ' (This is used to determine how transparency is handled when exporting to lower color depths.)
 Public Function isAlphaBinary() As Boolean
