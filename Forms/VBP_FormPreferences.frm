@@ -1994,7 +1994,7 @@ Private Sub cmdCategory_Click(Index As Integer)
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'We may need to access a generic "form" object multiple times, so I declare it at the top of this sub.
     Dim tForm As Form
@@ -2177,7 +2177,7 @@ Private Sub LoadAllPreferences()
     'Populate the combo box for exported color depth
     cmbExportColorDepth.Clear
     cmbExportColorDepth.AddItem " to match the image file's original color depth", 0
-    cmbExportColorDepth.AddItem " automatically (by counting unique colors)", 1
+    cmbExportColorDepth.AddItem " automatically", 1
     cmbExportColorDepth.AddItem " by asking me what color depth I want to use", 2
     cmbExportColorDepth.ListIndex = userPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
     
