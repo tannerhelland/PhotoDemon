@@ -1502,8 +1502,6 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
         
     Next x
     
-    MsgBox "here"
-    
     'With our check complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     Erase iData
