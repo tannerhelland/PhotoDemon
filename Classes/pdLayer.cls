@@ -1479,9 +1479,11 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
     'If initAlpha is something other than 255 or 0, we don't need to check the image
     If (initAlpha <> 0) And (initAlpha <> 255) Then
         verifyAlphaChannel = True
+        CopyMemory ByVal VarPtrArray(iData), 0&, 4
+        Erase iData
         Exit Function
     End If
-    
+        
     'Loop through the image, comparing colors as we go
     For x = 0 To layerWidth - 1
         QuickX = x * 4
@@ -1499,6 +1501,8 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
         If checkAlpha Then Exit For
         
     Next x
+    
+    MsgBox "here"
     
     'With our check complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
