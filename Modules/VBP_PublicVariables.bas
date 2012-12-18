@@ -159,6 +159,11 @@ Public g_ColorDepth As Long
 ' state unless you have just called the quick count colors routine (otherwise it may be outdated).
 Public g_IsImageGray As Boolean
 
+'Is the current image black and white (literally, is it monochrome e.g. comprised of JUST black and JUST white)?
+' This variable is set by the quick count colors routine.  Do not trust its state unless you have just called
+' the quick count colors routine (otherwise it may be outdated).
+Public g_IsImageMonochrome As Boolean
+
 'What threshold should be used for simplifying an image's complex alpha channel?
 ' (This is set by the custom alpha cutoff dialog.)
 Public g_AlphaCutoff As Byte

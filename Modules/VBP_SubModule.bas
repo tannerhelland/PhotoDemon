@@ -49,17 +49,15 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLa
             ' mark images as 4bpp or 1bpp if they are gray/b&w - otherwise, consider them 8bpp indexed color.
             If (srcColors > 2) Then
                                 
-                If g_IsImageGray Then
-                    getColorDepthFromColorCount = 4
-                Else
-                    getColorDepthFromColorCount = 8
-                End If
-                
+                If g_IsImageGray Then getColorDepthFromColorCount = 4 Else getColorDepthFromColorCount = 8
+            
+            'If there are only two colors, see if they are black and white, other shades of gray, or colors.
+            ' Mark the color depth as 1bpp, 4bpp, or 8bpp respectively.
             Else
-                If g_IsImageGray Then
+                If g_IsImageMonochrome Then
                     getColorDepthFromColorCount = 1
                 Else
-                    getColorDepthFromColorCount = 8
+                    If g_IsImageGray Then getColorDepthFromColorCount = 4 Else getColorDepthFromColorCount = 8
                 End If
             End If
             
@@ -111,7 +109,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     totalCount = 0
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim chkValue As Long
     Dim colorFound As Boolean
         
@@ -120,11 +118,11 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         QuickVal = x * qvDepth
     For y = 0 To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        chkValue = RGB(R, g, b)
+        chkValue = RGB(r, g, b)
         colorFound = False
         
         'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
@@ -153,9 +151,32 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    'Also, erase the counting array
-    'Erase UniqueColors
+    'If the image contains only two colors, check to see if they are pure black and pure white.  If so, mark
+    ' a global flag accordingly and exit (to save a little bit of extra processing time)
+    g_IsImageMonochrome = False
     
+    If totalCount = 2 Then
+    
+        r = ExtractR(UniqueColors(0))
+        g = ExtractG(UniqueColors(0))
+        b = ExtractB(UniqueColors(0))
+        
+        If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
+            
+            r = ExtractR(UniqueColors(1))
+            g = ExtractG(UniqueColors(1))
+            b = ExtractB(UniqueColors(1))
+            
+            If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
+                g_IsImageMonochrome = True
+                getQuickColorCount = totalCount
+                Exit Function
+            End If
+            
+        End If
+        
+    End If
+        
     'If we've made it this far, the color count has a maximum value of 257.
     ' If it is less than 257, analyze it to see if it contains all gray values.
     If totalCount <= 256 Then
@@ -165,12 +186,12 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         'Loop through all available colors
         For i = 0 To totalCount - 1
         
-            R = ExtractR(UniqueColors(i))
+            r = ExtractR(UniqueColors(i))
             g = ExtractG(UniqueColors(i))
             b = ExtractB(UniqueColors(i))
             
             'If any of the components do not match, this is not a grayscale image
-            If (R <> g) Or (g <> b) Or (R <> b) Then
+            If (r <> g) Or (g <> b) Or (r <> b) Then
                 g_IsImageGray = False
                 Exit For
             End If
@@ -183,7 +204,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     End If
     
     getQuickColorCount = totalCount
-    
+        
 End Function
 
 'Given an OLE color, return an RGB
