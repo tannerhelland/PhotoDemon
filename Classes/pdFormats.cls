@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Format Manager
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 26/November/12
-'Last update: added Industrial Light and Magic EXR format support
+'Last updated: 19/December/12
+'Last update: added pngnq availability tracking
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
@@ -44,6 +44,9 @@ Public FreeImageEnabled As Boolean
 
 'Is GDI+ available?
 Public GDIPlusEnabled As Boolean
+
+'Is pngnq available?
+Public pngnqEnabled As Boolean
 
 'Number of available input, output formats
 Private numOfInputFormats As Long, numOfOutputFormats As Long

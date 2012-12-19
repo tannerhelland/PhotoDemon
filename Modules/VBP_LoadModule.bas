@@ -1064,6 +1064,7 @@ Public Sub LoadPlugins()
         FormMain.MnuSelectScanner.Visible = False
         FormMain.MnuImportSepBar1.Visible = False
     Else
+        
         ScanEnabled = True
         
         'If we do find the DLL, use it to check that TWAIN32 support is available on this machine.
@@ -1093,6 +1094,13 @@ Public Sub LoadPlugins()
         FormMain.MnuRotateArbitrary.Visible = False
     Else
         imageFormats.FreeImageEnabled = True
+    End If
+    
+    'Check for pngnq interface
+    If FileExist(PluginPath & "pngnq-s9.exe") = False Then
+        imageFormats.pngnqEnabled = False
+    Else
+        imageFormats.pngnqEnabled = True
     End If
     
     'Finally, check GDI+ availability
