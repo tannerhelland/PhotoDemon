@@ -20,46 +20,85 @@ Attribute VB_Name = "Scanner_Interface"
 
 Option Explicit
 
-Private Declare Function TWAIN_AcquireToFilename Lib "EZTW32.dll" (ByVal hWndApp As Long, ByVal sFile As String) As Long
-Private Declare Function TWAIN_SelectImageSource Lib "EZTW32.dll" (ByVal hWndApp As Long) As Long
-Private Declare Function TWAIN_IsAvailable Lib "EZTW32.dll" () As Long
+Private Declare Function TWAIN_AcquireToFilename Lib "eztw32.dll" (ByVal hWndApp As Long, ByVal sFile As String) As Long
+Private Declare Function TWAIN_SelectImageSource Lib "eztw32.dll" (ByVal hWndApp As Long) As Long
+Private Declare Function TWAIN_IsAvailable Lib "eztw32.dll" () As Long
+Private Declare Function TWAIN_CloseSourceManager Lib "eztw32.dll" (ByVal hWnd As Long) As Long
+Private Declare Function TWAIN_UnloadSourceManager Lib "eztw32.dll" () As Long
 
 'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)
 Dim hLib_Scanner As Long
 
 'This must be run before the scanner is accessed
 Public Function EnableScanner() As Boolean
-    hLib_Scanner = LoadLibrary(PluginPath & "EZTW32.dll")
+
+    hLib_Scanner = LoadLibrary(PluginPath & "eztw32.dll")
+    
     If TWAIN_IsAvailable() = 0 Then EnableScanner = False Else EnableScanner = True
+    
+    FreeLibrary hLib_Scanner
+    
 End Function
 
-Public Sub UnloadScanner()
-    FreeLibrary hLib_Scanner
-End Sub
-
+'Allow the user to select which hardware PhotoDemon will use for scanning
 Public Sub Twain32SelectScanner()
+    
+    'ScanEnabled will only be set to true if the eztw32.dll file was found at program load
     If ScanEnabled = True Then
-        TWAIN_SelectImageSource (FormMain.hWnd)
+        
+        'EnableScanner queries the system for TWAIN-compatible devices
+        If EnableScanner Then
+            
+            Dim hLib As Long
+            hLib = LoadLibrary(PluginPath & "eztw32.dll")
+            
+            TWAIN_SelectImageSource FormMain.hWnd
+            
+            If hLib Then FreeLibrary hLib
+            
+            Message "Scanner successfully enabled "
+            
+        Else
+        
+            'If the scanner isn't responding...
+            MsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
+            Message "Unresponsive scanner - scanning suspended "
+            
+        End If
+    
     Else
-    'If the EZTW32.dll file doesn't exist...
+    
+        'If the EZTW32.dll file doesn't exist...
         MsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
         Message "Scanning disabled "
-        Exit Sub
+        
     End If
-    Message "Scanner successfully enabled "
+    
 End Sub
 
+'Acquire an image from the currently selected scanner
 Public Sub Twain32Scan()
 
     Message "Acquiring image..."
+    
+    'Make sure the EZTW32.dll file exists
     If ScanEnabled = False Then
-        'If the EZTW32.dll file doesn't exist...
         MsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
         Message "Scanner/digital camera import disabled "
         Exit Sub
     End If
+        
+    'Make sure the scanner is on and responsive
+    If Not EnableScanner Then
+        MsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
+        Message "Unresponsive scanner - scanning suspended "
+        Exit Sub
+    End If
 
-    'This form has a fairly extensive error handling routine
+    Dim hLib As Long
+    hLib = LoadLibrary(PluginPath & "eztw32.dll")
+
+    'Note that this function has a fairly extensive error handling routine
     On Error GoTo ScanError
     
     Dim ScannerCaptureFile As String, ScanCheck As Long
@@ -94,10 +133,14 @@ Public Sub Twain32Scan()
         GoTo ScanError
     End If
     
+    If hLib Then FreeLibrary hLib
+    
     Exit Sub
 
 'Something went wrong
 ScanError:
+    
+    If hLib Then FreeLibrary hLib
     
     Dim scanErrMessage As String
     
