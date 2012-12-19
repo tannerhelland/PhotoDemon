@@ -265,26 +265,35 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
         
-        'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If tmpLayer.isAlphaBinary Then
-            tmpLayer.applyAlphaCutoff
-        Else
-            Dim alphaCheck As VbMsgBoxResult
-            alphaCheck = promptAlphaCutoff(tmpLayer)
-            
-            'If the alpha dialog is canceled, abandon the entire save
-            If alphaCheck = vbCancel Then
-            
-                tmpLayer.eraseLayer
-                Set tmpLayer = Nothing
-                SavePNGImage = False
-                Exit Function
-            
-            'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+        'PhotoDemon now offers pngnq support via a plugin.  It can be used to render extremely high-quality 8bpp PNG files
+        ' with "full" transparency.  If it is available, the export process is a bit different.
+        If Not imageFormats.pngnqEnabled Then
+        
+            'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+            If tmpLayer.isAlphaBinary Then
+                tmpLayer.applyAlphaCutoff
             Else
-                tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                Dim alphaCheck As VbMsgBoxResult
+                alphaCheck = promptAlphaCutoff(tmpLayer)
+                
+                'If the alpha dialog is canceled, abandon the entire save
+                If alphaCheck = vbCancel Then
+                
+                    tmpLayer.eraseLayer
+                    Set tmpLayer = Nothing
+                    SavePNGImage = False
+                    Exit Function
+                
+                'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+                Else
+                    tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                End If
+                
             End If
             
+        'If pngnq is available, force the output to 32bpp.  PNGNQ will take care of the actual 8bpp reduction.
+        Else
+            outputColorDepth = 32
         End If
     
     Else
@@ -300,7 +309,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
-    If handleAlpha Then
+    If handleAlpha And (Not imageFormats.pngnqEnabled) Then
         fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
@@ -328,12 +337,69 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         Dim fi_Check As Long
                 
         fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, outputColorDepth, , , , , True)
+        
         If fi_Check = False Then
             Message "PNG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             FreeLibrary hLib
             SavePNGImage = False
             Exit Function
+        
         Else
+            
+            'If pngnq is being used to help with the 8bpp reduction, now is when we need to use it.
+            If handleAlpha And imageFormats.pngnqEnabled Then
+            
+                'Build a full shell path for the pngnq operation
+                Dim shellPath As String
+                shellPath = PluginPath & "pngnq-s9.exe "
+                
+                'Force overwrite if a file with that name already exists
+                shellPath = shellPath & "-f "
+                
+                'Turn off the alpha importance heuristic (this leads to better results on semi-transparent images)
+                shellPath = shellPath & "-A "
+                
+                'Allow moderate Floyd-Steinberg dithering
+                shellPath = shellPath & "-Qf "
+                
+                'Append the name of the current image
+                shellPath = shellPath & """" & PNGPath & """"
+                
+                'Use pngnq to create a new file
+                Message "Using the pngnq-s9 plugin to write a high-quality 8bpp PNG file.  This may take a moment..."
+                
+                Dim shellCheck As Boolean
+                shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
+                'Shell shellPath, vbMinimizedNoFocus
+            
+                'If the shell was successful and the image was created successfully, overwrite the original 32bpp save
+                ' (from FreeImage) with the new 8bpp one (from pngnq-s9)
+                If shellCheck Then
+                
+                    Message "Pngnq-s9 transformation complete.  Verifying output..."
+                
+                    'pngnq is going to create a new file with the name "filename-nq8.png".  We need to rename that file
+                    ' to whatever name the user supplied
+                    Dim srcFile As String
+                    srcFile = PNGPath
+                    StripOffExtension srcFile
+                    srcFile = srcFile & "-nq8.png"
+                    
+                    'Make sure both FreeImage and pngnq were able to generate valid files, then rewrite the FreeImage one
+                    ' with the pngnq one.
+                    If FileExist(srcFile) And FileExist(PNGPath) Then
+                        Kill PNGPath
+                        FileCopy srcFile, PNGPath
+                        Kill srcFile
+                    Else
+                        Message "Pngnq-s9 could not write file.  Saving 32bpp image instead..."
+                    End If
+                Else
+                    Message "Pngnq-s9 could not write file.  Saving 32bpp image instead..."
+                End If
+            
+            End If
+            
             Message "PNG save complete."
         End If
     Else
