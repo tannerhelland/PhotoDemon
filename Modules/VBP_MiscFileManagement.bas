@@ -14,6 +14,14 @@ Option Explicit
 Private Const ERROR_SHARING_VIOLATION As Long = 32
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
 
+'Used to shell an external program, then wait until it completes
+Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
+Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwProcessId As Long) As Long
+Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
+
+Private Const SYNCHRONIZE = &H100000
+Private Const WAIT_INFINITE = -1&
+
 'If a file exists, this function can be used to intelligently increment the file name (e.g. "filename (n+1).ext")
 ' Note that the function returns the filename WITHOUT an extension so that it can be passed to a common dialog without
 ' further parsing. However, an initial extension is required, because this function should only be used if a file name
@@ -148,3 +156,30 @@ End Function
 Public Sub OpenURL(ByVal targetURL As String)
     ShellExecute FormMain.hWnd, "Open", targetURL, "", 0, SW_SHOWNORMAL
 End Sub
+
+'Execute another program (in PhotoDemon's case, a plugin), then wait for it to finish running.
+Public Function ShellAndWait(ByVal sPath As String, ByVal winStyle As VbAppWinStyle) As Boolean
+
+    Dim procID As Long
+    Dim procHandle As Long
+
+    ' Start the program.
+    On Error GoTo ShellError
+    procID = Shell(sPath, winStyle)
+    On Error GoTo 0
+
+    ' Wait for the program to finish.
+    ' Get the process handle.
+    procHandle = OpenProcess(SYNCHRONIZE, 0, procID)
+    If procHandle <> 0 Then
+        WaitForSingleObject procHandle, WAIT_INFINITE
+        CloseHandle procHandle
+    End If
+
+    ' Reappear.
+    ShellAndWait = True
+    Exit Function
+
+ShellError:
+    ShellAndWait = False
+End Function
