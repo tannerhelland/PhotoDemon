@@ -29,13 +29,13 @@ End Type
 Dim FileHeader As CompressionHeader
 
 'Filename used for parsing
-Dim DstFilename As String
+Dim dstFilename As String
 
 'Used to compare compression ratios
 Dim OriginalSize As Long, CompressedSize As Long
 
 'Compress a file
-Public Function CompressFile(ByVal SrcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
+Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
     
     'Manually load the DLL from the "PluginPath" folder (should be App.Path\Data\Plugins)
     Dim hLib As Long
@@ -43,17 +43,17 @@ Public Function CompressFile(ByVal SrcFilename As String, Optional ByVal DispRes
 
     'Used to strip the extension from the original filename
     Dim fExtension As String * 3
-    fExtension = GetExtension(SrcFilename)
+    fExtension = GetExtension(srcFilename)
 
     'Allocate an array to receive the data from a file
     Dim DataBytes() As Byte
-    ReDim DataBytes(FileLen(SrcFilename) - 1)
+    ReDim DataBytes(FileLen(srcFilename) - 1)
 
     'Copy the data from the source into a numerical array
     Dim fileNum As Integer
     fileNum = FreeFile
     
-    Open SrcFilename For Binary Access Read As #fileNum
+    Open srcFilename For Binary Access Read As #fileNum
         Get #fileNum, , DataBytes()
     Close #fileNum
 
@@ -87,16 +87,16 @@ Public Function CompressFile(ByVal SrcFilename As String, Optional ByVal DispRes
     End If
 
     'Build the destination filename with a .pdi extension
-    DstFilename = Left(SrcFilename, Len(SrcFilename) - 4)
-    DstFilename = DstFilename & ".pdi"
-    If FileExist(DstFilename) Then Kill DstFilename
+    dstFilename = Left(srcFilename, Len(srcFilename) - 4)
+    dstFilename = dstFilename & ".pdi"
+    If FileExist(dstFilename) Then Kill dstFilename
     
     'Build our custom compressed file header
     FileHeader.Verification = "THZC"
     FileHeader.OriginalExt = fExtension
     FileHeader.OriginalSize = OriginalSize
     'Write the header and then the compressed data
-    Open DstFilename For Binary Access Write As #fileNum
+    Open dstFilename For Binary Access Write As #fileNum
         Put #fileNum, 1, FileHeader
         Put #fileNum, , DataBytes()
     Close #fileNum
@@ -119,7 +119,9 @@ Public Function CompressFile(ByVal SrcFilename As String, Optional ByVal DispRes
 End Function
 
 'Decompress a file
-Public Function DecompressFile(ByVal SrcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
+Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
+    
+    On Error Resume Next
     
     'Manually load the DLL from the "PluginPath" folder (should be App.Path\Data\Plugins)
     Dim hLib As Long
@@ -127,13 +129,13 @@ Public Function DecompressFile(ByVal SrcFilename As String, Optional ByVal DispR
 
     'Allocate a temporary array for receiving the compressed data
     Dim DataBytes() As Byte
-    ReDim DataBytes(FileLen(SrcFilename) - Len(FileHeader) - 1)
+    ReDim DataBytes(FileLen(srcFilename) - Len(FileHeader) - 1)
     
     'Copy out the header and then the compressed data
     Dim fileNum As Integer
     fileNum = FreeFile
     
-    Open SrcFilename For Binary Access Read As #fileNum
+    Open srcFilename For Binary Access Read As #fileNum
         Get #fileNum, 1, FileHeader
         'Make sure that we've got a valid file
         If FileHeader.Verification <> "THZC" Then
@@ -174,26 +176,26 @@ Public Function DecompressFile(ByVal SrcFilename As String, Optional ByVal DispR
     'Kill the now unnecessary buffer
     Erase TempBuffer
     
+    'Free the zLib library from memory
+    FreeLibrary hLib
+    
     'Build the output path using the original filename
-    DstFilename = Left(SrcFilename, Len(SrcFilename) - 3)
-    DstFilename = DstFilename & FileHeader.OriginalExt
+    dstFilename = Left(srcFilename, Len(srcFilename) - 3)
+    dstFilename = dstFilename & FileHeader.OriginalExt
     
     'If that file exists, murder it
-    If FileExist(DstFilename) Then Kill DstFilename
+    If FileExist(dstFilename) Then Kill dstFilename
     
     'Write the uncompressed data back into its original format
-    Open DstFilename For Binary Access Write As #fileNum
+    Open dstFilename For Binary Access Write As #fileNum
         Put #fileNum, , DataBytes()
     Close #fileNum
     
     'Kill the now unnecessary data array
     Erase DataBytes
-    
-    'Free the zLib library from memory
-    FreeLibrary hLib
-    
+        
     'Kill the original compressed file (note: may want to disable when debugging, so no important files are lost)
-    If SrcFilename <> DstFilename Then Kill SrcFilename
+    If srcFilename <> dstFilename Then Kill srcFilename
     
     'Display decompression results
     If DispResults = True Then MsgBox "File decompressed from " & OriginalSize & " bytes to " & CompressedSize & " bytes."
