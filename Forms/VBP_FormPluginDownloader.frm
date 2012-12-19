@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormPluginDownloader 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PhotoDemon Plugin Downloader"
-   ClientHeight    =   6015
+   ClientHeight    =   7425
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   8295
+   ClientWidth     =   10665
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,299 +18,444 @@ Begin VB.Form FormPluginDownloader
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   401
-   ScaleMode       =   3  'Pixel
-   ScaleWidth      =   553
+   ScaleHeight     =   7425
+   ScaleWidth      =   10665
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton cmdOKNo 
-      Caption         =   "&OK"
-      Height          =   495
-      Left            =   6720
-      TabIndex        =   18
-      Top             =   5280
-      Visible         =   0   'False
-      Width           =   1335
+   Begin VB.PictureBox picInitial 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7335
+      Left            =   0
+      ScaleHeight     =   489
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   705
+      TabIndex        =   7
+      TabStop         =   0   'False
+      Top             =   0
+      Width           =   10575
+      Begin PhotoDemon.jcbutton cmdChoice 
+         Default         =   -1  'True
+         Height          =   1605
+         Index           =   0
+         Left            =   180
+         TabIndex        =   0
+         Top             =   5520
+         Width           =   5130
+         _ExtentX        =   9049
+         _ExtentY        =   2778
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "Yes. Download these files to the plugins folder."
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormPluginDownloader.frx":0000
+         PictureAlign    =   0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   $"VBP_FormPluginDownloader.frx":1052
+         TooltipType     =   1
+         TooltipTitle    =   "Download All Plugins"
+      End
+      Begin PhotoDemon.jcbutton cmdChoice 
+         Cancel          =   -1  'True
+         Height          =   765
+         Index           =   1
+         Left            =   5370
+         TabIndex        =   1
+         Top             =   5520
+         Width           =   5130
+         _ExtentX        =   8837
+         _ExtentY        =   1349
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "Not right now, but please remind me later."
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormPluginDownloader.frx":1108
+         PictureAlign    =   0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   $"VBP_FormPluginDownloader.frx":215A
+         TooltipType     =   1
+         TooltipTitle    =   "Postpone Plugin Download"
+      End
+      Begin PhotoDemon.jcbutton cmdChoice 
+         Height          =   765
+         Index           =   2
+         Left            =   5370
+         TabIndex        =   2
+         Top             =   6360
+         Width           =   5130
+         _ExtentX        =   8837
+         _ExtentY        =   1349
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   " Not now, not ever. Do not prompt me again."
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormPluginDownloader.frx":2205
+         PictureAlign    =   0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   $"VBP_FormPluginDownloader.frx":3257
+         TooltipType     =   1
+         TooltipTitle    =   "Never Download Plugins"
+      End
+      Begin VB.Label lblExplanation 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Explanation appears here at run-time..."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   1335
+         Left            =   480
+         TabIndex        =   19
+         Top             =   720
+         Width           =   9735
+         WordWrap        =   -1  'True
+      End
+      Begin VB.Label lblDescription 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "free, open-source library for optimizing portable network graphics (PNG files)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   615
+         Index           =   3
+         Left            =   5880
+         TabIndex        =   18
+         Top             =   3600
+         Width           =   3975
+      End
+      Begin VB.Label lblDescription 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "free, open-source interface for importing images from scanners and digital cameras"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   615
+         Index           =   2
+         Left            =   720
+         TabIndex        =   17
+         Top             =   3600
+         Width           =   3975
+      End
+      Begin VB.Label lblDescription 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "free, open-source compression library; required to decompress all other plugins"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   615
+         Index           =   1
+         Left            =   5880
+         TabIndex        =   16
+         Top             =   2520
+         Width           =   3975
+      End
+      Begin VB.Label lblDescription 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "free, open-source library for importing and exporting a variety of image formats"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   615
+         Index           =   0
+         Left            =   720
+         TabIndex        =   15
+         Top             =   2520
+         Width           =   3975
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "pngnq-s9 2.0.1"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   285
+         Index           =   3
+         Left            =   5640
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":32E0
+         MousePointer    =   99  'Custom
+         TabIndex        =   14
+         Top             =   3240
+         Width           =   1635
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "zLib 1.2.5"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   285
+         Index           =   1
+         Left            =   5640
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":3432
+         MousePointer    =   99  'Custom
+         TabIndex        =   13
+         Top             =   2160
+         Width           =   1050
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "EZTwain 1.19"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   285
+         Index           =   2
+         Left            =   480
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":3584
+         MousePointer    =   99  'Custom
+         TabIndex        =   12
+         Top             =   3240
+         Width           =   1470
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "FreeImage 3.15.4"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   285
+         Index           =   0
+         Left            =   480
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":36D6
+         MousePointer    =   99  'Custom
+         TabIndex        =   11
+         Top             =   2160
+         Width           =   1890
+      End
+      Begin VB.Label lblPermission 
+         AutoSize        =   -1  'True
+         Caption         =   "Would you like PhotoDemon to download these plugins for you?"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   240
+         TabIndex        =   10
+         Top             =   4920
+         Width           =   6855
+      End
+      Begin VB.Label lblDownloadSize 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "total download size of all plugins: "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   480
+         TabIndex        =   9
+         Top             =   4380
+         Width           =   2925
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "Core Plugins Missing - Download Recommended"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   240
+         TabIndex        =   8
+         Top             =   180
+         Width           =   5145
+      End
    End
    Begin VB.PictureBox picYes 
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   2175
-      Left            =   8280
+      Left            =   0
       ScaleHeight     =   145
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   14
-      Top             =   120
+      ScaleWidth      =   713
+      TabIndex        =   3
+      TabStop         =   0   'False
+      Top             =   7920
       Visible         =   0   'False
-      Width           =   8295
+      Width           =   10695
       Begin VB.PictureBox picProgBar 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
          BackColor       =   &H00FFFFFF&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
-         Height          =   255
-         Left            =   2160
-         ScaleHeight     =   255
-         ScaleWidth      =   6015
-         TabIndex        =   17
-         Top             =   1080
-         Width           =   6015
+         Height          =   375
+         Left            =   2640
+         ScaleHeight     =   375
+         ScaleWidth      =   7695
+         TabIndex        =   6
+         TabStop         =   0   'False
+         Top             =   1200
+         Width           =   7695
       End
       Begin VB.Label lblDownloadInfo 
          Alignment       =   2  'Center
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
-         Caption         =   "Downloading file 1 of 3 (XXX of YYY bytes received)..."
+         Caption         =   "downloading file 1 of 4 (XXX of YYY bytes received)..."
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   9.75
+            Size            =   12
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00800000&
+         ForeColor       =   &H00404040&
          Height          =   375
          Left            =   240
-         TabIndex        =   16
+         TabIndex        =   5
          Top             =   480
-         Width           =   7815
+         Width           =   10215
       End
       Begin VB.Label lblDownload 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "Download progress:"
+         Caption         =   "download progress:"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   9.75
+            Size            =   12
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00400000&
-         Height          =   240
+         ForeColor       =   &H00404040&
+         Height          =   285
          Left            =   360
-         TabIndex        =   15
-         Top             =   1080
-         Width           =   1725
-      End
-   End
-   Begin VB.PictureBox picNo 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5295
-      Left            =   0
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   353
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   545
-      TabIndex        =   6
-      Top             =   6480
-      Visible         =   0   'False
-      Width           =   8175
-      Begin VB.TextBox txtNoExplanation 
-         Appearance      =   0  'Flat
-         BackColor       =   &H8000000F&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H00400000&
-         Height          =   1335
-         Left            =   240
-         Locked          =   -1  'True
-         MultiLine       =   -1  'True
-         TabIndex        =   7
-         Text            =   "VBP_FormPluginDownloader.frx":0000
-         Top             =   1440
-         Width           =   7935
-      End
-      Begin VB.Label lblPluginTitle3 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage:  "
-         ForeColor       =   &H00800000&
-         Height          =   195
-         Left            =   1920
-         TabIndex        =   13
-         Top             =   3840
-         Width           =   930
-      End
-      Begin VB.Label lblPluginTitle2 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "EZTW32 (""EZTwain Classic""): "
-         ForeColor       =   &H00800000&
-         Height          =   195
-         Left            =   1920
-         TabIndex        =   12
-         Top             =   3360
+         TabIndex        =   4
+         Top             =   1200
          Width           =   2115
       End
-      Begin VB.Label lblPluginTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "zLib (WAPI variant): "
-         ForeColor       =   &H00800000&
-         Height          =   195
-         Left            =   1800
-         TabIndex        =   11
-         Top             =   2880
-         Width           =   1500
-      End
-      Begin VB.Label lblFreeImage 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "http://freeimage.sourceforge.net/download.html"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C00000&
-         Height          =   195
-         Left            =   2880
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":01BC
-         MousePointer    =   99  'Custom
-         TabIndex        =   10
-         Top             =   3840
-         Width           =   3540
-      End
-      Begin VB.Label lblEZTW32 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "http://eztwain.com/eztwain1.htm"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C00000&
-         Height          =   195
-         Left            =   4080
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":030E
-         MousePointer    =   99  'Custom
-         TabIndex        =   9
-         Top             =   3360
-         Width           =   2415
-      End
-      Begin VB.Label lblzLib 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "http://www.winimage.com/zLibDll/index.html"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C00000&
-         Height          =   195
-         Left            =   3360
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":0460
-         MousePointer    =   99  'Custom
-         TabIndex        =   8
-         Top             =   2880
-         Width           =   3210
-      End
-   End
-   Begin VB.TextBox txtExplanation 
-      Appearance      =   0  'Flat
-      BackColor       =   &H8000000F&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H00400000&
-      Height          =   1095
-      Left            =   240
-      Locked          =   -1  'True
-      MultiLine       =   -1  'True
-      TabIndex        =   4
-      Text            =   "VBP_FormPluginDownloader.frx":05B2
-      Top             =   240
-      Width           =   7815
-   End
-   Begin VB.TextBox txtPlugins 
-      Appearance      =   0  'Flat
-      BackColor       =   &H8000000F&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H00800000&
-      Height          =   1815
-      Left            =   240
-      Locked          =   -1  'True
-      MultiLine       =   -1  'True
-      TabIndex        =   3
-      Text            =   "VBP_FormPluginDownloader.frx":071A
-      Top             =   1440
-      Width           =   7815
-   End
-   Begin VB.CommandButton cmdYesDownload 
-      Caption         =   "Yes.  Please download these files to the plugins directory."
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   240
-      TabIndex        =   0
-      Top             =   4080
-      Width           =   7815
-   End
-   Begin VB.CommandButton cmdNoDownload 
-      Caption         =   "Not right now, but please remind me again in the future."
-      Height          =   495
-      Left            =   240
-      TabIndex        =   1
-      Top             =   4680
-      Width           =   7815
-   End
-   Begin VB.CommandButton cmdNoDownloadNoReminder 
-      Caption         =   "Not now, not ever.  Do not download these files, and do not prompt me again."
-      Height          =   495
-      Left            =   240
-      TabIndex        =   2
-      Top             =   5280
-      Width           =   7815
-   End
-   Begin VB.Label lblPermission 
-      Alignment       =   2  'Center
-      BackStyle       =   0  'Transparent
-      Caption         =   "Would you like PhotoDemon to download these plugins for you?"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   495
-      Left            =   240
-      TabIndex        =   5
-      Top             =   3480
-      Width           =   7815
    End
 End
 Attribute VB_Name = "FormPluginDownloader"
@@ -322,8 +467,8 @@ Attribute VB_Exposed = False
 'Automatic Plugin Downloader (for downloading core plugins that were not found at program start)
 'Copyright ©2000-2012 by Tanner Helland
 'Created: 10/June/12
-'Last updated: 13/June/12
-'Last update: added compression support.  The total download size for all three plugins is now under 1.0M.  Sweet!
+'Last updated: 19/December/12
+'Last update: interface overhaul, pngnq addition, general code review
 '
 'Interface for downloading plugins marked as missing upon program load.  This code is a heavily modified version
 ' of publicly available code by Alberto Falossi (http://www.devx.com/vb2themax/Tip/19203).
@@ -331,7 +476,10 @@ Attribute VB_Exposed = False
 'A number of features have been added to the original version of this code.  The routine checks the file download
 ' size, and updates the user (via progress bar) on the download progress.  Many checks are in place to protect
 ' against Internet and download errors.  Full compression support is implemented, so if zLib is not found, it will be
-' downloaded first then used to decompress the other plugins.  This cut total download size from 2.8M to just under 1.0M.
+' downloaded first then used to decompress the other plugins.  This cut total download size from 3.0M to nearly 1.0M.
+'
+'Note that compression of the original plugin files must be performed using a custom PhotoDemon-based tool.  These are
+' NOT generic .zip files (they are actually smaller than generic .zip files, owing to their simpler headers).
 '
 'Additionally, this form interfaces with the .INI file so the user can opt to not download the plugins and never be
 ' reminded again. (FYI - this option can be enabled/disabled from the 'Edit' -> 'Program Preferences' menu.)
@@ -343,10 +491,17 @@ Option Explicit
 'Whether or not the Internet is currently connected
 Dim isInternetConnected As Boolean
 
-'Download sizes of the three core plugins
+'Download sizes of the four core plugins
 Dim zLibSize As Single
 Dim freeImageSize As Single
 Dim ezTW32Size As Single
+Dim pngnqSize As Single
+
+'Download size estimates if the user is not connected to the Internet
+Private Const estZLibSize As Long = 139000
+Private Const estFreeImageSize As Long = 1007000
+Private Const estEzTW32Size As Long = 27000
+Private Const estPngnqSize As Long = 298000
 
 'Total expected download size, amount download thus far
 Dim totalDownloadSize As Single, curDownloadSize As Single
@@ -360,65 +515,48 @@ Dim hInternetSession As Long
 'The progress bar class we'll use to update the user on download progress
 Dim dProgBar As cProgressBar
 
-'Do not download the plugins, but prompt the user again in the future
-Private Sub cmdNoDownload_Click()
+Private Sub cmdChoice_Click(Index As Integer)
 
-    userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", True
+    Select Case Index
     
-    If hInternetSession Then InternetCloseHandle hInternetSession
-    Message "Automatic update canceled."
+        'Yes
+        Case 0
+        
+            Dim pluginSuccess As Boolean
+        
+            pluginSuccess = downloadAllPlugins()
+        
+            'downloadAllPlugins() provides all its own error-checking
+            If Not pluginSuccess Then Message "Plugins could not be downloaded at this time.  Carry on!"
+        
+            Unload Me
+        
+        'Not now
+        Case 1
+        
+            'Store this preference
+            userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", True
     
-    cmdYesDownload.Visible = False
-    cmdNoDownload.Visible = False
-    cmdNoDownloadNoReminder.Visible = False
-    picNo.Left = 0
-    picNo.Top = 0
-    DoEvents
-    txtNoExplanation.Text = "The next time you launch " & PROGRAMNAME & ", it will repeat this check for missing plugins." & vbCrLf & vbCrLf & "Note: if you're the adventurous type, you can manually download these plugin files from their respective sites.  " & PROGRAMNAME & " will look for the DLL versions of these libraries in the '\Data\Plugins' subdirectory of wherever the " & PROGRAMNAME & " executable file is located."
-    picNo.Visible = True
-    cmdOKNo.Visible = True
-    cmdOKNo.SetFocus
+            'Close our Internet connection, if any
+            If hInternetSession Then InternetCloseHandle hInternetSession
+            Message "Automatic plugin download canceled.  Plugin-related features disabled for this session."
+            
+            Unload Me
+            
+        'Not ever
+        Case 2
+            
+            'Store this preference
+            userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", False
     
-End Sub
+            'Close our Internet connection, if any
+            If hInternetSession Then InternetCloseHandle hInternetSession
+            Message "Automatic plugin download canceled.  Plugin-related features permanently disabled."
+            
+            Unload Me
+    
+    End Select
 
-'Do not download the plugins, and do not prompt the user again
-Private Sub cmdNoDownloadNoReminder_Click()
-
-    userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", False
-    
-    If hInternetSession Then InternetCloseHandle hInternetSession
-    Message "Automatic update canceled."
-    
-    cmdYesDownload.Visible = False
-    cmdNoDownload.Visible = False
-    cmdNoDownloadNoReminder.Visible = False
-    picNo.Left = 0
-    picNo.Top = 0
-    txtNoExplanation.Text = PROGRAMNAME & " will no longer prompt you about missing plugins.  (If you change your mind in the future, this setting can be reversed from the 'Edit' -> 'Program Preferences' menu.)" & vbCrLf & vbCrLf & "Note: if you're the adventurous type, you can manually download these plugin files from their respective sites.  " & PROGRAMNAME & " will look for the DLL versions of these libraries in the '\Data\Plugins' subdirectory of wherever the " & PROGRAMNAME & " executable file is located."
-    DoEvents
-    picNo.Visible = True
-    cmdOKNo.Visible = True
-    cmdOKNo.SetFocus
-    
-End Sub
-
-'This OK button only appears on the picture box that contains additional information when either of the two "No" buttons are selected
-Private Sub cmdOKNo_Click()
-    Unload Me
-End Sub
-
-'Yes, the user wants us to download the plugins.  Go for it!
-Private Sub cmdYesDownload_Click()
-
-    Dim pluginSuccess As Boolean
-    
-    pluginSuccess = downloadAllPlugins()
-    
-    'downloadAllPlugins() provides all its own error-checking
-    If pluginSuccess = False Then Message "Plugins could not be downloaded at this time.  Carry on!"
-    
-    Unload Me
-    
 End Sub
 
 'LOAD form
@@ -433,82 +571,75 @@ Private Sub Form_Load()
     'If the user is NOT connected, adjust the text accordingly
     If hInternetSession = 0 Then
         isInternetConnected = False
-        txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please connect to the Internet and restart this program. Then, when prompted, please allow it to download the following free, open-source plugin(s):"
+        'txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please connect to the Internet and restart this program. Then, when prompted, please allow it to download the following free, open-source plugin(s):"
+        lblExplanation.Caption = "Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please connect to the Internet, then allow the program to automatically download the following free, open-source plugin(s):"
     Else
         isInternetConnected = True
-        txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):"
+        'txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):"
+        lblExplanation.Caption = "Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):"
     End If
     
     'This string will be used to hold the locations of the files to be downloaded
     Dim URL As String
     
-    Message "Missing plugins detected.  Generating automatic update information (this feature can be disabled from the Edit -> Preferences menu)..."
+    Message "Missing plugins detected.  Generating download information (this feature can be disabled from the Edit -> Preferences menu)..."
     
-    txtPlugins.Text = ""
     totalDownloadSize = 0
     numOfFiles = 0
     
-    'Upon program load, populate the list of files to be downloaded based on which turned up missing
-    If zLibEnabled = False Then
-        If isInternetConnected = True Then
-            URL = "http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc"
-            zLibSize = getPluginSize(hInternetSession, URL)
-            
-            'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
-            If zLibSize = -1 Then zLibSize = 139000
-            totalDownloadSize = zLibSize
-            
-            txtPlugins.Text = ">> zLib: a compression library used to save PhotoDemon Image (PDI) files, and decompress the other plugins after they've been downloaded.  Size: " & Int(zLibSize \ 1000) & " kB" & vbCrLf
-        Else
-            totalDownloadSize = 139000
-            txtPlugins.Text = ">> zLib: a compression library used to save PhotoDemon Image (PDI) files, and decompress the other plugins after they've been downloaded.  Size: ~138 kB" & vbCrLf
-        End If
+    'Upon program load, populate the list of files to be downloaded based on which could not be found.
+    
+    'zLib
+    If isInternetConnected = True Then
+        URL = "http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc"
+        zLibSize = getPluginSize(hInternetSession, URL)
         
-        numOfFiles = numOfFiles + 1
-        
+        'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
+        If zLibSize = -1 Then zLibSize = estZLibSize
+            
+    Else
+        zLibSize = estZLibSize
     End If
     
-    If ScanEnabled = False Then
-        If isInternetConnected = True Then
-            URL = "http://www.tannerhelland.com/photodemon_files/eztw32.pdc"
-            ezTW32Size = getPluginSize(hInternetSession, URL)
-            
-            'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
-            If ezTW32Size = -1 Then ezTW32Size = 28000
-            totalDownloadSize = totalDownloadSize + ezTW32Size
-            
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> EZTW32: enables scanner and digital camera access via the TWAIN32 protocol.  Size: " & Int(ezTW32Size \ 1000) & " kB" & vbCrLf
-        Else
-            totalDownloadSize = totalDownloadSize + 28000
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> EZTW32: enables scanner and digital camera access via the TWAIN32 protocol.  Size: ~27 kB" & vbCrLf
-        End If
+    'EZTwain
+    If isInternetConnected = True Then
+        URL = "http://www.tannerhelland.com/photodemon_files/eztw32.pdc"
+        ezTW32Size = getPluginSize(hInternetSession, URL)
         
-        numOfFiles = numOfFiles + 1
-        
+        'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
+        If ezTW32Size = -1 Then ezTW32Size = estEzTW32Size
+            
+    Else
+        ezTW32Size = estEzTW32Size
     End If
     
-    If imageFormats.FreeImageEnabled = False Then
-        If isInternetConnected = True Then
-            URL = "http://www.tannerhelland.com/photodemon_files/freeimage.pdc"
-            freeImageSize = getPluginSize(hInternetSession, URL)
-            
-            'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
-            If freeImageSize = -1 Then freeImageSize = 977000
-            totalDownloadSize = totalDownloadSize + freeImageSize
-            
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PSD, PICT, TGA, HDR, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: " & Int(freeImageSize \ 1000) & " kB"
-        Else
-            totalDownloadSize = totalDownloadSize + 977000
-            txtPlugins.Text = txtPlugins.Text & vbCrLf & ">> FreeImage: advanced file format support, including PSD, PICT, TGA, HDR, and many more.  Also used for advanced image resize filters (Mitchell and Netravali, Catmull-Rom, Lanczos).  Size: ~976 kB"
-        End If
+    'FreeImage
+    If isInternetConnected = True Then
+        URL = "http://www.tannerhelland.com/photodemon_files/freeimage.pdc"
+        freeImageSize = getPluginSize(hInternetSession, URL)
         
-        numOfFiles = numOfFiles + 1
+        'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
+        If freeImageSize = -1 Then freeImageSize = estFreeImageSize
         
+    Else
+        freeImageSize = estFreeImageSize
     End If
-
-    txtPlugins.Text = txtPlugins.Text & vbCrLf & vbCrLf & "Total download size: " & Int(totalDownloadSize \ 1000) & " kB"
-
-    Message "Ready to update. Awaiting user permission..."
+    
+    'pngnq
+    If isInternetConnected = True Then
+        URL = "http://www.tannerhelland.com/photodemon_files/pngnq-s9.pdc"
+        pngnqSize = getPluginSize(hInternetSession, URL)
+        
+        'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
+        If pngnqSize = -1 Then pngnqSize = estPngnqSize
+        
+    Else
+        pngnqSize = estPngnqSize
+    End If
+    
+    updateDownloadSize
+    
+    Message "Ready to download required plugins. Awaiting user permission..."
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -533,24 +664,35 @@ Private Function getPluginSize(ByVal hInternet As Long, ByVal pluginURL As Strin
     
 End Function
 
-'Launch the website for downloading the EZTW32 DLL
-Private Sub lblEZTW32_Click()
-    OpenURL "http://eztwain.com/eztwain1.htm"
-End Sub
-
-'Launch the website for downloading the FreeImage DLL
-Private Sub lblFreeImage_Click()
-    OpenURL "http://freeimage.sourceforge.net/download.html"
-End Sub
-
-'Launch the website for downloading the zLibwapi DLL
-Private Sub lblzLib_Click()
-    OpenURL "http://www.winimage.com/zLibDll/index.html"
+'Allow the user to visit any plugin homepage by clicking the plugin's name
+Private Sub lblInterfaceTitle_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'FreeImage
+        Case 0
+            OpenURL "http://freeimage.sourceforge.net/download.html"
+            
+        'zLib
+        Case 1
+            OpenURL "http://www.winimage.com/zLibDll/index.html"
+        
+        'EZTwain
+        Case 2
+            OpenURL "http://eztwain.com/eztwain1.htm"
+            
+        'PNGNQ
+        Case 3
+            OpenURL "http://sourceforge.net/projects/pngnqs9/"
+            
+    End Select
+    
 End Sub
 
 Private Function downloadAllPlugins() As Boolean
 
     If isInternetConnected = False Then
+    
         'Hopefully the user established an internet connection before clicking this button.  If not, prompt them to do so.
         Message "Checking again for Internet connection..."
         hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
@@ -567,12 +709,14 @@ Private Function downloadAllPlugins() As Boolean
     'If we've made it here, assume the user has a valid Internet connection
     
     'Bring the picture box with the download info to the foreground
+    picInitial.Visible = False
     picYes.Left = 0
     picYes.Top = 0
         
     'Set up a progress bar control
     Set dProgBar = New cProgressBar
     dProgBar.DrawObject = FormPluginDownloader.picProgBar
+    dProgBar.BarColor = RGB(48, 117, 255)
     dProgBar.Min = 0
     dProgBar.Max = 100
     dProgBar.XpStyle = True
@@ -592,70 +736,73 @@ Private Function downloadAllPlugins() As Boolean
         MkDir PluginPath
     End If
     
+    Message "Downloading core plugin files..."
+    
     Dim downloadSuccessful As Boolean
     curDownloadSize = 0
     curNumOfFiles = 1
     
     'Time to get the files.  Start with zLib.
-    If zLibEnabled = False Then
-        downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc", curNumOfFiles, numOfFiles, zLibSize, False)
-        If downloadSuccessful = False Then
-            MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
-            downloadAllPlugins = False
-            Exit Function
-        Else
-            zLibEnabled = True
-        End If
-        
-        curNumOfFiles = curNumOfFiles + 1
-    
+    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc", curNumOfFiles, numOfFiles, zLibSize, False)
+    If downloadSuccessful = False Then
+        MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        downloadAllPlugins = False
+        Exit Function
+    Else
+        zLibEnabled = True
     End If
+        
+    curNumOfFiles = curNumOfFiles + 1
     
     'Next comes EZTW32
-    If ScanEnabled = False Then
-        downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/eztw32.pdc", curNumOfFiles, numOfFiles, ezTW32Size, True)
-        If downloadSuccessful = False Then
-            MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
-            downloadAllPlugins = False
-            Exit Function
-        Else
-            ScanEnabled = True
-        End If
-        
-        curNumOfFiles = curNumOfFiles + 1
-    
+    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/eztw32.pdc", curNumOfFiles, numOfFiles, ezTW32Size, True)
+    If downloadSuccessful = False Then
+        MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        downloadAllPlugins = False
+        Exit Function
+    Else
+        ScanEnabled = True
     End If
-            
-    'Last is FreeImage
-    If imageFormats.FreeImageEnabled = False Then
-        downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
-        If downloadSuccessful = False Then
-            MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
-            downloadAllPlugins = False
-            Exit Function
-        Else
-            imageFormats.FreeImageEnabled = True
-        End If
     
+    curNumOfFiles = curNumOfFiles + 1
+            
+    'Next is FreeImage
+    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
+    If downloadSuccessful = False Then
+        MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        downloadAllPlugins = False
+        Exit Function
+    Else
+        imageFormats.FreeImageEnabled = True
+    End If
+    
+    curNumOfFiles = curNumOfFiles + 1
+    
+    'Last is pngnq
+    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/pngnq-s9.pdc", curNumOfFiles, numOfFiles, pngnqSize, True)
+    If downloadSuccessful = False Then
+        MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        downloadAllPlugins = False
+        Exit Function
+    Else
+        imageFormats.pngnqEnabled = True
     End If
     
     dProgBar.Value = dProgBar.Max
-    DoEvents
     
     If hInternetSession Then InternetCloseHandle hInternetSession
     
-    lblDownloadInfo.Caption = "All downloads successful.  This screen will automatically close in four seconds."
+    lblDownloadInfo.Caption = "All downloads successful.  This screen will automatically close in three seconds."
     
     Dim OT As Single
     OT = Timer
-    Do While Timer - OT < 4#
+    Do While Timer - OT < 3#
         DoEvents
     Loop
     
-    Message "Plugins downloaded successfully.  PhotoDemon is ready to go!  Please load an image (File -> Open)"
+    Message "Plugins downloaded successfully.  To complete plugin setup, please restart the program."
     
     Unload Me
-
 
 End Function
 
@@ -776,3 +923,25 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
     End If
 
 End Function
+
+'Add up the sizes of the selected plugins to give the user a "total download size" estimate.
+Private Sub updateDownloadSize()
+
+    totalDownloadSize = 0
+    numOfFiles = 0
+    
+    totalDownloadSize = totalDownloadSize + zLibSize
+    numOfFiles = numOfFiles + 1
+    
+    totalDownloadSize = totalDownloadSize + pngnqSize
+    numOfFiles = numOfFiles + 1
+    
+    totalDownloadSize = totalDownloadSize + ezTW32Size
+    numOfFiles = numOfFiles + 1
+    
+    totalDownloadSize = totalDownloadSize + freeImageSize
+    numOfFiles = numOfFiles + 1
+    
+    lblDownloadSize.Caption = "total download size: " & Format(CStr(totalDownloadSize / 1000000), "0.00") & " MB"
+
+End Sub
