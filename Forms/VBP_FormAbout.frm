@@ -4,7 +4,7 @@ Begin VB.Form FormAbout
    BackColor       =   &H00FFFFFF&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
-   ClientHeight    =   8115
+   ClientHeight    =   9735
    ClientLeft      =   2340
    ClientTop       =   1875
    ClientWidth     =   9000
@@ -22,7 +22,7 @@ Begin VB.Form FormAbout
    Icon            =   "VBP_FormAbout.frx":0000
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   541
+   ScaleHeight     =   649
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   600
    ShowInTaskbar   =   0   'False
@@ -33,10 +33,110 @@ Begin VB.Form FormAbout
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   465
-      Left            =   7635
+      Left            =   7320
       TabIndex        =   0
-      Top             =   7560
-      Width           =   1245
+      Top             =   9120
+      Width           =   1485
+   End
+   Begin VB.Label lblzLib 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "zLib license page"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FF0000&
+      Height          =   195
+      Left            =   4050
+      MouseIcon       =   "VBP_FormAbout.frx":000C
+      MousePointer    =   99  'Custom
+      TabIndex        =   8
+      Top             =   8640
+      Width           =   1200
+   End
+   Begin VB.Label lblEZTW32 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "EZTwain license page"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FF0000&
+      Height          =   195
+      Left            =   2235
+      MouseIcon       =   "VBP_FormAbout.frx":015E
+      MousePointer    =   99  'Custom
+      TabIndex        =   7
+      Top             =   8640
+      Width           =   1530
+   End
+   Begin VB.Label lblPngnq 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "pngnq-s9 homepage"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FF0000&
+      Height          =   195
+      Left            =   5520
+      MouseIcon       =   "VBP_FormAbout.frx":02B0
+      MousePointer    =   99  'Custom
+      TabIndex        =   6
+      Top             =   8640
+      Width           =   1470
+   End
+   Begin VB.Label lblFreeImage 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "FreeImage license page"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FF0000&
+      Height          =   195
+      Left            =   270
+      MouseIcon       =   "VBP_FormAbout.frx":0402
+      MousePointer    =   99  'Custom
+      TabIndex        =   5
+      Top             =   8640
+      Width           =   1710
+   End
+   Begin VB.Label lblLinks 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   $"VBP_FormAbout.frx":0554
+      ForeColor       =   &H80000008&
+      Height          =   435
+      Left            =   240
+      TabIndex        =   4
+      Top             =   8160
+      Width           =   8580
    End
    Begin VB.Line Line3 
       BorderColor     =   &H80000002&
@@ -50,16 +150,16 @@ Begin VB.Form FormAbout
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "PhotoDemon would not be possible without the following individuals. My sincerest thanks goes out to: "
+      Caption         =   "PhotoDemon would not be possible without contributions from the following individuals and organizations:"
       ForeColor       =   &H00400000&
       Height          =   195
       Index           =   0
       Left            =   240
-      MouseIcon       =   "VBP_FormAbout.frx":000C
+      MouseIcon       =   "VBP_FormAbout.frx":05DF
       MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   2880
-      Width           =   7335
+      Width           =   7560
    End
    Begin VB.Label lblDisclaimer 
       Alignment       =   1  'Right Justify
@@ -124,7 +224,7 @@ Option Explicit
 Dim creditList() As String
 Dim curCredit As Long
 
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Unload Me
 End Sub
 
@@ -159,7 +259,6 @@ Private Sub Form_Load()
     GenerateThankyou "The Tango Icon Library (public-domain)", "http://tango.freedesktop.org/"
     GenerateThankyou "Phil Fresle (SHA-256 hash implementation)", "http://www.frez.co.uk/vb6.aspx"
     GenerateThankyou "Johannes B ('Fog')", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42642&lngWId=1"
-    GenerateThankyou "Planet Source Code", "http://www.planetsourcecode.com/"
     GenerateThankyou "Dave Jamison", "http://www.modeltrainsoftware.com/"
     GenerateThankyou "Herman Liu"
     GenerateThankyou "Robert Rayment"
@@ -214,6 +313,18 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
 
 End Sub
 
+Private Sub lblEZTW32_Click()
+    OpenURL "http://eztwain.com/ezt1faq.htm"
+End Sub
+
+Private Sub lblFreeImage_Click()
+    OpenURL "http://freeimage.sourceforge.net/license.html"
+End Sub
+
+Private Sub lblPngnq_Click()
+    OpenURL "http://sourceforge.net/projects/pngnqs9/"
+End Sub
+
 'When a thank-you credit is clicked, launch the corresponding website
 Private Sub lblThanks_Click(Index As Integer)
 
@@ -221,3 +332,6 @@ Private Sub lblThanks_Click(Index As Integer)
 
 End Sub
 
+Private Sub lblzLib_Click()
+    OpenURL "http://www.zlib.net/zlib_license.html"
+End Sub
