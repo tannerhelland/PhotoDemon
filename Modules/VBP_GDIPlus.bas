@@ -330,6 +330,54 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     Dim TIFF_ColorDepth As Long, TIFF_Compression As Long
     TIFF_Compression = [EncoderValueCompressionLZW]
     
+    'TIFF has some unique constraints on account of its many compression schemes.  Because it only supports a subset
+    ' of compression types, we must adjust our code accordingly.
+    If imgFormat = ImageTIFF Then
+    
+        Select Case userPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
+        
+            'Default settings (LZW for > 1bpp, CCITT Group 4 fax encoding for 1bpp)
+            Case 0
+                If gdipColorDepth = 1 Then TIFF_Compression = [EncoderValueCompressionCCITT4] Else TIFF_Compression = [EncoderValueCompressionLZW]
+                
+            'No compression
+            Case 1
+                TIFF_Compression = [EncoderValueCompressionNone]
+                
+            'Macintosh Packbits (RLE)
+            Case 2
+                TIFF_Compression = [EncoderValueCompressionRle]
+            
+            'Proper deflate (Adobe-style) - not supported by GDI+
+            Case 3
+                TIFF_Compression = [EncoderValueCompressionLZW]
+            
+            'Obsolete deflate (PKZIP or zLib-style) - not supported by GDI+
+            Case 4
+                TIFF_Compression = [EncoderValueCompressionLZW]
+            
+            'LZW
+            Case 5
+                TIFF_Compression = [EncoderValueCompressionLZW]
+                
+            'JPEG - not supported by GDI+
+            Case 6
+                TIFF_Compression = [EncoderValueCompressionLZW]
+            
+            'Fax Group 3
+            Case 7
+                gdipColorDepth = 1
+                TIFF_Compression = [EncoderValueCompressionCCITT3]
+            
+            'Fax Group 4
+            Case 8
+                gdipColorDepth = 1
+                TIFF_Compression = [EncoderValueCompressionCCITT4]
+                
+        End Select
+    
+    End If
+    
     'Request an encoder from GDI+ based on the type passed to this routine
     Dim uEncCLSID As clsid
     Dim uEncParams As EncoderParameters

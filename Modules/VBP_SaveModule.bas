@@ -726,6 +726,24 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
     
     Message "Preparing TIFF image..."
     
+    'TIFFs have some unique considerations regarding compression techniques.  If a color-depth-specific compression
+    ' technique has been requested, modify the output depth accordingly.
+    Select Case userPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
+        
+        'JPEG compression
+        Case 6
+            outputColorDepth = 24
+        
+        'CCITT Group 3
+        Case 7
+            outputColorDepth = 1
+        
+        'CCITT Group 4
+        Case 8
+            outputColorDepth = 1
+            
+    End Select
+    
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
@@ -802,8 +820,53 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
     'Use that handle to save the image to TIFF format
     If fi_DIB <> 0 Then
         
+        'Prepare TIFF export flags based on the user's preferences
+        Dim TIFFFlags As Long
+        
+        Select Case userPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
+        
+            'Default settings (LZW for > 1bpp, CCITT Group 4 fax encoding for 1bpp)
+            Case 0
+                TIFFFlags = TIFF_DEFAULT
+                
+            'No compression
+            Case 1
+                TIFFFlags = TIFF_NONE
+            
+            'Macintosh Packbits (RLE)
+            Case 2
+                TIFFFlags = TIFF_PACKBITS
+            
+            'Proper deflate (Adobe-style)
+            Case 3
+                TIFFFlags = TIFF_ADOBE_DEFLATE
+            
+            'Obsolete deflate (PKZIP or zLib-style)
+            Case 4
+                TIFFFlags = TIFF_DEFLATE
+            
+            'LZW
+            Case 5
+                TIFFFlags = TIFF_LZW
+                
+            'JPEG
+            Case 6
+                TIFFFlags = TIFF_JPEG
+            
+            'Fax Group 3
+            Case 7
+                TIFFFlags = TIFF_CCITTFAX3
+            
+            'Fax Group 4
+            Case 8
+                TIFFFlags = TIFF_CCITTFAX4
+                
+        End Select
+        
+        If userPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False) Then TIFFFlags = (TIFFFlags Or TIFF_CMYK)
+        
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, FISO_TIFF_DEFAULT, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFFFlags, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "TIFF save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             FreeLibrary hLib
