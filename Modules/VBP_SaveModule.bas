@@ -53,7 +53,10 @@ Public Function SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal ou
             Dim fi_DIB As Long
             fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
             
-            'Use that handle to save the image to GIF format, with required color conversion based on the outgoing color depth
+            'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
+            If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
+            
+            'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
             If fi_DIB <> 0 Then
                 Dim fi_Check As Long
                 fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, FIF_BMP, , outputColorDepth, , , , , True)
@@ -307,6 +310,9 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    
+    'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
+    If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
     If handleAlpha And (Not imageFormats.pngnqEnabled) Then
@@ -765,6 +771,9 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    
+    'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
+    If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
     If handleAlpha Then
