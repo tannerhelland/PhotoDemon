@@ -110,6 +110,12 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         Dim curTop As Long, curLeft As Long
         Dim curWidth As Long, curHeight As Long
     
+        'Because certain changes will trigger the appearance of scroll bars, which take up extra space in the viewport,
+        ' we need to check for this and potentially increase window size slightly to accomodate the scroll bars.
+        Dim forceMaxWidth As Boolean, forceMaxHeight As Boolean
+        forceMaxWidth = False
+        forceMaxHeight = False
+    
         'Change the scalemode to twips to match the MDI form
         FormMain.ActiveForm.ScaleMode = 1
     
@@ -147,6 +153,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             Else
                 curTop = 0
                 curHeight = FormMain.ScaleHeight
+                forceMaxHeight = True
             End If
         
         End If
@@ -163,8 +170,27 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             Else
                 curLeft = 0
                 curWidth = FormMain.ScaleWidth
+                forceMaxWidth = True
             End If
        
+        End If
+        
+        'If the image does not fill the entire viewport, but one dimension is maxed out, add a little extra space for
+        ' the scroll bar that will necessarily appear.
+        If forceMaxHeight And (Not forceMaxWidth) Then
+            curWidth = curWidth + FormMain.ActiveForm.VScroll.Width
+            
+            'If this addition pushes the image off-screen, nudge it slightly left
+            If curLeft + curWidth > FormMain.ActiveForm.ScaleWidth Then curLeft = curWidth
+            
+        End If
+        
+        If forceMaxWidth And (Not forceMaxHeight) Then
+            curHeight = curHeight + FormMain.ActiveForm.HScroll.Height
+            
+            'If this addition pushes the image off-screen, nudge it slightly up
+            If curTop + curHeight > FormMain.ActiveForm.ScaleHeight Then curTop = curHeight
+            
         End If
         
         'Apply the changes in whatever manner appropriate (again, this is handled differently if the image is newly loaded)
