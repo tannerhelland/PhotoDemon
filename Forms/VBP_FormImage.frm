@@ -545,7 +545,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
  
                 'If we make it here and the save was successful, force an immediate unload
                 If Cancel = False Then
-                    Me.Visible = False
                     Unload Me
                 
                 '...but if the save was not successful, suspend all unload action
@@ -557,7 +556,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             
             'Do not save the image
             ElseIf confirmReturn = vbNo Then
-                Me.Visible = False
                 Unload Me
             
             End If
@@ -629,12 +627,12 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
+    Message "Closing image..."
+    NumOfWindows = NumOfWindows - 1
+    
     'Release mouse wheel support
     If isProgramCompiled Then Call WheelUnHook(Me.hWnd)
-    
-    Message "Closing image..."
-    
-    NumOfWindows = NumOfWindows - 1
+        
     Me.Visible = False
     
     'Erase all image layers (to prevent memory leaks)
