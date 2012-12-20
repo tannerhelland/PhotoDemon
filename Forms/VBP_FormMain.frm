@@ -861,10 +861,10 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuMirror 
-         Caption         =   "Mirror (Horizontal)"
+         Caption         =   "Flip Horizontal"
       End
       Begin VB.Menu MnuFlip 
-         Caption         =   "Flip (Vertical)"
+         Caption         =   "Flip Vertical"
       End
       Begin VB.Menu MnuImageSepBar3 
          Caption         =   "-"
