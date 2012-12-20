@@ -653,7 +653,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If AutosizeLargeImages = 0 Then FitImageToViewport True
                     
             'If the window is not maximized or minimized, fit the form around the picture box
-            If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
+            If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True, True
             
         End If
         

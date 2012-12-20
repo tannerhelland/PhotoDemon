@@ -95,7 +95,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
 End Sub
 
 'Fit the active window tightly around the image
-Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
+Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False, Optional ByVal isImageLoading As Boolean = False)
         
     If NumOfWindows = 0 Then Exit Sub
         
@@ -104,6 +104,11 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
     
         'Disable AutoScroll, because that messes with our calculations
         FixScrolling = False
+    
+        'To minimize flickering, we will only apply width/height and top/left changes once.
+        ' While calculations are being run, store all changes to variables.
+        Dim curTop As Long, curLeft As Long
+        Dim curWidth As Long, curHeight As Long
     
         'Change the scalemode to twips to match the MDI form
         FormMain.ActiveForm.ScaleMode = 1
@@ -116,8 +121,61 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False)
         hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
         
         'Now we set the form dimensions to match the image's
-        FormMain.ActiveForm.Width = wDif + ((Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
-        FormMain.ActiveForm.Height = hDif + ((Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        curWidth = wDif + ((Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        curHeight = hDif + ((Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        
+        'There is a possibility that after a transformation (such as a rotation), part of the image may be off the screen.
+        ' Start by populating some coordinate variables, which will be generated differently contingent on the image
+        ' being a newly loaded one (and thus is still off-screen), or a presently visible one.
+        If isImageLoading Then
+            curLeft = pdImages(CurrentImage).WindowLeft
+            curTop = pdImages(CurrentImage).WindowTop
+        Else
+            curLeft = FormMain.ActiveForm.Left
+            curTop = FormMain.ActiveForm.Top
+        End If
+        
+        ' Check for the image being off-viewport, starting with the vertical measurement.
+        If curTop + curHeight > FormMain.ScaleHeight Then
+        
+            'If we can solve the problem by simply moving the form upward, do that.
+            If curHeight < FormMain.ScaleHeight Then
+                curTop = FormMain.ScaleHeight - curHeight
+        
+            'If the image is taller than the MDI client area, we have a problem.  Move the image to the top of the
+            ' MDI client area, then shrink the window vertically to force a scroll bar appearance.
+            Else
+                curTop = 0
+                curHeight = FormMain.ScaleHeight
+            End If
+        
+        End If
+       
+        'Next, check the horizontal measurement.
+        If curLeft + curWidth > FormMain.ScaleWidth Then
+       
+            'If we can solve the problem by simply moving the form left, do that.
+            If curWidth < FormMain.ScaleWidth Then
+                curLeft = FormMain.ScaleWidth - curWidth
+       
+            'If the image is wider than the MDI client area, we have a problem.  Move the image to the far left of the
+            ' MDI client area, then shrink the window horizontally to force a scroll bar appearance.
+            Else
+                curLeft = 0
+                curWidth = FormMain.ScaleWidth
+            End If
+       
+        End If
+        
+        'Apply the changes in whatever manner appropriate (again, this is handled differently if the image is newly loaded)
+        If isImageLoading Then
+            pdImages(CurrentImage).WindowLeft = curLeft
+            pdImages(CurrentImage).WindowTop = curTop
+            FormMain.ActiveForm.Width = curWidth
+            FormMain.ActiveForm.Height = curHeight
+        Else
+            FormMain.ActiveForm.Move curLeft, curTop, curWidth, curHeight
+        End If
         
         'Set the scalemode back to a decent pixels
         FormMain.ActiveForm.ScaleMode = 3
