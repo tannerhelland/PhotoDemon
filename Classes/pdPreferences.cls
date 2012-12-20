@@ -339,6 +339,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "AlphaCheckTwo=" & RGB(204, 204, 204)
         Print #fileNum, "AlphaCheckSize=1"
         Print #fileNum, "AutosizeLargeImages=0"
+        Print #fileNum, "BitmapRLE=0"
         Print #fileNum, "CanvasBackground=" & vb3DShadow 'RGB(201, 211, 226)
         Print #fileNum, "CanvasDropShadow=1"
         Print #fileNum, "CheckForUpdates=1"

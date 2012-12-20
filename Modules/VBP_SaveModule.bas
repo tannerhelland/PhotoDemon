@@ -52,14 +52,21 @@ Public Function SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal ou
             'Convert our current layer to a FreeImage-type DIB
             Dim fi_DIB As Long
             fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
-            
+                        
             'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
             If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
+            
+            'Finally, prepare some BMP save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
+            ' request RLE encoding from FreeImage.
+            Dim BMPflags As Long
+            BMPflags = BMP_DEFAULT
+            
+            If outputColorDepth = 8 And userPreferences.GetPreference_Boolean("General Preferences", "BitampRLE", False) Then BMPflags = BMP_SAVE_RLE
             
             'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
             If fi_DIB <> 0 Then
                 Dim fi_Check As Long
-                fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, FIF_BMP, , outputColorDepth, , , , , True)
+                fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, FIF_BMP, BMPflags, outputColorDepth, , , , , True)
                 If fi_Check = False Then
                     Message "BMP save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
                     FreeLibrary hLib
