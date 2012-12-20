@@ -91,6 +91,8 @@ Private Enum EncoderValue
     [EncoderValueFrameDimensionTime] = 21
     [EncoderValueFrameDimensionResolution] = 22
     [EncoderValueFrameDimensionPage] = 23
+    [EncoderValueColorTypeGray] = 24
+    [EncoderValueColorTypeRGB] = 25
 End Enum
 
 Private Type clsid
@@ -130,6 +132,7 @@ End Type
 
 Private Const EncoderCompression      As String = "{E09D739D-CCD4-44EE-8EBA-3FBF8BE4FC58}"
 Private Const EncoderColorDepth       As String = "{66087055-AD66-4C7C-9A18-38A2310B8337}"
+Private Const EncoderColorSpace       As String = "{AE7A62A0-EE2C-49D8-9D07-1BA8A927596E}"
 Private Const EncoderScanMethod       As String = "{3A4E2661-3109-4E56-8536-42C156E7DCFA}"
 Private Const EncoderVersion          As String = "{24D18C76-814A-41A4-BF53-1C219CCCF797}"
 Private Const EncoderRenderMethod     As String = "{6D42C53A-229A-4825-8BB7-5C99E2B9A8B8}"
@@ -137,6 +140,7 @@ Private Const EncoderQuality          As String = "{1D5BE4B5-FA4A-452D-9CDD-5DB3
 Private Const EncoderTransformation   As String = "{8D0EB2D1-A58E-4EA8-AA14-108074B7B6F9}"
 Private Const EncoderLuminanceTable   As String = "{EDB33BCE-0266-4A77-B904-27216099E717}"
 Private Const EncoderChrominanceTable As String = "{F2E455DC-09B3-4316-8260-676ADA32481C}"
+Private Const EncoderSaveAsCMYK       As String = "{A219BBC9-0A9D-4005-A3EE-3A421B8BB06C}"
 Private Const EncoderSaveFlag         As String = "{292266FC-AC40-47BF-8CFC-A85B89A655DE}"
 Private Const CodecIImageBytes        As String = "{025D1823-6C7D-447B-BBDB-A3CBC3DFA2FC}"
 
@@ -282,7 +286,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef targetPict
 End Function
 
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
-' Additional save options are currently available for JPEG format (save quality, range [1,100]).
+' Additional save options are currently available for JPEGs (save quality, range [1,100]) and TIFFs (compression type).
 Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, ByVal outputColorDepth As Long, Optional ByVal JPEGQuality As Long = 92) As Boolean
 
     On Error GoTo GDIPlusSaveError
@@ -327,7 +331,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     Dim gdipColorDepth As Long
     gdipColorDepth = outputColorDepth
     
-    Dim TIFF_ColorDepth As Long, TIFF_Compression As Long
+    Dim TIFF_Compression As Long
     TIFF_Compression = [EncoderValueCompressionLZW]
     
     'TIFF has some unique constraints on account of its many compression schemes.  Because it only supports a subset
@@ -451,7 +455,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
         Case [ImageTIFF]
             pvGetEncoderClsID "image/tiff", uEncCLSID
             uEncParams.Count = 2
-            ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.Parameter))
+            ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.Parameter) * 2)
             
             With uEncParams.Parameter
                 .NumberOfValues = 1
