@@ -220,6 +220,34 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
     
     '****************************************************************************
+    ' Retrieve format-specific information, link PNG background color
+    '****************************************************************************
+    
+    'Check to see if the image has a background color embedded
+    If FreeImage_HasBackgroundColor(fi_hDIB) Then
+                
+        'FreeImage will pass the background color to an RGBquad type-variable
+        Dim rQuad As RGBQUAD
+        If FreeImage_GetBackgroundColor(fi_hDIB, rQuad) Then
+        
+            'Normally, we can reassemble the .r/g/b values in the object, but paletted images work a bit differently - the
+            ' palette index is stored in .rgbReserved.  Check for that, and if it's non-zero, retrieve the palette value instead.
+            If rQuad.rgbReserved <> 0 Then
+                Dim fi_Palette() As Long
+                fi_Palette = FreeImage_GetPaletteExLong(fi_hDIB)
+                dstImage.pngBackgroundColor = fi_Palette(rQuad.rgbReserved)
+            
+            'Otherwise it's easy - just reassemble the RGB values from the quad
+            Else
+                dstImage.pngBackgroundColor = RGB(rQuad.rgbRed, rQuad.rgbGreen, rQuad.rgbBlue)
+            End If
+        
+        End If
+        
+    End If
+    
+    
+    '****************************************************************************
     ' Determine native color depth
     '****************************************************************************
     

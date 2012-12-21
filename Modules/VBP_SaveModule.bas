@@ -336,8 +336,8 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         FreeImage_SetTransparentIndex fi_DIB, palIndex
         
         'Finally, because some software may not display the transparency correctly, we need to set that
-        ' palette index to some normal color instead of bright magenta.  To do that, we must make a
-        ' copy of the palette and update the transparency index accordingly.
+        ' palette index to its original value.  To do that, we must make a copy of the palette and update
+        ' the transparency index accordingly.
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
@@ -347,6 +347,17 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         
     'Use that handle to save the image to PNG format
     If fi_DIB <> 0 Then
+    
+        'Embed a background color if available, and the user has requested it.
+        If userPreferences.GetPreference_Boolean("General Preferences", "PNGBackgroundPreservation", True) And pdImages(imageID).pngBackgroundColor <> -1 Then
+            
+            Dim rQuad As RGBQUAD
+            rQuad.rgbRed = ExtractR(pdImages(imageID).pngBackgroundColor)
+            rQuad.rgbGreen = ExtractG(pdImages(imageID).pngBackgroundColor)
+            rQuad.rgbBlue = ExtractB(pdImages(imageID).pngBackgroundColor)
+            FreeImage_SetBackgroundColor fi_DIB, rQuad
+        
+        End If
     
         'Finally, prepare some PNG save flags based on the user's saved preferences
         Dim PNGFlags As Long

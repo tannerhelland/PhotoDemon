@@ -119,6 +119,9 @@ Option Explicit
     'For JPEG-2000 files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
     Public hasSeenJP2Prompt As Boolean
     
+    'For PNG files, if the original PNG file has a background color, it will be stored here.
+    Public pngBackgroundColor As Long
+    
     'Has this image been saved?
     Public HasBeenSaved As Boolean
     Public UndoNumAtLastSave As Integer
@@ -364,6 +367,7 @@ Private Sub Class_Initialize()
     UndoNumAtLastSave = 0
     forInternalUseOnly = False
     hasSeenJPEGPrompt = False
+    pngBackgroundColor = -1
     
     'Set up the process ID array
     ReDim UndoIDs(0 To 0) As Long
