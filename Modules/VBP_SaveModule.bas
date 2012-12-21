@@ -611,11 +611,18 @@ Public Function SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByV
         
     End If
     
+    'Finally, prepare a TGA save flag.  If the user has requested RLE encoding, pass that along to FreeImage.
+    Dim TGAflags As Long
+    TGAflags = TARGA_DEFAULT
+            
+    If userPreferences.GetPreference_Boolean("General Preferences", "TGARLE", False) Then TGAflags = TARGA_SAVE_RLE
+            
+    
     'Use that handle to save the image to TGA format
     If fi_DIB <> 0 Then
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, FILO_TARGA_DEFAULT, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, TGAflags, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "TGA save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             FreeLibrary hLib

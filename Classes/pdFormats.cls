@@ -252,7 +252,7 @@ Public Sub generateInputFormats()
         addInputFormat "PSD - Adobe Photoshop", "*.psd", FIF_PSD
         addInputFormat "RAS - Sun Raster File", "*.ras", FIF_RAS
         addInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta", FIF_SGI
-        addInputFormat "TGA - Truevision Targa", "*.tga", FIF_TARGA
+        addInputFormat "TGA - Truevision (TARGA)", "*.tga", FIF_TARGA
     End If
     
     'FreeImage or GDI+ works for loading TIFFs
@@ -340,7 +340,7 @@ Public Sub generateOutputFormats()
         
     If FreeImageEnabled Then
         addOutputFormat "PPM - Portable Pixel Map", "ppm", FIF_PPM
-        addOutputFormat "TGA - Truevision Targa", "tga", FIF_TARGA
+        addOutputFormat "TGA - Truevision (TARGA)", "tga", FIF_TARGA
     End If
     
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "TIFF - Tagged Image File Format", "tif", FIF_TIFF
