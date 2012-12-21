@@ -237,9 +237,9 @@ Option Explicit
 
 Private Sub ChkToColor_Click()
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
+        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
     Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
+        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
     End If
 End Sub
 
@@ -249,17 +249,17 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Used to remember the last color used for embossing
-    EmbossEngraveColor = PicColor.BackColor
+    EmbossEngraveColor = PicColor.backColor
     Me.Visible = False
     
     'Dependent: filter to grey OR to a background color
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then Process EmbossToColor, PicColor.BackColor Else Process EmbossToColor, RGB(127, 127, 127)
+        If ChkToColor.Value = vbChecked Then Process EmbossToColor, PicColor.backColor Else Process EmbossToColor, RGB(127, 127, 127)
     Else
-        If ChkToColor.Value = vbChecked Then Process EngraveToColor, PicColor.BackColor Else Process EngraveToColor, RGB(127, 127, 127)
+        If ChkToColor.Value = vbChecked Then Process EngraveToColor, PicColor.backColor Else Process EngraveToColor, RGB(127, 127, 127)
     End If
     
     Unload Me
@@ -268,16 +268,16 @@ End Sub
 Private Sub Form_Activate()
     
     'Remember the last emboss/engrave color selection
-    PicColor.BackColor = EmbossEngraveColor
+    PicColor.backColor = EmbossEngraveColor
     
     'Draw a preview of the current image to the left box
     DrawPreviewImage picPreview
     
     'Draw a preview of the emboss/engrave effect to the right box
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
+        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
     Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
+        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
     End If
     
     'Assign the system hand cursor to all relevant objects
@@ -289,17 +289,17 @@ End Sub
 'When the emboss/engrave options are clicked, redraw the preview
 Private Sub OptEmboss_Click()
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
+        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
     Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
+        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
     End If
 End Sub
 
 Private Sub OptEngrave_Click()
     If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
+        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
     Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
+        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
     End If
 End Sub
 
@@ -310,17 +310,15 @@ Private Sub PicColor_Click()
     Dim retColor As Long
     Dim CD1 As cCommonDialog
     Set CD1 = New cCommonDialog
-    retColor = PicColor.BackColor
-    CD1.VBChooseColor retColor, True, True, False, Me.HWnd
+    retColor = PicColor.backColor
     
-    'Note: the common dialog returns zero if canceled
-    If retColor > 0 Then
-        PicColor.BackColor = retColor
+    If CD1.VBChooseColor(retColor, True, True, False, Me.hWnd) Then
+        PicColor.backColor = retColor
         ChkToColor.Value = vbChecked
         If OptEmboss.Value = True Then
-            If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.BackColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
+            If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
         Else
-            If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.BackColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
+            If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
         End If
     End If
     
@@ -368,7 +366,7 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim tR As Long, tB As Long, tG As Long
 
     'Extract the red, green, and blue values from the color we've been passed
@@ -383,14 +381,14 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + tR)
+        R = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + tR)
         g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
         
-        If r > 255 Then
-            r = 255
-        ElseIf r < 0 Then
-            r = 0
+        If R > 255 Then
+            R = 255
+        ElseIf R < 0 Then
+            R = 0
         End If
         
         If g > 255 Then
@@ -405,13 +403,13 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
+        dstImageData(QuickVal + 2, y) = R
         dstImageData(QuickVal + 1, y) = g
         dstImageData(QuickVal, y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
         If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = r
+            dstImageData(QuickValRight + 2, y) = R
             dstImageData(QuickValRight + 1, y) = g
             dstImageData(QuickValRight, y) = b
         End If
@@ -476,7 +474,7 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim tR As Long, tB As Long, tG As Long
     
     'Extract the red, green, and blue values from the color we've been passed
@@ -491,14 +489,14 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + tR)
+        R = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + tR)
         g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
         
-        If r > 255 Then
-            r = 255
-        ElseIf r < 0 Then
-            r = 0
+        If R > 255 Then
+            R = 255
+        ElseIf R < 0 Then
+            R = 0
         End If
         
         If g > 255 Then
@@ -513,13 +511,13 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
+        dstImageData(QuickVal + 2, y) = R
         dstImageData(QuickVal + 1, y) = g
         dstImageData(QuickVal, y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
         If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = r
+            dstImageData(QuickValRight + 2, y) = R
             dstImageData(QuickValRight + 1, y) = g
             dstImageData(QuickValRight, y) = b
         End If
