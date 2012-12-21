@@ -121,9 +121,9 @@ Public Sub ClipboardPaste()
     
 End Sub
 
-'The code in the function below was originally located at www.vb-helper.com.  You can access the original version here: http://www.vb-helper.com/howto_track_clipboard.html
-' Many thanks to the original author of this very helpful code
-' Get an array of the files listed in the clipboard.
+'The code in the function below is a heavily modified version of code originally located at:
+' http://www.vb-helper.com/howto_track_clipboard.html (link still good as of 21 December 2012)
+' Many thanks to the original author(s).
 Public Function ClipboardGetFiles() As String()
     
     Dim drop_handle As Long

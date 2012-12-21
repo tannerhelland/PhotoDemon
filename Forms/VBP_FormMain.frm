@@ -656,7 +656,7 @@ Begin VB.MDIForm FormMain
          Shortcut        =   ^O
       End
       Begin VB.Menu MnuRecent 
-         Caption         =   "Open &Recent"
+         Caption         =   "Open &recent"
          Begin VB.Menu mnuRecDocs 
             Caption         =   "Empty"
             Enabled         =   0   'False
@@ -672,35 +672,35 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuAcquire 
          Caption         =   "&Import"
          Begin VB.Menu MnuImportClipboard 
-            Caption         =   "From Clipboard"
+            Caption         =   "From clipboard"
          End
          Begin VB.Menu MnuImportSepBar0 
             Caption         =   "-"
          End
          Begin VB.Menu MnuScanImage 
-            Caption         =   "From Scanner or Camera..."
+            Caption         =   "From scanner or camera..."
             Shortcut        =   ^I
          End
          Begin VB.Menu MnuSelectScanner 
-            Caption         =   "Select Scanner/Camera Source"
+            Caption         =   "Select which scanner or camera to use"
          End
          Begin VB.Menu MnuImportSepBar1 
             Caption         =   "-"
          End
          Begin VB.Menu MnuImportFromInternet 
-            Caption         =   "Online Image..."
+            Caption         =   "Online image..."
          End
          Begin VB.Menu MnuImportSepBar2 
             Caption         =   "-"
          End
          Begin VB.Menu MnuScreenCapture 
-            Caption         =   "Screen Capture..."
+            Caption         =   "Screen capture..."
          End
          Begin VB.Menu MnuImportSepBar3 
             Caption         =   "-"
          End
          Begin VB.Menu MnuImportFrx 
-            Caption         =   "Visual Basic Binary File..."
+            Caption         =   "Visual Basic binary file..."
          End
       End
       Begin VB.Menu MnuFileSepBar2 
@@ -711,7 +711,7 @@ Begin VB.MDIForm FormMain
          Shortcut        =   ^S
       End
       Begin VB.Menu MnuSaveAs 
-         Caption         =   "Save &As..."
+         Caption         =   "Save &as..."
       End
       Begin VB.Menu MnuFileSepBar3 
          Caption         =   "-"
@@ -721,13 +721,13 @@ Begin VB.MDIForm FormMain
          Shortcut        =   ^{F4}
       End
       Begin VB.Menu MnuCloseAll 
-         Caption         =   "Close All"
+         Caption         =   "Close all"
       End
       Begin VB.Menu MnuFileSepBar5 
          Caption         =   "-"
       End
       Begin VB.Menu MnuBatchConvert 
-         Caption         =   "&Batch Convert..."
+         Caption         =   "&Batch convert..."
          Shortcut        =   ^B
       End
       Begin VB.Menu MnuFileSepBar1 
@@ -756,7 +756,7 @@ Begin VB.MDIForm FormMain
          Shortcut        =   ^Y
       End
       Begin VB.Menu MnuRepeatLast 
-         Caption         =   "Repeat &Last Action"
+         Caption         =   "Repeat &last action"
          Enabled         =   0   'False
          Shortcut        =   ^F
       End
@@ -764,39 +764,33 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuCopy 
-         Caption         =   "&Copy to Clipboard"
+         Caption         =   "&Copy to clipboard"
          Shortcut        =   ^C
       End
       Begin VB.Menu MnuPaste 
-         Caption         =   "&Paste as New Image"
+         Caption         =   "&Paste as new image"
          Shortcut        =   ^V
       End
       Begin VB.Menu MnuEmptyClipboard 
-         Caption         =   "&Empty Clipboard"
-      End
-      Begin VB.Menu MnuEditSepBar2 
-         Caption         =   "-"
-      End
-      Begin VB.Menu MnuPreferences 
-         Caption         =   "Program Preferences"
+         Caption         =   "&Empty clipboard"
       End
    End
    Begin VB.Menu MnuView 
       Caption         =   "&View"
       Begin VB.Menu MnuFitOnScreen 
-         Caption         =   "&Fit Image on Screen"
+         Caption         =   "&Fit image on screen"
       End
       Begin VB.Menu MnuFitWindowToImage 
-         Caption         =   "Fit Viewport Around &Image"
+         Caption         =   "Fit viewport around &image"
       End
       Begin VB.Menu MnuViewSepBar0 
          Caption         =   "-"
       End
       Begin VB.Menu MnuZoomIn 
-         Caption         =   "Zoom &In"
+         Caption         =   "Zoom &in"
       End
       Begin VB.Menu MnuZoomOut 
-         Caption         =   "Zoom &Out"
+         Caption         =   "Zoom &out"
       End
       Begin VB.Menu MnuViewSepBar1 
          Caption         =   "-"
@@ -814,7 +808,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "2:1 (200%)"
       End
       Begin VB.Menu MnuActualSize 
-         Caption         =   "1:1 (Actual Size, 100%)"
+         Caption         =   "1:1 (actual size, 100%)"
       End
       Begin VB.Menu MnuZoom12 
          Caption         =   "1:2 (50%)"
@@ -861,37 +855,37 @@ Begin VB.MDIForm FormMain
          Shortcut        =   ^R
       End
       Begin VB.Menu MnuCropSelection 
-         Caption         =   "Crop to Selection"
+         Caption         =   "Crop to selection"
       End
       Begin VB.Menu MnuImageSepBar2 
          Caption         =   "-"
       End
       Begin VB.Menu MnuMirror 
-         Caption         =   "Flip Horizontal"
+         Caption         =   "Flip horizontal"
       End
       Begin VB.Menu MnuFlip 
-         Caption         =   "Flip Vertical"
+         Caption         =   "Flip vertical"
       End
       Begin VB.Menu MnuImageSepBar3 
          Caption         =   "-"
       End
       Begin VB.Menu MnuRotateClockwise 
-         Caption         =   "Rotate 90° Clockwise"
+         Caption         =   "Rotate 90° clockwise"
       End
       Begin VB.Menu MnuRotate270Clockwise 
-         Caption         =   "Rotate 90° Counter-clockwise"
+         Caption         =   "Rotate 90° counter-clockwise"
       End
       Begin VB.Menu MnuRotate180 
          Caption         =   "Rotate 180°"
       End
       Begin VB.Menu MnuRotateArbitrary 
-         Caption         =   "Arbitrary Rotation..."
+         Caption         =   "Arbitrary rotation..."
       End
       Begin VB.Menu MnuImageSepBar4 
          Caption         =   "-"
       End
       Begin VB.Menu MnuIsometric 
-         Caption         =   "Convert to Isometric View"
+         Caption         =   "Convert to isometric view"
       End
       Begin VB.Menu MnuTile 
          Caption         =   "Tile..."
@@ -900,14 +894,14 @@ Begin VB.MDIForm FormMain
    Begin VB.Menu MnuColor 
       Caption         =   "&Color"
       Begin VB.Menu MnuBrightness 
-         Caption         =   "Brightness/Contrast..."
+         Caption         =   "Brightness and contrast..."
       End
       Begin VB.Menu MnuGamma 
          Caption         =   "Gamma..."
          Shortcut        =   ^G
       End
       Begin VB.Menu MnuHueSaturation 
-         Caption         =   "Hue / Saturation..."
+         Caption         =   "Hue and saturation..."
          Shortcut        =   ^H
       End
       Begin VB.Menu MnuImageLevels 
@@ -919,7 +913,7 @@ Begin VB.MDIForm FormMain
          Shortcut        =   ^T
       End
       Begin VB.Menu MnuWhiteBalance 
-         Caption         =   "White Balance..."
+         Caption         =   "White balance..."
          Shortcut        =   ^W
       End
       Begin VB.Menu MnuSepBarColor2 
@@ -928,7 +922,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuHistogramTop 
          Caption         =   "Histogram"
          Begin VB.Menu MnuHistogram 
-            Caption         =   "Display Histogram"
+            Caption         =   "Display histogram"
          End
          Begin VB.Menu mnuHistogramSepBar1 
             Caption         =   "-"
@@ -944,12 +938,12 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuColorShift 
-         Caption         =   "Color Shift"
+         Caption         =   "Color shift"
          Begin VB.Menu MnuCShiftR 
-            Caption         =   "Shift Right (r -> g -> b -> r)"
+            Caption         =   "Shift colors right"
          End
          Begin VB.Menu MnuCShiftL 
-            Caption         =   "Shift Left (r -> b -> g -> r)"
+            Caption         =   "Shift colors left"
          End
       End
       Begin VB.Menu MnuRechannel 
@@ -959,7 +953,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuBlackAndWhite 
-         Caption         =   "Black and White..."
+         Caption         =   "Black and white..."
       End
       Begin VB.Menu MnuColorize 
          Caption         =   "Colorize..."
@@ -986,16 +980,16 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuFade 
          Caption         =   "Fade"
          Begin VB.Menu MnuFadeLow 
-            Caption         =   "Low Fade"
+            Caption         =   "Low fade"
          End
          Begin VB.Menu MnuFadeMedium 
-            Caption         =   "Medium Fade"
+            Caption         =   "Medium fade"
          End
          Begin VB.Menu MnuFadeHigh 
-            Caption         =   "High Fade"
+            Caption         =   "High fade"
          End
          Begin VB.Menu MnuCustomFade 
-            Caption         =   "Custom Fade..."
+            Caption         =   "Custom fade..."
          End
          Begin VB.Menu MnuFadeSepBar1 
             Caption         =   "-"
@@ -1010,10 +1004,10 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuInvertTop 
          Caption         =   "Invert"
          Begin VB.Menu MnuNegative 
-            Caption         =   "Invert CMYK (Film Negative)"
+            Caption         =   "Invert CMYK (film negative)"
          End
          Begin VB.Menu MnuInvertHue 
-            Caption         =   "Invert Hue"
+            Caption         =   "Invert hue"
          End
          Begin VB.Menu mnuInvert 
             Caption         =   "Invert RGB"
@@ -1022,7 +1016,7 @@ Begin VB.MDIForm FormMain
             Caption         =   "-"
          End
          Begin VB.Menu MnuCompoundInvert 
-            Caption         =   "Compound Invert"
+            Caption         =   "Compound invert"
          End
       End
       Begin VB.Menu MnuPosterize 
@@ -1042,7 +1036,7 @@ Begin VB.MDIForm FormMain
       End
    End
    Begin VB.Menu MnuFilter 
-      Caption         =   "Effec&ts"
+      Caption         =   "Effect&s"
       Begin VB.Menu MnuFadeLastEffect 
          Caption         =   "Fade last effect"
          Enabled         =   0   'False
@@ -1056,13 +1050,13 @@ Begin VB.MDIForm FormMain
             Caption         =   "Antique"
          End
          Begin VB.Menu MnuComicBook 
-            Caption         =   "Comic Book"
-         End
-         Begin VB.Menu MnuMosaic 
-            Caption         =   "Mosaic..."
+            Caption         =   "Comic book"
          End
          Begin VB.Menu MnuPencil 
-            Caption         =   "Pencil Drawing"
+            Caption         =   "Pencil drawing"
+         End
+         Begin VB.Menu MnuMosaic 
+            Caption         =   "Pixelate (mosaic)..."
          End
          Begin VB.Menu MnuRelief 
             Caption         =   "Relief"
@@ -1080,37 +1074,37 @@ Begin VB.MDIForm FormMain
             Caption         =   "Soften"
          End
          Begin VB.Menu MnuSoftenMore 
-            Caption         =   "Soften More"
+            Caption         =   "Soften more"
          End
          Begin VB.Menu MnuBlur 
             Caption         =   "Blur"
          End
          Begin VB.Menu MnuBlurMore 
-            Caption         =   "Blur More"
+            Caption         =   "Blur more"
          End
          Begin VB.Menu MnuGaussianBlur 
-            Caption         =   "Gaussian Blur"
+            Caption         =   "Gaussian blur"
          End
          Begin VB.Menu MnuGaussianBlurMore 
-            Caption         =   "Gaussian Blur More"
+            Caption         =   "Gaussian blur more"
          End
          Begin VB.Menu BlurSepBar2 
             Caption         =   "-"
          End
          Begin VB.Menu MnuGridBlur 
-            Caption         =   "Grid Blur"
+            Caption         =   "Grid blur"
          End
       End
       Begin VB.Menu MnuEdge 
          Caption         =   "Edge"
          Begin VB.Menu MnuEmbossEngrave 
-            Caption         =   "Emboss/Engrave..."
+            Caption         =   "Emboss or engrave..."
          End
          Begin VB.Menu MnuEdgeEnhance 
-            Caption         =   "Enhance Edges"
+            Caption         =   "Enhance edges"
          End
          Begin VB.Menu MnuFindEdges 
-            Caption         =   "Find Edges..."
+            Caption         =   "Find edges..."
          End
       End
       Begin VB.Menu MnuOtherFilters 
@@ -1119,7 +1113,7 @@ Begin VB.MDIForm FormMain
             Caption         =   "Alien"
          End
          Begin VB.Menu MnuBlackLight 
-            Caption         =   "Black Light..."
+            Caption         =   "Black light..."
          End
          Begin VB.Menu MnuDream 
             Caption         =   "Dream"
@@ -1131,7 +1125,7 @@ Begin VB.MDIForm FormMain
             Caption         =   "Synthesize"
          End
          Begin VB.Menu MnuHeatmap 
-            Caption         =   "Thermograph (Heat Map)"
+            Caption         =   "Thermograph (heat map)"
          End
          Begin VB.Menu MnuVibrate 
             Caption         =   "Vibrate"
@@ -1170,7 +1164,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuNoiseFilters 
          Caption         =   "Noise"
          Begin VB.Menu MnuNoise 
-            Caption         =   "Add Noise..."
+            Caption         =   "Add noise..."
          End
          Begin VB.Menu MnuNoiseSepBar1 
             Caption         =   "-"
@@ -1179,31 +1173,31 @@ Begin VB.MDIForm FormMain
             Caption         =   "Despeckle..."
          End
          Begin VB.Menu MnuDespeckle 
-            Caption         =   "Remove Orphan Pixels"
+            Caption         =   "Remove orphan pixels"
          End
       End
       Begin VB.Menu MnuRank 
          Caption         =   "Rank"
          Begin VB.Menu MnuMaximum 
-            Caption         =   "Dilate (Maximum)"
+            Caption         =   "Dilate (maximum)"
          End
          Begin VB.Menu MnuMinimum 
-            Caption         =   "Erode (Minimum)"
+            Caption         =   "Erode (minimum)"
          End
          Begin VB.Menu MnuExtreme 
-            Caption         =   "Extreme (Furthest value)"
+            Caption         =   "Extreme (furthest value)"
          End
          Begin VB.Menu MnuRankSepBar0 
             Caption         =   "-"
          End
          Begin VB.Menu MnuCustomRank 
-            Caption         =   "Custom Rank..."
+            Caption         =   "Custom rank..."
          End
       End
       Begin VB.Menu MnuSharpenUpper 
          Caption         =   "Sharpen"
          Begin VB.Menu MnuUnsharp 
-            Caption         =   "Remove Blur (Unsharp Mask)"
+            Caption         =   "Remove blur (unsharp mask)"
          End
          Begin VB.Menu MnuSharpenSepBar0 
             Caption         =   "-"
@@ -1212,7 +1206,7 @@ Begin VB.MDIForm FormMain
             Caption         =   "Sharpen"
          End
          Begin VB.Menu MnuSharpenMore 
-            Caption         =   "Sharpen More"
+            Caption         =   "Sharpen more"
          End
       End
       Begin VB.Menu MnuStylize 
@@ -1221,10 +1215,10 @@ Begin VB.MDIForm FormMain
             Caption         =   "Diffuse"
          End
          Begin VB.Menu MnuDiffuseMore 
-            Caption         =   "Diffuse More"
+            Caption         =   "Diffuse more"
          End
          Begin VB.Menu MnuCustomDiffuse 
-            Caption         =   "Custom Diffuse..."
+            Caption         =   "Custom diffuse..."
          End
          Begin VB.Menu MnuStylizeSepBar0 
             Caption         =   "-"
@@ -1240,60 +1234,69 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuCustomFilter 
-         Caption         =   "Custom Filter..."
+         Caption         =   "Custom filter..."
       End
       Begin VB.Menu MnuTest 
          Caption         =   "Test"
       End
    End
-   Begin VB.Menu MnuMacro 
-      Caption         =   "&Macro"
-      Begin VB.Menu MnuPlayMacroRecording 
-         Caption         =   "Play Saved Macro..."
+   Begin VB.Menu MnuTools 
+      Caption         =   "&Tools"
+      Begin VB.Menu MnuMacro 
+         Caption         =   "&Macros"
+         Begin VB.Menu MnuPlayMacroRecording 
+            Caption         =   "Play saved macro..."
+         End
+         Begin VB.Menu MnuMacroSepBar1 
+            Caption         =   "-"
+         End
+         Begin VB.Menu MnuStartMacroRecording 
+            Caption         =   "&Record new macro"
+         End
+         Begin VB.Menu MnuStopMacroRecording 
+            Caption         =   "Sto&p recording..."
+            Enabled         =   0   'False
+         End
       End
-      Begin VB.Menu MnuMacroSepBar1 
+      Begin VB.Menu MnuToolsSepBar1 
          Caption         =   "-"
       End
-      Begin VB.Menu MnuStartMacroRecording 
-         Caption         =   "&Start Recording"
-      End
-      Begin VB.Menu MnuStopMacroRecording 
-         Caption         =   "Sto&p Recording..."
-         Enabled         =   0   'False
+      Begin VB.Menu MnuPreferences 
+         Caption         =   "Options"
       End
    End
    Begin VB.Menu MnuWindow 
       Caption         =   "&Window"
       WindowList      =   -1  'True
       Begin VB.Menu MnuNextImage 
-         Caption         =   "Next Image"
+         Caption         =   "Next image"
       End
       Begin VB.Menu MnuPreviousImage 
-         Caption         =   "Previous Image"
+         Caption         =   "Previous image"
       End
       Begin VB.Menu MnuWindowSepBar0 
          Caption         =   "-"
       End
       Begin VB.Menu MnuArrangeIcons 
-         Caption         =   "&Arrange Icons"
+         Caption         =   "&Arrange icons"
       End
       Begin VB.Menu MnuCascadeWindows 
          Caption         =   "&Cascade"
       End
       Begin VB.Menu MnuTileHorizontally 
-         Caption         =   "Tile &Horizontally"
+         Caption         =   "Tile &horizontally"
       End
       Begin VB.Menu MnuTileVertically 
-         Caption         =   "Tile &Vertically"
+         Caption         =   "Tile &vertically"
       End
       Begin VB.Menu MnuWindowSepBar1 
          Caption         =   "-"
       End
       Begin VB.Menu MnuMinimizeAllWindows 
-         Caption         =   "&Minimize All Windows"
+         Caption         =   "&Minimize all windows"
       End
       Begin VB.Menu MnuRestoreAllWindows 
-         Caption         =   "&Restore All Windows"
+         Caption         =   "&Restore all windows"
       End
    End
    Begin VB.Menu MnuHelp 
@@ -1305,25 +1308,25 @@ Begin VB.MDIForm FormMain
          Caption         =   "-"
       End
       Begin VB.Menu MnuCheckUpdates 
-         Caption         =   "Check for &Updates"
+         Caption         =   "Check for &updates"
       End
       Begin VB.Menu MnuEmailAuthor 
-         Caption         =   "Submit Feedback..."
+         Caption         =   "Submit feedback..."
       End
       Begin VB.Menu MnuBugReport 
-         Caption         =   "Submit Bug Report..."
+         Caption         =   "Submit bug report..."
       End
       Begin VB.Menu MnuHelpSepBar1 
          Caption         =   "-"
       End
       Begin VB.Menu MnuVisitWebsite 
-         Caption         =   "&Visit the PhotoDemon Website"
+         Caption         =   "&Visit the PhotoDemon website"
       End
       Begin VB.Menu MnuDownloadSource 
-         Caption         =   "Download PhotoDemon's Source Code"
+         Caption         =   "Download PhotoDemon's source code"
       End
       Begin VB.Menu MnuReadLicense 
-         Caption         =   "Read PhotoDemon's License and Terms of Use"
+         Caption         =   "Read PhotoDemon's license and terms of use"
       End
       Begin VB.Menu MnuHelpSepBar2 
          Caption         =   "-"

@@ -299,7 +299,6 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 15, 4, 1      'Copy
         .PutImageToVBMenu 16, 5, 1      'Paste
         .PutImageToVBMenu 17, 6, 1      'Empty Clipboard
-        .PutImageToVBMenu 18, 8, 1      'Program Preferences
         
         'View Menu
         .PutImageToVBMenu 29, 0, 2      'Fit on Screen
@@ -386,8 +385,8 @@ Public Sub LoadMenuIcons()
             '--> Artistic sub-menu
             .PutImageToVBMenu 83, 0, 5, 2   'Antique (Sepia)
             .PutImageToVBMenu 84, 1, 5, 2   'Comic Book
-            .PutImageToVBMenu 85, 2, 5, 2   'Mosaic
-            .PutImageToVBMenu 86, 3, 5, 2   'Pencil
+            .PutImageToVBMenu 86, 2, 5, 2   'Pencil
+            .PutImageToVBMenu 85, 3, 5, 2   'Pixelate (Mosaic)
             .PutImageToVBMenu 87, 4, 5, 2   'Relief
         .PutImageToVBMenu 75, 3, 5       'Blur
             '--> Blur sub-menu
@@ -449,10 +448,13 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 133, 5, 5, 10 'Twins
         .PutImageToVBMenu 98, 12, 5      'Custom Filter
         
-        'Macro Menu
-        .PutImageToVBMenu 36, 0, 6     'Open Macro
-        .PutImageToVBMenu 37, 2, 6     'Start Recording
-        .PutImageToVBMenu 38, 3, 6     'Stop Recording
+        'Tools Menu
+        .PutImageToVBMenu 37, 0, 6       'Macros
+            '--> Macro sub-menu
+            .PutImageToVBMenu 36, 0, 6, 0    'Open Macro
+            .PutImageToVBMenu 37, 2, 6, 0    'Start Recording
+            .PutImageToVBMenu 38, 3, 6, 0    'Stop Recording
+        .PutImageToVBMenu 18, 2, 6      'Options (Preferences)
         
         'Window Menu
         .PutImageToVBMenu 139, 0, 7    'Next image
