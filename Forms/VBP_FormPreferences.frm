@@ -346,6 +346,133 @@ Begin VB.Form FormPreferences
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   3735
+         Index           =   1
+         Left            =   240
+         ScaleHeight     =   249
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   529
+         TabIndex        =   101
+         Top             =   1680
+         Width           =   7935
+         Begin VB.HScrollBar hsPNGCompression 
+            Height          =   330
+            Left            =   600
+            Max             =   9
+            TabIndex        =   104
+            Top             =   1080
+            Value           =   9
+            Width           =   7095
+         End
+         Begin VB.CheckBox chkPNGInterlacing 
+            Appearance      =   0  'Flat
+            Caption         =   " use interlacing (Adam7)"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   375
+            Left            =   600
+            TabIndex        =   102
+            ToolTipText     =   $"VBP_FormPreferences.frx":834F
+            Top             =   2040
+            Width           =   7215
+         End
+         Begin VB.Label lblPNGCompression 
+            Alignment       =   1  'Right Justify
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "maximum compression"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Index           =   1
+            Left            =   5880
+            TabIndex        =   107
+            Top             =   1560
+            Width           =   1590
+         End
+         Begin VB.Label lblPNGCompression 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "no compression"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Index           =   0
+            Left            =   840
+            TabIndex        =   106
+            Top             =   1560
+            Width           =   1110
+         End
+         Begin VB.Label lblFileStuff 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "when saving, compress PNG files at the following level:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   1
+            Left            =   600
+            TabIndex        =   105
+            Top             =   720
+            Width           =   4725
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            Caption         =   "PNG (Portable Network Graphic) settings"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   20
+            Left            =   360
+            TabIndex        =   103
+            Top             =   120
+            Width           =   4320
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   3735
          Index           =   0
          Left            =   240
          ScaleHeight     =   249
@@ -370,7 +497,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   99
-            ToolTipText     =   $"VBP_FormPreferences.frx":834F
+            ToolTipText     =   $"VBP_FormPreferences.frx":83FB
             Top             =   600
             Width           =   7215
          End
@@ -400,7 +527,7 @@ Begin VB.Form FormPreferences
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   3735
-         Index           =   2
+         Index           =   3
          Left            =   240
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
@@ -424,7 +551,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   96
-            ToolTipText     =   $"VBP_FormPreferences.frx":83FB
+            ToolTipText     =   $"VBP_FormPreferences.frx":84A7
             Top             =   1560
             Visible         =   0   'False
             Width           =   7215
@@ -495,7 +622,7 @@ Begin VB.Form FormPreferences
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   3855
-         Index           =   1
+         Index           =   2
          Left            =   240
          ScaleHeight     =   257
          ScaleMode       =   3  'Pixel
@@ -518,7 +645,7 @@ Begin VB.Form FormPreferences
             Left            =   2790
             Style           =   2  'Dropdown List
             TabIndex        =   87
-            ToolTipText     =   $"VBP_FormPreferences.frx":849D
+            ToolTipText     =   $"VBP_FormPreferences.frx":8549
             Top             =   600
             Width           =   4935
          End
@@ -565,7 +692,7 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblFileFreeImageWarning 
          BackStyle       =   0  'Transparent
-         Caption         =   $"VBP_FormPreferences.frx":8540
+         Caption         =   $"VBP_FormPreferences.frx":85EC
          ForeColor       =   &H000000FF&
          Height          =   495
          Left            =   600
@@ -650,7 +777,7 @@ Begin VB.Form FormPreferences
          Left            =   3180
          Style           =   2  'Dropdown List
          TabIndex        =   80
-         ToolTipText     =   $"VBP_FormPreferences.frx":85F1
+         ToolTipText     =   $"VBP_FormPreferences.frx":869D
          Top             =   1680
          Width           =   4995
       End
@@ -669,7 +796,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   77
-         ToolTipText     =   $"VBP_FormPreferences.frx":86B4
+         ToolTipText     =   $"VBP_FormPreferences.frx":8760
          Top             =   3840
          Width           =   5415
       End
@@ -688,7 +815,7 @@ Begin VB.Form FormPreferences
          Left            =   840
          Style           =   2  'Dropdown List
          TabIndex        =   69
-         ToolTipText     =   $"VBP_FormPreferences.frx":8781
+         ToolTipText     =   $"VBP_FormPreferences.frx":882D
          Top             =   2910
          Width           =   7335
       End
@@ -903,7 +1030,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   76
-         ToolTipText     =   $"VBP_FormPreferences.frx":8876
+         ToolTipText     =   $"VBP_FormPreferences.frx":8922
          Top             =   825
          Width           =   7455
       End
@@ -922,7 +1049,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   57
-         ToolTipText     =   $"VBP_FormPreferences.frx":895B
+         ToolTipText     =   $"VBP_FormPreferences.frx":8A07
          Top             =   4125
          Width           =   4095
       End
@@ -942,7 +1069,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   55
-         ToolTipText     =   $"VBP_FormPreferences.frx":8A03
+         ToolTipText     =   $"VBP_FormPreferences.frx":8AAF
          Top             =   3150
          Width           =   7455
       End
@@ -961,7 +1088,7 @@ Begin VB.Form FormPreferences
          Left            =   3000
          Style           =   2  'Dropdown List
          TabIndex        =   44
-         ToolTipText     =   $"VBP_FormPreferences.frx":8ACD
+         ToolTipText     =   $"VBP_FormPreferences.frx":8B79
          Top             =   1695
          Width           =   4815
       End
@@ -1026,7 +1153,7 @@ Begin VB.Form FormPreferences
          Width           =   4305
       End
       Begin VB.Label lblFreeImageWarning 
-         Caption         =   $"VBP_FormPreferences.frx":8B87
+         Caption         =   $"VBP_FormPreferences.frx":8C33
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9
@@ -1174,7 +1301,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   61
-         ToolTipText     =   $"VBP_FormPreferences.frx":8C9C
+         ToolTipText     =   $"VBP_FormPreferences.frx":8D48
          Top             =   480
          Width           =   7455
       End
@@ -1307,7 +1434,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   21
-         ToolTipText     =   $"VBP_FormPreferences.frx":8D80
+         ToolTipText     =   $"VBP_FormPreferences.frx":8E2C
          Top             =   480
          Width           =   6975
       End
@@ -1392,7 +1519,7 @@ Begin VB.Form FormPreferences
          Width           =   2385
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":8E72
+         Caption         =   $"VBP_FormPreferences.frx":8F1E
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -1481,7 +1608,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   17
-         ToolTipText     =   $"VBP_FormPreferences.frx":8F21
+         ToolTipText     =   $"VBP_FormPreferences.frx":8FCD
          Top             =   1080
          Width           =   6735
       End
@@ -1574,7 +1701,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   50
-         ToolTipText     =   $"VBP_FormPreferences.frx":8FBD
+         ToolTipText     =   $"VBP_FormPreferences.frx":9069
          Top             =   2520
          Width           =   4575
       End
@@ -1672,7 +1799,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   10
-         ToolTipText     =   $"VBP_FormPreferences.frx":9066
+         ToolTipText     =   $"VBP_FormPreferences.frx":9112
          Top             =   480
          Width           =   4815
       End
@@ -1682,7 +1809,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":90FF
+         MouseIcon       =   "VBP_FormPreferences.frx":91AB
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1864,7 +1991,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   46
-         ToolTipText     =   $"VBP_FormPreferences.frx":9251
+         ToolTipText     =   $"VBP_FormPreferences.frx":92FD
          Top             =   3240
          Width           =   7695
       End
@@ -1883,7 +2010,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   31
-         ToolTipText     =   $"VBP_FormPreferences.frx":9323
+         ToolTipText     =   $"VBP_FormPreferences.frx":93CF
          Top             =   2010
          Width           =   5055
       End
@@ -1902,7 +2029,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   28
-         ToolTipText     =   $"VBP_FormPreferences.frx":93B6
+         ToolTipText     =   $"VBP_FormPreferences.frx":9462
          Top             =   900
          Width           =   5055
       End
@@ -1912,7 +2039,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":944B
+         MouseIcon       =   "VBP_FormPreferences.frx":94F7
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1929,7 +2056,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":959D
+         MouseIcon       =   "VBP_FormPreferences.frx":9649
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -2198,7 +2325,13 @@ Private Sub cmdOK_Click()
     'Save all file format preferences
     
     'BMP RLE
-    userPreferences.SetPreference_Boolean "General Preferences", "BitampRLE", CBool(chkBMPRLE.Value)
+    userPreferences.SetPreference_Boolean "General Preferences", "BitmapRLE", CBool(chkBMPRLE.Value)
+    
+    'PNG compression
+    userPreferences.SetPreference_Long "General Preferences", "PNGCompression", hsPNGCompression.Value
+    
+    'PNG interlacing
+    userPreferences.SetPreference_Boolean "General Preferences", "PNGInterlacing", CBool(chkPNGInterlacing.Value)
     
     'PPM encoding
     userPreferences.SetPreference_Long "General Preferences", "PPMExportFormat", cmbPPMFormat.ListIndex
@@ -2361,13 +2494,20 @@ Private Sub LoadAllPreferences()
     'Prepare the various file type panels and listboxes
     cmbFiletype.Clear
     cmbFiletype.AddItem "BMP - Bitmap", 0
-    cmbFiletype.AddItem "PPM - Portable Pixmap", 1
-    cmbFiletype.AddItem "TIFF - Tagged Image File Format", 2
+    cmbFiletype.AddItem "PNG - Portable Network Graphics", 1
+    cmbFiletype.AddItem "PPM - Portable Pixmap", 2
+    cmbFiletype.AddItem "TIFF - Tagged Image File Format", 3
     
     cmbFiletype.ListIndex = 0
     
     'Set the check box for 8bpp BMP RLE encoding
-    If userPreferences.GetPreference_Boolean("General Preferences", "BitampRLE", False) Then chkBMPRLE.Value = vbChecked Else chkBMPRLE.Value = vbUnchecked
+    If userPreferences.GetPreference_Boolean("General Preferences", "BitmapRLE", False) Then chkBMPRLE.Value = vbChecked Else chkBMPRLE.Value = vbUnchecked
+    
+    'Set the scroll bar for PNG compression
+    hsPNGCompression.Value = userPreferences.GetPreference_Long("General Preferences", "PNGCompression", 9)
+    
+    'Set the check box for PNG interlacing
+    If userPreferences.GetPreference_Boolean("General Preferences", "PNGInterlacing", False) Then chkPNGInterlacing.Value = vbChecked Else chkPNGInterlacing.Value = vbUnchecked
     
     'Populate the combo box for PPM export
     cmbPPMFormat.Clear

@@ -361,6 +361,8 @@ Private Sub createNewINIFile()
         Print #fileNum, "LastWindowTop=1"
         Print #fileNum, "LastWindowWidth=1"
         Print #fileNum, "LastWindowHeight=1"
+        Print #fileNum, "PNGCompression=9"
+        Print #fileNum, "PNGInterlacing=0"
         Print #fileNum, "SaveBehavior=0"
         Print #fileNum, "TIFFCMYK=0"
         Print #fileNum, "TIFFCompression=0"

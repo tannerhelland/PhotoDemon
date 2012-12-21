@@ -61,7 +61,7 @@ Public Function SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal ou
             Dim BMPflags As Long
             BMPflags = BMP_DEFAULT
             
-            If outputColorDepth = 8 And userPreferences.GetPreference_Boolean("General Preferences", "BitampRLE", False) Then BMPflags = BMP_SAVE_RLE
+            If outputColorDepth = 8 And userPreferences.GetPreference_Boolean("General Preferences", "BitmapRLE", False) Then BMPflags = BMP_SAVE_RLE
             
             'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
             If fi_DIB <> 0 Then
@@ -347,9 +347,19 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         
     'Use that handle to save the image to PNG format
     If fi_DIB <> 0 Then
+    
+        'Finally, prepare some PNG save flags based on the user's saved preferences
+        Dim PNGFlags As Long
+        
+        'Compression level (1 to 9, but FreeImage also has a "no compression" option with a unique flag)
+        PNGFlags = userPreferences.GetPreference_Long("General Preferences", "PNGCompression", 9)
+        If PNGFlags = 0 Then PNGFlags = PNG_Z_NO_COMPRESSION
+        
+        'Interlacing
+        If userPreferences.GetPreference_Boolean("General Preferences", "PNGInterlacing", False) Then PNGFlags = (PNGFlags Or PNG_INTERLACED)
+    
         Dim fi_Check As Long
-                
-        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, PNGFlags, outputColorDepth, , , , , True)
         
         If fi_Check = False Then
             Message "PNG save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
