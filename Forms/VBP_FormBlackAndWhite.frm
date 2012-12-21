@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBlackAndWhite 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Black/White Color Conversion"
-   ClientHeight    =   7470
+   ClientHeight    =   8580
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,11 +18,37 @@ Begin VB.Form FormBlackAndWhite
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   498
+   ScaleHeight     =   572
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picBWColor 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   1
+      Left            =   3240
+      ScaleHeight     =   465
+      ScaleWidth      =   2745
+      TabIndex        =   15
+      Top             =   6240
+      Width           =   2775
+   End
+   Begin VB.PictureBox picBWColor 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00000000&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   0
+      Left            =   360
+      ScaleHeight     =   465
+      ScaleWidth      =   2745
+      TabIndex        =   14
+      Top             =   6240
+      Width           =   2775
+   End
    Begin VB.ComboBox cboDither 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -144,7 +170,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   495
       Left            =   4920
       TabIndex        =   1
-      Top             =   6870
+      Top             =   7950
       Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
@@ -156,8 +182,28 @@ Begin VB.Form FormBlackAndWhite
       Left            =   3600
       MaskColor       =   &H00000000&
       TabIndex        =   0
-      Top             =   6870
+      Top             =   7950
       Width           =   1245
+   End
+   Begin VB.Label Label1 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "colors to use (click boxes to change):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
+      TabIndex        =   13
+      Top             =   5880
+      Width           =   3945
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True
@@ -206,7 +252,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   735
       Left            =   240
       TabIndex        =   9
-      Top             =   6000
+      Top             =   7080
       Width           =   5775
    End
    Begin VB.Label lblBefore 
@@ -271,7 +317,7 @@ Option Explicit
 
 Private Sub cboDither_Click()
     If CBool(chkAutoThreshold.Value) Then txtThreshold.Text = calculateOptimalThreshold(cboDither.ListIndex)
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
 End Sub
 
 'When the auto threshold button is clicked, disable the scroll bar and text box and calculate the optimal value immediately
@@ -286,7 +332,7 @@ Private Sub chkAutoThreshold_Click()
         txtThreshold.Enabled = True
     End If
     
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
     
 End Sub
 
@@ -296,7 +342,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
     'Checking the threshold value to make sure it's valid
     If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max) = False Then
@@ -306,7 +352,7 @@ Private Sub CmdOK_Click()
     
     Me.Visible = False
     
-    Process BWMaster, txtThreshold, cboDither.ListIndex, 0, &HFFFFFF
+    Process BWMaster, txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor
     
     Unload Me
     
@@ -332,22 +378,40 @@ Private Sub Form_Activate()
     
     'Draw the previews
     DrawPreviewImage picPreview
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    setHandCursor picBWColor(0)
+    setHandCursor picBWColor(1)
     
 End Sub
 
 Private Sub hsThreshold_Change()
     copyToTextBoxI txtThreshold, hsThreshold.Value
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
 End Sub
 
 Private Sub hsThreshold_Scroll()
     chkAutoThreshold.Value = vbUnchecked
     copyToTextBoxI txtThreshold, hsThreshold.Value
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, , , True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
+End Sub
+
+'Allow the user to select a custom color for each
+Private Sub picBWColor_Click(Index As Integer)
+    
+    'Use a common dialog box to select a new color.  (In the future, perhaps I'll design a better custom box.)
+    Dim newColor As Long
+    Dim comDlg As cCommonDialog
+    Set comDlg = New cCommonDialog
+    newColor = picBWColor(Index).backColor
+    
+    If comDlg.VBChooseColor(newColor, True, True, False, Me.hWnd) Then
+        picBWColor(Index).backColor = newColor
+        masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
+    End If
+    
 End Sub
 
 Private Sub txtThreshold_GotFocus()
@@ -381,7 +445,7 @@ Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
             qvDepth = curLayerValues.BytesPerPixel
             
             'Color variables
-            Dim r As Long, g As Long, b As Long
+            Dim R As Long, g As Long, b As Long
             
             'Histogram tables
             Dim lLookup(0 To 255)
@@ -394,11 +458,11 @@ Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
             For y = initY To finalY
             
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
+                R = ImageData(QuickVal + 2, y)
                 g = ImageData(QuickVal + 1, y)
                 b = ImageData(QuickVal, y)
                 
-                pLuminance = getLuminance(r, g, b)
+                pLuminance = getLuminance(R, g, b)
                 
                 'Store this value in the histogram
                 lLookup(pLuminance) = lLookup(pLuminance) + 1
@@ -481,7 +545,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     highB = ExtractB(highColor)
     
     'Calculationg color variables (including luminance)
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim l As Long, newL As Long
     Dim xModQuick As Long
     Dim DitherTable() As Byte
@@ -500,12 +564,12 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
+                R = ImageData(QuickVal + 2, y)
                 g = ImageData(QuickVal + 1, y)
                 b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value
-                l = getLuminance(r, g, b)
+                l = getLuminance(R, g, b)
             
                 'Check the luminance against the threshold, and set new values accordingly
                 If l >= cThreshold Then
@@ -568,12 +632,12 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
+                R = ImageData(QuickVal + 2, y)
                 g = ImageData(QuickVal + 1, y)
                 b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 3)
+                l = getLuminance(R, g, b) + DitherTable(xModQuick, y And 3)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
@@ -687,12 +751,12 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
+                R = ImageData(QuickVal + 2, y)
                 g = ImageData(QuickVal + 1, y)
                 b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 7)
+                l = getLuminance(R, g, b) + DitherTable(xModQuick, y And 7)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
@@ -935,12 +999,12 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
         For y = initY To finalY
         
             'Get the source pixel color values
-            r = ImageData(QuickVal + 2, y)
+            R = ImageData(QuickVal + 2, y)
             g = ImageData(QuickVal + 1, y)
             b = ImageData(QuickVal, y)
             
             'Convert those to a luminance value and add the value of the error at this location
-            l = getLuminance(r, g, b)
+            l = getLuminance(R, g, b)
             newL = l + dErrors(x, y)
             
             If newL > 255 Then newL = 255
