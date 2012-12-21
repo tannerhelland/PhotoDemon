@@ -263,6 +263,7 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("MODE32CHK", "CUSTOM")   '152
         .AddImageFromStream LoadResData("LEFTPANHIDE", "CUSTOM") '153
         .AddImageFromStream LoadResData("LEFTPANSHOW", "CUSTOM") '154
+        .AddImageFromStream LoadResData("PLUGIN", "CUSTOM")      '155
         
         'File Menu
         .PutImageToVBMenu 0, 0, 0       'Open Image
@@ -455,6 +456,7 @@ Public Sub LoadMenuIcons()
             .PutImageToVBMenu 37, 2, 6, 0    'Start Recording
             .PutImageToVBMenu 38, 3, 6, 0    'Stop Recording
         .PutImageToVBMenu 18, 2, 6      'Options (Preferences)
+        .PutImageToVBMenu 155, 3, 6     'Plugin Manager
         
         'Window Menu
         .PutImageToVBMenu 139, 0, 7    'Next image
