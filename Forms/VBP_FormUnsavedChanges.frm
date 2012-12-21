@@ -227,7 +227,7 @@ Public Sub ShowDialog()
         Set tmpLayer = New pdLayer
         Dim nWidth As Long, nHeight As Long
         convertAspectRatio pdImages(imageBeingClosed).Width, pdImages(imageBeingClosed).Height, picPreview.ScaleWidth, picPreview.ScaleHeight, nWidth, nHeight
-        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, nWidth, nHeight, True
+        tmpLayer.createFromExistingLayer pdImages(imageBeingClosed).mainLayer, nWidth, nHeight, True
         tmpLayer.compositeBackgroundColor
         tmpLayer.renderToPictureBox picPreview
         tmpLayer.eraseLayer
