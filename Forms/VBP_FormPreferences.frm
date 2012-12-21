@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form FormPreferences 
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " PhotoDemon Preferences"
+   Caption         =   " PhotoDemon Options"
    ClientHeight    =   7350
    ClientLeft      =   45
    ClientTop       =   285
@@ -24,7 +24,7 @@ Begin VB.Form FormPreferences
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdReset 
-      Caption         =   "&Reset all Preferences"
+      Caption         =   "&Reset all options"
       Height          =   495
       Left            =   2880
       TabIndex        =   38
@@ -81,7 +81,7 @@ Begin VB.Form FormPreferences
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipType     =   1
-      TooltipTitle    =   "Interface Preferences"
+      TooltipTitle    =   "Interface Options"
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -113,7 +113,7 @@ Begin VB.Form FormPreferences
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipType     =   1
-      TooltipTitle    =   "Update Preferences"
+      TooltipTitle    =   "Update Options"
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -145,7 +145,7 @@ Begin VB.Form FormPreferences
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipType     =   1
-      TooltipTitle    =   "Tool Preferences"
+      TooltipTitle    =   "Tool Options"
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -177,7 +177,7 @@ Begin VB.Form FormPreferences
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipType     =   1
-      TooltipTitle    =   "Advanced Settings"
+      TooltipTitle    =   "Advanced Options"
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -209,7 +209,7 @@ Begin VB.Form FormPreferences
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipType     =   1
-      TooltipTitle    =   "Transparency preferences"
+      TooltipTitle    =   "Transparency Options"
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -241,7 +241,7 @@ Begin VB.Form FormPreferences
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipType     =   1
-      TooltipTitle    =   "Load (Import) Preferences"
+      TooltipTitle    =   "Load (Import) Options"
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -273,7 +273,7 @@ Begin VB.Form FormPreferences
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipType     =   1
-      TooltipTitle    =   "Save (Export) Preferences"
+      TooltipTitle    =   "Save (Export) Options"
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -294,7 +294,7 @@ Begin VB.Form FormPreferences
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Caption         =   "File Formats"
+      Caption         =   "File formats"
       ForeColor       =   4210752
       ForeColorHover  =   4194304
       Mode            =   1
@@ -305,7 +305,7 @@ Begin VB.Form FormPreferences
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipType     =   1
-      TooltipTitle    =   "File Format Preferences"
+      TooltipTitle    =   "File Format Options"
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -470,7 +470,7 @@ Begin VB.Form FormPreferences
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
-            Caption         =   "PNG (Portable Network Graphic) settings"
+            Caption         =   "PNG (Portable Network Graphic) options"
             BeginProperty Font 
                Name            =   "Tahoma"
                Size            =   12
@@ -486,7 +486,7 @@ Begin VB.Form FormPreferences
             Left            =   360
             TabIndex        =   103
             Top             =   120
-            Width           =   4320
+            Width           =   4290
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -524,7 +524,7 @@ Begin VB.Form FormPreferences
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
-            Caption         =   "TGA (Truevision) settings"
+            Caption         =   "TGA (Truevision) options"
             BeginProperty Font 
                Name            =   "Tahoma"
                Size            =   12
@@ -540,7 +540,7 @@ Begin VB.Form FormPreferences
             Left            =   360
             TabIndex        =   111
             Top             =   120
-            Width           =   2730
+            Width           =   2700
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -578,7 +578,7 @@ Begin VB.Form FormPreferences
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
-            Caption         =   "BMP (Bitmap) settings"
+            Caption         =   "BMP (Bitmap) options"
             BeginProperty Font 
                Name            =   "Tahoma"
                Size            =   12
@@ -594,7 +594,7 @@ Begin VB.Form FormPreferences
             Left            =   360
             TabIndex        =   100
             Top             =   120
-            Width           =   2325
+            Width           =   2295
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -652,7 +652,7 @@ Begin VB.Form FormPreferences
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
-            Caption         =   "TIFF (Tagged Image File Format) settings"
+            Caption         =   "TIFF (Tagged Image File Format) options"
             BeginProperty Font 
                Name            =   "Tahoma"
                Size            =   12
@@ -668,7 +668,7 @@ Begin VB.Form FormPreferences
             Left            =   360
             TabIndex        =   93
             Top             =   120
-            Width           =   4425
+            Width           =   4395
          End
          Begin VB.Label lblFileStuff 
             AutoSize        =   -1  'True
@@ -726,7 +726,7 @@ Begin VB.Form FormPreferences
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
-            Caption         =   "PPM (Portable Pixmap) settings"
+            Caption         =   "PPM (Portable Pixmap) options"
             BeginProperty Font 
                Name            =   "Tahoma"
                Size            =   12
@@ -742,7 +742,7 @@ Begin VB.Form FormPreferences
             Left            =   360
             TabIndex        =   94
             Top             =   120
-            Width           =   3315
+            Width           =   3285
          End
          Begin VB.Label lblPPMEncoding 
             AutoSize        =   -1  'True
@@ -804,7 +804,7 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "file format preferences"
+         Caption         =   "file format options"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -820,7 +820,7 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   68
          Top             =   0
-         Width           =   2385
+         Width           =   1950
       End
    End
    Begin VB.PictureBox picContainer 
@@ -852,7 +852,7 @@ Begin VB.Form FormPreferences
          Left            =   3180
          Style           =   2  'Dropdown List
          TabIndex        =   80
-         ToolTipText     =   $"VBP_FormPreferences.frx":87EF
+         ToolTipText     =   $"VBP_FormPreferences.frx":87EB
          Top             =   1680
          Width           =   4995
       End
@@ -871,7 +871,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   77
-         ToolTipText     =   $"VBP_FormPreferences.frx":88B2
+         ToolTipText     =   $"VBP_FormPreferences.frx":88AE
          Top             =   3840
          Width           =   5415
       End
@@ -890,7 +890,7 @@ Begin VB.Form FormPreferences
          Left            =   840
          Style           =   2  'Dropdown List
          TabIndex        =   69
-         ToolTipText     =   $"VBP_FormPreferences.frx":897F
+         ToolTipText     =   $"VBP_FormPreferences.frx":897B
          Top             =   2910
          Width           =   7335
       End
@@ -1056,7 +1056,7 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "global save preferences"
+         Caption         =   "save options"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -1072,7 +1072,7 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   65
          Top             =   0
-         Width           =   2475
+         Width           =   1320
       End
    End
    Begin VB.PictureBox picContainer 
@@ -1105,7 +1105,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   76
-         ToolTipText     =   $"VBP_FormPreferences.frx":8A74
+         ToolTipText     =   $"VBP_FormPreferences.frx":8A70
          Top             =   825
          Width           =   7455
       End
@@ -1124,7 +1124,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   57
-         ToolTipText     =   $"VBP_FormPreferences.frx":8B59
+         ToolTipText     =   $"VBP_FormPreferences.frx":8B55
          Top             =   4125
          Width           =   4095
       End
@@ -1144,7 +1144,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   55
-         ToolTipText     =   $"VBP_FormPreferences.frx":8C01
+         ToolTipText     =   $"VBP_FormPreferences.frx":8BFD
          Top             =   3150
          Width           =   7455
       End
@@ -1163,7 +1163,7 @@ Begin VB.Form FormPreferences
          Left            =   3000
          Style           =   2  'Dropdown List
          TabIndex        =   44
-         ToolTipText     =   $"VBP_FormPreferences.frx":8CCB
+         ToolTipText     =   $"VBP_FormPreferences.frx":8CC7
          Top             =   1695
          Width           =   4815
       End
@@ -1189,7 +1189,7 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "global load preferences"
+         Caption         =   "global load options"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -1205,11 +1205,11 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   74
          Top             =   0
-         Width           =   2460
+         Width           =   2025
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "load preferences for specific image types"
+         Caption         =   "load options for specific image types"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -1225,10 +1225,10 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   73
          Top             =   2280
-         Width           =   4305
+         Width           =   3870
       End
       Begin VB.Label lblFreeImageWarning 
-         Caption         =   $"VBP_FormPreferences.frx":8D85
+         Caption         =   $"VBP_FormPreferences.frx":8D81
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9
@@ -1376,7 +1376,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   61
-         ToolTipText     =   $"VBP_FormPreferences.frx":8E9A
+         ToolTipText     =   $"VBP_FormPreferences.frx":8E96
          Top             =   480
          Width           =   7455
       End
@@ -1509,7 +1509,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   21
-         ToolTipText     =   $"VBP_FormPreferences.frx":8F7E
+         ToolTipText     =   $"VBP_FormPreferences.frx":8F7A
          Top             =   480
          Width           =   6975
       End
@@ -1594,7 +1594,7 @@ Begin VB.Form FormPreferences
          Width           =   2385
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":9070
+         Caption         =   $"VBP_FormPreferences.frx":906C
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -1683,7 +1683,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   17
-         ToolTipText     =   $"VBP_FormPreferences.frx":911F
+         ToolTipText     =   $"VBP_FormPreferences.frx":911B
          Top             =   1080
          Width           =   6735
       End
@@ -1709,7 +1709,7 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
-         Caption         =   "update preferences"
+         Caption         =   "update options"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -1725,7 +1725,7 @@ Begin VB.Form FormPreferences
          Left            =   120
          TabIndex        =   15
          Top             =   0
-         Width           =   2010
+         Width           =   1575
       End
       Begin VB.Label lblExplanation 
          BackStyle       =   0  'Transparent
@@ -1776,7 +1776,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   50
-         ToolTipText     =   $"VBP_FormPreferences.frx":91BB
+         ToolTipText     =   $"VBP_FormPreferences.frx":91B7
          Top             =   2520
          Width           =   4575
       End
@@ -1874,7 +1874,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   10
-         ToolTipText     =   $"VBP_FormPreferences.frx":9264
+         ToolTipText     =   $"VBP_FormPreferences.frx":9260
          Top             =   480
          Width           =   4815
       End
@@ -1884,7 +1884,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":92FD
+         MouseIcon       =   "VBP_FormPreferences.frx":92F9
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -2066,7 +2066,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   46
-         ToolTipText     =   $"VBP_FormPreferences.frx":944F
+         ToolTipText     =   $"VBP_FormPreferences.frx":944B
          Top             =   3240
          Width           =   7695
       End
@@ -2085,7 +2085,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   31
-         ToolTipText     =   $"VBP_FormPreferences.frx":9521
+         ToolTipText     =   $"VBP_FormPreferences.frx":951D
          Top             =   2010
          Width           =   5055
       End
@@ -2104,7 +2104,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   28
-         ToolTipText     =   $"VBP_FormPreferences.frx":95B4
+         ToolTipText     =   $"VBP_FormPreferences.frx":95B0
          Top             =   900
          Width           =   5055
       End
@@ -2114,7 +2114,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":9649
+         MouseIcon       =   "VBP_FormPreferences.frx":9645
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -2131,7 +2131,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":979B
+         MouseIcon       =   "VBP_FormPreferences.frx":9797
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -2819,30 +2819,28 @@ End Sub
 'When the form is loaded, populate the various checkboxes and textboxes with the values from the INI file
 Private Sub Form_Load()
     
-    Me.Caption = PROGRAMNAME & " Preferences"
-    
     'Populate all controls with their corresponding values
     LoadAllPreferences
     
     'Populate the multi-line tooltips for the category command buttons
     'Interface
-    cmdCategory(0).ToolTip = "Interface preferences include default setting for canvas backgrounds," & vbCrLf & "image load/save behavior, and the program's visual theme."
+    cmdCategory(0).ToolTip = "Interface options include settings for the main PhotoDemon interface, including" & vbCrLf & "things like canvas settings, font selection, and positioning."
     'Loading
-    cmdCategory(1).ToolTip = "Load preferences allow you to customize the way image files enter the application."
+    cmdCategory(1).ToolTip = "Load options allow you to customize the way image files enter the application."
     'Saving
-    cmdCategory(2).ToolTip = "Save preferences allow you to customize the way image files leave the application."
+    cmdCategory(2).ToolTip = "Save options allow you to customize the way image files leave the application."
     'File formats
-    cmdCategory(3).ToolTip = "File formats preferences control how PhotoDemon handles various types of images."
+    cmdCategory(3).ToolTip = "File format options control how PhotoDemon handles certain types of images."
     'Performance
     'cmdCategory(3).ToolTip = "Performance preferences allow you to specify how aggressively PhotoDemon makes use" & vbCrLf & "of the system's available RAM and hard drive space."
     'Tools
-    cmdCategory(4).ToolTip = "Tool preferences currently include customizable options for the Selection Tool." & vbCrLf & "In the future, PhotoDemon will gain paint tools, and those settings will appear" & vbCrLf & "here as well."
+    cmdCategory(4).ToolTip = "Tool options currently include customizable options for the Selection Tool." & vbCrLf & "In the future, PhotoDemon will gain paint tools, and those settings will appear" & vbCrLf & "here as well."
     'Transparency
-    cmdCategory(5).ToolTip = "Transparency preferences control how PhotoDemon displays images" & vbCrLf & "that contain alpha channels (e.g. 32bpp images)."
+    cmdCategory(5).ToolTip = "Transparency options control how PhotoDemon displays images" & vbCrLf & "that contain alpha channels (e.g. 32bpp images)."
     'Updates
-    cmdCategory(6).ToolTip = "Update preferences control how frequently PhotoDemon checks for" & vbCrLf & "updated versions, and how it handles the download of missing plugins."
+    cmdCategory(6).ToolTip = "Update options control how frequently PhotoDemon checks for" & vbCrLf & "updated versions, and how it handles the download of missing plugins."
     'Advanced
-    cmdCategory(7).ToolTip = "Advanced preferences can be safely ignored by regular users." & vbCrLf & "Testers and developers may, however, find these settings useful."
+    cmdCategory(7).ToolTip = "Advanced options can be safely ignored by regular users." & vbCrLf & "Testers and developers may, however, find these settings useful."
     
     'Populate the network access disclaimer in the "Update" panel
     lblExplanation.Caption = PROGRAMNAME & " provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins (FreeImage, EZTwain, zLib, and pngnq-s9) if they aren't present in the \Data\Plugins subdirectory." _
