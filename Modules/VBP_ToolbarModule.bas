@@ -81,7 +81,7 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 ResetMenuIcons
             End If
             
-        'ImageOps is all Image-related menu items; it enables/disables the Image, Color, View, and Print menus
+        'ImageOps is all Image-related menu items; it enables/disables the Image, Color, View (most items, anyway), and Print menus
         Case tImageOps
             If FormMain.MnuImage.Enabled <> tState Then
                 FormMain.MnuImage.Enabled = tState
@@ -89,7 +89,19 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 FormMain.MnuColor.Enabled = tState
                 FormMain.MnuPrint.Enabled = tState
                 FormMain.MnuWindow.Enabled = tState
-                FormMain.MnuView.Enabled = tState
+                FormMain.MnuFitOnScreen.Enabled = tState
+                FormMain.MnuFitWindowToImage.Enabled = tState
+                FormMain.MnuZoomIn.Enabled = tState
+                FormMain.MnuZoomOut.Enabled = tState
+                FormMain.MnuZoom161.Enabled = tState
+                FormMain.MnuZoom81.Enabled = tState
+                FormMain.MnuZoom41.Enabled = tState
+                FormMain.MnuZoom21.Enabled = tState
+                FormMain.MnuActualSize.Enabled = tState
+                FormMain.MnuZoom12.Enabled = tState
+                FormMain.MnuZoom14.Enabled = tState
+                FormMain.MnuZoom18.Enabled = tState
+                FormMain.MnuZoom116.Enabled = tState
             End If
         
         'Filter (top-level menu)
@@ -128,16 +140,16 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
         'Selections
         Case tSelection
-            If FormMain.txtSelLeft.Visible <> tState Then FormMain.txtSelLeft.Visible = tState
-            If FormMain.txtSelTop.Visible <> tState Then FormMain.txtSelTop.Visible = tState
-            If FormMain.txtSelWidth.Visible <> tState Then FormMain.txtSelWidth.Visible = tState
-            If FormMain.txtSelHeight.Visible <> tState Then FormMain.txtSelHeight.Visible = tState
-            If FormMain.vsSelLeft.Visible <> tState Then FormMain.vsSelLeft.Visible = tState
-            If FormMain.vsSelTop.Visible <> tState Then FormMain.vsSelTop.Visible = tState
-            If FormMain.vsSelWidth.Visible <> tState Then FormMain.vsSelWidth.Visible = tState
-            If FormMain.vsSelHeight.Visible <> tState Then FormMain.vsSelHeight.Visible = tState
-            If FormMain.lblSelSize.Visible <> tState Then FormMain.lblSelSize.Visible = tState
-            If FormMain.lblSelPosition.Visible <> tState Then FormMain.lblSelPosition.Visible = tState
+            FormMain.txtSelLeft.Visible = tState
+            FormMain.txtSelTop.Visible = tState
+            FormMain.txtSelWidth.Visible = tState
+            FormMain.txtSelHeight.Visible = tState
+            FormMain.vsSelLeft.Visible = tState
+            FormMain.vsSelTop.Visible = tState
+            FormMain.vsSelWidth.Visible = tState
+            FormMain.vsSelHeight.Visible = tState
+            FormMain.lblSelSize.Visible = tState
+            FormMain.lblSelPosition.Visible = tState
             
             'Selection enabling/disabling also affects the Crop to Selection command
             If FormMain.MnuCropSelection.Enabled <> tState Then FormMain.MnuCropSelection.Enabled = tState

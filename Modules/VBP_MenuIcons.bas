@@ -104,7 +104,7 @@ Public Sub LoadMenuIcons()
         isThemingEnabled = .CanWeTheme
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-        If (Not isVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
+        If (Not isVistaOrLater) And (isProgramCompiled = False) Then Exit Sub
         
         .Init FormMain.hWnd, 16, 16
         
@@ -261,6 +261,8 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("MODE32", "CUSTOM")      '150
         .AddImageFromStream LoadResData("MODE24CHK", "CUSTOM")   '151
         .AddImageFromStream LoadResData("MODE32CHK", "CUSTOM")   '152
+        .AddImageFromStream LoadResData("LEFTPANHIDE", "CUSTOM") '153
+        .AddImageFromStream LoadResData("LEFTPANSHOW", "CUSTOM") '154
         
         'File Menu
         .PutImageToVBMenu 0, 0, 0       'Open Image
@@ -300,11 +302,12 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 18, 8, 1      'Program Preferences
         
         'View Menu
-        .PutImageToVBMenu 29, 0, 2     'Fit on Screen
-        .PutImageToVBMenu 28, 1, 2     'Fit Viewport to Image
+        .PutImageToVBMenu 29, 0, 2      'Fit on Screen
+        .PutImageToVBMenu 28, 1, 2      'Fit Viewport to Image
         .PutImageToVBMenu 136, 3, 2     'Zoom In
         .PutImageToVBMenu 137, 4, 2     'Zoom Out
-        .PutImageToVBMenu 138, 10, 2     'Zoom 100%
+        .PutImageToVBMenu 138, 10, 2    'Zoom 100%
+        .PutImageToVBMenu 154, 16, 2    'Show/Hide the left-hand panel
         
         'Image Menu
         .PutImageToVBMenu 42, 0, 3      'Duplicate
@@ -488,11 +491,11 @@ Public Sub LoadMenuIcons()
 End Sub
 
 'When menu captions are changed, the associated images are lost.  This forces a reset.
-' At present, it only address the Undo and Redo menu items.
+' Note that to keep the code small, all changeable icons are refreshed whenever this is called.
 Public Sub ResetMenuIcons()
 
     'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-    If (Not isVistaOrLater) And (IsProgramCompiled = False) Then Exit Sub
+    If (Not isVistaOrLater) And (isProgramCompiled = False) Then Exit Sub
 
     'The position of menus changes if the MDI child is maximized.  When maximized, the form menu is given index 0, shifting
     ' everything to the right by one.
@@ -515,6 +518,13 @@ Public Sub ResetMenuIcons()
     Dim numOfMRUFiles As Long
     numOfMRUFiles = MRU_ReturnCount()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0 + posModifier, 1
+    
+    'Change the Show/Hide left icon panel to match
+    If userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+        cMenuImage.PutImageToVBMenu 154, 16, 2 + posModifier    'Show the panel
+    Else
+        cMenuImage.PutImageToVBMenu 153, 16, 2 + posModifier    'Hide the panel
+    End If
         
     'If the OS is Vista or later, render MRU icons to the Open Recent menu
     If isVistaOrLater Then

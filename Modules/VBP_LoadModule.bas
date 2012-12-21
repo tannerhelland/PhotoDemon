@@ -192,6 +192,15 @@ Public Sub LoadTheProgram()
     'Render various aspects of the UI
     LoadMessage "Initializing user interface..."
         
+    'Display or hide the left-hand pane according to the saved setting in the INI file
+    If userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+        FormMain.MnuLeftPanel.Caption = "Show left panel"
+        FormMain.picLeftPane.Visible = False
+    Else
+        FormMain.MnuLeftPanel.Caption = "Hide left panel"
+        FormMain.picLeftPane.Visible = True
+    End If
+        
     'Manually create multi-line tooltips
     FormMain.cmdOpen.ToolTip = "Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop" & vbCrLf & " or Windows Explorer and dropping them onto PhotoDemon.)"
     If ConfirmClosingUnsaved Then

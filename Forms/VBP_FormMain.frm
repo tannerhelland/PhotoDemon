@@ -828,6 +828,12 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuZoom116 
          Caption         =   "1:16 (6.25%)"
       End
+      Begin VB.Menu MnuViewSepBar2 
+         Caption         =   "-"
+      End
+      Begin VB.Menu MnuLeftPanel 
+         Caption         =   "Hide left panel"
+      End
    End
    Begin VB.Menu MnuImage 
       Caption         =   "&Image"
@@ -1502,7 +1508,7 @@ Private Sub MDIForm_Load()
     
     'After the program has been successfully loaded, change the focus to the Open Image button
     Me.Visible = True
-    If FormMain.Enabled Then cmdOpen.SetFocus
+    If FormMain.Enabled And picLeftPane.Visible Then cmdOpen.SetFocus
         
     'Start by seeing if we're allowed to check for software updates
     Dim allowedToUpdate As Boolean
@@ -2132,6 +2138,26 @@ Private Sub MnuLava_Click()
     Process Lava
 End Sub
 
+'The user can toggle the appearance of the left-hand panel from this menu.  This toggle is also stored in the INI file.
+Private Sub MnuLeftPanel_Click()
+    
+    'Write the new value to the INI
+    userPreferences.SetPreference_Boolean "General Preferences", "HideLeftPanel", Not userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False)
+
+    'Toggle the text and picture box accordingly
+    If userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+        MnuLeftPanel.Caption = "Show left panel"
+        picLeftPane.Visible = False
+    Else
+        MnuLeftPanel.Caption = "Hide left panel"
+        picLeftPane.Visible = True
+    End If
+    
+    'Ask the menu icon handler to redraw the image with a toggled icon
+    ResetMenuIcons
+    
+End Sub
+
 Private Sub MnuMaximum_Click()
     Process CustomRank, 1, 0
 End Sub
@@ -2664,7 +2690,7 @@ End Sub
 Private Sub picLeftPane_Resize()
     
     'When this main form is resized, reapply any custom visual styles
-    RedrawMainForm
+    If FormMain.Visible Then RedrawMainForm
     
 End Sub
 
@@ -2674,7 +2700,7 @@ End Sub
 Private Sub picProgBar_Resize()
     
     'When this main form is resized, reapply any custom visual styles
-    RedrawMainForm
+    If FormMain.Visible Then RedrawMainForm
     
 End Sub
 

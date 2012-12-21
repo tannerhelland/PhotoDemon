@@ -347,6 +347,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "DefaultSaveFormat=0"
         Print #fileNum, "DisplayIDEWarning=1"
         Print #fileNum, "HasGitHubAccount="
+        Print #fileNum, "HideLeftPanel=0"
         Print #fileNum, "ImageCaptionSize=0"
         Print #fileNum, "LastUpdateCheck="
         Print #fileNum, "LastPreferencesPage=0"
