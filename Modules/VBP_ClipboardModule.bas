@@ -13,6 +13,13 @@ Attribute VB_Name = "Clipboard_Handler"
 
 Option Explicit
 
+'API functions used to extract file names from clipboard data
+Private Declare Function CloseClipboard Lib "user32" () As Long
+Private Declare Function DragQueryFile Lib "shell32.dll" Alias "DragQueryFileA" (ByVal hDrop As Long, ByVal iFile As Long, ByVal lpszFile As String, ByVal cch As Long) As Long
+Private Declare Function GetClipboardData Lib "user32" (ByVal wFormat As Long) As Long
+Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
+
+Private Const CF_HDROP As Long = 15
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 Private Const CLIPBOARD_FORMAT_METAFILE As Long = 3
 
@@ -91,7 +98,7 @@ Public Sub ClipboardPaste()
         Message "Clipboard data imported successfully "
     
     'Next, see if the clipboard contains text.  If it does, it may be a hyperlink - if so, try and load it
-    ElseIf Clipboard.GetFormat(vbCFText) And ((Left$(Trim(CStr(Clipboard.GetText)), 7) <> "http://") Or (Left$(Trim(CStr(Clipboard.GetText)), 6) <> "ftp://")) Then
+    ElseIf Clipboard.GetFormat(vbCFText) And ((Left$(Trim(CStr(Clipboard.GetText)), 7) = "http://") Or (Left$(Trim(CStr(Clipboard.GetText)), 6) = "ftp://")) Then
         
         Message "URL found on clipboard.  Attempting to download image at that location..."
         Dim downloadSuccess As Boolean
@@ -100,8 +107,64 @@ Public Sub ClipboardPaste()
         'If the download failed, let the user know that hey, at least we tried.
         If downloadSuccess = False Then Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
     
+    'Next, see if the clipboard contains one or more files.  If it does, try to load them.
+    ElseIf Clipboard.GetFormat(vbCFFiles) Then
+    
+        Dim listFiles() As String
+        listFiles = ClipboardGetFiles()
+        
+        PreLoadImage listFiles
+    
     Else
         MsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
     End If
     
 End Sub
+
+'The code in the function below was originally located at www.vb-helper.com.  You can access the original version here: http://www.vb-helper.com/howto_track_clipboard.html
+' Many thanks to the original author of this very helpful code
+' Get an array of the files listed in the clipboard.
+Public Function ClipboardGetFiles() As String()
+    
+    Dim drop_handle As Long
+    Dim num_file_names As Long
+    Dim file_names() As String
+    Dim file_name As String * 1024
+    Dim i As Long
+
+    ' Make sure there is file data.
+    If Clipboard.GetFormat(vbCFFiles) Then
+        
+        ' File data exists. Get it.
+        ' Open the clipboard.
+        If OpenClipboard(0) Then
+            ' The clipboard is open.
+
+            ' Get the handle to the dropped list of files.
+            drop_handle = GetClipboardData(CF_HDROP)
+
+            ' Get the number of dropped files.
+            num_file_names = DragQueryFile(drop_handle, -1, vbNullString, 0)
+
+            ' Get the file names.
+            ReDim file_names(0 To num_file_names - 1) As String
+            For i = 0 To num_file_names - 1
+                ' Get the file name.
+                DragQueryFile drop_handle, i, file_name, Len(file_name)
+
+                ' Truncate at the NULL character.
+                file_names(i) = Left$(file_name, InStr(file_name, vbNullChar) - 1)
+            Next i
+
+            ' Close the clipboard.
+            CloseClipboard
+
+            ' Assign the return value.
+            ClipboardGetFiles = file_names
+            
+        End If
+        
+    End If
+    
+End Function
+
