@@ -349,6 +349,8 @@ Private Sub createNewINIFile()
         Print #fileNum, "HasGitHubAccount="
         Print #fileNum, "ImageCaptionSize=0"
         Print #fileNum, "LastUpdateCheck="
+        Print #fileNum, "LastPreferencesPage=0"
+        Print #fileNum, "LastFilePreferencesPage=1"
         Print #fileNum, "LogProgramMessages=0"
         Print #fileNum, "MRUCaptionSize=0"
         Print #fileNum, "MultipageImagePrompt=0"

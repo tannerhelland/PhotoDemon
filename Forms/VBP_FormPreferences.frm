@@ -346,174 +346,6 @@ Begin VB.Form FormPreferences
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   3735
-         Index           =   4
-         Left            =   240
-         ScaleHeight     =   249
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   529
-         TabIndex        =   89
-         Top             =   1680
-         Width           =   7935
-         Begin VB.CheckBox chkTIFFCMYK 
-            Appearance      =   0  'Flat
-            Caption         =   " save TIFFs as separated CMYK (for printing)"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   375
-            Left            =   600
-            TabIndex        =   96
-            ToolTipText     =   $"VBP_FormPreferences.frx":834F
-            Top             =   1560
-            Visible         =   0   'False
-            Width           =   7215
-         End
-         Begin VB.ComboBox cmbTIFFCompression 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   630
-            Style           =   2  'Dropdown List
-            TabIndex        =   90
-            ToolTipText     =   $"VBP_FormPreferences.frx":83F1
-            Top             =   960
-            Width           =   7095
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            Caption         =   "TIFF (Tagged Image File Format) settings"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   7
-            Left            =   360
-            TabIndex        =   93
-            Top             =   120
-            Width           =   4425
-         End
-         Begin VB.Label lblFileStuff 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "when saving, compress TIFFs using:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Index           =   0
-            Left            =   600
-            TabIndex        =   91
-            Top             =   645
-            Width           =   3135
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   3855
-         Index           =   2
-         Left            =   240
-         ScaleHeight     =   257
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   529
-         TabIndex        =   86
-         Top             =   1680
-         Width           =   7935
-         Begin VB.ComboBox cmbPPMFormat 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   2790
-            Style           =   2  'Dropdown List
-            TabIndex        =   87
-            ToolTipText     =   $"VBP_FormPreferences.frx":84AD
-            Top             =   600
-            Width           =   4935
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            Caption         =   "PPM (Portable Pixmap) settings"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   12
-            Left            =   360
-            TabIndex        =   94
-            Top             =   120
-            Width           =   3315
-         End
-         Begin VB.Label lblPPMEncoding 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "export PPM files using:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Left            =   600
-            TabIndex        =   88
-            Top             =   645
-            Width           =   1950
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   3735
          Index           =   1
          Left            =   240
          ScaleHeight     =   249
@@ -547,7 +379,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   102
-            ToolTipText     =   $"VBP_FormPreferences.frx":8550
+            ToolTipText     =   $"VBP_FormPreferences.frx":834F
             Top             =   2040
             Width           =   7215
          End
@@ -567,7 +399,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   108
-            ToolTipText     =   $"VBP_FormPreferences.frx":85F3
+            ToolTipText     =   $"VBP_FormPreferences.frx":83F2
             Top             =   2520
             Value           =   1  'Checked
             Width           =   7215
@@ -740,7 +572,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   99
-            ToolTipText     =   $"VBP_FormPreferences.frx":8692
+            ToolTipText     =   $"VBP_FormPreferences.frx":8491
             Top             =   600
             Width           =   7215
          End
@@ -763,6 +595,174 @@ Begin VB.Form FormPreferences
             TabIndex        =   100
             Top             =   120
             Width           =   2325
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   3735
+         Index           =   4
+         Left            =   240
+         ScaleHeight     =   249
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   529
+         TabIndex        =   89
+         Top             =   1680
+         Width           =   7935
+         Begin VB.CheckBox chkTIFFCMYK 
+            Appearance      =   0  'Flat
+            Caption         =   " save TIFFs as separated CMYK (for printing)"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   375
+            Left            =   600
+            TabIndex        =   96
+            ToolTipText     =   $"VBP_FormPreferences.frx":853D
+            Top             =   1560
+            Visible         =   0   'False
+            Width           =   7215
+         End
+         Begin VB.ComboBox cmbTIFFCompression 
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   630
+            Style           =   2  'Dropdown List
+            TabIndex        =   90
+            ToolTipText     =   $"VBP_FormPreferences.frx":85DF
+            Top             =   960
+            Width           =   7095
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            Caption         =   "TIFF (Tagged Image File Format) settings"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   7
+            Left            =   360
+            TabIndex        =   93
+            Top             =   120
+            Width           =   4425
+         End
+         Begin VB.Label lblFileStuff 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "when saving, compress TIFFs using:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   0
+            Left            =   600
+            TabIndex        =   91
+            Top             =   645
+            Width           =   3135
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   3855
+         Index           =   2
+         Left            =   240
+         ScaleHeight     =   257
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   529
+         TabIndex        =   86
+         Top             =   1680
+         Width           =   7935
+         Begin VB.ComboBox cmbPPMFormat 
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   2790
+            Style           =   2  'Dropdown List
+            TabIndex        =   87
+            ToolTipText     =   $"VBP_FormPreferences.frx":869B
+            Top             =   600
+            Width           =   4935
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            Caption         =   "PPM (Portable Pixmap) settings"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   12
+            Left            =   360
+            TabIndex        =   94
+            Top             =   120
+            Width           =   3315
+         End
+         Begin VB.Label lblPPMEncoding 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "export PPM files using:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Left            =   600
+            TabIndex        =   88
+            Top             =   645
+            Width           =   1950
          End
       End
       Begin VB.Label lblFileFreeImageWarning 
@@ -2394,6 +2394,15 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
     
+    'First, remember the panel(s) that the user was looking at
+    Dim i As Long
+    
+    For i = 0 To cmdCategory.Count - 1
+        If cmdCategory(i).Value = True Then userPreferences.SetPreference_Long "General Preferences", "LastPreferencesPage", i
+    Next i
+    
+    userPreferences.SetPreference_Long "General Preferences", "LastFilePreferencesPage", cmbFiletype.ListIndex
+    
     'We may need to access a generic "form" object multiple times, so I declare it at the top of this sub.
     Dim tForm As Form
     
@@ -2842,12 +2851,21 @@ Private Sub Form_Load()
         
     'Finally, hide the inactive category panels
     Dim i As Long
-    For i = 1 To picContainer.Count - 1
+    For i = 0 To picContainer.Count - 1
         picContainer(i).Visible = False
+        cmdCategory(i).Value = False
     Next i
-    For i = 1 To picFileContainer.Count - 1
-        picContainer(i).Visible = False
+    For i = 0 To picFileContainer.Count - 1
+        picFileContainer(i).Visible = False
     Next i
+    
+    'Activate the last preferences panel that the user looked at
+    picContainer(userPreferences.GetPreference_Long("General Preferences", "LastPreferencesPage", 0)).Visible = True
+    cmdCategory(userPreferences.GetPreference_Long("General Preferences", "LastPreferencesPage", 0)).Value = True
+    
+    'Also, activate the last file preferences sub-panel that the user looked at
+    cmbFiletype.ListIndex = userPreferences.GetPreference_Long("General Preferences", "LastFilePreferencesPage", 1)
+    picFileContainer(userPreferences.GetPreference_Long("General Preferences", "LastFilePreferencesPage", 1)).Visible = True
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
