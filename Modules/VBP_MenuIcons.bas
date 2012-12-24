@@ -606,10 +606,11 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     Dim maskClr As Long
     Dim icoInfo As ICONINFO
    
-    'The icon can be drawn at any size, but 16x16 is how it will (typically) end up on the form. I use 32x32 here
-    ' in order to get slightly higher quality stretching during the resampling phase.
+    'The icon can be drawn at any size, but 16x16 is how it will (typically) end up on the form.  Note that I was previously considering
+    ' mimicking GIMP by making the taskbar icon dynamically change based on the image being edited, but I have since decided against that.
+    ' If I ever change my mind, I will want to use 32x32 here instead.
     Dim icoSize As Long
-    icoSize = 32
+    icoSize = 16
 
     'Determine aspect ratio
     Dim aspectRatio As Single
@@ -637,82 +638,158 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
         
     End If
     
-    'Clear out the current picture box
-    imgForm.picIcon.Picture = LoadPicture("")
+    'I have two systems in place for rendering the dynamic form icons.  One relies on FreeImage, and generates a very high-quality,
+    ' 32bpp with full alpha icon.  This is obviously the preferred method.  If FreeImage cannot be found, a StretchBlt-based
+    ' technique is used.  Alpha is not taken into account by that method (obviously), and the icon quality is much worse.
+    If imageFormats.FreeImageEnabled Then
     
-    'Resize the picture box that will receive the first draft of the icon
-    imgForm.picIcon.Width = icoSize
-    imgForm.picIcon.Height = icoSize
-    
-    'Because we'll be shrinking the image dramatically, set StretchBlt to use resampling
-    SetStretchBltMode imgForm.picIcon.hDC, STRETCHBLT_HALFTONE
-    
-    'Render the bitmap that will ultimately be converted into an icon
-    StretchBlt imgForm.picIcon.hDC, CLng(TX), CLng(TY), CLng(tIcoWidth), CLng(tIcoHeight), pdImages(imgForm.Tag).mainLayer.getLayerDC, 0, 0, pdImages(imgForm.Tag).Width, pdImages(imgForm.Tag).Height, vbSrcCopy
-    imgForm.picIcon.Picture = imgForm.picIcon.Image
-   
-    'Now that we have a first draft to work from, start preparing the data types required by the icon API calls
-    GetObject imgForm.picIcon.Picture.Handle, Len(BitmapData), BitmapData
-
-    With BitmapData
-        iWidth = .bmWidth
-        iHeight = .bmHeight
-    End With
-   
-    'Create a copy of the original image; this will be used to generate a mask (necessary if the image isn't square-shaped)
-    srcDC = CreateCompatibleDC(0&)
-    oldSrcObj = SelectObject(srcDC, imgForm.picIcon.Picture.Handle)
-   
-    'If the image isn't square-shaped, the backcolor of the first draft image will need to be made transparent
-    If tIcoWidth < icoSize Or tIcoHeight < icoSize Then
-        maskClr = imgForm.picIcon.backColor
+        'Load the FreeImage dll into memory
+        Dim hLib As Long
+        hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+        
+        'Convert our current layer to a FreeImage-type DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+        
+        'Use that handle to request an image resize
+        If fi_DIB <> 0 Then
+            
+            'Rescale the image
+            Dim returnDIB As Long
+            returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
+            
+            'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
+            Dim newDIB32 As Long
+            newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
+            
+            'Unload the original DIB
+            If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
+            
+            'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
+            
+            'Also, set the background of the enlarged area as transparent
+            Dim newColor As RGBQUAD
+            With newColor
+                .rgbBlue = 255
+                .rgbGreen = 255
+                .rgbRed = 255
+                .rgbReserved = 0
+            End With
+            
+            'Enlarge the canvas as necessary
+            Dim finalDIB As Long
+            finalDIB = FreeImage_EnlargeCanvas(newDIB32, TX, TY, TX, TY, newColor, FI_COLOR_IS_RGBA_COLOR)
+            
+            'Unload the original DIB
+            If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
+            
+            'Generate a blank monochrome mask to pass to the icon creation function.
+            MonoDC = CreateCompatibleDC(0&)
+            MonoBmp = CreateCompatibleBitmap(MonoDC, icoSize, icoSize)
+            oldMonoObj = SelectObject(MonoDC, MonoBmp)
+            
+            'With the transfer complete, release the FreeImage DIB and unload the library
+            If finalDIB <> 0 Then
+                With icoInfo
+                    .fIcon = True
+                    .xHotspot = icoSize
+                    .yHotspot = icoSize
+                    .hbmMask = MonoBmp
+                    .hbmColor = FreeImage_GetBitmapForDevice(finalDIB)
+                End With
+            End If
+                        
+        End If
+        
+    'If FreeImage isn't enabled, fall back to StretchBlt
     Else
-        maskClr = 0
-    End If
-   
-    'Generate two masks. First, a monochrome mask.
-    MonoDC = CreateCompatibleDC(0&)
-    MonoBmp = CreateCompatibleBitmap(MonoDC, iWidth, iHeight)
-    oldMonoObj = SelectObject(MonoDC, MonoBmp)
-    cBkColor = GetBkColor(srcDC)
-    SetBkColor srcDC, maskClr
-    BitBlt MonoDC, 0, 0, iWidth, iHeight, srcDC, 0, 0, vbSrcCopy
-    SetBkColor srcDC, cBkColor
     
-    'Second, an AND mask
-    InvertDC = CreateCompatibleDC(0&)
-    InvertBmp = CreateCompatibleBitmap(imgForm.hDC, iWidth, iHeight)
-    oldInvertObj = SelectObject(InvertDC, InvertBmp)
-    BitBlt InvertDC, 0, 0, iWidth, iHeight, srcDC, 0, 0, vbSrcCopy
-    SetBkColor InvertDC, vbBlack
-    SetTextColor InvertDC, vbWhite
-    BitBlt InvertDC, 0, 0, iWidth, iHeight, MonoDC, 0, 0, vbSrcAnd
-  
-    'We no longer need our copy of the original image, so free up that memory
-    SelectObject srcDC, oldSrcObj
-    DeleteDC srcDC
-    'We can also free up the temporary DCs used to generate our two masks
-    SelectObject MonoDC, oldMonoObj
-    SelectObject InvertDC, oldInvertObj
+        'Clear out the current picture box
+        imgForm.picIcon.Picture = LoadPicture("")
+    
+        'Resize the picture box that will receive the first draft of the icon
+        imgForm.picIcon.Width = icoSize
+        imgForm.picIcon.Height = icoSize
+    
+        'Because we'll be shrinking the image dramatically, set StretchBlt to use resampling
+        SetStretchBltMode imgForm.picIcon.hDC, STRETCHBLT_HALFTONE
+    
+        'Render the bitmap that will ultimately be converted into an icon
+        StretchBlt imgForm.picIcon.hDC, CLng(TX), CLng(TY), CLng(tIcoWidth), CLng(tIcoHeight), pdImages(imgForm.Tag).mainLayer.getLayerDC, 0, 0, pdImages(imgForm.Tag).Width, pdImages(imgForm.Tag).Height, vbSrcCopy
+        imgForm.picIcon.Picture = imgForm.picIcon.Image
+        
+        'Now that we have a first draft to work from, start preparing the data types required by the icon API calls
+        GetObject imgForm.picIcon.Picture.Handle, Len(BitmapData), BitmapData
 
-    'Populate the icon header
-    With icoInfo
-      .fIcon = True
-      .xHotspot = icoSize
-      .yHotspot = icoSize
-      .hbmMask = MonoBmp
-      .hbmColor = InvertBmp
-    End With
-      
+        With BitmapData
+            iWidth = .bmWidth
+            iHeight = .bmHeight
+        End With
+       
+        'Create a copy of the original image; this will be used to generate a mask (necessary if the image isn't square-shaped)
+        srcDC = CreateCompatibleDC(0&)
+        oldSrcObj = SelectObject(srcDC, imgForm.picIcon.Picture.Handle)
+       
+        'If the image isn't square-shaped, the backcolor of the first draft image will need to be made transparent
+        If tIcoWidth < icoSize Or tIcoHeight < icoSize Then
+            maskClr = imgForm.picIcon.backColor
+        Else
+            maskClr = 0
+        End If
+       
+        'Generate two masks. First, a monochrome mask.
+        MonoDC = CreateCompatibleDC(0&)
+        MonoBmp = CreateCompatibleBitmap(MonoDC, iWidth, iHeight)
+        oldMonoObj = SelectObject(MonoDC, MonoBmp)
+        cBkColor = GetBkColor(srcDC)
+        SetBkColor srcDC, maskClr
+        BitBlt MonoDC, 0, 0, iWidth, iHeight, srcDC, 0, 0, vbSrcCopy
+        SetBkColor srcDC, cBkColor
+    
+        'Second, an AND mask
+        InvertDC = CreateCompatibleDC(0&)
+        InvertBmp = CreateCompatibleBitmap(imgForm.hDC, iWidth, iHeight)
+        oldInvertObj = SelectObject(InvertDC, InvertBmp)
+        BitBlt InvertDC, 0, 0, iWidth, iHeight, srcDC, 0, 0, vbSrcCopy
+        SetBkColor InvertDC, vbBlack
+        SetTextColor InvertDC, vbWhite
+        BitBlt InvertDC, 0, 0, iWidth, iHeight, MonoDC, 0, 0, vbSrcAnd
+  
+        'We no longer need our copy of the original image, so free up that memory
+        SelectObject srcDC, oldSrcObj
+        DeleteDC srcDC
+        
+        'We can also free up the temporary DCs used to generate our two masks
+        SelectObject MonoDC, oldMonoObj
+        SelectObject InvertDC, oldInvertObj
+        
+        With icoInfo
+            .fIcon = True
+            .xHotspot = icoSize
+            .yHotspot = icoSize
+            .hbmMask = MonoBmp
+            .hbmColor = InvertBmp
+        End With
+        
+    End If
+    
     'Render the icon to a handle
     Dim generatedIcon As Long
     generatedIcon = CreateIconIndirect(icoInfo)
     
-    'Clear out our temporary masks (whose info are now embedded in the icon itself)
-    DeleteObject icoInfo.hbmMask
-    DeleteObject icoInfo.hbmColor
-    DeleteDC MonoDC
-    DeleteDC InvertDC
+    If imageFormats.FreeImageEnabled Then
+        FreeImage_UnloadEx finalDIB
+        FreeLibrary hLib
+        DeleteObject icoInfo.hbmMask
+        DeleteObject icoInfo.hbmColor
+        DeleteDC MonoDC
+    Else
+        'Clear out our temporary masks (whose info are now embedded in the icon itself)
+        DeleteObject icoInfo.hbmMask
+        DeleteObject icoInfo.hbmColor
+        DeleteDC MonoDC
+        DeleteDC InvertDC
+    End If
    
     'Use the API to assign this new icon to the specified MDI child form
     SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
