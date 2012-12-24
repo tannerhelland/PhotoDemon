@@ -159,7 +159,7 @@ Public Sub MRU_LoadFromINI()
             
             'Shortcuts are not displayed on XP, because they end up smashed into the caption itself.
             ' Also, shortcuts are disabled in the IDE because the VB Accelerator control that handles them requires subclassing.
-            If (isVistaOrLater And IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            If (isVistaOrLater And isProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
         
@@ -333,7 +333,7 @@ MRUEntryFound:
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
             End If
             
-            If (isVistaOrLater And IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            If (isVistaOrLater And isProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
     End If
@@ -366,7 +366,7 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
         Dim nWidth As Long, nHeight As Long
         convertAspectRatio tImage.Width, tImage.Height, 64, 64, nWidth, nHeight
     
-        'Create a temporary layer that in a square shape
+        'Create a temporary layer in a square shape
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
         
@@ -394,7 +394,7 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
                 fi_OutputColorDepth = FICD_32BPP
             End If
             
-            fi_Check = FreeImage_SaveEx(fi_DIB, sFilename, FIF_PNG, FISO_PNG_Z_BEST_COMPRESSION, fi_OutputColorDepth, 64, 64, , , True)
+            fi_Check = FreeImage_SaveEx(fi_DIB, sFilename, FIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, 64, 64, , FILTER_BILINEAR, True)
             If fi_Check = False Then Message "MRU thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             
             Message "Thumbnail saved successfully."

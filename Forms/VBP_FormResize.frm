@@ -266,9 +266,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Resampling declarations
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
-
 'Used to prevent the scroll bars from getting stuck in update loops
 Private updateWidthBar As Boolean, updateHeightBar As Boolean
 
