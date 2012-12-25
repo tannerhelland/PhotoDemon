@@ -443,6 +443,29 @@ Public Sub UpdateMDIStatus()
             setNewAppIcon origIcon16
         End If
         
+        'New addition: destroy all inactive pdImage objects.  This helps keep memory usage at a bare minimum.
+        If NumOfImagesLoaded > 1 Then
+        
+            Dim i As Long
+            
+            'Loop through all pdImage objects and make sure they've been deactivated
+            For i = 0 To NumOfImagesLoaded
+                If (Not pdImages(i) Is Nothing) Then
+                    pdImages(i).deactivateImage
+                    Set pdImages(i) = Nothing
+                End If
+            Next i
+        
+            'Redim the pdImages array
+            Erase pdImages
+        
+            'Reset all window tracking variables
+            NumOfImagesLoaded = 0
+            CurrentImage = 0
+            NumOfWindows = 0
+                        
+        End If
+                
     'Otherwise, enable all of 'em
     Else
         tInit tFilter, True

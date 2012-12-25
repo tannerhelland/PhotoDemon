@@ -94,10 +94,12 @@ End Sub
 
 'During run-time, the user has an option to use the current MDI child window's icon as the task bar icon as well.
 Public Sub setNewTaskbarIcon(ByVal iconHwnd32 As Long)
+    If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     SendMessageLong FormMain.hWnd, WM_SETICON, ICON_BIG, iconHwnd32
 End Sub
 
 Public Sub setNewAppIcon(ByVal iconHwnd16 As Long)
+    If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     SendMessageLong FormMain.hWnd, WM_SETICON, ICON_SMALL, iconHwnd16
 End Sub
 

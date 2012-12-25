@@ -65,6 +65,9 @@ Private Type ICONINFO
 Dim numOfIcons As Long
 Dim iconHandles() As Long
 
+'This constant is used for testing only.  It should always be set to TRUE for production code.
+Public Const ALLOW_DYNAMIC_ICONS As Boolean = True
+
 'The types and constants below (commented out) can be used to generate an icon object for use within VB
 
 'Private Type Guid
@@ -589,6 +592,8 @@ End Sub
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
 'Again, thanks to Paul Turcksin for the original draft of this code.
 Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
+
+    If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
 
     'Generating an icon requires many variables; see below for specific comments on each one
     Dim BitmapData As Bitmap

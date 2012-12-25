@@ -395,9 +395,7 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
             End If
             
             fi_Check = FreeImage_SaveEx(fi_DIB, sFilename, FIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, 64, 64, , FILTER_BILINEAR, True)
-            If fi_Check = False Then Message "MRU thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
-            
-            Message "Thumbnail saved successfully."
+            If fi_Check Then Message "Thumbnail saved successfully." Else Message "MRU thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             
         Else
             Message "Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."

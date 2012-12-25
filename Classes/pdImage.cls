@@ -159,6 +159,43 @@ Option Explicit
     Public mainSelection As pdSelection
     Public selectionActive As Boolean
     
+'When this layer is no longer being used, we can deactivate it to save on resources.
+Public Sub deactivateImage()
+    
+    'Erase the main layer
+    If Not (mainLayer Is Nothing) Then
+        mainLayer.eraseLayer
+        Set mainLayer = Nothing
+    End If
+    
+    'Erase the back buffer
+    If Not (backBuffer Is Nothing) Then
+        backBuffer.eraseLayer
+        Set backBuffer = Nothing
+    End If
+    
+    'If the alpha adjustment layer exists, erase it too
+    If Not (alphaFixLayer Is Nothing) Then
+        alphaFixLayer.eraseLayer
+        Set alphaFixLayer = Nothing
+    End If
+    
+    'If a selection exists, wipe it
+    If Not (mainSelection Is Nothing) Then Set mainSelection = Nothing
+    
+    'Remove the reference to the parent form so VB can wipe it
+    If Not (containingForm Is Nothing) Then Set containingForm = Nothing
+    
+    'It doesn't make a big difference, but we can also empty out this image's String-type variables to save a bit of space.
+    OriginalFileName = ""
+    OriginalFileNameAndExtension = ""
+    LocationOnDisk = ""
+    
+    'Mark this image as inactive
+    IsActive = False
+    
+End Sub
+    
 'Because arrays in a class module cannot be declared as Public, save flags must be read/stored via these two routines
 Public Function getSaveFlag(ByVal fIndex As Long) As Long
     getSaveFlag = saveFlags(fIndex)

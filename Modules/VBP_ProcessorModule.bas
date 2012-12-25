@@ -874,7 +874,7 @@ MainErrHandler:
         MsgBox AddInfo, mType, "Invalid image file"
         
         'On an invalid picture load, there will be a blank form that needs to be dealt with.
-        pdImages(CurrentImage).IsActive = False
+        pdImages(CurrentImage).deactivateImage
         Unload FormMain.ActiveForm
         Exit Sub
     

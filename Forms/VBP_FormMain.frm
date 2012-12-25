@@ -1844,9 +1844,7 @@ Private Sub MnuCascadeWindows_Click()
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
     For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive = True Then
-            PrepareViewport pdImages(i).containingForm, "Cascade"
-        End If
+        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
     Next i
     
 End Sub
@@ -1903,7 +1901,7 @@ Private Sub MnuCloseAll_Click()
     'Go through each image object and close the containing form
     Dim i As Long
     For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive = True Then Unload pdImages(i).containingForm
+        If pdImages(i).IsActive Then Unload pdImages(i).containingForm
     Next i
 
     'Reset the "closing all images" flag
@@ -2352,7 +2350,7 @@ Private Sub MnuRestoreAllWindows_Click()
             tForm.WindowState = vbNormal
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - VB is quirky about triggering that event reliably)
-            If pdImages(tForm.Tag).IsActive = True Then PrepareViewport tForm, "Restore all windows"
+            If pdImages(tForm.Tag).IsActive Then PrepareViewport tForm, "Restore all windows"
         End If
     Next
 End Sub
@@ -2452,7 +2450,7 @@ Private Sub MnuTileHorizontally_Click()
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
     For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
+        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
     Next i
     
 End Sub
@@ -2464,7 +2462,7 @@ Private Sub MnuTileVertically_Click()
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
     For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive = True Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
+        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
     Next i
     
 End Sub

@@ -124,7 +124,7 @@ Private Sub Form_Activate()
     If pdImages(CurrentImage).Width <> 0 Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
 
     'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
-    If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+    If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) And (MacroStatus <> MacroBATCH) Then
         If pdImages(CurrentImage).curFormIcon32 <> 0 Then
             setNewTaskbarIcon pdImages(CurrentImage).curFormIcon32
         Else
@@ -493,7 +493,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'If the user wants to be prompted about unsaved images, do it now
-    If (ConfirmClosingUnsaved = True) And (pdImages(Me.Tag).IsActive = True) And (pdImages(Me.Tag).forInternalUseOnly = False) Then
+    If ConfirmClosingUnsaved And pdImages(Me.Tag).IsActive And (Not pdImages(Me.Tag).forInternalUseOnly) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
         If pdImages(Me.Tag).HasBeenSaved = False Then
@@ -509,7 +509,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 If programShuttingDown Or closingAllImages Then
                     Dim i As Long
                     For i = 1 To NumOfImagesLoaded
-                        If (pdImages(i).IsActive = True) And (pdImages(i).forInternalUseOnly = False) And (pdImages(i).HasBeenSaved = False) Then
+                        If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).HasBeenSaved) Then
                             numOfUnsavedImages = numOfUnsavedImages + 1
                         End If
                     Next i
@@ -615,7 +615,7 @@ Private Sub Form_Resize()
         
             'Loop through every image, redrawing as we go
             For i = 1 To NumOfImagesLoaded
-                If pdImages(i).IsActive = True Then
+                If pdImages(i).IsActive Then
                     
                     'Remember this new window state and redraw the form containing this image
                     pdImages(i).WindowState = 0
@@ -646,18 +646,8 @@ Private Sub Form_Unload(Cancel As Integer)
         
     Me.Visible = False
     
-    'Erase all image layers (to prevent memory leaks)
-    pdImages(Me.Tag).mainLayer.eraseLayer
-    Set pdImages(Me.Tag).mainLayer = Nothing
-    pdImages(Me.Tag).backBuffer.eraseLayer
-    Set pdImages(Me.Tag).backBuffer = Nothing
-    If Not (pdImages(Me.Tag).alphaFixLayer Is Nothing) Then
-        pdImages(Me.Tag).alphaFixLayer.eraseLayer
-        Set pdImages(Me.Tag).alphaFixLayer = Nothing
-    End If
-        
     'Deactivate this layer
-    pdImages(Me.Tag).IsActive = False
+    pdImages(Me.Tag).deactivateImage
     
     'Remove any undo files associated with this layer
     ClearUndo Me.Tag

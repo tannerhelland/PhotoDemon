@@ -84,7 +84,7 @@ Public Sub ClearUndo(ByVal imageID As Long)
     If imageID = CurrentImage Then
         tInit tUndo, pdImages(CurrentImage).UndoState
     
-        'Also, disable fading any previous effects on this image (since there is no long an image to use for the function)
+        'Also, disable fading any previous effects on this image (since there is no longer an image to use for the function)
         FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
     End If
 
