@@ -125,7 +125,12 @@ Private Sub Form_Activate()
 
     'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
     If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
-        If pdImages(CurrentImage).curFormIcon32 <> 0 Then setNewTaskbarIcon pdImages(CurrentImage).curFormIcon32 Else SetIcon FormMain.hWnd, "AAA", True
+        If pdImages(CurrentImage).curFormIcon32 <> 0 Then
+            setNewTaskbarIcon pdImages(CurrentImage).curFormIcon32
+        Else
+            setNewTaskbarIcon origIcon32
+            setNewAppIcon origIcon16
+        End If
         If pdImages(CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(CurrentImage).curFormIcon16
     End If
 

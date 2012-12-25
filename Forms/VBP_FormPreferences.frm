@@ -2541,7 +2541,10 @@ Private Sub cmdOK_Click()
     If CanvasDropShadow Then canvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, CanvasBackground
     
     'Dynamic taskbar icon preference; if it has changed, reset the main form icon
-    If Not CBool(chkTaskbarIcon.Value) And userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then SetIcon FormMain.hWnd, "AAA", True
+    If Not CBool(chkTaskbarIcon.Value) And userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+        setNewTaskbarIcon origIcon32
+        setNewAppIcon origIcon16
+    End If
     userPreferences.SetPreference_Boolean "General Preferences", "DynamicTaskbarIcon", CBool(chkTaskbarIcon.Value)
     
     'Store the canvas background preference

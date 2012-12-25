@@ -436,6 +436,13 @@ Public Sub UpdateMDIStatus()
         
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
+        'Finally, if dynamic icons are enabled, restore the main program icon and clear the icon cache
+        If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+            destroyAllIcons
+            setNewTaskbarIcon origIcon32
+            setNewAppIcon origIcon16
+        End If
+        
     'Otherwise, enable all of 'em
     Else
         tInit tFilter, True

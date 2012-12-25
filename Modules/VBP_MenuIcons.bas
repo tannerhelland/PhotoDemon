@@ -894,11 +894,15 @@ End Sub
 'Remove all icons generated since the program launched
 Public Sub destroyAllIcons()
 
+    If numOfIcons = 0 Then Exit Sub
+    
     Dim i As Long
     For i = 0 To numOfIcons - 1
         DestroyIcon iconHandles(i)
     Next i
     
-    Erase iconHandles
+    numOfIcons = 0
+    
+    ReDim iconHandles(0) As Long
 
 End Sub

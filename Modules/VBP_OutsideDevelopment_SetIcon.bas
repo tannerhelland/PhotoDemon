@@ -51,6 +51,9 @@ Private Const GW_OWNER = 4
 'This variable will hold the hWnd of the hidden top-most parent of the program (created by VB)
 Dim lhWndTop As Long
 
+'Rather than constantly re-load the original icons from file, store them once generated
+Public origIcon32 As Long, origIcon16 As Long
+
 Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional ByVal bSetAsAppIcon As Boolean = True)
 
     Dim lHwnd As Long
@@ -74,6 +77,7 @@ Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional By
     cX = GetSystemMetrics(SM_CXICON)
     cY = GetSystemMetrics(SM_CYICON)
     hIconLarge = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
+    origIcon32 = hIconLarge
     
     If bSetAsAppIcon Then SendMessageLong lhWndTop, WM_SETICON, ICON_BIG, hIconLarge
     SendMessageLong hWnd, WM_SETICON, ICON_BIG, hIconLarge
@@ -81,13 +85,14 @@ Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional By
     cX = GetSystemMetrics(SM_CXSMICON)
     cY = GetSystemMetrics(SM_CYSMICON)
     hIconSmall = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
+    origIcon16 = hIconSmall
     
     If bSetAsAppIcon Then SendMessageLong lhWndTop, WM_SETICON, ICON_SMALL, hIconSmall
     SendMessageLong hWnd, WM_SETICON, ICON_SMALL, hIconSmall
    
 End Sub
 
-'During run-time, the user has an option to use the current MDI child window
+'During run-time, the user has an option to use the current MDI child window's icon as the task bar icon as well.
 Public Sub setNewTaskbarIcon(ByVal iconHwnd32 As Long)
     SendMessageLong FormMain.hWnd, WM_SETICON, ICON_BIG, iconHwnd32
 End Sub
