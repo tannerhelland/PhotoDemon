@@ -535,7 +535,7 @@ Function VBGetOpenFileName(FileName As String, _
 
     'Message "Preparing common dialog interface..."
 
-    Dim opfile As OPENFILENAME, s As String
+    Dim opfile As OPENFILENAME, S As String
     
     m_lApiReturn = 0
     m_lExtendedError = 0
@@ -564,26 +564,26 @@ With opfile
     .lpstrTitle = DlgTitle
     
     ' To make Windows-style filter, replace | and : with nulls
-    Dim ch As String, i As Integer
+    Dim Ch As String, i As Integer
     For i = 1 To Len(Filter)
-        ch = Mid$(Filter, i, 1)
-        If ch = "|" Or ch = ":" Then
-            s = s & vbNullChar
+        Ch = Mid$(Filter, i, 1)
+        If Ch = "|" Or Ch = ":" Then
+            S = S & vbNullChar
         Else
-            s = s & ch
+            S = S & Ch
         End If
     Next
     ' Put double null at end
-    s = s & vbNullChar & vbNullChar
-    .lpstrFilter = s
+    S = S & vbNullChar & vbNullChar
+    .lpstrFilter = S
     .nFilterIndex = FilterIndex
 
     ' Pad file and file title buffers to maximum path
-    s = FileName & String$(MAX_PATH - Len(FileName), 0)
-    .lpstrFile = s
+    S = FileName & String$(MAX_PATH - Len(FileName), 0)
+    .lpstrFile = S
     .nMaxFile = MAX_PATH
-    s = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
-    .lpstrFileTitle = s
+    S = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
+    .lpstrFileTitle = S
     .nMaxFileTitle = MAX_FILE
     ' All other fields set to zero
     
@@ -610,7 +610,7 @@ With opfile
         
         'This only happens when the user selects too many files (as far as I can tell)
         If (MultiSelect = True) And (lstrlen(.lpstrFile) <> 0) Then
-            MsgBox "Unfortunately, the number of images you selected exceeds what Microsoft Windows allows for a single common dialog box.  Please try again with a smaller set of selected images.", vbExclamation + vbApplicationModal + vbOKOnly, "Error: too many images"
+            MsgBox "Unfortunately, the number of images you selected exceeds what Microsoft Windows allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation + vbApplicationModal + vbOKOnly, "Error: too many images"
         End If
             
         ' Cancelled
@@ -633,8 +633,8 @@ With opfile
     End Select
 End With
 End Function
-Private Function StrZToStr(s As String) As String
-    StrZToStr = Left$(s, lstrlen(s))
+Private Function StrZToStr(S As String) As String
+    StrZToStr = Left$(S, lstrlen(S))
 End Function
 
 Function VBGetSaveFileName(FileName As String, _
@@ -648,7 +648,7 @@ Function VBGetSaveFileName(FileName As String, _
                            Optional Owner As Long = -1, _
                            Optional Flags As Long) As Boolean
             
-    Dim opfile As OPENFILENAME, s As String
+    Dim opfile As OPENFILENAME, S As String
 
     m_lApiReturn = 0
     m_lExtendedError = 0
@@ -671,26 +671,26 @@ With opfile
     .lpstrTitle = DlgTitle
     
     ' Make new filter with bars (|) replacing nulls and double null at end
-    Dim ch As String, i As Integer
+    Dim Ch As String, i As Integer
     For i = 1 To Len(Filter)
-        ch = Mid$(Filter, i, 1)
-        If ch = "|" Or ch = ":" Then
-            s = s & vbNullChar
+        Ch = Mid$(Filter, i, 1)
+        If Ch = "|" Or Ch = ":" Then
+            S = S & vbNullChar
         Else
-            s = s & ch
+            S = S & Ch
         End If
     Next
     ' Put double null at end
-    s = s & vbNullChar & vbNullChar
-    .lpstrFilter = s
+    S = S & vbNullChar & vbNullChar
+    .lpstrFilter = S
     .nFilterIndex = FilterIndex
 
     ' Pad file and file title buffers to maximum path
-    s = FileName & String$(MAX_PATH - Len(FileName), 0)
-    .lpstrFile = s
+    S = FileName & String$(MAX_PATH - Len(FileName), 0)
+    .lpstrFile = S
     .nMaxFile = MAX_PATH
-    s = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
-    .lpstrFileTitle = s
+    S = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
+    .lpstrFileTitle = S
     .nMaxFileTitle = MAX_FILE
     ' All other fields zero
     
@@ -727,7 +727,7 @@ End With
 End Function
 
 Private Function FilterLookup(ByVal sFilters As String, ByVal iCur As Long) As String
-    Dim iStart As Long, iEnd As Long, s As String
+    Dim iStart As Long, iEnd As Long, S As String
     iStart = 1
     If sFilters = "" Then Exit Function
     Do
@@ -736,13 +736,13 @@ Private Function FilterLookup(ByVal sFilters As String, ByVal iCur As Long) As S
         If iEnd = 0 Then Exit Function
         iEnd = InStr(iEnd + 1, sFilters, vbNullChar)
         If iEnd Then
-            s = Mid$(sFilters, iStart, iEnd - iStart)
+            S = Mid$(sFilters, iStart, iEnd - iStart)
         Else
-            s = Mid$(sFilters, iStart)
+            S = Mid$(sFilters, iStart)
         End If
         iStart = iEnd + 1
         If iCur = 1 Then
-            FilterLookup = s
+            FilterLookup = S
             Exit Function
         End If
         iCur = iCur - 1
@@ -874,21 +874,21 @@ End Sub
 #End If
 
 
-Private Sub StrToBytes(ab() As Byte, s As String)
+Private Sub StrToBytes(ab() As Byte, S As String)
     If IsArrayEmpty(ab) Then
         ' Assign to empty array
-        ab = StrConv(s, vbFromUnicode)
+        ab = StrConv(S, vbFromUnicode)
     Else
         Dim cab As Long
         ' Copy to existing array, padding or truncating if necessary
         cab = UBound(ab) - LBound(ab) + 1
-        If Len(s) < cab Then s = s & String$(cab - Len(s), 0)
+        If Len(S) < cab Then S = S & String$(cab - Len(S), 0)
         'If UnicodeTypeLib Then
         '    Dim st As String
         '    st = StrConv(s, vbFromUnicode)
         '    CopyMemoryStr ab(LBound(ab)), st, cab
         'Else
-            CopyMemoryStr ab(LBound(ab)), s, cab
+            CopyMemoryStr ab(LBound(ab)), S, cab
         'End If
     End If
 End Sub

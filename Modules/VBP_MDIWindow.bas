@@ -465,6 +465,9 @@ Public Sub UpdateMDIStatus()
             NumOfWindows = 0
                         
         End If
+        
+        'Erase any remaining viewport buffer
+        eraseViewportBuffers
                 
     'Otherwise, enable all of 'em
     Else

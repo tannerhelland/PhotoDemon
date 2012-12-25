@@ -20,6 +20,8 @@ Public Sub MenuOpen()
     
     If PhotoDemon_OpenImageDialog(sFile, FormMain.hWnd) Then PreLoadImage sFile
 
+    Erase sFile
+
 End Sub
 
 'Pass this function a string array, and it will fill it with a list of files selected by the user.
