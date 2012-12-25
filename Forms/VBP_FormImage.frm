@@ -123,6 +123,12 @@ Private Sub Form_Activate()
     ' unless they actually exist.)
     If pdImages(CurrentImage).Width <> 0 Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
 
+    'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
+    If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+        If pdImages(CurrentImage).curFormIcon32 <> 0 Then setNewTaskbarIcon pdImages(CurrentImage).curFormIcon32 Else SetIcon FormMain.hWnd, "AAA", True
+        If pdImages(CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(CurrentImage).curFormIcon16
+    End If
+
     'If this MDI child is maximized, double-check that it's been drawn correctly.
     ' (This is necessary because VB doesn't handle _Resize() properly when switching between maximized MDI child forms)
     If Me.WindowState = 2 Then
