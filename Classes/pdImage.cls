@@ -140,6 +140,9 @@ Option Explicit
     Public targetTop As Long
     Public targetLeft As Long       'Formerly the left and top of the .FrontBuffer picture box
     
+    'A copy of the form's current icon
+    Public curFormIcon32 As Long, curFormIcon16 As Long
+    
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user
     Public forInternalUseOnly As Boolean
     
