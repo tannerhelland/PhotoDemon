@@ -543,17 +543,27 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     fi_Height = FreeImage_GetHeight(fi_hDIB)
     
     Dim creationSuccess As Boolean
-    creationSuccess = dstLayer.createBlank(fi_Width, fi_Height, fi_BPP)
+    
+    'Update Dec 2012: certain faulty TIFF files can confuse FreeImage and cause it to report wildly bizarre height and width
+    ' values; check for this, and if it happens, abandon the load immediately.  (This is not ideal, because it leaks memory
+    ' - but it prevents a hard program crash, so it's the lesser of two evils.)
+    If (fi_Width > 1000000) Or (fi_Height > 1000000) Then
+        FreeLibrary hFreeImgLib
+        LoadFreeImageV3_Advanced = False
+        Exit Function
+    Else
+        creationSuccess = dstLayer.createBlank(fi_Width, fi_Height, fi_BPP)
+    End If
     
     'Make sure the blank DIB creation worked
     If creationSuccess = False Then
         Message "Import via FreeImage failed (couldn't create DIB)."
         
         If (pageToLoad = 0) Or (needToCloseMulti = False) Then
-            FreeImage_UnloadEx fi_hDIB
+            If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
         Else
-            FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-            FreeImage_CloseMultiBitmap fi_multi_hDIB
+            If (fi_hDIB <> 0) Then FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+            If (fi_multi_hDIB <> 0) Then FreeImage_CloseMultiBitmap fi_multi_hDIB
         End If
         
         FreeLibrary hFreeImgLib
