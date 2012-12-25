@@ -20,14 +20,7 @@ Private Const SM_CYICON = 12
 Private Const SM_CXSMICON = 49
 Private Const SM_CYSMICON = 50
    
-Private Declare Function LoadImageAsString Lib "user32" Alias "LoadImageA" ( _
-      ByVal hInst As Long, _
-      ByVal lpsz As String, _
-      ByVal uType As Long, _
-      ByVal cxDesired As Long, _
-      ByVal cyDesired As Long, _
-      ByVal fuLoad As Long _
-   ) As Long
+Private Declare Function LoadImageAsString Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal uType As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal fuLoad As Long) As Long
    
 Private Const LR_DEFAULTCOLOR = &H0
 Private Const LR_MONOCHROME = &H1
@@ -45,61 +38,61 @@ Private Const LR_SHARED = &H8000&
 
 Private Const IMAGE_ICON = 1
 
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal HWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 Private Const WM_SETICON = &H80
 
 Private Const ICON_SMALL = 0
 Private Const ICON_BIG = 1
 
-Private Declare Function GetWindow Lib "user32" (ByVal HWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 Private Const GW_OWNER = 4
 
-
-Public Sub SetIcon(ByVal HWnd As Long, ByVal sIconResName As String, Optional ByVal bSetAsAppIcon As Boolean = True)
-
+'This variable will hold the hWnd of the hidden top-most parent of the program (created by VB)
 Dim lhWndTop As Long
-Dim lHwnd As Long
-Dim cX As Long
-Dim cY As Long
-Dim hIconLarge As Long
-Dim hIconSmall As Long
+
+Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional ByVal bSetAsAppIcon As Boolean = True)
+
+    Dim lHwnd As Long
+    Dim cX As Long
+    Dim cY As Long
+    Dim hIconLarge As Long
+    Dim hIconSmall As Long
       
-   If (bSetAsAppIcon) Then
-      ' Find VB's hidden parent window:
-      lHwnd = HWnd
-      lhWndTop = lHwnd
-      Do While Not (lHwnd = 0)
-         lHwnd = GetWindow(lHwnd, GW_OWNER)
-         If Not (lHwnd = 0) Then
-            lhWndTop = lHwnd
-         End If
-      Loop
-   End If
+    If (bSetAsAppIcon) Then
+        ' Find VB's hidden parent window:
+        lHwnd = hWnd
+        lhWndTop = lHwnd
+        Do While Not (lHwnd = 0)
+            lHwnd = GetWindow(lHwnd, GW_OWNER)
+            If Not (lHwnd = 0) Then
+                lhWndTop = lHwnd
+            End If
+        Loop
+    End If
+       
+    cX = GetSystemMetrics(SM_CXICON)
+    cY = GetSystemMetrics(SM_CYICON)
+    hIconLarge = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
+    
+    If bSetAsAppIcon Then SendMessageLong lhWndTop, WM_SETICON, ICON_BIG, hIconLarge
+    SendMessageLong hWnd, WM_SETICON, ICON_BIG, hIconLarge
+       
+    cX = GetSystemMetrics(SM_CXSMICON)
+    cY = GetSystemMetrics(SM_CYSMICON)
+    hIconSmall = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
+    
+    If bSetAsAppIcon Then SendMessageLong lhWndTop, WM_SETICON, ICON_SMALL, hIconSmall
+    SendMessageLong hWnd, WM_SETICON, ICON_SMALL, hIconSmall
    
-   cX = GetSystemMetrics(SM_CXICON)
-   cY = GetSystemMetrics(SM_CYICON)
-   hIconLarge = LoadImageAsString( _
-         App.hInstance, sIconResName, _
-         IMAGE_ICON, _
-         cX, cY, _
-         LR_SHARED)
-   If (bSetAsAppIcon) Then
-      SendMessageLong lhWndTop, WM_SETICON, ICON_BIG, hIconLarge
-   End If
-   SendMessageLong HWnd, WM_SETICON, ICON_BIG, hIconLarge
-   
-   cX = GetSystemMetrics(SM_CXSMICON)
-   cY = GetSystemMetrics(SM_CYSMICON)
-   hIconSmall = LoadImageAsString( _
-         App.hInstance, sIconResName, _
-         IMAGE_ICON, _
-         cX, cY, _
-         LR_SHARED)
-   If (bSetAsAppIcon) Then
-      SendMessageLong lhWndTop, WM_SETICON, ICON_SMALL, hIconSmall
-   End If
-   SendMessageLong HWnd, WM_SETICON, ICON_SMALL, hIconSmall
-   
+End Sub
+
+'During run-time, the user has an option to use the current MDI child window
+Public Sub setNewTaskbarIcon(ByVal iconHwnd32 As Long)
+    SendMessageLong FormMain.hWnd, WM_SETICON, ICON_BIG, iconHwnd32
+End Sub
+
+Public Sub setNewAppIcon(ByVal iconHwnd16 As Long)
+    SendMessageLong FormMain.hWnd, WM_SETICON, ICON_SMALL, iconHwnd16
 End Sub
 
