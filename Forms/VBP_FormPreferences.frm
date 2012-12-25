@@ -337,7 +337,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   112
-         ToolTipText     =   "This setting uses ""Segoe UI"" as the PhotoDemon interface font. Leaving it unchecked defaults to ""Tahoma""."
+         ToolTipText     =   $"VBP_FormPreferences.frx":8290
          Top             =   4230
          Width           =   8055
       End
@@ -356,7 +356,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   50
-         ToolTipText     =   $"VBP_FormPreferences.frx":8290
+         ToolTipText     =   $"VBP_FormPreferences.frx":8371
          Top             =   2280
          Width           =   4575
       End
@@ -454,7 +454,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   10
-         ToolTipText     =   $"VBP_FormPreferences.frx":8339
+         ToolTipText     =   $"VBP_FormPreferences.frx":841A
          Top             =   390
          Width           =   4815
       End
@@ -464,7 +464,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":83D2
+         MouseIcon       =   "VBP_FormPreferences.frx":84B3
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -666,7 +666,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   46
-         ToolTipText     =   $"VBP_FormPreferences.frx":8524
+         ToolTipText     =   $"VBP_FormPreferences.frx":8605
          Top             =   3240
          Width           =   7695
       End
@@ -685,7 +685,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   31
-         ToolTipText     =   $"VBP_FormPreferences.frx":85F6
+         ToolTipText     =   $"VBP_FormPreferences.frx":86D7
          Top             =   2010
          Width           =   5055
       End
@@ -704,7 +704,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   28
-         ToolTipText     =   $"VBP_FormPreferences.frx":8689
+         ToolTipText     =   $"VBP_FormPreferences.frx":876A
          Top             =   900
          Width           =   5055
       End
@@ -714,7 +714,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":871E
+         MouseIcon       =   "VBP_FormPreferences.frx":87FF
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -731,7 +731,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":8870
+         MouseIcon       =   "VBP_FormPreferences.frx":8951
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -853,7 +853,7 @@ Begin VB.Form FormPreferences
          Left            =   600
          Style           =   2  'Dropdown List
          TabIndex        =   95
-         ToolTipText     =   $"VBP_FormPreferences.frx":89C2
+         ToolTipText     =   $"VBP_FormPreferences.frx":8AA3
          Top             =   960
          Width           =   7395
       End
@@ -895,7 +895,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   102
-            ToolTipText     =   $"VBP_FormPreferences.frx":8A81
+            ToolTipText     =   $"VBP_FormPreferences.frx":8B62
             Top             =   2040
             Width           =   7215
          End
@@ -915,7 +915,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   108
-            ToolTipText     =   $"VBP_FormPreferences.frx":8B24
+            ToolTipText     =   $"VBP_FormPreferences.frx":8C05
             Top             =   2520
             Value           =   1  'Checked
             Width           =   7215
@@ -1088,7 +1088,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   99
-            ToolTipText     =   $"VBP_FormPreferences.frx":8BC3
+            ToolTipText     =   $"VBP_FormPreferences.frx":8CA4
             Top             =   600
             Width           =   7215
          End
@@ -1142,7 +1142,7 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   96
-            ToolTipText     =   $"VBP_FormPreferences.frx":8C6F
+            ToolTipText     =   $"VBP_FormPreferences.frx":8D50
             Top             =   1560
             Visible         =   0   'False
             Width           =   7215
@@ -1162,7 +1162,7 @@ Begin VB.Form FormPreferences
             Left            =   630
             Style           =   2  'Dropdown List
             TabIndex        =   90
-            ToolTipText     =   $"VBP_FormPreferences.frx":8D11
+            ToolTipText     =   $"VBP_FormPreferences.frx":8DF2
             Top             =   960
             Width           =   7095
          End
@@ -1236,7 +1236,7 @@ Begin VB.Form FormPreferences
             Left            =   2790
             Style           =   2  'Dropdown List
             TabIndex        =   87
-            ToolTipText     =   $"VBP_FormPreferences.frx":8DCD
+            ToolTipText     =   $"VBP_FormPreferences.frx":8EAE
             Top             =   600
             Width           =   4935
          End
@@ -1283,7 +1283,7 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblFileFreeImageWarning 
          BackStyle       =   0  'Transparent
-         Caption         =   $"VBP_FormPreferences.frx":8E70
+         Caption         =   $"VBP_FormPreferences.frx":8F51
          ForeColor       =   &H000000FF&
          Height          =   495
          Left            =   600
@@ -1368,7 +1368,7 @@ Begin VB.Form FormPreferences
          Left            =   3180
          Style           =   2  'Dropdown List
          TabIndex        =   80
-         ToolTipText     =   $"VBP_FormPreferences.frx":8F1D
+         ToolTipText     =   $"VBP_FormPreferences.frx":8FFE
          Top             =   1680
          Width           =   4995
       End
@@ -1387,7 +1387,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   77
-         ToolTipText     =   $"VBP_FormPreferences.frx":8FE0
+         ToolTipText     =   $"VBP_FormPreferences.frx":90C1
          Top             =   3840
          Width           =   5415
       End
@@ -1406,7 +1406,7 @@ Begin VB.Form FormPreferences
          Left            =   840
          Style           =   2  'Dropdown List
          TabIndex        =   69
-         ToolTipText     =   $"VBP_FormPreferences.frx":90AD
+         ToolTipText     =   $"VBP_FormPreferences.frx":918E
          Top             =   2910
          Width           =   7335
       End
@@ -1621,7 +1621,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   76
-         ToolTipText     =   $"VBP_FormPreferences.frx":91A2
+         ToolTipText     =   $"VBP_FormPreferences.frx":9283
          Top             =   825
          Width           =   7455
       End
@@ -1640,7 +1640,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   57
-         ToolTipText     =   $"VBP_FormPreferences.frx":9287
+         ToolTipText     =   $"VBP_FormPreferences.frx":9368
          Top             =   4125
          Width           =   4095
       End
@@ -1660,7 +1660,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   55
-         ToolTipText     =   $"VBP_FormPreferences.frx":932F
+         ToolTipText     =   $"VBP_FormPreferences.frx":9410
          Top             =   3150
          Width           =   7455
       End
@@ -1679,7 +1679,7 @@ Begin VB.Form FormPreferences
          Left            =   3000
          Style           =   2  'Dropdown List
          TabIndex        =   44
-         ToolTipText     =   $"VBP_FormPreferences.frx":93F9
+         ToolTipText     =   $"VBP_FormPreferences.frx":94DA
          Top             =   1695
          Width           =   4815
       End
@@ -1744,7 +1744,7 @@ Begin VB.Form FormPreferences
          Width           =   3870
       End
       Begin VB.Label lblFreeImageWarning 
-         Caption         =   $"VBP_FormPreferences.frx":94B3
+         Caption         =   $"VBP_FormPreferences.frx":9594
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9
@@ -1892,7 +1892,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   61
-         ToolTipText     =   $"VBP_FormPreferences.frx":95C8
+         ToolTipText     =   $"VBP_FormPreferences.frx":96A9
          Top             =   480
          Width           =   7455
       End
@@ -2025,7 +2025,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   21
-         ToolTipText     =   $"VBP_FormPreferences.frx":96AC
+         ToolTipText     =   $"VBP_FormPreferences.frx":978D
          Top             =   480
          Width           =   6975
       End
@@ -2110,7 +2110,7 @@ Begin VB.Form FormPreferences
          Width           =   2385
       End
       Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":979E
+         Caption         =   $"VBP_FormPreferences.frx":987F
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -2199,7 +2199,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   17
-         ToolTipText     =   $"VBP_FormPreferences.frx":984D
+         ToolTipText     =   $"VBP_FormPreferences.frx":992E
          Top             =   1080
          Width           =   6735
       End
