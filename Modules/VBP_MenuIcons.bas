@@ -605,12 +605,15 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     Dim cBkColor As Long
     Dim maskClr As Long
     Dim icoInfo As ICONINFO
+    Dim generatedIcon As Long
    
     'The icon can be drawn at any size, but 16x16 is how it will (typically) end up on the form.  Note that I was previously considering
     ' mimicking GIMP by making the taskbar icon dynamically change based on the image being edited, but I have since decided against that.
     ' If I ever change my mind, I will want to use 32x32 here instead.
     Dim icoSize As Long
-    icoSize = 16
+    
+    'If we are rendering a dynamic taskbar icon, we will perform two reductions - first to 32x32, second to 16x16
+    If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then icoSize = 32 Else icoSize = 16
 
     'Determine aspect ratio
     Dim aspectRatio As Single
@@ -682,6 +685,50 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
             
             'Unload the original DIB
             If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
+            
+            'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.
+            
+            'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 32x32 icon now
+            If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+                
+                'Generate a blank monochrome mask to pass to the icon creation function.
+                MonoDC = CreateCompatibleDC(0&)
+                MonoBmp = CreateCompatibleBitmap(MonoDC, icoSize, icoSize)
+                oldMonoObj = SelectObject(MonoDC, MonoBmp)
+            
+                'With the transfer complete, release the FreeImage DIB and unload the library
+                If finalDIB <> 0 Then
+                    With icoInfo
+                        .fIcon = True
+                        .xHotspot = icoSize
+                        .yHotspot = icoSize
+                        .hbmMask = MonoBmp
+                        .hbmColor = FreeImage_GetBitmapForDevice(finalDIB)
+                    End With
+                End If
+                
+                'Create the 32x32 icon
+                generatedIcon = CreateIconIndirect(icoInfo)
+                
+                'Assign it to the taskbar
+                setNewTaskbarIcon generatedIcon
+                
+                '...and remember it in our current icon collection
+                addIconToList generatedIcon
+                
+                '...and the current form
+                pdImages(imgForm.Tag).curFormIcon32 = generatedIcon
+                
+                'Now delete the temporary mask and bitmap
+                DeleteObject icoInfo.hbmMask
+                DeleteObject icoInfo.hbmColor
+                DeleteDC MonoDC
+                
+                'Finally, resize the 32x32 icon to 16x16 so it will work as the current form icon as well
+                icoSize = 16
+                finalDIB = FreeImage_RescaleByPixel(finalDIB, 16, 16, True, FILTER_BILINEAR)
+                
+            End If
             
             'Generate a blank monochrome mask to pass to the icon creation function.
             MonoDC = CreateCompatibleDC(0&)
@@ -774,10 +821,16 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     End If
     
     'Render the icon to a handle
-    Dim generatedIcon As Long
     generatedIcon = CreateIconIndirect(icoInfo)
-    
+        
     If imageFormats.FreeImageEnabled Then
+    
+        'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 16x16 icon now
+        If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+            setNewAppIcon generatedIcon
+            pdImages(imgForm.Tag).curFormIcon16 = generatedIcon
+        End If
+    
         FreeImage_UnloadEx finalDIB
         FreeLibrary hLib
         DeleteObject icoInfo.hbmMask
@@ -793,7 +846,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
    
     'Use the API to assign this new icon to the specified MDI child form
     SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
-    
+        
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon
 
