@@ -27,7 +27,7 @@ Begin VB.Form FormPreferences
       Caption         =   "&Reset all options"
       Height          =   495
       Left            =   2880
-      TabIndex        =   38
+      TabIndex        =   37
       ToolTipText     =   "Use this to reset all preferences to their default state.  This action cannot be undone."
       Top             =   6600
       Width           =   2085
@@ -215,7 +215,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   1
       Left            =   120
-      TabIndex        =   42
+      TabIndex        =   41
       Top             =   960
       Width           =   2265
       _ExtentX        =   3995
@@ -247,7 +247,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   2
       Left            =   120
-      TabIndex        =   62
+      TabIndex        =   61
       Top             =   1800
       Width           =   2265
       _ExtentX        =   3995
@@ -279,7 +279,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   3
       Left            =   120
-      TabIndex        =   66
+      TabIndex        =   65
       Top             =   2640
       Width           =   2265
       _ExtentX        =   3995
@@ -312,6 +312,332 @@ Begin VB.Form FormPreferences
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   6000
+      Index           =   7
+      Left            =   2760
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   400
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   19
+      Top             =   345
+      Width           =   8295
+      Begin VB.CheckBox chkGDIPlusTest 
+         Appearance      =   0  'Flat
+         Caption         =   " enable GDI+ support"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   255
+         Left            =   240
+         TabIndex        =   36
+         ToolTipText     =   "Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines."
+         Top             =   5160
+         Width           =   7815
+      End
+      Begin VB.TextBox TxtTempPath 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   375
+         Left            =   240
+         Locked          =   -1  'True
+         TabIndex        =   23
+         Text            =   "automatically generated at run-time"
+         ToolTipText     =   "Folder used for temporary files"
+         Top             =   1440
+         Width           =   6975
+      End
+      Begin VB.CommandButton cmdTmpPath 
+         Caption         =   "..."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   7320
+         TabIndex        =   22
+         ToolTipText     =   "Click to open a browse-for-folder dialog"
+         Top             =   1440
+         Width           =   405
+      End
+      Begin VB.CheckBox chkLogMessages 
+         Appearance      =   0  'Flat
+         Caption         =   " log all program messages to file "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   255
+         Left            =   240
+         TabIndex        =   21
+         ToolTipText     =   $"VBP_FormPreferences.frx":8290
+         Top             =   480
+         Width           =   6975
+      End
+      Begin VB.Label lblMemoryUsageMax 
+         BackStyle       =   0  'Transparent
+         Caption         =   "memory usage will be displayed here"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00804040&
+         Height          =   360
+         Left            =   240
+         TabIndex        =   84
+         Top             =   3810
+         Width           =   7965
+         WordWrap        =   -1  'True
+      End
+      Begin VB.Label lblMemoryUsageCurrent 
+         BackStyle       =   0  'Transparent
+         Caption         =   "memory usage will be displayed here"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00804040&
+         Height          =   360
+         Left            =   240
+         TabIndex        =   83
+         Top             =   3360
+         Width           =   7965
+         WordWrap        =   -1  'True
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "memory diagnostics"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   5
+         Left            =   120
+         TabIndex        =   82
+         Top             =   2880
+         Width           =   2130
+      End
+      Begin VB.Label lblRuntimeSettings 
+         AutoSize        =   -1  'True
+         Caption         =   "temporary file location"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   120
+         TabIndex        =   59
+         Top             =   960
+         Width           =   2385
+      End
+      Begin VB.Label lblTempPathWarning 
+         Caption         =   $"VBP_FormPreferences.frx":8382
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H000000FF&
+         Height          =   495
+         Left            =   240
+         TabIndex        =   40
+         Top             =   2040
+         Width           =   7695
+         WordWrap        =   -1  'True
+      End
+      Begin VB.Label lblRuntimeSettings 
+         AutoSize        =   -1  'True
+         Caption         =   "run-time testing options (NOTE: these are not saved to the INI file)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   35
+         Top             =   4680
+         Width           =   7155
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "debugging"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   120
+         TabIndex        =   20
+         Top             =   0
+         Width           =   1125
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6000
+      Index           =   6
+      Left            =   2760
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   400
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   14
+      Top             =   345
+      Width           =   8295
+      Begin VB.CheckBox chkPromptPluginDownload 
+         Appearance      =   0  'Flat
+         Caption         =   " if core plugins cannot be located, offer to download them"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   375
+         Left            =   240
+         TabIndex        =   17
+         ToolTipText     =   $"VBP_FormPreferences.frx":8431
+         Top             =   1080
+         Width           =   6735
+      End
+      Begin VB.CheckBox chkProgramUpdates 
+         Appearance      =   0  'Flat
+         Caption         =   " automatically check for software updates every 10 days"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   495
+         Left            =   240
+         TabIndex        =   16
+         ToolTipText     =   "If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon"
+         Top             =   480
+         Width           =   7455
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "update options"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   120
+         TabIndex        =   15
+         Top             =   0
+         Width           =   1575
+      End
+      Begin VB.Label lblExplanation 
+         BackStyle       =   0  'Transparent
+         Caption         =   "(disclaimer populated at run-time)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   2775
+         Left            =   240
+         TabIndex        =   18
+         Top             =   1800
+         Width           =   7935
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6000
       Index           =   0
       Left            =   2760
       MousePointer    =   1  'Arrow
@@ -336,8 +662,8 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   375
          Left            =   240
-         TabIndex        =   112
-         ToolTipText     =   $"VBP_FormPreferences.frx":8290
+         TabIndex        =   111
+         ToolTipText     =   $"VBP_FormPreferences.frx":84CD
          Top             =   4230
          Width           =   8055
       End
@@ -355,8 +681,8 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   3720
          Style           =   2  'Dropdown List
-         TabIndex        =   50
-         ToolTipText     =   $"VBP_FormPreferences.frx":8371
+         TabIndex        =   49
+         ToolTipText     =   $"VBP_FormPreferences.frx":85AE
          Top             =   2280
          Width           =   4575
       End
@@ -374,7 +700,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   3720
          Style           =   2  'Dropdown List
-         TabIndex        =   47
+         TabIndex        =   46
          ToolTipText     =   "Image windows tend to be large, so feel free to display each image's full location in the image window title bars."
          Top             =   1830
          Width           =   4575
@@ -394,7 +720,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   375
          Left            =   240
-         TabIndex        =   40
+         TabIndex        =   39
          ToolTipText     =   "If selected, this setting will ensure that PhotoDemon starts up in the on-screen location where you last left it."
          Top             =   5190
          Width           =   7815
@@ -454,7 +780,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   10
-         ToolTipText     =   $"VBP_FormPreferences.frx":841A
+         ToolTipText     =   $"VBP_FormPreferences.frx":8657
          Top             =   390
          Width           =   4815
       End
@@ -464,7 +790,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":84B3
+         MouseIcon       =   "VBP_FormPreferences.frx":86F0
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -491,7 +817,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   22
          Left            =   120
-         TabIndex        =   113
+         TabIndex        =   112
          Top             =   3840
          Width           =   1275
       End
@@ -511,7 +837,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   51
+         TabIndex        =   50
          Top             =   2340
          Width           =   3315
       End
@@ -531,7 +857,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   4
          Left            =   120
-         TabIndex        =   49
+         TabIndex        =   48
          Top             =   1440
          Width           =   870
       End
@@ -551,7 +877,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   48
+         TabIndex        =   47
          Top             =   1890
          Width           =   2730
       End
@@ -571,7 +897,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   3
          Left            =   120
-         TabIndex        =   39
+         TabIndex        =   38
          Top             =   4800
          Width           =   1725
       End
@@ -665,8 +991,8 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   255
          Left            =   360
-         TabIndex        =   46
-         ToolTipText     =   $"VBP_FormPreferences.frx":8605
+         TabIndex        =   45
+         ToolTipText     =   $"VBP_FormPreferences.frx":8842
          Top             =   3240
          Width           =   7695
       End
@@ -685,7 +1011,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   31
-         ToolTipText     =   $"VBP_FormPreferences.frx":86D7
+         ToolTipText     =   $"VBP_FormPreferences.frx":8914
          Top             =   2010
          Width           =   5055
       End
@@ -704,7 +1030,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   28
-         ToolTipText     =   $"VBP_FormPreferences.frx":876A
+         ToolTipText     =   $"VBP_FormPreferences.frx":89A7
          Top             =   900
          Width           =   5055
       End
@@ -714,7 +1040,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":87FF
+         MouseIcon       =   "VBP_FormPreferences.frx":8A3C
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -731,7 +1057,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":8951
+         MouseIcon       =   "VBP_FormPreferences.frx":8B8E
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -758,7 +1084,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   0
          Left            =   120
-         TabIndex        =   52
+         TabIndex        =   51
          Top             =   2760
          Width           =   1020
       End
@@ -835,7 +1161,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   402
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   67
+      TabIndex        =   66
       Top             =   345
       Width           =   8295
       Begin VB.ComboBox cmbFiletype 
@@ -852,8 +1178,8 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   600
          Style           =   2  'Dropdown List
-         TabIndex        =   95
-         ToolTipText     =   $"VBP_FormPreferences.frx":8AA3
+         TabIndex        =   94
+         ToolTipText     =   $"VBP_FormPreferences.frx":8CE0
          Top             =   960
          Width           =   7395
       End
@@ -867,14 +1193,14 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   101
+         TabIndex        =   100
          Top             =   1680
          Width           =   7935
          Begin VB.HScrollBar hsPNGCompression 
             Height          =   330
             Left            =   600
             Max             =   9
-            TabIndex        =   104
+            TabIndex        =   103
             Top             =   1080
             Value           =   9
             Width           =   7095
@@ -894,8 +1220,8 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   375
             Left            =   600
-            TabIndex        =   102
-            ToolTipText     =   $"VBP_FormPreferences.frx":8B62
+            TabIndex        =   101
+            ToolTipText     =   $"VBP_FormPreferences.frx":8D9F
             Top             =   2040
             Width           =   7215
          End
@@ -914,8 +1240,8 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   375
             Left            =   600
-            TabIndex        =   108
-            ToolTipText     =   $"VBP_FormPreferences.frx":8C05
+            TabIndex        =   107
+            ToolTipText     =   $"VBP_FormPreferences.frx":8E42
             Top             =   2520
             Value           =   1  'Checked
             Width           =   7215
@@ -938,7 +1264,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   1
             Left            =   5865
-            TabIndex        =   107
+            TabIndex        =   106
             Top             =   1560
             Width           =   1590
          End
@@ -959,7 +1285,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   0
             Left            =   840
-            TabIndex        =   106
+            TabIndex        =   105
             Top             =   1560
             Width           =   1110
          End
@@ -980,7 +1306,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   1
             Left            =   600
-            TabIndex        =   105
+            TabIndex        =   104
             Top             =   720
             Width           =   4725
          End
@@ -1000,7 +1326,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   20
             Left            =   360
-            TabIndex        =   103
+            TabIndex        =   102
             Top             =   120
             Width           =   4290
          End
@@ -1015,7 +1341,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   109
+         TabIndex        =   108
          Top             =   1680
          Width           =   7935
          Begin VB.CheckBox chkTGARLE 
@@ -1033,7 +1359,7 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   375
             Left            =   600
-            TabIndex        =   110
+            TabIndex        =   109
             ToolTipText     =   "TGA files only support one type of compression.  PhotoDemon can apply simple RLE encoding when saving TGA images."
             Top             =   600
             Width           =   7215
@@ -1054,7 +1380,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   21
             Left            =   360
-            TabIndex        =   111
+            TabIndex        =   110
             Top             =   120
             Width           =   2700
          End
@@ -1069,7 +1395,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   98
+         TabIndex        =   97
          Top             =   1680
          Width           =   7935
          Begin VB.CheckBox chkBMPRLE 
@@ -1087,8 +1413,8 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   375
             Left            =   600
-            TabIndex        =   99
-            ToolTipText     =   $"VBP_FormPreferences.frx":8CA4
+            TabIndex        =   98
+            ToolTipText     =   $"VBP_FormPreferences.frx":8EE1
             Top             =   600
             Width           =   7215
          End
@@ -1108,7 +1434,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   19
             Left            =   360
-            TabIndex        =   100
+            TabIndex        =   99
             Top             =   120
             Width           =   2295
          End
@@ -1123,7 +1449,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   89
+         TabIndex        =   88
          Top             =   1680
          Width           =   7935
          Begin VB.CheckBox chkTIFFCMYK 
@@ -1141,8 +1467,8 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   375
             Left            =   600
-            TabIndex        =   96
-            ToolTipText     =   $"VBP_FormPreferences.frx":8D50
+            TabIndex        =   95
+            ToolTipText     =   $"VBP_FormPreferences.frx":8F8D
             Top             =   1560
             Visible         =   0   'False
             Width           =   7215
@@ -1161,8 +1487,8 @@ Begin VB.Form FormPreferences
             Height          =   360
             Left            =   630
             Style           =   2  'Dropdown List
-            TabIndex        =   90
-            ToolTipText     =   $"VBP_FormPreferences.frx":8DF2
+            TabIndex        =   89
+            ToolTipText     =   $"VBP_FormPreferences.frx":902F
             Top             =   960
             Width           =   7095
          End
@@ -1182,7 +1508,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   7
             Left            =   360
-            TabIndex        =   93
+            TabIndex        =   92
             Top             =   120
             Width           =   4395
          End
@@ -1203,7 +1529,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   0
             Left            =   600
-            TabIndex        =   91
+            TabIndex        =   90
             Top             =   645
             Width           =   3135
          End
@@ -1218,7 +1544,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   257
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   86
+         TabIndex        =   85
          Top             =   1680
          Width           =   7935
          Begin VB.ComboBox cmbPPMFormat 
@@ -1235,8 +1561,8 @@ Begin VB.Form FormPreferences
             Height          =   360
             Left            =   2790
             Style           =   2  'Dropdown List
-            TabIndex        =   87
-            ToolTipText     =   $"VBP_FormPreferences.frx":8EAE
+            TabIndex        =   86
+            ToolTipText     =   $"VBP_FormPreferences.frx":90EB
             Top             =   600
             Width           =   4935
          End
@@ -1256,7 +1582,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   12
             Left            =   360
-            TabIndex        =   94
+            TabIndex        =   93
             Top             =   120
             Width           =   3285
          End
@@ -1276,18 +1602,18 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   240
             Left            =   600
-            TabIndex        =   88
+            TabIndex        =   87
             Top             =   645
             Width           =   1950
          End
       End
       Begin VB.Label lblFileFreeImageWarning 
          BackStyle       =   0  'Transparent
-         Caption         =   $"VBP_FormPreferences.frx":8F51
+         Caption         =   $"VBP_FormPreferences.frx":918E
          ForeColor       =   &H000000FF&
          Height          =   495
          Left            =   600
-         TabIndex        =   97
+         TabIndex        =   96
          Top             =   5520
          Width           =   7455
       End
@@ -1314,7 +1640,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   18
          Left            =   360
-         TabIndex        =   92
+         TabIndex        =   91
          Top             =   480
          Width           =   2520
       End
@@ -1334,7 +1660,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   9
          Left            =   120
-         TabIndex        =   68
+         TabIndex        =   67
          Top             =   0
          Width           =   1950
       End
@@ -1350,7 +1676,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   400
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   63
+      TabIndex        =   62
       Top             =   345
       Width           =   8295
       Begin VB.ComboBox cmbExportColorDepth 
@@ -1367,8 +1693,8 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   3180
          Style           =   2  'Dropdown List
-         TabIndex        =   80
-         ToolTipText     =   $"VBP_FormPreferences.frx":8FFE
+         TabIndex        =   79
+         ToolTipText     =   $"VBP_FormPreferences.frx":923B
          Top             =   1680
          Width           =   4995
       End
@@ -1386,8 +1712,8 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   2760
          Style           =   2  'Dropdown List
-         TabIndex        =   77
-         ToolTipText     =   $"VBP_FormPreferences.frx":90C1
+         TabIndex        =   76
+         ToolTipText     =   $"VBP_FormPreferences.frx":92FE
          Top             =   3840
          Width           =   5415
       End
@@ -1405,8 +1731,8 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   840
          Style           =   2  'Dropdown List
-         TabIndex        =   69
-         ToolTipText     =   $"VBP_FormPreferences.frx":918E
+         TabIndex        =   68
+         ToolTipText     =   $"VBP_FormPreferences.frx":93CB
          Top             =   2910
          Width           =   7335
       End
@@ -1425,7 +1751,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   375
          Left            =   840
-         TabIndex        =   64
+         TabIndex        =   63
          ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
          Top             =   855
          Width           =   7215
@@ -1446,7 +1772,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   840
-         TabIndex        =   82
+         TabIndex        =   81
          Top             =   1740
          Width           =   2145
       End
@@ -1466,7 +1792,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   17
          Left            =   360
-         TabIndex        =   81
+         TabIndex        =   80
          Top             =   1320
          Width           =   2985
       End
@@ -1486,7 +1812,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   16
          Left            =   360
-         TabIndex        =   79
+         TabIndex        =   78
          Top             =   3480
          Width           =   4320
       End
@@ -1506,7 +1832,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   840
-         TabIndex        =   78
+         TabIndex        =   77
          Top             =   3900
          Width           =   1830
       End
@@ -1526,7 +1852,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   11
          Left            =   360
-         TabIndex        =   72
+         TabIndex        =   71
          Top             =   480
          Width           =   2505
       End
@@ -1546,7 +1872,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   840
-         TabIndex        =   71
+         TabIndex        =   70
          Top             =   2580
          Width           =   6585
       End
@@ -1566,7 +1892,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   10
          Left            =   360
-         TabIndex        =   70
+         TabIndex        =   69
          Top             =   2175
          Width           =   3285
       End
@@ -1586,7 +1912,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   120
-         TabIndex        =   65
+         TabIndex        =   64
          Top             =   0
          Width           =   1320
       End
@@ -1602,7 +1928,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   400
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   43
+      TabIndex        =   42
       Top             =   345
       Width           =   8295
       Begin VB.CheckBox chkInitialColorDepth 
@@ -1620,8 +1946,8 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   375
          Left            =   720
-         TabIndex        =   76
-         ToolTipText     =   $"VBP_FormPreferences.frx":9283
+         TabIndex        =   75
+         ToolTipText     =   $"VBP_FormPreferences.frx":94C0
          Top             =   825
          Width           =   7455
       End
@@ -1639,8 +1965,8 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   3720
          Style           =   2  'Dropdown List
-         TabIndex        =   57
-         ToolTipText     =   $"VBP_FormPreferences.frx":9368
+         TabIndex        =   56
+         ToolTipText     =   $"VBP_FormPreferences.frx":95A5
          Top             =   4125
          Width           =   4095
       End
@@ -1659,8 +1985,8 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   375
          Left            =   720
-         TabIndex        =   55
-         ToolTipText     =   $"VBP_FormPreferences.frx":9410
+         TabIndex        =   54
+         ToolTipText     =   $"VBP_FormPreferences.frx":964D
          Top             =   3150
          Width           =   7455
       End
@@ -1678,8 +2004,8 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   3000
          Style           =   2  'Dropdown List
-         TabIndex        =   44
-         ToolTipText     =   $"VBP_FormPreferences.frx":94DA
+         TabIndex        =   43
+         ToolTipText     =   $"VBP_FormPreferences.frx":9717
          Top             =   1695
          Width           =   4815
       End
@@ -1699,7 +2025,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   15
          Left            =   360
-         TabIndex        =   75
+         TabIndex        =   74
          Top             =   480
          Width           =   1200
       End
@@ -1719,7 +2045,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   14
          Left            =   120
-         TabIndex        =   74
+         TabIndex        =   73
          Top             =   0
          Width           =   2025
       End
@@ -1739,12 +2065,12 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   13
          Left            =   120
-         TabIndex        =   73
+         TabIndex        =   72
          Top             =   2280
          Width           =   3870
       End
       Begin VB.Label lblFreeImageWarning 
-         Caption         =   $"VBP_FormPreferences.frx":9594
+         Caption         =   $"VBP_FormPreferences.frx":97D1
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9
@@ -1757,7 +2083,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   735
          Left            =   120
-         TabIndex        =   59
+         TabIndex        =   58
          Top             =   5160
          Width           =   8175
       End
@@ -1777,7 +2103,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   720
-         TabIndex        =   58
+         TabIndex        =   57
          Top             =   4185
          Width           =   2895
       End
@@ -1797,7 +2123,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   8
          Left            =   360
-         TabIndex        =   56
+         TabIndex        =   55
          Top             =   3720
          Width           =   5205
       End
@@ -1817,7 +2143,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   6
          Left            =   360
-         TabIndex        =   54
+         TabIndex        =   53
          Top             =   2760
          Width           =   3345
       End
@@ -1837,7 +2163,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   360
-         TabIndex        =   53
+         TabIndex        =   52
          Top             =   1320
          Width           =   1560
       End
@@ -1857,7 +2183,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   720
-         TabIndex        =   45
+         TabIndex        =   44
          Top             =   1755
          Width           =   2235
       End
@@ -1891,8 +2217,8 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   255
          Left            =   360
-         TabIndex        =   61
-         ToolTipText     =   $"VBP_FormPreferences.frx":96A9
+         TabIndex        =   60
+         ToolTipText     =   $"VBP_FormPreferences.frx":98E6
          Top             =   480
          Width           =   7455
       End
@@ -1915,352 +2241,6 @@ Begin VB.Form FormPreferences
          TabIndex        =   13
          Top             =   0
          Width           =   1020
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6000
-      Index           =   7
-      Left            =   2760
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   400
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   19
-      Top             =   345
-      Width           =   8295
-      Begin VB.CheckBox chkGDIPlusTest 
-         Appearance      =   0  'Flat
-         Caption         =   " enable GDI+ support"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Left            =   240
-         TabIndex        =   37
-         ToolTipText     =   "Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines."
-         Top             =   5280
-         Width           =   7815
-      End
-      Begin VB.CheckBox chkFreeImageTest 
-         Appearance      =   0  'Flat
-         Caption         =   " enable FreeImage support"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Left            =   240
-         TabIndex        =   36
-         ToolTipText     =   "Use this to manually disable FreeImage support. This forces PhotoDemon to rely on its GDI+ and internal VB-only routines."
-         Top             =   4800
-         Width           =   7815
-      End
-      Begin VB.TextBox TxtTempPath 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   375
-         Left            =   240
-         Locked          =   -1  'True
-         TabIndex        =   23
-         Text            =   "automatically generated at run-time"
-         ToolTipText     =   "Folder used for temporary files"
-         Top             =   1440
-         Width           =   6975
-      End
-      Begin VB.CommandButton cmdTmpPath 
-         Caption         =   "..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   7320
-         TabIndex        =   22
-         ToolTipText     =   "Click to open a browse-for-folder dialog"
-         Top             =   1440
-         Width           =   405
-      End
-      Begin VB.CheckBox chkLogMessages 
-         Appearance      =   0  'Flat
-         Caption         =   " log all program messages to file "
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Left            =   240
-         TabIndex        =   21
-         ToolTipText     =   $"VBP_FormPreferences.frx":978D
-         Top             =   480
-         Width           =   6975
-      End
-      Begin VB.Label lblMemoryUsageMax 
-         BackStyle       =   0  'Transparent
-         Caption         =   "memory usage will be displayed here"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00804040&
-         Height          =   360
-         Left            =   240
-         TabIndex        =   85
-         Top             =   3810
-         Width           =   7965
-         WordWrap        =   -1  'True
-      End
-      Begin VB.Label lblMemoryUsageCurrent 
-         BackStyle       =   0  'Transparent
-         Caption         =   "memory usage will be displayed here"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00804040&
-         Height          =   360
-         Left            =   240
-         TabIndex        =   84
-         Top             =   3360
-         Width           =   7965
-         WordWrap        =   -1  'True
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "memory diagnostics"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         TabIndex        =   83
-         Top             =   2880
-         Width           =   2130
-      End
-      Begin VB.Label lblRuntimeSettings 
-         AutoSize        =   -1  'True
-         Caption         =   "temporary file location"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   60
-         Top             =   960
-         Width           =   2385
-      End
-      Begin VB.Label lblTempPathWarning 
-         Caption         =   $"VBP_FormPreferences.frx":987F
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H000000FF&
-         Height          =   495
-         Left            =   240
-         TabIndex        =   41
-         Top             =   2040
-         Width           =   7695
-         WordWrap        =   -1  'True
-      End
-      Begin VB.Label lblRuntimeSettings 
-         AutoSize        =   -1  'True
-         Caption         =   "run-time testing options (NOTE: these are not saved to the INI file)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   35
-         Top             =   4320
-         Width           =   7155
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "debugging"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   4
-         Left            =   120
-         TabIndex        =   20
-         Top             =   0
-         Width           =   1125
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6000
-      Index           =   6
-      Left            =   2760
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   400
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   14
-      Top             =   345
-      Width           =   8295
-      Begin VB.CheckBox chkPromptPluginDownload 
-         Appearance      =   0  'Flat
-         Caption         =   " if core plugins cannot be located, offer to download them"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   375
-         Left            =   240
-         TabIndex        =   17
-         ToolTipText     =   $"VBP_FormPreferences.frx":992E
-         Top             =   1080
-         Width           =   6735
-      End
-      Begin VB.CheckBox chkProgramUpdates 
-         Appearance      =   0  'Flat
-         Caption         =   " automatically check for software updates every 10 days"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   495
-         Left            =   240
-         TabIndex        =   16
-         ToolTipText     =   "If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon"
-         Top             =   480
-         Width           =   7455
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         Caption         =   "update options"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   120
-         TabIndex        =   15
-         Top             =   0
-         Width           =   1575
-      End
-      Begin VB.Label lblExplanation 
-         BackStyle       =   0  'Transparent
-         Caption         =   "(disclaimer populated at run-time)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   2775
-         Left            =   240
-         TabIndex        =   18
-         Top             =   1800
-         Width           =   7935
       End
    End
    Begin VB.Line lneVertical 
@@ -2570,11 +2550,6 @@ Private Sub cmdOK_Click()
     If LCase(TxtTempPath.Text) <> LCase(userPreferences.getTempPath) Then userPreferences.setTempPath TxtTempPath.Text
     
     'Remember the run-time only settings in the "Advanced" panel
-    If imageFormats.FreeImageEnabled <> CBool(chkFreeImageTest.Value) Then
-        imageFormats.FreeImageEnabled = CBool(chkFreeImageTest.Value)
-        imageFormats.generateInputFormats
-        imageFormats.generateOutputFormats
-    End If
     If imageFormats.GDIPlusEnabled <> CBool(chkGDIPlusTest.Value) Then
         imageFormats.GDIPlusEnabled = CBool(chkGDIPlusTest.Value)
         imageFormats.generateInputFormats
