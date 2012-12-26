@@ -27,6 +27,11 @@ Public imagePageCount As Long
 'DIB declarations
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
+'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
+Public Function isFreeImageAvailable() As Boolean
+    If FileExist(PluginPath & "freeimage.dll") Then isFreeImageAvailable = True Else isFreeImageAvailable = False
+End Function
+    
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
 Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageToLoad As Long = 0) As Boolean
 
