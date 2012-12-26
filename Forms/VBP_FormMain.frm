@@ -1265,8 +1265,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "Options"
       End
       Begin VB.Menu MnuPlugins 
-         Caption         =   "Plugin Manager"
-         Shortcut        =   ^M
+         Caption         =   "Plugin manager"
       End
    End
    Begin VB.Menu MnuWindow 
@@ -1587,7 +1586,7 @@ Private Sub MDIForm_Load()
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so ignore this request if the user was already notified of an update.)
-    If (updateNeeded <> 2) And ((zLibEnabled = False) Or (ScanEnabled = False) Or (imageFormats.FreeImageEnabled = False) Or (imageFormats.pngnqEnabled = False)) Then
+    If (updateNeeded <> 2) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngnqAvailable)) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
         
@@ -2254,12 +2253,16 @@ Private Sub MnuPlayMacroRecording_Click()
     Process MacroPlayRecording
 End Sub
 
+Private Sub MnuPlugins_Click()
+    If Not FormPluginManager.Visible Then FormPluginManager.Show 1, FormMain
+End Sub
+
 Private Sub MnuPosterize_Click()
     Process Posterize, , , , , , , , , , True
 End Sub
 
 Private Sub MnuPreferences_Click()
-    If FormPreferences.Visible = False Then FormPreferences.Show 1, FormMain
+    If Not FormPreferences.Visible Then FormPreferences.Show 1, FormMain
 End Sub
 
 Private Sub MnuPreviousImage_Click()

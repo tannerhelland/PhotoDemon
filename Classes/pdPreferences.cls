@@ -378,6 +378,14 @@ Private Sub createNewINIFile()
         Print #fileNum, "VerifyInitialColorDepth=1"
         Print #fileNum, ""
         
+        'Write out plugin preferences
+        Print #fileNum, "[Plugin Preferences]"
+        Print #fileNum, "ForceFreeImageDisable=0"
+        Print #fileNum, "ForceZLibDisable=0"
+        Print #fileNum, "ForceEZTwainDisable=0"
+        Print #fileNum, "ForcePngnqDisable=0"
+        Print #fileNum, ""
+        
         'Write out tool preferences
         Print #fileNum, "[Tool Preferences]"
         Print #fileNum, "ClearSelectionAfterCrop=1"
