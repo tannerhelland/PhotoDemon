@@ -25,11 +25,32 @@ Private Declare Function TWAIN_SelectImageSource Lib "eztw32.dll" (ByVal hWndApp
 Private Declare Function TWAIN_IsAvailable Lib "eztw32.dll" () As Long
 Private Declare Function TWAIN_CloseSourceManager Lib "eztw32.dll" (ByVal hWnd As Long) As Long
 Private Declare Function TWAIN_UnloadSourceManager Lib "eztw32.dll" () As Long
+Private Declare Function TWAIN_EasyVersion Lib "eztw32.dll" () As Long
 
 'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)
 Dim hLib_Scanner As Long
 
-'This must be run before the scanner is accessed
+'Is EZTwain available as a plugin?  (NOTE: this is now determined separately from ScanEnabled.)
+Public Function isEZTwainAvailable() As Boolean
+    If FileExist(PluginPath & "eztw32.dll") Then isEZTwainAvailable = True Else isEZTwainAvailable = False
+End Function
+
+'Return the EZTwain version number, as a string
+Public Function getEZTwainVersion() As String
+
+    hLib_Scanner = LoadLibrary(PluginPath & "eztw32.dll")
+    
+    Dim ezVer As Long
+    ezVer = TWAIN_EasyVersion
+    
+    FreeLibrary hLib_Scanner
+    
+    'The TWAIN version is the version number * 100.  Modify the return string accordingly
+    getEZTwainVersion = (ezVer \ 100) & "." & (ezVer Mod 100) & ".0.0"
+
+End Function
+
+'This should be run before the scanner is accessed
 Public Function EnableScanner() As Boolean
 
     hLib_Scanner = LoadLibrary(PluginPath & "eztw32.dll")
