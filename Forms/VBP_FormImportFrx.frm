@@ -235,7 +235,7 @@ Dim m_cff As New cFrxFile
 Dim requestUnload As Boolean
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     
     Message "VB binary file import canceled"
     Unload Me
@@ -243,7 +243,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Me.Visible = False
     Message "Importing binary image data..."
     PicLoadImage.Picture = m_cff(LstInfo.ListIndex + 1).Picture
@@ -357,7 +357,7 @@ Private Sub LstInfo_Click()
                 tmpImportLayer.CreateFromPicture m_cff(LstInfo.ListIndex + 1).Picture
                 If tmpImportLayer.getLayerWidth <> 0 And tmpImportLayer.getLayerHeight <> 0 Then tmpImportLayer.renderToPictureBox picDemo
                 
-                CmdOK.Enabled = True
+                cmdOK.Enabled = True
                 LblData.Visible = False
                 DoEvents
             
@@ -371,7 +371,7 @@ Private Sub LstInfo_Click()
                 picDemo.Picture = picDemo.Image
                 picDemo.Refresh
                 
-                CmdOK.Enabled = True
+                cmdOK.Enabled = True
                 LblData.Visible = False
                 DoEvents
             
@@ -380,7 +380,7 @@ Private Sub LstInfo_Click()
         Else
             picDemo.Picture = Nothing
             LblData.Visible = True
-            CmdOK.Enabled = False
+            cmdOK.Enabled = False
             If .ImageSize And (.ImageSize < 2 ^ 15) Then
                 LblData.Caption = "Binary data: " & StrConv(.Bits, vbUnicode)
             Else
