@@ -580,7 +580,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If imageFormats.FreeImageEnabled = True Then
                     loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
                 Else
-                    MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will download this plugin for you.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
+                    MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will download this plugin for you.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
                     Message "Image load canceled."
                     pdImages(CurrentImage).deactivateImage
                     Unload FormMain.ActiveForm
@@ -1065,51 +1065,73 @@ Public Sub LoadPlugins()
         
     'Check for image scanning
     'First, make sure we have our dll file
-    If FileExist(PluginPath & "EZTW32.dll") = False Then
+    If isEZTwainAvailable Then
+                
+        'If we do find the DLL, check to see if EZTwain has been forcibly disabled by the user.
+        If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForceEZTwainDisable", False) Then
+            ScanEnabled = False
+            FormMain.MnuScanImage.Visible = False
+            FormMain.MnuSelectScanner.Visible = False
+            FormMain.MnuImportSepBar1.Visible = False
+        Else
+            ScanEnabled = True
+            FormMain.MnuScanImage.Visible = True
+            FormMain.MnuSelectScanner.Visible = True
+            FormMain.MnuImportSepBar1.Visible = True
+        End If
+        
+    Else
+        
         'If we can't find the DLL, hide the menu options and internally disable scanning
         '(perhaps overkill, but it acts as a safeguard to prevent bad DLL-based crashes)
         ScanEnabled = False
         FormMain.MnuScanImage.Visible = False
         FormMain.MnuSelectScanner.Visible = False
         FormMain.MnuImportSepBar1.Visible = False
-    Else
         
-        ScanEnabled = True
-        
-        'If we do find the DLL, use it to check that TWAIN32 support is available on this machine.
-        ' If TWAIN32 support isn't available, hide the scanning options, but leave ScanEnabled as True
-        ' so our automatic plugin downloader doesn't mistakenly try to download the DLL again.
-        If EnableScanner() = False Then
-            FormMain.MnuScanImage.Visible = False
-            FormMain.MnuSelectScanner.Visible = False
-            FormMain.MnuImportSepBar1.Visible = False
-        Else
-            FormMain.MnuScanImage.Visible = True
-            FormMain.MnuSelectScanner.Visible = True
-            FormMain.MnuImportSepBar1.Visible = True
-        End If
     End If
     
     'Check for zLib compression capabilities
-    If FileExist(PluginPath & "zlibwapi.dll") = False Then
-        zLibEnabled = False
+    If isZLibAvailable Then
+    
+        'Check to see if zLib has been forcibly disabled.
+        If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForceZLibDisable", False) Then
+            zLibEnabled = False
+        Else
+            zLibEnabled = True
+        End If
+        
     Else
-        zLibEnabled = True
+        zLibEnabled = False
     End If
     
     'Check for FreeImage file interface
-    If FileExist(PluginPath & "FreeImage.dll") = False Then
+    If isFreeImageAvailable Then
+        
+        'Check to see if FreeImage has been forcibly disabled
+        If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForceFreeImageDisable", False) Then
+            imageFormats.FreeImageEnabled = False
+        Else
+            imageFormats.FreeImageEnabled = True
+        End If
+        
+    Else
         imageFormats.FreeImageEnabled = False
         FormMain.MnuRotateArbitrary.Visible = False
-    Else
-        imageFormats.FreeImageEnabled = True
     End If
     
     'Check for pngnq interface
-    If FileExist(PluginPath & "pngnq-s9.exe") = False Then
-        imageFormats.pngnqEnabled = False
+    If isPngnqAvailable Then
+        
+        'Check to see if pngnq-s9 has been forcibly disabled
+        If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForcePngnqDisable", False) Then
+            imageFormats.pngnqEnabled = False
+        Else
+            imageFormats.pngnqEnabled = True
+        End If
+        
     Else
-        imageFormats.pngnqEnabled = True
+        imageFormats.pngnqEnabled = False
     End If
     
     'Finally, check GDI+ availability
