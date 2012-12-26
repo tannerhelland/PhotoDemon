@@ -15,8 +15,9 @@ Option Explicit
 
 'API Declarations
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function compress Lib "zlibwapi.dll" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
-Private Declare Function uncompress Lib "zlibwapi.dll" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
+Private Declare Function compress Lib "zlibwapi.dll" (dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
+Private Declare Function uncompress Lib "zlibwapi.dll" (dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
+Private Declare Function zlibVersion Lib "zlibwapi.dll" () As Long
 
 'Custom compressed file header
 Type CompressionHeader
@@ -33,6 +34,34 @@ Dim dstFilename As String
 
 'Used to compare compression ratios
 Dim OriginalSize As Long, CompressedSize As Long
+
+'Is zLib available as a plugin?  (NOTE: this is now determined separately from zLibEnabled.)
+Public Function isZLibAvailable() As Boolean
+    If FileExist(PluginPath & "zlibwapi.dll") Then isZLibAvailable = True Else isZLibAvailable = False
+End Function
+
+'Return the current zLib version
+Public Function getZLibVersion() As Long
+
+    If Not zLibEnabled Then
+        getZLibVersion = -1
+        Exit Function
+    End If
+
+    'Manually load the DLL from the "PluginPath" folder (should be App.Path\Data\Plugins)
+    Dim hLib As Long
+    hLib = LoadLibrary(PluginPath & "zlibwapi.dll")
+    
+    'Check the version
+    Dim zLibVer As Long
+    zLibVer = zlibVersion()
+    
+    'Release the zLib library
+    FreeLibrary hLib
+    
+    getZLibVersion = zLibVer
+
+End Function
 
 'Compress a file
 Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
