@@ -521,24 +521,30 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
     'UpdateMRU should only be true if the save was successful
     If updateMRU Then
     
-        'Add this file to the MRU list
-        MRU_AddNewFile dstPath, pdImages(imageID)
-    
-        'Remember the file's location for future saves
-        pdImages(imageID).LocationOnDisk = dstPath
+        'Additionally, only add this MRU to the list (and generate an accompanying icon) if we are not in the midst
+        ' of a batch conversion.
+        If MacroStatus <> MacroBATCH Then
         
-        'Remember the file's filename
-        Dim tmpFilename As String
-        tmpFilename = dstPath
-        StripFilename tmpFilename
-        pdImages(imageID).OriginalFileNameAndExtension = tmpFilename
-        StripOffExtension tmpFilename
-        pdImages(imageID).OriginalFileName = tmpFilename
+            'Add this file to the MRU list
+            MRU_AddNewFile dstPath, pdImages(imageID)
         
-        'Mark this file as having been saved
-        pdImages(imageID).UpdateSaveState True
-        
-        PhotoDemon_SaveImage = True
+            'Remember the file's location for future saves
+            pdImages(imageID).LocationOnDisk = dstPath
+            
+            'Remember the file's filename
+            Dim tmpFilename As String
+            tmpFilename = dstPath
+            StripFilename tmpFilename
+            pdImages(imageID).OriginalFileNameAndExtension = tmpFilename
+            StripOffExtension tmpFilename
+            pdImages(imageID).OriginalFileName = tmpFilename
+            
+            'Mark this file as having been saved
+            pdImages(imageID).UpdateSaveState True
+            
+            PhotoDemon_SaveImage = True
+            
+        End If
     
     Else
         

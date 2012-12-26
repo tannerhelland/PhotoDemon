@@ -729,7 +729,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             PrepareViewport FormMain.ActiveForm, "PreLoadImage"
             
             'Render an icon-sized version of this image as the MDI child form's icon
-            CreateCustomFormIcon FormMain.ActiveForm
+            If MacroStatus <> MacroBATCH Then CreateCustomFormIcon FormMain.ActiveForm
             
             'Note the window state, as it may be important in the future
             targetImage.WindowState = FormMain.ActiveForm.WindowState
@@ -746,7 +746,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If AutosizeLargeImages = 1 Then FitWindowToViewport
         
             'Finally, add this file to the MRU list (unless specifically told not to)
-            If (ToUpdateMRU = True) And (pageNumber = 0) Then MRU_AddNewFile sFile(thisImage), targetImage
+            If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then MRU_AddNewFile sFile(thisImage), targetImage
         
         End If
         
