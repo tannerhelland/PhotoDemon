@@ -282,7 +282,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "EZTwain 1.19"
+         Caption         =   "EZTwain 1.18"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
