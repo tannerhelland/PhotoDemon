@@ -74,9 +74,12 @@ End Function
 
 'When images are loaded, this function is used to quickly determine the image's color count.  It stops once 257 is reached,
 ' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
-Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
+Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal imageID As Long = -1) As Long
     
     Message "Verifying image color count..."
+    
+    'Mark the image ID to the global tracking variable
+    g_LastImageScanned = imageID
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -137,7 +140,6 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
         If Not colorFound Then
             UniqueColors(totalCount) = chkValue
             totalCount = totalCount + 1
-            'ReDim Preserve UniqueColors(0 To totalCount) As Long
         End If
         
         'If the image has more than 256 colors, treat it as 24/32 bpp
@@ -170,6 +172,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
             If ((R = 0) And (g = 0) And (b = 0)) Or ((R = 255) And (g = 255) And (b = 255)) Then
                 g_IsImageMonochrome = True
                 Erase UniqueColors
+                g_LastColorCount = totalCount
                 getQuickColorCount = totalCount
                 Exit Function
             End If
@@ -206,6 +209,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage) As Long
     
     Erase UniqueColors
     
+    g_LastColorCount = totalCount
     getQuickColorCount = totalCount
         
 End Function

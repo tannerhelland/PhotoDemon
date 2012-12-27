@@ -314,7 +314,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 ' as anything above 256 colors is treated as 24bpp.)
                 Dim colorCountCheck As Long
                 Message "Counting image colors to determine optimal exported color depth..."
-                colorCountCheck = getQuickColorCount(pdImages(imageID))
+                colorCountCheck = getQuickColorCount(pdImages(imageID), imageID)
                 
                 'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
                 outputColorDepth = getColorDepthFromColorCount(colorCountCheck, pdImages(imageID).mainLayer)

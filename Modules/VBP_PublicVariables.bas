@@ -155,6 +155,9 @@ Public g_JP2Compression As Long
 'Exported color depth
 Public g_ColorDepth As Long
 
+'Color count
+Public g_LastColorCount As Long
+
 'Is the current image grayscale?  This variable is set by the quick count colors routine.  Do not trust its
 ' state unless you have just called the quick count colors routine (otherwise it may be outdated).
 Public g_IsImageGray As Boolean
@@ -167,3 +170,7 @@ Public g_IsImageMonochrome As Boolean
 'What threshold should be used for simplifying an image's complex alpha channel?
 ' (This is set by the custom alpha cutoff dialog.)
 Public g_AlphaCutoff As Byte
+
+'When an image has its colors counted, the image's ID is stored here.  Other functions can use this to see if the
+' current color count is relevant for a given image (e.g. if the image being worked on has just had its colors counted).
+Public g_LastImageScanned As Long

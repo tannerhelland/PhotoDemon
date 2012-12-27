@@ -277,7 +277,20 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         
         'PhotoDemon now offers pngnq support via a plugin.  It can be used to render extremely high-quality 8bpp PNG files
         ' with "full" transparency.  If it is available, the export process is a bit different.
-        If Not imageFormats.pngnqEnabled Then
+        
+        'Before we can send stuff off to pngnq, however, we need to see if the image has more than 256 colors.  If it
+        ' doesn't, we can save the file ourselves.
+        
+        'Check to see if the current image had its colors counted before coming here.  If not, count it.
+        Dim numColors As Long
+        If g_LastImageScanned <> imageID Then
+            numColors = getQuickColorCount(pdImages(imageID), imageID)
+        Else
+            numColors = g_LastColorCount
+        End If
+        
+        'We only want to use pngnq if the image has more than 256 colors (and if it's available, obviously).
+        If (Not imageFormats.pngnqEnabled) Or (numColors <= 256) Then
         
             'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
             If tmpLayer.isAlphaBinary Then
@@ -322,7 +335,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
-    If handleAlpha And (Not imageFormats.pngnqEnabled) Then
+    If handleAlpha And ((Not imageFormats.pngnqEnabled) Or (numColors <= 256)) Then
         fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
@@ -381,7 +394,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         Else
             
             'If pngnq is being used to help with the 8bpp reduction, now is when we need to use it.
-            If handleAlpha And imageFormats.pngnqEnabled Then
+            If handleAlpha And imageFormats.pngnqEnabled And (numColors > 256) Then
             
                 'Build a full shell path for the pngnq operation
                 Dim shellPath As String
