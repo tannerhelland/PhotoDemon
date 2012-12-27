@@ -2379,7 +2379,7 @@ Private Sub cmbFiletype_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     
     'Restore any settings that may have been changed in real-time
     If useFancyFonts <> originalUseFancyFonts Then
@@ -2797,14 +2797,6 @@ Private Sub LoadAllPreferences()
     End If
         
     'Populate and en/disable the run-time only settings in the "Advanced" panel
-    If imageFormats.FreeImageEnabled Then
-        chkFreeImageTest.Caption = " enable FreeImage support"
-        chkFreeImageTest.Value = vbChecked
-    Else
-        chkFreeImageTest.Caption = " enable FreeImage support (do not activate this if FreeImage.dll is not available)"
-        chkFreeImageTest.Value = vbUnchecked
-    End If
-    
     If imageFormats.GDIPlusEnabled Then
         chkGDIPlusTest.Caption = " enable GDI+ support"
         chkGDIPlusTest.Value = vbChecked
