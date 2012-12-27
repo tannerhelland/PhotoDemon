@@ -268,6 +268,30 @@ Public Sub LoadMenuIcons()
         .AddImageFromStream LoadResData("LEFTPANSHOW", "CUSTOM") '154
         .AddImageFromStream LoadResData("PLUGIN", "CUSTOM")      '155
         
+    End With
+    
+    'Now that all menu icons are loaded, apply them to the proper menu entires
+    ApplyAllMenuIcons
+    
+    'Finally, calculate where to place the "Clear MRU" menu item (this requires its own special handling).
+    Dim numOfMRUFiles As Long
+    numOfMRUFiles = MRU_ReturnCount()
+    cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
+    
+    'And initialize the MRU icon handler.  (Unfortunately, MRU icons must be disabled on XP.  We can't
+    ' double-subclass the main form, and using a single menu icon class isn't possible at present.)
+    If isVistaOrLater Then
+        Set cMRUIcons = New clsMenuImage
+        cMRUIcons.Init FormMain.hWnd, 64, 64
+    End If
+        
+End Sub
+
+'Apply loaded menu items to their proper menu entries.  DO NOT CALL THIS BEFORE LOADMENU ICONS (above)!
+Public Sub ApplyAllMenuIcons()
+
+    With cMenuImage
+        
         'File Menu
         .PutImageToVBMenu 0, 0, 0       'Open Image
         .PutImageToVBMenu 1, 1, 0       'Open recent
@@ -282,7 +306,7 @@ Public Sub LoadMenuIcons()
         
         '--> Import Sub-Menu
         'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
-        If ScanEnabled = True Then
+        If ScanEnabled Then
             .PutImageToVBMenu 16, 0, 0, 2      'From Clipboard (Paste as New Image)
             .PutImageToVBMenu 8, 2, 0, 2       'Scan Image
             .PutImageToVBMenu 45, 3, 0, 2      'Select Scanner
@@ -482,18 +506,6 @@ Public Sub LoadMenuIcons()
         .PutImageToVBMenu 27, 10, 8    'About PD
     
     End With
-    
-    'Finally, calculate where to place the "Clear MRU" menu item
-    Dim numOfMRUFiles As Long
-    numOfMRUFiles = MRU_ReturnCount()
-    cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
-    
-    'And initialize the MRU icon handler.  (Unfortunately, MRU icons must be disabled on XP.  We can't
-    ' double-subclass the main form, and using a single menu icon class isn't possible at present.)
-    If isVistaOrLater Then
-        Set cMRUIcons = New clsMenuImage
-        cMRUIcons.Init FormMain.hWnd, 64, 64
-    End If
     
 End Sub
 

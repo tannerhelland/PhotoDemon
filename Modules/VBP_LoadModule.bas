@@ -1072,14 +1072,8 @@ Public Sub LoadPlugins()
         'If we do find the DLL, check to see if EZTwain has been forcibly disabled by the user.
         If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForceEZTwainDisable", False) Then
             ScanEnabled = False
-            FormMain.MnuScanImage.Visible = False
-            FormMain.MnuSelectScanner.Visible = False
-            FormMain.MnuImportSepBar1.Visible = False
         Else
             ScanEnabled = True
-            FormMain.MnuScanImage.Visible = True
-            FormMain.MnuSelectScanner.Visible = True
-            FormMain.MnuImportSepBar1.Visible = True
         End If
         
     Else
@@ -1087,11 +1081,13 @@ Public Sub LoadPlugins()
         'If we can't find the DLL, hide the menu options and internally disable scanning
         '(perhaps overkill, but it acts as a safeguard to prevent bad DLL-based crashes)
         ScanEnabled = False
-        FormMain.MnuScanImage.Visible = False
-        FormMain.MnuSelectScanner.Visible = False
-        FormMain.MnuImportSepBar1.Visible = False
         
     End If
+    
+        'Additionally related to EZTwain - enable/disable the various scanner options contigent on EZTwain's enabling
+        FormMain.MnuScanImage.Visible = ScanEnabled
+        FormMain.MnuSelectScanner.Visible = ScanEnabled
+        FormMain.MnuImportSepBar1.Visible = ScanEnabled
     
     'Check for zLib compression capabilities
     If isZLibAvailable Then
@@ -1119,8 +1115,10 @@ Public Sub LoadPlugins()
         
     Else
         imageFormats.FreeImageEnabled = False
-        FormMain.MnuRotateArbitrary.Visible = False
     End If
+    
+        'Additionally related to FreeImage - enable/disable the arbitrary rotation option contingent on FreeImage's enabling
+        FormMain.MnuRotateArbitrary.Visible = imageFormats.FreeImageEnabled
     
     'Check for pngnq interface
     If isPngnqAvailable Then
