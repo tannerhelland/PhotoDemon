@@ -26,14 +26,13 @@ Attribute VB_Name = "pngnq_Interface"
 
 Option Explicit
 
-
 'Is pngnq-s9 available as a plugin?  (NOTE: this is now determined separately from pngnqEnabled.)
 Public Function isPngnqAvailable() As Boolean
     If FileExist(PluginPath & "pngnq-s9.exe") Then isPngnqAvailable = True Else isPngnqAvailable = False
 End Function
 
 'Retrieve the pngnq-s9 version from the file.  There is currently not a good way to do this, so just report the
-' expected version (as it's incredibly unlikely that the user will use any other version).
+' expected version (as it's incredibly unlikely that the user will attempt to use another version).
 Public Function getPngnqVersion() As String
 
     If Not isPngnqAvailable Then
