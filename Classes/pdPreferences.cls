@@ -384,6 +384,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "ForceZLibDisable=0"
         Print #fileNum, "ForceEZTwainDisable=0"
         Print #fileNum, "ForcePngnqDisable=0"
+        Print #fileNum, "LastPluginPreferencesPage=0"
         Print #fileNum, ""
         
         'Write out tool preferences

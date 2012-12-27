@@ -1266,6 +1266,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuPlugins 
          Caption         =   "Plugin manager"
+         Shortcut        =   ^M
       End
    End
    Begin VB.Menu MnuWindow 
