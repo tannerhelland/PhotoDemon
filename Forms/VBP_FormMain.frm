@@ -1600,6 +1600,14 @@ Private Sub MDIForm_Load()
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
         If promptToDownload = True Then
             FormPluginDownloader.Show 1, FormMain
+            
+            'Since plugins may have been downloaded, update the interface to match any new features that may be available.
+            LoadPlugins
+            ApplyAllMenuIcons
+            ResetMenuIcons
+            imageFormats.generateInputFormats
+            imageFormats.generateOutputFormats
+            
         Else
             Message "Ignoring plugin update request per user's INI settings"
         End If
