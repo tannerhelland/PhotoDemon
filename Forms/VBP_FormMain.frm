@@ -1378,8 +1378,10 @@ Private Sub cmbSelRender_Click()
     If NumOfWindows > 0 Then
     
         Dim i As Long
-        For i = 1 To NumOfImagesLoaded
-            If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
+        For i = 0 To NumOfImagesLoaded
+            If (Not pdImages(i) Is Nothing) Then
+                If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
+            End If
         Next i
     
     End If
@@ -1842,8 +1844,10 @@ Private Sub MnuCascadeWindows_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
+    For i = 0 To NumOfImagesLoaded
+        If (Not pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
+        End If
     Next i
     
 End Sub
@@ -1899,8 +1903,10 @@ Private Sub MnuCloseAll_Click()
 
     'Go through each image object and close the containing form
     Dim i As Long
-    For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive Then Unload pdImages(i).containingForm
+    For i = 0 To NumOfImagesLoaded
+        If (Not pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then Unload pdImages(i).containingForm
+        End If
     Next i
 
     'Reset the "closing all images" flag
@@ -2452,8 +2458,10 @@ Private Sub MnuTileHorizontally_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
+    For i = 0 To NumOfImagesLoaded
+        If (Not pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
+        End If
     Next i
     
 End Sub
@@ -2464,8 +2472,10 @@ Private Sub MnuTileVertically_Click()
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
     Dim i As Long
-    For i = 1 To NumOfImagesLoaded
-        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
+    For i = 0 To NumOfImagesLoaded
+        If (Not pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
+        End If
     Next i
     
 End Sub
