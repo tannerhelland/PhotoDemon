@@ -9,7 +9,7 @@ Attribute VB_Name = "FreeImage_Expanded_Interface"
 'This module represents a new - and significantly more complex - approach to loading images via the FreeImage libary.
 ' It handles a variety of decisions on a per-format basis to ensure optimal load speed and quality.
 '
-'Several sections of this module are based on the work of Herman Liu, to whom I am very grateful.
+'Several sections of this module were heavily tested by Herman Liu, to whom I am very grateful.
 '
 'Additionally, this module continues to rely heavily on Carsten Klein's FreeImage wrapper for VB (included in this project
 ' as Outside_FreeImageV3; see that file for license details).  Thanks to Carsten for his work on integrating FreeImage
@@ -111,10 +111,12 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     If pageToLoad > 0 Then needToCloseMulti = True Else needToCloseMulti = False
     
     'If the image is a GIF, it might be animated.  Check for that now.
-    If ((fileFIF = FIF_GIF) Or (fileFIF = FIF_TIFF)) And (pageToLoad = 0) And (MacroStatus <> MacroBATCH) Then
+    If ((fileFIF = FIF_GIF) Or (fileFIF = FIF_TIFF) Or (fileFIF = FIF_ICO)) And (pageToLoad = 0) And (MacroStatus <> MacroBATCH) Then
     
         If fileFIF = FIF_GIF Then
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename)
+        ElseIf fileFIF = FIF_ICO Then
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename)
         Else
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename)
         End If
@@ -130,6 +132,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             
             If fileFIF = FIF_GIF Then
                 Message "Animated GIF file detected."
+            ElseIf fileFIF = FIF_ICO Then
+                Message "Multiple icons detected."
             Else
                 Message "Multipage TIFF file detected."
             End If
@@ -141,11 +145,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 Case 0
                 
                     Dim mpImportAnswer As VbMsgBoxResult
-                    'If fileFIF = FIF_GIF Then
-                    '    mpImportAnswer = MsgBox("This is an animated GIF file (" & chkPageCount & " frames total).  Would you like to import each frame as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each frame as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first frame.", vbInformation + vbYesNo + vbApplicationModal, " Animated GIF Import Options")
-                    'Else
-                    '    mpImportAnswer = MsgBox("This TIFF file contains multiple pages (" & chkPageCount & " pages total).  Would you like to import each page as its own image?" & vbCrLf & vbCrLf & "Select ""Yes"" to load each page as an individual image, for a total of " & chkPageCount & " images." & vbCrLf & vbCrLf & "Select ""No"" to load only the first page.", vbInformation + vbYesNo + vbApplicationModal, " Multipage TIFF Import Options")
-                    'End If
+                    
                     mpImportAnswer = promptMultiImage(srcFilename, chkPageCount)
                     
                     'If the user said "yes", import each page as its own image
@@ -153,6 +153,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                     
                         If fileFIF = FIF_GIF Then
                             Message "All frames will be loaded, per the user's request."
+                        ElseIf fileFIF = FIF_ICO Then
+                            Message "All icons will be loaded, per the user's request."
                         Else
                             Message "All pages will be loaded, per the user's request."
                         End If
@@ -166,6 +168,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                         
                         If fileFIF = FIF_GIF Then
                             Message "Only the first frame will be loaded, per the user's request."
+                        ElseIf fileFIF = FIF_ICO Then
+                            Message "Only the first icon will be loaded, per the user's request."
                         Else
                             Message "Only the first page will be loaded, per the user's request."
                         End If
@@ -209,6 +213,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         If fileFIF = FIF_GIF Then
             Message "Importing frame #" & pageToLoad & " from animated GIF file..."
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
+        ElseIf fileFIF = FIF_ICO Then
+            Message "Importing icon #" & pageToLoad & " from ICO file..."
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , 0)
         Else
             Message "Importing page #" & pageToLoad & " from multipage TIFF file..."
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename, , , , 0)
@@ -668,7 +675,7 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
     If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilename(srcFilename)
     
     'If FreeImage can't determine the file type, or if the filetype is not GIF or TIF, return False
-    If (Not FreeImage_FIFSupportsReading(fileFIF)) Or ((fileFIF <> FIF_GIF) And (fileFIF <> FIF_TIFF)) Then
+    If (Not FreeImage_FIFSupportsReading(fileFIF)) Or ((fileFIF <> FIF_GIF) And (fileFIF <> FIF_TIFF) And (fileFIF <> FIF_ICO)) Then
         isMultiImage = 0
         Exit Function
     End If
@@ -678,6 +685,8 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
     Dim fi_multi_hDIB As Long
     If fileFIF = FIF_GIF Then
         fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename)
+    ElseIf fileFIF = FIF_ICO Then
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename)
     Else
         fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename)
     End If

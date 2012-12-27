@@ -138,11 +138,11 @@ Attribute VB_Exposed = False
 'Multi-Image Load Dialog
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 01/December/12
-'Last updated: 01/December/12
-'Last update: initial build; this is replacing the generic message box previously used
+'Last updated: 27/December/12
+'Last update: add support for icon files, which may contain many embedded icons.
 '
 'Custom dialog box for asking the user how they want to treat a multi-image file (at present, an
-' animated GIF or a multipage TIFF).
+' animated GIF, multipage TIFF, or ICO).
 '
 'This form is tied into the settable user preference for handling multipage images.  Checking the
 ' "remember this decision and don't ask me again" option will set that preference for the user.
@@ -192,6 +192,14 @@ Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
         cmdAnswer(1).Caption = "Load only the first frame"
         cmdAnswer(1).ToolTip = "This option will only load a single frame from the animated GIF file," & vbCrLf & "effectively treating at as a non-animated GIF file."
         cmdAnswer(1).TooltipTitle = "Load one frame only"
+    ElseIf UCase(fileExtension) = "ICO" Then
+        lblWarning.Caption = getFilename(srcFilename) & " contains multiple icons (" & numOfImages & " in total).  How would you like to proceed?"
+        cmdAnswer(0).Caption = "Load each icon as a separate image"
+        cmdAnswer(0).ToolTip = "This option will load every icon in the ICO file as an individual image."
+        cmdAnswer(0).TooltipTitle = "Load all icons"
+        cmdAnswer(1).Caption = "Load only the first icon"
+        cmdAnswer(1).ToolTip = "This option will only load a single icon from the ICO file."
+        cmdAnswer(1).TooltipTitle = "Load one icon only"
     Else
         lblWarning.Caption = getFilename(srcFilename) & " contains multiple pages (" & numOfImages & " in total).  How would you like to proceed?"
         cmdAnswer(0).Caption = "Load each page as a separate image"

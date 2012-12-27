@@ -467,7 +467,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
                 loadSuccessful = False
                 If imageFormats.FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
                 End If
                 
                 'If FreeImage failed (not likely, but not impossible) or is otherwise unavailable, attempt to load
@@ -639,7 +639,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         If userPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors Then
             
-            colorCountCheck = getQuickColorCount(targetImage)
+            colorCountCheck = getQuickColorCount(targetImage, CurrentImage)
         
             'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
             targetImage.OriginalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.mainLayer)
@@ -766,8 +766,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Call PreLoadImage again for each individual frame in the multipage file
             For pageTracker = 1 To imagePageCount
-                If GetExtension(sFile(thisImage)) = "gif" Then
+                If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
                     PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
+                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (icon " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (icon " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 Else
                     PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (page " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (page " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 End If
