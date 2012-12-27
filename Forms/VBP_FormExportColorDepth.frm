@@ -189,6 +189,9 @@ Private userAnswer As VbMsgBoxResult
 'The desired output format (used to activate available color depths)
 Private outputFormat As Long
 
+'We want to temporarily suspend an hourglass cursor if necessary
+Private restoreCursor As Boolean
+
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -200,7 +203,9 @@ Public Property Let imageFormat(ByVal imageFormat As Long)
 End Property
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
+    
+    If restoreCursor Then Screen.MousePointer = vbHourglass
     
     userAnswer = vbCancel
     Me.Hide
@@ -208,7 +213,10 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
+        
+    'Restore a busy cursor if necessary
+    If restoreCursor Then Screen.MousePointer = vbHourglass
         
     'Save the selected color depth to the corresponding global variable (so other functions can access it
     ' after this form is unloaded)
@@ -230,7 +238,12 @@ Public Sub ShowDialog()
     userAnswer = vbCancel
     
     'Make sure that the proper cursor is set
-    Screen.MousePointer = 0
+    If Screen.MousePointer = vbHourglass Then
+        restoreCursor = True
+        Screen.MousePointer = vbNormal
+    Else
+        restoreCursor = False
+    End If
         
     'Based on the supplied image format, disable invalid color depths
     If imageFormats.isColorDepthSupported(outputFormat, 1) Then optColorDepth(0).Enabled = True Else optColorDepth(0).Enabled = False
@@ -265,4 +278,3 @@ Public Sub ShowDialog()
     Me.Show vbModal, FormMain
 
 End Sub
-
