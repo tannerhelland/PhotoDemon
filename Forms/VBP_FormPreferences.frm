@@ -2679,7 +2679,7 @@ Private Sub LoadAllPreferences()
     'Update the check box for dynamic taskbar icon updating
     If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then chkTaskbarIcon.Value = vbChecked Else chkTaskbarIcon.Value = vbUnchecked
     If Not imageFormats.FreeImageEnabled Then
-        chkTaskbarIcon.Value = vbUnchecked
+        'chkTaskbarIcon.Value = vbUnchecked
         chkTaskbarIcon.Enabled = False
         chkTaskbarIcon.Caption = " dynamically update taskbar icon to match current image (FreeImage plugin required)"
     End If
@@ -2812,7 +2812,7 @@ Private Sub LoadAllPreferences()
     
     'If any preferences rely on FreeImage to operate, en/disable them as necessary
     If imageFormats.FreeImageEnabled = False Then
-        chkToneMapping.Value = vbUnchecked
+        'chkToneMapping.Value = vbUnchecked
         chkToneMapping.Caption = " feature disabled due to missing plungin"
         chkToneMapping.Enabled = False
         cmbMultiImage.Clear
