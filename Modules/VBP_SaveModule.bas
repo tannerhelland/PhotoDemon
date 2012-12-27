@@ -252,10 +252,14 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     'Make sure we found the plug-in when we loaded the program
     If imageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save could not be completed without FreeImage library access."
+        Message "Save cannot be completed without FreeImage library."
         SavePNGImage = False
         Exit Function
     End If
+    
+    'Before doing anything else, make a special note of the outputColorDepth.  If it is 8bpp, we will use pngnq-s9 to help with the save.
+    Dim output8BPP As Boolean
+    If outputColorDepth = 8 Then output8BPP = True Else output8BPP = False
     
     'Load FreeImage into memory
     Dim hLib As Long
@@ -289,8 +293,8 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
             numColors = g_LastColorCount
         End If
         
-        'We only want to use pngnq if the image has more than 256 colors (and if it's available, obviously).
-        If (Not imageFormats.pngnqEnabled) Or (numColors <= 256) Then
+        'Pngnq can handle all transparency for us, if it exists.  If it does not, we must rely on our own routines.
+        If Not imageFormats.pngnqEnabled Then
         
             'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
             If tmpLayer.isAlphaBinary Then
@@ -325,6 +329,9 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         ' If we are, composite the image against a white background.
         If (pdImages(imageID).mainLayer.getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
     
+        'Also, if pngnq is enabled, we will use that for the transformation - so we need to reset the outgoing color depth to 24bpp
+        If (pdImages(imageID).mainLayer.getLayerColorDepth = 24) And (outputColorDepth = 8) And imageFormats.pngnqEnabled Then outputColorDepth = 24
+    
     End If
     
     'Convert our current layer to a FreeImage-type DIB
@@ -334,8 +341,9 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
     If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
     
-    'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
-    If handleAlpha And ((Not imageFormats.pngnqEnabled) Or (numColors <= 256)) Then
+    'If the image contains alpha and pngnq is not available, we need to manually convert the FreeImage copy of the image to 8bpp.
+    ' Then we need to apply alpha using the cut-off established earlier in this section.
+    If handleAlpha And (Not imageFormats.pngnqEnabled) Then
         fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
@@ -394,7 +402,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         Else
             
             'If pngnq is being used to help with the 8bpp reduction, now is when we need to use it.
-            If handleAlpha And imageFormats.pngnqEnabled And (numColors > 256) Then
+            If imageFormats.pngnqEnabled And output8BPP Then
             
                 'Build a full shell path for the pngnq operation
                 Dim shellPath As String
