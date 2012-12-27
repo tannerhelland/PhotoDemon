@@ -23,6 +23,15 @@ Begin VB.Form FormPluginManager
    ScaleWidth      =   721
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton cmdReset 
+      Caption         =   "&Reset all plugin options"
+      Height          =   495
+      Left            =   120
+      TabIndex        =   73
+      ToolTipText     =   "Use this to reset all plugin-related options to their default state.  This action cannot be undone."
+      Top             =   5520
+      Width           =   2775
+   End
    Begin VB.CommandButton cmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,7 +51,6 @@ Begin VB.Form FormPluginManager
       Width           =   1245
    End
    Begin VB.ListBox lstPlugins 
-      Appearance      =   0  'Flat
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -53,7 +61,7 @@ Begin VB.Form FormPluginManager
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   4890
+      Height          =   4920
       Left            =   120
       TabIndex        =   0
       Top             =   240
@@ -72,6 +80,215 @@ Begin VB.Form FormPluginManager
       TabIndex        =   52
       Top             =   240
       Width           =   7695
+      Begin VB.HScrollBar hsPngnqDither 
+         Height          =   255
+         Left            =   2280
+         Max             =   10
+         TabIndex        =   70
+         Top             =   4320
+         Value           =   5
+         Width           =   5055
+      End
+      Begin VB.CheckBox chkPngnqAlphaExtenuation 
+         Appearance      =   0  'Flat
+         Caption         =   " when reducing alpha channels, attempt to preserve values of 0 and 255"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Left            =   480
+         TabIndex        =   68
+         ToolTipText     =   $"VBP_FormPluginManager.frx":0000
+         Top             =   2640
+         Width           =   7095
+      End
+      Begin VB.HScrollBar hsPngnqSample 
+         Height          =   255
+         Left            =   2280
+         Max             =   -1
+         Min             =   -10
+         TabIndex        =   65
+         Top             =   3600
+         Value           =   -3
+         Width           =   5055
+      End
+      Begin VB.CheckBox chkPngnqYUVA 
+         Appearance      =   0  'Flat
+         Caption         =   " analyze colors using YUV instead of RGB (slower, but much higher quality)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Left            =   480
+         TabIndex        =   63
+         ToolTipText     =   $"VBP_FormPluginManager.frx":009C
+         Top             =   3090
+         Value           =   1  'Checked
+         Width           =   7095
+      End
+      Begin VB.Label lblHSDescription 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "full persistence"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   195
+         Index           =   3
+         Left            =   6045
+         TabIndex        =   72
+         Top             =   4680
+         Width           =   1080
+      End
+      Begin VB.Label lblHSDescription 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "none"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   195
+         Index           =   2
+         Left            =   2550
+         TabIndex        =   71
+         Top             =   4680
+         Width           =   360
+      End
+      Begin VB.Label lblPngnqSetting 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "color dithering:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   1
+         Left            =   480
+         TabIndex        =   69
+         Top             =   4320
+         Width           =   1305
+      End
+      Begin VB.Label lblHSDescription 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "large (slow, high quality)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   195
+         Index           =   1
+         Left            =   5355
+         TabIndex        =   67
+         Top             =   3960
+         Width           =   1770
+      End
+      Begin VB.Label lblHSDescription 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "small (fast, low quality)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   195
+         Index           =   0
+         Left            =   2550
+         TabIndex        =   66
+         Top             =   3960
+         Width           =   1665
+      End
+      Begin VB.Label lblPngnqSetting 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "color sample size:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   0
+         Left            =   480
+         TabIndex        =   64
+         Top             =   3600
+         Width           =   1560
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "pngnq-s9 settings"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   5
+         Left            =   120
+         TabIndex        =   62
+         Top             =   2160
+         Width           =   1890
+      End
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
          Caption         =   "custom license, see PNGNQ-S9-LICENSE file"
@@ -88,7 +305,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   7
          Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0000
+         MouseIcon       =   "VBP_FormPluginManager.frx":012B
          MousePointer    =   99  'Custom
          TabIndex        =   61
          Top             =   1560
@@ -111,7 +328,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   15
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":0152
+         MouseIcon       =   "VBP_FormPluginManager.frx":027D
          MousePointer    =   99  'Custom
          TabIndex        =   60
          Top             =   1560
@@ -133,7 +350,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   6
          Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
+         MouseIcon       =   "VBP_FormPluginManager.frx":03CF
          MousePointer    =   99  'Custom
          TabIndex        =   59
          Top             =   1080
@@ -156,7 +373,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   14
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
+         MouseIcon       =   "VBP_FormPluginManager.frx":0521
          MousePointer    =   99  'Custom
          TabIndex        =   58
          Top             =   1080
@@ -179,7 +396,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   13
          Left            =   3960
-         MouseIcon       =   "VBP_FormPluginManager.frx":0548
+         MouseIcon       =   "VBP_FormPluginManager.frx":0673
          MousePointer    =   99  'Custom
          TabIndex        =   57
          Top             =   600
@@ -201,7 +418,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   2400
-         MouseIcon       =   "VBP_FormPluginManager.frx":069A
+         MouseIcon       =   "VBP_FormPluginManager.frx":07C5
          MousePointer    =   99  'Custom
          TabIndex        =   56
          Top             =   600
@@ -223,7 +440,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   5520
-         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
+         MouseIcon       =   "VBP_FormPluginManager.frx":0917
          MousePointer    =   99  'Custom
          TabIndex        =   55
          Top             =   600
@@ -246,7 +463,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   12
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":093E
+         MouseIcon       =   "VBP_FormPluginManager.frx":0A69
          MousePointer    =   99  'Custom
          TabIndex        =   54
          Top             =   600
@@ -325,7 +542,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   11
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
+         MouseIcon       =   "VBP_FormPluginManager.frx":0BBB
          MousePointer    =   99  'Custom
          TabIndex        =   50
          Top             =   600
@@ -347,7 +564,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   5520
-         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
+         MouseIcon       =   "VBP_FormPluginManager.frx":0D0D
          MousePointer    =   99  'Custom
          TabIndex        =   49
          Top             =   600
@@ -369,7 +586,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2400
-         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
+         MouseIcon       =   "VBP_FormPluginManager.frx":0E5F
          MousePointer    =   99  'Custom
          TabIndex        =   48
          Top             =   600
@@ -392,7 +609,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   10
          Left            =   3960
-         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
+         MouseIcon       =   "VBP_FormPluginManager.frx":0FB1
          MousePointer    =   99  'Custom
          TabIndex        =   47
          Top             =   600
@@ -415,7 +632,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   9
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":0FD8
+         MouseIcon       =   "VBP_FormPluginManager.frx":1103
          MousePointer    =   99  'Custom
          TabIndex        =   46
          Top             =   1080
@@ -437,7 +654,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":112A
+         MouseIcon       =   "VBP_FormPluginManager.frx":1255
          MousePointer    =   99  'Custom
          TabIndex        =   45
          Top             =   1080
@@ -460,7 +677,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   8
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":127C
+         MouseIcon       =   "VBP_FormPluginManager.frx":13A7
          MousePointer    =   99  'Custom
          TabIndex        =   44
          Top             =   1560
@@ -482,7 +699,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   5
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":13CE
+         MouseIcon       =   "VBP_FormPluginManager.frx":14F9
          MousePointer    =   99  'Custom
          TabIndex        =   43
          Top             =   1560
@@ -518,7 +735,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":1520
+         MouseIcon       =   "VBP_FormPluginManager.frx":164B
          MousePointer    =   99  'Custom
          TabIndex        =   31
          Top             =   1560
@@ -541,7 +758,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":1672
+         MouseIcon       =   "VBP_FormPluginManager.frx":179D
          MousePointer    =   99  'Custom
          TabIndex        =   30
          Top             =   1560
@@ -563,7 +780,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":17C4
+         MouseIcon       =   "VBP_FormPluginManager.frx":18EF
          MousePointer    =   99  'Custom
          TabIndex        =   29
          Top             =   1080
@@ -586,7 +803,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   5
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":1916
+         MouseIcon       =   "VBP_FormPluginManager.frx":1A41
          MousePointer    =   99  'Custom
          TabIndex        =   28
          Top             =   1080
@@ -609,7 +826,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   6
          Left            =   3960
-         MouseIcon       =   "VBP_FormPluginManager.frx":1A68
+         MouseIcon       =   "VBP_FormPluginManager.frx":1B93
          MousePointer    =   99  'Custom
          TabIndex        =   27
          Top             =   600
@@ -631,7 +848,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2400
-         MouseIcon       =   "VBP_FormPluginManager.frx":1BBA
+         MouseIcon       =   "VBP_FormPluginManager.frx":1CE5
          MousePointer    =   99  'Custom
          TabIndex        =   26
          Top             =   600
@@ -653,7 +870,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   5520
-         MouseIcon       =   "VBP_FormPluginManager.frx":1D0C
+         MouseIcon       =   "VBP_FormPluginManager.frx":1E37
          MousePointer    =   99  'Custom
          TabIndex        =   25
          Top             =   600
@@ -676,7 +893,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   7
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":1E5E
+         MouseIcon       =   "VBP_FormPluginManager.frx":1F89
          MousePointer    =   99  'Custom
          TabIndex        =   24
          Top             =   600
@@ -755,7 +972,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":1FB0
+         MouseIcon       =   "VBP_FormPluginManager.frx":20DB
          MousePointer    =   99  'Custom
          TabIndex        =   40
          Top             =   600
@@ -777,7 +994,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   5520
-         MouseIcon       =   "VBP_FormPluginManager.frx":2102
+         MouseIcon       =   "VBP_FormPluginManager.frx":222D
          MousePointer    =   99  'Custom
          TabIndex        =   39
          Top             =   600
@@ -799,7 +1016,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2400
-         MouseIcon       =   "VBP_FormPluginManager.frx":2254
+         MouseIcon       =   "VBP_FormPluginManager.frx":237F
          MousePointer    =   99  'Custom
          TabIndex        =   38
          Top             =   600
@@ -822,7 +1039,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   3960
-         MouseIcon       =   "VBP_FormPluginManager.frx":23A6
+         MouseIcon       =   "VBP_FormPluginManager.frx":24D1
          MousePointer    =   99  'Custom
          TabIndex        =   37
          Top             =   600
@@ -845,7 +1062,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":24F8
+         MouseIcon       =   "VBP_FormPluginManager.frx":2623
          MousePointer    =   99  'Custom
          TabIndex        =   36
          Top             =   1080
@@ -867,7 +1084,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":264A
+         MouseIcon       =   "VBP_FormPluginManager.frx":2775
          MousePointer    =   99  'Custom
          TabIndex        =   35
          Top             =   1080
@@ -890,7 +1107,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":279C
+         MouseIcon       =   "VBP_FormPluginManager.frx":28C7
          MousePointer    =   99  'Custom
          TabIndex        =   34
          Top             =   1560
@@ -912,7 +1129,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":28EE
+         MouseIcon       =   "VBP_FormPluginManager.frx":2A19
          MousePointer    =   99  'Custom
          TabIndex        =   33
          Top             =   1560
@@ -989,7 +1206,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   3
          Left            =   240
-         MouseIcon       =   "VBP_FormPluginManager.frx":2A40
+         MouseIcon       =   "VBP_FormPluginManager.frx":2B6B
          MousePointer    =   99  'Custom
          TabIndex        =   19
          Top             =   3960
@@ -1011,7 +1228,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   1
          Left            =   240
-         MouseIcon       =   "VBP_FormPluginManager.frx":2B92
+         MouseIcon       =   "VBP_FormPluginManager.frx":2CBD
          MousePointer    =   99  'Custom
          TabIndex        =   18
          Top             =   1800
@@ -1033,7 +1250,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   2
          Left            =   240
-         MouseIcon       =   "VBP_FormPluginManager.frx":2CE4
+         MouseIcon       =   "VBP_FormPluginManager.frx":2E0F
          MousePointer    =   99  'Custom
          TabIndex        =   17
          Top             =   2880
@@ -1055,7 +1272,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   0
          Left            =   240
-         MouseIcon       =   "VBP_FormPluginManager.frx":2E36
+         MouseIcon       =   "VBP_FormPluginManager.frx":2F61
          MousePointer    =   99  'Custom
          TabIndex        =   16
          Top             =   720
@@ -1077,7 +1294,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":2F88
+         MouseIcon       =   "VBP_FormPluginManager.frx":30B3
          MousePointer    =   99  'Custom
          TabIndex        =   15
          Top             =   1080
@@ -1119,7 +1336,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":30DA
+         MouseIcon       =   "VBP_FormPluginManager.frx":3205
          MousePointer    =   99  'Custom
          TabIndex        =   13
          Top             =   2160
@@ -1161,7 +1378,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":322C
+         MouseIcon       =   "VBP_FormPluginManager.frx":3357
          MousePointer    =   99  'Custom
          TabIndex        =   11
          Top             =   3240
@@ -1203,7 +1420,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":337E
+         MouseIcon       =   "VBP_FormPluginManager.frx":34A9
          MousePointer    =   99  'Custom
          TabIndex        =   9
          Top             =   4320
@@ -1246,7 +1463,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   0
          Left            =   5760
-         MouseIcon       =   "VBP_FormPluginManager.frx":34D0
+         MouseIcon       =   "VBP_FormPluginManager.frx":35FB
          MousePointer    =   99  'Custom
          TabIndex        =   7
          Top             =   765
@@ -1269,7 +1486,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   1
          Left            =   6360
-         MouseIcon       =   "VBP_FormPluginManager.frx":3622
+         MouseIcon       =   "VBP_FormPluginManager.frx":374D
          MousePointer    =   99  'Custom
          TabIndex        =   6
          Top             =   1845
@@ -1292,7 +1509,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   2
          Left            =   5955
-         MouseIcon       =   "VBP_FormPluginManager.frx":3774
+         MouseIcon       =   "VBP_FormPluginManager.frx":389F
          MousePointer    =   99  'Custom
          TabIndex        =   5
          Top             =   2925
@@ -1315,7 +1532,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   3
          Left            =   5895
-         MouseIcon       =   "VBP_FormPluginManager.frx":38C6
+         MouseIcon       =   "VBP_FormPluginManager.frx":39F1
          MousePointer    =   99  'Custom
          TabIndex        =   4
          Top             =   4005
@@ -1439,11 +1656,28 @@ Private Sub cmdOK_Click()
     
     Message "Saving plugin options..."
     
+    'Hide this form
+    Me.Visible = False
+    
     'Remember the current container the user is viewing
     userPreferences.SetPreference_Long "Plugin Preferences", "LastPluginPreferencesPage", lstPlugins.ListIndex
     
-    Me.Visible = False
+    'Save all plugin-specific settings to the INI file
+    
+    'pngnq-s9 settings
         
+        'Alpha extenuation
+        userPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", CBool(chkPngnqAlphaExtenuation.Value)
+        
+        'YUV
+        userPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqYUV", CBool(chkPngnqYUVA.Value)
+        
+        'Color sample size
+        userPreferences.SetPreference_Long "Plugin Preferences", "PngnqColorSample", -1 * hsPngnqSample.Value
+        
+        'Dithering
+        userPreferences.SetPreference_Long "Plugin Preferences", "PngnqDithering", hsPngnqDither.Value
+            
     'Write all enabled/disabled plugin changes to the INI file
     If imageFormats.FreeImageEnabled Then
         userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
@@ -1487,6 +1721,43 @@ Private Sub cmdOK_Click()
     
 End Sub
 
+'RESET all plugin options
+Private Sub cmdReset_Click()
+
+    'Set current container to zero
+    userPreferences.SetPreference_Long "Plugin Preferences", "LastPluginPreferencesPage", 0
+    
+    'Reset all plugin-specific settings in the INI file
+    
+    'pngnq-s9 settings
+        
+        'Alpha extenuation
+        userPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", False
+        
+        'YUV
+        userPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqYUV", True
+        
+        'Color sample size
+        userPreferences.SetPreference_Long "Plugin Preferences", "PngnqColorSample", 3
+        
+        'Dithering
+        userPreferences.SetPreference_Long "Plugin Preferences", "PngnqDithering", 5
+
+    'Enable all plugins if possible
+    userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
+    userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", False
+    userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
+    userPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", False
+    
+    'Reload the plugins (from a system standpoint)
+    LoadPlugins
+    
+    'Reload the dialog
+    LoadAllPluginSettings
+    
+End Sub
+
+'LOAD the form
 Private Sub Form_Load()
     
     'Remember which plugins the user has enabled or disabled
@@ -1505,6 +1776,24 @@ Private Sub Form_Load()
     
     lstPlugins.ListIndex = 0
     
+    'Load all user-editable settings from the INI, and populate all plugin information
+    LoadAllPluginSettings
+        
+    'For some reason, the container picture boxes automatically acquire the pointer of children objects.
+    ' Manually force those cursors to arrows to prevent this.
+    Dim i As Long
+    For i = 0 To picContainer.Count - 1
+        setArrowCursorToObject picContainer(i)
+    Next i
+            
+    'Apply visual styles
+    makeFormPretty Me
+    
+End Sub
+
+'When the dialog is first launched, use this to populate the dialog with any settings the user may have modified
+Private Sub LoadAllPluginSettings()
+
     'Now, check version numbers of each plugin.  This is more complicated than it needs to be, on account of
     ' each plugin having its own unique mechanism for version-checking, but I have wrapped these various functions
     ' inside fairly standard wrapper calls.
@@ -1524,15 +1813,22 @@ Private Sub Form_Load()
     lstPlugins.ListIndex = userPreferences.GetPreference_Long("Plugin Preferences", "LastPluginPreferencesPage", 0)
     picContainer(lstPlugins.ListIndex).Visible = True
     
-    'For some reason, the container picture boxes automatically acquire the pointer of children objects.
-    ' Manually force those cursors to arrows to prevent this.
-    For i = 0 To picContainer.Count - 1
-        setArrowCursorToObject picContainer(i)
-    Next i
-            
-    'Apply visual styles
-    makeFormPretty Me
+    'Load all plugin settings from the INI file
     
+    'pngnq-s9 settings
+        
+        'Alpha extenuation
+        If userPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then chkPngnqAlphaExtenuation.Value = vbChecked Else chkPngnqAlphaExtenuation.Value = vbUnchecked
+        
+        'YUV
+        If userPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqYUV", True) Then chkPngnqYUVA.Value = vbChecked Else chkPngnqYUVA.Value = vbUnchecked
+        
+        'Color sample size
+        hsPngnqSample.Value = -1 * userPreferences.GetPreference_Long("Plugin Preferences", "PngnqColorSample", 3)
+        
+        'Dithering
+        hsPngnqDither.Value = userPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5)
+        
 End Sub
 
 'Assuming version numbers have been successfully retrieved, this function can be called to update the

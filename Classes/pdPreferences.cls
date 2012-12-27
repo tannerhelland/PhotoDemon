@@ -385,6 +385,10 @@ Private Sub createNewINIFile()
         Print #fileNum, "ForceEZTwainDisable=0"
         Print #fileNum, "ForcePngnqDisable=0"
         Print #fileNum, "LastPluginPreferencesPage=0"
+        Print #fileNum, "PngnqAlphaExtenuation=0"
+        Print #fileNum, "PngnqYUV=1"
+        Print #fileNum, "PngnqColorSample=3"
+        Print #fileNum, "PngnqDithering=5"
         Print #fileNum, ""
         
         'Write out tool preferences

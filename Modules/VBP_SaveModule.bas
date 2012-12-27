@@ -411,17 +411,50 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
                 'Force overwrite if a file with that name already exists
                 shellPath = shellPath & "-f "
                 
-                'Turn off the alpha importance heuristic (this leads to better results on semi-transparent images)
+                'Display verbose status messages (consider removing this for production build)
+                shellPath = shellPath & "-v "
+                
+                'Turn off the alpha importance heuristic (this leads to better results on semi-transparent images, and improves
+                ' processing time for 24bpp images)
                 shellPath = shellPath & "-A "
                 
-                'Allow moderate Floyd-Steinberg dithering
-                shellPath = shellPath & "-Qf "
+                'Now, add options that the user may have specified.
+                
+                'Alpha extenuation (only relevant for 32bpp images)
+                If pdImages(imageID).mainLayer.getLayerColorDepth = 32 Then
+                    If userPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then
+                        shellPath = shellPath & "-t15 "
+                    Else
+                        shellPath = shellPath & "-t0 "
+                    End If
+                End If
+        
+                'YUV
+                If userPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqYUV", True) Then
+                    shellPath = shellPath & "-Cy "
+                Else
+                    shellPath = shellPath & "-Cr "
+                End If
+        
+                'Color sample size
+                shellPath = shellPath & "-s" & userPreferences.GetPreference_Long("Plugin Preferences", "PngnqColorSample", 3) & " "
+        
+                'Dithering
+                If userPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5) = 0 Then
+                    shellPath = shellPath & "-Qn "
+                Else
+                    shellPath = shellPath & "-Q" & userPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5) & " "
+                End If
                 
                 'Append the name of the current image
                 shellPath = shellPath & """" & PNGPath & """"
                 
                 'Use pngnq to create a new file
                 Message "Using the pngnq-s9 plugin to write a high-quality 8bpp PNG file.  This may take a moment..."
+                
+                'Before launching the shell, launch a single DoEvents.  This gives us some leeway before Windows marks the program
+                ' as unresponsive...
+                DoEvents
                 
                 Dim shellCheck As Boolean
                 shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
