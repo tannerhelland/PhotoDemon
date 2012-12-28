@@ -305,8 +305,8 @@ Attribute VB_Exposed = False
 'Black/White Color Reduction Form
 'Copyright ©2000-2012 by Tanner Helland
 'Created: some time 2002
-'Last updated: 11/September/12
-'Last update: full rewrite
+'Last updated: 28/December/12
+'Last update: allow optimal threshold calculation for all dithering types
 '
 'The meat of this form is in the module with the same name...look there for
 ' real algorithm info.
@@ -421,85 +421,75 @@ End Sub
 'Calculate the optimal threshold for the current image
 Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
 
-    Select Case DitherMethod
-    
-        Case 0
-
-            'Create a local array and point it at the pixel data of the image
-            Dim ImageData() As Byte
-            Dim tmpSA As SAFEARRAY2D
+    'Create a local array and point it at the pixel data of the image
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
             
-            prepImageData tmpSA
-            CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
                 
-            'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-            initX = curLayerValues.Left
-            initY = curLayerValues.Top
-            finalX = curLayerValues.Right
-            finalY = curLayerValues.Bottom
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
                     
-            'These values will help us access locations in the array more quickly.
-            ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-            Dim QuickVal As Long, qvDepth As Long
-            qvDepth = curLayerValues.BytesPerPixel
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
             
-            'Color variables
-            Dim R As Long, g As Long, b As Long
+    'Color variables
+    Dim R As Long, g As Long, b As Long
             
-            'Histogram tables
-            Dim lLookup(0 To 255)
-            Dim pLuminance As Long
-            Dim NumOfPixels As Long
+    'Histogram tables
+    Dim lLookup(0 To 255)
+    Dim pLuminance As Long
+    Dim NumOfPixels As Long
                 
-            'Loop through each pixel in the image, tallying values as we go
-            For x = initX To finalX
-                QuickVal = x * qvDepth
-            For y = initY To finalY
+    'Loop through each pixel in the image, tallying values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
             
-                'Get the source pixel color values
-                R = ImageData(QuickVal + 2, y)
-                g = ImageData(QuickVal + 1, y)
-                b = ImageData(QuickVal, y)
+        'Get the source pixel color values
+        R = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
                 
-                pLuminance = getLuminance(R, g, b)
-                
-                'Store this value in the histogram
-                lLookup(pLuminance) = lLookup(pLuminance) + 1
-                
-                'Increment the pixel count
-                NumOfPixels = NumOfPixels + 1
-                
-            Next y
-            Next x
-            
-            'With our work complete, point ImageData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-            Erase ImageData
-            workingLayer.eraseLayer
-            Set workingLayer = Nothing
-            
-            'Divide the number of pixels by two
-            NumOfPixels = NumOfPixels \ 2
-                    
-            Dim pixelCount As Long
-            pixelCount = 0
-            x = 0
-                    
-            'Loop through the histogram table until we have moved past half the pixels in the image
-            Do
-                pixelCount = pixelCount + lLookup(x)
-                x = x + 1
-            Loop While pixelCount < NumOfPixels
-    
-            calculateOptimalThreshold = x
+        pLuminance = getLuminance(R, g, b)
         
-        'For all dithered methods, the optimal threshold is 127.  The dithering will take care of the rest.
-        Case Else
-            calculateOptimalThreshold = 127
+        'Store this value in the histogram
+        lLookup(pLuminance) = lLookup(pLuminance) + 1
+        
+        'Increment the pixel count
+        NumOfPixels = NumOfPixels + 1
+        
+    Next y
+    Next x
     
-    End Select
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    workingLayer.eraseLayer
+    Set workingLayer = Nothing
+            
+    'Divide the number of pixels by two
+    NumOfPixels = NumOfPixels \ 2
+                       
+    Dim pixelCount As Long
+    pixelCount = 0
+    x = 0
+                    
+    'Loop through the histogram table until we have moved past half the pixels in the image
+    Do
+        pixelCount = pixelCount + lLookup(x)
+        x = x + 1
+    Loop While pixelCount < NumOfPixels
     
+    calculateOptimalThreshold = x
+        
 End Function
 
 'Convert an image to black and white (1-bit image)
