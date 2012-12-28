@@ -1549,8 +1549,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Plugin Manager
 'Copyright ©2011-2012 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 26/December/12
-'Last update: finished initial build
+'Last updated: 27/December/12
+'Last update: added a host of pngnq-s9 settings
 '
 'Dialog for presenting the user data related to the currently installed plugins.
 '
@@ -1591,10 +1591,10 @@ Private Type VS_FIXEDFILEINFO
    dwFileDateMS As Long           ' e.g. 0
    dwFileDateLS As Long           ' e.g. 0
 End Type
-Private Declare Function GetFileVersionInfo Lib "version" Alias "GetFileVersionInfoA" (ByVal lptstrFilename As String, ByVal dwhandle As Long, ByVal dwlen As Long, lpData As Any) As Long
-Private Declare Function GetFileVersionInfoSize Lib "version" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, lpdwHandle As Long) As Long
-Private Declare Function VerQueryValue Lib "version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
-Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (dest As Any, ByVal Source As Long, ByVal length As Long)
+Private Declare Function GetFileVersionInfo Lib "Version" Alias "GetFileVersionInfoA" (ByVal lptstrFilename As String, ByVal dwhandle As Long, ByVal dwlen As Long, lpData As Any) As Long
+Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, lpdwHandle As Long) As Long
+Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
+Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, ByVal Source As Long, ByVal Length As Long)
 
 'This array will contain the full version strings of our various plugins
 Dim vString(0 To 3) As String
@@ -1604,10 +1604,8 @@ Dim pEnabled(0 To 3) As Boolean
 
 Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As Long)
    
-   Dim Filename As String, Directory As String
    Dim StrucVer As String, FileVer As String, ProdVer As String
-   Dim FileFlags As String, FileOS As String, FileType As String, FileSubType As String
-
+   
    Dim rc As Long, lDummy As Long, sBuffer() As Byte
    Dim lBufferLen As Long, lVerPointer As Long, udtVerBuffer As VS_FIXEDFILEINFO
    Dim lVerbufferLen As Long
@@ -1639,7 +1637,7 @@ Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As L
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     'Restore the original values for enabled or disabled plugins
     imageFormats.FreeImageEnabled = pEnabled(0)
