@@ -1007,9 +1007,6 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             l = getLuminance(R, g, b)
             newL = l + dErrors(x, y)
             
-            If newL > 255 Then newL = 255
-            If newL < 0 Then newL = 0
-            
             'Check our modified luminance value against the threshold, and set new values accordingly
             If newL >= cThreshold Then
                 errorVal = newL - 255
@@ -1028,11 +1025,11 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             
                 'Now, spread that error across the relevant pixels according to the dither table formula
                 For i = xLeft To xRight
-                    QuickValInner = (i * qvDepth) + QuickVal
+                    'QuickValInner = (i * qvDepth) + QuickVal
                 For j = 0 To yDown
                 
                     'First, ignore already processed pixels
-                    If j = 0 And i <= 0 Then GoTo NextDitheredPixel
+                    If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
                     
                     'Second, ignore pixels that have a zero in the dither table
                     If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
