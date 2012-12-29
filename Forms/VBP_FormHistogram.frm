@@ -100,6 +100,7 @@ Begin VB.Form FormHistogram
       Left            =   240
       TabIndex        =   3
       Top             =   7800
+      Visible         =   0   'False
       Width           =   2535
    End
    Begin VB.CommandButton CmdOK 
@@ -497,7 +498,7 @@ Private Sub cmdExportHistogram_Click()
     
     'Display the save dialog
     If CC.VBGetSaveFileName(sFile, , True, cdfStr, defFormat, tempPathString, "Save histogram to file", defExtension, FormHistogram.hWnd, 0) Then
-        
+                
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
@@ -505,17 +506,44 @@ Private Sub cmdExportHistogram_Click()
         
         Message "Saving histogram to file..."
         
+        'Make a note of the current image
+        Dim realCurrentImage As Long
+        realCurrentImage = CurrentImage
+        
         'Create a temporary form to hold the image we'll be saving
         CreateNewImageForm True
         
+        'Specify the correct output format
+        Select Case defFormat
+        
+            'BMP
+            Case 1
+                pdImages(CurrentImage).CurrentFileFormat = FIF_BMP
+            
+            'GIF
+            Case 2
+                pdImages(CurrentImage).CurrentFileFormat = FIF_GIF
+            
+            'PNG
+            Case 3
+                pdImages(CurrentImage).CurrentFileFormat = FIF_PNG
+                
+        End Select
+        
         'Copy the current histogram image into the temporary form's main layer
         pdImages(CurrentImage).mainLayer.CreateFromPicture FormHistogram.picH.Picture
-                
+        pdImages(CurrentImage).mainLayer.convertTo24bpp
+        pdImages(CurrentImage).OriginalColorDepth = 24
+        pdImages(CurrentImage).updateSize
+
         'Use the core PhotoDemon save function to save the histogram image to file
         PhotoDemon_SaveImage CurrentImage, sFile, False, &H8
         
         'Unload the temporary form
         Unload FormMain.ActiveForm
+        
+        'Restore the original image
+        CurrentImage = realCurrentImage
         
         Message "Histogram save complete."
         
@@ -524,7 +552,7 @@ Private Sub cmdExportHistogram_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Unload Me
 End Sub
 
@@ -705,6 +733,8 @@ Public Sub DrawHistogram()
     
     picH.Picture = picH.Image
     picH.Refresh
+    Clipboard.Clear
+    Clipboard.SetData picH.Picture
     
     'Last but not least, generate the statistics at the bottom of the form
     
@@ -734,7 +764,7 @@ Public Sub DrawHistogram()
     Else
         lblMaxCount.Caption = channelMax(3) & " (Luminance, level " & channelMaxPosition(3) & ")"
     End If
-    
+        
 End Sub
 
 'If the form is resized, adjust all the controls to match
@@ -743,7 +773,7 @@ Private Sub Form_Resize()
     picH.Width = Me.ScaleWidth - picH.Left - 8
     picGradient.Width = Me.ScaleWidth - picGradient.Left - 8
     
-    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
+    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - 8
     For x = 0 To lineStats.Count - 1
         lineStats(x).x2 = Me.ScaleWidth - lineStats(x).x1
     Next x
@@ -777,11 +807,11 @@ End Sub
 '(like Photoshop does).  This code is old, but it works ;)
 Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As Long, ByVal Color2 As Long)
     'RGB() variables for each color
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     
     'Extract the r,g,b values from the colors passed by the user
-    r = Color1 Mod 256
+    R = Color1 Mod 256
     g = (Color1 \ 256) And 255
     b = (Color1 \ 65536) And 255
     r2 = Color2 Mod 256
@@ -798,18 +828,18 @@ Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As
     
     'Here, create a calculation variable for determining the step between
     'each level of the gradient
-    VR = Abs(r - r2) / iWidth
+    VR = Abs(R - r2) / iWidth
     VG = Abs(g - g2) / iWidth
     VB = Abs(b - b2) / iWidth
     'If the second value is lower then the first value, make the step negative
-    If r2 < r Then VR = -VR
+    If r2 < R Then VR = -VR
     If g2 < g Then VG = -VG
     If b2 < b Then VB = -VB
     'Last, run a loop through the width of the picture box, incrementing the color as
     'we go (thus creating a gradient effect)
     Dim x As Long
     For x = 0 To iWidth
-        r2 = r + VR * x
+        r2 = R + VR * x
         g2 = g + VG * x
         b2 = b + VB * x
         DstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
@@ -879,9 +909,9 @@ End Function
 Private Sub SetPandU()
     Dim i As Integer
     Dim d() As Single
-    Dim w() As Single
+    Dim W() As Single
     ReDim d(nPoints) As Single
-    ReDim w(nPoints) As Single
+    ReDim W(nPoints) As Single
     'Routine to compute the parameters of our cubic spline.  Based on equations derived from some basic facts...
     'Each segment must be a cubic polynomial.  Curve segments must have equal first and second derivatives
     'at knots they share.  General algorithm taken from a book which has long since been lost.
@@ -898,15 +928,15 @@ Private Sub SetPandU()
         u(i) = iX(i + 1) - iX(i)
     Next
     For i = 2 To nPoints - 1
-        w(i) = 6# * ((iY(i + 1) - iY(i)) / u(i) - (iY(i) - iY(i - 1)) / u(i - 1))
+        W(i) = 6# * ((iY(i + 1) - iY(i)) / u(i) - (iY(i) - iY(i - 1)) / u(i - 1))
     Next
     For i = 2 To nPoints - 2
-        w(i + 1) = w(i + 1) - w(i) * u(i) / d(i)
+        W(i + 1) = W(i + 1) - W(i) * u(i) / d(i)
         d(i + 1) = d(i + 1) - u(i) * u(i) / d(i)
     Next
     p(1) = 0#
     For i = nPoints - 1 To 2 Step -1
-        p(i) = (w(i) - u(i) * p(i + 1)) / d(i)
+        p(i) = (W(i) - u(i) * p(i + 1)) / d(i)
     Next
     p(nPoints) = 0#
 End Sub
@@ -943,7 +973,7 @@ Public Sub TallyHistogramValues()
     qvDepth = curLayerValues.BytesPerPixel
     
     'These variables will hold temporary histogram values
-    Dim r As Long, g As Long, b As Long, l As Long
+    Dim R As Long, g As Long, b As Long, l As Long
     
     'If the histogram has already been used, we need to clear out all the
     'maximum values and histogram values
@@ -970,20 +1000,20 @@ Public Sub TallyHistogramValues()
     For y = initY To finalY
     
         'We have to gather the red, green, and blue in order to calculate luminance
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we'll use
         ' a simpler average value.
         
-        l = lumLookup(r + g + b)
+        l = lumLookup(R + g + b)
         
         'Increment each value in the array, depending on its present value; this will let us see how many pixels of
         ' each color value (and luminance value) there are in the image
         
         'Red
-        hData(0, r) = hData(0, r) + 1
+        hData(0, R) = hData(0, R) + 1
         'Green
         hData(1, g) = hData(1, g) + 1
         'Blue
@@ -1059,7 +1089,7 @@ Public Sub StretchHistogram()
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     
     'Max and min values
     Dim RMax As Long, GMax As Long, BMax As Long
@@ -1074,12 +1104,12 @@ Public Sub StretchHistogram()
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        If r < RMin Then RMin = r
-        If r > RMax Then RMax = r
+        If R < RMin Then RMin = R
+        If R > RMax Then RMax = R
         If g < GMin Then GMin = g
         If g > GMax Then GMax = g
         If b < BMin Then BMin = b
@@ -1100,10 +1130,10 @@ Public Sub StretchHistogram()
     
     For x = 0 To 255
         If Rdif <> 0 Then
-            r = 255 * ((x - RMin) / Rdif)
-            If r < 0 Then r = 0
-            If r > 255 Then r = 255
-            rLookup(x) = r
+            R = 255 * ((x - RMin) / Rdif)
+            If R < 0 Then R = 0
+            If R > 255 Then R = 255
+            rLookup(x) = R
         Else
             rLookup(x) = x
         End If
@@ -1131,11 +1161,11 @@ Public Sub StretchHistogram()
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
                 
-        ImageData(QuickVal + 2, y) = rLookup(r)
+        ImageData(QuickVal + 2, y) = rLookup(R)
         ImageData(QuickVal + 1, y) = gLookup(g)
         ImageData(QuickVal, y) = bLookup(b)
         
