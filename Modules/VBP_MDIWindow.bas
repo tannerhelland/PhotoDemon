@@ -64,8 +64,8 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     
     'This is kind of cheap, but let's just set a random loading point between 0 and 99% :)
     Randomize Timer
-    Dim RandPercent As Long
-    RandPercent = Int(Rnd * 100)
+    Dim randPercent As Long
+    randPercent = Int(Rnd * 100)
     
     'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
     pdImages(NumOfImagesLoaded).WindowLeft = frm.Left
@@ -74,7 +74,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     frm.Top = FormMain.ScaleHeight
     
     frm.Show
-    frm.Caption = "Loading image (" & RandPercent & "%)..."
+    frm.Caption = "Loading image (" & randPercent & "%)..."
     If FormMain.Enabled Then frm.SetFocus
     
     'Set this image as the current one

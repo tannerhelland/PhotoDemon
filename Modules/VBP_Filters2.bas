@@ -950,7 +950,6 @@ Public Sub MenuTest()
 
     
 End Sub
-    
 
 'This function will return the luminance value of an RGB triplet.  Note that the value will be in the [0,255] range instead
 ' of the usual [0,1.0] one.

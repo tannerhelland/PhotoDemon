@@ -282,7 +282,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
     'Check the text box values against the limits of their corresponding scroll bars - that'll catch
     ' any out-of-range errors
@@ -406,10 +406,10 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Op
             
                 If toPreview = False Then Message "Sampling image data to determine true contrast..."
                 
-                Dim RTotal As Long, GTotal As Long, BTotal As Long
-                RTotal = 0
-                GTotal = 0
-                BTotal = 0
+                Dim rTotal As Long, gTotal As Long, bTotal As Long
+                rTotal = 0
+                gTotal = 0
+                bTotal = 0
                 
                 Dim NumOfPixels As Long
                 NumOfPixels = 0
@@ -417,18 +417,18 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Op
                 For x = initX To finalX
                     QuickVal = x * qvDepth
                 For y = initY To finalY
-                    RTotal = RTotal + ImageData(QuickVal + 2, y)
-                    GTotal = GTotal + ImageData(QuickVal + 1, y)
-                    BTotal = BTotal + ImageData(QuickVal, y)
+                    rTotal = rTotal + ImageData(QuickVal + 2, y)
+                    gTotal = gTotal + ImageData(QuickVal + 1, y)
+                    bTotal = bTotal + ImageData(QuickVal, y)
                     NumOfPixels = NumOfPixels + 1
                 Next y
                 Next x
                 
-                RTotal = RTotal \ NumOfPixels
-                GTotal = GTotal \ NumOfPixels
-                BTotal = BTotal \ NumOfPixels
+                rTotal = rTotal \ NumOfPixels
+                gTotal = gTotal \ NumOfPixels
+                bTotal = bTotal \ NumOfPixels
                 
-                Mean = (RTotal + GTotal + BTotal) \ 3
+                Mean = (rTotal + gTotal + bTotal) \ 3
                 
                 If toPreview Then
                     previewSampledContrast = Mean

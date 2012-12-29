@@ -72,7 +72,7 @@ End Type
 ' ================================================
 Private Function WindowProc(ByVal lWnd As Long, ByVal lMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
   Dim MouseKeys As Long
-  Dim Rotation As Long
+  Dim rotation As Long
   Dim Xpos As Long
   Dim Ypos As Long
   Dim fFrm As Form
@@ -84,7 +84,7 @@ Private Function WindowProc(ByVal lWnd As Long, ByVal lMsg As Long, ByVal wParam
     Case WM_MOUSEWHEEL
     
       MouseKeys = wParam And 65535
-      Rotation = wParam / 65536
+      rotation = wParam / 65536
       Xpos = lParam And 65535
       Ypos = lParam / 65536
       
@@ -95,13 +95,13 @@ Private Function WindowProc(ByVal lWnd As Long, ByVal lMsg As Long, ByVal wParam
           ' it's not over the control and is over the form,
           ' so fire mousewheel on form (if it's not a dropped down combo)
           If SendMessage(lWnd, CB_GETDROPPEDSTATE, 0&, 0&) <> 1 Then
-            GetForm(GetParent(lWnd)).MouseWheel MouseKeys, Rotation, Xpos, Ypos
+            GetForm(GetParent(lWnd)).MouseWheel MouseKeys, rotation, Xpos, Ypos
             Exit Function ' Discard scroll message to control
           End If
         End If
       Else
         ' it's a form so fire mousewheel
-        If IsOver(fFrm.hWnd, Xpos, Ypos) Then fFrm.MouseWheel MouseKeys, Rotation, Xpos, Ypos
+        If IsOver(fFrm.hWnd, Xpos, Ypos) Then fFrm.MouseWheel MouseKeys, rotation, Xpos, Ypos
       End If
       
     'Forgive my use of arbitrary numbers here, but I used brute force testing to discover what messages my
@@ -141,11 +141,11 @@ End Sub
 
 ' Window Checks
 ' ================================================
-Public Function IsOver(ByVal hWnd As Long, ByVal Lx As Long, ByVal lY As Long) As Boolean
+Public Function IsOver(ByVal hWnd As Long, ByVal lX As Long, ByVal lY As Long) As Boolean
   Dim rectCtl As RECT
   GetWindowRect hWnd, rectCtl
   With rectCtl
-    IsOver = (Lx >= .Left And Lx <= .Right And lY >= .Top And lY <= .Bottom)
+    IsOver = (lX >= .Left And lX <= .Right And lY >= .Top And lY <= .Bottom)
   End With
 End Function
 
@@ -156,7 +156,7 @@ Private Function GetForm(ByVal hWnd As Long) As Form
   Set GetForm = Nothing
 End Function
 
-Public Sub PictureBoxZoom(ByRef PicBox As PictureBox, ByVal MouseKeys As Long, ByVal Rotation As Long, ByVal Xpos As Long, ByVal Ypos As Long)
+Public Sub PictureBoxZoom(ByRef PicBox As PictureBox, ByVal MouseKeys As Long, ByVal rotation As Long, ByVal Xpos As Long, ByVal Ypos As Long)
   PicBox.Cls
-  PicBox.Print "MouseWheel " & IIf(Rotation < 0, "Down", "Up")
+  PicBox.Print "MouseWheel " & IIf(rotation < 0, "Down", "Up")
 End Sub

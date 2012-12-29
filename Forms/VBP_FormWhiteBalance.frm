@@ -204,7 +204,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
     If EntryValid(txtIgnore, hsIgnore.Min / 100, hsIgnore.Max / 100) Then
         Me.Visible = False
@@ -262,10 +262,10 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
     Dim r As Long, g As Long, b As Long
     
     'Maximum and minimum values, which will be detected by our initial histogram run
-    Dim RMax As Byte, GMax As Byte, BMax As Byte
-    Dim RMin As Byte, GMin As Byte, BMin As Byte
-    RMax = 0: GMax = 0: BMax = 0
-    RMin = 255: GMin = 255: BMin = 255
+    Dim rMax As Byte, gMax As Byte, bMax As Byte
+    Dim rMin As Byte, gMin As Byte, bMin As Byte
+    rMax = 0: gMax = 0: bMax = 0
+    rMin = 255: gMin = 255: bMin = 255
     
     'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
     percentIgnore = percentIgnore / 100
@@ -314,7 +314,7 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
             r = r + 1
             rTally = rTally + rCount(r)
         Else
-            RMin = r
+            rMin = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -326,7 +326,7 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
             g = g + 1
             gTally = gTally + gCount(g)
         Else
-            GMin = g
+            gMin = g
             foundYet = True
         End If
     Loop While foundYet = False
@@ -338,7 +338,7 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
             b = b + 1
             bTally = bTally + bCount(b)
         Else
-            BMin = b
+            bMin = b
             foundYet = True
         End If
     Loop While foundYet = False
@@ -354,7 +354,7 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
             r = r - 1
             rTally = rTally + rCount(r)
         Else
-            RMax = r
+            rMax = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -366,7 +366,7 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
             g = g - 1
             gTally = gTally + gCount(g)
         Else
-            GMax = g
+            gMax = g
             foundYet = True
         End If
     Loop While foundYet = False
@@ -378,24 +378,24 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
             b = b - 1
             bTally = bTally + bCount(b)
         Else
-            BMax = b
+            bMax = b
             foundYet = True
         End If
     Loop While foundYet = False
     
     'Finally, calculate the difference between max and min for each color
-    Dim Rdif As Long, Gdif As Long, Bdif As Long
-    Rdif = CLng(RMax) - CLng(RMin)
-    Gdif = CLng(GMax) - CLng(GMin)
-    Bdif = CLng(BMax) - CLng(BMin)
+    Dim rdif As Long, Gdif As Long, Bdif As Long
+    rdif = CLng(rMax) - CLng(rMin)
+    Gdif = CLng(gMax) - CLng(gMin)
+    Bdif = CLng(bMax) - CLng(bMin)
     
     'We can now build a final set of look-up tables that contain the results of every possible color transformation
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If Rdif <> 0 Then r = 255 * ((x - RMin) / Rdif) Else r = x
-        If Gdif <> 0 Then g = 255 * ((x - GMin) / Gdif) Else g = x
-        If Bdif <> 0 Then b = 255 * ((x - BMin) / Bdif) Else b = x
+        If rdif <> 0 Then r = 255 * ((x - rMin) / rdif) Else r = x
+        If Gdif <> 0 Then g = 255 * ((x - gMin) / Gdif) Else g = x
+        If Bdif <> 0 Then b = 255 * ((x - bMin) / Bdif) Else b = x
         If r > 255 Then r = 255
         If r < 0 Then r = 0
         If g > 255 Then g = 255

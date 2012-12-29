@@ -109,7 +109,7 @@ Private Declare Function GetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal x As
 Private Declare Function CreateRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function GetTextColor Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
-Private Declare Function OleTranslateColor Lib "OLEPRO32.DLL" (ByVal OLE_COLOR As Long, ByVal hPalette As Long, ByRef pccolorref As Long) As Long
+Private Declare Function OleTranslateColor Lib "OLEPRO32.DLL" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, ByRef pccolorref As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetNearestColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (lpLogFont As tLOGFONT) As Long
@@ -833,7 +833,7 @@ Private Sub DrawFocusRectangle(ByVal x As Long, ByVal y As Long, ByVal Width As 
    '****************************************************************************
 
    Dim brect            As RECT
-   Dim RetVal           As Long
+   Dim retVal           As Long
 
    With brect
       .Left = x
@@ -842,7 +842,7 @@ Private Sub DrawFocusRectangle(ByVal x As Long, ByVal y As Long, ByVal Width As 
       .Bottom = y + Height
    End With
 
-   RetVal = DrawFocusRect(hDC, brect)
+   retVal = DrawFocusRect(hDC, brect)
 
 End Sub
 
@@ -1348,14 +1348,14 @@ Private Sub DrawGradientEx(ByVal x As Long, ByVal y As Long, ByVal Width As Long
 
 End Sub
 
-Private Function translateColor(ByVal clrColor As OLE_COLOR, Optional ByRef hPalette As Long = 0) As Long
+Private Function TranslateColor(ByVal clrColor As OLE_COLOR, Optional ByRef HPALETTE As Long = 0) As Long
 
    '****************************************************************************
    '*  System color code to long rgb                                           *
    '****************************************************************************
 
-   If OleTranslateColor(clrColor, hPalette, translateColor) Then
-      translateColor = CLR_INVALID
+   If OleTranslateColor(clrColor, HPALETTE, TranslateColor) Then
+      TranslateColor = CLR_INVALID
    End If
 
 End Function
@@ -1638,7 +1638,7 @@ Private Sub DrawPicwithCaption()
    
    ' --Draw Pictures
    If m_bPicPushOnHover And m_Buttonstate = eStateOver Then
-      lShadowClr = translateColor(&HC0C0C0)
+      lShadowClr = TranslateColor(&HC0C0C0)
       DrawPicture m_PicRect, lShadowClr
       CopyRect pRect, m_PicRect
       OffsetRect pRect, -2, -2
@@ -1661,9 +1661,9 @@ Private Sub DrawPicwithCaption()
    ' --At Last, draw the Captions
    If m_bEnabled Then
       If m_Buttonstate = eStateOver Then
-         DrawCaptionEx m_TextRect, translateColor(m_bColors.tForeColorOver), 0, 0
+         DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColorOver), 0, 0
       Else
-         DrawCaptionEx m_TextRect, translateColor(m_bColors.tForeColor), 0, 0
+         DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColor), 0, 0
       End If
    Else
       DrawCaptionEx m_TextRect, GetSysColor(COLOR_GRAYTEXT), 0, 0
@@ -1679,7 +1679,7 @@ Private Sub DrawPicwithCaption()
       End If
         
       If m_bEnabled Then
-         UserControl.ForeColor = translateColor(m_bColors.tForeColor)
+         UserControl.ForeColor = TranslateColor(m_bColors.tForeColor)
       Else
          UserControl.ForeColor = GetSysColor(COLOR_GRAYTEXT)
       End If
@@ -1791,7 +1791,7 @@ Private Sub DrawPicture(lpRect As RECT, Optional lBrushColor As Long = -1)
 
    ' --Draw picture
    If tmppic.Type = vbPicTypeIcon Then
-      tmpMaskColor = translateColor(&HC0C0C0)
+      tmpMaskColor = TranslateColor(&HC0C0C0)
    Else
       tmpMaskColor = m_lMaskColor
    End If
@@ -1816,7 +1816,7 @@ Private Sub DrawPicShadow()
       OffsetRect m_PicRect, -2, -2
    End If
      
-   lShadowClr = BlendColors(translateColor(&H808080), translateColor(m_bColors.tBackColor))
+   lShadowClr = BlendColors(TranslateColor(&H808080), TranslateColor(m_bColors.tBackColor))
    CopyRect lpRect, m_PicRect
     
    OffsetRect lpRect, 2, 2
@@ -1836,7 +1836,7 @@ Private Sub DrawCaptionEffect()
 
    Dim bColor           As Long                                  'BackColor
 
-   bColor = translateColor(m_bColors.tBackColor)
+   bColor = TranslateColor(m_bColors.tBackColor)
 
    ' --Set new colors according to effects
    Select Case m_CaptionEffects
@@ -1845,7 +1845,7 @@ Private Sub DrawCaptionEffect()
       Case eseEngraved
          DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.14), 1, 1
       Case eseShadowed
-         DrawCaptionEx m_TextRect, translateColor(&HC0C0C0), 1, 1
+         DrawCaptionEx m_TextRect, TranslateColor(&HC0C0C0), 1, 1
       Case eseOutline
          DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), 1, 1
          DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), 1, -1
@@ -1860,7 +1860,7 @@ Private Sub DrawCaptionEffect()
    End Select
 
    If m_bEnabled Then
-      DrawCaptionEx m_TextRect, translateColor(m_bColors.tForeColor), 0, 0
+      DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColor), 0, 0
    Else
       DrawCaptionEx m_TextRect, GetSysColor(COLOR_GRAYTEXT), 0, 0
    End If
@@ -1961,12 +1961,12 @@ Private Sub DrawXPToolbar(ByVal vState As enumButtonStates)
 
    lh = ScaleHeight
    lw = ScaleWidth
-   bColor = translateColor(m_bColors.tBackColor)
+   bColor = TranslateColor(m_bColors.tBackColor)
 
    If vState = eStateDown Then
-      m_bColors.tForeColor = translateColor(vbWhite)
+      m_bColors.tForeColor = TranslateColor(vbWhite)
    Else
-      m_bColors.tForeColor = translateColor(vbButtonText)
+      m_bColors.tForeColor = TranslateColor(vbButtonText)
    End If
 
    If m_ButtonMode <> ebmCommandButton And m_bValue Then
@@ -1975,16 +1975,16 @@ Private Sub DrawXPToolbar(ByVal vState As enumButtonStates)
 
    If m_ButtonMode <> ebmCommandButton And m_bValue And vState <> eStateDown Then
       SetRect lpRect, 0, 0, lw, lh
-      PaintRect translateColor(&HFEFEFE), lpRect
-      m_bColors.tForeColor = translateColor(vbButtonText)
+      PaintRect TranslateColor(&HFEFEFE), lpRect
+      m_bColors.tForeColor = TranslateColor(vbButtonText)
       DrawPicwithCaption
-      DrawRectangle 0, 0, lw, lh, translateColor(&HAF987A)
-      DrawCorners ShiftColor(translateColor(&HC1B3A0), -0.2)
+      DrawRectangle 0, 0, lw, lh, TranslateColor(&HAF987A)
+      DrawCorners ShiftColor(TranslateColor(&HC1B3A0), -0.2)
       If vState = eStateOver Then
-         DrawLineApi lw - 2, 2, lw - 2, lh - 2, translateColor(&HEDF0F2)  'Right Line
-         DrawLineApi 2, lh - 2, lw - 2, lh - 2, translateColor(&HD8DEE4)   'Bottom
-         DrawLineApi 1, lh - 3, lw - 1, lh - 3, translateColor(&HE8ECEF)  'Bottom
-         DrawLineApi 1, lh - 4, lw - 1, lh - 4, translateColor(&HF8F9FA)   'Bottom
+         DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HEDF0F2)  'Right Line
+         DrawLineApi 2, lh - 2, lw - 2, lh - 2, TranslateColor(&HD8DEE4)   'Bottom
+         DrawLineApi 1, lh - 3, lw - 1, lh - 3, TranslateColor(&HE8ECEF)  'Bottom
+         DrawLineApi 1, lh - 4, lw - 1, lh - 4, TranslateColor(&HF8F9FA)   'Bottom
       End If
       ' --Necessary to redraw text & pictures 'coz we are painting usercontrol agaon
       Exit Sub
@@ -1996,25 +1996,25 @@ Private Sub DrawXPToolbar(ByVal vState As enumButtonStates)
          PaintRect bColor, m_ButtonRect
          DrawPicwithCaption
       Case eStateOver
-         DrawGradientEx 0, 0, lw, lh / 2, translateColor(&HFDFEFE), translateColor(&HEEF4F4), gdVertical
-         DrawGradientEx 0, lh / 2, lw, lh / 2, translateColor(&HEEF4F4), translateColor(&HEAF1F1), gdVertical
+         DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(&HFDFEFE), TranslateColor(&HEEF4F4), gdVertical
+         DrawGradientEx 0, lh / 2, lw, lh / 2, TranslateColor(&HEEF4F4), TranslateColor(&HEAF1F1), gdVertical
          DrawPicwithCaption
-         DrawLineApi lw - 2, 2, lw - 2, lh - 2, translateColor(&HE0E7EA) 'right line
-         DrawLineApi lw - 3, 2, lw - 3, lh - 2, translateColor(&HEAF0F0)
-         DrawLineApi 0, lh - 4, lw, lh - 4, translateColor(&HE5EDEE)    'Bottom
-         DrawLineApi 0, lh - 3, lw, lh - 3, translateColor(&HD6E1E4)    'Bottom
-         DrawLineApi 0, lh - 2, lw, lh - 2, translateColor(&HC6D2D7)    'Bottom
-         DrawRectangle 0, 0, lw, lh, translateColor(&HC3CECE)
-         DrawCorners ShiftColor(translateColor(&HC9D4D4), -0.05)
+         DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HE0E7EA) 'right line
+         DrawLineApi lw - 3, 2, lw - 3, lh - 2, TranslateColor(&HEAF0F0)
+         DrawLineApi 0, lh - 4, lw, lh - 4, TranslateColor(&HE5EDEE)    'Bottom
+         DrawLineApi 0, lh - 3, lw, lh - 3, TranslateColor(&HD6E1E4)    'Bottom
+         DrawLineApi 0, lh - 2, lw, lh - 2, TranslateColor(&HC6D2D7)    'Bottom
+         DrawRectangle 0, 0, lw, lh, TranslateColor(&HC3CECE)
+         DrawCorners ShiftColor(TranslateColor(&HC9D4D4), -0.05)
       Case eStateDown
-         PaintRect translateColor(&HDDE4E5), m_ButtonRect                 'Paint with Darker color
+         PaintRect TranslateColor(&HDDE4E5), m_ButtonRect                 'Paint with Darker color
          DrawPicwithCaption
-         DrawLineApi 1, 1, lw - 2, 1, ShiftColor(translateColor(&HD1DADC), -0.02)          'Topmost Line
-         DrawLineApi 1, 2, lw - 2, 2, ShiftColor(translateColor(&HDAE1E3), -0.02)          'A lighter top line
-         DrawLineApi 1, lh - 3, lw - 2, lh - 3, ShiftColor(translateColor(&HDEE5E6), 0.02) 'Bottom Line
-         DrawLineApi 1, lh - 2, lw - 2, lh - 2, ShiftColor(translateColor(&HE5EAEB), 0.02)
-         DrawRectangle 0, 0, lw, lh, translateColor(&H929D9D)
-         DrawCorners ShiftColor(translateColor(&HABB4B5), -0.2)
+         DrawLineApi 1, 1, lw - 2, 1, ShiftColor(TranslateColor(&HD1DADC), -0.02)          'Topmost Line
+         DrawLineApi 1, 2, lw - 2, 2, ShiftColor(TranslateColor(&HDAE1E3), -0.02)          'A lighter top line
+         DrawLineApi 1, lh - 3, lw - 2, lh - 3, ShiftColor(TranslateColor(&HDEE5E6), 0.02) 'Bottom Line
+         DrawLineApi 1, lh - 2, lw - 2, lh - 2, ShiftColor(TranslateColor(&HE5EAEB), 0.02)
+         DrawRectangle 0, 0, lw, lh, TranslateColor(&H929D9D)
+         DrawCorners ShiftColor(TranslateColor(&HABB4B5), -0.2)
    End Select
 
 End Sub
@@ -2031,7 +2031,7 @@ Private Sub DrawWinXPButton(ByVal vState As enumButtonStates)
 
    lh = ScaleHeight
    lw = ScaleWidth
-   bColor = translateColor(m_bColors.tBackColor)
+   bColor = TranslateColor(m_bColors.tBackColor)
    SetRect m_ButtonRect, 0, 0, lw, lh
 
    If Not m_bEnabled Then
@@ -2057,14 +2057,14 @@ Private Sub DrawWinXPButton(ByVal vState As enumButtonStates)
                DrawLineApi 1, lh - 3, lw - 2, lh - 3, ShiftColor(bColor, -0.05) 'Bottom Line
                DrawLineApi 1, lh - 4, lw - 2, lh - 4, ShiftColor(bColor, -0.01) 'Bottom Line
                DrawLineApi lw - 2, 2, lw - 2, lh - 2, ShiftColor(bColor, -0.08) 'Right Line
-               DrawLineApi 1, 1, 1, lh - 2, BlendColors(translateColor(vbWhite), (bColor)) 'Left Line
+               DrawLineApi 1, 1, 1, lh - 2, BlendColors(TranslateColor(vbWhite), (bColor)) 'Left Line
             Case ecsSilver
                ' --mimic the Silver XP style
                DrawGradientEx 0, 0, lw, lh / 2, ShiftColor(bColor, 0.22), bColor, gdVertical
                DrawGradientEx 0, lh / 2, lw, lh / 2, ShiftColor(bColor, -0.01), ShiftColor(bColor, -0.15), gdVertical
                DrawPicwithCaption
-               DrawLineApi lw - 2, 2, lw - 2, lh - 2, translateColor(vbWhite)  'Right Line
-               DrawLineApi 1, 1, 1, lh - 2, translateColor(vbWhite)            'Left Line
+               DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(vbWhite)  'Right Line
+               DrawLineApi 1, 1, 1, lh - 2, TranslateColor(vbWhite)            'Left Line
          End Select
 
       Case eStateOver
@@ -2079,14 +2079,14 @@ Private Sub DrawWinXPButton(ByVal vState As enumButtonStates)
                DrawPicwithCaption
          End Select
          ' --Draw the ORANGE border lines....
-         DrawLineApi 1, 2, lw - 2, 2, translateColor(&H89D8FD)           'uppermost inner hover
-         DrawLineApi 1, 1, lw - 2, 1, translateColor(&HCFF0FF)           'uppermost outer hover
-         DrawLineApi 1, 1, 1, lh - 2, translateColor(&H49BDF9)           'Leftmost Line
-         DrawLineApi lw - 2, 2, lw - 2, lh - 2, translateColor(&H49BDF9) 'Rightmost Line
-         DrawLineApi 2, 2, 2, lh - 3, translateColor(&H7AD2FC)           'Left Line
-         DrawLineApi lw - 3, 3, lw - 3, lh - 3, translateColor(&H7AD2FC) 'Right Line
-         DrawLineApi 2, lh - 3, lw - 2, lh - 3, translateColor(&H30B3F8) 'BottomMost Line
-         DrawLineApi 2, lh - 2, lw - 2, lh - 2, translateColor(&H97E5&)  'Bottom Line
+         DrawLineApi 1, 2, lw - 2, 2, TranslateColor(&H89D8FD)           'uppermost inner hover
+         DrawLineApi 1, 1, lw - 2, 1, TranslateColor(&HCFF0FF)           'uppermost outer hover
+         DrawLineApi 1, 1, 1, lh - 2, TranslateColor(&H49BDF9)           'Leftmost Line
+         DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&H49BDF9) 'Rightmost Line
+         DrawLineApi 2, 2, 2, lh - 3, TranslateColor(&H7AD2FC)           'Left Line
+         DrawLineApi lw - 3, 3, lw - 3, lh - 3, TranslateColor(&H7AD2FC) 'Right Line
+         DrawLineApi 2, lh - 3, lw - 2, lh - 3, TranslateColor(&H30B3F8) 'BottomMost Line
+         DrawLineApi 2, lh - 2, lw - 2, lh - 2, TranslateColor(&H97E5&)  'Bottom Line
 
       Case eStateDown
          Select Case m_lXPColor
@@ -2101,9 +2101,9 @@ Private Sub DrawWinXPButton(ByVal vState As enumButtonStates)
                DrawLineApi lw - 2, 2, lw - 2, lh - 2, ShiftColor(bColor, 0.04)  'Right Line
             Case ecsSilver
                DrawGradientEx 0, 0, lw, lh - 6, ShiftColor(bColor, -0.2), ShiftColor(bColor, 0.05), gdVertical
-               DrawGradientEx 0, lh - 6, lw, lh - 1, ShiftColor(bColor, 0.08), translateColor(vbWhite), gdVertical
+               DrawGradientEx 0, lh - 6, lw, lh - 1, ShiftColor(bColor, 0.08), TranslateColor(vbWhite), gdVertical
                DrawPicwithCaption
-               DrawRectangle 1, 1, lw - 2, lh - 2, translateColor(vbWhite)
+               DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
          End Select
    End Select
 
@@ -2111,32 +2111,32 @@ Private Sub DrawWinXPButton(ByVal vState As enumButtonStates)
       If (m_bHasFocus Or m_bDefault) And (vState <> eStateDown And vState <> eStateOver) Then
          Select Case m_lXPColor
             Case ecsBlue, ecsCustom
-               DrawLineApi 1, 2, lw - 2, 2, translateColor(&HF6D4BC)           'uppermost inner hover
-               DrawLineApi 1, 1, lw - 2, 1, translateColor(&HFFE7CE)           'uppermost outer hover
-               DrawLineApi 1, 1, 1, lh - 2, translateColor(&HE6AF8E)           'Leftmost Line
-               DrawLineApi lw - 2, 2, lw - 2, lh - 2, translateColor(&HE6AF8E) 'Rightmost Line
-               DrawLineApi 2, 2, 2, lh - 3, translateColor(&HF4D1B8)           'Left Line
-               DrawLineApi lw - 3, 3, lw - 3, lh - 3, translateColor(&HF4D1B8) 'Right Line
-               DrawLineApi 2, lh - 3, lw - 2, lh - 3, translateColor(&HE4AD89) 'BottomMost Line
-               DrawLineApi 2, lh - 2, lw - 2, lh - 2, translateColor(&HEE8269) 'Bottom Line
+               DrawLineApi 1, 2, lw - 2, 2, TranslateColor(&HF6D4BC)           'uppermost inner hover
+               DrawLineApi 1, 1, lw - 2, 1, TranslateColor(&HFFE7CE)           'uppermost outer hover
+               DrawLineApi 1, 1, 1, lh - 2, TranslateColor(&HE6AF8E)           'Leftmost Line
+               DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HE6AF8E) 'Rightmost Line
+               DrawLineApi 2, 2, 2, lh - 3, TranslateColor(&HF4D1B8)           'Left Line
+               DrawLineApi lw - 3, 3, lw - 3, lh - 3, TranslateColor(&HF4D1B8) 'Right Line
+               DrawLineApi 2, lh - 3, lw - 2, lh - 3, TranslateColor(&HE4AD89) 'BottomMost Line
+               DrawLineApi 2, lh - 2, lw - 2, lh - 2, TranslateColor(&HEE8269) 'Bottom Line
             Case ecsOliveGreen
-               DrawLineApi 1, 2, lw - 2, 2, translateColor(&H8FD1C2)           'uppermost inner hover
-               DrawLineApi 1, 1, lw - 2, 1, translateColor(&H80CBB1)           'uppermost outer hover
-               DrawLineApi 1, 1, 1, lh - 2, translateColor(&H68C8A0)           'Leftmost Line
-               DrawLineApi lw - 2, 2, lw - 2, lh - 2, translateColor(&H68C8A0) 'Rightmost Line
-               DrawLineApi 2, 2, 2, lh - 3, translateColor(&H68C8A0)           'Left Line
-               DrawLineApi lw - 3, 3, lw - 3, lh - 3, translateColor(&H68C8A0) 'Right Line
-               DrawLineApi 2, lh - 3, lw - 2, lh - 3, translateColor(&H68C8A0) 'Bottom Line
-               DrawLineApi 2, lh - 2, lw - 2, lh - 2, translateColor(&H66A7A8) 'BottomMost Line
+               DrawLineApi 1, 2, lw - 2, 2, TranslateColor(&H8FD1C2)           'uppermost inner hover
+               DrawLineApi 1, 1, lw - 2, 1, TranslateColor(&H80CBB1)           'uppermost outer hover
+               DrawLineApi 1, 1, 1, lh - 2, TranslateColor(&H68C8A0)           'Leftmost Line
+               DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&H68C8A0) 'Rightmost Line
+               DrawLineApi 2, 2, 2, lh - 3, TranslateColor(&H68C8A0)           'Left Line
+               DrawLineApi lw - 3, 3, lw - 3, lh - 3, TranslateColor(&H68C8A0) 'Right Line
+               DrawLineApi 2, lh - 3, lw - 2, lh - 3, TranslateColor(&H68C8A0) 'Bottom Line
+               DrawLineApi 2, lh - 2, lw - 2, lh - 2, TranslateColor(&H66A7A8) 'BottomMost Line
             Case ecsSilver
-               DrawLineApi 1, 2, lw - 2, 2, translateColor(&HF6D4BC)           'uppermost inner hover
-               DrawLineApi 1, 1, lw - 2, 1, translateColor(&HFFE7CE)           'uppermost outer hover
-               DrawLineApi 1, 1, 1, lh - 2, translateColor(&HE6AF8E)           'Leftmost Line
-               DrawLineApi lw - 2, 2, lw - 2, lh - 2, translateColor(&HE6AF8E) 'Rightmost Line
-               DrawLineApi 2, 2, 2, lh - 3, translateColor(vbWhite)            'Left Line
-               DrawLineApi lw - 3, 3, lw - 3, lh - 3, translateColor(vbWhite) 'Right Line
-               DrawLineApi 2, lh - 3, lw - 2, lh - 3, translateColor(&HE4AD89) 'BottomMost Line
-               DrawLineApi 2, lh - 2, lw - 2, lh - 2, translateColor(&HEE8269) 'Bottom Line
+               DrawLineApi 1, 2, lw - 2, 2, TranslateColor(&HF6D4BC)           'uppermost inner hover
+               DrawLineApi 1, 1, lw - 2, 1, TranslateColor(&HFFE7CE)           'uppermost outer hover
+               DrawLineApi 1, 1, 1, lh - 2, TranslateColor(&HE6AF8E)           'Leftmost Line
+               DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HE6AF8E) 'Rightmost Line
+               DrawLineApi 2, 2, 2, lh - 3, TranslateColor(vbWhite)            'Left Line
+               DrawLineApi lw - 3, 3, lw - 3, lh - 3, TranslateColor(vbWhite) 'Right Line
+               DrawLineApi 2, lh - 3, lw - 2, lh - 3, TranslateColor(&HE4AD89) 'BottomMost Line
+               DrawLineApi 2, lh - 2, lw - 2, lh - 2, TranslateColor(&HEE8269) 'Bottom Line
          End Select
       End If
    End If
@@ -2151,8 +2151,8 @@ Private Sub DrawWinXPButton(ByVal vState As enumButtonStates)
 
    Select Case m_lXPColor
       Case ecsBlue, ecsSilver, ecsCustom
-         DrawRectangle 0, 0, lw, lh, translateColor(&H743C00)
-         DrawCorners ShiftColor(translateColor(&H743C00), 0.3)
+         DrawRectangle 0, 0, lw, lh, TranslateColor(&H743C00)
+         DrawCorners ShiftColor(TranslateColor(&H743C00), 0.3)
       Case ecsOliveGreen
          DrawRectangle 0, 0, lw, lh, RGB(55, 98, 6)
          DrawCorners ShiftColor(RGB(55, 98, 6), 0.3)
@@ -2171,19 +2171,19 @@ Private Sub DrawOfficeXP(ByVal vState As enumButtonStates)
    lh = UserControl.ScaleHeight
    lw = UserControl.ScaleWidth
 
-   bColor = translateColor(m_bColors.tBackColor)
+   bColor = TranslateColor(m_bColors.tBackColor)
    SetRect lpRect, 0, 0, lw, lh
 
    Select Case m_lXPColor
       Case ecsBlue
-         oColor = translateColor(&HEED2C1)
-         BorderColor = translateColor(&HC56A31)
+         oColor = TranslateColor(&HEED2C1)
+         BorderColor = TranslateColor(&HC56A31)
       Case ecsSilver
-         oColor = translateColor(&HE3DFE0)
-         BorderColor = translateColor(&HBFB4B2)
+         oColor = TranslateColor(&HE3DFE0)
+         BorderColor = TranslateColor(&HBFB4B2)
       Case ecsOliveGreen
-         oColor = translateColor(&HBAD6D4)
-         BorderColor = translateColor(&H70A093)
+         oColor = TranslateColor(&HBAD6D4)
+         BorderColor = TranslateColor(&H70A093)
       Case ecsCustom
          oColor = bColor
          BorderColor = ShiftColor(bColor, -0.12)
@@ -2227,9 +2227,9 @@ Private Sub DrawVistaToolbarStyle(ByVal vState As enumButtonStates)
 
    If Not m_bEnabled Then
       ' --Draw Disabled button
-      PaintRect translateColor(m_bColors.tBackColor), m_ButtonRect
+      PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
       DrawPicwithCaption
-      DrawCorners translateColor(m_bColors.tBackColor)
+      DrawCorners TranslateColor(m_bColors.tBackColor)
       Exit Sub
    End If
 
@@ -2238,35 +2238,35 @@ Private Sub DrawVistaToolbarStyle(ByVal vState As enumButtonStates)
       ' --Set the rect to fill back color
       SetRect lpRect, 0, 0, lw, lh
       ' --Simply fill the button with one color (No gradient effect here!!)
-      PaintRect translateColor(m_bColors.tBackColor), lpRect
+      PaintRect TranslateColor(m_bColors.tBackColor), lpRect
       DrawPicwithCaption
    ElseIf vState = eStateOver Then
 
       ' --Draws a gradient effect with the folowing colors
-      DrawGradientEx 1, 1, lw - 2, lh - 2, translateColor(&HFDF9F1), translateColor(&HF8ECD0), gdVertical
+      DrawGradientEx 1, 1, lw - 2, lh - 2, TranslateColor(&HFDF9F1), TranslateColor(&HF8ECD0), gdVertical
 
       ' --Draws a gradient in half region to give a Light Effect
-      DrawGradientEx 1, lh / 1.7, lw - 2, lh - 2, translateColor(&HF8ECD0), translateColor(&HF8ECD0), gdVertical
+      DrawGradientEx 1, lh / 1.7, lw - 2, lh - 2, TranslateColor(&HF8ECD0), TranslateColor(&HF8ECD0), gdVertical
 
       DrawPicwithCaption
 
       ' --Draw outside borders
-      DrawRectangle 0, 0, lw, lh, translateColor(&HCA9E61)
-      DrawRectangle 1, 1, lw - 2, lh - 2, translateColor(vbWhite)
+      DrawRectangle 0, 0, lw, lh, TranslateColor(&HCA9E61)
+      DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
 
    ElseIf vState = eStateDown Then
 
-      DrawGradientEx 1, 1, lw - 2, lh - 2, translateColor(&HF1DEB0), translateColor(&HF9F1DB), gdVertical
+      DrawGradientEx 1, 1, lw - 2, lh - 2, TranslateColor(&HF1DEB0), TranslateColor(&HF9F1DB), gdVertical
 
       DrawPicwithCaption
       ' --Draws outside borders
-      DrawRectangle 0, 0, lw, lh, translateColor(&HCA9E61)
-      DrawRectangle 1, 1, lw - 2, lh - 2, translateColor(vbWhite)
+      DrawRectangle 0, 0, lw, lh, TranslateColor(&HCA9E61)
+      DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
 
    End If
 
    If vState = eStateDown Or vState = eStateOver Then
-      DrawCorners ShiftColor(translateColor(&HCA9E61), 0.3)
+      DrawCorners ShiftColor(TranslateColor(&HCA9E61), 0.3)
    End If
 
 End Sub
@@ -2284,8 +2284,8 @@ Private Sub DrawVistaButton(ByVal vState As enumButtonStates)
 
    lh = ScaleHeight
    lw = ScaleWidth
-   Color1 = ShiftColor(translateColor(m_bColors.tBackColor), 0.05)
-   bColor = translateColor(m_bColors.tBackColor)
+   Color1 = ShiftColor(TranslateColor(m_bColors.tBackColor), 0.05)
+   bColor = TranslateColor(m_bColors.tBackColor)
 
    If Not m_bEnabled Then
       ' --Draw the Disabled Button
@@ -2318,55 +2318,55 @@ Private Sub DrawVistaButton(ByVal vState As enumButtonStates)
          DrawPicwithCaption
 
          ' --Draws border rectangle
-         DrawRectangle 0, 0, lw, lh, translateColor(&H707070)   'outer
-         DrawRectangle 1, 1, lw - 2, lh - 2, translateColor(vbWhite) 'inner
+         DrawRectangle 0, 0, lw, lh, TranslateColor(&H707070)   'outer
+         DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite) 'inner
 
       Case eStateOver
 
          ' --Make gradient in the upper half region
-         DrawGradientEx 1, 1, lw - 2, lh / 2, translateColor(&HFFF7E4), translateColor(&HFFF3DA), gdVertical
+         DrawGradientEx 1, 1, lw - 2, lh / 2, TranslateColor(&HFFF7E4), TranslateColor(&HFFF3DA), gdVertical
 
          ' --Draw gradient in half button downside to give a glass look
-         DrawGradientEx 1, lh / 2, lw - 2, lh - 2, translateColor(&HFFE9C1), translateColor(&HFDE1AE), gdVertical
+         DrawGradientEx 1, lh / 2, lw - 2, lh - 2, TranslateColor(&HFFE9C1), TranslateColor(&HFDE1AE), gdVertical
 
          ' --Draws left side gradient effects horizontal
-         DrawGradientEx 1, 3, 5, lh / 2 - 2, translateColor(&HFFEECD), translateColor(&HFFF7E4), gdHorizontal    'Left
-         DrawGradientEx 1, lh / 2, 5, lh - (lh / 2) - 1, translateColor(&HFAD68F), ShiftColor(translateColor(&HFDE1AC), 0.01), gdHorizontal   'Left
+         DrawGradientEx 1, 3, 5, lh / 2 - 2, TranslateColor(&HFFEECD), TranslateColor(&HFFF7E4), gdHorizontal    'Left
+         DrawGradientEx 1, lh / 2, 5, lh - (lh / 2) - 1, TranslateColor(&HFAD68F), ShiftColor(TranslateColor(&HFDE1AC), 0.01), gdHorizontal   'Left
 
          ' --Draws right side gradient effects horizontal
-         DrawGradientEx lw - 6, 3, 5, lh / 2 - 2, translateColor(&HFFF7E4), translateColor(&HFFEECD), gdHorizontal 'Right
-         DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(translateColor(&HFDE1AC), 0.01), translateColor(&HFAD68F), gdHorizontal 'Right
+         DrawGradientEx lw - 6, 3, 5, lh / 2 - 2, TranslateColor(&HFFF7E4), TranslateColor(&HFFEECD), gdHorizontal 'Right
+         DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HFDE1AC), 0.01), TranslateColor(&HFAD68F), gdHorizontal 'Right
 
          DrawPicwithCaption
          ' --Draws border rectangle
-         DrawRectangle 0, 0, lw, lh, translateColor(&HA77532)   'outer
-         DrawRectangle 1, 1, lw - 2, lh - 2, translateColor(vbWhite) 'inner
+         DrawRectangle 0, 0, lw, lh, TranslateColor(&HA77532)   'outer
+         DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite) 'inner
 
       Case eStateDown
 
          ' --Draw a gradent in full region
-         DrawGradientEx 1, 1, lw - 1, lh, translateColor(&HF6E4C2), translateColor(&HF6E4C2), gdVertical
+         DrawGradientEx 1, 1, lw - 1, lh, TranslateColor(&HF6E4C2), TranslateColor(&HF6E4C2), gdVertical
 
          ' --Draw gradient in half button downside to give a glass look
-         DrawGradientEx 1, lh / 2, lw - 2, lh - 2, translateColor(&HF0D29A), translateColor(&HF0D29A), gdVertical
+         DrawGradientEx 1, lh / 2, lw - 2, lh - 2, TranslateColor(&HF0D29A), TranslateColor(&HF0D29A), gdVertical
 
          ' --Draws down rectangle
 
-         DrawRectangle 0, 0, lw, lh, translateColor(&H5C411D)    '
-         DrawLineApi 1, 1, lw - 1, 1, translateColor(&HB39C71)   '\Top Lines
-         DrawLineApi 1, 2, lw - 1, 2, translateColor(&HD6C6A9)   '/
-         DrawLineApi 1, 3, lw - 1, 3, translateColor(&HECD9B9)   '
+         DrawRectangle 0, 0, lw, lh, TranslateColor(&H5C411D)    '
+         DrawLineApi 1, 1, lw - 1, 1, TranslateColor(&HB39C71)   '\Top Lines
+         DrawLineApi 1, 2, lw - 1, 2, TranslateColor(&HD6C6A9)   '/
+         DrawLineApi 1, 3, lw - 1, 3, TranslateColor(&HECD9B9)   '
 
-         DrawLineApi 1, 1, 1, lh / 2 - 1, translateColor(&HCFB073)   'Left upper
-         DrawLineApi 1, lh / 2, 1, lh - (lh / 2) - 1, translateColor(&HC5912B)   'Left Bottom
+         DrawLineApi 1, 1, 1, lh / 2 - 1, TranslateColor(&HCFB073)   'Left upper
+         DrawLineApi 1, lh / 2, 1, lh - (lh / 2) - 1, TranslateColor(&HC5912B)   'Left Bottom
 
          ' --Draws left side gradient effects horizontal
-         DrawGradientEx 1, 3, 5, lh / 2 - 2, ShiftColor(translateColor(&HE6C891), 0.02), ShiftColor(translateColor(&HF6E4C2), -0.01), gdHorizontal   'Left
-         DrawGradientEx 1, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(translateColor(&HDCAB4E), 0.02), ShiftColor(translateColor(&HF0D29A), -0.01), gdHorizontal 'Left
+         DrawGradientEx 1, 3, 5, lh / 2 - 2, ShiftColor(TranslateColor(&HE6C891), 0.02), ShiftColor(TranslateColor(&HF6E4C2), -0.01), gdHorizontal   'Left
+         DrawGradientEx 1, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HDCAB4E), 0.02), ShiftColor(TranslateColor(&HF0D29A), -0.01), gdHorizontal 'Left
 
          ' --Draws right side gradient effects horizontal
-         DrawGradientEx lw - 6, 3, 5, lh / 2 - 2, ShiftColor(translateColor(&HF6E4C2), -0.01), ShiftColor(translateColor(&HE6C891), 0.02), gdHorizontal 'Right
-         DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(translateColor(&HF0D29A), -0.01), ShiftColor(translateColor(&HDCAB4E), 0.02), gdHorizontal 'Right
+         DrawGradientEx lw - 6, 3, 5, lh / 2 - 2, ShiftColor(TranslateColor(&HF6E4C2), -0.01), ShiftColor(TranslateColor(&HE6C891), 0.02), gdHorizontal 'Right
+         DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HF0D29A), -0.01), ShiftColor(TranslateColor(&HDCAB4E), 0.02), gdHorizontal 'Right
          DrawPicwithCaption
 
    End Select
@@ -2376,9 +2376,9 @@ Private Sub DrawVistaButton(ByVal vState As enumButtonStates)
    If m_bParentActive Then
       If (m_bHasFocus Or m_bDefault) And vState = eStateNormal Then
          ' --Draw darker outer rectangle
-         DrawRectangle 0, 0, lw, lh, translateColor(&HA77532)
+         DrawRectangle 0, 0, lw, lh, TranslateColor(&HA77532)
          ' --Draw light inner rectangle
-         DrawRectangle 1, 1, lw - 2, lh - 2, translateColor(&HFBD848)
+         DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(&HFBD848)
       End If
 
       If (m_bShowFocus And m_bHasFocus) Then
@@ -2388,7 +2388,7 @@ Private Sub DrawVistaButton(ByVal vState As enumButtonStates)
    End If
 
    ' --Create four corners which will be common to all states
-   DrawCorners translateColor(&HBE965F)
+   DrawCorners TranslateColor(&HBE965F)
 
 End Sub
 
@@ -2399,15 +2399,15 @@ Private Sub DrawOutlook2007(ByVal vState As enumButtonStates)
 
    lh = ScaleHeight
    lw = ScaleWidth
-   bColor = translateColor(m_bColors.tBackColor)
+   bColor = TranslateColor(m_bColors.tBackColor)
 
    If m_ButtonMode <> ebmCommandButton And m_bValue Then
-      DrawGradientEx 0, 0, lw, lh / 2.7, translateColor(&HA9D9FF), translateColor(&H6FC0FF), gdVertical
-      DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), translateColor(&H3FABFF), translateColor(&H75E1FF), gdVertical
+      DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&HA9D9FF), TranslateColor(&H6FC0FF), gdVertical
+      DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H3FABFF), TranslateColor(&H75E1FF), gdVertical
       DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
       If m_bMouseInCtl Then
-         DrawGradientEx 0, 0, lw, lh / 2.7, translateColor(&H58C1FF), translateColor(&H51AFFF), gdVertical
-         DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), translateColor(&H468FFF), translateColor(&H5FD3FF), gdVertical
+         DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&H58C1FF), TranslateColor(&H51AFFF), gdVertical
+         DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H468FFF), TranslateColor(&H5FD3FF), gdVertical
          DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
       End If
       DrawPicwithCaption
@@ -2417,18 +2417,18 @@ Private Sub DrawOutlook2007(ByVal vState As enumButtonStates)
    Select Case vState
       Case eStateNormal
          PaintRect bColor, m_ButtonRect
-         DrawGradientEx 0, 0, lw, lh / 2.7, BlendColors(ShiftColor(bColor, 0.09), translateColor(vbWhite)), BlendColors(ShiftColor(bColor, 0.07), bColor), gdVertical
+         DrawGradientEx 0, 0, lw, lh / 2.7, BlendColors(ShiftColor(bColor, 0.09), TranslateColor(vbWhite)), BlendColors(ShiftColor(bColor, 0.07), bColor), gdVertical
          DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), bColor, ShiftColor(bColor, 0.03), gdVertical
          DrawPicwithCaption
          DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
       Case eStateOver
-         DrawGradientEx 0, 0, lw, lh / 2.7, translateColor(&HE1FFFF), translateColor(&HACEAFF), gdVertical
-         DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), translateColor(&H67D7FF), translateColor(&H99E4FF), gdVertical
+         DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&HE1FFFF), TranslateColor(&HACEAFF), gdVertical
+         DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H67D7FF), TranslateColor(&H99E4FF), gdVertical
          DrawPicwithCaption
          DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
       Case eStateDown
-         DrawGradientEx 0, 0, lw, lh / 2.7, translateColor(&H58C1FF), translateColor(&H51AFFF), gdVertical
-         DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), translateColor(&H468FFF), translateColor(&H5FD3FF), gdVertical
+         DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&H58C1FF), TranslateColor(&H51AFFF), gdVertical
+         DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H468FFF), TranslateColor(&H5FD3FF), gdVertical
          DrawPicwithCaption
          DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
    End Select
@@ -2443,17 +2443,17 @@ Private Sub DrawOffice2003(ByVal vState As enumButtonStates)
    lh = UserControl.ScaleHeight
    lw = UserControl.ScaleWidth
 
-   bColor = translateColor(m_bColors.tBackColor)
+   bColor = TranslateColor(m_bColors.tBackColor)
    SetRect m_ButtonRect, 0, 0, lw, lh
 
    If m_ButtonMode <> ebmCommandButton And m_bValue Then
       If m_bMouseInCtl Then
-         DrawGradientEx 0, 0, lw, lh, translateColor(&H4E91FE), translateColor(&H8ED3FF), gdVertical
+         DrawGradientEx 0, 0, lw, lh, TranslateColor(&H4E91FE), TranslateColor(&H8ED3FF), gdVertical
       Else
-         DrawGradientEx 0, 0, lw, lh, translateColor(&H8CD5FF), translateColor(&H55ADFF), gdVertical
+         DrawGradientEx 0, 0, lw, lh, TranslateColor(&H8CD5FF), TranslateColor(&H55ADFF), gdVertical
       End If
       DrawPicwithCaption
-      DrawRectangle 0, 0, lw, lh, translateColor(&H800000)
+      DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
       Exit Sub
    End If
 
@@ -2461,18 +2461,18 @@ Private Sub DrawOffice2003(ByVal vState As enumButtonStates)
 
       Case eStateNormal
          CreateRegion
-         DrawGradientEx 0, 0, lw, lh / 2, BlendColors(translateColor(vbWhite), ShiftColor(bColor, 0.08)), bColor, gdVertical
+         DrawGradientEx 0, 0, lw, lh / 2, BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.08)), bColor, gdVertical
          DrawGradientEx 0, lh / 2, lw, lh / 2 + 1, bColor, ShiftColor(bColor, -0.15), gdVertical
       Case eStateOver
-         DrawGradientEx 0, 0, lw, lh, translateColor(&HCCF4FF), translateColor(&H91D0FF), gdVertical
+         DrawGradientEx 0, 0, lw, lh, TranslateColor(&HCCF4FF), TranslateColor(&H91D0FF), gdVertical
       Case eStateDown
-         DrawGradientEx 0, 0, lw, lh, translateColor(&H4E91FE), translateColor(&H8ED3FF), gdVertical
+         DrawGradientEx 0, 0, lw, lh, TranslateColor(&H4E91FE), TranslateColor(&H8ED3FF), gdVertical
    End Select
 
    DrawPicwithCaption
 
    If m_Buttonstate <> eStateNormal Then
-      DrawRectangle 0, 0, lw, lh, translateColor(&H800000)
+      DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
    End If
 
 End Sub
@@ -3052,7 +3052,7 @@ Private Sub CreateToolTip()
    End If
    SendMessage m_lttHwnd, TTM_SETMAXTIPWIDTH, 0, 240 'for Multiline capability
    If m_lttBackColor <> Empty Then
-      SendMessage m_lttHwnd, TTM_SETTIPBKCOLOR, translateColor(m_lttBackColor), 0&
+      SendMessage m_lttHwnd, TTM_SETTIPBKCOLOR, TranslateColor(m_lttBackColor), 0&
    End If
 
 End Sub
@@ -3082,52 +3082,52 @@ Private Sub SetThemeColors()
          Case eWindowsXP
             Select Case m_lXPColor
                Case ecsBlue
-                  .tBackColor = translateColor(&HE7EBEC)
+                  .tBackColor = TranslateColor(&HE7EBEC)
                Case ecsOliveGreen
-                  .tBackColor = translateColor(&HDBEEF3)
+                  .tBackColor = TranslateColor(&HDBEEF3)
                Case ecsSilver
-                  .tBackColor = translateColor(&HFCF1F0)
+                  .tBackColor = TranslateColor(&HFCF1F0)
             End Select
          Case eOutlook2007, eGelButton
             Select Case m_lXPColor
                Case ecsBlue
-                  .tBackColor = translateColor(&HFFD1AD)
+                  .tBackColor = TranslateColor(&HFFD1AD)
                Case ecsOliveGreen
-                  .tBackColor = translateColor(&HBAD6D4)
+                  .tBackColor = TranslateColor(&HBAD6D4)
                Case ecsSilver
-                  .tBackColor = translateColor(&HE3DFE0)
+                  .tBackColor = TranslateColor(&HE3DFE0)
             End Select
-            .tForeColor = translateColor(&H8B4215)
+            .tForeColor = TranslateColor(&H8B4215)
          Case eVistaAero
             Select Case m_lXPColor
                Case ecsBlue
-                  .tBackColor = translateColor(&HFDECE0)
+                  .tBackColor = TranslateColor(&HFDECE0)
                Case ecsOliveGreen
-                  .tBackColor = translateColor(&HDEEDE8)
+                  .tBackColor = TranslateColor(&HDEEDE8)
                Case ecsSilver
-                  .tBackColor = ShiftColor(translateColor(&HD4D4D4), 0.06)
+                  .tBackColor = ShiftColor(TranslateColor(&HD4D4D4), 0.06)
             End Select
          Case eInstallShield
             Select Case m_lXPColor
                Case ecsBlue
-                  .tBackColor = translateColor(&HFFD1AD)
+                  .tBackColor = TranslateColor(&HFFD1AD)
                Case ecsOliveGreen
-                  .tBackColor = translateColor(&HBAD6D4)
+                  .tBackColor = TranslateColor(&HBAD6D4)
                Case ecsSilver
-                  .tBackColor = translateColor(&HE1D6D5)
+                  .tBackColor = TranslateColor(&HE1D6D5)
             End Select
          Case eOffice2003
             Select Case m_lXPColor
                Case ecsBlue
-                  .tBackColor = translateColor(&HFCE1CA)
+                  .tBackColor = TranslateColor(&HFCE1CA)
                Case ecsOliveGreen
-                  .tBackColor = translateColor(&HBAD6D4)
+                  .tBackColor = TranslateColor(&HBAD6D4)
                Case ecsSilver
-                  .tBackColor = ShiftColor(translateColor(&HBA9EA0), 0.15)
+                  .tBackColor = ShiftColor(TranslateColor(&HBA9EA0), 0.15)
             End Select
       End Select
 
-      .tForeColor = translateColor(vbButtonText)
+      .tForeColor = TranslateColor(vbButtonText)
       If m_ButtonStyle = eFlat Or m_ButtonStyle = eInstallShield Or m_ButtonStyle = eStandard Then
          m_bShowFocus = True
       Else
@@ -3295,15 +3295,15 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
       m_ButtonMode = .ReadProperty("Mode", ebmCommandButton)
       m_PictureAlign = .ReadProperty("PictureAlign", epLeftOfCaption)
       m_CaptionAlign = .ReadProperty("CaptionAlign", ecCenterAlign)
-      m_bColors.tForeColor = .ReadProperty("ForeColor", translateColor(vbButtonText))
-      m_bColors.tForeColorOver = .ReadProperty("ForeColorHover", translateColor(vbButtonText))
+      m_bColors.tForeColor = .ReadProperty("ForeColor", TranslateColor(vbButtonText))
+      m_bColors.tForeColorOver = .ReadProperty("ForeColorHover", TranslateColor(vbButtonText))
       UserControl.ForeColor = m_bColors.tForeColor
       m_bDropDownSep = .ReadProperty("DropDownSeparator", False)
       m_sTooltiptitle = .ReadProperty("TooltipTitle", vbNullString)
       m_sTooltipText = .ReadProperty("ToolTip", vbNullString)
       m_lToolTipIcon = .ReadProperty("TooltipIcon", TTNoIcon)
       m_lTooltipType = .ReadProperty("TooltipType", TooltipStandard)
-      m_lttBackColor = .ReadProperty("TooltipBackColor", translateColor(vbInfoBackground))
+      m_lttBackColor = .ReadProperty("TooltipBackColor", TranslateColor(vbInfoBackground))
       m_bRTL = .ReadProperty("RightToLeft", False)
       m_bttRTL = .ReadProperty("RightToLeft", False)
       m_DropDownSymbol = .ReadProperty("DropDownSymbol", ebsNone)
@@ -3388,8 +3388,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
       .WriteProperty "Font", mFont, Ambient.Font
       .WriteProperty "BackColor", m_bColors.tBackColor, GetSysColor(COLOR_BTNFACE)
       .WriteProperty "Caption", m_Caption, "jcbutton1"
-      .WriteProperty "ForeColor", m_bColors.tForeColor, translateColor(vbButtonText)
-      .WriteProperty "ForeColorHover", m_bColors.tForeColorOver, translateColor(vbButtonText)
+      .WriteProperty "ForeColor", m_bColors.tForeColor, TranslateColor(vbButtonText)
+      .WriteProperty "ForeColorHover", m_bColors.tForeColorOver, TranslateColor(vbButtonText)
       .WriteProperty "Mode", m_ButtonMode, ebmCommandButton
       .WriteProperty "Value", m_bValue, False
       .WriteProperty "MousePointer", UserControl.MousePointer, 0
@@ -3414,7 +3414,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
       .WriteProperty "TooltipType", m_lTooltipType, TooltipStandard
       .WriteProperty "TooltipIcon", m_lToolTipIcon, TTNoIcon
       .WriteProperty "TooltipTitle", m_sTooltiptitle, vbNullString
-      .WriteProperty "TooltipBackColor", m_lttBackColor, translateColor(vbInfoBackground)
+      .WriteProperty "TooltipBackColor", m_lttBackColor, TranslateColor(vbInfoBackground)
       .WriteProperty "RightToLeft", m_bRTL, False
       .WriteProperty "DropDownSymbol", m_DropDownSymbol, ebsNone
       .WriteProperty "DropDownSeparator", m_bDropDownSep, False
