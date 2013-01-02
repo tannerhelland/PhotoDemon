@@ -319,6 +319,13 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
                 outputColorDepth = getColorDepthFromColorCount(colorCountCheck, pdImages(imageID).mainLayer)
                 
+                'A special case arises when an image has <= 256 colors, but a non-binary alpha channel.  PNG allows for
+                ' this, but other formats do not.  Because even the PNG transformation is not lossless, set these types of
+                ' images to be exported as 32bpp.
+                If (outputColorDepth <= 8) And (pdImages(imageID).mainLayer.getLayerColorDepth = 32) Then
+                    If (Not pdImages(imageID).mainLayer.isAlphaBinary) Then outputColorDepth = 32
+                End If
+                
                 Message "Color count successful (" & outputColorDepth & " bpp recommended)"
                 
                 'As with case 0, we now need to see if this format supports the suggested color depth
