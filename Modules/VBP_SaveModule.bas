@@ -952,7 +952,7 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
                 
         End Select
         
-        If userPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False) Then TIFFFlags = (TIFFFlags Or TIFF_CMYK)
+        'If userPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False) Then TIFFFlags = (TIFFFlags Or TIFF_CMYK)
         
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFFFlags, outputColorDepth, , , , , True)
