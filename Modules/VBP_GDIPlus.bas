@@ -144,6 +144,33 @@ Private Const EncoderSaveAsCMYK       As String = "{A219BBC9-0A9D-4005-A3EE-3A42
 Private Const EncoderSaveFlag         As String = "{292266FC-AC40-47BF-8CFC-A85B89A655DE}"
 Private Const CodecIImageBytes        As String = "{025D1823-6C7D-447B-BBDB-A3CBC3DFA2FC}"
 
+'GDI+ recognizes a variety of pixel formats:
+'Public Const PixelFormatIndexed = &H10000           ' Indexes into a palette
+'Public Const PixelFormatGDI = &H20000               ' Is a GDI-supported format
+'Public Const PixelFormatAlpha = &H40000             ' Has an alpha component
+'Public Const PixelFormatPAlpha = &H80000            ' Pre-multiplied alpha
+'Public Const PixelFormatExtended = &H100000         ' Extended color 16 bits/channel
+'Public Const PixelFormatCanonical = &H200000
+'
+'Public Const PixelFormatUndefined = 0
+'
+'Public Const PixelFormat1bppIndexed = &H30101
+'Public Const PixelFormat4bppIndexed = &H30402
+'Public Const PixelFormat8bppIndexed = &H30803
+'Public Const PixelFormat16bppGreyScale = &H101004
+'Public Const PixelFormat16bppRGB555 = &H21005
+'Public Const PixelFormat16bppRGB565 = &H21006
+'Public Const PixelFormat16bppARGB1555 = &H61007
+
+Private Const PixelFormat24bppRGB = &H21808
+Private Const PixelFormat32bppARGB = &H26200A
+'Private Const PixelFormat32bppRGB = &H22009
+Private Const PixelFormat32bppPARGB = &HE200B
+'Public Const PixelFormat48bppRGB = &H10300C
+'Public Const PixelFormat64bppARGB = &H34400D
+'Public Const PixelFormat64bppPARGB = &H1C400E
+'Public Const PixelFormatMax = 15 '&HF
+
 'GDI+ required types
 Private Type GDIPlusStartupInput
     GDIPlusVersion           As Long
@@ -201,6 +228,7 @@ Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As 
 
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, GpImage As Long) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef Scan0 As Any, ByRef pBitmap As Long) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal Bitmap As Long, hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) As GDIPlusStatus
 Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, Bitmap As Long) As GDIPlusStatus
@@ -316,7 +344,16 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     
     Message "Creating GDI+ compatible image copy..."
         
-    GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
+    'Different GDI+ calls are required for different color depths. GdipCreateBitmapFromGdiDib leads to a blank
+    ' alpha channel for 32bpp images, so use GdipCreateBitmapFromScan0 in that case.
+    If tmpLayer.getLayerColorDepth = 32 Then
+        
+        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
+        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, tmpLayer.getLayerWidth * 4, PixelFormat32bppARGB, ByVal tmpLayer.getLayerDIBits, hImage)
+    
+    Else
+        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
+    End If
     
     If (GDIPlusReturn <> [OK]) Then
         GdipDisposeImage hImage
