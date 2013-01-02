@@ -632,6 +632,70 @@ Public Function convertTo32bpp() As Boolean
 
 End Function
 
+'Convert the current layer to 32bpp CMYK encoding (for export as CMYK via FreeImage)
+Public Sub convertToCMYK32()
+    
+    'Make sure this layer isn't empty
+    If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+    
+        'If is layer isn't 32bpp, make it 32bpp
+        If layerColorDepth <> 32 Then Me.convertTo32bpp
+    
+        'Prepare direct access to the DIB data
+        Dim iData() As Byte
+        Dim tmpSA As SAFEARRAY2D
+        prepInternalSafeArray tmpSA
+        CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+        
+        Dim x As Long, y As Long, QuickX As Long
+                        
+        Dim r As Long, g As Long, b As Long
+        
+        Dim cyan As Long, magenta As Long, yellow As Long, k As Long
+        
+        Dim qvDepth As Long
+        qvDepth = layerColorDepth \ 8
+                        
+        'Loop through the image, checking alphas as we go
+        For x = 0 To layerWidth - 1
+            QuickX = x * qvDepth
+        For y = 0 To layerHeight - 1
+                        
+            'Cyan
+            cyan = 255 - iData(QuickX + 2, y)
+            
+            'Magenta
+            magenta = 255 - iData(QuickX + 1, y)
+            
+            'Yellow
+            yellow = 255 - iData(QuickX, y)
+            
+            'Key
+            k = CByte(MinimumInt(cyan, magenta, yellow))
+            iData(QuickX + 3, y) = k
+            
+            If k = 255 Then
+                iData(QuickX, y) = 0
+                iData(QuickX + 1, y) = 0
+                iData(QuickX + 2, y) = 0
+            Else
+                iData(QuickX, y) = cyan - k
+                iData(QuickX + 1, y) = magenta - k
+                iData(QuickX + 2, y) = yellow - k
+            End If
+                            
+        Next y
+        Next x
+    
+        'With our alpha channel complete, point iData() away from the DIB and deallocate it
+        CopyMemory ByVal VarPtrArray(iData), 0&, 4
+        
+        Erase iData
+                        
+    End If
+    
+End Sub
+
 'Is this layer grayscale?  Determination is made by scanning each pixel and comparing RGB values to see if they match.
 Public Function isLayerGrayscale() As Boolean
     
@@ -646,7 +710,7 @@ Public Function isLayerGrayscale() As Boolean
         
         Dim x As Long, y As Long, QuickX As Long
                         
-        Dim R As Long, g As Long, b As Long
+        Dim r As Long, g As Long, b As Long
         
         Dim qvDepth As Long
         qvDepth = layerColorDepth \ 8
@@ -656,13 +720,13 @@ Public Function isLayerGrayscale() As Boolean
             QuickX = x * qvDepth
         For y = 0 To layerHeight - 1
             
-            R = iData(QuickX + 2, y)
+            r = iData(QuickX + 2, y)
             g = iData(QuickX + 1, y)
             b = iData(QuickX, y)
             
             'For optimization reasons, this is stated as multiple IFs instead of an OR.  I'm not sure if VB
             ' short-circuits OR statements, but I know multiple IF statements work.  :)
-            If R <> g Then
+            If r <> g Then
                 
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
@@ -678,7 +742,7 @@ Public Function isLayerGrayscale() As Boolean
                 isLayerGrayscale = False
                 Exit Function
                 
-            ElseIf R <> b Then
+            ElseIf r <> b Then
             
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
@@ -1568,7 +1632,7 @@ Public Sub fixPremultipliedAlpha()
     
     Dim x As Long, y As Long, QuickX As Long
     
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim tmpAlpha As Byte, tmpAlphaModifier As Single
 
     'Loop through the image, removing the effects of pre-multiplication as we go
@@ -1582,18 +1646,18 @@ Public Sub fixPremultipliedAlpha()
         If tmpAlpha <> 255 Then
             If tmpAlpha <> 0 Then
             
-                R = iData(QuickX + 2, y)
+                r = iData(QuickX + 2, y)
                 g = iData(QuickX + 1, y)
                 b = iData(QuickX, y)
             
                 tmpAlphaModifier = 255 / tmpAlpha
             
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                R = R * tmpAlphaModifier
+                r = r * tmpAlphaModifier
                 g = g * tmpAlphaModifier
                 b = b * tmpAlphaModifier
                 
-                iData(QuickX + 2, y) = CByte(R)
+                iData(QuickX + 2, y) = CByte(r)
                 iData(QuickX + 1, y) = CByte(g)
                 iData(QuickX, y) = CByte(b)
             

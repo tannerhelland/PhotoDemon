@@ -952,7 +952,14 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
                 
         End Select
         
-        'If userPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False) Then TIFFFlags = (TIFFFlags Or TIFF_CMYK)
+        'If the user has requested CMYK encoding of TIFF files, add that flag and convert the image to 32bpp CMYK
+        If (outputColorDepth = 24) And userPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False) Then
+            outputColorDepth = 32
+            TIFFFlags = (TIFFFlags Or TIFF_CMYK)
+            FreeImage_UnloadEx fi_DIB
+            tmpLayer.convertToCMYK32
+            fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+        End If
         
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFFFlags, outputColorDepth, , , , , True)
