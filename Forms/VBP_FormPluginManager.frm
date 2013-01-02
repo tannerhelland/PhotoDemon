@@ -121,7 +121,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.CheckBox chkPngnqYUVA 
          Appearance      =   0  'Flat
-         Caption         =   " analyze colors using YUV instead of RGB (slower, but much higher quality)"
+         Caption         =   " analyze colors using YUV instead of RGB (slower, but higher quality)"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75

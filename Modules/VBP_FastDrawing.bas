@@ -152,7 +152,7 @@ End Sub
 'This function can be used to populate a valid SAFEARRAY2D structure against any layer
 Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcLayer As pdLayer)
     
-    'With our temporary layer successfully created, populate the relevant SafeArray variable
+    'Populate a relevant SafeArray variable for the supplied layer
     With srcSA
         .cbElements = 1
         .cDims = 2
