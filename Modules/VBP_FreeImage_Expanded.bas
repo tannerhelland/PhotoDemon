@@ -304,43 +304,19 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         'As of 25 Nov '12, the user can choose to disable tone-mapping (which makes HDR loading much faster, but reduces image quality).
         ' Check that preference before tone-mapping the image.
         If userPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
-                
-            'If the image has transparency, make a copy of the alpha data for future use
-            If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
-                
-                Message "Non-standard alpha data found.  Making temporary copy prior to tone mapping..."
-                
-                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
-                
-                Set tmpAlphaLayer = New pdLayer
-                tmpAlphaCopySuccess = tmpAlphaLayer.createBlank(FreeImage_GetWidth(new_hDIB), FreeImage_GetHeight(new_hDIB), 32)
-        
-                'Make sure the blank DIB creation worked
-                If tmpAlphaCopySuccess Then tmpAlphaRequired = True
-                
-                'Copy the bits from the FreeImage DIB to our DIB
-                'NOTE: investigate using AlphaBlend to copy the bits, with SourceConstantAlpha set to 255 (per http://msdn.microsoft.com/en-us/library/dd183393%28v=vs.85%29.aspx)
-                ' This may be a way to preserve the alpha channel... assuming that this SetDIBitsToDevice is actually the problem, which it may not be.
-                SetDIBitsToDevice tmpAlphaLayer.getLayerDC, 0, 0, FreeImage_GetWidth(new_hDIB), FreeImage_GetHeight(new_hDIB), 0, 0, 0, FreeImage_GetHeight(new_hDIB), ByVal FreeImage_GetBits(new_hDIB), ByVal FreeImage_GetInfo(new_hDIB), 0&
-         
-                'With the alpha data safely in the care of our temporary object, unload the temporary 32bpp version of this image
-                FreeImage_UnloadEx new_hDIB
-            Else
-            
-                Message "No alpha data found.  Preparing tone-mapping..."
-            
-            End If
             
             Message "Tone mapping HDR image to preserve tonal range..."
             
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
             
             If pageToLoad = 0 Then
-                FreeImage_UnloadEx fi_hDIB
+                If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
             Else
-                needToCloseMulti = False
-                FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                FreeImage_CloseMultiBitmap fi_multi_hDIB
+                If (fi_hDIB <> new_hDIB) Then
+                    needToCloseMulti = False
+                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                End If
             End If
             
             fi_hDIB = new_hDIB
@@ -355,11 +331,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
                 If pageToLoad = 0 Then
-                    FreeImage_UnloadEx fi_hDIB
+                    If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    If (fi_hDIB <> new_hDIB) Then
+                        needToCloseMulti = False
+                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                        FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    End If
                 End If
                 
                 fi_hDIB = new_hDIB
@@ -370,11 +348,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
                 
                 If pageToLoad = 0 Then
-                    FreeImage_UnloadEx fi_hDIB
+                    If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    If (fi_hDIB <> new_hDIB) Then
+                        needToCloseMulti = False
+                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                        FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    End If
                 End If
             
                 fi_hDIB = new_hDIB
@@ -393,35 +373,19 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         'Again, check for the user's preference on tone-mapping
         If userPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
         
-            Message "High bit-depth RGBA image identified.  Making copy of alpha data..."
-        
-            new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
-                
-            Set tmpAlphaLayer = New pdLayer
-            tmpAlphaCopySuccess = tmpAlphaLayer.createBlank(FreeImage_GetWidth(new_hDIB), FreeImage_GetHeight(new_hDIB), 32)
-                
-            'Make sure the blank DIB creation worked
-            If tmpAlphaCopySuccess Then tmpAlphaRequired = True
-                
-            'Copy the bits from the FreeImage DIB to our DIB
-            'NOTE: investigate using AlphaBlend to copy the bits, with SourceConstantAlpha set to 255 (per http://msdn.microsoft.com/en-us/library/dd183393%28v=vs.85%29.aspx)
-            ' This may be a way to preserve the alpha channel... assuming that this SetDIBitsToDevice is actually the problem, which it may not be.
-            SetDIBitsToDevice tmpAlphaLayer.getLayerDC, 0, 0, FreeImage_GetWidth(new_hDIB), FreeImage_GetHeight(new_hDIB), 0, 0, 0, FreeImage_GetHeight(new_hDIB), ByVal FreeImage_GetBits(new_hDIB), ByVal FreeImage_GetInfo(new_hDIB), 0&
-         
-            'With the alpha data safely in the care of our temporary object, unload the temporary 32bpp version of this image
-            FreeImage_UnloadEx new_hDIB
-        
-            Message "Alpha copy complete.  Tone mapping HDR image to preserve tonal range..."
+            Message "High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range..."
         
             'Now, convert the RGB data using the superior tone-mapping method.
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
             
             If pageToLoad = 0 Then
-                FreeImage_UnloadEx fi_hDIB
+                If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
             Else
-                needToCloseMulti = False
-                FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                FreeImage_CloseMultiBitmap fi_multi_hDIB
+                If (new_hDIB <> fi_hDIB) Then
+                    needToCloseMulti = False
+                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                End If
             End If
             
             fi_hDIB = new_hDIB
@@ -434,11 +398,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
             
             If pageToLoad = 0 Then
-                FreeImage_UnloadEx fi_hDIB
+                If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
             Else
-                needToCloseMulti = False
-                FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                FreeImage_CloseMultiBitmap fi_multi_hDIB
+                If (fi_hDIB <> new_hDIB) Then
+                    needToCloseMulti = False
+                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                End If
             End If
             
             fi_hDIB = new_hDIB
@@ -480,11 +446,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
                 If pageToLoad = 0 Then
-                    FreeImage_UnloadEx fi_hDIB
+                    If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    If (new_hDIB <> fi_hDIB) Then
+                        needToCloseMulti = False
+                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                        FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    End If
                 End If
             
                 fi_hDIB = new_hDIB
@@ -492,11 +460,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
                 
                 If pageToLoad = 0 Then
-                    FreeImage_UnloadEx fi_hDIB
+                    If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    If (new_hDIB <> fi_hDIB) Then
+                        needToCloseMulti = False
+                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                        FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    End If
                 End If
             
                 fi_hDIB = new_hDIB
@@ -512,11 +482,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
                 If pageToLoad = 0 Then
-                    FreeImage_UnloadEx fi_hDIB
+                    If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    If (new_hDIB <> fi_hDIB) Then
+                        needToCloseMulti = False
+                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                        FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    End If
                 End If
             
                 fi_hDIB = new_hDIB
@@ -524,11 +496,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
                 
                 If pageToLoad = 0 Then
-                    FreeImage_UnloadEx fi_hDIB
+                    If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    If (new_hDIB <> fi_hDIB) Then
+                        needToCloseMulti = False
+                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                        FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    End If
                 End If
             
                 fi_hDIB = new_hDIB
