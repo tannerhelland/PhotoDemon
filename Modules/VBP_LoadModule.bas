@@ -176,6 +176,9 @@ Public Sub LoadTheProgram()
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
     initializeIconHandler
     
+    'Before displaying the main window, see if the user wants to restore last-used window location.
+    If userPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then restoreMainWindowLocation
+    
     
     
     '*************************************************************************************************************************************

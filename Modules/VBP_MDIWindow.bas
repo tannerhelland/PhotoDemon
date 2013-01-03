@@ -495,3 +495,75 @@ Public Sub UpdateMDIStatus()
     End If
     
 End Sub
+
+'Restore the main form to the window coordinates saved in the INI file
+Public Sub restoreMainWindowLocation()
+
+    'First, check which state the window was in previously.
+    Dim lWindowState As Long
+    lWindowState = userPreferences.GetPreference_Long("General Preferences", "LastWindowState", 0)
+        
+    Dim lWindowLeft As Long, lWindowTop As Long
+    Dim lWindowWidth As Long, lWindowHeight As Long
+        
+    'If the window state was "minimized", reset it to "normal"
+    If lWindowState = vbMinimized Then lWindowState = 0
+        
+    'If the window state was "maximized", set that and ignore the saved width/height values
+    If lWindowState = vbMaximized Then
+            
+        lWindowLeft = userPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
+        lWindowTop = userPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
+        FormMain.Left = lWindowLeft * Screen.TwipsPerPixelX
+        FormMain.Top = lWindowTop * Screen.TwipsPerPixelY
+        FormMain.WindowState = vbMaximized
+        
+    'If the window state is normal, attempt to restore the last-used values
+    Else
+            
+        'Start by pulling the last left/top/width/height values from the INI file
+        lWindowLeft = userPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
+        lWindowTop = userPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
+        lWindowWidth = userPreferences.GetPreference_Long("General Preferences", "LastWindowWidth", 1)
+        lWindowHeight = userPreferences.GetPreference_Long("General Preferences", "LastWindowHeight", 1)
+            
+        'If the left/top/width/height values all equal "1" (the default value), then a previous location has never
+        ' been saved.  Center the form on the current screen at its default size.
+        If (lWindowLeft = 1) And (lWindowTop = 1) And (lWindowWidth = 1) And (lWindowHeight = 1) Then
+            
+            cMonitors.CenterFormOnMonitor FormMain, FormMain
+            
+        'If values have been saved, perform a sanity check and then restore them
+        Else
+                                
+            'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user
+            ' detached a second monitor that was previously attached and PhotoDemon was being used on that monitor),
+            ' change the values to ensure that the program window appears on-screen.
+            If (lWindowLeft + lWindowWidth) < cMonitors.DesktopLeft Then lWindowLeft = cMonitors.DesktopLeft
+            If lWindowLeft > cMonitors.DesktopLeft + cMonitors.DesktopWidth Then lWindowLeft = cMonitors.DesktopWidth - lWindowWidth
+            If lWindowTop < cMonitors.DesktopTop Then lWindowTop = cMonitors.DesktopTop
+            If lWindowTop > cMonitors.DesktopHeight Then lWindowTop = cMonitors.DesktopHeight - lWindowHeight
+                
+            'Perform a similar sanity check for width and height using arbitrary values (200 pixels at present)
+            If lWindowWidth < 200 Then lWindowWidth = 200
+            If lWindowHeight < 200 Then lWindowHeight = 200
+                
+            'With all values now set to guaranteed-safe values, set the main window's location
+            FormMain.Left = lWindowLeft * Screen.TwipsPerPixelX
+            FormMain.Top = lWindowTop * Screen.TwipsPerPixelY
+            FormMain.Width = lWindowWidth * Screen.TwipsPerPixelX
+            FormMain.Height = lWindowHeight * Screen.TwipsPerPixelY
+            
+        End If
+            
+        
+    End If
+        
+    'Store the current window location to file (in case it hasn't been saved before, or we had to move it from
+    ' an unavailable monitor to an available one)
+    userPreferences.SetPreference_Long "General Preferences", "LastWindowLeft", FormMain.Left / Screen.TwipsPerPixelX
+    userPreferences.SetPreference_Long "General Preferences", "LastWindowTop", FormMain.Top / Screen.TwipsPerPixelY
+    userPreferences.SetPreference_Long "General Preferences", "LastWindowWidth", FormMain.Width / Screen.TwipsPerPixelX
+    userPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", FormMain.Height / Screen.TwipsPerPixelY
+    
+End Sub
