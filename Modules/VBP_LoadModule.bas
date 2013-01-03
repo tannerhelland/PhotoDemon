@@ -234,7 +234,7 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Checking command line..."
     
-    If CommandLine <> "" Then loadImagesFromCommandLine
+    If CommandLine <> "" Then LoadImagesFromCommandLine
         
     '*************************************************************************************************************************************
     ' Unload the splash screen and present the main form
@@ -249,7 +249,7 @@ Public Sub LoadTheProgram()
 End Sub
 
 'If files are present in the command line, this sub will load them
-Private Sub loadImagesFromCommandLine()
+Private Sub LoadImagesFromCommandLine()
 
     LoadMessage "Loading image(s)..."
         
@@ -328,9 +328,27 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
     Dim mustCountColors As Boolean
     Dim colorCountCheck As Long
             
+    'To improve load time, declare a variety of other variables outside the image load loop
+    Dim fileExtension As String
+    Dim loadSuccessful As Boolean
+    
+    Dim loadedByOtherMeans As Boolean
+    loadedByOtherMeans = False
+            
+    'If multiple files are being loaded, we want to suppress all warnings and errors until the very end.
+    Dim multipleFilesLoading As Boolean
+    If UBound(sFile) > 0 Then multipleFilesLoading = True Else multipleFilesLoading = False
+    
+    Dim missingFiles As String
+    missingFiles = ""
+    
+    Dim brokenFiles As String
+    brokenFiles = ""
+            
     'Because this routine accepts an array of images, we have to be prepared for the possibility that more than
     ' one image file is being opened.  This loop will execute until all files are loaded.
     Dim thisImage As Long
+    
     For thisImage = 0 To UBound(sFile)
     
         'Before doing anything else, reset the multipage checker
@@ -343,8 +361,15 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         Message "Verifying that file exists..."
     
         If FileExist(sFile(thisImage)) = False Then
-            Message "File not found. Image load canceled."
-            MsgBox "Unfortunately, the image '" & sFile(thisImage) & "' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found"
+            Message "File not found (" & sFile(thisImage) & "). Image load canceled."
+            
+            'If multiple files are being loaded, suppress any errors until the end
+            If multipleFilesLoading Then
+                missingFiles = missingFiles & getFilename(sFile(thisImage)) & vbCrLf
+            Else
+                MsgBox "Unfortunately, the image '" & sFile(thisImage) & "' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found"
+            End If
+            
             GoTo PreloadMoreImages
         End If
         
@@ -381,189 +406,120 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' LoadFreeImageV3 function.)
         targetImage.OriginalFileFormat = -1
         
-        Dim fileExtension As String
+        'Strip the extension from the file
         fileExtension = UCase(GetExtension(sFile(thisImage)))
-                
-        Dim loadSuccessful As Boolean
-        loadSuccessful = True
         
-        'Dependent on the file's extension, load the appropriate image decoding routine
+        loadSuccessful = False
+        loadedByOtherMeans = False
+            
+        'Depending on the file's extension, load the image using the most appropriate image decoding routine
         Select Case fileExtension
         
-            'BMP
-            Case "BMP"
-                'Bitmaps are preferentially loaded by FreeImage (which loads 32bpp bitmaps correctly), then GDI+ (which
-                ' loads 32bpp bitmaps but may ignore the alpha channel), then default VB (which fails with 32bpp but will
-                ' load other depths).
-                If imageFormats.FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                Else
-                    
-                    If imageFormats.GDIPlusEnabled Then
-                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    Else
-                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    End If
-                    
-                    targetImage.OriginalFileFormat = FIF_BMP
-                    mustCountColors = True
-                    
-                End If
-                
-            'GIF
-            Case "GIF"
-                'GIF is preferentially loaded by FreeImage, then GDI+ if available, then default VB.
-                If imageFormats.FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
-                Else
-                
-                    If imageFormats.GDIPlusEnabled Then
-                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    Else
-                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    End If
-                    
-                    targetImage.OriginalFileFormat = FIF_GIF
-                    targetImage.OriginalColorDepth = 8
-                    
-                End If
-                
-            'ICONS
-            Case "ICO"
-                'Icons are preferentially loaded by FreeImage, then GDI+ if available, then default VB.
-                loadSuccessful = False
-                If imageFormats.FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
-                End If
-                
-                'If FreeImage failed (not likely, but not impossible) or is otherwise unavailable, attempt to load
-                ' the icon file with GDI+ or VB.
-                If loadSuccessful = False Then
-                    
-                    If imageFormats.GDIPlusEnabled Then
-                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    Else
-                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                    End If
-                    
-                    targetImage.OriginalFileFormat = FIF_ICO
-                    mustCountColors = True
-                    
-                End If
-                
-            'JPEG
-            Case "JIF", "JPG", "JPEG", "JPE"
-            
-                'JPEGs are preferentially loaded by FreeImage, then GDI+ if available, then default VB, unless we are in the
-                ' midst of a batch conversion - in that case, use GDI+ first because it is significantly faster as it doesn't
-                ' need to make a copy of the image before operating on it.
-                
-                'Yes, this system is complicated - but it yields quite good results, including for edge cases like CMYK-encoded JPEGs.
-                If MacroStatus = MacroBATCH Then
-                
-                    If imageFormats.GDIPlusEnabled Then
-                        loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = FIF_JPEG
-                        targetImage.OriginalColorDepth = 24
-                    ElseIf imageFormats.FreeImageEnabled Then
-                        loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                    Else
-                        loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                        targetImage.OriginalFileFormat = FIF_JPEG
-                        targetImage.OriginalColorDepth = 24
-                    End If
-                    
-                Else
-                
-                    If imageFormats.FreeImageEnabled Then
-                        loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                    Else
-                        If imageFormats.GDIPlusEnabled Then
-                            loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                        Else
-                            loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                        End If
-                        
-                        targetImage.OriginalFileFormat = FIF_JPEG
-                        targetImage.OriginalColorDepth = 24
-                            
-                    End If
-                    
-                End If
-                    
-            'Internal PhotoDemon format
+            'PhotoDemon's custom file format must be handled specially (as obviously, FreeImage and GDI+ won't handle it)
             Case "PDI"
             
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
                 loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetLayer)
+                
                 targetImage.OriginalFileFormat = 100
                 mustCountColors = True
-                
-            Case "PNG"
-            
-                'FreeImage has a more robust (and reliable) PNG implementation than GDI+, so use it if available
-                loadSuccessful = False
-                If imageFormats.FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                End If
-                
-                'If FreeImage fails for some reason (such as it being a 1bpp PNG), offload the image to GDI+
-                If Not loadSuccessful And imageFormats.GDIPlusEnabled Then
-                    
-                    Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = FIF_PNG
-                    mustCountColors = True
-                    
-                End If
-                
-            Case "TIF", "TIFF"
-            
-                'FreeImage has a more robust (and reliable) TIFF implementation than GDI+, so use it if available
-                If imageFormats.FreeImageEnabled Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
-                Else
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                    targetImage.OriginalFileFormat = FIF_TIFF
-                    mustCountColors = True
-                End If
-                
+        
+            'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too.
             Case "TMP"
             
-                'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too
-                If imageFormats.GDIPlusEnabled Then
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
-                Else
-                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
-                End If
+                If imageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                
+                If (Not imageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                 
                 targetImage.OriginalFileFormat = FIF_BMP
                 mustCountColors = True
-                
-            'Every other file type must be loaded by FreeImage.  Unfortunately, we can't be guaranteed that FreeImage exists.
-            Case Else
-            
-                If imageFormats.FreeImageEnabled = True Then
-                    loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
-                Else
-                    MsgBox "Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please allow " & PROGRAMNAME & " to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:" & vbCrLf & vbCrLf & """If core plugins cannot be located, offer to download them""" & vbCrLf & vbCrLf & "Once this is enabled, restart " & PROGRAMNAME & " and it will download this plugin for you.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
-                    Message "Image load canceled."
-                    pdImages(CurrentImage).deactivateImage
-                    Unload FormMain.ActiveForm
-                    GoTo PreloadMoreImages
-                End If
         
+            'All other formats follow a prescribed behavior - try to load via FreeImage (if available), then GDI+, then finally
+            ' VB's internal LoadPicture function.
+            Case Else
+                                
+                If imageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                
+                If loadSuccessful Then loadedByOtherMeans = False
+                
+                'If FreeImage fails for some reason, offload the image to GDI+
+                If (Not loadSuccessful) And imageFormats.GDIPlusEnabled Then
+                    
+                    Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                    
+                    'If GDI+ loaded the image successfully, note that we have to count available colors ourselves
+                    If loadSuccessful Then
+                        loadedByOtherMeans = True
+                        mustCountColors = True
+                    End If
+                        
+                End If
+                
+                'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture
+                If (Not loadSuccessful) Then
+                    
+                    Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                
+                    'If VB managed to load the image successfully, note that we have to count available colors ourselves
+                    If loadSuccessful Then
+                        loadedByOtherMeans = True
+                        mustCountColors = True
+                    End If
+                
+                End If
+                    
         End Select
         
         'Double-check to make sure the image was loaded successfully
-        If loadSuccessful = False Then
-            Message "Image load canceled."
-            MsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "PhotoDemon Import Failed"
+        If (Not loadSuccessful) Then
+            Message "Failed to load " & sFile(thisImage) & "."
+            
+            'If multiple files are being loaded, suppress any errors until the end
+            If multipleFilesLoading Then
+                brokenFiles = brokenFiles & getFilename(sFile(thisImage)) & vbCrLf
+            Else
+                MsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed"
+            End If
+            
             targetImage.deactivateImage
             If isThisPrimaryImage Then Unload FormMain.ActiveForm
             GoTo PreloadMoreImages
+            
         Else
             Message "Image data loaded successfully."
+        End If
+        
+        'If the image was loaded via GDI+ or VB's LoadPicture, we need to manually mark the file format ourselves based on the extension.
+        ' Also, if possible, make an estimate of the image's color depth if possible.
+        If loadedByOtherMeans Then
+        
+            Select Case fileExtension
+                
+                Case "GIF"
+                    targetImage.OriginalFileFormat = FIF_GIF
+                    targetImage.OriginalColorDepth = 8
+                    
+                Case "ICO"
+                    targetImage.OriginalFileFormat = FIF_ICO
+                
+                Case "JIF", "JPG", "JPEG", "JPE"
+                    targetImage.OriginalFileFormat = FIF_JPEG
+                    targetImage.OriginalColorDepth = 24
+                    
+                Case "PNG"
+                    targetImage.OriginalFileFormat = FIF_PNG
+                
+                Case "TIF", "TIFF"
+                    targetImage.OriginalFileFormat = FIF_TIFF
+                    
+                'Treat anything else as a BMP file
+                Case Else
+                    targetImage.OriginalFileFormat = FIF_BMP
+                    
+            End Select
+        
         End If
         
         'Before continuing, if the image is 32bpp, verify the alpha channel.  If the alpha channel is all 0's or all 255's,
@@ -749,6 +705,15 @@ PreloadMoreImages:
     Next thisImage
         
     If pageNumber = 0 Then Screen.MousePointer = vbNormal
+    
+    'Finally, if we were loading multiple images and something went wrong (missing files, broken files), let the user know about them.
+    If multipleFilesLoading And (Len(missingFiles) > 0) Then
+        MsgBox "Unfortunately, PhotoDemon was unable to find the following image(s):" & vbCrLf & vbCrLf & missingFiles & vbCrLf & "If these imaged were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "Image files missing"
+    End If
+        
+    If multipleFilesLoading And (Len(brokenFiles) > 0) Then
+        MsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & brokenFiles & vbCrLf & "Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Formats Not Supported"
+    End If
         
 End Sub
 
@@ -816,6 +781,8 @@ End Function
 'BITMAP loading
 Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer) As Boolean
     
+    On Error GoTo LoadVBImageFail
+    
     'Create a temporary StdPicture object that will be used to load the image
     Dim tmpPicture As StdPicture
     Set tmpPicture = New StdPicture
@@ -830,6 +797,12 @@ Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer
     dstLayer.CreateFromPicture tmpPicture
     
     LoadVBImage = True
+    Exit Function
+    
+LoadVBImageFail:
+
+    LoadVBImage = False
+    Exit Function
     
 End Function
 
