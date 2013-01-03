@@ -799,14 +799,20 @@ PreloadMoreImages:
     ' Before finishing, display any relevant load problems (missing files, invalid formats, etc)
     '*************************************************************************************************************************************
     
+    'If multiple images were loaded and everything went well, display a success message
+    If multipleFilesLoading And (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) Then Message "All images loaded successfully."
+    
+    'Restore the screen cursor if necessary
     If pageNumber = 0 Then Screen.MousePointer = vbNormal
     
     'Finally, if we were loading multiple images and something went wrong (missing files, broken files), let the user know about them.
     If multipleFilesLoading And (Len(missingFiles) > 0) Then
+        Message "All images loaded, except for those that could not be found."
         MsgBox "Unfortunately, PhotoDemon was unable to find the following image(s):" & vbCrLf & vbCrLf & missingFiles & vbCrLf & "If these imaged were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "Image files missing"
     End If
         
     If multipleFilesLoading And (Len(brokenFiles) > 0) Then
+        Message "All images loaded, except for those in invalid formats."
         MsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & brokenFiles & vbCrLf & "Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Formats Not Supported"
     End If
         
