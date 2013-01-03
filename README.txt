@@ -1,4 +1,4 @@
-PhotoDemon v5.4 beta - Copyright (c) 2012 by Tanner Helland
+PhotoDemon v5.4 beta - Copyright (c) 2013 by Tanner Helland
 =====================================================================================
 A free, open-source photo editor and image processing tool.
 http://tannerhelland.com/photodemon
@@ -44,7 +44,7 @@ What doesn't PhotoDemon do?
 -------------------------------------------------------------------------------------
 :: Painting tools.
 	PhotoDemon does not provide any painting tools.  These are coming, but they will
-	not make the cut for version 5.2.
+	not make the cut for version 5.4.
 		
 :: Advanced color management (ICC profiles)
 	PhotoDemon ignores embedded ICC profiles.  As a tool designed for consumers and
@@ -100,7 +100,7 @@ If you can't contribute monetarily to the project, here are other ways to help:
   
 [2] License
 =====================================================================================
-PhotoDemon is Copyright (c) 2012 by Tanner Helland, www.tannerhelland.com
+PhotoDemon is Copyright (c) 2013 by Tanner Helland, www.tannerhelland.com
 
 PhotoDemon is released under a BSD license. You may read more about this license at the following location: http://creativecommons.org/licenses/BSD/.  A full copy of this license is included at the bottom of this section.
 
@@ -110,7 +110,7 @@ Questions regarding licensing should be directed to: www.tannerhelland.com/conta
 
 Full text of BSD license follows.
 
-Copyright (c) 2012, Tanner Helland
+Copyright (c) 2013, Tanner Helland
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -168,6 +168,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://tango.freedesktop.org/Tango_Icon_Library)
 * Phil Fresle for a native-VB implementation of SHA-2 hashing
   (http://www.frez.co.uk/vb6.aspx)
+* Adrian Pellas-Rice, Kornel Lesinski, Stuart Coyle, Greg Roelofs, and Anthony Dekker for the pngnq-s9 tool
+  (http://sourceforge.net/projects/pngnqs9/)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
   * Herman Liu
   * Dave Jamison
