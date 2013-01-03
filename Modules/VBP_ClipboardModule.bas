@@ -1,7 +1,7 @@
 Attribute VB_Name = "Clipboard_Handler"
 '***************************************************************************
 'Clipboard Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 06/September/12
 'Last update: rewrote copy/paste against the new layer class.
@@ -122,7 +122,7 @@ Public Sub ClipboardPaste()
 End Sub
 
 'The code in the function below is a heavily modified version of code originally located at:
-' http://www.vb-helper.com/howto_track_clipboard.html (link still good as of 21 December 2012)
+' http://www.vb-helper.com/howto_track_clipboard.html (link still good as of 21 December '12)
 ' Many thanks to the original author(s).
 Public Function ClipboardGetFiles() As String()
     

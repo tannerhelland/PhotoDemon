@@ -1,7 +1,7 @@
 Attribute VB_Name = "Misc_Validation"
 '***************************************************************************
 'Miscellaneous Functions Related to Validating User Input
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 03/October/12
 'Last update: First build

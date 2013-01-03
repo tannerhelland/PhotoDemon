@@ -215,7 +215,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gamma Correction Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 12/May/01
 'Last updated: 09/September/12
 'Last update: rewrote all code against the new layer class
@@ -238,7 +238,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
     If EntryValid(txtGamma, hsGamma.Min / 100, hsGamma.Max / 100) Then
         Me.Visible = False
@@ -300,7 +300,7 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     
     'Gamma can be easily applied using a look-up table
     Dim gLookup(0 To 255) As Byte
@@ -323,17 +323,17 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Correct the gamma values according to the channel requested by the user
         If Method = 0 Then
-            r = gLookup(r)
+            R = gLookup(R)
             g = gLookup(g)
             b = gLookup(b)
         ElseIf Method = 1 Then
-            r = gLookup(r)
+            R = gLookup(R)
         ElseIf Method = 2 Then
             g = gLookup(g)
         ElseIf Method = 3 Then
@@ -341,7 +341,7 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

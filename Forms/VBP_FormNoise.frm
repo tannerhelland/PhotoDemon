@@ -203,7 +203,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Noise Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 3/15/01
 'Last updated: 10/September/12
 'Last update: rewrote against new layer class
@@ -224,7 +224,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max) Then
         FormNoise.Visible = False
         Process Noise, hsNoise.Value, ChkM.Value
@@ -265,7 +265,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     
     'Noise variables
     Dim nColor As Long
@@ -283,7 +283,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
@@ -291,28 +291,28 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
             
             'Monochromatic noise - same amount for each color
             nColor = (dNoise * Rnd) - Noise
-            r = r + nColor
+            R = R + nColor
             g = g + nColor
             b = b + nColor
             
         Else
             
             'Colored noise - each color generated randomly
-            r = r + (dNoise * Rnd) - Noise
+            R = R + (dNoise * Rnd) - Noise
             g = g + (dNoise * Rnd) - Noise
             b = b + (dNoise * Rnd) - Noise
             
         End If
         
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
+        If R > 255 Then R = 255
+        If R < 0 Then R = 0
         If g > 255 Then g = 255
         If g < 0 Then g = 0
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
         'Assign that blended value to each color channel
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

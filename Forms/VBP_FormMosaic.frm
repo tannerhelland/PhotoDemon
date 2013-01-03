@@ -234,7 +234,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Mosaic filter interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 8/5/00
 'Last updated: 10/September/12
 'Last update: fixed many problems; rewrote code against new layer class, fixed code to work with mosaic sizes of 1,
@@ -256,7 +256,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max) Then
         If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max) Then
             Me.Visible = False
@@ -334,7 +334,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
     Dim NumOfPixels As Long
     
     'Finally, individual colors also need to be tracked
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     
     'Loop through each pixel in the image, diffusing as we go
     For x = initX To xLoop
@@ -356,7 +356,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            r = r + srcImageData(QuickVal + 2, j)
+            R = R + srcImageData(QuickVal + 2, j)
             g = g + srcImageData(QuickVal + 1, j)
             b = b + srcImageData(QuickVal, j)
             
@@ -372,7 +372,7 @@ NextMosiacPixel1:
         If NumOfPixels = 0 Then GoTo NextMosaicPixel3
         
         'Take the average red, green, and blue values of all the pixles within this tile
-        r = r \ NumOfPixels
+        R = R \ NumOfPixels
         g = g \ NumOfPixels
         b = b \ NumOfPixels
         
@@ -386,7 +386,7 @@ NextMosiacPixel1:
             If i > finalX Or j > finalY Then GoTo NextMosiacPixel2
             
             'Set the pixel
-            dstImageData(QuickVal + 2, j) = r
+            dstImageData(QuickVal + 2, j) = R
             dstImageData(QuickVal + 1, j) = g
             dstImageData(QuickVal, j) = b
             
@@ -398,7 +398,7 @@ NextMosiacPixel2:
 NextMosaicPixel3:
 
         'Clear all the variables and go to the next pixel
-        r = 0
+        R = 0
         g = 0
         b = 0
         NumOfPixels = 0

@@ -226,7 +226,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rank (a.k.a. High/Low Pass, Dilate/Erode) Filter Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 26/October/06
 'Last update: Image preview and additional optimizations. Image previewing
@@ -253,7 +253,7 @@ Private Sub cboRank_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 'OK Button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max) Then
         Me.Visible = False
         Process CustomRank, hsRadius.Value, cboRank.ListIndex
@@ -325,7 +325,7 @@ Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte, Option
     progBarCheck = findBestProgBarValue()
     
     'Rank calculations require a lot of variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim grayVal As Long, grayValOriginal As Long
     Dim MaxX As Long, MaxY As Long
     Dim MaxTotal As Long
@@ -352,11 +352,11 @@ Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte, Option
                 MaxTotal = -1
         End Select
         
-        r = srcImageData(QuickVal + 2, y)
+        R = srcImageData(QuickVal + 2, y)
         g = srcImageData(QuickVal + 1, y)
         b = srcImageData(QuickVal, y)
             
-        grayValOriginal = gLookup(r + g + b)
+        grayValOriginal = gLookup(R + g + b)
         
         For c = x - Radius To x + Radius
             QuickValInner = c * qvDepth
@@ -367,11 +367,11 @@ Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte, Option
             If d < 0 Then GoTo NextRankPixel
             If d > finalY Then GoTo NextRankPixel
         
-            r = srcImageData(QuickValInner + 2, d)
+            R = srcImageData(QuickValInner + 2, d)
             g = srcImageData(QuickValInner + 1, d)
             b = srcImageData(QuickValInner, d)
             
-            grayVal = gLookup(r + g + b)
+            grayVal = gLookup(R + g + b)
             
             Select Case RankType
                 Case 0

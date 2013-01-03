@@ -231,7 +231,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Detection Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 1/11/02
 'Last updated: 09/September/12
 'Last update: added previewing!  Also, rewrote all functions against new layer code.
@@ -253,7 +253,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
     Me.Visible = False
     

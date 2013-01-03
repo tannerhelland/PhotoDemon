@@ -385,7 +385,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Handler
-'Copyright ©2001-2012 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 09/September/12
 'Last update: rewrote the histogram against the new layer class, and greatly improved its export mechanism
@@ -1092,11 +1092,11 @@ Public Sub StretchHistogram()
     Dim R As Long, g As Long, b As Long
     
     'Max and min values
-    Dim RMax As Long, GMax As Long, BMax As Long
-    Dim RMin As Long, GMin As Long, BMin As Long
-    RMin = 255
-    GMin = 255
-    BMin = 255
+    Dim rMax As Long, gMax As Long, bMax As Long
+    Dim rMin As Long, gMin As Long, bMin As Long
+    rMin = 255
+    gMin = 255
+    bMin = 255
         
     'Loop through each pixel in the image, checking max/min values as we go
     For x = initX To finalX
@@ -1108,29 +1108,29 @@ Public Sub StretchHistogram()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        If R < RMin Then RMin = R
-        If R > RMax Then RMax = R
-        If g < GMin Then GMin = g
-        If g > GMax Then GMax = g
-        If b < BMin Then BMin = b
-        If b > BMax Then BMax = b
+        If R < rMin Then rMin = R
+        If R > rMax Then rMax = R
+        If g < gMin Then gMin = g
+        If g > gMax Then gMax = g
+        If b < bMin Then bMin = b
+        If b > bMax Then bMax = b
         
     Next y
     Next x
     
     Message "Stretching histogram..."
-    Dim Rdif As Long, Gdif As Long, Bdif As Long
+    Dim rdif As Long, Gdif As Long, Bdif As Long
     
-    Rdif = RMax - RMin
-    Gdif = GMax - GMin
-    Bdif = BMax - BMin
+    rdif = rMax - rMin
+    Gdif = gMax - gMin
+    Bdif = bMax - bMin
     
     'Lookup tables make the stretching go faster
     Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     For x = 0 To 255
-        If Rdif <> 0 Then
-            R = 255 * ((x - RMin) / Rdif)
+        If rdif <> 0 Then
+            R = 255 * ((x - rMin) / rdif)
             If R < 0 Then R = 0
             If R > 255 Then R = 255
             rLookup(x) = R
@@ -1138,7 +1138,7 @@ Public Sub StretchHistogram()
             rLookup(x) = x
         End If
         If Gdif <> 0 Then
-            g = 255 * ((x - GMin) / Gdif)
+            g = 255 * ((x - gMin) / Gdif)
             If g < 0 Then g = 0
             If g > 255 Then g = 255
             gLookup(x) = g
@@ -1146,7 +1146,7 @@ Public Sub StretchHistogram()
             gLookup(x) = x
         End If
         If Bdif <> 0 Then
-            b = 255 * ((x - BMin) / Bdif)
+            b = 255 * ((x - bMin) / Bdif)
             If b < 0 Then b = 0
             If b > 255 Then b = 255
             bLookup(x) = b

@@ -179,7 +179,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Rotation Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 12/November/12
 'Last updated: 12/November/12
 'Last update: initial build
@@ -209,7 +209,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
     If Not EntryValid(txtAngle, -180, 180, True, True) Then

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Screen_Capture"
 '***************************************************************************
 'Screen Capture Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 12/June/99
 'Last updated: 04/September/12
 'Last update: use the Sleep API call to prevent the capture message box from being caught in the capture.
@@ -15,11 +15,11 @@ Option Explicit
 
 'Various API calls required for screen capturing
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
-Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hDC As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 
 
@@ -57,7 +57,7 @@ Public Sub CaptureScreen()
     Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
     
-    'UPDATE 12 November 2012: use our new cMonitors object to detect VIRTUAL screen size.  This will capture all monitors
+    'UPDATE 12 November '12: use our new cMonitors object to detect VIRTUAL screen size.  This will capture all monitors
     ' on a multimonitor arrangement, not just the primary one.
     screenLeft = cMonitors.DesktopLeft
     screenTop = cMonitors.DesktopTop
@@ -87,11 +87,11 @@ Public Sub CaptureScreen()
     End If
     
     'Set the picture of the form to equal its image
-    Dim tmpFileName As String
-    tmpFileName = userPreferences.getTempPath & PROGRAMNAME & " Screen Capture.tmp"
+    Dim tmpFilename As String
+    tmpFilename = userPreferences.getTempPath & PROGRAMNAME & " Screen Capture.tmp"
     
     'Ask the layer to write out its data to file in BMP format
-    tmpLayer.writeToBitmapFile tmpFileName
+    tmpLayer.writeToBitmapFile tmpFilename
         
     'We are now done with the temporary layer, so free it up
     tmpLayer.eraseLayer
@@ -100,12 +100,12 @@ Public Sub CaptureScreen()
     'Once the capture is saved, load it up like any other bitmap
     ' NOTE: Because PreLoadImage requires an array of strings, create an array to send to it
     Dim sFile(0) As String
-    sFile(0) = tmpFileName
+    sFile(0) = tmpFilename
         
     PreLoadImage sFile, False, "Screen Capture", "Screen capture (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     
     'Erase the temp file
-    If FileExist(tmpFileName) Then Kill tmpFileName
+    If FileExist(tmpFilename) Then Kill tmpFilename
     
     Message "Screen capture complete."
     

@@ -1,7 +1,7 @@
 Attribute VB_Name = "FastDrawing"
 '***************************************************************************
 'Fast API Graphics Routines Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 31/August/12
 'Last update: Completed work on prepImageData and finalizeImageData, which are the much-improved successors to

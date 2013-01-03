@@ -1,7 +1,7 @@
 Attribute VB_Name = "MDI_Handler"
 '***************************************************************************
 'MDI Window Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 10/September/12
 'Last update: when calling FitOnScreen, maximized forms are now left maximized (previously they were forceably un-maximized)

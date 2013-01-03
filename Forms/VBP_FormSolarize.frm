@@ -187,7 +187,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Solarizing Effect Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/14/01
 'Last updated: 10/September/12
 'Last update: rewrote against new layer class; also, optimized with look-up tables
@@ -204,7 +204,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max) Then
         Me.Visible = False
         Process Solarize, hsThreshold.Value

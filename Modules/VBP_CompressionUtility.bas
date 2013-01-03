@@ -1,7 +1,7 @@
 Attribute VB_Name = "zLib_Handler"
 '***************************************************************************
 'File Compression Interface (via zLib)
-'Copyright ©2003-2012 by Tanner Helland
+'Copyright ©2003-2013 by Tanner Helland
 'Created: 3/02/02
 'Last updated: 24/October/07
 'Last update: cleaned up error handling
@@ -15,8 +15,8 @@ Option Explicit
 
 'API Declarations
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function compress Lib "zlibwapi.dll" (dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
-Private Declare Function uncompress Lib "zlibwapi.dll" (dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
+Private Declare Function compress Lib "zlibwapi.dll" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
+Private Declare Function uncompress Lib "zlibwapi.dll" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
 Private Declare Function zlibVersion Lib "zlibwapi.dll" () As Long
 
 'Custom compressed file header

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Misc_FileInteractions"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 13/November/12
 'Last update: Updated DirectoryExist to not only check for a directory's existence, but also make sure we have access rights.

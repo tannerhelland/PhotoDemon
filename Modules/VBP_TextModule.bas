@@ -1,7 +1,7 @@
 Attribute VB_Name = "Text_Processing"
 '***************************************************************************
 'Text Operations Module
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 05/July/12
 'Last updated: 23/September/12
 'Last update: use local copies of "x" for each function

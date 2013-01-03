@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macro_and_Batch_Handler"
 '***************************************************************************
 'Macro and Batch Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 10/21/01
 'Last updated: 30/July/06
 'Last update: Uses new process call format and can convert old 2002 files

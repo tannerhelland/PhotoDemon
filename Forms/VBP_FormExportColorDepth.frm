@@ -170,7 +170,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exported Color Depth Dialog
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 11/December/12
 'Last update: initial build
@@ -203,7 +203,7 @@ Public Property Let imageFormat(ByVal imageFormat As Long)
 End Property
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     If restoreCursor Then Screen.MousePointer = vbHourglass
     

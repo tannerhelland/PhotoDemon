@@ -249,7 +249,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Diffuse Filter Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 8/14/01
 'Last updated: 09/September/12
 'Last update: rewrote all effects against new layer class
@@ -275,7 +275,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'The max and min values of the scroll bars are used to validate the range of the text box
     If EntryValid(txtX, hsX.Min, hsX.Max) Then

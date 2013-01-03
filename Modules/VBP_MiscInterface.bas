@@ -1,7 +1,7 @@
 Attribute VB_Name = "Misc_Interface"
 '***************************************************************************
 'Miscellaneous Functions Related to the User Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 03/October/12
 'Last update: First build
@@ -197,13 +197,13 @@ Public Sub Message(ByVal MString As String)
     If MacroStatus = MacroSTART Then MString = MString & " {-Recording-}"
     
     If MacroStatus <> MacroBATCH Then
-        If FormMain.Visible = True Then
+        If FormMain.Visible Then
             cProgBar.Text = MString
             cProgBar.Draw
         End If
     End If
     
-    If IsProgramCompiled = False Then Debug.Print MString
+    If isProgramCompiled = False Then Debug.Print MString
     
     'If we're logging program messages, open up a log file and dump the message there
     If LogProgramMessages = True Then

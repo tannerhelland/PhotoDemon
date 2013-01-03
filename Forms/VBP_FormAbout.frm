@@ -210,7 +210,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'About Form
-'Copyright ©2001-2012 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 23/November/12
 'Last update: updated list to reflect recent changes to the codebase.

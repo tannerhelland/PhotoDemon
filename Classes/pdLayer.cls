@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Layer class
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 25/November/12
 'Last update: added a function for copying just the alpha values from another layer object
@@ -649,9 +649,9 @@ Public Sub convertToCMYK32()
         
         Dim x As Long, y As Long, QuickX As Long
                         
-        Dim r As Long, g As Long, b As Long
+        Dim R As Long, g As Long, b As Long
         
-        Dim cyan As Long, magenta As Long, yellow As Long, k As Long
+        Dim cyan As Long, magenta As Long, yellow As Long, K As Long
         
         Dim qvDepth As Long
         qvDepth = layerColorDepth \ 8
@@ -671,17 +671,17 @@ Public Sub convertToCMYK32()
             yellow = 255 - iData(QuickX, y)
             
             'Key
-            k = CByte(MinimumInt(cyan, magenta, yellow))
-            iData(QuickX + 3, y) = k
+            K = CByte(MinimumInt(cyan, magenta, yellow))
+            iData(QuickX + 3, y) = K
             
-            If k = 255 Then
+            If K = 255 Then
                 iData(QuickX, y) = 0
                 iData(QuickX + 1, y) = 0
                 iData(QuickX + 2, y) = 0
             Else
-                iData(QuickX, y) = cyan - k
-                iData(QuickX + 1, y) = magenta - k
-                iData(QuickX + 2, y) = yellow - k
+                iData(QuickX, y) = cyan - K
+                iData(QuickX + 1, y) = magenta - K
+                iData(QuickX + 2, y) = yellow - K
             End If
                             
         Next y
@@ -710,7 +710,7 @@ Public Function isLayerGrayscale() As Boolean
         
         Dim x As Long, y As Long, QuickX As Long
                         
-        Dim r As Long, g As Long, b As Long
+        Dim R As Long, g As Long, b As Long
         
         Dim qvDepth As Long
         qvDepth = layerColorDepth \ 8
@@ -720,13 +720,13 @@ Public Function isLayerGrayscale() As Boolean
             QuickX = x * qvDepth
         For y = 0 To layerHeight - 1
             
-            r = iData(QuickX + 2, y)
+            R = iData(QuickX + 2, y)
             g = iData(QuickX + 1, y)
             b = iData(QuickX, y)
             
             'For optimization reasons, this is stated as multiple IFs instead of an OR.  I'm not sure if VB
             ' short-circuits OR statements, but I know multiple IF statements work.  :)
-            If r <> g Then
+            If R <> g Then
                 
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
@@ -742,7 +742,7 @@ Public Function isLayerGrayscale() As Boolean
                 isLayerGrayscale = False
                 Exit Function
                 
-            ElseIf r <> b Then
+            ElseIf R <> b Then
             
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
@@ -1632,7 +1632,7 @@ Public Sub fixPremultipliedAlpha()
     
     Dim x As Long, y As Long, QuickX As Long
     
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim tmpAlpha As Byte, tmpAlphaModifier As Single
 
     'Loop through the image, removing the effects of pre-multiplication as we go
@@ -1646,18 +1646,18 @@ Public Sub fixPremultipliedAlpha()
         If tmpAlpha <> 255 Then
             If tmpAlpha <> 0 Then
             
-                r = iData(QuickX + 2, y)
+                R = iData(QuickX + 2, y)
                 g = iData(QuickX + 1, y)
                 b = iData(QuickX, y)
             
                 tmpAlphaModifier = 255 / tmpAlpha
             
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                r = r * tmpAlphaModifier
+                R = R * tmpAlphaModifier
                 g = g * tmpAlphaModifier
                 b = b * tmpAlphaModifier
                 
-                iData(QuickX + 2, y) = CByte(r)
+                iData(QuickX + 2, y) = CByte(R)
                 iData(QuickX + 1, y) = CByte(g)
                 iData(QuickX, y) = CByte(b)
             

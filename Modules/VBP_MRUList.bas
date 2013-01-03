@@ -1,7 +1,7 @@
 Attribute VB_Name = "MRU_List_Handler"
 '***************************************************************************
 'MRU (Most Recently Used) List Handler
-'Copyright ©2005-2012 by Tanner Helland
+'Copyright ©2005-2013 by Tanner Helland
 'Created: 22/May/05
 'Last updated: 25/November/12
 'Last update: finished debugging MRU icons and preferences related to MRU caption length
@@ -11,7 +11,7 @@ Attribute VB_Name = "MRU_List_Handler"
 ' entire thing to use only the INI file. PhotoDemon doesn't touch the registry!
 '
 'Special thanks to Randy Birch for the original version of the path shrinking code.
-' You can download his original version from this link (good as of 22 Nov 2012):
+' You can download his original version from this link (good as of 22 Nov '12):
 ' http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm
 '
 '***************************************************************************

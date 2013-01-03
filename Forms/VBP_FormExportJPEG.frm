@@ -255,7 +255,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG Export Dialog
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 5/8/00
 'Last updated: 03/December/12
 'Last update: converted this into a true "dialog", in that it can be called from anywhere, and it will return
@@ -319,7 +319,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
         
     'Determine the compression quality for the quantization tables
     Select Case CmbSaveQuality.ListIndex
@@ -449,8 +449,8 @@ Private Sub toggleAdvancedSettings()
         lineSeparator.y1 = hsQuality.Top + 48
         lineSeparator.y2 = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 16
-        CmdOK.Top = cmdShowHide.Top
-        CmdCancel.Top = CmdOK.Top
+        cmdOK.Top = cmdShowHide.Top
+        cmdCancel.Top = cmdOK.Top
     
     Else
     
@@ -469,8 +469,8 @@ Private Sub toggleAdvancedSettings()
         lineSeparator.y1 = chkSubsample.Top + 48
         lineSeparator.y2 = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 16
-        CmdOK.Top = cmdShowHide.Top
-        CmdCancel.Top = CmdOK.Top
+        cmdOK.Top = cmdShowHide.Top
+        cmdCancel.Top = cmdOK.Top
     
     End If
 

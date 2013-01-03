@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 
 'This class was originally written by Mike Dixon.
 
-'You may download the original version of this code from the following link (good as of November 2012):
+'You may download the original version of this code from the following link (good as of November '12):
 ' http://support.microsoft.com/kb/194578
 
 
@@ -70,8 +70,8 @@ Public Property Get Width() As Long
     Width = m_Width
 End Property
 
-Public Property Let Width(w As Long)
-    m_Width = w
+Public Property Let Width(W As Long)
+    m_Width = W
 End Property
 
 Public Property Get Left() As Long
@@ -86,8 +86,8 @@ Public Property Get Right() As Long
     Right = m_Right
 End Property
 
-Public Property Let Right(r As Long)
-    m_Right = r
+Public Property Let Right(R As Long)
+    m_Right = R
 End Property
 
 Public Property Get Top() As Long
@@ -118,8 +118,8 @@ Public Property Get WorkRight() As Long
     WorkRight = m_Workright
 End Property
 
-Public Property Let WorkRight(r As Long)
-    m_Workright = r
+Public Property Let WorkRight(R As Long)
+    m_Workright = R
 End Property
 
 Public Property Get WorkTop() As Long

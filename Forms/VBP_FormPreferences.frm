@@ -2257,7 +2257,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Program Preferences Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 22/October/12
 'Last update: revamped entire interface; settings are now sorted by category.

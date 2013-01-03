@@ -827,7 +827,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Filter Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 08/September/12
 'Last update: several routines from this form have been moved to the Filters_Area module, which is a more sensible place for them.
@@ -839,7 +839,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'When the user clicks OK...
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Before we do anything else, check to make sure every text box has a
     'valid number in it (no range checking is necessary)

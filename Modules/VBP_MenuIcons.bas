@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menu_Icon_Handler"
 '***************************************************************************
 'Specialized Icon Handler
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 12/August/12
 'Last update: Added ResetMenuIcons, which redraws menu icons that may have been dropped due to the menu

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Misc_Uncategorized"
 '***************************************************************************
 'Miscellaneous Operations Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 03/October/12
 'Last update: Reorganized this massive module into a bunch of smaller ones for improved organization.

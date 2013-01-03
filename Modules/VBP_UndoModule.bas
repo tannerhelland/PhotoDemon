@@ -1,7 +1,7 @@
 Attribute VB_Name = "Undo_Handler"
 '***************************************************************************
 'Undo/Redo Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 2/April/01
 'Last updated: 12/August/12
 'Last update: BuildImageRestore requests are now required to supply the ID of the process requesting

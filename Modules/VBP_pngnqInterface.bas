@@ -1,7 +1,7 @@
 Attribute VB_Name = "pngnq_Interface"
 '***************************************************************************
 'pngnq-s9 Interface
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 19/December/12
 'Last updated: 26/December/12
 'Last update: added mechanism for version checking
@@ -18,7 +18,7 @@ Attribute VB_Name = "pngnq_Interface"
 '
 ' http://sourceforge.net/projects/pngnqs9/
 '
-'This project was designed against v2.0.1 of the pngnq-s9 tool (16 Oct 2012).  It may not work with
+'This project was designed against v2.0.1 of the pngnq-s9 tool (16 Oct '12).  It may not work with
 ' other versions of the tool.  Additional documentation regarding the use of pngnq-s9 is available
 ' as part of the official pngnq-s9 zip, downloadable from http://sourceforge.net/projects/pngnqs9/files/
 '

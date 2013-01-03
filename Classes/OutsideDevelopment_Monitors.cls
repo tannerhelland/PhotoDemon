@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 
 'This class was originally written by Mike Dixon.
 
-'You may download the original version of this code from the following link (good as of November 2012):
+'You may download the original version of this code from the following link (good as of November '12):
 ' http://support.microsoft.com/kb/194578
 
 

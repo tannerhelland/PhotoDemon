@@ -283,7 +283,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tile Rendering Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 25/August/12
 'Last updated: 09/September/12
 'Last update: rewrote against new layer class.  The tile generation is now much MUCH faster, especially for egregiously large
@@ -392,7 +392,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
     If Not EntryValid(TxtWidth, 1, 32767, True, True) Then

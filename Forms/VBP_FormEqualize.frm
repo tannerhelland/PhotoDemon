@@ -213,7 +213,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Equalization Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 19/September/12
 'Last updated: 19/September/12
 'Last update: initial build.  Originally, the equalize functions were handled from menu entries on the main form, but this
@@ -245,7 +245,7 @@ Private Sub chkRed_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     Me.Visible = False
         
@@ -303,8 +303,8 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
+    Dim R As Long, g As Long, b As Long
+    Dim h As Single, S As Single, l As Single
     Dim lInt As Long
     
     'Histogram variables
@@ -320,18 +320,18 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Store those values in the histogram
-        rDataInt(r) = rDataInt(r) + 1
+        rDataInt(R) = rDataInt(R) + 1
         gDataInt(g) = gDataInt(g) + 1
         bDataInt(b) = bDataInt(b) + 1
         
         'Because luminance is slower to calculate, only calculate it if absolutely necessary
         If HandleL Then
-            lInt = getLuminance(r, g, b)
+            lInt = getLuminance(R, g, b)
             lDataInt(lInt) = lDataInt(lInt) + 1
         End If
         
@@ -414,23 +414,23 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     For y = initY To finalY
     
         'Get the RGB values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'If luminance has been requested, calculate it before messing with any of the color channels
         If HandleL Then
-            tRGBToHSL r, g, b, h, s, l
-            tHSLToRGB h, s, lDataInt(Int(l * 255)) / 255, r, g, b
+            tRGBToHSL R, g, b, h, S, l
+            tHSLToRGB h, S, lDataInt(Int(l * 255)) / 255, R, g, b
         End If
         
         'Next, calculate new values for the color channels, based on what is being equalized
-        If HandleR Then r = rDataInt(r)
+        If HandleR Then R = rDataInt(R)
         If HandleG Then g = gDataInt(g)
         If HandleB Then b = bDataInt(b)
         
         'Assign our new values back into the pixel array
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

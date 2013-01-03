@@ -17,7 +17,7 @@ Attribute VB_Exposed = False
 
 'This class was originally written by Steve McMahon.
 
-'You may download the original version of this code from the following link (good as of June 2012):
+'You may download the original version of this code from the following link (good as of June '12):
 ' http://www.vbaccelerator.com/home/VB/Code/Controls/Progress_Bar/No_Progress_Bar_Class/article.asp
 
 'To the best of my knowledge, this code is released under a CC-BY-1.0 license.  (Assumed from the footer text of vbaccelerator.com: "All contents of this web site are licensed under a Creative Commons Licence, except where otherwise noted.")
@@ -40,12 +40,12 @@ Private Type POINTAPI
    y As Long
 End Type
 Private Declare Function WindowFromDC Lib "user32" (ByVal hDC As Long) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal HWnd As Long, lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT, ByVal bErase As Long) As Long
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function SelectClipRgn Lib "gdi32" (ByVal hDC As Long, ByVal hRgn As Long) As Long
 Private Declare Function CreateRectRgnIndirect Lib "gdi32" (lpRect As RECT) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal HWnd As Long, lpRect As RECT) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
 Private Declare Function GetSysColorBrush Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
@@ -82,7 +82,7 @@ Private Declare Function OleTranslateColor Lib "OLEPRO32.DLL" (ByVal OLE_COLOR A
 Private Const CLR_INVALID = -1
 
 Private Declare Function OpenThemeData Lib "uxtheme.dll" _
-   (ByVal HWnd As Long, ByVal pszClassList As Long) As Long
+   (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
 Private Declare Function CloseThemeData Lib "uxtheme.dll" _
    (ByVal hTheme As Long) As Long
 Private Declare Function DrawThemeBackground Lib "uxtheme.dll" _
@@ -287,8 +287,8 @@ End Property
 Public Sub Draw()
    If Not m_obj Is Nothing Then
       Dim tR As RECT
-      GetClientRect m_obj.HWnd, tR
-      DrawToDC m_obj.HWnd, m_obj.hDC, tR.Left, tR.Top, tR.Right, tR.Bottom
+      GetClientRect m_obj.hWnd, tR
+      DrawToDC m_obj.hWnd, m_obj.hDC, tR.Left, tR.Top, tR.Right, tR.Bottom
       Me.DrawObject.Picture = Me.DrawObject.Image
       Me.DrawObject.Refresh
       DoEvents
@@ -302,7 +302,7 @@ Public Sub Draw()
 End Sub
 
 Public Sub DrawToDC( _
-      ByVal HWnd As Long, _
+      ByVal hWnd As Long, _
       ByVal hDC As Long, _
       ByVal lLeft As Long, ByVal lTop As Long, _
       ByVal lRight As Long, ByVal lBottom As Long _
@@ -368,7 +368,7 @@ Dim bDrawn As Boolean
       End If
    Else
       If (m_bXpStyle) Then
-         hTheme = OpenThemeData(HWnd, StrPtr("Progress"))
+         hTheme = OpenThemeData(hWnd, StrPtr("Progress"))
          If (hTheme <> 0) Then
             hR = GetThemeInt(hTheme, 0, 0, PROGRESSCHUNKSIZE, lSegmentWidth)
             If (hR = S_OK) Then
@@ -389,7 +389,7 @@ Dim bDrawn As Boolean
       End If
       
       If Not (bDrawn) Then
-         lColor = BackColor
+         lColor = backColor
          If lColor And &H80000000 Then
             hBr = GetSysColorBrush(lColor And &H1F&)
          Else
@@ -503,7 +503,7 @@ Dim bDrawn As Boolean
    End If
    
    If m_bSegments And Not bDrawn Then
-      lColor = BackColor
+      lColor = backColor
       If lColor And &H80000000 Then
          hBr = GetSysColorBrush(lColor And &H1F&)
       Else
@@ -702,10 +702,10 @@ Dim lDstHeight As Long
 End Sub
 
 
-Public Property Get BackColor() As OLE_COLOR
-   BackColor = m_oBackColor
+Public Property Get backColor() As OLE_COLOR
+   backColor = m_oBackColor
 End Property
-Public Property Let BackColor(oColor As OLE_COLOR)
+Public Property Let backColor(oColor As OLE_COLOR)
    m_oBackColor = oColor
    Draw
 End Property

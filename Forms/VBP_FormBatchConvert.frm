@@ -511,7 +511,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 08/September/12
 'Last update: rewrote all batch conversion file format compatibility against the new hybrid FreeImage/GDI+ system.  This means additional
@@ -703,7 +703,7 @@ Private Sub cmdSelectMacro_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Make sure the user has selected some files to operate on
     If lstFiles.ListCount < 1 Then

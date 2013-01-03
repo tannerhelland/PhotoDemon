@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 13/August/12
 'Last update: built GetNameOfProcess for returning human-readable descriptions of processes

@@ -188,7 +188,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Colorize Form
-'Copyright ©2006-2012 by Tanner Helland
+'Copyright ©2006-2013 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 09/September/12
 'Last update: added "maintain saturation" check box
@@ -211,7 +211,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Me.Visible = False
     
     If chkSaturation.Value = vbChecked Then
@@ -254,8 +254,8 @@ Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturati
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
+    Dim R As Long, g As Long, b As Long
+    Dim h As Single, S As Single, l As Single
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -263,22 +263,22 @@ Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturati
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Get the hue and saturation
-        tRGBToHSL r, g, b, h, s, l
+        tRGBToHSL R, g, b, h, S, l
         
         'Convert back to RGB using our artificial hue value
         If maintainSaturation Then
-            tHSLToRGB hToUse, s, l, r, g, b
+            tHSLToRGB hToUse, S, l, R, g, b
         Else
-            tHSLToRGB hToUse, 0.5, l, r, g, b
+            tHSLToRGB hToUse, 0.5, l, R, g, b
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -302,7 +302,7 @@ Private Sub Form_Activate()
 
     'This short routine is for drawing the picture box below the hue slider
     Dim hVal As Single
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     
     'Simple gradient-ish code implementation of drawing hue
     For x = 0 To picHueDemo.ScaleWidth
@@ -313,10 +313,10 @@ Private Sub Form_Activate()
         hVal = (hVal - 60) / 60
         
         'Generate a hue for this position (the 1 and 0.5 correspond to full saturation and half luminance, respectively)
-        tHSLToRGB hVal, 1, 0.5, r, g, b
+        tHSLToRGB hVal, 1, 0.5, R, g, b
         
         'Draw the color
-        picHueDemo.Line (x, 0)-(x, picHueDemo.ScaleHeight), RGB(r, g, b)
+        picHueDemo.Line (x, 0)-(x, picHueDemo.ScaleHeight), RGB(R, g, b)
         
     Next x
     

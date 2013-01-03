@@ -252,7 +252,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brightness and Contrast Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 2/6/01
 'Last updated: 09/September/12
 'Last update: better optimized sampled contrast while previewing.  The sampled mean is now calculated only once, then

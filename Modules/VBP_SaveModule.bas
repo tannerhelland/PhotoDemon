@@ -1,7 +1,7 @@
 Attribute VB_Name = "Saving"
 '***************************************************************************
 'File Saving Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 15/December/12
 'Last update: Rewrote all save subs as functions.  They now report success or not to the calling routine.

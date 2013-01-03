@@ -166,7 +166,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Twin" Filter Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 10/September/12
 'Last update: rewrote twin algorithm against new layer class
@@ -183,7 +183,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Me.Visible = False
     If OptVertical.Value = True Then
         Process Twins, 0
@@ -245,7 +245,7 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
     Next x
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     
     'Loop through each pixel in the image, converting values as we go
@@ -254,7 +254,7 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
     For y = initY To finalY
     
         'Grab the current pixel values
-        r = srcImageData(QuickVal + 2, y)
+        R = srcImageData(QuickVal + 2, y)
         g = srcImageData(QuickVal + 1, y)
         b = srcImageData(QuickVal, y)
         
@@ -270,7 +270,7 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
         End If
         
         'Alpha-blend the two pixels using our shortcut look-up table
-        dstImageData(QuickVal + 2, y) = hLookup(r + r2)
+        dstImageData(QuickVal + 2, y) = hLookup(R + r2)
         dstImageData(QuickVal + 1, y) = hLookup(g + g2)
         dstImageData(QuickVal, y) = hLookup(b + b2)
         

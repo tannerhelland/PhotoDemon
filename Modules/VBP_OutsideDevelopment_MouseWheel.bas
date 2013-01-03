@@ -1,7 +1,7 @@
 Attribute VB_Name = "Outside_modMouseWheel"
 'Note: this file has been modified for use within PhotoDemon.
 
-'This code was adopted from http://www.vbforums.com/showthread.php?s=ff827c56c69cb7ad5dcbab38a92b5799&t=388222, accessed on 20 April 2012
+'This code was adopted from http://www.vbforums.com/showthread.php?s=ff827c56c69cb7ad5dcbab38a92b5799&t=388222, accessed on 20 April '12
 ' Thank you to user "bushmobile" for supplying the initial version of this code.
 
 Option Explicit

@@ -310,7 +310,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Software Updater (note: it doesn't do the actual updating, it just CHECKS for updates!)
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 19/August/12
 'Last update: initial build

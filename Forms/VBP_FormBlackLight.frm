@@ -185,7 +185,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Blacklight Form
-'Copyright ©2001-2012 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: some time 2001
 'Last updated: 08/September/12
 'Last update: rewrote effect against new layer class, merged previewing into core effect
@@ -203,7 +203,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
     If EntryValid(txtIntensity, hsIntensity.Min, hsIntensity.Max) Then
         Me.Visible = False
@@ -246,7 +246,7 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
     progBarCheck = findBestProgBarValue()
     
     'Color and grayscale variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim grayVal As Byte
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
@@ -261,24 +261,24 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Calculate the gray value using the look-up table
-        grayVal = grayLookUp(r + g + b)
+        grayVal = grayLookUp(R + g + b)
         
         'Perform the blacklight conversion
-        r = Abs(r - grayVal) * Weight
+        R = Abs(R - grayVal) * Weight
         g = Abs(g - grayVal) * Weight
         b = Abs(b - grayVal) * Weight
         
-        If r > 255 Then r = 255
+        If R > 255 Then R = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = r
+        ImageData(QuickVal, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal + 2, y) = b
         

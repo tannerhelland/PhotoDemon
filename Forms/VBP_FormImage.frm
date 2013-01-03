@@ -83,7 +83,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Form (Child MDI form)
-'Copyright ©2002-2012 by Tanner Helland
+'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 09/September/12
 'Last update: manually unload this image's main layer when the attached form is unloaded (to conserve memory)
@@ -687,14 +687,14 @@ Private Sub VScroll_Scroll()
 End Sub
 
 'In VB6, a routine this like is required to support use of a mouse wheel.
-Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal Rotation As Long, ByVal Xpos As Long, ByVal Ypos As Long)
+Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal rotation As Long, ByVal Xpos As Long, ByVal Ypos As Long)
   
   On Error Resume Next
   
   'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
   If (VScroll.Visible = True) And (Not ShiftDown) And (Not CtrlDown) Then
   
-    If Rotation < 0 Then
+    If rotation < 0 Then
         
         If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
             VScroll.Value = VScroll.Max
@@ -704,7 +704,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal Rotation As Long, ByVal Xpo
         
         ScrollViewport Me
     
-    ElseIf Rotation > 0 Then
+    ElseIf rotation > 0 Then
         
         If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
             VScroll.Value = VScroll.Min
@@ -720,7 +720,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal Rotation As Long, ByVal Xpo
   'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
   If (HScroll.Visible = True) And ShiftDown And (Not CtrlDown) Then
   
-    If Rotation < 0 Then
+    If rotation < 0 Then
         
         If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
             HScroll.Value = HScroll.Max
@@ -730,7 +730,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal Rotation As Long, ByVal Xpo
         
         ScrollViewport Me
     
-    ElseIf Rotation > 0 Then
+    ElseIf rotation > 0 Then
         
         If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
             HScroll.Value = HScroll.Min
@@ -746,14 +746,14 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal Rotation As Long, ByVal Xpo
   'Zooming - only trigger when Ctrl has been pressed
   If CtrlDown And (Not ShiftDown) Then
   
-    If Rotation > 0 Then
+    If rotation > 0 Then
         
         If FormMain.CmbZoom.ListIndex > 0 Then
             FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
             PrepareViewport Me, "Ctrl+Mousewheel"
         End If
     
-    ElseIf Rotation < 0 Then
+    ElseIf rotation < 0 Then
         
         If FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then
             FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1

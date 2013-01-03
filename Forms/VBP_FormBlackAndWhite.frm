@@ -303,7 +303,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Black/White Color Reduction Form
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: some time 2002
 'Last updated: 28/December/12
 'Last update: allow optimal threshold calculation for all dithering types

@@ -185,7 +185,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fade Filter Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 11/7/01
 'Last updated: 19/June/12
 'Last update: condensed all fade routines into a single, percentage-based one.  The speed increase provided by
@@ -199,7 +199,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max) Then
         Me.Visible = False
@@ -242,7 +242,7 @@ Public Sub FadeImage(ByVal fadeRatio As Single, Optional ByVal toPreview As Bool
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim grayVal As Long
         
     'Because gray values are constant, we can use a look-up table to calculate them
@@ -257,14 +257,14 @@ Public Sub FadeImage(ByVal fadeRatio As Single, Optional ByVal toPreview As Bool
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookup(R + g + b)
                 
         'Assign that blended value to each color channel
-        ImageData(QuickVal + 2, y) = BlendColors(r, grayVal, fadeRatio)
+        ImageData(QuickVal + 2, y) = BlendColors(R, grayVal, fadeRatio)
         ImageData(QuickVal + 1, y) = BlendColors(g, grayVal, fadeRatio)
         ImageData(QuickVal, y) = BlendColors(b, grayVal, fadeRatio)
         
@@ -318,7 +318,7 @@ Public Sub UnfadeImage(Optional ByVal toPreview As Boolean = False, Optional ByR
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim grayVal As Long
         
     'Because gray values are constant, we can use a look-up table to calculate them.
@@ -334,26 +334,26 @@ Public Sub UnfadeImage(Optional ByVal toPreview As Boolean = False, Optional ByR
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookup(R + g + b)
                 
         'Use a modified contrast formula to move each color AWAY from gray
-        r = (r - grayVal) * 2
+        R = (R - grayVal) * 2
         g = (g - grayVal) * 2
         b = (b - grayVal) * 2
         
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
+        If R > 255 Then R = 255
+        If R < 0 Then R = 0
         If g > 255 Then g = 255
         If g < 0 Then g = 0
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
         'Assign that blended value to each color channel
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

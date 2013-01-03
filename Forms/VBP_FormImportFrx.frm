@@ -215,7 +215,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'VB Binary File Import Tool
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 ' (Some segments adopted from the original version, which is ©1997-1999 by Brad Martinez, http://www.mvps.org - see Outside_ModFrx.bas for more details)
 'Created: 2/14/03
 'Last updated: 26/September/12
@@ -235,7 +235,7 @@ Dim m_cff As New cFrxFile
 Dim requestUnload As Boolean
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     Message "VB binary file import canceled"
     Unload Me

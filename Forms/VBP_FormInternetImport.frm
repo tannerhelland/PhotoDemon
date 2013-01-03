@@ -99,7 +99,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Internet Interface (for importing images directly from a URL)
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 08/June/12
 'Last updated: 03/December/12
 'Last update: made some slight modifications to ImportImageFromInternet so it can be used by external callers.
@@ -292,7 +292,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK Button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Check to make sure the user followed directions
     Dim fullURL As String

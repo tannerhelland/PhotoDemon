@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Color_Effects"
 '***************************************************************************
 'Filter (Color Effects) Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 25/January/03
 'Last updated: 06/September/12
 'Last update: new formulas for all AutoEnhance functions.  Now they are much faster AND they offer much better results.
@@ -93,22 +93,22 @@ Public Sub MenuCShift(ByVal sType As Byte)
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
         If sType = 0 Then
-            r = ImageData(QuickVal, y)
+            R = ImageData(QuickVal, y)
             g = ImageData(QuickVal + 2, y)
             b = ImageData(QuickVal + 1, y)
         Else
-            r = ImageData(QuickVal + 1, y)
+            R = ImageData(QuickVal + 1, y)
             g = ImageData(QuickVal, y)
             b = ImageData(QuickVal + 2, y)
         End If
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
     Next y
@@ -153,8 +153,8 @@ Public Sub MenuNegative()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
+    Dim R As Long, g As Long, b As Long
+    Dim h As Single, S As Single, l As Single
     
     'Apply the filter
     For x = initX To finalX
@@ -162,18 +162,18 @@ Public Sub MenuNegative()
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Use those to calculate hue and saturation
-        tRGBToHSL r, g, b, h, s, l
+        tRGBToHSL R, g, b, h, S, l
         
         'Convert those HSL values back to RGB, but substitute inverted luminance
-        tHSLToRGB h, s, 1 - l, r, g, b
+        tHSLToRGB h, S, 1 - l, R, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -219,8 +219,8 @@ Public Sub MenuInvertHue()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
+    Dim R As Long, g As Long, b As Long
+    Dim h As Single, S As Single, l As Single
     
     'Apply the filter
     For x = initX To finalX
@@ -228,21 +228,21 @@ Public Sub MenuInvertHue()
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Use those to calculate hue, saturation, and luminance
-        tRGBToHSL r, g, b, h, s, l
+        tRGBToHSL R, g, b, h, S, l
         
         'Invert hue
         h = 6 - (h + 1) - 1
         
         'Convert the newly calculated HSL values back to RGB
-        tHSLToRGB h, s, l, r, g, b
+        tHSLToRGB h, S, l, R, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -288,7 +288,7 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
         
     'Apply the filter
@@ -296,17 +296,17 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        If r = 0 Then r = 1
+        If R = 0 Then R = 1
         If g = 0 Then g = 1
         If b = 0 Then b = 1
         
         newR = (g * b) \ Divisor
-        newG = (r * b) \ Divisor
-        newB = (r * g) \ Divisor
+        newG = (R * b) \ Divisor
+        newB = (R * g) \ Divisor
         
         If newR > 255 Then newR = 255
         If newG > 255 Then newG = 255
@@ -358,7 +358,7 @@ Public Sub MenuAutoEnhanceContrast()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim grayVal As Long
     
@@ -379,14 +379,14 @@ Public Sub MenuAutoEnhanceContrast()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookup(R + g + b)
         
         'Spread out the contrast
-        newR = hLookup(r - grayVal) + r
+        newR = hLookup(R - grayVal) + R
         newG = hLookup(g - grayVal) + g
         newB = hLookup(b - grayVal) + b
         
@@ -444,7 +444,7 @@ Public Sub MenuAutoEnhanceHighlights()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim grayVal As Long
     Dim blendValue As Single
@@ -467,14 +467,14 @@ Public Sub MenuAutoEnhanceHighlights()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookup(R + g + b)
         
         'Calculate new RGB values with 2x the contrast of the original color
-        newR = Abs(r - grayVal) + r
+        newR = Abs(R - grayVal) + R
         newG = Abs(g - grayVal) + g
         newB = Abs(b - grayVal) + b
                 
@@ -489,11 +489,11 @@ Public Sub MenuAutoEnhanceHighlights()
         'Emphasize highlights by making bright colors emphasize the 2x contrast value, while dark colors stay the same.
         blendValue = grayVal / 255
         
-        r = BlendColors(r, newR, blendValue)
+        R = BlendColors(R, newR, blendValue)
         g = BlendColors(g, newG, blendValue)
         b = BlendColors(b, newB, blendValue)
         
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -539,7 +539,7 @@ Public Sub MenuAutoEnhanceMidtones()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim grayVal As Long
     Dim blendValue As Single
@@ -567,14 +567,14 @@ Public Sub MenuAutoEnhanceMidtones()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookup(R + g + b)
         
         'Spread out the contrast
-        newR = hLookup(r - grayVal) + r
+        newR = hLookup(R - grayVal) + R
         newG = hLookup(g - grayVal) + g
         newB = hLookup(b - grayVal) + b
         
@@ -590,11 +590,11 @@ Public Sub MenuAutoEnhanceMidtones()
         ' receive minimal blending.
         blendValue = sLookup(grayVal)
         
-        r = BlendColors(r, newR, blendValue)
+        R = BlendColors(R, newR, blendValue)
         g = BlendColors(g, newG, blendValue)
         b = BlendColors(b, newB, blendValue)
         
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -640,7 +640,7 @@ Public Sub MenuAutoEnhanceShadows()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim grayVal As Long
     Dim blendValue As Single
@@ -663,14 +663,14 @@ Public Sub MenuAutoEnhanceShadows()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookup(R + g + b)
         
         'Calculate new RGB values with 2x the contrast of the original color
-        newR = r - Abs(r - grayVal)
+        newR = R - Abs(R - grayVal)
         newG = g - Abs(g - grayVal)
         newB = b - Abs(b - grayVal)
                 
@@ -685,11 +685,11 @@ Public Sub MenuAutoEnhanceShadows()
         'Emphasize shadows by making dark colors emphasize the 2x contrast value, while bright colors stay the same.
         blendValue = 1 - eLookup(grayVal)
         
-        r = BlendColors(r, newR, blendValue)
+        R = BlendColors(R, newR, blendValue)
         g = BlendColors(g, newG, blendValue)
         b = BlendColors(b, newB, blendValue)
         
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

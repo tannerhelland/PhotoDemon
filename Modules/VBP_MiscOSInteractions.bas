@@ -1,7 +1,7 @@
 Attribute VB_Name = "Misc_OS_Interactions"
 '***************************************************************************
 'Miscellaneous OS Interaction Handler
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 27/November/12
 'Last updated: 27/November/12
 'Last update: added function for returning PhotoDemon's current memory usage
@@ -10,7 +10,7 @@ Attribute VB_Name = "Misc_OS_Interactions"
 ' available RAM on the system.  This module handles such calls.
 '
 'Special thanks goes to Mike Raynder, who wrote the original version of the process-specific memory function.  You can
-' download a copy of Mike's original code from this link (good as of 27 Nov 2012): http://www.xtremevbtalk.com/showthread.php?t=229758
+' download a copy of Mike's original code from this link (good as of 27 Nov '12): http://www.xtremevbtalk.com/showthread.php?t=229758
 '
 '***************************************************************************
 
@@ -82,7 +82,7 @@ Public Function getVistaOrLaterStatus() As Boolean
 End Function
 
 'Function for returning PhotoDemon's current memory usage.  This is a modified version of code first published by Mike Raynder.
-' You can download a copy of Mike's original code from this link (good as of 27 Nov 2012): http://www.xtremevbtalk.com/showthread.php?t=229758
+' You can download a copy of Mike's original code from this link (good as of 27 Nov '12): http://www.xtremevbtalk.com/showthread.php?t=229758
 
 '---------------------------------------------------------------------------------------
 ' Procedure : GetProcessMemory
@@ -122,7 +122,7 @@ Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = F
 
     'EXEName was original passed into this function as a parameter.  There is no need to require that for use in PhotoDemon only.
     Dim EXEName As String
-    If IsProgramCompiled Then EXEName = "photodemon.exe" Else EXEName = "vb6.exe"
+    If isProgramCompiled Then EXEName = "photodemon.exe" Else EXEName = "vb6.exe"
 
     EXEName = UCase$(Trim$(EXEName))
     lngLength = Len(EXEName)

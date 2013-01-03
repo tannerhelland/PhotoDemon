@@ -1,7 +1,7 @@
 Attribute VB_Name = "Custom_Dialog_Handler"
 '***************************************************************************
 'Custom Dialog Interface
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 30/November/12
 'Last updated: 15/December/12
 'Last update: added support for the custom alpha cut-off dialog

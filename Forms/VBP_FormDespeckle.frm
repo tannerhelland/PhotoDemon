@@ -121,7 +121,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Advanced Despeckle Form
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 12/September/11
 'Last updated: 09/September/12
 'Last update: rewrote all functions against the new layer class
@@ -145,7 +145,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Me.Visible = False
     Process CustomDespeckle, CLng(10 - hsDespeckle.Value)
     Unload Me

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Scanner_Interface"
 '***************************************************************************
 'Scanner Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 1/10/01
 'Last updated: 04/September/12
 'Last update: improved system for loading/unloading the scanner interface (now it's done only at program load and unload)

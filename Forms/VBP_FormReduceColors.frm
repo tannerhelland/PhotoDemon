@@ -385,7 +385,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Reduction Form
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 11/September/12
 'Last update: Rewrote all reduction algorithms against the new layer class and added previewing
@@ -410,7 +410,7 @@ Private Sub chkSmartColors_Click()
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 

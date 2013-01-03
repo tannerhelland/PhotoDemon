@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Format Manager
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 18/November/12
 'Last updated: 19/December/12
 'Last update: added pngnq availability tracking
@@ -27,7 +27,7 @@ Attribute VB_Exposed = False
 ' have any connection to the other.
 '
 'Most non-standard formats rely on FreeImage for loading and/or saving, and they can additionally be tested against
-' individual FreeImage version numbers if necessary.  As of FreeImage 3.15.4 (released October 2012) no formats are
+' individual FreeImage version numbers if necessary.  As of FreeImage 3.15.4 (released October '12) no formats are
 ' disabled due to known FreeImage bugs.
 '
 'GDIPlus is optionally used as a fallback if FreeImage is not present, but it should be noted that GDI+ interoperability

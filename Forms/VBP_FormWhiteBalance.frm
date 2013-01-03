@@ -179,7 +179,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'White Balance Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 03/July/12
 'Last updated: 03/July/12
 'Last update: first build
@@ -259,7 +259,7 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
     progBarCheck = findBestProgBarValue()
     
     'Color values
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     
     'Maximum and minimum values, which will be detected by our initial histogram run
     Dim rMax As Byte, gMax As Byte, bMax As Byte
@@ -282,10 +282,10 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
-        rCount(r) = rCount(r) + 1
+        rCount(R) = rCount(R) + 1
         gCount(g) = gCount(g) + 1
         bCount(b) = bCount(b) + 1
     Next y
@@ -303,18 +303,18 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
     Dim wbThreshold As Long
     wbThreshold = NumOfPixels * percentIgnore
     
-    r = 0: g = 0: b = 0
+    R = 0: g = 0: b = 0
     
     Dim rTally As Long, gTally As Long, bTally As Long
     rTally = 0: gTally = 0: bTally = 0
     
     'Find minimum values of red, green, and blue
     Do
-        If rCount(r) + rTally < wbThreshold Then
-            r = r + 1
-            rTally = rTally + rCount(r)
+        If rCount(R) + rTally < wbThreshold Then
+            R = R + 1
+            rTally = rTally + rCount(R)
         Else
-            rMin = r
+            rMin = R
             foundYet = True
         End If
     Loop While foundYet = False
@@ -346,15 +346,15 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
     'Now, find maximum values of red, green, and blue
     foundYet = False
     
-    r = 255: g = 255: b = 255
+    R = 255: g = 255: b = 255
     rTally = 0: gTally = 0: bTally = 0
     
     Do
-        If rCount(r) + rTally < wbThreshold Then
-            r = r - 1
-            rTally = rTally + rCount(r)
+        If rCount(R) + rTally < wbThreshold Then
+            R = R - 1
+            rTally = rTally + rCount(R)
         Else
-            rMax = r
+            rMax = R
             foundYet = True
         End If
     Loop While foundYet = False
@@ -393,16 +393,16 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If rdif <> 0 Then r = 255 * ((x - rMin) / rdif) Else r = x
+        If rdif <> 0 Then R = 255 * ((x - rMin) / rdif) Else R = x
         If Gdif <> 0 Then g = 255 * ((x - gMin) / Gdif) Else g = x
         If Bdif <> 0 Then b = 255 * ((x - bMin) / Bdif) Else b = x
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
+        If R > 255 Then R = 255
+        If R < 0 Then R = 0
         If g > 255 Then g = 255
         If g < 0 Then g = 0
         If b > 255 Then b = 255
         If b < 0 Then b = 0
-        rFinal(x) = r
+        rFinal(x) = R
         gFinal(x) = g
         bFinal(x) = b
     Next x

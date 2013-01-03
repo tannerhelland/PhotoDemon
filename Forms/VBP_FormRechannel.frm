@@ -403,7 +403,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rechannel Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: original rechannel algorithm - sometimes 2001, this form 28/September/12
 'Last updated: 28/September/12
 'Last update: built a dedicated form for rechanneling, added CMY options
@@ -421,7 +421,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Me.Visible = False
     
     Dim rechannelMethod As Long

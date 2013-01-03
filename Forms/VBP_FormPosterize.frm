@@ -187,7 +187,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Posterizing Effect Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 24/September/12
 'Last update: interface overhaul
@@ -205,7 +205,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     If EntryValid(txtBits, hsBits.Min, hsBits.Max) Then
         Me.Visible = False
         Process Posterize, hsBits.Value

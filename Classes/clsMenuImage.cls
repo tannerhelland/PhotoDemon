@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 
 'This code was originally written by Leandro I. Ascierto.
 
-'You may download the original version of this code from the following link (good as of June 2012):
+'You may download the original version of this code from the following link (good as of June '12):
 ' http://leandroascierto.com/blog/clsmenuimage/
 
 ' Many thanks to Leandro for providing a way to apply PNG images to program menus in VB6
@@ -31,7 +31,7 @@ Option Explicit
 ' ---------------------------------------------------
 
 
-'Tanner's addition 20 September 2012:
+'Tanner's addition 20 September '12:
 ' We must check if theming is enabled. On Vista/7, use of the "Classic Theme" disables theming and screws up menu icon placement.
 Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
 Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
@@ -1101,7 +1101,7 @@ Private Sub Class_Initialize()
 
     IsWinVistaOrLater = tOSVI.dwMajorVersion >= 6
     
-    'Tanner's addition 20 September 2012:
+    'Tanner's addition 20 September '12:
     ' Double-check that theming is enabled. If it isn't, fall back to subclassing (e.g. Windows XP style)
     Dim hTheme As Long
     Dim sClass As String

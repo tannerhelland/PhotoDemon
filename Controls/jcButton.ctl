@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 
 'This code was originally written by Juned Chhipa.
 
-'You may download the original version of this code from the following link (good as of June 2012):
+'You may download the original version of this code from the following link (good as of June '12):
 ' http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1
 
 ' Many thanks to Juned for his excellent custom button, which PhotoDemon uses on the left-hand panel of the main form.
@@ -476,7 +476,7 @@ End Type
 
 '  RGB Colors structure
 Private Type RGBColor
-   r                    As Single
+   R                    As Single
    g                    As Single
    b                    As Single
 End Type
@@ -2641,32 +2641,32 @@ Private Function ShiftColor(Color As Long, PercentInDecimal As Single) As Long
    '* A Littlebit modified by me                                               *
    '****************************************************************************
 
-   Dim r                As Long
+   Dim R                As Long
    Dim g                As Long
    Dim b                As Long
 
    '  Add or remove a certain color quantity by how many percent.
 
-   r = Color And 255
+   R = Color And 255
    g = (Color \ 256) And 255
    b = (Color \ 65536) And 255
 
-   r = r + PercentInDecimal * 255       ' Percent should already
+   R = R + PercentInDecimal * 255       ' Percent should already
    g = g + PercentInDecimal * 255       ' be translated.
    b = b + PercentInDecimal * 255       ' Ex. 50% -> 50 / 100 = 0.5
 
    '  When overflow occurs, ....
    If (PercentInDecimal > 0) Then       ' RGB values must be between 0-255 only
-      If (r > 255) Then r = 255
+      If (R > 255) Then R = 255
       If (g > 255) Then g = 255
       If (b > 255) Then b = 255
    Else
-      If (r < 0) Then r = 0
+      If (R < 0) Then R = 0
       If (g < 0) Then g = 0
       If (b < 0) Then b = 0
    End If
 
-   ShiftColor = r + 256& * g + 65536 * b ' Return shifted color value
+   ShiftColor = R + 256& * g + 65536 * b ' Return shifted color value
 
 End Function
 

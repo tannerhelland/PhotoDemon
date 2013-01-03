@@ -282,7 +282,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'HSL Adjustment Form
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 05/October/12
 'Last updated: 05/October/12
 'Last update: initial build
@@ -301,7 +301,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     Me.Visible = False
     Process AdjustHSL, CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value)
@@ -345,8 +345,8 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
+    Dim R As Long, g As Long, b As Long
+    Dim h As Single, S As Single, l As Single
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -354,31 +354,31 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Get the hue and saturation
-        tRGBToHSL r, g, b, h, s, l
+        tRGBToHSL R, g, b, h, S, l
         
         'Apply the modifiers
         h = h + hModifier
         If h > 5 Then h = h - 6
         If h < -1 Then h = h + 6
         
-        s = s * sModifier
-        If s < 0 Then s = 0
-        If s > 1 Then s = 1
+        S = S * sModifier
+        If S < 0 Then S = 0
+        If S > 1 Then S = 1
         
         l = l + lModifier
         If l < 0 Then l = 0
         If l > 1 Then l = 1
         
         'Convert back to RGB using our artificial hue value
-        tHSLToRGB h, s, l, r, g, b
+        tHSLToRGB h, S, l, R, g, b
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

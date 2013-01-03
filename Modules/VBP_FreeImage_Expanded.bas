@@ -1,7 +1,7 @@
 Attribute VB_Name = "FreeImage_Expanded_Interface"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 25/November/12
 'Last update: improved tone-mapping for high-bit-depth images with alpha channels
@@ -301,7 +301,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
         fi_transparentEntries = FreeImage_GetTransparencyCount(fi_hDIB)
     
-        'As of 25 Nov 2012, the user can choose to disable tone-mapping (which makes HDR loading much faster, but reduces image quality).
+        'As of 25 Nov '12, the user can choose to disable tone-mapping (which makes HDR loading much faster, but reduces image quality).
         ' Check that preference before tone-mapping the image.
         If userPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
                 
@@ -556,7 +556,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     Dim creationSuccess As Boolean
     
-    'Update Dec 2012: certain faulty TIFF files can confuse FreeImage and cause it to report wildly bizarre height and width
+    'Update Dec '12: certain faulty TIFF files can confuse FreeImage and cause it to report wildly bizarre height and width
     ' values; check for this, and if it happens, abandon the load immediately.  (This is not ideal, because it leaks memory
     ' - but it prevents a hard program crash, so it's the lesser of two evils.)
     If (fi_Width > 1000000) Or (fi_Height > 1000000) Then

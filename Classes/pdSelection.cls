@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection class
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 25/September/12
 'Last updated: 03/October/12
 'Last update: added a "Red" highlight draw option
@@ -53,8 +53,8 @@ Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As An
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
 'DC API functions
-Private Declare Function GetDC Lib "user32" (ByVal HWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal HWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 
 'Object API functions
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long

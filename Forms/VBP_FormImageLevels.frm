@@ -413,7 +413,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright ©2006-2012 by Tanner Helland
+'Copyright ©2006-2013 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 09/September/12
 'Last update: rewrote everything against the new layer class
@@ -446,7 +446,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     Me.Visible = False
     
@@ -583,7 +583,7 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
         
     'Look-up table for the midtone (gamma) leveled values
     Dim gValues(0 To 255) As Double
@@ -665,12 +665,12 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Assign new values looking the lookup table
-        ImageData(QuickVal + 2, y) = newLevels(r)
+        ImageData(QuickVal + 2, y) = newLevels(R)
         ImageData(QuickVal + 1, y) = newLevels(g)
         ImageData(QuickVal, y) = newLevels(b)
         

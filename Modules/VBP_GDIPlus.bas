@@ -1,7 +1,7 @@
 Attribute VB_Name = "GDI_Plus"
 '***************************************************************************
 'GDI+ Interface
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 4/September/12
 'Last update: full support for image saving (GIF, JPEG, PNG, TIFF) via GDI+.  These are all considered fallbacks; if FreeImage

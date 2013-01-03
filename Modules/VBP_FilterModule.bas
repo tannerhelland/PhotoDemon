@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 'Filter (Area) Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 08/September/12
 'Last update: rewrote all filters against layers
@@ -68,7 +68,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     
     'CalcVar determines the size of each sub-loop (so that we don't waste time running a 5x5 matrix on 3x3 filters)
     Dim CalcVar As Long
@@ -115,7 +115,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
-        r = 0
+        R = 0
         g = 0
         b = 0
         FilterWeightTemp = FilterWeightA
@@ -139,7 +139,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
             End If
             
             'Adjust red, green, and blue according to the values in the filter matrix (FM)
-            r = r + (tmpData(QuickValInner + 2, y2) * iFM(CalcX, CalcY))
+            R = R + (tmpData(QuickValInner + 2, y2) * iFM(CalcX, CalcY))
             g = g + (tmpData(QuickValInner + 1, y2) * iFM(CalcX, CalcY))
             b = b + (tmpData(QuickValInner, y2) * iFM(CalcX, CalcY))
 
@@ -149,11 +149,11 @@ NextCustomFilterPixel:  Next y2
         'If a weight has been set, apply it now
         If (FilterWeightTemp <> 1) Then
             If (FilterWeightTemp <> 0) Then
-                r = r \ FilterWeightTemp
+                R = R \ FilterWeightTemp
                 g = g \ FilterWeightTemp
                 b = b \ FilterWeightTemp
             Else
-                r = 0
+                R = 0
                 g = 0
                 b = 0
             End If
@@ -161,16 +161,16 @@ NextCustomFilterPixel:  Next y2
         
         'If a bias has been specified, apply it now
         If FilterBiasA <> 0 Then
-            r = r + FilterBiasA
+            R = R + FilterBiasA
             g = g + FilterBiasA
             b = b + FilterBiasA
         End If
         
         'Make sure all values are between 0 and 255
-        If r < 0 Then
-            r = 0
-        ElseIf r > 255 Then
-            r = 255
+        If R < 0 Then
+            R = 0
+        ElseIf R > 255 Then
+            R = 255
         End If
         
         If g < 0 Then
@@ -187,13 +187,13 @@ NextCustomFilterPixel:  Next y2
         
         'If inversion is specified, apply it now
         If InvertResult = True Then
-            r = 255 - r
+            R = 255 - R
             g = 255 - g
             b = 255 - b
         End If
         
         'Finally, remember the new value in our tData array
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -623,7 +623,7 @@ Public Sub FilterGridBlur()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim rax() As Long, gax() As Long, bax() As Long
     Dim ray() As Long, gay() As Long, bay() As Long
     ReDim rax(0 To iWidth) As Long, gax(0 To iWidth) As Long, bax(0 To iWidth) As Long
@@ -631,32 +631,32 @@ Public Sub FilterGridBlur()
     
     'Generate the averages for vertical lines
     For x = initX To finalX
-        r = 0
+        R = 0
         g = 0
         b = 0
         QuickVal = x * qvDepth
         For y = initY To finalY
-            r = r + ImageData(QuickVal + 2, y)
+            R = R + ImageData(QuickVal + 2, y)
             g = g + ImageData(QuickVal + 1, y)
             b = b + ImageData(QuickVal, y)
         Next y
-        rax(x) = r
+        rax(x) = R
         gax(x) = g
         bax(x) = b
     Next x
     
     'Generate the averages for horizontal lines
     For y = initY To finalY
-        r = 0
+        R = 0
         g = 0
         b = 0
         For x = initX To finalX
             QuickVal = x * qvDepth
-            r = r + ImageData(QuickVal + 2, y)
+            R = R + ImageData(QuickVal + 2, y)
             g = g + ImageData(QuickVal + 1, y)
             b = b + ImageData(QuickVal, y)
         Next x
-        ray(y) = r
+        ray(y) = R
         gay(y) = g
         bay(y) = b
     Next y
@@ -669,17 +669,17 @@ Public Sub FilterGridBlur()
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
-        r = (rax(x) + ray(y)) \ NumOfPixels
+        R = (rax(x) + ray(y)) \ NumOfPixels
         g = (gax(x) + gay(y)) \ NumOfPixels
         b = (bax(x) + bay(y)) \ NumOfPixels
         
         'The colors shouldn't exceed 255, but it doesn't hurt to double-check
-        If r > 255 Then r = 255
+        If R > 255 Then R = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 2, y) = R
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

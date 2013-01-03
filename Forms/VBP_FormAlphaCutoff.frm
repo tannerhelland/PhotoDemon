@@ -153,7 +153,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Alpha Cut-Off Dialog
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 15/December/12
 'Last updated: 15/December/12
 'Last update: initial build
@@ -203,7 +203,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
         
     'Save the selected color depth to the corresponding global variable (so other functions can access it
     ' after this form is unloaded)

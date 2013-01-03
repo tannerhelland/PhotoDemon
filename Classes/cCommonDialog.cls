@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 
 'This class was originally written by Steve McMahon.
 
-'You may download the original version of this code from the following link (good as of June 2012):
+'You may download the original version of this code from the following link (good as of June '12):
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Common_Dialogs/Code_Only_Common_Dialogs/article.asp
 
 'To the best of my knowledge, this code is released under a CC-BY-1.0 license.  (Assumed from the footer text of vbaccelerator.com: "All contents of this web site are licensed under a Creative Commons Licence, except where otherwise noted.")

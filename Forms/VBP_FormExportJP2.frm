@@ -159,7 +159,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG-2000 (JP2) Export Dialog
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 04/December/12
 'Last updated: 04/December/12
 'Last update: abandoned my attempt to merge this with the JPEG export form; it's way easier (and less code, surprisingly)
@@ -221,7 +221,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
         
     'Determine the compression ratio for the JPEG2000 wavelet transformation
     Select Case CmbSaveQuality.ListIndex

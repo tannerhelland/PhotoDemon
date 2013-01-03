@@ -465,7 +465,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Plugin Downloader (for downloading core plugins that were not found at program start)
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 10/June/12
 'Last updated: 19/December/12
 'Last update: interface overhaul, pngnq addition, general code review

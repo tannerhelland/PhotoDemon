@@ -223,7 +223,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Emboss/Engrave Filter Interface
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 3/6/03
 'Last updated: 09/September/12
 'Last update: rewrite emboss/engrave against new layer class

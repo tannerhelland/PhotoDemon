@@ -1,7 +1,7 @@
 Attribute VB_Name = "Software_Updater"
 '***************************************************************************
 'Automatic Software Updater (note: at present this doesn't techincally DO the updating (e.g. overwriting program files), it just CHECKS for updates)
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 05/October/12
 'Last update: improve status reports; now the update function is of type "Long", and it returns failure, success but no update
