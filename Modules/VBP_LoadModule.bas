@@ -322,6 +322,10 @@ End Sub
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
 Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetLayer As pdLayer, Optional ByVal pageNumber As Long = 0)
         
+    '*************************************************************************************************************************************
+    ' Prepare all variables related to image loading
+    '*************************************************************************************************************************************
+        
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
             
@@ -348,11 +352,23 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
     Dim brokenFiles As String
     brokenFiles = ""
             
+            
+            
+    '*************************************************************************************************************************************
+    ' Loop through each entry in the sFile() array, loading images as we go
+    '*************************************************************************************************************************************
+            
     'Because this routine accepts an array of images, we have to be prepared for the possibility that more than
     ' one image file is being opened.  This loop will execute until all files are loaded.
     Dim thisImage As Long
     
     For thisImage = 0 To UBound(sFile)
+    
+    
+    
+        '*************************************************************************************************************************************
+        ' Reset all variables used on a per-image level
+        '*************************************************************************************************************************************
     
         'Before doing anything else, reset the multipage checker
         imageHasMultiplePages = False
@@ -360,7 +376,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '...and reset the "need to check colors" variable
         mustCountColors = False
     
-        'Next, ensure that the image file actually exists
+    
+    
+        '*************************************************************************************************************************************
+        ' Before attempting to load this image, make sure it exists
+        '*************************************************************************************************************************************
+    
         Message "Verifying that file exists..."
     
         If FileExist(sFile(thisImage)) = False Then
@@ -375,6 +396,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             GoTo PreloadMoreImages
         End If
+        
+        
+        
+        '*************************************************************************************************************************************
+        ' If the image being loaded is a primary image (e.g. one opened normally), prepare a blank form to receive it
+        '*************************************************************************************************************************************
         
         'If this is a standard load (e.g. loading an image via File -> Open), prepare a blank form to receive the image.
         If isThisPrimaryImage Then
@@ -401,6 +428,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             tInit tFilter, True
             
         End If
+            
+            
+            
+        '*************************************************************************************************************************************
+        ' Based on what type of image this is, call the most appropriate load function for it (FreeImage, GDI+, or VB's LoadPicture)
+        '*************************************************************************************************************************************
             
         Message "Determining filetype..."
         
@@ -445,8 +478,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
                 If loadSuccessful Then loadedByOtherMeans = False
                 
-                'If FreeImage fails for some reason, offload the image to GDI+
-                If (Not loadSuccessful) And imageFormats.GDIPlusEnabled Then
+                'If FreeImage fails for some reason, offload the image to GDI+ - UNLESS the image is a WMF or EMF, which can cause
+                ' GDI+ to experience a silent fail, thus bringing down the entire program.
+                If (Not loadSuccessful) And imageFormats.GDIPlusEnabled And (fileExtension <> "EMF") And (fileExtension <> "WMF") Then
                     
                     Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
@@ -475,8 +509,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     
         End Select
         
+        
+        
+        '*************************************************************************************************************************************
+        ' Make sure the image data was loaded successfully
+        '*************************************************************************************************************************************
+        
         'Double-check to make sure the image was loaded successfully
-        If (Not loadSuccessful) Then
+        If (Not loadSuccessful) Or (targetImage.mainLayer.getLayerWidth = 0) Or (targetImage.mainLayer.getLayerHeight = 0) Then
             Message "Failed to load " & sFile(thisImage) & "."
             
             'If multiple files are being loaded, suppress any errors until the end
@@ -494,8 +534,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Message "Image data loaded successfully."
         End If
         
-        'If the image was loaded via GDI+ or VB's LoadPicture, we need to manually mark the file format ourselves based on the extension.
-        ' Also, if possible, make an estimate of the image's color depth if possible.
+        
+        
+        '*************************************************************************************************************************************
+        ' If GDI+ or LoadPicture was used to grab the image data, populate some related fields manually (filetype, color depth, etc)
+        '*************************************************************************************************************************************
+        
         If loadedByOtherMeans Then
         
             Select Case fileExtension
@@ -525,8 +569,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         End If
         
-        'Before continuing, if the image is 32bpp, verify the alpha channel.  If the alpha channel is all 0's or all 255's,
-        ' we can conserve on resources by transparently converting it to 24bpp.
+        
+        
+        '*************************************************************************************************************************************
+        ' If the image has an alpha channel, verify it.  If it contains all 0 or all 255, convert it to 24bpp to conserve resources.
+        '*************************************************************************************************************************************
+        
         If targetImage.mainLayer.getLayerColorDepth = 32 Then
             
             'Make sure the user hasn't disabled this capability
@@ -552,10 +600,21 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         End If
         
-        'Store important data about the image to the pdImages array
+        
+        
+        '*************************************************************************************************************************************
+        ' Store some universally important information to the target image object
+        '*************************************************************************************************************************************
+        
         targetImage.updateSize
         targetImage.OriginalFileSize = FileLen(sFile(thisImage))
         targetImage.CurrentFileFormat = targetImage.OriginalFileFormat
+                
+                
+                
+        '*************************************************************************************************************************************
+        ' If requested by the user, manually count the number of unique colors in the image (to determine absolutely accurate color depth)
+        '*************************************************************************************************************************************
                 
         'At this point, we now have loaded image data in 24 or 32bpp format.  For future reference, let's count
         ' the number of colors present in the image (if the user has allowed it).  If the user HASN'T allowed
@@ -576,20 +635,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
                         
         End If
+        
+        
                 
-        'If this is a primary image, it needs to be rendered to the screen
-        If isThisPrimaryImage Then
-            
-            'If the form isn't maximized or minimized then set its dimensions to just slightly bigger than the image size
-            Message "Resizing image to fit screen..."
-    
-            'If the user wants us to resize the image to fit on-screen, do that now
-            If AutosizeLargeImages = 0 Then FitImageToViewport True
-                    
-            'If the window is not maximized or minimized, fit the form around the picture box
-            If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True, True
-            
-        End If
+        '*************************************************************************************************************************************
+        ' Determine a name for this image
+        '*************************************************************************************************************************************
+        
+        Message "Determining image title..."
         
         'If a different image name has been specified, we can assume the calling routine is NOT loading a file
         ' from disk (e.g. it's a scan, or Internet download, or screen capture, etc.).  Therefore, set the
@@ -626,11 +679,27 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
         End If
             
-        'More UI-related updates are necessary if this is a primary image
-        If isThisPrimaryImage Then
         
+        
+        '*************************************************************************************************************************************
+        ' If this is a primary image, render it to the screen and update all relevant interface elements
+        '*************************************************************************************************************************************
+                
+        'If this is a primary image, it needs to be rendered to the screen
+        If isThisPrimaryImage Then
+            
+            'If the form isn't maximized or minimized then set its dimensions to just slightly bigger than the image size
+            Message "Resizing image to fit screen..."
+    
+            'If the user wants us to resize the image to fit on-screen, do that now
+            If AutosizeLargeImages = 0 Then FitImageToViewport True
+                    
+            'If the window is not maximized or minimized, fit the form around the picture box
+            If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True, True
+            
             'Update relevant user interface controls
             DisplaySize targetImage.Width, targetImage.Height
+            
             If imgFormTitle = "" Then
                 If userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) = 0 Then
                     FormMain.ActiveForm.Caption = getFilename(sFile(thisImage))
@@ -675,10 +744,21 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         End If
         
-        'If we made it all the way here, the image loaded successfully.
+        
+        
+        '*************************************************************************************************************************************
+        ' Image loaded successfully.
+        '*************************************************************************************************************************************
+        
         targetImage.loadedSuccessfully = True
         
         Message "Image loaded successfully."
+        
+        
+        
+        '*************************************************************************************************************************************
+        ' If the just-loaded image was in a multipage format (icon, animated GIF, multipage TIFF), perform a few extra checks.
+        '*************************************************************************************************************************************
         
         'Before continuing on to the next image (if any), see if the just-loaded image was in multipage format.  If it was, the user
         ' may have requested that we load all frames from this image.
@@ -702,11 +782,23 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         End If
         
+        
+        
+    '*************************************************************************************************************************************
+    ' Move on to the next image.
+    '*************************************************************************************************************************************
+        
 PreloadMoreImages:
 
     'If we have more images to process, now's the time to do it!
     Next thisImage
         
+    
+    
+    '*************************************************************************************************************************************
+    ' Before finishing, display any relevant load problems (missing files, invalid formats, etc)
+    '*************************************************************************************************************************************
+    
     If pageNumber = 0 Then Screen.MousePointer = vbNormal
     
     'Finally, if we were loading multiple images and something went wrong (missing files, broken files), let the user know about them.
