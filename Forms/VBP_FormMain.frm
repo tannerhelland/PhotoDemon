@@ -1347,11 +1347,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Please see the included README.txt file for additional information regarding licensing and redistribution.
 
-'PhotoDemon is Copyright ©1999-2012 by Tanner Helland, www.tannerhelland.com
+'PhotoDemon is Copyright ©1999-2013 by Tanner Helland, www.tannerhelland.com
 
 '***************************************************************************
 'Main Program MDI Form
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 30/July/12
 'Last update: new accelerators added (page up, page down for previous, next image respectively)
@@ -1425,13 +1425,13 @@ Private Sub cmdUndo_Click()
 End Sub
 
 'THE BEGINNING OF EVERYTHING
-'This form is actually loaded first!  Everything starts here!!
+' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
 Private Sub MDIForm_Load()
 
-    'Use a global variable to store the command-line parameters
+    'Use a global variable to store any command line parameters we may have been passed
     CommandLine = Command$
     
-    'Temporarily exit from here and run the load program subroutine (Loading module)
+    'The bulk of the loading code actually takes place inside the LoadTheprogram subroutine (which can be found in the "Loading" module)
     LoadTheProgram
     
     'Before displaying the main window, see if the user wants to restore last-used window location.  If they do, set up

@@ -79,13 +79,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Simple Splash Screen
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 10/June/12
-'Last update: no more "force to top" z-order code.  It was never necessary in
-'             the first place, and it's bad UI behavior (especially if the program
-'             has to throw a message box for some reason, because it gets hidden
-'             behind the forced-to-top form).
+'Last updated: 03/January/13
+'Last update: move code from the LoadProgram routine to here (to help tidy up that function)
 '
 'Responsible for checking the runtime environment and building paths
 ' accordingly.  Also shows a nice little loading message while it does its thing.
@@ -94,49 +91,43 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'We use this to ensure that the splash shows for at least 1 second
+'We use these to ensure that the splash shows for at least 1 second
 Private Const LOADTIME As Single = 1#
+Dim OT As Single
 
 'The form is loaded invisibly, so this code is placed in the _Activate event instead of the more common _Load event
 Private Sub Form_Activate()
-
-    'Check to see if we're running in the IDE or as a compiled EXE (see below)
-    CheckEnvironment
     
-    'Make sure the splash screen shows for at least 1 second
-    Me.Show
-    Dim OT As Single
+    'We want to make sure the splash screen shows for at least 1 second, so make a note of the time when the form is loaded
     OT = Timer
-    Do While Timer - OT < LOADTIME
-        DoEvents
-    Loop
+        
+End Sub
+
+Public Sub prepareSplash()
+
+    'Before we can display the splash screen, we need to paint the program logo to it.  (This is done dynamically
+    ' for several reasons; it allows us to keep just one copy of the logo in the project, and it guarantees proper
+    ' painting regardless of screen DPI.)
+    Dim logoWidth As Long, logoHeight As Long
+    Dim logoAspectRatio As Double
+    
+    logoWidth = FormMain.picLogo.ScaleWidth
+    logoHeight = FormMain.picLogo.ScaleHeight
+    logoAspectRatio = CDbl(logoWidth) / CDbl(logoHeight)
+    
+    SetStretchBltMode Me.hDC, STRETCHBLT_HALFTONE
+    StretchBlt Me.hDC, 0, 0, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio, FormMain.picLogo.hDC, 0, 0, logoWidth, logoHeight, vbSrcCopy
+    Me.Picture = Me.Image
     
 End Sub
 
-'Check for IDE or compiled EXE, and set program parameters accordingly
-Private Sub CheckEnvironment()
-    
-    'Check the run-time environment.
-    
-    'App is compiled:
-    If App.LogMode = 1 Then
-        
-        IsProgramCompiled = True
-        
-        'Determine the version automatically from the EXE information
-        lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
-        
-        'Disable the "Test" menu (that I use for debugging)
-        FormMain.MnuTest.Visible = False
-        
-    'App is not compiled:
-    Else
-    
-        IsProgramCompiled = False
+'When the form is unloaded, pause until at least a second has passed
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
-        'Add a gentle reminder to compile the program
-        lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision & " - please compile!"
-        
+    If Timer - OT < LOADTIME Then
+        Do While Timer - OT < LOADTIME
+            DoEvents
+        Loop
     End If
-    
+
 End Sub

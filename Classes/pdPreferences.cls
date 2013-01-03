@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Preferences (INI) Interface
-'Copyright ©2011-2012 by Tanner Helland
+'Copyright ©2011-2013 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 19/November/12
 'Last update: provide an externally accessible function for seeing if a key/pair value exists in the INI file
@@ -287,6 +287,30 @@ Public Sub loadUserSettings()
     
     'Check if the user wants large images automatically zoomed when loaded
     AutosizeLargeImages = GetPreference_Long("General Preferences", "AutosizeLargeImages", 0)
+    
+    'Grab the last-used common dialog filters
+    LastOpenFilter = GetPreference_Long("File Formats", "LastOpenFilter", 1)
+    LastSaveFilter = GetPreference_Long("File Formats", "LastSaveFilter", 3)
+    
+    'Initialize a few other settings to default values, despite them not coming from the INI file
+    
+    'No custom filters have been created yet
+    HasCreatedFilter = False
+    
+    'Mark the Macro recorder as "not recording"
+    MacroStatus = MacroSTOP
+    
+    'No images have been loaded yet
+    NumOfImagesLoaded = 0
+    
+    'Set the default MDI window index to 0
+    CurrentImage = 0
+    
+    'Set the number of open image windows to 0
+    NumOfWindows = 0
+    
+    'Set a default emboss/engrave color
+    EmbossEngraveColor = &HFF8080
     
 End Sub
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'Program/File Loading Handler
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 03/September/12
 'Last update: completely rewrote everything against the new layer class.
@@ -16,183 +16,136 @@ Option Explicit
 'IT ALL BEGINS HERE (after Sub Main, that is)
 Public Sub LoadTheProgram()
     
-    'Before we can display the splash screen, we need to paint the logo to it.  (This is done for several reasons; it allows
-    ' us to keep just one copy of the logo in the project, and it guarantees proper painting regardless of screen DPI.)
-    Dim logoWidth As Long, logoHeight As Long
-    Dim logoAspectRatio As Double
+    '*************************************************************************************************************************************
+    ' Prepare the splash screen and display it
+    '*************************************************************************************************************************************
     
-    logoWidth = FormMain.picLogo.ScaleWidth
-    logoHeight = FormMain.picLogo.ScaleHeight
-    logoAspectRatio = CDbl(logoWidth) / CDbl(logoHeight)
-    
+    'Load FormSplash into memory, but don't make it visible.  Then ask it to prepare itself.
     FormSplash.Visible = False
-    SetStretchBltMode FormSplash.hDC, STRETCHBLT_HALFTONE
-    StretchBlt FormSplash.hDC, 0, 0, FormSplash.ScaleWidth, FormSplash.ScaleWidth / logoAspectRatio, FormMain.picLogo.hDC, 0, 0, logoWidth, logoHeight, vbSrcCopy
-    FormSplash.Picture = FormSplash.Image
+    FormSplash.prepareSplash
     
-    'With that done, we can now display the splash screen. That form will determine whether we're running in the IDE or as a
-    ' standalone EXE.  It will also determine the appropriate program path, and from that the plug-in path.
-    FormSplash.Show 0
-    DoEvents
+    'Check the environment.  If inside the the IDE, the splash needs to be modified slightly.
+    CheckLoadingEnvironment
+    
+    'Once prepared, we can display the splash screen to the user. Note that the splash form will determine
+    ' whether we're running in the IDE or as a standalone EXE.  It will also determine the appropriate program
+    ' path, and from that the plug-in path.
+    FormSplash.Show
+    
+    
+    
+    '*************************************************************************************************************************************
+    ' Determine which version of Windows the user is running (as other load functions rely on this)
+    '*************************************************************************************************************************************
+    
+    LoadMessage "Detecting Windows® version..."
     
     'Next, detect the version of Windows we're running on.  PhotoDemon is only concerned with "Vista or later", which lets it
     ' know that certain features are guaranteed to be available.
     isVistaOrLater = getVistaOrLaterStatus
+        
+        
+        
+    '*************************************************************************************************************************************
+    ' Initialize the user preferences (settings) handler
+    '*************************************************************************************************************************************
     
-    'Initialize a preferences and settings handler
     Set userPreferences = New pdPreferences
-    
-    'Initialize an image format handler
-    Set imageFormats = New pdFormats
     
     'Ask the new preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them)
     LoadMessage "Initializing all program directories..."
+    
     userPreferences.initializePaths
     
     'Now, ask the preferences handler to load all other user settings from the INI file
     LoadMessage "Loading all user settings..."
+    
     userPreferences.loadUserSettings
-        
-    'Check for plugins (we do this early, because other routines rely on this knowledge)
-    ' (Note that this is also the routine that checks GDI+ availability, despite it not really being a "plugin")
+            
+    'Before loading plugins, we need to initialize the image format handler (as the plugins interact with it)
+    Set imageFormats = New pdFormats
+            
+            
+            
+    '*************************************************************************************************************************************
+    ' Check for the presence of plugins (as other functions rely on these to initialize themselves)
+    '*************************************************************************************************************************************
+    
     LoadMessage "Loading plugins..."
+    
     LoadPlugins
     
-    'Based on the list of available plugins, initialize the program's image format handler
+    '(Note that LoadPlugins also checks GDI+ availability, despite GDI+ not really being a "plugin")
+    
+    
+    
+    '*************************************************************************************************************************************
+    ' Based on available plugins, determine which image formats PhotoDemon can handle
+    '*************************************************************************************************************************************
+        
     LoadMessage "Loading import/export libraries..."
+        
     imageFormats.generateInputFormats
     imageFormats.generateOutputFormats
     
-    'Set default variables
-    LoadMessage "Initializing all user settings..."
     
-    'No custom filters have been created yet
-    HasCreatedFilter = False
     
-    'Mark the Macro recorder as "not recording"
-    MacroStatus = MacroSTOP
-    
-    'Set the default common dialog filters
-    LastOpenFilter = userPreferences.GetPreference_Long("File Formats", "LastOpenFilter", 1)
-    LastSaveFilter = userPreferences.GetPreference_Long("File Formats", "LastSaveFilter", 3)
-    
-    'No images have been loaded yet
-    NumOfImagesLoaded = 0
-    'Set the default MDI window index to 0
-    CurrentImage = 0
-    'Set the number of open image windows to 0
-    NumOfWindows = 0
-    
-    'Set the default emboss/engrave color
-    EmbossEngraveColor = &HFF8080
+    '*************************************************************************************************************************************
+    ' Get the viewport engine ready
+    '*************************************************************************************************************************************
     
     'Initialize our current zoom method
-    LoadMessage "Initializing zoom processor..."
+    LoadMessage "Initializing viewport engine..."
     
-    'This list of zoom values is effectively arbitrary.  I've based this list off similar lists (Paint.NET, GIMP) while
-    ' including a few extra values for convenience's sake
-    Zoom.ZoomCount = 25
-    ReDim Zoom.ZoomArray(0 To Zoom.ZoomCount) As Double
-    ReDim Zoom.ZoomFactor(0 To Zoom.ZoomCount) As Double
-    FormMain.CmbZoom.AddItem "3200%", 0
-        Zoom.ZoomArray(0) = 32
-        Zoom.ZoomFactor(0) = 32
-    FormMain.CmbZoom.AddItem "2400%", 1
-        Zoom.ZoomArray(1) = 24
-        Zoom.ZoomFactor(1) = 24
-    FormMain.CmbZoom.AddItem "1600%", 2
-        Zoom.ZoomArray(2) = 16
-        Zoom.ZoomFactor(2) = 16
-    FormMain.CmbZoom.AddItem "1200%", 3
-        Zoom.ZoomArray(3) = 12
-        Zoom.ZoomFactor(3) = 12
-    FormMain.CmbZoom.AddItem "800%", 4
-        Zoom.ZoomArray(4) = 8
-        Zoom.ZoomFactor(4) = 8
-    FormMain.CmbZoom.AddItem "700%", 5
-        Zoom.ZoomArray(5) = 7
-        Zoom.ZoomFactor(5) = 7
-    FormMain.CmbZoom.AddItem "600%", 6
-        Zoom.ZoomArray(6) = 6
-        Zoom.ZoomFactor(6) = 6
-    FormMain.CmbZoom.AddItem "500%", 7
-        Zoom.ZoomArray(7) = 5
-        Zoom.ZoomFactor(7) = 5
-    FormMain.CmbZoom.AddItem "400%", 8
-        Zoom.ZoomArray(8) = 4
-        Zoom.ZoomFactor(8) = 4
-    FormMain.CmbZoom.AddItem "300%", 9
-        Zoom.ZoomArray(9) = 3
-        Zoom.ZoomFactor(9) = 3
-    FormMain.CmbZoom.AddItem "200%", 10
-        Zoom.ZoomArray(10) = 2
-        Zoom.ZoomFactor(10) = 2
-    FormMain.CmbZoom.AddItem "100%", 11
-        Zoom.ZoomArray(11) = 1
-        Zoom.ZoomFactor(11) = 1
-    FormMain.CmbZoom.AddItem "75%", 12
-        Zoom.ZoomArray(12) = 3 / 4
-        Zoom.ZoomFactor(12) = 4 / 3
-    FormMain.CmbZoom.AddItem "67%", 13
-        Zoom.ZoomArray(13) = 2 / 3
-        Zoom.ZoomFactor(13) = 3 / 2
-    FormMain.CmbZoom.AddItem "50%", 14
-        Zoom.ZoomArray(14) = 0.5
-        Zoom.ZoomFactor(14) = 2
-    FormMain.CmbZoom.AddItem "33%", 15
-        Zoom.ZoomArray(15) = 1 / 3
-        Zoom.ZoomFactor(15) = 3
-    FormMain.CmbZoom.AddItem "25%", 16
-        Zoom.ZoomArray(16) = 0.25
-        Zoom.ZoomFactor(16) = 4
-    FormMain.CmbZoom.AddItem "20%", 17
-        Zoom.ZoomArray(17) = 0.2
-        Zoom.ZoomFactor(17) = 5
-    FormMain.CmbZoom.AddItem "16%", 18
-        Zoom.ZoomArray(18) = 0.16
-        Zoom.ZoomFactor(18) = 100 / 16
-    FormMain.CmbZoom.AddItem "12%", 19
-        Zoom.ZoomArray(19) = 0.12
-        Zoom.ZoomFactor(19) = 100 / 12
-    FormMain.CmbZoom.AddItem "8%", 20
-        Zoom.ZoomArray(20) = 0.08
-        Zoom.ZoomFactor(20) = 100 / 8
-    FormMain.CmbZoom.AddItem "6%", 21
-        Zoom.ZoomArray(21) = 0.06
-        Zoom.ZoomFactor(21) = 100 / 6
-    FormMain.CmbZoom.AddItem "4%", 22
-        Zoom.ZoomArray(22) = 0.04
-        Zoom.ZoomFactor(22) = 25
-    FormMain.CmbZoom.AddItem "3%", 23
-        Zoom.ZoomArray(23) = 0.03
-        Zoom.ZoomFactor(23) = 100 / 0.03
-    FormMain.CmbZoom.AddItem "2%", 24
-        Zoom.ZoomArray(24) = 0.02
-        Zoom.ZoomFactor(24) = 50
-    FormMain.CmbZoom.AddItem "1%", 25
-        Zoom.ZoomArray(25) = 0.01
-        Zoom.ZoomFactor(25) = 100
+    initializeViewportEngine
     
-    'Set the zoom box to display "100%"
-    FormMain.CmbZoom.ListIndex = zoomIndex100
+    
         
-    'Initialize the selection box next
+    '*************************************************************************************************************************************
+    ' Set up all default tool values
+    '*************************************************************************************************************************************
+        
     LoadMessage "Initializing selection tool..."
+    
+    'Initialize all Selection Tool controls
     FormMain.cmbSelRender.AddItem "Lightbox", 0
     FormMain.cmbSelRender.AddItem "Highlight (Blue)", 1
     FormMain.cmbSelRender.AddItem "Highlight (Red)", 2
     FormMain.cmbSelRender.ListIndex = 0
     selectionRenderPreference = 0
     
-    'Analyze the current monitor arrangement to make sure we handle multimonitor setups properly
+    
+    
+    '*************************************************************************************************************************************
+    ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
+    '*************************************************************************************************************************************
+    
     LoadMessage "Analyzing current monitor setup..."
+    
     Set cMonitors = New clsMonitors
     cMonitors.Refresh
-    
-    'Render various aspects of the UI
-    LoadMessage "Initializing user interface..."
         
-    'Display or hide the left-hand pane according to the saved setting in the INI file
+        
+        
+    '*************************************************************************************************************************************
+    ' PhotoDemon draws its own drop shadows.  Prepare the engine that handles such shadows.
+    '*************************************************************************************************************************************
+    
+    LoadMessage "Initializing drop shadow renderer..."
+            
+    'Initialize the drop shadow engine
+    Set canvasShadow = New pdShadow
+    canvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, CanvasBackground
+    
+    
+    
+    '*************************************************************************************************************************************
+    ' PhotoDemon's complex interface requires a lot of aspects to be generated at run-time.
+    '*************************************************************************************************************************************
+    
+    LoadMessage "Initializing user interface..."
+                
+    'Display or hide the main form's left-hand pane according to the saved setting in the INI file
     If userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
         FormMain.MnuLeftPanel.Caption = "Show left panel"
         FormMain.picLeftPane.Visible = False
@@ -200,8 +153,8 @@ Public Sub LoadTheProgram()
         FormMain.MnuLeftPanel.Caption = "Hide left panel"
         FormMain.picLeftPane.Visible = True
     End If
-        
-    'Manually create multi-line tooltips
+                
+    'Manually create multi-line tooltips for some command buttons
     FormMain.cmdOpen.ToolTip = "Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop" & vbCrLf & " or Windows Explorer and dropping them onto PhotoDemon.)"
     If ConfirmClosingUnsaved Then
         FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes."
@@ -210,6 +163,29 @@ Public Sub LoadTheProgram()
     End If
     FormMain.cmdSave.ToolTip = "Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file." & vbCrLf & " To save to a different file, use the ""Save As"" button."
     FormMain.cmdSaveAs.ToolTip = "Save the current image to a new file."
+                        
+    'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
+    SetIcon FormMain.hWnd, "AAA", True
+    
+    'Initialize all system cursors we rely on (hand, busy, resizing, etc)
+    InitAllCursors
+    
+    'Set up the program's title bar
+    FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
+    
+    'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
+    initializeIconHandler
+    
+    
+    
+    '*************************************************************************************************************************************
+    ' The program's menus support many features that VB can't do natively (like icons and custom shortcuts).  Load such things now.
+    '*************************************************************************************************************************************
+    
+    LoadMessage "Preparing program menus..."
+    
+    'If inside the IDE, disable the "Effects" -> "Test" menu
+    If (Not isProgramCompiled) Then FormMain.MnuTest.Visible = False
     
     'Load the most-recently-used file list (MRU)
     MRU_LoadFromINI
@@ -217,29 +193,21 @@ Public Sub LoadTheProgram()
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
     LoadMenuShortcuts
             
-    'Initialize the drop shadow engine
-    Set canvasShadow = New pdShadow
-    canvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, CanvasBackground
-    
-    'Use the API to give PhotoDemon's main form a 32-bit icon (VB doesn't support that bit-depth)
-    LoadMessage "Fixing icon..."
-    SetIcon FormMain.hWnd, "AAA", True
-        
-    'Load and draw the menu icons
-    ' (Note: as a bonus, this function also checks the current Windows version and updates the "isVistaOrLater" public variable accordingly)
-    LoadMessage "Generating menu icons..."
+    'Load and draw all menu icons
     LoadMenuIcons
     
-    'Initialize the hand cursor we use for all clickable objects
-    InitAllCursors
-    
-    'Look in the MDIWindow module for this code - it enables/disables various control and menus based on
-    ' whether or not images have been loaded
-    LoadMessage "Enabling user interface..."
+    'Look in the MDIWindow module for this code - it enables/disables additional menus based on whether or not images have been loaded.
+    ' At this point, it mostly disables all image-related menu items (as no images have been loaded yet)
     UpdateMDIStatus
-        
-    'Set up our main progress bar control
+    
+    
+    
+    '*************************************************************************************************************************************
+    ' To avoid relying on OCXs, we use a custom progress bar control.  Initialize it now.
+    '*************************************************************************************************************************************
+    
     LoadMessage "Initializing progress bar..."
+    
     Set cProgBar = New cProgressBar
     
     With cProgBar
@@ -258,96 +226,94 @@ Public Sub LoadTheProgram()
     'Clear the newly built progress bar
     SetProgBarVal 0
     
-    'Set up the program's title bar
-    LoadMessage "Captioning main form..."
-    FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
     
-    'Initialize the custom MDI child form icon handler
-    LoadMessage "Preparing custom child icon handler..."
-    initializeIconHandler
     
-    'Check the command line to see if the user is attempting to load an image
+    '*************************************************************************************************************************************
+    ' Finally, before loading the final interface, analyze the command line and load any image files (if present).
+    '*************************************************************************************************************************************
+    
     LoadMessage "Checking command line..."
     
-    If CommandLine <> "" Then
+    If CommandLine <> "" Then loadImagesFromCommandLine
         
-        LoadMessage "Loading image(s)..."
-        
-        'NOTE: Windows will pass multiple filenames in a command line parameter, but its behavior is idiotic.
-        ' Specifically, it will place quotation marks around filenames IFF they contain a space, otherwise that filename
-        ' will be from its neighboring filenames by a space.  This creates a problem when passing a mixture of filenames
-        ' with spaces and filenames without, because Windows will switch between using and not using quotation marks to
-        ' delimit the filenames.  Stupid, isn't it?
-        
-        'At any rate, this means we must perform some specialized parsing of the command line.
-        
-        'This array will ultimately contain each filename to be loaded (one filename per index)
-        Dim sFile() As String
-        
-        'First, check the command line for quotation marks
-        If InStr(CommandLine, Chr(34)) = 0 Then
-        
-            'If there aren't any, our work is simple - simply split the array using the "space" character as the delimiter
-            sFile = Split(CommandLine, Chr(32))
-            
-        'If there are quotation marks, things get a bit messier.
-        Else
-        
-            Dim inQuotes As Boolean
-            inQuotes = False
-            Dim tChar As String
-            
-            'Scan the command line one character at a time
-            For x = 1 To Len(CommandLine)
-            
-                tChar = Mid(CommandLine, x, 1)
-                
-                'If the current character is a quotation mark, change inQuotes to specify that we are either inside
-                ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
-                ' how Windows handles command line parameters)
-                If tChar = Chr(34) Then inQuotes = Not inQuotes
-                
-                'If the current character is a space...
-                If tChar = Chr(32) Then
-                    
-                    '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
-                    ' filename and NOT a delimiter.  Replace it with an asterisk.
-                    If inQuotes = True Then
-                        CommandLine = Left(CommandLine, x - 1) & "*" & Right(CommandLine, Len(CommandLine) - x)
-                    End If
-                    
-                End If
-            Next x
-            
-            'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
-            ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
-            ' between filenames.
-            sFile = Split(CommandLine, Chr(32))
-            
-            'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
-            ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-            For x = 0 To UBound(sFile)
-                sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
-                sFile(x) = Replace$(sFile(x), Chr(34), "")
-            Next x
-        
-        End If
-        
-        'Finally, pass the array of filenames to the loading routine
-        PreLoadImage sFile
-        
-    End If
-
-    'Set a generic message and start unloading and loading forms
-    LoadMessage "All preparations successful. Loading final interface..."
+    '*************************************************************************************************************************************
+    ' Unload the splash screen and present the main form
+    '*************************************************************************************************************************************
     
-    'Display the main form and hide the splash form
-    FormMain.Show
+    LoadMessage "All systems go!  Launching main window..."
     
     Unload FormSplash
     
-    DoEvents
-    
+    FormMain.Show
+        
+End Sub
+
+'If files are present in the command line, this sub will load them
+Private Sub loadImagesFromCommandLine()
+
+    LoadMessage "Loading image(s)..."
+        
+    'NOTE: Windows can pass the program multiple filenames via the command line, but it does so in a confusing and overly complex way.
+    ' Specifically, quotation marks are placed around filenames IFF they contain a space; otherwise, file names are separated from
+    ' neighboring filenames by a space.  This creates a problem when passing a mixture of filenames with spaces and filenames without,
+    ' because Windows will switch between using and not using quotation marks to delimit the filenames.  Thus, we must perform complex,
+    ' specialized parsing of the command line.
+        
+    'This array will ultimately contain each filename to be loaded (one filename per index)
+    Dim sFile() As String
+        
+    'First, check the command line for quotation marks
+    If InStr(CommandLine, Chr(34)) = 0 Then
+        
+        'If there aren't any, our work is simple - simply split the array using the "space" character as the delimiter
+        sFile = Split(CommandLine, Chr(32))
+        
+    'If there are quotation marks, things get a lot messier.
+    Else
+        
+        Dim inQuotes As Boolean
+        inQuotes = False
+        
+        Dim tChar As String
+        
+        'Scan the command line one character at a time
+        For x = 1 To Len(CommandLine)
+            
+            tChar = Mid(CommandLine, x, 1)
+                
+            'If the current character is a quotation mark, change inQuotes to specify that we are either inside
+            ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
+            ' how Windows handles command line parameters)
+            If tChar = Chr(34) Then inQuotes = Not inQuotes
+                
+            'If the current character is a space...
+            If tChar = Chr(32) Then
+                    
+                '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
+                ' filename and NOT a delimiter.  Replace it with an asterisk.
+                If inQuotes = True Then CommandLine = Left(CommandLine, x - 1) & "*" & Right(CommandLine, Len(CommandLine) - x)
+                    
+            End If
+            
+        Next x
+            
+        'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
+        ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
+        ' between filenames.
+        sFile = Split(CommandLine, Chr(32))
+            
+        'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
+        ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
+        For x = 0 To UBound(sFile)
+            sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
+            sFile(x) = Replace$(sFile(x), Chr(34), "")
+        Next x
+        
+    End If
+        
+    'Finally, pass the array of filenames to the image loading routine
+    PreLoadImage sFile
+
 End Sub
 
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
@@ -1141,6 +1107,8 @@ Public Sub LoadPlugins()
         imageFormats.GDIPlusEnabled = False
     End If
     
+    
+    
 End Sub
 
 'Make a copy of the current image.  Thanks to PSC user "Achmad Junus" for this suggestion.
@@ -1233,4 +1201,29 @@ Public Sub DuplicateCurrentImage()
     'If we made it all the way here, the image was successfully duplicated.
     pdImages(CurrentImage).loadedSuccessfully = True
         
+End Sub
+
+'Check for IDE or compiled EXE, and set program parameters accordingly
+Private Sub CheckLoadingEnvironment()
+    
+    'Check the run-time environment.
+    
+    'App is compiled:
+    If App.LogMode = 1 Then
+        
+        isProgramCompiled = True
+        
+        'Determine the version automatically from the EXE information
+        FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
+                
+    'App is not compiled:
+    Else
+    
+        isProgramCompiled = False
+
+        'Add a gentle reminder to compile the program
+        FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision & " - please compile!"
+        
+    End If
+    
 End Sub

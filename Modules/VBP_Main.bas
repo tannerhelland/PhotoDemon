@@ -46,12 +46,16 @@ Public Sub Main()
        .lngICC = ICC_STANDARD_CLASSES Or ICC_BAR_CLASSES Or ICC_WIN95_CLASSES
     End With
     
-    On Error Resume Next ' error? InitCommonControlsEx requires IEv3 or above
+    'InitCommonControlsEx requires IEv3 or above, which shouldn't be a problem on any modern system.  But just to be
+    ' safe, use On Error Resume Next.
+    On Error Resume Next
     
+    'The follow block of code prevents XP crashes when VB usercontrols are present in a project (as they are in PhotoDemon)
     Dim hMod As Long
-    hMod = LoadLibraryA("shell32.dll") ' patch to prevent XP crashes when VB usercontrols present
+    hMod = LoadLibraryA("shell32.dll")
     InitCommonControlsEx iccex
     
+    'If an error occurs, attempt to initiate the Win9x version
     If Err Then
         InitCommonControls ' try Win9x version
         Err.Clear
@@ -61,6 +65,8 @@ Public Sub Main()
     
     Load FormMain
     
+    'FormMain will be now be loaded.  If the shell32 library was loaded successfully, once FormMain is closed, we
+    ' need to unload the library handle
     If hMod Then FreeLibrary hMod
 
 End Sub

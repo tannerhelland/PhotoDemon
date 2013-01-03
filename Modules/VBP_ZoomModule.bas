@@ -1,7 +1,7 @@
 Attribute VB_Name = "Viewport_Handler"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
-'Copyright ©2000-2012 by Tanner Helland
+'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 12/November/12
 'Last update: Maintain scroll bar value whenever possible (e.g. when Undo/Redo data is loaded, do not reset the scroll bars unless we absolutely have to)
@@ -26,10 +26,6 @@ Public Const zoomIndex100 As Long = 11
 'Width and height values of the image AFTER zoom has been applied.  (For example, if the image is 100x100
 ' and the zoom value is 200%, zWidth and zHeight will be 200.)
 Dim zWidth As Single, zHeight As Single
-
-'32bpp images require pre-multiplication against a background (otherwise it will be black).  To make sure that the original alpha
-' channel is correctly preserved, we must reapply this pre-multiplication every time we draw the image to screen.  This object will
-' hold the object used to perform the pre-multiplication.
 
 'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
 Dim srcWidth As Double, srcHeight As Double
@@ -456,4 +452,126 @@ Public Sub eraseViewportBuffers()
         frontBuffer.eraseLayer
         Set frontBuffer = Nothing
     End If
+End Sub
+
+'When the program is first loaded, we need to populate a number of viewport-related values.
+Public Sub initializeViewportEngine()
+
+    'This list of zoom values is (effectively) arbitrary.  I've based this list off similar lists (Paint.NET, GIMP)
+    ' while including a few extra values for convenience's sake
+    
+    'Total number of available zoom values
+    Zoom.ZoomCount = 25
+    
+    ReDim Zoom.ZoomArray(0 To Zoom.ZoomCount) As Double
+    ReDim Zoom.ZoomFactor(0 To Zoom.ZoomCount) As Double
+    
+    'Manually create a list of user-friendly zoom values
+    FormMain.CmbZoom.AddItem "3200%", 0
+        Zoom.ZoomArray(0) = 32
+        Zoom.ZoomFactor(0) = 32
+        
+    FormMain.CmbZoom.AddItem "2400%", 1
+        Zoom.ZoomArray(1) = 24
+        Zoom.ZoomFactor(1) = 24
+        
+    FormMain.CmbZoom.AddItem "1600%", 2
+        Zoom.ZoomArray(2) = 16
+        Zoom.ZoomFactor(2) = 16
+        
+    FormMain.CmbZoom.AddItem "1200%", 3
+        Zoom.ZoomArray(3) = 12
+        Zoom.ZoomFactor(3) = 12
+        
+    FormMain.CmbZoom.AddItem "800%", 4
+        Zoom.ZoomArray(4) = 8
+        Zoom.ZoomFactor(4) = 8
+        
+    FormMain.CmbZoom.AddItem "700%", 5
+        Zoom.ZoomArray(5) = 7
+        Zoom.ZoomFactor(5) = 7
+        
+    FormMain.CmbZoom.AddItem "600%", 6
+        Zoom.ZoomArray(6) = 6
+        Zoom.ZoomFactor(6) = 6
+        
+    FormMain.CmbZoom.AddItem "500%", 7
+        Zoom.ZoomArray(7) = 5
+        Zoom.ZoomFactor(7) = 5
+        
+    FormMain.CmbZoom.AddItem "400%", 8
+        Zoom.ZoomArray(8) = 4
+        Zoom.ZoomFactor(8) = 4
+        
+    FormMain.CmbZoom.AddItem "300%", 9
+        Zoom.ZoomArray(9) = 3
+        Zoom.ZoomFactor(9) = 3
+        
+    FormMain.CmbZoom.AddItem "200%", 10
+        Zoom.ZoomArray(10) = 2
+        Zoom.ZoomFactor(10) = 2
+        
+    FormMain.CmbZoom.AddItem "100%", 11
+        Zoom.ZoomArray(11) = 1
+        Zoom.ZoomFactor(11) = 1
+        
+    FormMain.CmbZoom.AddItem "75%", 12
+        Zoom.ZoomArray(12) = 3 / 4
+        Zoom.ZoomFactor(12) = 4 / 3
+        
+    FormMain.CmbZoom.AddItem "67%", 13
+        Zoom.ZoomArray(13) = 2 / 3
+        Zoom.ZoomFactor(13) = 3 / 2
+        
+    FormMain.CmbZoom.AddItem "50%", 14
+        Zoom.ZoomArray(14) = 0.5
+        Zoom.ZoomFactor(14) = 2
+        
+    FormMain.CmbZoom.AddItem "33%", 15
+        Zoom.ZoomArray(15) = 1 / 3
+        Zoom.ZoomFactor(15) = 3
+        
+    FormMain.CmbZoom.AddItem "25%", 16
+        Zoom.ZoomArray(16) = 0.25
+        Zoom.ZoomFactor(16) = 4
+        
+    FormMain.CmbZoom.AddItem "20%", 17
+        Zoom.ZoomArray(17) = 0.2
+        Zoom.ZoomFactor(17) = 5
+        
+    FormMain.CmbZoom.AddItem "16%", 18
+        Zoom.ZoomArray(18) = 0.16
+        Zoom.ZoomFactor(18) = 100 / 16
+        
+    FormMain.CmbZoom.AddItem "12%", 19
+        Zoom.ZoomArray(19) = 0.12
+        Zoom.ZoomFactor(19) = 100 / 12
+        
+    FormMain.CmbZoom.AddItem "8%", 20
+        Zoom.ZoomArray(20) = 0.08
+        Zoom.ZoomFactor(20) = 100 / 8
+        
+    FormMain.CmbZoom.AddItem "6%", 21
+        Zoom.ZoomArray(21) = 0.06
+        Zoom.ZoomFactor(21) = 100 / 6
+        
+    FormMain.CmbZoom.AddItem "4%", 22
+        Zoom.ZoomArray(22) = 0.04
+        Zoom.ZoomFactor(22) = 25
+        
+    FormMain.CmbZoom.AddItem "3%", 23
+        Zoom.ZoomArray(23) = 0.03
+        Zoom.ZoomFactor(23) = 100 / 0.03
+        
+    FormMain.CmbZoom.AddItem "2%", 24
+        Zoom.ZoomArray(24) = 0.02
+        Zoom.ZoomFactor(24) = 50
+        
+    FormMain.CmbZoom.AddItem "1%", 25
+        Zoom.ZoomArray(25) = 0.01
+        Zoom.ZoomFactor(25) = 100
+    
+    'Set the main form's zoom box to display "100%"
+    FormMain.CmbZoom.ListIndex = zoomIndex100
+
 End Sub
