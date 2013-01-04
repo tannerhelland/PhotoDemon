@@ -237,13 +237,19 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Checking command line..."
     
-    If CommandLine <> "" Then LoadImagesFromCommandLine
-        
+    If CommandLine <> "" Then
+        LoadMessage "Loading images..."
+        FormSplash.Visible = False
+        LoadImagesFromCommandLine
+    Else
+        LoadMessage "All systems go!  Launching main window..."
+    End If
+    
+    
+    
     '*************************************************************************************************************************************
     ' Unload the splash screen and present the main form
     '*************************************************************************************************************************************
-    
-    LoadMessage "All systems go!  Launching main window..."
     
     Unload FormSplash
     
@@ -474,7 +480,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             ' VB's internal LoadPicture function.
             Case Else
                                 
-                If imageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage)
+                If imageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
                 
                 If loadSuccessful Then loadedByOtherMeans = False
                 
