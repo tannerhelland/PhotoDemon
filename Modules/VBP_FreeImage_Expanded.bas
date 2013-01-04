@@ -223,6 +223,33 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
     End If
     
+    'Icon files may use a simple mask for their alpha channel; in this case, re-load the icon with the FILO_ICO_MAKEALPHA flag
+    If fileFIF = FIF_ICO Then
+        
+        'Check the bit-depth
+        If FreeImage_GetBPP(fi_hDIB) < 32 Then
+    
+            'If this is the first frame of the icon, unload it and try again
+            If (pageToLoad = 0) Then
+                If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
+                fi_hDIB = FreeImage_Load(fileFIF, srcFilename, FILO_ICO_MAKEALPHA)
+            
+            'If this is not the first frame, the required load code is a bit different.
+            Else
+                
+                'Unlock this page and close the multi-page bitmap
+                FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                FreeImage_CloseMultiBitmap fi_multi_hDIB
+                
+                'Now re-open it with the proper flags
+                fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , FILO_ICO_MAKEALPHA)
+                fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
+            End If
+            
+        End If
+        
+    End If
+    
     'If an empty handle is returned, abandon the import attempt.
     If fi_hDIB = 0 Then
         Message "Import via FreeImage failed (blank handle)."
@@ -230,6 +257,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         LoadFreeImageV3_Advanced = False
         Exit Function
     End If
+    
+    
     
     '****************************************************************************
     ' Retrieve format-specific information, link PNG background color
