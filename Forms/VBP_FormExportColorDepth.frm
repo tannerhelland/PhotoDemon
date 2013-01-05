@@ -246,11 +246,11 @@ Public Sub ShowDialog()
     End If
         
     'Based on the supplied image format, disable invalid color depths
-    If imageFormats.isColorDepthSupported(outputFormat, 1) Then optColorDepth(0).Enabled = True Else optColorDepth(0).Enabled = False
-    If imageFormats.isColorDepthSupported(outputFormat, 4) Then optColorDepth(1).Enabled = True Else optColorDepth(1).Enabled = False
-    If imageFormats.isColorDepthSupported(outputFormat, 8) Then optColorDepth(2).Enabled = True Else optColorDepth(2).Enabled = False
-    If imageFormats.isColorDepthSupported(outputFormat, 24) Then optColorDepth(3).Enabled = True Else optColorDepth(3).Enabled = False
-    If imageFormats.isColorDepthSupported(outputFormat, 32) Then optColorDepth(4).Enabled = True Else optColorDepth(4).Enabled = False
+    If g_ImageFormats.isColorDepthSupported(outputFormat, 1) Then optColorDepth(0).Enabled = True Else optColorDepth(0).Enabled = False
+    If g_ImageFormats.isColorDepthSupported(outputFormat, 4) Then optColorDepth(1).Enabled = True Else optColorDepth(1).Enabled = False
+    If g_ImageFormats.isColorDepthSupported(outputFormat, 8) Then optColorDepth(2).Enabled = True Else optColorDepth(2).Enabled = False
+    If g_ImageFormats.isColorDepthSupported(outputFormat, 24) Then optColorDepth(3).Enabled = True Else optColorDepth(3).Enabled = False
+    If g_ImageFormats.isColorDepthSupported(outputFormat, 32) Then optColorDepth(4).Enabled = True Else optColorDepth(4).Enabled = False
         
     'Out of politeness, set the default color depth to the current image's color depth
     If (pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24) And (optColorDepth(3).Enabled) Then

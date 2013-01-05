@@ -641,7 +641,7 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long, grayVal As Long
+    Dim r As Long, g As Long, b As Long, grayVal As Long
     
     'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
     Dim conversionFactor As Single
@@ -668,11 +668,11 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = grayLookUp(R + g + b)
+        grayVal = grayLookUp(r + g + b)
         
         'Assign all color channels the new gray value
         ImageData(QuickVal + 2, y) = LookUp(grayVal)
@@ -725,7 +725,7 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long, grayVal As Long
+    Dim r As Long, g As Long, b As Long, grayVal As Long
     
     'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
     Dim conversionFactor As Single
@@ -752,12 +752,12 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
         QuickVal = x * qvDepth
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Look up our initial grayscale value in the table
-        grayVal = grayLookUp(R + g + b)
+        grayVal = grayLookUp(r + g + b)
         
         'Add the error value (a cumulative value of the difference between actual gray values and gray values we've selected) to the current gray value
         grayTempCalc = grayVal + errorValue
@@ -828,7 +828,7 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
     progBarCheck = findBestProgBarValue()
     
     'Color and grayscale variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Byte
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
@@ -843,12 +843,12 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Calculate the gray value using the look-up table
-        grayVal = grayLookUp(R + g + b)
+        grayVal = grayLookUp(r + g + b)
         
         'Assign that gray value to each color channel
         ImageData(QuickVal, y) = grayVal
@@ -900,7 +900,7 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional B
     progBarCheck = findBestProgBarValue()
     
     'Color and grayscale variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
         
     'Loop through each pixel in the image, converting values as we go
@@ -909,12 +909,12 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional B
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (213 * R + 715 * g + 72 * b) \ 1000
+        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
         If grayVal > 255 Then grayVal = 255
         
         'Assign that gray value to each color channel
@@ -967,7 +967,7 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional 
     progBarCheck = findBestProgBarValue()
     
     'Color and grayscale variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Byte
        
     'Loop through each pixel in the image, converting values as we go
@@ -976,12 +976,12 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional 
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Calculate a grayscale value by using a short-hand RGB <-> HSL conversion
-        grayVal = CByte(getLuminance(R, g, b))
+        grayVal = CByte(getLuminance(r, g, b))
         
         'Assign that gray value to each color channel
         ImageData(QuickVal, y) = grayVal
@@ -1033,7 +1033,7 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
     progBarCheck = findBestProgBarValue()
     
     'Color and grayscale variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Byte
         
     'Loop through each pixel in the image, converting values as we go
@@ -1042,12 +1042,12 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Find the highest or lowest of the RGB values
-        If maxOrMin = 0 Then grayVal = CByte(MinimumInt(R, g, b)) Else grayVal = CByte(MaximumInt(R, g, b))
+        If maxOrMin = 0 Then grayVal = CByte(MinimumInt(r, g, b)) Else grayVal = CByte(MaximumInt(r, g, b))
         
         'Assign that gray value to each color channel
         ImageData(QuickVal, y) = grayVal
@@ -1110,7 +1110,7 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
     progBarCheck = findBestProgBarValue()
     
     'Color and grayscale variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Byte
         
     'Loop through each pixel in the image, converting values as we go
@@ -1119,14 +1119,14 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Assign the gray value to a single color channel based on the value of cChannel
         Select Case cChannel
             Case 0
-                grayVal = R
+                grayVal = r
             Case 1
                 grayVal = g
             Case 2

@@ -222,10 +222,10 @@ Public Sub loadUserSettings()
     If FileExist(INIPath) = False Then createNewINIFile
             
     'Get the LogProgramMessages preference
-    LogProgramMessages = GetPreference_Boolean("General Preferences", "LogProgramMessages", False)
+    g_LogProgramMessages = GetPreference_Boolean("General Preferences", "LogProgramMessages", False)
     
     'If the user wants us to log program messages, open the log file and write out the current date and time
-    If LogProgramMessages = True Then
+    If g_LogProgramMessages Then
         
         Dim fileNum As Integer
         fileNum = FreeFile
@@ -264,38 +264,38 @@ Public Sub loadUserSettings()
         x = RGB(201, 211, 226)
         SetPreference_Long "General Preferences", "CanvasBackground", CStr(RGB(201, 211, 226))
     End If
-    CanvasBackground = x
+    g_CanvasBackground = x
     
     'Get the canvas drop shadow preference
-    CanvasDropShadow = GetPreference_Boolean("General Preferences", "CanvasDropShadow", False)
+    g_CanvasDropShadow = GetPreference_Boolean("General Preferences", "CanvasDropShadow", False)
     
     'Get the alpha transparency checkerboard pattern
-    AlphaCheckMode = GetPreference_Long("General Preferences", "AlphaCheckMode", 1)
+    g_AlphaCheckMode = GetPreference_Long("General Preferences", "AlphaCheckMode", 1)
     
     'Get the alpha transparency checkerboard colors
-    AlphaCheckOne = GetPreference_Long("General Preferences", "AlphaCheckOne", RGB(153, 153, 153))
-    AlphaCheckTwo = GetPreference_Long("General Preferences", "AlphaCheckTwo", RGB(102, 102, 102))
+    g_AlphaCheckOne = GetPreference_Long("General Preferences", "AlphaCheckOne", RGB(153, 153, 153))
+    g_AlphaCheckTwo = GetPreference_Long("General Preferences", "AlphaCheckTwo", RGB(102, 102, 102))
     
     'Get the alpha checkerboard size
-    AlphaCheckSize = GetPreference_Long("General Preferences", "AlphaCheckSize", 1)
+    g_AlphaCheckSize = GetPreference_Long("General Preferences", "AlphaCheckSize", 1)
     
     'Check if the user wants us to prompt them about closing unsaved images
-    ConfirmClosingUnsaved = GetPreference_Boolean("General Preferences", "ConfirmClosingUnsaved", True)
+    g_ConfirmClosingUnsaved = GetPreference_Boolean("General Preferences", "ConfirmClosingUnsaved", True)
         
     'Check if the user wants the interface to use modern typefaces if available
-    useFancyFonts = GetPreference_Boolean("General Preferences", "UseFancyFonts", False)
+    g_UseFancyFonts = GetPreference_Boolean("General Preferences", "UseFancyFonts", False)
     
     'Check if the user wants large images automatically zoomed when loaded
-    AutosizeLargeImages = GetPreference_Long("General Preferences", "AutosizeLargeImages", 0)
+    g_AutosizeLargeImages = GetPreference_Long("General Preferences", "AutosizeLargeImages", 0)
     
     'Grab the last-used common dialog filters
-    LastOpenFilter = GetPreference_Long("File Formats", "LastOpenFilter", 1)
-    LastSaveFilter = GetPreference_Long("File Formats", "LastSaveFilter", 3)
+    g_LastOpenFilter = GetPreference_Long("File Formats", "LastOpenFilter", 1)
+    g_LastSaveFilter = GetPreference_Long("File Formats", "LastSaveFilter", 3)
     
     'Initialize a few other settings to default values, despite them not coming from the INI file
     
     'No custom filters have been created yet
-    HasCreatedFilter = False
+    g_HasCreatedFilter = False
     
     'Mark the Macro recorder as "not recording"
     MacroStatus = MacroSTOP
@@ -310,7 +310,7 @@ Public Sub loadUserSettings()
     NumOfWindows = 0
     
     'Set a default emboss/engrave color
-    EmbossEngraveColor = &HFF8080
+    g_EmbossEngraveColor = &HFF8080
     
 End Sub
 

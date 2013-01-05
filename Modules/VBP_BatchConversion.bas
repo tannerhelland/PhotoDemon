@@ -82,10 +82,10 @@ Public Sub StopMacro()
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , userPreferences.getMacroPath, "Save macro data", "." & MACRO_EXT, FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , g_UserPreferences.getMacroPath, "Save macro data", "." & MACRO_EXT, FormMain.hWnd, 0) Then
         
         'Save this macro's directory as the default macro path
-        userPreferences.setMacroPath sFile
+        g_UserPreferences.setMacroPath sFile
 
         'Delete any existing file (overwrite) and dump the info to file
         If FileExist(sFile) = True Then Kill sFile
@@ -126,12 +126,12 @@ Public Sub PlayMacro()
     Set CC = New cCommonDialog
    
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , userPreferences.getMacroPath, "Open Macro File", "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , g_UserPreferences.getMacroPath, "Open Macro File", "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
         
         Message "Loading macro data..."
         
         'Save this macro's folder as the default macro path
-        userPreferences.setMacroPath sFile
+        g_UserPreferences.setMacroPath sFile
                 
         PlayMacroFromFile sFile
         
@@ -171,8 +171,11 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
                 Dim OldCalls() As ProcessCall2002
                 ReDim OldCalls(0 To CurrentCall) As ProcessCall2002
                 Get #fileNum, , OldCalls
+                
                 'Loop through and copy our old macro structure into
                 'the new format
+                Dim x As Long
+                
                 For x = 0 To CurrentCall
                     Calls(x).MainType = OldCalls(x).MainType
                     Calls(x).pOPCODE = OldCalls(x).pOPCODE
@@ -182,6 +185,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
                     Calls(x).LoadForm = OldCalls(x).LoadForm
                     Calls(x).RecordAction = OldCalls(x).RecordAction
                 Next x
+                
                 'Once complete, close the old file, then copy it over
                 'with a new version
                 Close #fileNum

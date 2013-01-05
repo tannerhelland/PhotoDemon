@@ -30,7 +30,7 @@ Public pdImages() As pdImage
 Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
 
     'Disable viewport adjustments
-    FixScrolling = False
+    g_FixScrolling = False
 
     'Increase the number of images we're tracking
     NumOfImagesLoaded = NumOfImagesLoaded + 1
@@ -60,7 +60,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     pdImages(NumOfImagesLoaded).UndoMax = 0
     pdImages(NumOfImagesLoaded).UndoState = False
     pdImages(NumOfImagesLoaded).RedoState = False
-    pdImages(NumOfImagesLoaded).CurrentZoomValue = zoomIndex100   'Default zoom is 100%
+    pdImages(NumOfImagesLoaded).CurrentZoomValue = ZoomIndex100   'Default zoom is 100%
     
     'This is kind of cheap, but let's just set a random loading point between 0 and 99% :)
     Randomize Timer
@@ -87,7 +87,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     UpdateMDIStatus
     
     'Re-enable viewport adjustments
-    FixScrolling = True
+    g_FixScrolling = True
     
     'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
     pdImages(NumOfImagesLoaded).forInternalUseOnly = forInternalUse
@@ -103,7 +103,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
     If FormMain.ActiveForm.WindowState = 0 Then
     
         'Disable AutoScroll, because that messes with our calculations
-        FixScrolling = False
+        g_FixScrolling = False
     
         'To minimize flickering, we will only apply width/height and top/left changes once.
         ' While calculations are being run, store all changes to variables.
@@ -127,8 +127,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
         
         'Now we set the form dimensions to match the image's
-        curWidth = wDif + ((Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
-        curHeight = hDif + ((Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) * Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        curWidth = wDif + ((Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) * g_Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        curHeight = hDif + ((Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) * g_Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
         
         'There is a possibility that after a transformation (such as a rotation), part of the image may be off the screen.
         ' Start by populating some coordinate variables, which will be generated differently contingent on the image
@@ -207,7 +207,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         FormMain.ActiveForm.ScaleMode = 3
     
         'Re-enable scrolling
-        FixScrolling = True
+        g_FixScrolling = True
         
     End If
     
@@ -229,7 +229,7 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
     If FormMain.ActiveForm.WindowState = 0 Then
     
         'Prevent automatic recalculation of the viewport scroll bars until we finish our calculations here
-        FixScrolling = False
+        g_FixScrolling = False
         
         'Start by determining if the image's canvas falls outside the viewport area.  Note that we will repeat this process
         ' twice: once for horizontal, and again for vertical.
@@ -257,7 +257,7 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
         End If
             
         'Re-enable scrolling
-        FixScrolling = True
+        g_FixScrolling = True
         
     End If
     
@@ -273,7 +273,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     If NumOfWindows = 0 Then Exit Sub
     
     'Disable AutoScroll, because that messes with our calculations
-    FixScrolling = False
+    g_FixScrolling = False
     
     'Gotta change the scalemode to twips to match the MDI form
     FormMain.ActiveForm.ScaleMode = 1
@@ -288,16 +288,18 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     '...while this variable does the same thing for scaleheight and height
     hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
     
-    'Use this to track zoom
+    'Use this to track zpp,
     Dim zVal As Long
-    zVal = zoomIndex100
+    zVal = ZoomIndex100
     
-    'First, let's check to see if we need to adjust zoom because the width is too big
+    Dim x As Long
+    
+    'First, let's check to see if we need to adjust zppm because the width is too big
     If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) > (FormMain.ScaleWidth - tDif) Then
         'If it is too big, run a loop backwards through the possible zoom values to see
         'if one will make it fit
-        For x = zoomIndex100 To Zoom.ZoomCount Step 1
-            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * Zoom.ZoomArray(x)) < (FormMain.ScaleWidth - tDif) Then
+        For x = ZoomIndex100 To g_Zoom.ZoomCount Step 1
+            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < (FormMain.ScaleWidth - tDif) Then
                 zVal = x
                 Exit For
             End If
@@ -309,8 +311,8 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) > (FormMain.ScaleHeight - hDif) Then
         'If the image's height is too big for the form, run a loop backwards through all
         ' possible zoom values to see if one will make it fit
-        For x = zVal To Zoom.ZoomCount Step 1
-            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
+        For x = zVal To g_Zoom.ZoomCount Step 1
+            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
                 zVal = x
                 Exit For
             End If
@@ -326,14 +328,14 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     FormMain.ActiveForm.ScaleMode = 3
     
     'Re-enable scrolling
-    FixScrolling = True
+    g_FixScrolling = True
     
     'Now fix scrollbars and everything
     If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitImageToViewport"
     
 End Sub
 
-'Fit the current image onscreen at as large a size as possible (including possibility of zoomed-in)
+'Fit the current image onscreen at as large a size as possible (including possibility of g_Zoomed-in)
 Public Sub FitOnScreen()
     
     If NumOfWindows = 0 Then Exit Sub
@@ -342,7 +344,7 @@ Public Sub FitOnScreen()
     FormMain.ActiveForm.ScaleMode = 1
         
     'Disable AutoScroll, because that messes with our calculations
-    FixScrolling = False
+    g_FixScrolling = False
     
     'If the image is minimized, restore it
     If FormMain.ActiveForm.WindowState = vbMinimized Then FormMain.ActiveForm.WindowState = 0
@@ -358,18 +360,20 @@ Public Sub FitOnScreen()
     Dim zVal As Long
     zVal = 0
     
+    Dim x As Long
+    
     'Run a loop backwards through the possible zoom values to see
     'if one will make it fit at the maximum possible size
-    For x = 0 To Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
+    For x = 0 To g_Zoom.ZoomCount Step 1
+        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
             zVal = x
             Exit For
         End If
     Next x
     
     'Now we do the same thing for the height
-    For x = zVal To Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
+    For x = zVal To g_Zoom.ZoomCount Step 1
+        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
             zVal = x
             Exit For
         End If
@@ -381,7 +385,7 @@ Public Sub FitOnScreen()
     FormMain.ActiveForm.ScaleMode = 3
     
     'Re-enable scrolling
-    FixScrolling = True
+    g_FixScrolling = True
     
     'If the window is not maximized or minimized, fit the window to it
     If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
@@ -424,7 +428,7 @@ Public Sub UpdateMDIStatus()
         If FormMain.CmbZoom.Enabled = True Then
             FormMain.CmbZoom.Enabled = False
             FormMain.lblZoom.ForeColor = &H606060
-            FormMain.CmbZoom.ListIndex = zoomIndex100   'Reset zoom to 100%
+            FormMain.CmbZoom.ListIndex = ZoomIndex100   'Reset zoom to 100%
         End If
         
         FormMain.lblImgSize.ForeColor = &HD1B499
@@ -437,7 +441,7 @@ Public Sub UpdateMDIStatus()
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
         'Finally, if dynamic icons are enabled, restore the main program icon and clear the icon cache
-        If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+        If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
             destroyAllIcons
             setNewTaskbarIcon origIcon32
             setNewAppIcon origIcon16
@@ -501,7 +505,7 @@ Public Sub restoreMainWindowLocation()
 
     'First, check which state the window was in previously.
     Dim lWindowState As Long
-    lWindowState = userPreferences.GetPreference_Long("General Preferences", "LastWindowState", 0)
+    lWindowState = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowState", 0)
         
     Dim lWindowLeft As Long, lWindowTop As Long
     Dim lWindowWidth As Long, lWindowHeight As Long
@@ -512,8 +516,8 @@ Public Sub restoreMainWindowLocation()
     'If the window state was "maximized", set that and ignore the saved width/height values
     If lWindowState = vbMaximized Then
             
-        lWindowLeft = userPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
-        lWindowTop = userPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
+        lWindowLeft = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
+        lWindowTop = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
         FormMain.Left = lWindowLeft * Screen.TwipsPerPixelX
         FormMain.Top = lWindowTop * Screen.TwipsPerPixelY
         FormMain.WindowState = vbMaximized
@@ -522,16 +526,16 @@ Public Sub restoreMainWindowLocation()
     Else
             
         'Start by pulling the last left/top/width/height values from the INI file
-        lWindowLeft = userPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
-        lWindowTop = userPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
-        lWindowWidth = userPreferences.GetPreference_Long("General Preferences", "LastWindowWidth", 1)
-        lWindowHeight = userPreferences.GetPreference_Long("General Preferences", "LastWindowHeight", 1)
+        lWindowLeft = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
+        lWindowTop = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
+        lWindowWidth = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowWidth", 1)
+        lWindowHeight = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowHeight", 1)
             
         'If the left/top/width/height values all equal "1" (the default value), then a previous location has never
         ' been saved.  Center the form on the current screen at its default size.
         If (lWindowLeft = 1) And (lWindowTop = 1) And (lWindowWidth = 1) And (lWindowHeight = 1) Then
             
-            cMonitors.CenterFormOnMonitor FormMain, FormMain
+            g_cMonitors.CenterFormOnMonitor FormMain, FormMain
             
         'If values have been saved, perform a sanity check and then restore them
         Else
@@ -539,10 +543,10 @@ Public Sub restoreMainWindowLocation()
             'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user
             ' detached a second monitor that was previously attached and PhotoDemon was being used on that monitor),
             ' change the values to ensure that the program window appears on-screen.
-            If (lWindowLeft + lWindowWidth) < cMonitors.DesktopLeft Then lWindowLeft = cMonitors.DesktopLeft
-            If lWindowLeft > cMonitors.DesktopLeft + cMonitors.DesktopWidth Then lWindowLeft = cMonitors.DesktopWidth - lWindowWidth
-            If lWindowTop < cMonitors.DesktopTop Then lWindowTop = cMonitors.DesktopTop
-            If lWindowTop > cMonitors.DesktopHeight Then lWindowTop = cMonitors.DesktopHeight - lWindowHeight
+            If (lWindowLeft + lWindowWidth) < g_cMonitors.DesktopLeft Then lWindowLeft = g_cMonitors.DesktopLeft
+            If lWindowLeft > g_cMonitors.DesktopLeft + g_cMonitors.DesktopWidth Then lWindowLeft = g_cMonitors.DesktopWidth - lWindowWidth
+            If lWindowTop < g_cMonitors.DesktopTop Then lWindowTop = g_cMonitors.DesktopTop
+            If lWindowTop > g_cMonitors.DesktopHeight Then lWindowTop = g_cMonitors.DesktopHeight - lWindowHeight
                 
             'Perform a similar sanity check for width and height using arbitrary values (200 pixels at present)
             If lWindowWidth < 200 Then lWindowWidth = 200
@@ -561,9 +565,9 @@ Public Sub restoreMainWindowLocation()
         
     'Store the current window location to file (in case it hasn't been saved before, or we had to move it from
     ' an unavailable monitor to an available one)
-    userPreferences.SetPreference_Long "General Preferences", "LastWindowLeft", FormMain.Left / Screen.TwipsPerPixelX
-    userPreferences.SetPreference_Long "General Preferences", "LastWindowTop", FormMain.Top / Screen.TwipsPerPixelY
-    userPreferences.SetPreference_Long "General Preferences", "LastWindowWidth", FormMain.Width / Screen.TwipsPerPixelX
-    userPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", FormMain.Height / Screen.TwipsPerPixelY
+    g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowLeft", FormMain.Left / Screen.TwipsPerPixelX
+    g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowTop", FormMain.Top / Screen.TwipsPerPixelY
+    g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowWidth", FormMain.Width / Screen.TwipsPerPixelX
+    g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", FormMain.Height / Screen.TwipsPerPixelY
     
 End Sub

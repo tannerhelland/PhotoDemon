@@ -197,7 +197,7 @@ Public Sub ShowDialog()
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
     iconY = 18
-    If useFancyFonts Then iconY = iconY + 2
+    If g_UseFancyFonts Then iconY = iconY + 2
     DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 22, iconY
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
@@ -214,7 +214,7 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
 
-    If CBool(chkRepeat.Value) Then userPreferences.SetPreference_Boolean "General Preferences", "DisplayIDEWarning", False
+    If CBool(chkRepeat.Value) Then g_UserPreferences.SetPreference_Boolean "General Preferences", "DisplayIDEWarning", False
     Me.Hide
 
 End Sub

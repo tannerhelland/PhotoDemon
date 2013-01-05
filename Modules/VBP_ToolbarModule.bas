@@ -159,7 +159,7 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
             'NOTE: because the corresponding menu entries are "checkable", added images won't render nicely in unthemed environments.
             '       Thus, only activate the checked state if theming IS enabled.
-            If isThemingEnabled And isVistaOrLater Then
+            If g_IsThemingEnabled And g_IsVistaOrLater Then
             
                 'tState = True indicates 32bpp mode.
                 If tState Then

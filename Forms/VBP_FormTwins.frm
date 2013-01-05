@@ -245,7 +245,7 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
     Next x
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     
     'Loop through each pixel in the image, converting values as we go
@@ -254,7 +254,7 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
     For y = initY To finalY
     
         'Grab the current pixel values
-        R = srcImageData(QuickVal + 2, y)
+        r = srcImageData(QuickVal + 2, y)
         g = srcImageData(QuickVal + 1, y)
         b = srcImageData(QuickVal, y)
         
@@ -270,7 +270,7 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
         End If
         
         'Alpha-blend the two pixels using our shortcut look-up table
-        dstImageData(QuickVal + 2, y) = hLookup(R + r2)
+        dstImageData(QuickVal + 2, y) = hLookup(r + r2)
         dstImageData(QuickVal + 1, y) = hLookup(g + g2)
         dstImageData(QuickVal, y) = hLookup(b + b2)
         

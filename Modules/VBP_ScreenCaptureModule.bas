@@ -57,12 +57,12 @@ Public Sub CaptureScreen()
     Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
     
-    'UPDATE 12 November '12: use our new cMonitors object to detect VIRTUAL screen size.  This will capture all monitors
+    'UPDATE 12 November '12: use our new g_cMonitors object to detect VIRTUAL screen size.  This will capture all monitors
     ' on a multimonitor arrangement, not just the primary one.
-    screenLeft = cMonitors.DesktopLeft
-    screenTop = cMonitors.DesktopTop
-    screenWidth = cMonitors.DesktopWidth
-    screenHeight = cMonitors.DesktopHeight
+    screenLeft = g_cMonitors.DesktopLeft
+    screenTop = g_cMonitors.DesktopTop
+    screenWidth = g_cMonitors.DesktopWidth
+    screenHeight = g_cMonitors.DesktopHeight
     
     'screenWidth = Screen.Width \ Screen.TwipsPerPixelX
     'screenHeight = Screen.Height \ Screen.TwipsPerPixelY
@@ -88,7 +88,7 @@ Public Sub CaptureScreen()
     
     'Set the picture of the form to equal its image
     Dim tmpFilename As String
-    tmpFilename = userPreferences.getTempPath & PROGRAMNAME & " Screen Capture.tmp"
+    tmpFilename = g_UserPreferences.getTempPath & PROGRAMNAME & " Screen Capture.tmp"
     
     'Ask the layer to write out its data to file in BMP format
     tmpLayer.writeToBitmapFile tmpFilename

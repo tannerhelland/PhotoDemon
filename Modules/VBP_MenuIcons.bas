@@ -104,10 +104,10 @@ Public Sub LoadMenuIcons()
     With cMenuImage
             
         'Use Leandro's class to check if the current Windows install supports theming.
-        isThemingEnabled = .CanWeTheme
+        g_IsThemingEnabled = .CanWeTheme
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-        If (Not isVistaOrLater) And (isProgramCompiled = False) Then Exit Sub
+        If (Not g_IsVistaOrLater) And (g_IsProgramCompiled = False) Then Exit Sub
         
         .Init FormMain.hWnd, 16, 16
         
@@ -280,7 +280,7 @@ Public Sub LoadMenuIcons()
     
     'And initialize the MRU icon handler.  (Unfortunately, MRU icons must be disabled on XP.  We can't
     ' double-subclass the main form, and using a single menu icon class isn't possible at present.)
-    If isVistaOrLater Then
+    If g_IsVistaOrLater Then
         Set cMRUIcons = New clsMenuImage
         cMRUIcons.Init FormMain.hWnd, 64, 64
     End If
@@ -306,7 +306,7 @@ Public Sub ApplyAllMenuIcons()
         
         '--> Import Sub-Menu
         'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
-        If ScanEnabled Then
+        If g_ScanEnabled Then
             .PutImageToVBMenu 16, 0, 0, 2      'From Clipboard (Paste as New Image)
             .PutImageToVBMenu 8, 2, 0, 2       'Scan Image
             .PutImageToVBMenu 45, 3, 0, 2      'Select Scanner
@@ -350,7 +350,7 @@ Public Sub ApplyAllMenuIcons()
         .PutImageToVBMenu 21, 11, 3      'Rotate Counter-clockwise
         .PutImageToVBMenu 22, 12, 3      'Rotate 180
         'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
-        If imageFormats.FreeImageEnabled Then
+        If g_ImageFormats.FreeImageEnabled Then
             .PutImageToVBMenu 146, 13, 3     'Rotate Arbitrary
             .PutImageToVBMenu 125, 15, 3     'Isometric
             .PutImageToVBMenu 132, 16, 3     'Tile
@@ -514,7 +514,7 @@ End Sub
 Public Sub ResetMenuIcons()
 
     'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-    If (Not isVistaOrLater) And (isProgramCompiled = False) Then Exit Sub
+    If (Not g_IsVistaOrLater) And (g_IsProgramCompiled = False) Then Exit Sub
 
     'The position of menus changes if the MDI child is maximized.  When maximized, the form menu is given index 0, shifting
     ' everything to the right by one.
@@ -539,14 +539,14 @@ Public Sub ResetMenuIcons()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0 + posModifier, 1
     
     'Change the Show/Hide left icon panel to match
-    If userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
         cMenuImage.PutImageToVBMenu 154, 16, 2 + posModifier    'Show the panel
     Else
         cMenuImage.PutImageToVBMenu 153, 16, 2 + posModifier    'Hide the panel
     End If
         
     'If the OS is Vista or later, render MRU icons to the Open Recent menu
-    If isVistaOrLater Then
+    If g_IsVistaOrLater Then
     
         cMRUIcons.Clear
         Dim tmpFilename As String
@@ -624,13 +624,12 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     Dim icoInfo As ICONINFO
     Dim generatedIcon As Long
    
-    'The icon can be drawn at any size, but 16x16 is how it will (typically) end up on the form.  Note that I was previously considering
-    ' mimicking GIMP by making the taskbar icon dynamically change based on the image being edited, but I have since decided against that.
-    ' If I ever change my mind, I will want to use 32x32 here instead.
+    'The icon can be drawn at any size, but 16x16 is how it will (typically) end up on the form.  Since we are now rendering
+    ' a dynamically generated icon to the task bar as well, we opt for 32x32, and from that we generate an additional 16x16 version.
     Dim icoSize As Long
     
     'If we are rendering a dynamic taskbar icon, we will perform two reductions - first to 32x32, second to 16x16
-    If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then icoSize = 32 Else icoSize = 16
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then icoSize = 32 Else icoSize = 16
 
     'Determine aspect ratio
     Dim aspectRatio As Single
@@ -661,11 +660,11 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     'I have two systems in place for rendering the dynamic form icons.  One relies on FreeImage, and generates a very high-quality,
     ' 32bpp with full alpha icon.  This is obviously the preferred method.  If FreeImage cannot be found, a StretchBlt-based
     ' technique is used.  Alpha is not taken into account by that method (obviously), and the icon quality is much worse.
-    If imageFormats.FreeImageEnabled Then
+    If g_ImageFormats.FreeImageEnabled Then
     
         'Load the FreeImage dll into memory
         Dim hLib As Long
-        hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
         
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long
@@ -706,7 +705,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
             'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.
             
             'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 32x32 icon now
-            If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+            If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
                 
                 'Generate a blank monochrome mask to pass to the icon creation function.
                 MonoDC = CreateCompatibleDC(0&)
@@ -840,10 +839,10 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     'Render the icon to a handle
     generatedIcon = CreateIconIndirect(icoInfo)
         
-    If imageFormats.FreeImageEnabled Then
+    If g_ImageFormats.FreeImageEnabled Then
     
         'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 16x16 icon now
-        If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+        If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
             setNewAppIcon generatedIcon
             pdImages(imgForm.Tag).curFormIcon16 = generatedIcon
         End If

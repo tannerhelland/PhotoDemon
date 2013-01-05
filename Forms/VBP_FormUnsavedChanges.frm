@@ -213,7 +213,7 @@ Public Sub ShowDialog()
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
     iconY = 24
-    If useFancyFonts Then iconY = iconY + 2
+    If g_UseFancyFonts Then iconY = iconY + 2
     DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 277, iconY
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
@@ -255,7 +255,7 @@ Public Sub ShowDialog()
     
     'If there are multiple unsaved images, give the user a prompt to apply this action to all of them.
     ' (If there are not multiple unsaved images, hide that section from view.)
-    If numOfUnsavedImages < 2 Then
+    If g_NumOfUnsavedImages < 2 Then
         lineBottom.Visible = False
         chkRepeat.Visible = False
         Me.Height = vDifference + picPreview.Height + (picPreview.Top * 2)
@@ -264,10 +264,10 @@ Public Sub ShowDialog()
         chkRepeat.Visible = True
         
         'Change the text of the "repeat for all unsaved images" check box depending on how many unsaved images are present.
-        If numOfUnsavedImages = 2 Then
+        If g_NumOfUnsavedImages = 2 Then
             chkRepeat.Caption = " Repeat this action for both unsaved images"
         Else
-            chkRepeat.Caption = " Repeat this action for all unsaved images (" & numOfUnsavedImages & " in total)"
+            chkRepeat.Caption = " Repeat this action for all unsaved images (" & g_NumOfUnsavedImages & " in total)"
         End If
         
         Me.Height = vDifference + (chkRepeat.Top + chkRepeat.Height) + picPreview.Top
@@ -287,10 +287,10 @@ End Sub
 Private Sub updateRepeatToAllUnsavedImages(ByVal actionToApply As VbMsgBoxResult)
     
     If chkRepeat.Value = vbChecked Then
-        dealWithAllUnsavedImages = True
-        howToDealWithAllUnsavedImages = actionToApply
+        g_DealWithAllUnsavedImages = True
+        g_HowToDealWithAllUnsavedImages = actionToApply
     Else
-        dealWithAllUnsavedImages = False
+        g_DealWithAllUnsavedImages = False
     End If
     
 End Sub

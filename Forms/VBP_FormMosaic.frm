@@ -334,7 +334,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
     Dim NumOfPixels As Long
     
     'Finally, individual colors also need to be tracked
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     
     'Loop through each pixel in the image, diffusing as we go
     For x = initX To xLoop
@@ -356,7 +356,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            R = R + srcImageData(QuickVal + 2, j)
+            r = r + srcImageData(QuickVal + 2, j)
             g = g + srcImageData(QuickVal + 1, j)
             b = b + srcImageData(QuickVal, j)
             
@@ -372,7 +372,7 @@ NextMosiacPixel1:
         If NumOfPixels = 0 Then GoTo NextMosaicPixel3
         
         'Take the average red, green, and blue values of all the pixles within this tile
-        R = R \ NumOfPixels
+        r = r \ NumOfPixels
         g = g \ NumOfPixels
         b = b \ NumOfPixels
         
@@ -386,7 +386,7 @@ NextMosiacPixel1:
             If i > finalX Or j > finalY Then GoTo NextMosiacPixel2
             
             'Set the pixel
-            dstImageData(QuickVal + 2, j) = R
+            dstImageData(QuickVal + 2, j) = r
             dstImageData(QuickVal + 1, j) = g
             dstImageData(QuickVal, j) = b
             
@@ -398,7 +398,7 @@ NextMosiacPixel2:
 NextMosaicPixel3:
 
         'Clear all the variables and go to the next pixel
-        R = 0
+        r = 0
         g = 0
         b = 0
         NumOfPixels = 0

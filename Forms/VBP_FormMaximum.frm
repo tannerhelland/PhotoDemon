@@ -325,7 +325,7 @@ Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte, Option
     progBarCheck = findBestProgBarValue()
     
     'Rank calculations require a lot of variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long, grayValOriginal As Long
     Dim MaxX As Long, MaxY As Long
     Dim MaxTotal As Long
@@ -352,11 +352,11 @@ Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte, Option
                 MaxTotal = -1
         End Select
         
-        R = srcImageData(QuickVal + 2, y)
+        r = srcImageData(QuickVal + 2, y)
         g = srcImageData(QuickVal + 1, y)
         b = srcImageData(QuickVal, y)
             
-        grayValOriginal = gLookup(R + g + b)
+        grayValOriginal = gLookup(r + g + b)
         
         For c = x - Radius To x + Radius
             QuickValInner = c * qvDepth
@@ -367,11 +367,11 @@ Public Sub CustomRankFilter(ByVal Radius As Long, ByVal RankType As Byte, Option
             If d < 0 Then GoTo NextRankPixel
             If d > finalY Then GoTo NextRankPixel
         
-            R = srcImageData(QuickValInner + 2, d)
+            r = srcImageData(QuickValInner + 2, d)
             g = srcImageData(QuickValInner + 1, d)
             b = srcImageData(QuickValInner, d)
             
-            grayVal = gLookup(R + g + b)
+            grayVal = gLookup(r + g + b)
             
             Select Case RankType
                 Case 0

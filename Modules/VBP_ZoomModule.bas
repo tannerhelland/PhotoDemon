@@ -21,7 +21,7 @@ Attribute VB_Name = "Viewport_Handler"
 Option Explicit
 
 'This is the ListIndex of the FormMain zoom combo box that corresponds to 100%
-Public Const zoomIndex100 As Long = 11
+Public Const ZoomIndex100 As Long = 11
 
 'Width and height values of the image AFTER zoom has been applied.  (For example, if the image is 100x100
 ' and the zoom value is 200%, zWidth and zHeight will be 200.)
@@ -30,7 +30,7 @@ Dim zWidth As Single, zHeight As Single
 'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
 Dim srcWidth As Double, srcHeight As Double
 
-'The zoom value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
+'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
 Dim ZoomVal As Double
 
 'These variables are the offset, as determined by the scroll bar values
@@ -67,12 +67,12 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If pdImages(formToBuffer.Tag).selectionActive Then
     
         'If it is, composite the selection against the temporary buffer
-        pdImages(formToBuffer.Tag).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, selectionRenderPreference
+        pdImages(formToBuffer.Tag).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, g_selectionRenderPreference
     
     End If
         
     'If the user has requested a drop shadow drawn onto the canvas, handle that next
-    If CanvasDropShadow Then
+    If g_CanvasDropShadow Then
     
         'We'll handle this in two steps; first, the horizontal stretches
         If formToBuffer.VScroll.Visible = False Then
@@ -80,37 +80,37 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
             'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
             If pdImages(formToBuffer.Tag).targetTop <> 0 Then
                 'Top edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetWidth, PD_CANVASSHADOWSIZE, canvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
                 'Bottom edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).targetWidth, PD_CANVASSHADOWSIZE, canvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
             End If
         
         End If
         
         'Second, the vertical stretches
-        If formToBuffer.HScroll.Visible = False Then
+        If Not formToBuffer.HScroll.Visible Then
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
             If pdImages(formToBuffer.Tag).targetLeft <> 0 Then
                 'Left edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop, PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetHeight, canvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop, PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetHeight, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
                 'Right edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop, PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetHeight, canvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+                StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop, PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetHeight, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
             End If
         
         End If
         
         'Finally, the corners, which are only drawn if both scroll bars are invisible
-        If (formToBuffer.VScroll.Visible = False) And (formToBuffer.HScroll.Visible = False) Then
+        If (Not formToBuffer.VScroll.Visible) And (Not formToBuffer.HScroll.Visible) Then
         
             'NW corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, canvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'NE corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, canvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'SW corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, canvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'SE corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, canvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft + pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetTop + pdImages(formToBuffer.Tag).targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
         
         End If
     
@@ -153,8 +153,8 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     'If the image associated with this form is inactive, ignore this request
     If pdImages(formToBuffer.Tag).IsActive = False Then Exit Sub
     
-    'The zoom value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
-    ZoomVal = Zoom.ZoomArray(pdImages(formToBuffer.Tag).CurrentZoomValue)
+    'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
+    ZoomVal = g_Zoom.ZoomArray(pdImages(formToBuffer.Tag).CurrentZoomValue)
 
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
     srcWidth = pdImages(formToBuffer.Tag).targetWidth / ZoomVal
@@ -200,9 +200,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
         Dim bltWidth As Long, bltHeight As Long
-        bltWidth = pdImages(formToBuffer.Tag).targetWidth + (Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue)) - (pdImages(formToBuffer.Tag).targetWidth Mod Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue))))
+        bltWidth = pdImages(formToBuffer.Tag).targetWidth + (Int(g_Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue)) - (pdImages(formToBuffer.Tag).targetWidth Mod Int(g_Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue))))
         srcWidth = bltWidth / ZoomVal
-        bltHeight = pdImages(formToBuffer.Tag).targetHeight + (Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue)) - (pdImages(formToBuffer.Tag).targetHeight Mod Int(Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue))))
+        bltHeight = pdImages(formToBuffer.Tag).targetHeight + (Int(g_Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue)) - (pdImages(formToBuffer.Tag).targetHeight Mod Int(g_Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue))))
         srcHeight = bltHeight / ZoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
@@ -237,10 +237,10 @@ End Sub
 ' in non-active windows - in those cases, the calling routine must tell us which viewport it wants rebuilt.
 Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForRedraw As String)
 
-    'Don't attempt to resize the scroll bars if FixScrolling is disabled. This is used to provide a smoother user experience,
+    'Don't attempt to resize the scroll bars if g_FixScrolling is disabled. This is used to provide a smoother user experience,
     ' especially when images are being loaded. (This routine is triggered on Form_Resize, which is in turn triggered when a
-    ' new picture is loaded.  To prevent PrepareViewport from being fired multiple times, FixScrolling is utilized.)
-    If FixScrolling = False Then Exit Sub
+    ' new picture is loaded.  To prevent PrepareViewport from being fired multiple times, g_FixScrolling is utilized.)
+    If g_FixScrolling = False Then Exit Sub
     
     'Make sure the form is valid
     If formToBuffer Is Nothing Then Exit Sub
@@ -255,7 +255,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'Get the mathematical zoom multiplier (based on the current combo box setting - for example, 0.50 for "50% zoom")
     Dim ZoomVal As Double
-    ZoomVal = Zoom.ZoomArray(pdImages(formToBuffer.Tag).CurrentZoomValue)
+    ZoomVal = g_Zoom.ZoomArray(pdImages(formToBuffer.Tag).CurrentZoomValue)
     
     'Calculate the width and height of the full-size viewport based on the current zoom value
     zWidth = (pdImages(formToBuffer.Tag).Width * ZoomVal)
@@ -284,36 +284,36 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     'We now know which scroll bars need to be enabled.  Before calculating scroll bar stuff, however, let's figure out where our viewport will
     ' be located - on the edge if scroll bars are enabled, or centered in the viewable area if scroll bars are NOT enabled.
     
-    'Additionally, calculate viewport size - full form size if scroll bars enabled, full zoom size if they are not
+    'Additionally, calculate viewport size - full form size if scroll bars enabled, full zoomed size if they are not
     Dim viewportLeft As Long, viewportTop As Long
     Dim viewportWidth As Long, viewportHeight As Long
     
-    If hScrollEnabled = True Then
+    If hScrollEnabled Then
         viewportLeft = 0
-        If vScrollEnabled = False Then
+        If Not vScrollEnabled Then
             viewportWidth = FormWidth
         Else
             viewportWidth = FormWidth - formToBuffer.VScroll.Width
         End If
     Else
         viewportWidth = zWidth
-        If vScrollEnabled = False Then
+        If Not vScrollEnabled Then
             viewportLeft = (FormWidth - zWidth) / 2
         Else
             viewportLeft = ((FormWidth - formToBuffer.VScroll.Width) - zWidth) / 2
         End If
     End If
     
-    If vScrollEnabled = True Then
+    If vScrollEnabled Then
         viewportTop = 0
-        If hScrollEnabled = False Then
+        If Not hScrollEnabled Then
             viewportHeight = FormHeight
         Else
             viewportHeight = FormHeight - formToBuffer.HScroll.Height
         End If
     Else
         viewportHeight = zHeight
-        If hScrollEnabled = False Then
+        If Not hScrollEnabled Then
             viewportTop = (FormHeight - zHeight) / 2
         Else
             viewportTop = ((FormHeight - formToBuffer.HScroll.Height) - zHeight) / 2
@@ -324,18 +324,18 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     ' the scroll bar values.
     
     'First - if no scroll bars are enabled, draw the viewport and exit.
-    If hScrollEnabled = False And vScrollEnabled = False Then
+    If (Not hScrollEnabled) And (Not vScrollEnabled) Then
     
         'Reset the scroll bar values so ScrollViewport doesn't assume we want scrolling
         formToBuffer.HScroll.Value = 0
         formToBuffer.VScroll.Value = 0
     
         'Hide the scroll bars if necessary
-        If formToBuffer.HScroll.Visible = True Then formToBuffer.HScroll.Visible = False
-        If formToBuffer.VScroll.Visible = True Then formToBuffer.VScroll.Visible = False
+        If formToBuffer.HScroll.Visible Then formToBuffer.HScroll.Visible = False
+        If formToBuffer.VScroll.Visible Then formToBuffer.VScroll.Visible = False
             
         'Resize the buffer and store the relevant painting information into this pdImages object
-        pdImages(formToBuffer.Tag).backBuffer.createBlank FormWidth, FormHeight, 24, CanvasBackground
+        pdImages(formToBuffer.Tag).backBuffer.createBlank FormWidth, FormHeight, 24, g_CanvasBackground
         pdImages(formToBuffer.Tag).targetLeft = viewportLeft
         pdImages(formToBuffer.Tag).targetTop = viewportTop
         pdImages(formToBuffer.Tag).targetWidth = viewportWidth
@@ -352,14 +352,14 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     'Horizontal scroll bar comes first.
     Static newScrollMax As Long
     
-    If hScrollEnabled = True Then
+    If hScrollEnabled Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
-            newScrollMax = pdImages(formToBuffer.Tag).Width - Int(viewportWidth * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(formToBuffer.Tag).Width - Int(viewportWidth * g_Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            newScrollMax = pdImages(formToBuffer.Tag).Width - Int(viewportWidth / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(formToBuffer.Tag).Width - Int(viewportWidth / g_Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         End If
         
         If formToBuffer.HScroll.Value > newScrollMax Then formToBuffer.HScroll.Value = newScrollMax
@@ -375,10 +375,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
-            newScrollMax = pdImages(formToBuffer.Tag).Height - Int(viewportHeight * Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(formToBuffer.Tag).Height - Int(viewportHeight * g_Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            newScrollMax = pdImages(formToBuffer.Tag).Height - Int(viewportHeight / Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(formToBuffer.Tag).Height - Int(viewportHeight / g_Zoom.ZoomFactor(pdImages(formToBuffer.Tag).CurrentZoomValue) + 0.5)
         End If
         
         If formToBuffer.VScroll.Value > newScrollMax Then formToBuffer.VScroll.Value = newScrollMax
@@ -393,32 +393,32 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     ' As such, the time has come to render everything to the screen.
     
     'Horizontal scroll bar gets rendered first...
-    If hScrollEnabled = True Then
+    If hScrollEnabled Then
         formToBuffer.HScroll.Move 0, FormHeight - formToBuffer.HScroll.Height, viewportWidth, formToBuffer.HScroll.Height
-        If formToBuffer.HScroll.Visible = False Then formToBuffer.HScroll.Visible = True
+        If (Not formToBuffer.HScroll.Visible) Then formToBuffer.HScroll.Visible = True
     Else
         formToBuffer.HScroll.Value = 0
-        If formToBuffer.HScroll.Visible = True Then formToBuffer.HScroll.Visible = False
+        If formToBuffer.HScroll.Visible Then formToBuffer.HScroll.Visible = False
     End If
     
     'Then vertical scroll bar...
-    If vScrollEnabled = True Then
+    If vScrollEnabled Then
         formToBuffer.VScroll.Move FormWidth - formToBuffer.VScroll.Width, 0, formToBuffer.VScroll.Width, viewportHeight
-        If formToBuffer.VScroll.Visible = False Then formToBuffer.VScroll.Visible = True
+        If (Not formToBuffer.VScroll.Visible) Then formToBuffer.VScroll.Visible = True
     Else
         formToBuffer.VScroll.Value = 0
-        If formToBuffer.VScroll.Visible = True Then formToBuffer.VScroll.Visible = False
+        If formToBuffer.VScroll.Visible Then formToBuffer.VScroll.Visible = False
     End If
     
     'We don't actually render the image here; instead, we prepare the buffer (backBuffer) and store the relevant
     ' drawing variables to this pdImages object.  ScrollViewport (above) will handle the actual drawing.
     Dim newVWidth As Long, newVHeight As Long
-    If hScrollEnabled = True Then newVWidth = viewportWidth Else newVWidth = FormWidth
-    If vScrollEnabled = True Then newVHeight = viewportHeight Else newVHeight = FormHeight
+    If hScrollEnabled Then newVWidth = viewportWidth Else newVWidth = FormWidth
+    If vScrollEnabled Then newVHeight = viewportHeight Else newVHeight = FormHeight
     
     'Prepare the relevant back buffer
-    If Not pdImages(formToBuffer.Tag).backBuffer Is Nothing Then pdImages(formToBuffer.Tag).backBuffer.eraseLayer
-    pdImages(formToBuffer.Tag).backBuffer.createBlank newVWidth, newVHeight, 24, CanvasBackground
+    If (Not pdImages(formToBuffer.Tag).backBuffer Is Nothing) Then pdImages(formToBuffer.Tag).backBuffer.eraseLayer
+    pdImages(formToBuffer.Tag).backBuffer.createBlank newVWidth, newVHeight, 24, g_CanvasBackground
     
     pdImages(formToBuffer.Tag).targetLeft = viewportLeft
     pdImages(formToBuffer.Tag).targetTop = viewportTop
@@ -440,7 +440,7 @@ ZoomErrorHandler:
         Message "Invalid zoom value."
         Exit Sub
     Else
-        Message "Zoom paused due to unexpected error (#" & Err & ")."
+        Message "Viewport rendering paused due to unexpected error (#" & Err & ")."
         Exit Sub
     End If
 
@@ -461,117 +461,117 @@ Public Sub initializeViewportEngine()
     ' while including a few extra values for convenience's sake
     
     'Total number of available zoom values
-    Zoom.ZoomCount = 25
+    g_Zoom.ZoomCount = 25
     
-    ReDim Zoom.ZoomArray(0 To Zoom.ZoomCount) As Double
-    ReDim Zoom.ZoomFactor(0 To Zoom.ZoomCount) As Double
+    ReDim g_Zoom.ZoomArray(0 To g_Zoom.ZoomCount) As Double
+    ReDim g_Zoom.ZoomFactor(0 To g_Zoom.ZoomCount) As Double
     
     'Manually create a list of user-friendly zoom values
     FormMain.CmbZoom.AddItem "3200%", 0
-        Zoom.ZoomArray(0) = 32
-        Zoom.ZoomFactor(0) = 32
+        g_Zoom.ZoomArray(0) = 32
+        g_Zoom.ZoomFactor(0) = 32
         
     FormMain.CmbZoom.AddItem "2400%", 1
-        Zoom.ZoomArray(1) = 24
-        Zoom.ZoomFactor(1) = 24
+        g_Zoom.ZoomArray(1) = 24
+        g_Zoom.ZoomFactor(1) = 24
         
     FormMain.CmbZoom.AddItem "1600%", 2
-        Zoom.ZoomArray(2) = 16
-        Zoom.ZoomFactor(2) = 16
+        g_Zoom.ZoomArray(2) = 16
+        g_Zoom.ZoomFactor(2) = 16
         
     FormMain.CmbZoom.AddItem "1200%", 3
-        Zoom.ZoomArray(3) = 12
-        Zoom.ZoomFactor(3) = 12
+        g_Zoom.ZoomArray(3) = 12
+        g_Zoom.ZoomFactor(3) = 12
         
     FormMain.CmbZoom.AddItem "800%", 4
-        Zoom.ZoomArray(4) = 8
-        Zoom.ZoomFactor(4) = 8
+        g_Zoom.ZoomArray(4) = 8
+        g_Zoom.ZoomFactor(4) = 8
         
     FormMain.CmbZoom.AddItem "700%", 5
-        Zoom.ZoomArray(5) = 7
-        Zoom.ZoomFactor(5) = 7
+        g_Zoom.ZoomArray(5) = 7
+        g_Zoom.ZoomFactor(5) = 7
         
     FormMain.CmbZoom.AddItem "600%", 6
-        Zoom.ZoomArray(6) = 6
-        Zoom.ZoomFactor(6) = 6
+        g_Zoom.ZoomArray(6) = 6
+        g_Zoom.ZoomFactor(6) = 6
         
     FormMain.CmbZoom.AddItem "500%", 7
-        Zoom.ZoomArray(7) = 5
-        Zoom.ZoomFactor(7) = 5
+        g_Zoom.ZoomArray(7) = 5
+        g_Zoom.ZoomFactor(7) = 5
         
     FormMain.CmbZoom.AddItem "400%", 8
-        Zoom.ZoomArray(8) = 4
-        Zoom.ZoomFactor(8) = 4
+        g_Zoom.ZoomArray(8) = 4
+        g_Zoom.ZoomFactor(8) = 4
         
     FormMain.CmbZoom.AddItem "300%", 9
-        Zoom.ZoomArray(9) = 3
-        Zoom.ZoomFactor(9) = 3
+        g_Zoom.ZoomArray(9) = 3
+        g_Zoom.ZoomFactor(9) = 3
         
     FormMain.CmbZoom.AddItem "200%", 10
-        Zoom.ZoomArray(10) = 2
-        Zoom.ZoomFactor(10) = 2
+        g_Zoom.ZoomArray(10) = 2
+        g_Zoom.ZoomFactor(10) = 2
         
     FormMain.CmbZoom.AddItem "100%", 11
-        Zoom.ZoomArray(11) = 1
-        Zoom.ZoomFactor(11) = 1
+        g_Zoom.ZoomArray(11) = 1
+        g_Zoom.ZoomFactor(11) = 1
         
     FormMain.CmbZoom.AddItem "75%", 12
-        Zoom.ZoomArray(12) = 3 / 4
-        Zoom.ZoomFactor(12) = 4 / 3
+        g_Zoom.ZoomArray(12) = 3 / 4
+        g_Zoom.ZoomFactor(12) = 4 / 3
         
     FormMain.CmbZoom.AddItem "67%", 13
-        Zoom.ZoomArray(13) = 2 / 3
-        Zoom.ZoomFactor(13) = 3 / 2
+        g_Zoom.ZoomArray(13) = 2 / 3
+        g_Zoom.ZoomFactor(13) = 3 / 2
         
     FormMain.CmbZoom.AddItem "50%", 14
-        Zoom.ZoomArray(14) = 0.5
-        Zoom.ZoomFactor(14) = 2
+        g_Zoom.ZoomArray(14) = 0.5
+        g_Zoom.ZoomFactor(14) = 2
         
     FormMain.CmbZoom.AddItem "33%", 15
-        Zoom.ZoomArray(15) = 1 / 3
-        Zoom.ZoomFactor(15) = 3
+        g_Zoom.ZoomArray(15) = 1 / 3
+        g_Zoom.ZoomFactor(15) = 3
         
     FormMain.CmbZoom.AddItem "25%", 16
-        Zoom.ZoomArray(16) = 0.25
-        Zoom.ZoomFactor(16) = 4
+        g_Zoom.ZoomArray(16) = 0.25
+        g_Zoom.ZoomFactor(16) = 4
         
     FormMain.CmbZoom.AddItem "20%", 17
-        Zoom.ZoomArray(17) = 0.2
-        Zoom.ZoomFactor(17) = 5
+        g_Zoom.ZoomArray(17) = 0.2
+        g_Zoom.ZoomFactor(17) = 5
         
     FormMain.CmbZoom.AddItem "16%", 18
-        Zoom.ZoomArray(18) = 0.16
-        Zoom.ZoomFactor(18) = 100 / 16
+        g_Zoom.ZoomArray(18) = 0.16
+        g_Zoom.ZoomFactor(18) = 100 / 16
         
     FormMain.CmbZoom.AddItem "12%", 19
-        Zoom.ZoomArray(19) = 0.12
-        Zoom.ZoomFactor(19) = 100 / 12
+        g_Zoom.ZoomArray(19) = 0.12
+        g_Zoom.ZoomFactor(19) = 100 / 12
         
     FormMain.CmbZoom.AddItem "8%", 20
-        Zoom.ZoomArray(20) = 0.08
-        Zoom.ZoomFactor(20) = 100 / 8
+        g_Zoom.ZoomArray(20) = 0.08
+        g_Zoom.ZoomFactor(20) = 100 / 8
         
     FormMain.CmbZoom.AddItem "6%", 21
-        Zoom.ZoomArray(21) = 0.06
-        Zoom.ZoomFactor(21) = 100 / 6
+        g_Zoom.ZoomArray(21) = 0.06
+        g_Zoom.ZoomFactor(21) = 100 / 6
         
     FormMain.CmbZoom.AddItem "4%", 22
-        Zoom.ZoomArray(22) = 0.04
-        Zoom.ZoomFactor(22) = 25
+        g_Zoom.ZoomArray(22) = 0.04
+        g_Zoom.ZoomFactor(22) = 25
         
     FormMain.CmbZoom.AddItem "3%", 23
-        Zoom.ZoomArray(23) = 0.03
-        Zoom.ZoomFactor(23) = 100 / 0.03
+        g_Zoom.ZoomArray(23) = 0.03
+        g_Zoom.ZoomFactor(23) = 100 / 0.03
         
     FormMain.CmbZoom.AddItem "2%", 24
-        Zoom.ZoomArray(24) = 0.02
-        Zoom.ZoomFactor(24) = 50
+        g_Zoom.ZoomArray(24) = 0.02
+        g_Zoom.ZoomFactor(24) = 50
         
     FormMain.CmbZoom.AddItem "1%", 25
-        Zoom.ZoomArray(25) = 0.01
-        Zoom.ZoomFactor(25) = 100
+        g_Zoom.ZoomArray(25) = 0.01
+        g_Zoom.ZoomFactor(25) = 100
     
-    'Set the main form's zoom box to display "100%"
-    FormMain.CmbZoom.ListIndex = zoomIndex100
+    'Set the main form's zoom combo box to display "100%"
+    FormMain.CmbZoom.ListIndex = ZoomIndex100
 
 End Sub

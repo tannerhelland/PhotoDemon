@@ -237,7 +237,7 @@ Public Sub generateInputFormats()
     End If
     
     'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
-    If zLibEnabled Then addInputFormat "PDI - PhotoDemon Image", "*.pdi", 100
+    If g_ZLibEnabled Then addInputFormat "PDI - PhotoDemon Image", "*.pdi", 100
         
     If FreeImageEnabled Then
         addInputFormat "PGM - Portable Graymap", "*.pgm", FIF_PGM
@@ -334,7 +334,7 @@ Public Sub generateOutputFormats()
         
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "JPG - Joint Photographic Experts Group", "jpg", FIF_JPEG
         
-    If zLibEnabled Then addOutputFormat "PDI - PhotoDemon Image", "pdi", 100
+    If g_ZLibEnabled Then addOutputFormat "PDI - PhotoDemon Image", "pdi", 100
     
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "PNG - Portable Network Graphic", "png", FIF_PNG
         

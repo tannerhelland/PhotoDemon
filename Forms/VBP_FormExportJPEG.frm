@@ -514,7 +514,7 @@ Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
     cmbSubsample.ListIndex = 2
     
     'If FreeImage is not available, disable all the advanced settings
-    If Not imageFormats.FreeImageEnabled Then
+    If Not g_ImageFormats.FreeImageEnabled Then
         chkOptimize.Enabled = False
         chkProgressive.Enabled = False
         chkSubsample.Enabled = False
@@ -532,7 +532,7 @@ Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
     makeFormPretty Me
     
     'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-    If useFancyFonts Then hsQuality.Height = 23 Else hsQuality.Height = 22
+    If g_UseFancyFonts Then hsQuality.Height = 23 Else hsQuality.Height = 22
 
     'Display the dialog
     Me.Show vbModal, FormMain

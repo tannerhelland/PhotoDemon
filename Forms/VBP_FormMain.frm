@@ -1374,7 +1374,7 @@ Private updateSelWidthBar As Boolean, updateSelHeightBar As Boolean
 'When the selection type is changed, update the corresponding preference and redraw all selections
 Private Sub cmbSelRender_Click()
     
-    selectionRenderPreference = FormMain.cmbSelRender.ListIndex
+    g_selectionRenderPreference = FormMain.cmbSelRender.ListIndex
     
     If NumOfWindows > 0 Then
     
@@ -1395,7 +1395,7 @@ Private Sub CmbZoom_Click()
     'Track the current zoom value
     If NumOfWindows > 0 Then
         pdImages(FormMain.ActiveForm.Tag).CurrentZoomValue = FormMain.CmbZoom.ListIndex
-        PrepareViewport FormMain.ActiveForm, "Zoom changed by user"
+        PrepareViewport FormMain.ActiveForm, "zoom changed by user"
     End If
     
 End Sub
@@ -1429,7 +1429,7 @@ End Sub
 Private Sub MDIForm_Load()
 
     'Use a global variable to store any command line parameters we may have been passed
-    CommandLine = Command$
+    g_CommandLine = Command$
     
     'The bulk of the loading code actually takes place inside the LoadTheprogram subroutine (which can be found in the "Loading" module)
     LoadTheProgram
@@ -1452,13 +1452,13 @@ Private Sub MDIForm_Load()
         
     'Start by seeing if we're allowed to check for software updates
     Dim allowedToUpdate As Boolean
-    allowedToUpdate = userPreferences.GetPreference_Boolean("General Preferences", "CheckForUpdates", True)
+    allowedToUpdate = g_UserPreferences.GetPreference_Boolean("General Preferences", "CheckForUpdates", True)
         
     'If updates ARE allowed, see when we last checked.  To be polite, only check once every 10 days.
     If allowedToUpdate Then
     
         Dim lastCheckDate As String
-        lastCheckDate = userPreferences.GetPreference_String("General Preferences", "LastUpdateCheck", "")
+        lastCheckDate = g_UserPreferences.GetPreference_String("General Preferences", "LastUpdateCheck", "")
         
         'If the last update check date was not found, request an update check now
         If lastCheckDate = "" Then
@@ -1507,7 +1507,7 @@ Private Sub MDIForm_Load()
                 Message "Software is up-to-date."
                 
                 'Because the software is up-to-date, we can mark this as a successful check in the INI file
-                userPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
+                g_UserPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
                 
             Case 2
                 Message "Software update found!  Launching update notifier..."
@@ -1526,7 +1526,7 @@ Private Sub MDIForm_Load()
         
         'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
         Dim promptToDownload As Boolean
-        promptToDownload = userPreferences.GetPreference_Boolean("General Preferences", "PromptForPluginDownload", True)
+        promptToDownload = g_UserPreferences.GetPreference_Boolean("General Preferences", "PromptForPluginDownload", True)
                 
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
         If promptToDownload = True Then
@@ -1536,8 +1536,8 @@ Private Sub MDIForm_Load()
             LoadPlugins
             ApplyAllMenuIcons
             ResetMenuIcons
-            imageFormats.generateInputFormats
-            imageFormats.generateOutputFormats
+            g_ImageFormats.generateInputFormats
+            g_ImageFormats.generateOutputFormats
             
         Else
             Message "Ignoring plugin update request per user's INI settings"
@@ -1554,7 +1554,7 @@ Private Sub MDIForm_Load()
     makeFormPretty Me
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
-    If (Not isProgramCompiled) And (userPreferences.GetPreference_Boolean("General Preferences", "DisplayIDEWarning", True)) Then displayIDEWarning
+    If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPreference_Boolean("General Preferences", "DisplayIDEWarning", True)) Then displayIDEWarning
                
 End Sub
 
@@ -1619,18 +1619,18 @@ Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     Unload FormHistogram
     
     'If the user wants us to remember the program's last-used location, store those values to file now
-    If userPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then
     
-        userPreferences.SetPreference_Long "General Preferences", "LastWindowState", Me.WindowState
-        userPreferences.SetPreference_Long "General Preferences", "LastWindowLeft", Me.Left / Screen.TwipsPerPixelX
-        userPreferences.SetPreference_Long "General Preferences", "LastWindowTop", Me.Top / Screen.TwipsPerPixelY
-        userPreferences.SetPreference_Long "General Preferences", "LastWindowWidth", Me.Width / Screen.TwipsPerPixelX
-        userPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", Me.Height / Screen.TwipsPerPixelY
+        g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowState", Me.WindowState
+        g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowLeft", Me.Left / Screen.TwipsPerPixelX
+        g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowTop", Me.Top / Screen.TwipsPerPixelY
+        g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowWidth", Me.Width / Screen.TwipsPerPixelX
+        g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", Me.Height / Screen.TwipsPerPixelY
     
     End If
     
     'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
-    programShuttingDown = True
+    g_ProgramShuttingDown = True
     
 End Sub
 
@@ -1642,7 +1642,7 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     ClearALLUndo
     
     'Release GDIPlus (if applicable)
-    If imageFormats.GDIPlusEnabled Then releaseGDIPlus
+    If g_ImageFormats.GDIPlusEnabled Then releaseGDIPlus
     
     'Destroy all custom-created form icons
     destroyAllIcons
@@ -1679,7 +1679,7 @@ Private Sub MnuAbout_Click()
 End Sub
 
 Private Sub MnuActualSize_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = zoomIndex100
+    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = ZoomIndex100
 End Sub
 
 'Private Sub MnuAnimate_Click()
@@ -1744,10 +1744,10 @@ Private Sub MnuBugReport_Click()
     Dim msgReturn As VbMsgBoxResult
     
     'If the user has previously been prompted about having a GitHub account, use their previous answer
-    If userPreferences.doesValueExist("General Preferences", "HasGitHubAccount") Then
+    If g_UserPreferences.doesValueExist("General Preferences", "HasGitHubAccount") Then
     
         Dim hasGitHub As Boolean
-        hasGitHub = userPreferences.GetPreference_Boolean("General Preferences", "HasGitHubAccount", False)
+        hasGitHub = g_UserPreferences.GetPreference_Boolean("General Preferences", "HasGitHubAccount", False)
         
         If hasGitHub Then msgReturn = vbYes Else msgReturn = vbNo
     
@@ -1757,8 +1757,8 @@ Private Sub MnuBugReport_Click()
         msgReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for making " & PROGRAMNAME & " better")
         
         'If their answer was anything but "Cancel", store that answer to file
-        If msgReturn = vbYes Then userPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", True
-        If msgReturn = vbNo Then userPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", False
+        If msgReturn = vbYes Then g_UserPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", True
+        If msgReturn = vbNo Then g_UserPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", False
         
     End If
     
@@ -1814,7 +1814,7 @@ Private Sub MnuCheckUpdates_Click()
             Message "This copy of PhotoDemon is the newest available.  (Version " & App.Major & "." & App.Minor & "." & App.Revision & ")"
                 
             'Because the software is up-to-date, we can mark this as a successful check in the INI file
-            userPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
+            g_UserPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
                 
         Case 2
             Message "Software update found!  Launching update notifier..."
@@ -1831,7 +1831,7 @@ End Sub
 Private Sub MnuClose_Click()
     
     'Note that we are not closing ALL images - just one of them
-    closingAllImages = False
+    g_ClosingAllImages = False
     Unload Me.ActiveForm
     
 End Sub
@@ -1839,7 +1839,7 @@ End Sub
 Private Sub MnuCloseAll_Click()
 
     'Note that the user has opted to close ALL open images
-    closingAllImages = True
+    g_ClosingAllImages = True
 
     'Go through each image object and close the containing form
     Dim i As Long
@@ -1850,8 +1850,8 @@ Private Sub MnuCloseAll_Click()
     Next i
 
     'Reset the "closing all images" flag
-    closingAllImages = False
-    dealWithAllUnsavedImages = False
+    g_ClosingAllImages = False
+    g_DealWithAllUnsavedImages = False
     
 End Sub
 
@@ -2092,10 +2092,10 @@ End Sub
 Private Sub MnuLeftPanel_Click()
     
     'Write the new value to the INI
-    userPreferences.SetPreference_Boolean "General Preferences", "HideLeftPanel", Not userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False)
+    g_UserPreferences.SetPreference_Boolean "General Preferences", "HideLeftPanel", Not g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False)
 
     'Toggle the text and picture box accordingly
-    If userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
         MnuLeftPanel.Caption = "Show left panel"
         picLeftPane.Visible = False
     Else
@@ -2172,11 +2172,6 @@ End Sub
 
 Private Sub MnuFlip_Click()
     Process Flip
-End Sub
-
-'Once I get this working (working WELL :), it will be re-enabled
-Private Sub MnuFreeRotate_Click()
-    Process FreeRotate, , , , , , , , , , True
 End Sub
 
 Private Sub MnuInvert_Click()
@@ -2513,7 +2508,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Actual size
     If ctlAccelerator.Key(nIndex) = "Actual_Size" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = zoomIndex100
+        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = ZoomIndex100
     End If
     
     'Various zoom values
@@ -2654,7 +2649,7 @@ End Sub
 
 
 'When the form is resized, the progress bar at bottom needs to be manually redrawn.  Unfortunately, VB doesn't trigger
-' the Resize() event properly for MDI parent forms, so we use the picProgBar resize event instead.
+' the Resize() event properly for MDI parent forms, so we use the pig_ProgBar resize event instead.
 Private Sub picProgBar_Resize()
     
     'When this main form is resized, reapply any custom visual styles

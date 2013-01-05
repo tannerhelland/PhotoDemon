@@ -42,7 +42,7 @@ Public Sub MenuRainbow()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim h As Single, S As Single, l As Single
     Dim hVal As Single
     
@@ -57,18 +57,18 @@ Public Sub MenuRainbow()
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Use RGB to calculate hue, saturation, and luminance
-        tRGBToHSL R, g, b, h, S, l
+        tRGBToHSL r, g, b, h, S, l
         
         'Now convert those HSL values back to RGB, but substitute in our artificial hue value (calculated above)
-        tHSLToRGB hVal, S, l, R, g, b
+        tHSLToRGB hVal, S, l, r, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -114,7 +114,7 @@ Public Sub MenuFogEffect()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     
     'This value can be changed to adjust the "thickness" of the fog
     Dim fogLimit As Long
@@ -125,16 +125,16 @@ Public Sub MenuFogEffect()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        If R > 127 Then
-            R = R - fogLimit
-            If R < 127 Then R = 127
+        If r > 127 Then
+            r = r - fogLimit
+            If r < 127 Then r = 127
         Else
-            R = R + fogLimit
-            If R > 127 Then R = 127
+            r = r + fogLimit
+            If r > 127 Then r = 127
         End If
         
         If g > 127 Then
@@ -153,7 +153,7 @@ Public Sub MenuFogEffect()
             If b > 127 Then b = 127
         End If
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -199,7 +199,7 @@ Public Sub MenuWater()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
@@ -213,24 +213,24 @@ Public Sub MenuWater()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
-        R = gray - g - b
-        g = gray - R - b
-        b = gray - R - g
+        r = gray - g - b
+        g = gray - r - b
+        b = gray - r - g
         
-        If R > 255 Then R = 255
-        If R < 0 Then R = 0
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
         If g > 255 Then g = 255
         If g < 0 Then g = 0
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -276,7 +276,7 @@ Public Sub MenuAtmospheric()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
         
     'Apply the filter
@@ -284,13 +284,13 @@ Public Sub MenuAtmospheric()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         newR = (g + b) \ 2
-        newG = (R + b) \ 2
-        newB = (R + g) \ 2
+        newG = (r + b) \ 2
+        newB = (r + g) \ 2
         
         ImageData(QuickVal + 2, y) = newR
         ImageData(QuickVal + 1, y) = newG
@@ -338,30 +338,30 @@ Public Sub MenuFrozen()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
         
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        R = Abs((R - g - b) * 1.5)
-        g = Abs((g - b - R) * 1.5)
-        b = Abs((b - R - g) * 1.5)
+        r = Abs((r - g - b) * 1.5)
+        g = Abs((g - b - r) * 1.5)
+        b = Abs((b - r - g) * 1.5)
         
-        If R < 0 Then R = 0
+        If r < 0 Then r = 0
         If g < 0 Then g = 0
         If b < 0 Then b = 0
         
-        If R > 255 Then R = 255
+        If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -407,7 +407,7 @@ Public Sub MenuLava()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
@@ -421,17 +421,17 @@ Public Sub MenuLava()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
-        R = grayVal
+        r = grayVal
         g = Abs(b - 128)
         b = Abs(b - 128)
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -477,7 +477,7 @@ Public Sub MenuBurn()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
@@ -491,19 +491,19 @@ Public Sub MenuBurn()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
-        R = grayVal * 3
+        r = grayVal * 3
         g = grayVal
         b = gLookup(grayVal)
         
-        If R > 255 Then R = 255
+        If r > 255 Then r = 255
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -549,7 +549,7 @@ Public Sub MenuOcean()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
@@ -563,19 +563,19 @@ Public Sub MenuOcean()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
-        R = gLookup(grayVal)
+        r = gLookup(grayVal)
         g = grayVal
         b = grayVal * 3
         
         If b > 255 Then b = 255
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -621,7 +621,7 @@ Public Sub MenuSteel()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
@@ -635,29 +635,29 @@ Public Sub MenuSteel()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
-        R = Abs(R - 64)
-        g = Abs(R - 64)
+        r = ImageData(QuickVal + 2, y)
+        r = Abs(r - 64)
+        g = Abs(r - 64)
         b = Abs(g - 64)
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
-        R = grayVal + 70
-        R = R + (((R - 128) * 100) \ 100)
+        r = grayVal + 70
+        r = r + (((r - 128) * 100) \ 100)
         g = Abs(grayVal - 6) + 70
         g = g + (((g - 128) * 100) \ 100)
         b = (grayVal + 5) + 70
         b = b + (((b - 128) * 100) \ 100)
         
-        If R < 0 Then R = 0
+        If r < 0 Then r = 0
         If g < 0 Then g = 0
         If b < 0 Then b = 0
         
-        If R > 255 Then R = 255
+        If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

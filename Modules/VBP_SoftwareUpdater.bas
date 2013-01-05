@@ -62,7 +62,7 @@ Public Function CheckForSoftwareUpdate() As Long
         
     'We need a temporary file to house the update information; generate it automatically
     Dim tmpFile As String
-    tmpFile = userPreferences.getTempPath & "updates.txt"
+    tmpFile = g_UserPreferences.getTempPath & "updates.txt"
     
     'Open the temporary file and begin downloading the update information to it
     Dim fileNum As Integer
@@ -133,7 +133,7 @@ Public Function CheckForSoftwareUpdate() As Long
     Dim tmpIniRead As String
     
     'Attempt to retrieve the major version number
-    tmpIniRead = userPreferences.GetFromArbitraryIni(tmpFile, iniCategory, "Major")
+    tmpIniRead = g_UserPreferences.GetFromArbitraryIni(tmpFile, iniCategory, "Major")
     
     'Verify the major version number
     If tmpIniRead <> "" Then
@@ -147,7 +147,7 @@ Public Function CheckForSoftwareUpdate() As Long
     End If
     
     'Attempt to retrieve the minor version number
-    tmpIniRead = userPreferences.GetFromArbitraryIni(tmpFile, iniCategory, "Minor")
+    tmpIniRead = g_UserPreferences.GetFromArbitraryIni(tmpFile, iniCategory, "Minor")
     
     'Verify the minor version number
     If tmpIniRead <> "" Then
@@ -161,7 +161,7 @@ Public Function CheckForSoftwareUpdate() As Long
     End If
     
     'Attempt to retrieve a build number
-    tmpIniRead = userPreferences.GetFromArbitraryIni(tmpFile, iniCategory, "Build")
+    tmpIniRead = g_UserPreferences.GetFromArbitraryIni(tmpFile, iniCategory, "Build")
     
     'Verify the minor version number
     If tmpIniRead <> "" Then
@@ -174,7 +174,7 @@ Public Function CheckForSoftwareUpdate() As Long
     
     'Finally, attempt to grab the update announcement URL.  This may or may not be blank; it depends on whether I've
     ' written an announcement yet, heh.
-    tmpIniRead = userPreferences.GetFromArbitraryIni(tmpFile, iniCategory, "AnnouncementURL")
+    tmpIniRead = g_UserPreferences.GetFromArbitraryIni(tmpFile, iniCategory, "AnnouncementURL")
     updateAnnouncement = tmpIniRead
     
     'We have what we need from the temporary file, so delete it

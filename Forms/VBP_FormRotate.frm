@@ -237,7 +237,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     rotationAngle = -rotationAngle
 
     'Double-check that FreeImage exists
-    If imageFormats.FreeImageEnabled Then
+    If g_ImageFormats.FreeImageEnabled Then
     
         'If a selection is active, remove it.  (This is not the most elegant solution, but it isn't fixable until masked
         ' selections are implemented.)
@@ -250,7 +250,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         
         'Load the FreeImage dll into memory
         Dim hLib As Long
-        hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
                 
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long

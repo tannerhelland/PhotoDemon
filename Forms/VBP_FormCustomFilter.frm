@@ -843,6 +843,8 @@ Private Sub cmdOK_Click()
     
     'Before we do anything else, check to make sure every text box has a
     'valid number in it (no range checking is necessary)
+    Dim x As Long, y As Long
+    
     For x = 0 To 24
         If Not NumberValid(TxtF(x)) Then
             AutoSelectText TxtF(x)
@@ -863,27 +865,27 @@ Private Sub cmdOK_Click()
     'Copy the values from the text boxes into an array
     Message "Generating filter data..."
         
-    FilterSize = 5
+    g_FilterSize = 5
         
-    ReDim FM(-2 To 2, -2 To 2) As Long
+    ReDim g_FM(-2 To 2, -2 To 2) As Long
     
     For x = -2 To 2
     For y = -2 To 2
-        FM(x, y) = Val(TxtF((x + 2) + (y + 2) * 5))
+        g_FM(x, y) = Val(TxtF((x + 2) + (y + 2) * 5))
     Next y
     Next x
         
     'What to divide the final value by
-    FilterWeight = Val(TxtWeight.Text)
+    g_FilterWeight = Val(TxtWeight.Text)
     
     'Any offset value
-    FilterBias = Val(txtBias.Text)
+    g_FilterBias = Val(txtBias.Text)
     
     'Set that we have created a filter during this program session, and save it accordingly
-    HasCreatedFilter = True
+    g_HasCreatedFilter = True
     
-    SaveCustomFilter userPreferences.getTempPath & "~PD_CF.tmp"
-    Process CustomFilter, userPreferences.getTempPath & "~PD_CF.tmp"
+    SaveCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
+    Process CustomFilter, g_UserPreferences.getTempPath & "~PD_CF.tmp"
     
     Unload Me
     
@@ -900,7 +902,7 @@ Private Sub Form_Activate()
     DrawPreviewImage picPreview
     
     'If a filter has been used previously, load it from the temp file
-    If HasCreatedFilter = True Then OpenCustomFilter userPreferences.getTempPath & "~PD_CF.tmp"
+    If g_HasCreatedFilter = True Then OpenCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
     
     'Draw the right preview
     updatePreview
@@ -916,11 +918,11 @@ Private Sub cmdOpen_Click()
         
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , userPreferences.getFilterPath, "Open a custom filter", , FormCustomFilter.hWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , g_UserPreferences.getFilterPath, "Open a custom filter", , FormCustomFilter.hWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
             
             'Save the new directory as the default path for future usage
-            userPreferences.setFilterPath sFile
+            g_UserPreferences.setFilterPath sFile
             
             'Redraw the preview
             updatePreview
@@ -940,10 +942,10 @@ Private Sub cmdSave_Click()
         
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , userPreferences.getFilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , g_UserPreferences.getFilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
-        userPreferences.setFilterPath sFile
+        g_UserPreferences.setFilterPath sFile
         
         'Write out the file
         SaveCustomFilter sFile
@@ -957,6 +959,8 @@ Private Function OpenCustomFilter(ByRef srcFilterPath As String) As Boolean
     
     Dim tmpVal As Integer
     Dim tmpValLong As Long
+    
+    Dim x As Long
     
     'Open the specified path
     Dim fileNum As Integer
@@ -1020,6 +1024,8 @@ Private Function SaveCustomFilter(ByRef dstFilterPath As String) As Boolean
 
     If FileExist(dstFilterPath) Then Kill dstFilterPath
     
+    Dim x As Long
+    
     'Open the specified file
     Dim fileNum As Integer
     fileNum = FreeFile
@@ -1074,6 +1080,8 @@ End Sub
 'When the filter is changed, update the preview to match
 Private Sub updatePreview()
 
+    Dim x As Long, y As Long
+
     'We can only apply the preview if all loaded text boxes are valid
     For x = 0 To 24
         If Not EntryValid(TxtF(x), -1000000, 1000000, False, False) Then Exit Sub
@@ -1084,21 +1092,21 @@ Private Sub updatePreview()
     If Not EntryValid(txtBias, -1000000, 1000000, False, False) Then Exit Sub
     
     'Copy the values from the text boxes into an array
-    FilterSize = 5
+    g_FilterSize = 5
         
-    ReDim FM(-2 To 2, -2 To 2) As Long
+    ReDim g_FM(-2 To 2, -2 To 2) As Long
     
     For x = -2 To 2
     For y = -2 To 2
-        FM(x, y) = Val(TxtF((x + 2) + (y + 2) * 5))
+        g_FM(x, y) = Val(TxtF((x + 2) + (y + 2) * 5))
     Next y
     Next x
         
     'What to divide the final value by
-    FilterWeight = Val(TxtWeight.Text)
+    g_FilterWeight = Val(TxtWeight.Text)
     
     'Offset value
-    FilterBias = Val(txtBias.Text)
+    g_FilterBias = Val(txtBias.Text)
         
     'Apply the preview
     DoFilter "Preview", False, , True, picEffect

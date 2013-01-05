@@ -122,7 +122,7 @@ Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = F
 
     'EXEName was original passed into this function as a parameter.  There is no need to require that for use in PhotoDemon only.
     Dim EXEName As String
-    If isProgramCompiled Then EXEName = "photodemon.exe" Else EXEName = "vb6.exe"
+    If g_IsProgramCompiled Then EXEName = "photodemon.exe" Else EXEName = "vb6.exe"
 
     EXEName = UCase$(Trim$(EXEName))
     lngLength = Len(EXEName)

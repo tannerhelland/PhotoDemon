@@ -28,7 +28,7 @@ Option Explicit
 
 'Is pngnq-s9 available as a plugin?  (NOTE: this is now determined separately from pngnqEnabled.)
 Public Function isPngnqAvailable() As Boolean
-    If FileExist(PluginPath & "pngnq-s9.exe") Then isPngnqAvailable = True Else isPngnqAvailable = False
+    If FileExist(g_PluginPath & "pngnq-s9.exe") Then isPngnqAvailable = True Else isPngnqAvailable = False
 End Function
 
 'Retrieve the pngnq-s9 version from the file.  There is currently not a good way to do this, so just report the

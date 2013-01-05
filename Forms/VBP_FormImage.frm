@@ -124,7 +124,7 @@ Private Sub Form_Activate()
     If pdImages(CurrentImage).Width <> 0 Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
 
     'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
-    If userPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) And (MacroStatus <> MacroBATCH) Then
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) And (MacroStatus <> MacroBATCH) Then
         If pdImages(CurrentImage).curFormIcon32 <> 0 Then
             setNewTaskbarIcon pdImages(CurrentImage).curFormIcon32
         Else
@@ -187,7 +187,7 @@ End Sub
 Private Sub Form_Load()
     
     'Add support for scrolling with the mouse wheel
-    If isProgramCompiled Then Call WheelHook(Me.hWnd)
+    If g_IsProgramCompiled Then Call WheelHook(Me.hWnd)
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -493,24 +493,24 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'If the user wants to be prompted about unsaved images, do it now
-    If ConfirmClosingUnsaved And pdImages(Me.Tag).IsActive And (Not pdImages(Me.Tag).forInternalUseOnly) Then
+    If g_ConfirmClosingUnsaved And pdImages(Me.Tag).IsActive And (Not pdImages(Me.Tag).forInternalUseOnly) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
         If pdImages(Me.Tag).HasBeenSaved = False Then
                         
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
-            If dealWithAllUnsavedImages = False Then
+            If g_DealWithAllUnsavedImages = False Then
             
-                numOfUnsavedImages = 0
+                g_NumOfUnsavedImages = 0
                                 
                 'Loop through all images to count how many unsaved images there are in total.
                 ' NOTE: we only need to do this if the entire program is being shut down or if the user has selected "close all";
                 ' otherwise, this close action only affects the current image, so we shouldn't present a "repeat for all images" option
-                If programShuttingDown Or closingAllImages Then
+                If g_ProgramShuttingDown Or g_ClosingAllImages Then
                     Dim i As Long
                     For i = 1 To NumOfImagesLoaded
                         If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).HasBeenSaved) Then
-                            numOfUnsavedImages = numOfUnsavedImages + 1
+                            g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
                         End If
                     Next i
                 End If
@@ -521,7 +521,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 confirmReturn = confirmClose(Me.Tag)
                         
             Else
-                confirmReturn = howToDealWithAllUnsavedImages
+                confirmReturn = g_HowToDealWithAllUnsavedImages
             End If
         
             'There are now three possible courses of action:
@@ -533,9 +533,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             If confirmReturn = vbCancel Then
                 
                 Cancel = True
-                If programShuttingDown Then programShuttingDown = False
-                If closingAllImages Then closingAllImages = False
-                dealWithAllUnsavedImages = False
+                If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
+                If g_ClosingAllImages Then g_ClosingAllImages = False
+                g_DealWithAllUnsavedImages = False
                 
             'Save the image
             ElseIf confirmReturn = vbYes Then
@@ -560,9 +560,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 
                 '...but if the save was not successful, suspend all unload action
                 Else
-                    If programShuttingDown Then programShuttingDown = False
-                    If closingAllImages Then closingAllImages = False
-                    dealWithAllUnsavedImages = False
+                    If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
+                    If g_ClosingAllImages Then g_ClosingAllImages = False
+                    g_DealWithAllUnsavedImages = False
                 End If
             
             'Do not save the image
@@ -642,7 +642,7 @@ Private Sub Form_Unload(Cancel As Integer)
     NumOfWindows = NumOfWindows - 1
     
     'Release mouse wheel support
-    If isProgramCompiled Then Call WheelUnHook(Me.hWnd)
+    If g_IsProgramCompiled Then Call WheelUnHook(Me.hWnd)
         
     Me.Visible = False
     

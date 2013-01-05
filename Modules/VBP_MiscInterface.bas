@@ -66,16 +66,16 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
         ' redraw all control fonts using Segoe UI.
-        If isVistaOrLater And ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
-            If useFancyFonts Then
+        If g_IsVistaOrLater And ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
+            If g_UseFancyFonts Then
                 eControl.FontName = "Segoe UI"
             Else
                 eControl.FontName = "Tahoma"
             End If
         End If
         
-        If isVistaOrLater And (TypeOf eControl Is jcbutton) Then
-            If useFancyFonts Then
+        If g_IsVistaOrLater And (TypeOf eControl Is jcbutton) Then
+            If g_UseFancyFonts Then
                 eControl.Font.Name = "Segoe UI"
             Else
                 eControl.Font.Name = "Tahoma"
@@ -106,7 +106,7 @@ Public Sub RedrawMainForm()
     
     'Redraw the progress bar
     FormMain.picProgBar.Refresh
-    cProgBar.Draw
+    g_ProgBar.Draw
     
 End Sub
 
@@ -198,18 +198,18 @@ Public Sub Message(ByVal MString As String)
     
     If MacroStatus <> MacroBATCH Then
         If FormMain.Visible Then
-            cProgBar.Text = MString
-            cProgBar.Draw
+            g_ProgBar.Text = MString
+            g_ProgBar.Draw
         End If
     End If
     
-    If isProgramCompiled = False Then Debug.Print MString
+    If g_IsProgramCompiled = False Then Debug.Print MString
     
     'If we're logging program messages, open up a log file and dump the message there
-    If LogProgramMessages = True Then
+    If g_LogProgramMessages = True Then
         Dim fileNum As Integer
         fileNum = FreeFile
-        Open userPreferences.getDataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
+        Open g_UserPreferences.getDataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
             Print #fileNum, MString
             If MString = "Finished." Then Print #fileNum, vbCrLf
         Close #fileNum

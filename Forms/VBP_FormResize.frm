@@ -344,7 +344,7 @@ Private Sub Form_Activate()
     cboResample.ListIndex = 2
     
     'If the FreeImage library is available, add additional resize options to the combo box
-    If imageFormats.FreeImageEnabled = True Then
+    If g_ImageFormats.FreeImageEnabled = True Then
         cboResample.AddItem "B-Spline", 3
         cboResample.AddItem "Bicubic (Mitchell and Netravali)", 4
         cboResample.AddItem "Bicubic (Catmull-Rom)", 5
@@ -405,11 +405,11 @@ End Sub
 Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
     
     'Double-check that FreeImage exists
-    If imageFormats.FreeImageEnabled Then
+    If g_ImageFormats.FreeImageEnabled Then
     
         'Load the FreeImage dll into memory
         Dim hLib As Long
-        hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
         
         Message "Resampling image using the FreeImage library..."
         
@@ -562,7 +562,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
         Case RESIZE_BILINEAR
         
             'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
-            If imageFormats.FreeImageEnabled Then
+            If g_ImageFormats.FreeImageEnabled Then
             
                 FreeImageResize iWidth, iHeight, FILTER_BILINEAR
             
@@ -612,7 +612,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 
                 'Values we'll use to interpolate the new pixel
                 Dim r1 As Single, r2 As Single, r3 As Single, r4 As Single
-                Dim R As Long
+                Dim r As Long
                 
                 'Interpolated results (horizontal and vertical)
                 Dim ir1 As Long, ir2 As Long
@@ -663,14 +663,14 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                             ir2 = r2 * invCalcY + r4 * CalcY
                             
                             'Interpolate the value in the X direction
-                            R = ir1 * invCalcX + ir2 * CalcX
+                            r = ir1 * invCalcX + ir2 * CalcX
                             
                             'Make sure that the value is in acceptable byte range
-                            If R > 255 Then R = 255
-                            If R < 0 Then R = 0
+                            If r > 255 Then r = 255
+                            If r < 0 Then r = 0
                             
                             'Set this pixel onto the destination image
-                            dstImageData(QuickX + i, y) = R
+                            dstImageData(QuickX + i, y) = r
                             
                         Next i
                     

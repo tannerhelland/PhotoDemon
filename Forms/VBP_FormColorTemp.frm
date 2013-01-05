@@ -381,7 +381,7 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim h As Single, S As Single, l As Single
     Dim originalLuminance As Single
     Dim tmpR As Long, tmpG As Long, tmpB As Long
@@ -398,27 +398,27 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
-        originalLuminance = (getLuminance(R, g, b) / 255)
+        originalLuminance = (getLuminance(r, g, b) / 255)
         
         'Blend the original and new RGB values using the specified strength
-        R = BlendColors(R, tmpR, tempStrength)
+        r = BlendColors(r, tmpR, tempStrength)
         g = BlendColors(g, tmpG, tempStrength)
         b = BlendColors(b, tmpB, tempStrength)
         
         'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
         ' value with the original
         If preserveLuminance Then
-            tRGBToHSL R, g, b, h, S, l
-            tHSLToRGB h, S, originalLuminance, R, g, b
+            tRGBToHSL r, g, b, h, S, l
+            tHSLToRGB h, S, originalLuminance, r, g, b
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -442,9 +442,10 @@ Private Sub Form_Activate()
 
     'This short routine is for drawing the picture box below the temperature slider
     Dim temperatureVal As Double
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     
     'Simple gradient-ish code implementation of drawing temperature between 1000 and 12000 Kelvin
+    Dim x As Long
     For x = 0 To picTempDemo.ScaleWidth
     
         'Based on our x-position, gradient a value between 1000 and 12000
@@ -453,10 +454,10 @@ Private Sub Form_Activate()
         temperatureVal = temperatureVal + (CLng(hsTemperature.Min) * 100)
         
         'Generate an RGB equivalent for this temperature
-        getRGBfromTemperature R, g, b, temperatureVal
+        getRGBfromTemperature r, g, b, temperatureVal
         
         'Draw the color
-        picTempDemo.Line (x, 0)-(x, picTempDemo.ScaleHeight), RGB(R, g, b)
+        picTempDemo.Line (x, 0)-(x, picTempDemo.ScaleHeight), RGB(r, g, b)
         
     Next x
     
@@ -498,7 +499,7 @@ End Sub
 ' NOTE: the mathematical formula used in this routine is NOT STANDARD.  I wrote it myself using self-calculated regression equations based
 '        off the raw data on blackbody radiation provided at http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html
 '        Because of that, I can't guarantee great precision - but the function works well enough for photo-manipulation purposes.
-Private Sub getRGBfromTemperature(ByRef R As Long, ByRef g As Long, ByRef b As Long, ByVal tmpKelvin As Long)
+Private Sub getRGBfromTemperature(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByVal tmpKelvin As Long)
 
     Static tmpCalc As Double
 
@@ -513,14 +514,14 @@ Private Sub getRGBfromTemperature(ByRef R As Long, ByRef g As Long, ByRef b As L
     
     'First: red
     If tmpKelvin <= 66 Then
-        R = 255
+        r = 255
     Else
         'Note: the R-squared value for this approximation is .988
         tmpCalc = tmpKelvin - 60
         tmpCalc = 329.698727446 * (tmpCalc ^ -0.1332047592)
-        R = tmpCalc
-        If R < 0 Then R = 0
-        If R > 255 Then R = 255
+        r = tmpCalc
+        If r < 0 Then r = 0
+        If r > 255 Then r = 255
     End If
     
     'Second: green

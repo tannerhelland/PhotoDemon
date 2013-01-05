@@ -395,7 +395,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     
     'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates
     Static ZoomVal As Single
-    ZoomVal = Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
+    ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
     
     Static dstLeft As Single, dstRight As Single
     Static dstTop As Single, dstBottom As Single

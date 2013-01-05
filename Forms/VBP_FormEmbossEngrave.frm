@@ -252,7 +252,7 @@ End Sub
 Private Sub cmdOK_Click()
     
     'Used to remember the last color used for embossing
-    EmbossEngraveColor = PicColor.backColor
+    g_EmbossEngraveColor = PicColor.backColor
     Me.Visible = False
     
     'Dependent: filter to grey OR to a background color
@@ -268,7 +268,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Remember the last emboss/engrave color selection
-    PicColor.backColor = EmbossEngraveColor
+    PicColor.backColor = g_EmbossEngraveColor
     
     'Draw a preview of the current image to the left box
     DrawPreviewImage picPreview
@@ -366,7 +366,7 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim tR As Long, tB As Long, tG As Long
 
     'Extract the red, green, and blue values from the color we've been passed
@@ -381,14 +381,14 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        R = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + tR)
+        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + tR)
         g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
         
-        If R > 255 Then
-            R = 255
-        ElseIf R < 0 Then
-            R = 0
+        If r > 255 Then
+            r = 255
+        ElseIf r < 0 Then
+            r = 0
         End If
         
         If g > 255 Then
@@ -403,13 +403,13 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = R
+        dstImageData(QuickVal + 2, y) = r
         dstImageData(QuickVal + 1, y) = g
         dstImageData(QuickVal, y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
         If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = R
+            dstImageData(QuickValRight + 2, y) = r
             dstImageData(QuickValRight + 1, y) = g
             dstImageData(QuickValRight, y) = b
         End If
@@ -474,7 +474,7 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim tR As Long, tB As Long, tG As Long
     
     'Extract the red, green, and blue values from the color we've been passed
@@ -489,14 +489,14 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        R = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + tR)
+        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + tR)
         g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
         
-        If R > 255 Then
-            R = 255
-        ElseIf R < 0 Then
-            R = 0
+        If r > 255 Then
+            r = 255
+        ElseIf r < 0 Then
+            r = 0
         End If
         
         If g > 255 Then
@@ -511,13 +511,13 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = R
+        dstImageData(QuickVal + 2, y) = r
         dstImageData(QuickVal + 1, y) = g
         dstImageData(QuickVal, y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
         If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = R
+            dstImageData(QuickValRight + 2, y) = r
             dstImageData(QuickValRight + 1, y) = g
             dstImageData(QuickValRight, y) = b
         End If

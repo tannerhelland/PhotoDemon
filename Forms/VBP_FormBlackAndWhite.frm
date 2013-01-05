@@ -441,7 +441,7 @@ Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
     qvDepth = curLayerValues.BytesPerPixel
             
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
             
     'Histogram tables
     Dim lLookup(0 To 255)
@@ -454,11 +454,11 @@ Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
     For y = initY To finalY
             
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
                 
-        pLuminance = getLuminance(R, g, b)
+        pLuminance = getLuminance(r, g, b)
         
         'Store this value in the histogram
         lLookup(pLuminance) = lLookup(pLuminance) + 1
@@ -535,7 +535,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     highB = ExtractB(highColor)
     
     'Calculationg color variables (including luminance)
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim l As Long, newL As Long
     Dim xModQuick As Long
     Dim DitherTable() As Byte
@@ -554,12 +554,12 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             For y = initY To finalY
         
                 'Get the source pixel color values
-                R = ImageData(QuickVal + 2, y)
+                r = ImageData(QuickVal + 2, y)
                 g = ImageData(QuickVal + 1, y)
                 b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value
-                l = getLuminance(R, g, b)
+                l = getLuminance(r, g, b)
             
                 'Check the luminance against the threshold, and set new values accordingly
                 If l >= cThreshold Then
@@ -622,12 +622,12 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             For y = initY To finalY
         
                 'Get the source pixel color values
-                R = ImageData(QuickVal + 2, y)
+                r = ImageData(QuickVal + 2, y)
                 g = ImageData(QuickVal + 1, y)
                 b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = getLuminance(R, g, b) + DitherTable(xModQuick, y And 3)
+                l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 3)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
@@ -741,12 +741,12 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             For y = initY To finalY
         
                 'Get the source pixel color values
-                R = ImageData(QuickVal + 2, y)
+                r = ImageData(QuickVal + 2, y)
                 g = ImageData(QuickVal + 1, y)
                 b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = getLuminance(R, g, b) + DitherTable(xModQuick, y And 7)
+                l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 7)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
@@ -989,12 +989,12 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
         For y = initY To finalY
         
             'Get the source pixel color values
-            R = ImageData(QuickVal + 2, y)
+            r = ImageData(QuickVal + 2, y)
             g = ImageData(QuickVal + 1, y)
             b = ImageData(QuickVal, y)
             
             'Convert those to a luminance value and add the value of the error at this location
-            l = getLuminance(R, g, b)
+            l = getLuminance(r, g, b)
             newL = l + dErrors(x, y)
             
             'Check our modified luminance value against the threshold, and set new values accordingly

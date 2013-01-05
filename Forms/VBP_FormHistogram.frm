@@ -474,14 +474,14 @@ Private Sub cmdExportHistogram_Click()
     
     'Get the last "save image" path from the INI file
     Dim tempPathString As String
-    tempPathString = userPreferences.GetPreference_String("Program Paths", "MainSave", "")
+    tempPathString = g_UserPreferences.GetPreference_String("Program Paths", "MainSave", "")
     
     Dim cdfStr As String
     
     cdfStr = "BMP - Windows Bitmap|*.bmp"
     
     'FreeImage allows us to save more filetypes
-    If imageFormats.FreeImageEnabled Or imageFormats.GDIPlusEnabled Then
+    If g_ImageFormats.FreeImageEnabled Or g_ImageFormats.GDIPlusEnabled Then
         cdfStr = cdfStr & "|GIF - Graphics Interchange Format|*.gif"
         cdfStr = cdfStr & "|PNG - Portable Network Graphic|*.png"
     End If
@@ -491,10 +491,10 @@ Private Sub cmdExportHistogram_Click()
     
     'If FreeImage is enabled, suggest PNG as the default format; otherwise, bitmaps is all they get
     Dim defFormat As Long
-    If (imageFormats.FreeImageEnabled = False) And (imageFormats.GDIPlusEnabled = False) Then defFormat = 1 Else defFormat = 3
+    If (g_ImageFormats.FreeImageEnabled = False) And (g_ImageFormats.GDIPlusEnabled = False) Then defFormat = 1 Else defFormat = 3
     
     Dim defExtension As String
-    If (imageFormats.FreeImageEnabled = False) And (imageFormats.GDIPlusEnabled = False) Then defExtension = ".bmp" Else defExtension = ".png"
+    If (g_ImageFormats.FreeImageEnabled = False) And (g_ImageFormats.GDIPlusEnabled = False) Then defExtension = ".bmp" Else defExtension = ".png"
     
     'Display the save dialog
     If CC.VBGetSaveFileName(sFile, , True, cdfStr, defFormat, tempPathString, "Save histogram to file", defExtension, FormHistogram.hWnd, 0) Then
@@ -502,7 +502,7 @@ Private Sub cmdExportHistogram_Click()
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
-        userPreferences.SetPreference_String "Program Paths", "MainSave", tempPathString
+        g_UserPreferences.SetPreference_String "Program Paths", "MainSave", tempPathString
         
         Message "Saving histogram to file..."
         
@@ -807,11 +807,11 @@ End Sub
 '(like Photoshop does).  This code is old, but it works ;)
 Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As Long, ByVal Color2 As Long)
     'RGB() variables for each color
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     
     'Extract the r,g,b values from the colors passed by the user
-    R = Color1 Mod 256
+    r = Color1 Mod 256
     g = (Color1 \ 256) And 255
     b = (Color1 \ 65536) And 255
     r2 = Color2 Mod 256
@@ -828,18 +828,18 @@ Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As
     
     'Here, create a calculation variable for determining the step between
     'each level of the gradient
-    VR = Abs(R - r2) / iWidth
+    VR = Abs(r - r2) / iWidth
     VG = Abs(g - g2) / iWidth
     VB = Abs(b - b2) / iWidth
     'If the second value is lower then the first value, make the step negative
-    If r2 < R Then VR = -VR
+    If r2 < r Then VR = -VR
     If g2 < g Then VG = -VG
     If b2 < b Then VB = -VB
     'Last, run a loop through the width of the picture box, incrementing the color as
     'we go (thus creating a gradient effect)
     Dim x As Long
     For x = 0 To iWidth
-        r2 = R + VR * x
+        r2 = r + VR * x
         g2 = g + VG * x
         b2 = b + VB * x
         DstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
@@ -973,7 +973,7 @@ Public Sub TallyHistogramValues()
     qvDepth = curLayerValues.BytesPerPixel
     
     'These variables will hold temporary histogram values
-    Dim R As Long, g As Long, b As Long, l As Long
+    Dim r As Long, g As Long, b As Long, l As Long
     
     'If the histogram has already been used, we need to clear out all the
     'maximum values and histogram values
@@ -1000,20 +1000,20 @@ Public Sub TallyHistogramValues()
     For y = initY To finalY
     
         'We have to gather the red, green, and blue in order to calculate luminance
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we'll use
         ' a simpler average value.
         
-        l = lumLookup(R + g + b)
+        l = lumLookup(r + g + b)
         
         'Increment each value in the array, depending on its present value; this will let us see how many pixels of
         ' each color value (and luminance value) there are in the image
         
         'Red
-        hData(0, R) = hData(0, R) + 1
+        hData(0, r) = hData(0, r) + 1
         'Green
         hData(1, g) = hData(1, g) + 1
         'Blue
@@ -1089,7 +1089,7 @@ Public Sub StretchHistogram()
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     
     'Max and min values
     Dim rMax As Long, gMax As Long, bMax As Long
@@ -1104,12 +1104,12 @@ Public Sub StretchHistogram()
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        If R < rMin Then rMin = R
-        If R > rMax Then rMax = R
+        If r < rMin Then rMin = r
+        If r > rMax Then rMax = r
         If g < gMin Then gMin = g
         If g > gMax Then gMax = g
         If b < bMin Then bMin = b
@@ -1130,10 +1130,10 @@ Public Sub StretchHistogram()
     
     For x = 0 To 255
         If rdif <> 0 Then
-            R = 255 * ((x - rMin) / rdif)
-            If R < 0 Then R = 0
-            If R > 255 Then R = 255
-            rLookup(x) = R
+            r = 255 * ((x - rMin) / rdif)
+            If r < 0 Then r = 0
+            If r > 255 Then r = 255
+            rLookup(x) = r
         Else
             rLookup(x) = x
         End If
@@ -1161,11 +1161,11 @@ Public Sub StretchHistogram()
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
                 
-        ImageData(QuickVal + 2, y) = rLookup(R)
+        ImageData(QuickVal + 2, y) = rLookup(r)
         ImageData(QuickVal + 1, y) = gLookup(g)
         ImageData(QuickVal, y) = bLookup(b)
         

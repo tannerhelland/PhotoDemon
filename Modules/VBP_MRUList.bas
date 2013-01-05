@@ -47,7 +47,7 @@ Private numOfMRUHashes As Long
 'Return the path to an MRU thumbnail file (in PNG format)
 Public Function getMRUThumbnailPath(ByVal mruIndex As Long) As String
     If (mruIndex >= 0) And (mruIndex <= numEntries) Then
-        getMRUThumbnailPath = userPreferences.getIconPath & getMRUHash(MRUlist(mruIndex)) & ".png"
+        getMRUThumbnailPath = g_UserPreferences.getIconPath & getMRUHash(MRUlist(mruIndex)) & ".png"
     Else
         getMRUThumbnailPath = ""
     End If
@@ -135,15 +135,17 @@ Public Sub MRU_LoadFromINI()
     numOfMRUHashes = 0
     
     'Get the number of MRU entries from the INI file
-    numEntries = userPreferences.GetPreference_Long("MRU", "NumberOfEntries", RECENT_FILE_COUNT)
+    numEntries = g_UserPreferences.GetPreference_Long("MRU", "NumberOfEntries", RECENT_FILE_COUNT)
     
     'Only load entries if MRU data exists
     If numEntries > 0 Then
         ReDim MRUlist(0 To numEntries) As String
         
+        Dim x As Long
+        
         'Loop through each MRU entry, loading them onto the menu as we go
         For x = 0 To numEntries - 1
-            MRUlist(x) = userPreferences.GetPreference_String("MRU", "f" & x, "")
+            MRUlist(x) = g_UserPreferences.GetPreference_String("MRU", "f" & x, "")
             If x <> 0 Then
                 Load FormMain.mnuRecDocs(x)
             Else
@@ -151,7 +153,7 @@ Public Sub MRU_LoadFromINI()
             End If
             
             'Based on the user's preference for captioning, display either the full path or just the filename
-            If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+            If g_UserPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
                 FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
@@ -159,7 +161,7 @@ Public Sub MRU_LoadFromINI()
             
             'Shortcuts are not displayed on XP, because they end up smashed into the caption itself.
             ' Also, shortcuts are disabled in the IDE because the VB Accelerator control that handles them requires subclassing.
-            If (isVistaOrLater And isProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            If (g_IsVistaOrLater And g_IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
         
@@ -183,14 +185,14 @@ End Sub
 Public Sub MRU_SaveToINI()
 
     'Save the number of current entries
-    userPreferences.SetPreference_Long "MRU", "NumberOfEntries", numEntries
+    g_UserPreferences.SetPreference_Long "MRU", "NumberOfEntries", numEntries
     
     Dim x As Long
     
     'Only save entries if MRU data exists
     If numEntries <> 0 Then
         For x = 0 To numEntries - 1
-            userPreferences.SetPreference_String "MRU", "f" & x, MRUlist(x)
+            g_UserPreferences.SetPreference_String "MRU", "f" & x, MRUlist(x)
         Next x
     End If
     
@@ -206,7 +208,7 @@ Public Sub MRU_SaveToINI()
     'Finally, scan the MRU icon directory to make sure there are no orphaned PNG files.  (Multiple instances of PhotoDemon
     ' running simultaneously can lead to this.)  Delete any PNG files that don't correspond to current MRU entries.
     Dim chkFile As String
-    chkFile = Dir(userPreferences.getIconPath & "*.png", vbNormal)
+    chkFile = Dir(g_UserPreferences.getIconPath & "*.png", vbNormal)
     
     Dim fileOK As Boolean
     
@@ -219,7 +221,7 @@ Public Sub MRU_SaveToINI()
             For x = 0 To numEntries - 1
                 
                 'If this hash matches one on file, mark it as OK.
-                If StrComp(userPreferences.getIconPath & chkFile, getMRUThumbnailPath(x), vbTextCompare) = 0 Then
+                If StrComp(g_UserPreferences.getIconPath & chkFile, getMRUThumbnailPath(x), vbTextCompare) = 0 Then
                     fileOK = True
                     Exit For
                 End If
@@ -231,7 +233,7 @@ Public Sub MRU_SaveToINI()
         
         'If an MRU hash does not exist for this file, delete it
         If fileOK = False Then
-            If FileExist(userPreferences.getIconPath & chkFile) Then Kill userPreferences.getIconPath & chkFile
+            If FileExist(g_UserPreferences.getIconPath & chkFile) Then Kill g_UserPreferences.getIconPath & chkFile
         End If
     
         'Retrieve the next file and repeat
@@ -250,6 +252,8 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, ByRef srcImage As pdImage)
     
     Dim curLocation As Long
     curLocation = -1
+    
+    Dim x As Long
     
     'First, check to see if our entry currently exists in the MRU list
     For x = 0 To numEntries - 1
@@ -307,14 +311,14 @@ MRUEntryFound:
     End If
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-    If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+    If g_UserPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
         FormMain.mnuRecDocs(0).Caption = getFilename(newFile)
     Else
         FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile)
     End If
     
     'On Vista or later, display the corresponding accelerator.  XP truncates this, so just add some blank spaces for aesthetics.
-    If isVistaOrLater Then FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & "Ctrl+0" Else FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & "   "
+    If g_IsVistaOrLater Then FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & "Ctrl+0" Else FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & "   "
     
     If numEntries > 1 Then
         'Unload existing menus...
@@ -327,13 +331,13 @@ MRUEntryFound:
             Load FormMain.mnuRecDocs(x)
             
             'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-            If userPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+            If g_UserPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
                 FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
             End If
             
-            If (isVistaOrLater And isProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            If (g_IsVistaOrLater And g_IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             
         Next x
     End If
@@ -350,17 +354,17 @@ End Sub
 Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
 
     'Right now, the save process is reliant on FreeImage.  Disable thumbnails if FreeImage is not present
-    If imageFormats.FreeImageEnabled Then
+    If g_ImageFormats.FreeImageEnabled Then
     
         Message "Saving recent file menu thumbnail..."
     
         'First, generate a path at which to save the file in question
         Dim sFilename As String
-        sFilename = userPreferences.getIconPath & getMRUHash(iPath) & ".png"
+        sFilename = g_UserPreferences.getIconPath & getMRUHash(iPath) & ".png"
         
         'Load FreeImage into memory
         Dim hLib As Long
-        hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
         'Calculate thumbnail dimensions of the image in question
         Dim nWidth As Long, nHeight As Long
@@ -440,11 +444,11 @@ Public Sub MRU_ClearList()
     
     'Clear all entries in the INI file
     For i = 0 To RECENT_FILE_COUNT - 1
-        userPreferences.SetPreference_String "MRU", "f" & i, ""
+        g_UserPreferences.SetPreference_String "MRU", "f" & i, ""
     Next i
     
     'Tell the INI that no files are left
-    userPreferences.SetPreference_Long "MRU", "NumberOfEntries", 0
+    g_UserPreferences.SetPreference_Long "MRU", "NumberOfEntries", 0
     
     'The icons in the MRU sub-menu need to be reset after this action
     ResetMenuIcons

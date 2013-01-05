@@ -42,7 +42,7 @@ Public Sub LoadTheProgram()
     
     'Next, detect the version of Windows we're running on.  PhotoDemon is only concerned with "Vista or later", which lets it
     ' know that certain features are guaranteed to be available.
-    isVistaOrLater = getVistaOrLaterStatus
+    g_IsVistaOrLater = getVistaOrLaterStatus
         
         
         
@@ -50,20 +50,20 @@ Public Sub LoadTheProgram()
     ' Initialize the user preferences (settings) handler
     '*************************************************************************************************************************************
     
-    Set userPreferences = New pdPreferences
+    Set g_UserPreferences = New pdPreferences
     
     'Ask the new preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them)
     LoadMessage "Initializing all program directories..."
     
-    userPreferences.initializePaths
+    g_UserPreferences.initializePaths
     
     'Now, ask the preferences handler to load all other user settings from the INI file
     LoadMessage "Loading all user settings..."
     
-    userPreferences.loadUserSettings
+    g_UserPreferences.loadUserSettings
             
     'Before loading plugins, we need to initialize the image format handler (as the plugins interact with it)
-    Set imageFormats = New pdFormats
+    Set g_ImageFormats = New pdFormats
             
             
             
@@ -85,8 +85,8 @@ Public Sub LoadTheProgram()
         
     LoadMessage "Loading import/export libraries..."
         
-    imageFormats.generateInputFormats
-    imageFormats.generateOutputFormats
+    g_ImageFormats.generateInputFormats
+    g_ImageFormats.generateOutputFormats
     
     
     
@@ -112,7 +112,7 @@ Public Sub LoadTheProgram()
     FormMain.cmbSelRender.AddItem "Highlight (Blue)", 1
     FormMain.cmbSelRender.AddItem "Highlight (Red)", 2
     FormMain.cmbSelRender.ListIndex = 0
-    selectionRenderPreference = 0
+    g_selectionRenderPreference = 0
     
     
     
@@ -122,8 +122,8 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Analyzing current monitor setup..."
     
-    Set cMonitors = New clsMonitors
-    cMonitors.Refresh
+    Set g_cMonitors = New clsMonitors
+    g_cMonitors.Refresh
         
         
         
@@ -134,8 +134,8 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing drop shadow renderer..."
             
     'Initialize the drop shadow engine
-    Set canvasShadow = New pdShadow
-    canvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, CanvasBackground
+    Set g_CanvasShadow = New pdShadow
+    g_CanvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, g_CanvasBackground
     
     
     
@@ -146,7 +146,7 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing user interface..."
                 
     'Display or hide the main form's left-hand pane according to the saved setting in the INI file
-    If userPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
         FormMain.MnuLeftPanel.Caption = "Show left panel"
         FormMain.picLeftPane.Visible = False
     Else
@@ -156,7 +156,7 @@ Public Sub LoadTheProgram()
                 
     'Manually create multi-line tooltips for some command buttons
     FormMain.cmdOpen.ToolTip = "Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop" & vbCrLf & " or Windows Explorer and dropping them onto PhotoDemon.)"
-    If ConfirmClosingUnsaved Then
+    If g_ConfirmClosingUnsaved Then
         FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes."
     Else
         FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences)," & vbCrLf & " you WILL NOT receive a prompt to save this image before it closes."
@@ -177,7 +177,7 @@ Public Sub LoadTheProgram()
     initializeIconHandler
     
     'Before displaying the main window, see if the user wants to restore last-used window location.
-    If userPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then restoreMainWindowLocation
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then restoreMainWindowLocation
     
     
     
@@ -188,7 +188,7 @@ Public Sub LoadTheProgram()
     LoadMessage "Preparing program menus..."
     
     'If inside the IDE, disable the "Effects" -> "Test" menu
-    If (Not isProgramCompiled) Then FormMain.MnuTest.Visible = False
+    If (Not g_IsProgramCompiled) Then FormMain.MnuTest.Visible = False
     
     'Load the most-recently-used file list (MRU)
     MRU_LoadFromINI
@@ -211,9 +211,9 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Initializing progress bar..."
     
-    Set cProgBar = New cProgressBar
+    Set g_ProgBar = New cProgressBar
     
-    With cProgBar
+    With g_ProgBar
         .DrawObject = FormMain.picProgBar
         .BarColor = RGB(48, 117, 255)
         .Min = 0
@@ -237,7 +237,7 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Checking command line..."
     
-    If CommandLine <> "" Then
+    If g_CommandLine <> "" Then
         LoadMessage "Loading images..."
         FormSplash.Visible = False
         LoadImagesFromCommandLine
@@ -272,10 +272,10 @@ Private Sub LoadImagesFromCommandLine()
     Dim sFile() As String
         
     'First, check the command line for quotation marks
-    If InStr(CommandLine, Chr(34)) = 0 Then
+    If InStr(g_CommandLine, Chr(34)) = 0 Then
         
         'If there aren't any, our work is simple - simply split the array using the "space" character as the delimiter
-        sFile = Split(CommandLine, Chr(32))
+        sFile = Split(g_CommandLine, Chr(32))
         
     'If there are quotation marks, things get a lot messier.
     Else
@@ -286,9 +286,10 @@ Private Sub LoadImagesFromCommandLine()
         Dim tChar As String
         
         'Scan the command line one character at a time
-        For x = 1 To Len(CommandLine)
+        Dim x As Long
+        For x = 1 To Len(g_CommandLine)
             
-            tChar = Mid(CommandLine, x, 1)
+            tChar = Mid(g_CommandLine, x, 1)
                 
             'If the current character is a quotation mark, change inQuotes to specify that we are either inside
             ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
@@ -300,7 +301,7 @@ Private Sub LoadImagesFromCommandLine()
                     
                 '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
                 ' filename and NOT a delimiter.  Replace it with an asterisk.
-                If inQuotes = True Then CommandLine = Left(CommandLine, x - 1) & "*" & Right(CommandLine, Len(CommandLine) - x)
+                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, x - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - x)
                     
             End If
             
@@ -309,7 +310,7 @@ Private Sub LoadImagesFromCommandLine()
         'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
         ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
         ' between filenames.
-        sFile = Split(CommandLine, Chr(32))
+        sFile = Split(g_CommandLine, Chr(32))
             
         'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
         ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
@@ -419,7 +420,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Set targetImage = pdImages(CurrentImage)
             Set targetLayer = pdImages(CurrentImage).mainLayer
         
-            FixScrolling = False
+            g_FixScrolling = False
         
             FormMain.ActiveForm.HScroll.Value = 0
             FormMain.ActiveForm.VScroll.Value = 0
@@ -469,9 +470,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too.
             Case "TMP"
             
-                If imageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                 
-                If (Not imageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                 
                 targetImage.OriginalFileFormat = FIF_BMP
                 mustCountColors = True
@@ -480,13 +481,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             ' VB's internal LoadPicture function.
             Case Else
                                 
-                If imageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
+                If g_ImageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
                 
                 If loadSuccessful Then loadedByOtherMeans = False
                 
                 'If FreeImage fails for some reason, offload the image to GDI+ - UNLESS the image is a WMF or EMF, which can cause
                 ' GDI+ to experience a silent fail, thus bringing down the entire program.
-                If (Not loadSuccessful) And imageFormats.GDIPlusEnabled And (fileExtension <> "EMF") And (fileExtension <> "WMF") Then
+                If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((fileExtension <> "EMF") And (fileExtension <> "WMF")) Then
                     
                     Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
@@ -584,7 +585,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If targetImage.mainLayer.getLayerColorDepth = 32 Then
             
             'Make sure the user hasn't disabled this capability
-            If userPreferences.GetPreference_Boolean("General Preferences", "ValidateAlphaChannels", True) Then
+            If g_UserPreferences.GetPreference_Boolean("General Preferences", "ValidateAlphaChannels", True) Then
             
                 Message "Verfiying alpha channel..."
             
@@ -627,7 +628,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' it, we have no choice but to rely on whatever color depth was returned by FreeImage or GDI+ (or was
         ' inferred by us for this format, e.g. we know that GIFs are 8bpp).
         
-        If userPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors Then
+        If g_UserPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors Then
             
             colorCountCheck = getQuickColorCount(targetImage, CurrentImage)
         
@@ -698,7 +699,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Message "Resizing image to fit screen..."
     
             'If the user wants us to resize the image to fit on-screen, do that now
-            If AutosizeLargeImages = 0 Then FitImageToViewport True
+            If g_AutosizeLargeImages = 0 Then FitImageToViewport True
                     
             'If the window is not maximized or minimized, fit the form around the picture box
             If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True, True
@@ -707,7 +708,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             DisplaySize targetImage.Width, targetImage.Height
             
             If imgFormTitle = "" Then
-                If userPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) = 0 Then
+                If g_UserPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) = 0 Then
                     FormMain.ActiveForm.Caption = getFilename(sFile(thisImage))
                 Else
                     FormMain.ActiveForm.Caption = sFile(thisImage)
@@ -719,12 +720,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
             If targetImage.mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
             
-            'FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
-            FixScrolling = False
+            'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
+            g_FixScrolling = False
             FormMain.CmbZoom.ListIndex = targetImage.CurrentZoomValue
         
             'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
-            FixScrolling = True
+            g_FixScrolling = True
         
             PrepareViewport FormMain.ActiveForm, "PreLoadImage"
             
@@ -743,7 +744,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
             ' bottom edges don't fall outside the MDI client area
             'If the user wants us to resize the image to fit on-screen, do that now
-            If AutosizeLargeImages = 1 Then FitWindowToViewport
+            If g_AutosizeLargeImages = 1 Then FitWindowToViewport
         
             'Finally, add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then MRU_AddNewFile sFile(thisImage), targetImage
@@ -941,7 +942,7 @@ End Sub
 Public Sub LoadMenuShortcuts()
 
     'Don't allow custom shortcuts in the IDE, as they require subclassing and might crash
-    If Not isProgramCompiled Then Exit Sub
+    If Not g_IsProgramCompiled Then Exit Sub
 
     With FormMain.ctlAccelerator
     
@@ -1049,65 +1050,65 @@ End Sub
 Public Sub LoadPlugins()
     
     'Plugin files are located in the \Data\Plugins subdirectory
-    PluginPath = userPreferences.getDataPath & "Plugins\"
+    g_PluginPath = g_UserPreferences.getDataPath & "Plugins\"
     
     'Make sure the plugin path exists
-    If Not DirectoryExist(PluginPath) Then MkDir PluginPath
+    If Not DirectoryExist(g_PluginPath) Then MkDir g_PluginPath
     
     'Old versions of PhotoDemon kept plugins in a different directory. Check the old location,
     ' and if plugin-related files are found, copy them to the new directory
     On Error Resume Next
-    Dim tmpPluginPath As String
-    tmpPluginPath = userPreferences.getProgramPath & "Plugins\"
+    Dim tmpg_PluginPath As String
+    tmpg_PluginPath = g_UserPreferences.getProgramPath & "Plugins\"
     
-    If DirectoryExist(tmpPluginPath) Then
+    If DirectoryExist(tmpg_PluginPath) Then
         LoadMessage "Copying plugin files to new \Data\Plugins subdirectory"
         
         Dim pluginName As String
         pluginName = "EZTW32.dll"
-        If FileExist(tmpPluginPath & pluginName) Then
-            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
-            Kill tmpPluginPath & pluginName
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
         End If
         
         pluginName = "EZTWAIN_README.TXT"
-        If FileExist(tmpPluginPath & pluginName) Then
-            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
-            Kill tmpPluginPath & pluginName
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
         End If
         
         pluginName = "FreeImage.dll"
-        If FileExist(tmpPluginPath & pluginName) Then
-            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
-            Kill tmpPluginPath & pluginName
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
         End If
         
         pluginName = "license-fi.txt"
-        If FileExist(tmpPluginPath & pluginName) Then
-            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
-            Kill tmpPluginPath & pluginName
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
         End If
         
         pluginName = "license-gplv2.txt"
-        If FileExist(tmpPluginPath & pluginName) Then
-            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
-            Kill tmpPluginPath & pluginName
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
         End If
         
         pluginName = "license-gplv3.txt"
-        If FileExist(tmpPluginPath & pluginName) Then
-            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
-            Kill tmpPluginPath & pluginName
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
         End If
         
         pluginName = "zlibwapi.dll"
-        If FileExist(tmpPluginPath & pluginName) Then
-            FileCopy tmpPluginPath & pluginName, PluginPath & pluginName
-            Kill tmpPluginPath & pluginName
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
         End If
         
         'After all files have been removed, kill the old Plugin directory
-        RmDir tmpPluginPath
+        RmDir tmpg_PluginPath
         
     End If
         
@@ -1116,75 +1117,75 @@ Public Sub LoadPlugins()
     If isEZTwainAvailable Then
                 
         'If we do find the DLL, check to see if EZTwain has been forcibly disabled by the user.
-        If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForceEZTwainDisable", False) Then
-            ScanEnabled = False
+        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForceEZTwainDisable", False) Then
+            g_ScanEnabled = False
         Else
-            ScanEnabled = True
+            g_ScanEnabled = True
         End If
         
     Else
         
         'If we can't find the DLL, hide the menu options and internally disable scanning
         '(perhaps overkill, but it acts as a safeguard to prevent bad DLL-based crashes)
-        ScanEnabled = False
+        g_ScanEnabled = False
         
     End If
     
         'Additionally related to EZTwain - enable/disable the various scanner options contigent on EZTwain's enabling
-        FormMain.MnuScanImage.Visible = ScanEnabled
-        FormMain.MnuSelectScanner.Visible = ScanEnabled
-        FormMain.MnuImportSepBar1.Visible = ScanEnabled
+        FormMain.MnuScanImage.Visible = g_ScanEnabled
+        FormMain.MnuSelectScanner.Visible = g_ScanEnabled
+        FormMain.MnuImportSepBar1.Visible = g_ScanEnabled
     
     'Check for zLib compression capabilities
     If isZLibAvailable Then
     
         'Check to see if zLib has been forcibly disabled.
-        If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForceZLibDisable", False) Then
-            zLibEnabled = False
+        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForceZLibDisable", False) Then
+            g_ZLibEnabled = False
         Else
-            zLibEnabled = True
+            g_ZLibEnabled = True
         End If
         
     Else
-        zLibEnabled = False
+        g_ZLibEnabled = False
     End If
     
     'Check for FreeImage file interface
     If isFreeImageAvailable Then
         
         'Check to see if FreeImage has been forcibly disabled
-        If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForceFreeImageDisable", False) Then
-            imageFormats.FreeImageEnabled = False
+        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForceFreeImageDisable", False) Then
+            g_ImageFormats.FreeImageEnabled = False
         Else
-            imageFormats.FreeImageEnabled = True
+            g_ImageFormats.FreeImageEnabled = True
         End If
         
     Else
-        imageFormats.FreeImageEnabled = False
+        g_ImageFormats.FreeImageEnabled = False
     End If
     
         'Additionally related to FreeImage - enable/disable the arbitrary rotation option contingent on FreeImage's enabling
-        FormMain.MnuRotateArbitrary.Visible = imageFormats.FreeImageEnabled
+        FormMain.MnuRotateArbitrary.Visible = g_ImageFormats.FreeImageEnabled
     
     'Check for pngnq interface
     If isPngnqAvailable Then
         
         'Check to see if pngnq-s9 has been forcibly disabled
-        If userPreferences.GetPreference_Boolean("Plugin Preferences", "ForcePngnqDisable", False) Then
-            imageFormats.pngnqEnabled = False
+        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForcePngnqDisable", False) Then
+            g_ImageFormats.pngnqEnabled = False
         Else
-            imageFormats.pngnqEnabled = True
+            g_ImageFormats.pngnqEnabled = True
         End If
         
     Else
-        imageFormats.pngnqEnabled = False
+        g_ImageFormats.pngnqEnabled = False
     End If
     
     'Finally, check GDI+ availability
     If isGDIPlusAvailable() Then
-        imageFormats.GDIPlusEnabled = True
+        g_ImageFormats.GDIPlusEnabled = True
     Else
-        imageFormats.GDIPlusEnabled = False
+        g_ImageFormats.GDIPlusEnabled = False
     End If
     
     
@@ -1202,7 +1203,7 @@ Public Sub DuplicateCurrentImage()
     
     CreateNewImageForm
         
-    FixScrolling = False
+    g_FixScrolling = False
         
     FormMain.ActiveForm.HScroll.Value = 0
     FormMain.ActiveForm.VScroll.Value = 0
@@ -1240,7 +1241,7 @@ Public Sub DuplicateCurrentImage()
     Message "Resizing image to fit screen..."
     
     'If the user wants us to resize the image to fit on-screen, do that now
-    If AutosizeLargeImages = 0 Then
+    If g_AutosizeLargeImages = 0 Then
         FitImageToViewport True
     Else
         FitWindowToViewport True
@@ -1255,14 +1256,14 @@ Public Sub DuplicateCurrentImage()
     'Update the current caption to match
     FormMain.ActiveForm.Caption = pdImages(CurrentImage).OriginalFileNameAndExtension
         
-    'FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
-    FixScrolling = False
+    'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
+    g_FixScrolling = False
     FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
         
     Message "Image duplication complete."
     
     'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
-    FixScrolling = True
+    g_FixScrolling = True
     
     PrepareViewport FormMain.ActiveForm, "DuplicateImage"
         
@@ -1291,7 +1292,7 @@ Private Sub CheckLoadingEnvironment()
     'App is compiled:
     If App.LogMode = 1 Then
         
-        isProgramCompiled = True
+        g_IsProgramCompiled = True
         
         'Determine the version automatically from the EXE information
         FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
@@ -1299,7 +1300,7 @@ Private Sub CheckLoadingEnvironment()
     'App is not compiled:
     Else
     
-        isProgramCompiled = False
+        g_IsProgramCompiled = False
 
         'Add a gentle reminder to compile the program
         FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision & " - please compile!"

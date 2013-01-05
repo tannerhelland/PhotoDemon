@@ -474,7 +474,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Only allow AutoReduction stuff if the FreeImage dll was found.
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         OptQuant(0).Enabled = False
         OptQuant(1).Enabled = False
         OptQuant(2).Value = True
@@ -617,11 +617,11 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     End If
 
     'Make sure we found the FreeImage plug-in when the program was loaded
-    If imageFormats.FreeImageEnabled Then
+    If g_ImageFormats.FreeImageEnabled Then
     
         'Load the FreeImage dll into memory
         Dim hLib As Long
-        hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
         
         If toPreview = False Then Message "Quantizing image using the FreeImage library..."
         
@@ -703,7 +703,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim mR As Single, mG As Single, mB As Single
     Dim cR As Long, cG As Long, cb As Long
     
@@ -740,18 +740,18 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Truncate R, G, and B values (posterize-style) into discreet increments.  0.5 is added for rounding purposes.
-        cR = rQuick(R)
+        cR = rQuick(r)
         cG = gQuick(g)
         cb = bQuick(b)
         
         'If we're doing Intelligent Coloring, place color values into a look-up table
         If smartColors = True Then
-            rLookup(cR, cG, cb) = rLookup(cR, cG, cb) + R
+            rLookup(cR, cG, cb) = rLookup(cR, cG, cb) + r
             gLookup(cR, cG, cb) = gLookup(cR, cG, cb) + g
             bLookup(cR, cG, cb) = bLookup(cR, cG, cb) + b
             'Also, keep track of how many colors fall into this bucket (so we can later determine an average color)
@@ -793,31 +793,31 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         End If
         
         'Find average colors based on color counts
-        For R = 0 To rValue
+        For r = 0 To rValue
         For g = 0 To gValue
         For b = 0 To bValue
-            If countLookup(R, g, b) <> 0 Then
-                rLookup(R, g, b) = Int(Int(rLookup(R, g, b)) / Int(countLookup(R, g, b)))
-                gLookup(R, g, b) = Int(Int(gLookup(R, g, b)) / Int(countLookup(R, g, b)))
-                bLookup(R, g, b) = Int(Int(bLookup(R, g, b)) / Int(countLookup(R, g, b)))
-                If rLookup(R, g, b) > 255 Then rLookup(R, g, b) = 255
-                If gLookup(R, g, b) > 255 Then gLookup(R, g, b) = 255
-                If bLookup(R, g, b) > 255 Then bLookup(R, g, b) = 255
+            If countLookup(r, g, b) <> 0 Then
+                rLookup(r, g, b) = Int(Int(rLookup(r, g, b)) / Int(countLookup(r, g, b)))
+                gLookup(r, g, b) = Int(Int(gLookup(r, g, b)) / Int(countLookup(r, g, b)))
+                bLookup(r, g, b) = Int(Int(bLookup(r, g, b)) / Int(countLookup(r, g, b)))
+                If rLookup(r, g, b) > 255 Then rLookup(r, g, b) = 255
+                If gLookup(r, g, b) > 255 Then gLookup(r, g, b) = 255
+                If bLookup(r, g, b) > 255 Then bLookup(r, g, b) = 255
             End If
         Next b
         Next g
-        Next R
+        Next r
         
         'Assign average colors back into the picture
         For x = initX To finalX
             QuickVal = x * qvDepth
         For y = initY To finalY
         
-            R = ImageData(QuickVal + 2, y)
+            r = ImageData(QuickVal + 2, y)
             g = ImageData(QuickVal + 1, y)
             b = ImageData(QuickVal, y)
             
-            cR = rQuick(R)
+            cR = rQuick(r)
             cG = gQuick(g)
             cb = bQuick(b)
             
@@ -870,7 +870,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim cR As Long, cG As Long, cb As Long
     Dim iR As Long, iG As Long, iB As Long
     Dim mR As Single, mG As Single, mB As Single
@@ -914,25 +914,25 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         iG = ImageData(QuickVal + 1, y)
         iB = ImageData(QuickVal, y)
         
-        R = iR + eR
+        r = iR + eR
         g = iG + eG
         b = iB + eB
         
-        If R > 255 Then R = 255
+        If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
-        If R < 0 Then R = 0
+        If r < 0 Then r = 0
         If g < 0 Then g = 0
         If b < 0 Then b = 0
         
         'Truncate R, G, and B values (posterize-style) into discreet increments.  0.5 is added for rounding purposes.
-        cR = rQuick(R)
+        cR = rQuick(r)
         cG = gQuick(g)
         cb = bQuick(b)
         
         'If we're doing Intelligent Coloring, place color values into a look-up table
         If smartColors = True Then
-            rLookup(cR, cG, cb) = rLookup(cR, cG, cb) + R
+            rLookup(cR, cG, cb) = rLookup(cR, cG, cb) + r
             gLookup(cR, cG, cb) = gLookup(cR, cG, cb) + g
             bLookup(cR, cG, cb) = bLookup(cR, cG, cb) + b
             'Also, keep track of how many colors fall into this bucket (so we can later determine an average color)
@@ -992,20 +992,20 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         End If
         
         'Find average colors based on color counts
-        For R = 0 To rValue
+        For r = 0 To rValue
         For g = 0 To gValue
         For b = 0 To bValue
-            If countLookup(R, g, b) <> 0 Then
-                rLookup(R, g, b) = Int(Int(rLookup(R, g, b)) / Int(countLookup(R, g, b)))
-                gLookup(R, g, b) = Int(Int(gLookup(R, g, b)) / Int(countLookup(R, g, b)))
-                bLookup(R, g, b) = Int(Int(bLookup(R, g, b)) / Int(countLookup(R, g, b)))
-                If rLookup(R, g, b) > 255 Then rLookup(R, g, b) = 255
-                If gLookup(R, g, b) > 255 Then gLookup(R, g, b) = 255
-                If bLookup(R, g, b) > 255 Then bLookup(R, g, b) = 255
+            If countLookup(r, g, b) <> 0 Then
+                rLookup(r, g, b) = Int(Int(rLookup(r, g, b)) / Int(countLookup(r, g, b)))
+                gLookup(r, g, b) = Int(Int(gLookup(r, g, b)) / Int(countLookup(r, g, b)))
+                bLookup(r, g, b) = Int(Int(bLookup(r, g, b)) / Int(countLookup(r, g, b)))
+                If rLookup(r, g, b) > 255 Then rLookup(r, g, b) = 255
+                If gLookup(r, g, b) > 255 Then gLookup(r, g, b) = 255
+                If bLookup(r, g, b) > 255 Then bLookup(r, g, b) = 255
             End If
         Next b
         Next g
-        Next R
+        Next r
         
         'Assign average colors back into the picture
         For y = initY To finalY
@@ -1017,18 +1017,18 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
             iG = ImageData(QuickVal + 1, y)
             iB = ImageData(QuickVal, y)
             
-            R = iR + eR
+            r = iR + eR
             g = iG + eG
             b = iB + eB
             
-            If R > 255 Then R = 255
+            If r > 255 Then r = 255
             If g > 255 Then g = 255
             If b > 255 Then b = 255
-            If R < 0 Then R = 0
+            If r < 0 Then r = 0
             If g < 0 Then g = 0
             If b < 0 Then b = 0
             
-            cR = rQuick(R)
+            cR = rQuick(r)
             cG = gQuick(g)
             cb = bQuick(b)
             

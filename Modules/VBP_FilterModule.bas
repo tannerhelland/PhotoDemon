@@ -20,7 +20,7 @@ Public Const CUSTOM_FILTER_ID As String * 4 = "DScf"
 Public Const CUSTOM_FILTER_VERSION_2003 = &H80000000
 Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
 
-'The omnipotent DoFilter routine - it takes whatever is in FM() - the "filter matrix" and applies it to the image
+'The omnipotent DoFilter routine - it takes whatever is in g_FM() - the "filter matrix" and applies it to the image
 Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByVal InvertResult As Boolean = False, Optional ByVal srcFilterFile As String = "", Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
     
     'If requested, load the custom filter data from a file
@@ -68,24 +68,24 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     
     'CalcVar determines the size of each sub-loop (so that we don't waste time running a 5x5 matrix on 3x3 filters)
     Dim CalcVar As Long
-    CalcVar = (FilterSize \ 2)
+    CalcVar = (g_FilterSize \ 2)
         
-    'iFM() will hold the contents of FM() - the filter matrix; we don't use FM directly in case other events want to access it
+    'iFM() will hold the contents of g_FM() - the filter matrix; we don't use FM directly in case other events want to access it
     Dim iFM() As Long
     
-    'Resize iFM according to the size of the filter matrix, then copy over the contents of FM()
-    If FilterSize = 3 Then ReDim iFM(-1 To 1, -1 To 1) As Long Else ReDim iFM(-2 To 2, -2 To 2) As Long
-    iFM = FM
+    'Resize iFM according to the size of the filter matrix, then copy over the contents of g_FM()
+    If g_FilterSize = 3 Then ReDim iFM(-1 To 1, -1 To 1) As Long Else ReDim iFM(-2 To 2, -2 To 2) As Long
+    iFM = g_FM
     
-    'FilterWeightA and FilterBiasA are copies of the global FilterWeight and FilterBias variables; again, we don't use the originals in case other events
+    'FilterWeightA and FilterBiasA are copies of the global g_FilterWeight and g_FilterBias variables; again, we don't use the originals in case other events
     ' want to access them
     Dim FilterWeightA As Long, FilterBiasA As Long
-    FilterWeightA = FilterWeight
-    FilterBiasA = FilterBias
+    FilterWeightA = g_FilterWeight
+    FilterBiasA = g_FilterBias
     
     'FilterWeightTemp will be reset for every pixel, and decremented appropriately when attempting to calculate the value for pixels
     ' outside the image perimeter
@@ -115,7 +115,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
-        R = 0
+        r = 0
         g = 0
         b = 0
         FilterWeightTemp = FilterWeightA
@@ -132,14 +132,14 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
             ' but because VB does not provide a "continue next" type mechanism, GoTo's are all we've got.)
             If iFM(CalcX, CalcY) = 0 Then GoTo NextCustomFilterPixel
             
-            'If this pixel lies outside the image perimeter, ignore it and adjust FilterWeight accordingly
+            'If this pixel lies outside the image perimeter, ignore it and adjust g_FilterWeight accordingly
             If x2 < checkXMin Or y2 < checkYMin Or x2 > checkXMax Or y2 > checkYMax Then
                 FilterWeightTemp = FilterWeightTemp - iFM(CalcX, CalcY)
                 GoTo NextCustomFilterPixel
             End If
             
             'Adjust red, green, and blue according to the values in the filter matrix (FM)
-            R = R + (tmpData(QuickValInner + 2, y2) * iFM(CalcX, CalcY))
+            r = r + (tmpData(QuickValInner + 2, y2) * iFM(CalcX, CalcY))
             g = g + (tmpData(QuickValInner + 1, y2) * iFM(CalcX, CalcY))
             b = b + (tmpData(QuickValInner, y2) * iFM(CalcX, CalcY))
 
@@ -149,11 +149,11 @@ NextCustomFilterPixel:  Next y2
         'If a weight has been set, apply it now
         If (FilterWeightTemp <> 1) Then
             If (FilterWeightTemp <> 0) Then
-                R = R \ FilterWeightTemp
+                r = r \ FilterWeightTemp
                 g = g \ FilterWeightTemp
                 b = b \ FilterWeightTemp
             Else
-                R = 0
+                r = 0
                 g = 0
                 b = 0
             End If
@@ -161,16 +161,16 @@ NextCustomFilterPixel:  Next y2
         
         'If a bias has been specified, apply it now
         If FilterBiasA <> 0 Then
-            R = R + FilterBiasA
+            r = r + FilterBiasA
             g = g + FilterBiasA
             b = b + FilterBiasA
         End If
         
         'Make sure all values are between 0 and 255
-        If R < 0 Then
-            R = 0
-        ElseIf R > 255 Then
-            R = 255
+        If r < 0 Then
+            r = 0
+        ElseIf r > 255 Then
+            r = 255
         End If
         
         If g < 0 Then
@@ -186,14 +186,14 @@ NextCustomFilterPixel:  Next y2
         End If
         
         'If inversion is specified, apply it now
-        If InvertResult = True Then
-            R = 255 - R
+        If InvertResult Then
+            r = 255 - r
             g = 255 - g
             b = 255 - b
         End If
         
         'Finally, remember the new value in our tData array
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -219,13 +219,15 @@ NextCustomFilterPixel:  Next y2
     
 End Sub
 
-'This subroutine will load the data from a custom filter file straight into the FM() array
+'This subroutine will load the data from a custom filter file straight into the g_FM() array
 Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
     
     'These are used to load values from the filter file; previously, they were integers, but in
     ' 2012 I changed them to Longs.  PhotoDemon loads both types.
     Dim tmpVal As Integer
     Dim tmpValLong As Long
+    
+    Dim x As Long, y As Long
     
     'Open the specified path
     Dim fileNum As Integer
@@ -255,19 +257,19 @@ Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
         
         If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
             Get #fileNum, , tmpVal
-            FilterWeight = tmpVal
+            g_FilterWeight = tmpVal
             Get #fileNum, , tmpVal
-            FilterBias = tmpVal
+            g_FilterBias = tmpVal
         ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
             Get #fileNum, , tmpValLong
-            FilterWeight = tmpValLong
+            g_FilterWeight = tmpValLong
             Get #fileNum, , tmpValLong
-            FilterBias = tmpValLong
+            g_FilterBias = tmpValLong
         End If
         
         'Resize the filter array to fit the default filter size
-        FilterSize = 5
-        ReDim FM(-2 To 2, -2 To 2) As Long
+        g_FilterSize = 5
+        ReDim g_FM(-2 To 2, -2 To 2) As Long
         'Dim a temporary array from which to load the array data
         Dim tFilterArray(0 To 24) As Long
         
@@ -286,7 +288,7 @@ Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
         'Now dump the temporary array into the filter array
         For x = -2 To 2
         For y = -2 To 2
-            FM(x, y) = tFilterArray((x + 2) + (y + 2) * 5)
+            g_FM(x, y) = tFilterArray((x + 2) + (y + 2) * 5)
         Next y
         Next x
     'Close the file up
@@ -296,38 +298,38 @@ End Function
 
 'A very, very gentle softening effect
 Public Sub FilterAntialias()
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, 0) = 1
-    FM(1, 0) = 1
-    FM(0, -1) = 1
-    FM(0, 1) = 1
-    FM(0, 0) = 6
-    FilterWeight = 10
-    FilterBias = 0
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    g_FM(-1, 0) = 1
+    g_FM(1, 0) = 1
+    g_FM(0, -1) = 1
+    g_FM(0, 1) = 1
+    g_FM(0, 0) = 6
+    g_FilterWeight = 10
+    g_FilterBias = 0
     DoFilter "Antialias"
 End Sub
 
 '"Soften an image" (aka, apply a gentle 3x3 blur)
 Public Sub FilterSoften()
     
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
     
-    FM(-1, -1) = 1
-    FM(-1, 0) = 1
-    FM(-1, 1) = 1
+    g_FM(-1, -1) = 1
+    g_FM(-1, 0) = 1
+    g_FM(-1, 1) = 1
     
-    FM(0, -1) = 1
-    FM(0, 0) = 8
-    FM(0, 1) = 1
+    g_FM(0, -1) = 1
+    g_FM(0, 0) = 8
+    g_FM(0, 1) = 1
     
-    FM(1, -1) = 1
-    FM(1, 0) = 1
-    FM(1, 1) = 1
+    g_FM(1, -1) = 1
+    g_FM(1, 0) = 1
+    g_FM(1, 1) = 1
     
-    FilterWeight = 16
-    FilterBias = 0
+    g_FilterWeight = 16
+    g_FilterBias = 0
     
     DoFilter "Soften"
     
@@ -336,41 +338,41 @@ End Sub
 '"Soften an image more" (aka, apply a gentle 5x5 blur)
 Public Sub FilterSoftenMore()
     
-    FilterSize = 5
-    ReDim FM(-2 To 2, -2 To 2) As Long
+    g_FilterSize = 5
+    ReDim g_FM(-2 To 2, -2 To 2) As Long
     
-    FM(-2, -2) = 1
-    FM(-2, -1) = 1
-    FM(-2, 0) = 1
-    FM(-2, 1) = 1
-    FM(-2, 2) = 1
+    g_FM(-2, -2) = 1
+    g_FM(-2, -1) = 1
+    g_FM(-2, 0) = 1
+    g_FM(-2, 1) = 1
+    g_FM(-2, 2) = 1
     
-    FM(-1, -2) = 1
-    FM(-1, -1) = 1
-    FM(-1, 0) = 1
-    FM(-1, 1) = 1
-    FM(-1, 2) = 1
+    g_FM(-1, -2) = 1
+    g_FM(-1, -1) = 1
+    g_FM(-1, 0) = 1
+    g_FM(-1, 1) = 1
+    g_FM(-1, 2) = 1
     
-    FM(0, -2) = 1
-    FM(0, -1) = 1
-    FM(0, 0) = 24
-    FM(0, 1) = 1
-    FM(0, 2) = 1
+    g_FM(0, -2) = 1
+    g_FM(0, -1) = 1
+    g_FM(0, 0) = 24
+    g_FM(0, 1) = 1
+    g_FM(0, 2) = 1
     
-    FM(1, -2) = 1
-    FM(1, -1) = 1
-    FM(1, 0) = 1
-    FM(1, 1) = 1
-    FM(1, 2) = 1
+    g_FM(1, -2) = 1
+    g_FM(1, -1) = 1
+    g_FM(1, 0) = 1
+    g_FM(1, 1) = 1
+    g_FM(1, 2) = 1
     
-    FM(2, -2) = 1
-    FM(2, -1) = 1
-    FM(2, 0) = 1
-    FM(2, 1) = 1
-    FM(2, 2) = 1
+    g_FM(2, -2) = 1
+    g_FM(2, -1) = 1
+    g_FM(2, 0) = 1
+    g_FM(2, 1) = 1
+    g_FM(2, 2) = 1
     
-    FilterWeight = 48
-    FilterBias = 0
+    g_FilterWeight = 48
+    g_FilterBias = 0
     
     DoFilter "Strong Soften"
     
@@ -379,23 +381,23 @@ End Sub
 'Blur an image using a 3x3 convolution matrix
 Public Sub FilterBlur()
         
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
     
-    FM(-1, -1) = 1
-    FM(-1, 0) = 1
-    FM(-1, 1) = 1
+    g_FM(-1, -1) = 1
+    g_FM(-1, 0) = 1
+    g_FM(-1, 1) = 1
     
-    FM(0, -1) = 1
-    FM(0, 0) = 1
-    FM(0, 1) = 1
+    g_FM(0, -1) = 1
+    g_FM(0, 0) = 1
+    g_FM(0, 1) = 1
     
-    FM(1, -1) = 1
-    FM(1, 0) = 1
-    FM(1, 1) = 1
+    g_FM(1, -1) = 1
+    g_FM(1, 0) = 1
+    g_FM(1, 1) = 1
     
-    FilterWeight = 9
-    FilterBias = 0
+    g_FilterWeight = 9
+    g_FilterBias = 0
     
     DoFilter "Blur"
     
@@ -404,41 +406,41 @@ End Sub
 'Blur an image using a 5x5 convolution matrix
 Public Sub FilterBlurMore()
     
-    FilterSize = 5
-    ReDim FM(-2 To 2, -2 To 2) As Long
+    g_FilterSize = 5
+    ReDim g_FM(-2 To 2, -2 To 2) As Long
     
-    FM(-2, -2) = 1
-    FM(-2, -1) = 1
-    FM(-2, 0) = 1
-    FM(-2, 1) = 1
-    FM(-2, 2) = 1
+    g_FM(-2, -2) = 1
+    g_FM(-2, -1) = 1
+    g_FM(-2, 0) = 1
+    g_FM(-2, 1) = 1
+    g_FM(-2, 2) = 1
     
-    FM(-1, -2) = 1
-    FM(-1, -1) = 1
-    FM(-1, 0) = 1
-    FM(-1, 1) = 1
-    FM(-1, 2) = 1
+    g_FM(-1, -2) = 1
+    g_FM(-1, -1) = 1
+    g_FM(-1, 0) = 1
+    g_FM(-1, 1) = 1
+    g_FM(-1, 2) = 1
     
-    FM(0, -2) = 1
-    FM(0, -1) = 1
-    FM(0, 0) = 1
-    FM(0, 1) = 1
-    FM(0, 2) = 1
+    g_FM(0, -2) = 1
+    g_FM(0, -1) = 1
+    g_FM(0, 0) = 1
+    g_FM(0, 1) = 1
+    g_FM(0, 2) = 1
     
-    FM(1, -2) = 1
-    FM(1, -1) = 1
-    FM(1, 0) = 1
-    FM(1, 1) = 1
-    FM(1, 2) = 1
+    g_FM(1, -2) = 1
+    g_FM(1, -1) = 1
+    g_FM(1, 0) = 1
+    g_FM(1, 1) = 1
+    g_FM(1, 2) = 1
     
-    FM(2, -2) = 1
-    FM(2, -1) = 1
-    FM(2, 0) = 1
-    FM(2, 1) = 1
-    FM(2, 2) = 1
+    g_FM(2, -2) = 1
+    g_FM(2, -1) = 1
+    g_FM(2, 0) = 1
+    g_FM(2, 1) = 1
+    g_FM(2, 2) = 1
     
-    FilterWeight = 25
-    FilterBias = 0
+    g_FilterWeight = 25
+    g_FilterBias = 0
     
     DoFilter "Strong Blur"
     
@@ -447,23 +449,23 @@ End Sub
 '3x3 Gaussian blur
 Public Sub FilterGaussianBlur()
 
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
     
-    FM(-1, -1) = 1
-    FM(0, -1) = 2
-    FM(1, -1) = 1
+    g_FM(-1, -1) = 1
+    g_FM(0, -1) = 2
+    g_FM(1, -1) = 1
     
-    FM(-1, 0) = 2
-    FM(0, 0) = 4
-    FM(1, 0) = 2
+    g_FM(-1, 0) = 2
+    g_FM(0, 0) = 4
+    g_FM(1, 0) = 2
     
-    FM(-1, 1) = 1
-    FM(0, 1) = 2
-    FM(1, 1) = 1
+    g_FM(-1, 1) = 1
+    g_FM(0, 1) = 2
+    g_FM(1, 1) = 1
     
-    FilterWeight = 16
-    FilterBias = 0
+    g_FilterWeight = 16
+    g_FilterBias = 0
     
     DoFilter "Gaussian Blur"
     
@@ -472,41 +474,41 @@ End Sub
 '5x5 Gaussian blur
 Public Sub FilterGaussianBlurMore()
 
-    FilterSize = 5
-    ReDim FM(-2 To 2, -2 To 2) As Long
+    g_FilterSize = 5
+    ReDim g_FM(-2 To 2, -2 To 2) As Long
     
-    FM(-2, -2) = 1
-    FM(-1, -2) = 4
-    FM(0, -2) = 7
-    FM(1, -2) = 4
-    FM(2, -2) = 1
+    g_FM(-2, -2) = 1
+    g_FM(-1, -2) = 4
+    g_FM(0, -2) = 7
+    g_FM(1, -2) = 4
+    g_FM(2, -2) = 1
     
-    FM(-2, -1) = 4
-    FM(-1, -1) = 16
-    FM(0, -1) = 26
-    FM(1, -1) = 16
-    FM(2, -1) = 4
+    g_FM(-2, -1) = 4
+    g_FM(-1, -1) = 16
+    g_FM(0, -1) = 26
+    g_FM(1, -1) = 16
+    g_FM(2, -1) = 4
     
-    FM(-2, 0) = 7
-    FM(-1, 0) = 26
-    FM(0, 0) = 41
-    FM(1, 0) = 26
-    FM(2, 0) = 7
+    g_FM(-2, 0) = 7
+    g_FM(-1, 0) = 26
+    g_FM(0, 0) = 41
+    g_FM(1, 0) = 26
+    g_FM(2, 0) = 7
     
-    FM(-2, 1) = 4
-    FM(-1, 1) = 16
-    FM(0, 1) = 26
-    FM(1, 1) = 16
-    FM(2, 1) = 4
+    g_FM(-2, 1) = 4
+    g_FM(-1, 1) = 16
+    g_FM(0, 1) = 26
+    g_FM(1, 1) = 16
+    g_FM(2, 1) = 4
     
-    FM(-2, 2) = 1
-    FM(-1, 2) = 4
-    FM(0, 2) = 7
-    FM(1, 2) = 4
-    FM(2, 2) = 1
+    g_FM(-2, 2) = 1
+    g_FM(-1, 2) = 4
+    g_FM(0, 2) = 7
+    g_FM(1, 2) = 4
+    g_FM(2, 2) = 1
     
-    FilterWeight = 273
-    FilterBias = 0
+    g_FilterWeight = 273
+    g_FilterBias = 0
     
     DoFilter "Strong Gaussian Blur"
     
@@ -515,23 +517,23 @@ End Sub
 'Sharpen an image via convolution filter
 Public Sub FilterSharpen()
     
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
     
-    FM(-1, -1) = -1
-    FM(0, -1) = -1
-    FM(1, -1) = -1
+    g_FM(-1, -1) = -1
+    g_FM(0, -1) = -1
+    g_FM(1, -1) = -1
     
-    FM(-1, 0) = -1
-    FM(0, 0) = 15
-    FM(1, 0) = -1
+    g_FM(-1, 0) = -1
+    g_FM(0, 0) = 15
+    g_FM(1, 0) = -1
     
-    FM(-1, 1) = -1
-    FM(0, 1) = -1
-    FM(1, 1) = -1
+    g_FM(-1, 1) = -1
+    g_FM(0, 1) = -1
+    g_FM(1, 1) = -1
     
-    FilterWeight = 7
-    FilterBias = 0
+    g_FilterWeight = 7
+    g_FilterBias = 0
     
     DoFilter "Sharpen"
   
@@ -540,23 +542,23 @@ End Sub
 'Strongly sharpen an image via convolution filter
 Public Sub FilterSharpenMore()
 
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
     
-    FM(-1, -1) = 0
-    FM(0, -1) = -1
-    FM(1, -1) = 0
+    g_FM(-1, -1) = 0
+    g_FM(0, -1) = -1
+    g_FM(1, -1) = 0
     
-    FM(-1, 0) = -1
-    FM(0, 0) = 5
-    FM(1, 0) = -1
+    g_FM(-1, 0) = -1
+    g_FM(0, 0) = 5
+    g_FM(1, 0) = -1
     
-    FM(-1, 1) = 0
-    FM(0, 1) = -1
-    FM(1, 1) = 0
+    g_FM(-1, 1) = 0
+    g_FM(0, 1) = -1
+    g_FM(1, 1) = 0
     
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterWeight = 1
+    g_FilterBias = 0
     
     DoFilter "Strong Sharpen"
   
@@ -565,23 +567,23 @@ End Sub
 '"Unsharp" an image - it's a stupid name, but that's the industry standard.  Basically, blur the image, then subtract that from the original image.
 Public Sub FilterUnsharp()
 
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
     
-    FM(-1, -1) = -1
-    FM(0, -1) = -2
-    FM(1, -1) = -1
+    g_FM(-1, -1) = -1
+    g_FM(0, -1) = -2
+    g_FM(1, -1) = -1
     
-    FM(-1, 0) = -2
-    FM(0, 0) = 24
-    FM(1, 0) = -2
+    g_FM(-1, 0) = -2
+    g_FM(0, 0) = 24
+    g_FM(1, 0) = -2
     
-    FM(-1, 1) = -1
-    FM(0, 1) = -2
-    FM(1, 1) = -1
+    g_FM(-1, 1) = -1
+    g_FM(0, 1) = -2
+    g_FM(1, 1) = -1
     
-    FilterWeight = 12
-    FilterBias = 0
+    g_FilterWeight = 12
+    g_FilterBias = 0
     
     DoFilter "Unsharp"
   
@@ -623,7 +625,7 @@ Public Sub FilterGridBlur()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim rax() As Long, gax() As Long, bax() As Long
     Dim ray() As Long, gay() As Long, bay() As Long
     ReDim rax(0 To iWidth) As Long, gax(0 To iWidth) As Long, bax(0 To iWidth) As Long
@@ -631,32 +633,32 @@ Public Sub FilterGridBlur()
     
     'Generate the averages for vertical lines
     For x = initX To finalX
-        R = 0
+        r = 0
         g = 0
         b = 0
         QuickVal = x * qvDepth
         For y = initY To finalY
-            R = R + ImageData(QuickVal + 2, y)
+            r = r + ImageData(QuickVal + 2, y)
             g = g + ImageData(QuickVal + 1, y)
             b = b + ImageData(QuickVal, y)
         Next y
-        rax(x) = R
+        rax(x) = r
         gax(x) = g
         bax(x) = b
     Next x
     
     'Generate the averages for horizontal lines
     For y = initY To finalY
-        R = 0
+        r = 0
         g = 0
         b = 0
         For x = initX To finalX
             QuickVal = x * qvDepth
-            R = R + ImageData(QuickVal + 2, y)
+            r = r + ImageData(QuickVal + 2, y)
             g = g + ImageData(QuickVal + 1, y)
             b = b + ImageData(QuickVal, y)
         Next x
-        ray(y) = R
+        ray(y) = r
         gay(y) = g
         bay(y) = b
     Next y
@@ -669,17 +671,17 @@ Public Sub FilterGridBlur()
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
-        R = (rax(x) + ray(y)) \ NumOfPixels
+        r = (rax(x) + ray(y)) \ NumOfPixels
         g = (gax(x) + gay(y)) \ NumOfPixels
         b = (bax(x) + bay(y)) \ NumOfPixels
         
         'The colors shouldn't exceed 255, but it doesn't hurt to double-check
-        If R > 255 Then R = 255
+        If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

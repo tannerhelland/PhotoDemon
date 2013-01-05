@@ -156,7 +156,7 @@ Public Sub MenuHeatMap()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     Dim hVal As Single, sVal As Single, lVal As Single
     Dim h As Single, S As Single, l As Single
@@ -172,11 +172,11 @@ Public Sub MenuHeatMap()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
         'Based on the luminance of this pixel, apply a predetermined hue gradient (stretching between -1 and 5)
         hVal = (CSng(grayVal) / 255) * 360
@@ -198,12 +198,12 @@ Public Sub MenuHeatMap()
         sVal = 0.8
         
         'Use RGB to calculate hue, saturation, and luminance
-        tRGBToHSL R, g, b, h, S, l
+        tRGBToHSL r, g, b, h, S, l
         
         'Now convert those HSL values back to RGB, but substitute in our artificial hue value (calculated above)
-        tHSLToRGB hVal, sVal, lVal, R, g, b
+        tHSLToRGB hVal, sVal, lVal, r, g, b
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -260,7 +260,7 @@ Public Sub MenuSynthesize()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
@@ -274,24 +274,24 @@ Public Sub MenuSynthesize()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
-        R = g + b - grayVal
-        g = R + b - grayVal
-        b = R + g - grayVal
+        r = g + b - grayVal
+        g = r + b - grayVal
+        b = r + g - grayVal
         
-        If R > 255 Then R = 255
-        If R < 0 Then R = 0
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
         If g > 255 Then g = 255
         If g < 0 Then g = 0
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -337,7 +337,7 @@ Public Sub MenuAlien()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
         
     'Apply the filter
@@ -345,13 +345,13 @@ Public Sub MenuAlien()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        newR = b + g - R
-        newG = R + b - g
-        newB = R + g - b
+        newR = b + g - r
+        newG = r + b - g
+        newB = r + g - b
         
         If newR > 255 Then newR = 255
         If newR < 0 Then newR = 0
@@ -433,7 +433,7 @@ Public Sub MenuAntique()
     Next x
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim gray As Long
         
@@ -442,21 +442,21 @@ Public Sub MenuAntique()
         QuickVal = x * qvDepth
     For y = initY To finalY
     
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        gray = gLookup(R + g + b)
+        gray = gLookup(r + g + b)
         
-        R = (R + gray) \ 2
+        r = (r + gray) \ 2
         g = (g + gray) \ 2
         b = (b + gray) \ 2
         
-        R = (g * b) \ 256
-        g = (b * R) \ 256
-        b = (R * g) \ 256
+        r = (g * b) \ 256
+        g = (b * r) \ 256
+        b = (r * g) \ 256
         
-        newR = bLookup(R)
+        newR = bLookup(r)
         newG = bLookup(g)
         newB = bLookup(b)
         
@@ -511,7 +511,7 @@ Public Sub MenuSepia()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim newR As Single, newG As Single, newB As Single
         
     'Apply the filter
@@ -519,23 +519,23 @@ Public Sub MenuSepia()
         QuickVal = x * qvDepth
     For y = initY To finalY
     
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
                 
-        newR = CSng(R) * 0.393 + CSng(g) * 0.769 + CSng(b) * 0.189
-        newG = CSng(R) * 0.349 + CSng(g) * 0.686 + CSng(b) * 0.168
-        newB = CSng(R) * 0.272 + CSng(g) * 0.534 + CSng(b) * 0.131
+        newR = CSng(r) * 0.393 + CSng(g) * 0.769 + CSng(b) * 0.189
+        newG = CSng(r) * 0.349 + CSng(g) * 0.686 + CSng(b) * 0.168
+        newB = CSng(r) * 0.272 + CSng(g) * 0.534 + CSng(b) * 0.131
         
-        R = newR
+        r = newR
         g = newG
         b = newB
         
-        If R > 255 Then R = 255
+        If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -554,19 +554,19 @@ End Sub
 
 'Makes the picture appear like it has been shaken
 Public Sub MenuVibrate()
-    FilterSize = 5
-    ReDim FM(-2 To 2, -2 To 2) As Long
-    FM(-2, -2) = 1
-    FM(-1, -1) = -1
-    FM(0, 0) = 1
-    FM(1, 1) = -1
-    FM(2, 2) = 1
-    FM(-1, 1) = 1
-    FM(-2, 2) = -1
-    FM(1, -1) = 1
-    FM(2, -2) = -1
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 5
+    ReDim g_FM(-2 To 2, -2 To 2) As Long
+    g_FM(-2, -2) = 1
+    g_FM(-1, -1) = -1
+    g_FM(0, 0) = 1
+    g_FM(1, 1) = -1
+    g_FM(2, 2) = 1
+    g_FM(-1, 1) = 1
+    g_FM(-2, 2) = -1
+    g_FM(1, -1) = 1
+    g_FM(2, -2) = -1
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "Vibrate"
 End Sub
 
@@ -599,7 +599,7 @@ Public Sub MenuDream()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim grayVal As Long
     
@@ -620,18 +620,18 @@ Public Sub MenuDream()
         
         grayVal = gLookup(newR + newG + newB)
         
-        R = Abs(newR - grayVal) + Abs(newR - newG) + Abs(newR - newB) + (newR \ 2)
+        r = Abs(newR - grayVal) + Abs(newR - newG) + Abs(newR - newB) + (newR \ 2)
         g = Abs(newG - grayVal) + Abs(newG - newB) + Abs(newG - newR) + (newG \ 2)
         b = Abs(newB - grayVal) + Abs(newB - newR) + Abs(newB - newG) + (newB \ 2)
         
-        If R > 255 Then R = 255
-        If R < 0 Then R = 0
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
         If g > 255 Then g = 255
         If g < 0 Then g = 0
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
@@ -677,7 +677,7 @@ Public Sub MenuRadioactive()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
         
     'Apply the filter
@@ -685,17 +685,17 @@ Public Sub MenuRadioactive()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        If R = 0 Then R = 1
+        If r = 0 Then r = 1
         If g = 0 Then g = 1
         If b = 0 Then b = 1
         
-        newR = (g * b) \ R
-        newG = (R * b) \ g
-        newB = (R * g) \ b
+        newR = (g * b) \ r
+        newG = (r * b) \ g
+        newB = (r * g) \ b
         
         If newR > 255 Then newR = 255
         If newG > 255 Then newG = 255
@@ -749,7 +749,7 @@ Public Sub MenuComicBook()
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
@@ -763,19 +763,19 @@ Public Sub MenuComicBook()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        R = Abs(R * (g - b + g + R)) / 255
-        g = Abs(R * (b - g + b + R)) / 255
-        b = Abs(g * (b - g + b + R)) / 255
+        r = Abs(r * (g - b + g + r)) / 255
+        g = Abs(r * (b - g + b + r)) / 255
+        b = Abs(g * (b - g + b + r)) / 255
         
-        If R > 255 Then R = 255
+        If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
         ImageData(QuickVal + 2, y) = grayVal
         ImageData(QuickVal + 1, y) = grayVal
@@ -831,7 +831,7 @@ Public Sub MenuCountColors()
     totalCount = 0
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim chkValue As Long
         
     'Apply the filter
@@ -839,11 +839,11 @@ Public Sub MenuCountColors()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        chkValue = RGB(R, g, b)
+        chkValue = RGB(r, g, b)
         If UniqueColors(chkValue) = False Then
             totalCount = totalCount + 1
             UniqueColors(chkValue) = True
@@ -904,7 +904,7 @@ Public Sub MenuTest()
     Next x
     
     'Finally, a bunch of variables used in color calculation
-    Dim R As Long, g As Long, b As Long, grayVal As Long
+    Dim r As Long, g As Long, b As Long, grayVal As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim hVal As Single, sVal As Single, lVal As Single
     Dim h As Single, S As Single, l As Single
@@ -914,11 +914,11 @@ Public Sub MenuTest()
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(R + g + b)
+        grayVal = gLookup(r + g + b)
         
         'Put interesting color transformations here.  As an example, here's one possible sepia formula.
         newR = grayVal + 40
@@ -953,22 +953,22 @@ End Sub
 
 'This function will return the luminance value of an RGB triplet.  Note that the value will be in the [0,255] range instead
 ' of the usual [0,1.0] one.
-Public Function getLuminance(ByVal R As Long, ByVal g As Long, ByVal b As Long) As Long
+Public Function getLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
     Dim Max As Long, Min As Long
-    Max = MaximumInt(R, g, b)
-    Min = MinimumInt(R, g, b)
+    Max = MaximumInt(r, g, b)
+    Min = MinimumInt(r, g, b)
     getLuminance = (Max + Min) \ 2
 End Function
 
 'HSL <-> RGB conversion routines
-Public Sub tRGBToHSL(R As Long, g As Long, b As Long, h As Single, S As Single, l As Single)
+Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, S As Single, l As Single)
     
     Static Max As Single
     Static Min As Single
     Static delta As Single
     Static rR As Single, rG As Single, rB As Single
     
-    rR = R / 255
+    rR = r / 255
     rG = g / 255
     rB = b / 255
 
@@ -1022,7 +1022,7 @@ Public Sub tRGBToHSL(R As Long, g As Long, b As Long, h As Single, S As Single, 
 End Sub
 
 'Convert HSL values to RGB values
-Public Sub tHSLToRGB(h As Single, S As Single, l As Single, R As Long, g As Long, b As Long)
+Public Sub tHSLToRGB(h As Single, S As Single, l As Single, r As Long, g As Long, b As Long)
 
     Static rR As Single, rG As Single, rB As Single
     Static Min As Single, Max As Single
@@ -1079,13 +1079,13 @@ Public Sub tHSLToRGB(h As Single, S As Single, l As Single, R As Long, g As Long
             
    End If
    
-   R = rR * 255
+   r = rR * 255
    g = rG * 255
    b = rB * 255
    
    'Failsafe added 29 August '12
    'This should never return RGB values > 255, but it doesn't hurt to make sure.
-   If R > 255 Then R = 255
+   If r > 255 Then r = 255
    If g > 255 Then g = 255
    If b > 255 Then b = 255
    

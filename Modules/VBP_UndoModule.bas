@@ -112,7 +112,7 @@ End Sub
 
 'Subroutine for generating an Undo filename
 Private Function GenerateUndoFile(ByVal uIndex As Integer) As String
-    GenerateUndoFile = userPreferences.getTempPath & "~cPDU" & CurrentImage & "_" & uIndex & ".tmp"
+    GenerateUndoFile = g_UserPreferences.getTempPath & "~cPDU" & CurrentImage & "_" & uIndex & ".tmp"
 End Function
 
 'Subroutine for returning the path of the last Undo file (used for fading last effect)

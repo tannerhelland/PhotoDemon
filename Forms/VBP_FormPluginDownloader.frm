@@ -535,7 +535,7 @@ Private Sub cmdChoice_Click(Index As Integer)
         Case 1
         
             'Store this preference
-            userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", True
+            g_UserPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", True
     
             'Close our Internet connection, if any
             If hInternetSession Then InternetCloseHandle hInternetSession
@@ -547,7 +547,7 @@ Private Sub cmdChoice_Click(Index As Integer)
         Case 2
             
             'Store this preference
-            userPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", False
+            g_UserPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", False
     
             'Close our Internet connection, if any
             If hInternetSession Then InternetCloseHandle hInternetSession
@@ -731,9 +731,9 @@ Private Function downloadAllPlugins() As Boolean
     
     'Begin by creating a plugin subdirectory if it doesn't exist
     Message "Checking for plugin directory..."
-    If DirectoryExist(PluginPath) = False Then
+    If DirectoryExist(g_PluginPath) = False Then
         Message "Creating plugin directory..."
-        MkDir PluginPath
+        MkDir g_PluginPath
     End If
     
     Message "Downloading core plugin files..."
@@ -749,7 +749,7 @@ Private Function downloadAllPlugins() As Boolean
         downloadAllPlugins = False
         Exit Function
     Else
-        zLibEnabled = True
+        g_ZLibEnabled = True
     End If
         
     curNumOfFiles = curNumOfFiles + 1
@@ -761,7 +761,7 @@ Private Function downloadAllPlugins() As Boolean
         downloadAllPlugins = False
         Exit Function
     Else
-        ScanEnabled = True
+        g_ScanEnabled = True
     End If
     
     curNumOfFiles = curNumOfFiles + 1
@@ -773,7 +773,7 @@ Private Function downloadAllPlugins() As Boolean
         downloadAllPlugins = False
         Exit Function
     Else
-        imageFormats.FreeImageEnabled = True
+        g_ImageFormats.FreeImageEnabled = True
     End If
     
     curNumOfFiles = curNumOfFiles + 1
@@ -785,7 +785,7 @@ Private Function downloadAllPlugins() As Boolean
         downloadAllPlugins = False
         Exit Function
     Else
-        imageFormats.pngnqEnabled = True
+        g_ImageFormats.pngnqEnabled = True
     End If
     
     dProgBar.Value = dProgBar.Max
@@ -831,9 +831,9 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
     Dim tmpFile As String
     If toDecompress = False Then
         StripOffExtension tmpFilename
-        tmpFile = PluginPath & tmpFilename & ".dll"
+        tmpFile = g_PluginPath & tmpFilename & ".dll"
     Else
-        tmpFile = PluginPath & tmpFilename
+        tmpFile = g_PluginPath & tmpFilename
     End If
     
     'Open the temporary file and begin downloading the image to it

@@ -12,17 +12,17 @@ Option Explicit
 'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
 Public Sub SetProgBarMax(ByVal pbVal As Long)
-    If MacroStatus <> MacroBATCH Then cProgBar.Max = pbVal
+    If MacroStatus <> MacroBATCH Then g_ProgBar.Max = pbVal
 End Sub
 
 Public Function getProgBarMax() As Long
-    getProgBarMax = cProgBar.Max
+    getProgBarMax = g_ProgBar.Max
 End Function
 
 Public Sub SetProgBarVal(ByVal pbVal As Long)
     If MacroStatus <> MacroBATCH Then
-        cProgBar.Value = pbVal
-        cProgBar.Draw
+        g_ProgBar.Value = pbVal
+        g_ProgBar.Draw
     End If
 End Sub
 

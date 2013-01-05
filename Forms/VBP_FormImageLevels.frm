@@ -583,7 +583,7 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
         
     'Look-up table for the midtone (gamma) leveled values
     Dim gValues(0 To 255) As Double
@@ -665,12 +665,12 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Assign new values looking the lookup table
-        ImageData(QuickVal + 2, y) = newLevels(R)
+        ImageData(QuickVal + 2, y) = newLevels(r)
         ImageData(QuickVal + 1, y) = newLevels(g)
         ImageData(QuickVal, y) = newLevels(b)
         

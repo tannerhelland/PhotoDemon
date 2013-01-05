@@ -309,111 +309,111 @@ Private Sub Form_Activate()
 End Sub
 
 Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, -1) = -4
-    FM(-1, 0) = -2
-    FM(0, -1) = -2
-    FM(1, -1) = -1
-    FM(-1, 1) = -1
-    FM(0, 0) = 10
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    g_FM(-1, -1) = -4
+    g_FM(-1, 0) = -2
+    g_FM(0, -1) = -2
+    g_FM(1, -1) = -1
+    g_FM(-1, 1) = -1
+    g_FM(0, 0) = 10
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "Hilite edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-    FilterSize = 5
-    ReDim FM(-2 To 2, -2 To 2) As Long
-    FM(-1, -2) = 1
-    FM(-2, 1) = 1
-    FM(1, 2) = 1
-    FM(2, -1) = 1
-    FM(0, 0) = -4
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 5
+    ReDim g_FM(-2 To 2, -2 To 2) As Long
+    g_FM(-1, -2) = 1
+    g_FM(-2, 1) = 1
+    g_FM(1, 2) = 1
+    g_FM(2, -1) = 1
+    g_FM(0, 0) = -4
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "PhotoDemon cubic edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, -1) = -1
-    FM(-1, 1) = -1
-    FM(1, -1) = -1
-    FM(1, 1) = -1
-    FM(0, 0) = 4
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    g_FM(-1, -1) = -1
+    g_FM(-1, 1) = -1
+    g_FM(1, -1) = -1
+    g_FM(1, 1) = -1
+    g_FM(0, 0) = 4
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "PhotoDemon linear edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, -1) = -1
-    FM(-1, 0) = -1
-    FM(-1, 1) = -1
-    FM(1, -1) = 1
-    FM(1, 0) = 1
-    FM(1, 1) = 1
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    g_FM(-1, -1) = -1
+    g_FM(-1, 0) = -1
+    g_FM(-1, 1) = -1
+    g_FM(1, -1) = 1
+    g_FM(1, 0) = 1
+    g_FM(1, 1) = 1
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "Prewitt horizontal edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, -1) = 1
-    FM(0, -1) = 1
-    FM(1, -1) = 1
-    FM(-1, 1) = -1
-    FM(0, 1) = -1
-    FM(1, 1) = -1
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    g_FM(-1, -1) = 1
+    g_FM(0, -1) = 1
+    g_FM(1, -1) = 1
+    g_FM(-1, 1) = -1
+    g_FM(0, 1) = -1
+    g_FM(1, 1) = -1
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "Prewitt vertical edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, -1) = -1
-    FM(-1, 0) = -2
-    FM(-1, 1) = -1
-    FM(1, -1) = 1
-    FM(1, 0) = 2
-    FM(1, 1) = 1
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    g_FM(-1, -1) = -1
+    g_FM(-1, 0) = -2
+    g_FM(-1, 1) = -1
+    g_FM(1, -1) = 1
+    g_FM(1, 0) = 2
+    g_FM(1, 1) = 1
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "Sobel horizontal edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, -1) = 1
-    FM(0, -1) = 2
-    FM(1, -1) = 1
-    FM(-1, 1) = -1
-    FM(0, 1) = -2
-    FM(1, 1) = -1
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    g_FM(-1, -1) = 1
+    g_FM(0, -1) = 2
+    g_FM(1, -1) = 1
+    g_FM(-1, 1) = -1
+    g_FM(0, 1) = -2
+    g_FM(1, 1) = -1
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "Sobel vertical edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
-    FilterSize = 3
-    ReDim FM(-1 To 1, -1 To 1) As Long
-    FM(-1, 0) = -1
-    FM(0, -1) = -1
-    FM(0, 1) = -1
-    FM(1, 0) = -1
-    FM(0, 0) = 4
-    FilterWeight = 1
-    FilterBias = 0
+    g_FilterSize = 3
+    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    g_FM(-1, 0) = -1
+    g_FM(0, -1) = -1
+    g_FM(0, 1) = -1
+    g_FM(1, 0) = -1
+    g_FM(0, 0) = 4
+    g_FilterWeight = 1
+    g_FilterBias = 0
     DoFilter "Laplacian edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 

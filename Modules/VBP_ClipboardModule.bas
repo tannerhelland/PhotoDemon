@@ -78,7 +78,7 @@ Public Sub ClipboardPaste()
         
         'Ask the layer to write its contents to file in BMP format
         Dim tmpClipboardFile As String
-        tmpClipboardFile = userPreferences.getTempPath & "PDClipboard.tmp"
+        tmpClipboardFile = g_UserPreferences.getTempPath & "PDClipboard.tmp"
         tmpLayer.writeToBitmapFile tmpClipboardFile
         
         'Now that the image is saved on the hard drive, we can delete our temporary objects

@@ -21,7 +21,7 @@ Public Function SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal ou
    
     'If the output color depth is 24 or 32bpp, or if both GDI+ and FreeImage are missing, use our own internal methods
     ' to save a BMP file
-    If (outputColorDepth = 24) Or (outputColorDepth = 32) Or ((Not imageFormats.GDIPlusEnabled) And (Not imageFormats.FreeImageEnabled)) Then
+    If (outputColorDepth = 24) Or (outputColorDepth = 32) Or ((Not g_ImageFormats.GDIPlusEnabled) And (Not g_ImageFormats.FreeImageEnabled)) Then
     
         Message "Saving bitmap..."
     
@@ -33,11 +33,11 @@ Public Function SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal ou
     'If some other color depth is specified, use FreeImage or GDI+ to write the file
     Else
     
-        If imageFormats.FreeImageEnabled Then
+        If g_ImageFormats.FreeImageEnabled Then
             
             'Load FreeImage into memory
             Dim hLib As Long
-            hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+            hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
             
             Message "Preparing BMP image..."
             
@@ -61,7 +61,7 @@ Public Function SaveBMP(ByVal imageID As Long, ByVal BMPPath As String, ByVal ou
             Dim BMPflags As Long
             BMPflags = BMP_DEFAULT
             
-            If outputColorDepth = 8 And userPreferences.GetPreference_Boolean("General Preferences", "BitmapRLE", False) Then BMPflags = BMP_SAVE_RLE
+            If outputColorDepth = 8 And g_UserPreferences.GetPreference_Boolean("General Preferences", "BitmapRLE", False) Then BMPflags = BMP_SAVE_RLE
             
             'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
             If fi_DIB <> 0 Then
@@ -132,7 +132,7 @@ Public Function SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String) As 
     On Error GoTo SaveGIFError
 
     'Make sure we found the plug-in when we loaded the program
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         SaveGIFImage = False
@@ -141,7 +141,7 @@ Public Function SaveGIFImage(ByVal imageID As Long, ByVal GIFPath As String) As 
     
     'Load FreeImage into memory
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing GIF image..."
     
@@ -250,7 +250,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     On Error GoTo SavePNGError
 
     'Make sure we found the plug-in when we loaded the program
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SavePNGImage = False
@@ -263,7 +263,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     
     'Load FreeImage into memory
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing PNG image..."
     
@@ -294,7 +294,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         End If
         
         'Pngnq can handle all transparency for us, if it exists.  If it does not, we must rely on our own routines.
-        If Not imageFormats.pngnqEnabled Then
+        If Not g_ImageFormats.pngnqEnabled Then
         
             'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
             If tmpLayer.isAlphaBinary Then
@@ -330,7 +330,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         If (pdImages(imageID).mainLayer.getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
     
         'Also, if pngnq is enabled, we will use that for the transformation - so we need to reset the outgoing color depth to 24bpp
-        If (pdImages(imageID).mainLayer.getLayerColorDepth = 24) And (outputColorDepth = 8) And imageFormats.pngnqEnabled Then outputColorDepth = 24
+        If (pdImages(imageID).mainLayer.getLayerColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
     
     End If
     
@@ -343,7 +343,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     
     'If the image contains alpha and pngnq is not available, we need to manually convert the FreeImage copy of the image to 8bpp.
     ' Then we need to apply alpha using the cut-off established earlier in this section.
-    If handleAlpha And (Not imageFormats.pngnqEnabled) Then
+    If handleAlpha And (Not g_ImageFormats.pngnqEnabled) Then
         fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
@@ -370,7 +370,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
     If fi_DIB <> 0 Then
     
         'Embed a background color if available, and the user has requested it.
-        If userPreferences.GetPreference_Boolean("General Preferences", "PNGBackgroundPreservation", True) And pdImages(imageID).pngBackgroundColor <> -1 Then
+        If g_UserPreferences.GetPreference_Boolean("General Preferences", "PNGBackgroundPreservation", True) And pdImages(imageID).pngBackgroundColor <> -1 Then
             
             Dim rQuad As RGBQUAD
             rQuad.rgbRed = ExtractR(pdImages(imageID).pngBackgroundColor)
@@ -384,11 +384,11 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         Dim PNGFlags As Long
         
         'Compression level (1 to 9, but FreeImage also has a "no compression" option with a unique flag)
-        PNGFlags = userPreferences.GetPreference_Long("General Preferences", "PNGCompression", 9)
+        PNGFlags = g_UserPreferences.GetPreference_Long("General Preferences", "PNGCompression", 9)
         If PNGFlags = 0 Then PNGFlags = PNG_Z_NO_COMPRESSION
         
         'Interlacing
-        If userPreferences.GetPreference_Boolean("General Preferences", "PNGInterlacing", False) Then PNGFlags = (PNGFlags Or PNG_INTERLACED)
+        If g_UserPreferences.GetPreference_Boolean("General Preferences", "PNGInterlacing", False) Then PNGFlags = (PNGFlags Or PNG_INTERLACED)
     
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, PNGFlags, outputColorDepth, , , , , True)
@@ -402,11 +402,11 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
         Else
             
             'If pngnq is being used to help with the 8bpp reduction, now is when we need to use it.
-            If imageFormats.pngnqEnabled And output8BPP Then
+            If g_ImageFormats.pngnqEnabled And output8BPP Then
             
                 'Build a full shell path for the pngnq operation
                 Dim shellPath As String
-                shellPath = PluginPath & "pngnq-s9.exe "
+                shellPath = g_PluginPath & "pngnq-s9.exe "
                 
                 'Force overwrite if a file with that name already exists
                 shellPath = shellPath & "-f "
@@ -422,7 +422,7 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
                 
                 'Alpha extenuation (only relevant for 32bpp images)
                 If pdImages(imageID).mainLayer.getLayerColorDepth = 32 Then
-                    If userPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then
+                    If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then
                         shellPath = shellPath & "-t15 "
                     Else
                         shellPath = shellPath & "-t0 "
@@ -430,20 +430,20 @@ Public Function SavePNGImage(ByVal imageID As Long, ByVal PNGPath As String, ByV
                 End If
         
                 'YUV
-                If userPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqYUV", True) Then
+                If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqYUV", True) Then
                     shellPath = shellPath & "-Cy "
                 Else
                     shellPath = shellPath & "-Cr "
                 End If
         
                 'Color sample size
-                shellPath = shellPath & "-s" & userPreferences.GetPreference_Long("Plugin Preferences", "PngnqColorSample", 3) & " "
+                shellPath = shellPath & "-s" & g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqColorSample", 3) & " "
         
                 'Dithering
-                If userPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5) = 0 Then
+                If g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5) = 0 Then
                     shellPath = shellPath & "-Qn "
                 Else
-                    shellPath = shellPath & "-Q" & userPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5) & " "
+                    shellPath = shellPath & "-Q" & g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5) & " "
                 End If
                 
                 'Append the name of the current image
@@ -517,7 +517,7 @@ Public Function SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String) As 
     On Error GoTo SavePPMError
 
     'Make sure we found the plug-in when we loaded the program
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         SavePPMImage = False
@@ -526,13 +526,13 @@ Public Function SavePPMImage(ByVal imageID As Long, ByVal PPMPath As String) As 
 
     'Load FreeImage into memory
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing PPM image..."
     
     'Based on the user's preference, select binary or ASCII encoding for the PPM file
     Dim ppm_Encoding As FREE_IMAGE_SAVE_OPTIONS
-    If userPreferences.GetPreference_Long("General Preferences", "PPMExportFormat", 0) = 0 Then ppm_Encoding = FISO_PNM_SAVE_RAW Else ppm_Encoding = FISO_PNM_SAVE_ASCII
+    If g_UserPreferences.GetPreference_Long("General Preferences", "PPMExportFormat", 0) = 0 Then ppm_Encoding = FISO_PNM_SAVE_RAW Else ppm_Encoding = FISO_PNM_SAVE_ASCII
     
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
@@ -582,7 +582,7 @@ Public Function SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByV
     On Error GoTo SaveTGAError
     
     'Make sure we found the plug-in when we loaded the program
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         SaveTGAImage = False
@@ -591,7 +591,7 @@ Public Function SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByV
 
     'Load FreeImage into memory
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing TGA image..."
     
@@ -669,7 +669,7 @@ Public Function SaveTGAImage(ByVal imageID As Long, ByVal TGAPath As String, ByV
     Dim TGAflags As Long
     TGAflags = TARGA_DEFAULT
             
-    If userPreferences.GetPreference_Boolean("General Preferences", "TGARLE", False) Then TGAflags = TARGA_SAVE_RLE
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "TGARLE", False) Then TGAflags = TARGA_SAVE_RLE
             
     
     'Use that handle to save the image to TGA format
@@ -711,7 +711,7 @@ Public Function SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, B
     On Error GoTo SaveJPEGError
     
     'Make sure we found the plug-in when we loaded the program
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         SaveJPEGImage = False
@@ -720,7 +720,7 @@ Public Function SaveJPEGImage(ByVal imageID As Long, ByVal JPEGPath As String, B
 
     'Load FreeImage into memory
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing JPEG image..."
     
@@ -802,7 +802,7 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
     On Error GoTo SaveTIFError
     
     'Make sure we found the plug-in when we loaded the program
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         SaveTIFImage = False
@@ -811,13 +811,13 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
 
     'Load FreeImage into memory
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing TIFF image..."
     
     'TIFFs have some unique considerations regarding compression techniques.  If a color-depth-specific compression
     ' technique has been requested, modify the output depth accordingly.
-    Select Case userPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
+    Select Case g_UserPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
         
         'JPEG compression
         Case 6
@@ -912,7 +912,7 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
         'Prepare TIFF export flags based on the user's preferences
         Dim TIFFFlags As Long
         
-        Select Case userPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
+        Select Case g_UserPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
         
             'Default settings (LZW for > 1bpp, CCITT Group 4 fax encoding for 1bpp)
             Case 0
@@ -953,7 +953,7 @@ Public Function SaveTIFImage(ByVal imageID As Long, ByVal TIFPath As String, ByV
         End Select
         
         'If the user has requested CMYK encoding of TIFF files, add that flag and convert the image to 32bpp CMYK
-        If (outputColorDepth = 24) And userPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False) Then
+        If (outputColorDepth = 24) And g_UserPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False) Then
             outputColorDepth = 32
             TIFFFlags = (TIFFFlags Or TIFF_CMYK)
             FreeImage_UnloadEx fi_DIB
@@ -997,7 +997,7 @@ Public Function SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, ByV
     On Error GoTo SaveJP2Error
     
     'Make sure we found the plug-in when we loaded the program
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         MsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save could not be completed without FreeImage library access."
         SaveJP2Image = False
@@ -1006,7 +1006,7 @@ Public Function SaveJP2Image(ByVal imageID As Long, ByVal jp2Path As String, ByV
 
     'Load FreeImage into memory
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing JPEG-2000 image..."
     

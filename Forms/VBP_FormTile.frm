@@ -474,6 +474,8 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If isPreview = False Then SetProgBarMax xLoop
     
     'Using that loop variable, render the original image to the target picture box that many times
+    Dim x As Long, y As Long
+    
     For x = 0 To xLoop
     For y = 0 To yLoop
         BitBlt tmpLayer.getLayerDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy

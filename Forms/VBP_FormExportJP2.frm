@@ -320,7 +320,7 @@ Public Sub ShowDialog()
     makeFormPretty Me
     
     'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-    If useFancyFonts Then hsQuality.Height = 23 Else hsQuality.Height = 22
+    If g_UseFancyFonts Then hsQuality.Height = 23 Else hsQuality.Height = 22
 
     'Display the dialog
     Me.Show vbModal, FormMain

@@ -542,19 +542,20 @@ End Sub
 
 'Update the file list box to display only images of the selected file format
 Private Sub cmbPattern_Click()
-    File1.Pattern = imageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
+    File1.Pattern = g_ImageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
 End Sub
 
 Private Sub cmbPattern_KeyUp(KeyCode As Integer, Shift As Integer)
-    File1.Pattern = imageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
+    File1.Pattern = g_ImageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
 End Sub
 
 Private Sub cmbPattern_Scroll()
-    File1.Pattern = imageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
+    File1.Pattern = g_ImageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
 End Sub
 
 'Adds selected files from the left list box to the center list box
 Private Sub cmdAddFiles_Click()
+    Dim x As Long
     For x = 0 To File1.ListCount - 1
         If File1.Selected(x) = True Then lstFiles.AddItem Dir1.Path & "\" & File1.List(x)
     Next x
@@ -572,7 +573,7 @@ Private Sub cmdLoadList_Click()
     
     'Get the last "open/save image list" path from the INI file
     Dim tempPathString As String
-    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
+    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
     
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -583,7 +584,7 @@ Private Sub cmdLoadList_Click()
         Dim listPath As String
         listPath = sFile
         StripDirectory listPath
-        userPreferences.SetPreference_String "Batch Preferences", "ListFolder", listPath
+        g_UserPreferences.SetPreference_String "Batch Preferences", "ListFolder", listPath
         
         Dim fileNum As Integer
         fileNum = FreeFile
@@ -608,6 +609,8 @@ Private Sub cmdLoadList_Click()
             Input #fileNum, tmpLine
             Dim numOfEntries As Long
             numOfEntries = CLng(tmpLine)
+            
+            Dim x As Long
             For x = 0 To numOfEntries - 1
                 Input #fileNum, tmpLine
                 lstFiles.AddItem tmpLine
@@ -619,7 +622,9 @@ End Sub
 
 'Remove an item from the batch conversion list
 Private Sub cmdRemove_Click()
-    x = 0
+    
+    Dim x As Long
+    
     Do While x <= lstFiles.ListCount - 1
         If lstFiles.Selected(x) = True Then
             lstFiles.RemoveItem x
@@ -648,7 +653,7 @@ Private Sub cmdSaveList_Click()
     
     'Get the last "open/save image list" path from the INI file
     Dim tempPathString As String
-    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
+    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
     
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -659,11 +664,13 @@ Private Sub cmdSaveList_Click()
         Dim listPath As String
         listPath = sFile
         StripDirectory listPath
-        userPreferences.SetPreference_String "Batch Preferences", "ListFolder", listPath
+        g_UserPreferences.SetPreference_String "Batch Preferences", "ListFolder", listPath
         
         If FileExist(sFile) Then Kill sFile
         Dim fileNum As Integer
         fileNum = FreeFile
+        
+        Dim x As Long
         
         Open sFile For Output As #fileNum
             Print #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
@@ -686,14 +693,14 @@ Private Sub cmdSelectMacro_Click()
     
     'Get the last macro-related path from the INI file
     Dim tempPathString As String
-    tempPathString = userPreferences.GetPreference_String("Program Paths", "Macro", "")
+    tempPathString = g_UserPreferences.GetPreference_String("Program Paths", "Macro", "")
    
     'If we get a path, load that file
     If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, "Open Macro File", "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
-        userPreferences.SetPreference_String "Program Paths", "Macro", tempPathString
+        g_UserPreferences.SetPreference_String "Program Paths", "Macro", tempPathString
         
         'Remember this path for the other routines
         LocationOfMacroFile = sFile
@@ -729,8 +736,8 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Before doing anything, save relevant options to the INI file
-    userPreferences.SetPreference_String "Batch Preferences", "DriveBox", Drive1
-    userPreferences.SetPreference_String "Batch Preferences", "InputFolder", Dir1.Path
+    g_UserPreferences.SetPreference_String "Batch Preferences", "DriveBox", Drive1
+    g_UserPreferences.SetPreference_String "Batch Preferences", "InputFolder", Dir1.Path
 
     'Let the rest of the program know that batch processing has begun
     MacroStatus = MacroBATCH
@@ -752,7 +759,7 @@ Private Sub cmdOK_Click()
     
     'This routine has the power to reappropriate use of the progress bar for itself.  Progress bar and message calls
     ' anywhere else in the project will be ignored while batch conversion is running.
-    cProgBar.Max = totalNumOfFiles
+    g_ProgBar.Max = totalNumOfFiles
     
     'Let's also give the user an estimate of how long this is going to take.  We'll estimate time by determining an
     ' approximate "time-per-image" value, then multiplying that by the amount of time remaining.  The progress bar
@@ -773,8 +780,8 @@ Private Sub cmdOK_Click()
         
         'Give the user a progress update
         MacroMessage = "(Batch converting file #" & (curBatchFile + 1) & " of " & totalNumOfFiles & ")" & timeMsg
-        cProgBar.Text = MacroMessage
-        cProgBar.Value = curBatchFile
+        g_ProgBar.Text = MacroMessage
+        g_ProgBar.Value = curBatchFile
         
         'As a failsafe, check to make sure the current input file exists before attempting to load it
         If FileExist(tmpFilename) = True Then
@@ -789,7 +796,7 @@ Private Sub cmdOK_Click()
             'Check the user's preference regarding multipage images.  If they have specifically requested that we load
             ' only the first page of the image, ignore any subsequent pages.
             If howManyPages > 0 Then
-                If userPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0) = 1 Then howManyPages = 1
+                If g_UserPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0) = 1 Then howManyPages = 1
             Else
                 howManyPages = 1
             End If
@@ -820,11 +827,11 @@ Private Sub cmdOK_Click()
                 If curPage > 0 Then tmpFilename = tmpFilename & " (" & curPage & ")"
                 
                 'Attach the proper image format extension
-                tmpFilename = tmpFilename & "." & imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
+                tmpFilename = tmpFilename & "." & g_ImageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
                 
                 'Certain file extensions require extra attention.  Check for those formats, and send the PhotoDemon_SaveImage
                 ' method a specialized string containing any extra information it may require
-                If imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex) = "jpg" Then
+                If g_ImageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex) = "jpg" Then
                     PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename, False, Val(txtQuality)
                 Else
                     PhotoDemon_SaveImage CLng(FormMain.ActiveForm.Tag), tmpFilename
@@ -922,7 +929,7 @@ Private Sub cmdSelectOutputPath_Click()
         txtOutputPath.Text = FixPath(tString)
     
         'Save this new directory as the default path for future usage
-        userPreferences.SetPreference_String "Batch Preferences", "OutputFolder", tString
+        g_UserPreferences.SetPreference_String "Batch Preferences", "OutputFolder", tString
     End If
 End Sub
 
@@ -933,6 +940,8 @@ Private Sub cmdUseCD_Click()
     Dim sFile() As String
     
     If PhotoDemon_OpenImageDialog(sFile, Me.hWnd) Then
+        
+        Dim x As Long
         
         For x = 0 To UBound(sFile)
             lstFiles.AddItem sFile(x)
@@ -961,13 +970,13 @@ Private Sub Form_Load()
     Dim x As Long
     
     'Populate the combo box that displays user-friendly summaries of the various output filetypes
-    For x = 0 To imageFormats.getNumOfOutputFormats
-        cmbOutputFormat.AddItem imageFormats.getOutputFormatDescription(x), x
+    For x = 0 To g_ImageFormats.getNumOfOutputFormats
+        cmbOutputFormat.AddItem g_ImageFormats.getOutputFormatDescription(x), x
     Next x
     
     'Save JPEGs by default
     For x = 0 To cmbOutputFormat.ListCount
-        If imageFormats.getOutputFormatExtension(x) = "jpg" Then
+        If g_ImageFormats.getOutputFormatExtension(x) = "jpg" Then
             cmbOutputFormat.ListIndex = x
             jpegFormatIndex = x
             Exit For
@@ -976,12 +985,12 @@ Private Sub Form_Load()
     
     'Build default paths from INI file values
     Dim tempPathString As String
-    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "DriveBox", "")
+    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "DriveBox", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then Drive1 = tempPathString
-    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "InputFolder", "")
+    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "InputFolder", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
     File1.Path = Dir1
-    tempPathString = userPreferences.GetPreference_String("Batch Preferences", "OutputFolder", "")
+    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "OutputFolder", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = Dir1
     
     'Options for output filenames
@@ -990,8 +999,8 @@ Private Sub Form_Load()
     cmbOutputOptions.ListIndex = 0
     
     'Populate the combo box that displays user-friendly summaries of the various input filetypes
-    For x = 0 To imageFormats.getNumOfInputFormats
-        cmbPattern.AddItem imageFormats.getInputFormatDescription(x), x
+    For x = 0 To g_ImageFormats.getNumOfInputFormats
+        cmbPattern.AddItem g_ImageFormats.getInputFormatDescription(x), x
     Next x
         
     cmbPattern.ListIndex = 0
@@ -1063,7 +1072,7 @@ End Sub
 
 'Display or hide controls associated with the current save file format
 Private Sub UpdateVisibleControls()
-    If imageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex) = "jpg" Then
+    If g_ImageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex) = "jpg" Then
         lblQuality.Visible = True
         txtQuality.Visible = True
         hsJpegQuality.Visible = True

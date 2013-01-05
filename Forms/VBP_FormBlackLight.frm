@@ -246,7 +246,7 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
     progBarCheck = findBestProgBarValue()
     
     'Color and grayscale variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim grayVal As Byte
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
@@ -261,24 +261,24 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Calculate the gray value using the look-up table
-        grayVal = grayLookUp(R + g + b)
+        grayVal = grayLookUp(r + g + b)
         
         'Perform the blacklight conversion
-        R = Abs(R - grayVal) * Weight
+        r = Abs(r - grayVal) * Weight
         g = Abs(g - grayVal) * Weight
         b = Abs(b - grayVal) * Weight
         
-        If R > 255 Then R = 255
+        If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = R
+        ImageData(QuickVal, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal + 2, y) = b
         

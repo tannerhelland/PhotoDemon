@@ -30,15 +30,15 @@ Private Declare Function TWAIN_EasyVersion Lib "eztw32.dll" () As Long
 'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)
 Dim hLib_Scanner As Long
 
-'Is EZTwain available as a plugin?  (NOTE: this is now determined separately from ScanEnabled.)
+'Is EZTwain available as a plugin?  (NOTE: this is now determined separately from g_ScanEnabled.)
 Public Function isEZTwainAvailable() As Boolean
-    If FileExist(PluginPath & "eztw32.dll") Then isEZTwainAvailable = True Else isEZTwainAvailable = False
+    If FileExist(g_PluginPath & "eztw32.dll") Then isEZTwainAvailable = True Else isEZTwainAvailable = False
 End Function
 
 'Return the EZTwain version number, as a string
 Public Function getEZTwainVersion() As String
 
-    hLib_Scanner = LoadLibrary(PluginPath & "eztw32.dll")
+    hLib_Scanner = LoadLibrary(g_PluginPath & "eztw32.dll")
     
     Dim ezVer As Long
     ezVer = TWAIN_EasyVersion
@@ -53,7 +53,7 @@ End Function
 'This should be run before the scanner is accessed
 Public Function EnableScanner() As Boolean
 
-    hLib_Scanner = LoadLibrary(PluginPath & "eztw32.dll")
+    hLib_Scanner = LoadLibrary(g_PluginPath & "eztw32.dll")
     
     If TWAIN_IsAvailable() = 0 Then EnableScanner = False Else EnableScanner = True
     
@@ -64,14 +64,14 @@ End Function
 'Allow the user to select which hardware PhotoDemon will use for scanning
 Public Sub Twain32SelectScanner()
     
-    'ScanEnabled will only be set to true if the eztw32.dll file was found at program load
-    If ScanEnabled = True Then
+    'g_ScanEnabled will only be set to true if the eztw32.dll file was found at program load
+    If g_ScanEnabled = True Then
         
         'EnableScanner queries the system for TWAIN-compatible devices
         If EnableScanner Then
             
             Dim hLib As Long
-            hLib = LoadLibrary(PluginPath & "eztw32.dll")
+            hLib = LoadLibrary(g_PluginPath & "eztw32.dll")
             
             TWAIN_SelectImageSource FormMain.hWnd
             
@@ -103,7 +103,7 @@ Public Sub Twain32Scan()
     Message "Acquiring image..."
     
     'Make sure the EZTW32.dll file exists
-    If ScanEnabled = False Then
+    If g_ScanEnabled = False Then
         MsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
         Message "Scanner/digital camera import disabled "
         Exit Sub
@@ -117,7 +117,7 @@ Public Sub Twain32Scan()
     End If
 
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "eztw32.dll")
+    hLib = LoadLibrary(g_PluginPath & "eztw32.dll")
 
     'Note that this function has a fairly extensive error handling routine
     On Error GoTo ScanError
@@ -129,7 +129,7 @@ Public Sub Twain32Scan()
     ScanCheck = -5
     
     'A temporary file is required by the scanner; we will place it in the project folder, then delete it when finished
-    ScannerCaptureFile = userPreferences.getTempPath & "PDScanInterface.tmp"
+    ScannerCaptureFile = g_UserPreferences.getTempPath & "PDScanInterface.tmp"
     
     'This line uses the EZTW32.dll file to scan the image and send it to a temporary file
     ScanCheck = TWAIN_AcquireToFilename(FormMain.hWnd, ScannerCaptureFile)

@@ -392,7 +392,7 @@ Public Sub copyLayerToClipboard()
                     
                     'Also, add a PNG-format copy of the image if GDI+ is available
                     
-                    'If imageFormats.GDIPlusEnabled Then
+                    'If g_ImageFormats.GDIPlusEnabled Then
                   '
                   '      Dim tmpStream() As Byte
                   '      Dim tmpIIStream As IUnknown
@@ -649,7 +649,7 @@ Public Sub convertToCMYK32()
         
         Dim x As Long, y As Long, QuickX As Long
                         
-        Dim R As Long, g As Long, b As Long
+        Dim r As Long, g As Long, b As Long
         
         Dim cyan As Long, magenta As Long, yellow As Long, K As Long
         
@@ -710,7 +710,7 @@ Public Function isLayerGrayscale() As Boolean
         
         Dim x As Long, y As Long, QuickX As Long
                         
-        Dim R As Long, g As Long, b As Long
+        Dim r As Long, g As Long, b As Long
         
         Dim qvDepth As Long
         qvDepth = layerColorDepth \ 8
@@ -720,13 +720,13 @@ Public Function isLayerGrayscale() As Boolean
             QuickX = x * qvDepth
         For y = 0 To layerHeight - 1
             
-            R = iData(QuickX + 2, y)
+            r = iData(QuickX + 2, y)
             g = iData(QuickX + 1, y)
             b = iData(QuickX, y)
             
             'For optimization reasons, this is stated as multiple IFs instead of an OR.  I'm not sure if VB
             ' short-circuits OR statements, but I know multiple IF statements work.  :)
-            If R <> g Then
+            If r <> g Then
                 
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
@@ -742,7 +742,7 @@ Public Function isLayerGrayscale() As Boolean
                 isLayerGrayscale = False
                 Exit Function
                 
-            ElseIf R <> b Then
+            ElseIf r <> b Then
             
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
@@ -1287,24 +1287,24 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
         r1 = newR
         r2 = newR
     Else
-        r1 = ExtractR(AlphaCheckOne)
-        r2 = ExtractR(AlphaCheckTwo)
+        r1 = ExtractR(g_AlphaCheckOne)
+        r2 = ExtractR(g_AlphaCheckTwo)
     End If
     
     If newG <> -1 Then
         g1 = newG
         g2 = newG
     Else
-        g1 = ExtractG(AlphaCheckOne)
-        g2 = ExtractG(AlphaCheckTwo)
+        g1 = ExtractG(g_AlphaCheckOne)
+        g2 = ExtractG(g_AlphaCheckTwo)
     End If
     
     If newB <> -1 Then
         b1 = newB
         b2 = newB
     Else
-        b1 = ExtractB(AlphaCheckOne)
-        b2 = ExtractB(AlphaCheckTwo)
+        b1 = ExtractB(g_AlphaCheckOne)
+        b2 = ExtractB(g_AlphaCheckTwo)
     End If
     
     'Make sure the user didn't supply us with bad values
@@ -1325,7 +1325,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     'Finally, determine a checkerboard size based on the current user preference
     Dim checkerSize As Byte
     
-    Select Case AlphaCheckSize
+    Select Case g_AlphaCheckSize
     
         'Small (4x4 checks)
         Case 0
@@ -1419,24 +1419,24 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
         r1 = newR
         r2 = newR
     Else
-        r1 = ExtractR(AlphaCheckOne)
-        r2 = ExtractR(AlphaCheckTwo)
+        r1 = ExtractR(g_AlphaCheckOne)
+        r2 = ExtractR(g_AlphaCheckTwo)
     End If
     
     If newG <> -1 Then
         g1 = newG
         g2 = newG
     Else
-        g1 = ExtractG(AlphaCheckOne)
-        g2 = ExtractG(AlphaCheckTwo)
+        g1 = ExtractG(g_AlphaCheckOne)
+        g2 = ExtractG(g_AlphaCheckTwo)
     End If
     
     If newB <> -1 Then
         b1 = newB
         b2 = newB
     Else
-        b1 = ExtractB(AlphaCheckOne)
-        b2 = ExtractB(AlphaCheckTwo)
+        b1 = ExtractB(g_AlphaCheckOne)
+        b2 = ExtractB(g_AlphaCheckTwo)
     End If
     
     'Make sure the user didn't supply us with bad values
@@ -1457,7 +1457,7 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
     'Finally, determine a checkerboard size based on the current user preference
     Dim checkerSize As Byte
     
-    Select Case AlphaCheckSize
+    Select Case g_AlphaCheckSize
     
         'Small (4x4 checks)
         Case 0
@@ -1632,7 +1632,7 @@ Public Sub fixPremultipliedAlpha()
     
     Dim x As Long, y As Long, QuickX As Long
     
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim tmpAlpha As Byte, tmpAlphaModifier As Single
 
     'Loop through the image, removing the effects of pre-multiplication as we go
@@ -1646,18 +1646,18 @@ Public Sub fixPremultipliedAlpha()
         If tmpAlpha <> 255 Then
             If tmpAlpha <> 0 Then
             
-                R = iData(QuickX + 2, y)
+                r = iData(QuickX + 2, y)
                 g = iData(QuickX + 1, y)
                 b = iData(QuickX, y)
             
                 tmpAlphaModifier = 255 / tmpAlpha
             
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                R = R * tmpAlphaModifier
+                r = r * tmpAlphaModifier
                 g = g * tmpAlphaModifier
                 b = b * tmpAlphaModifier
                 
-                iData(QuickX + 2, y) = CByte(R)
+                iData(QuickX + 2, y) = CByte(r)
                 iData(QuickX + 1, y) = CByte(g)
                 iData(QuickX, y) = CByte(b)
             

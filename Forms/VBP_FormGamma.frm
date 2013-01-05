@@ -300,7 +300,7 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     
     'Gamma can be easily applied using a look-up table
     Dim gLookup(0 To 255) As Byte
@@ -323,17 +323,17 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Correct the gamma values according to the channel requested by the user
         If Method = 0 Then
-            R = gLookup(R)
+            r = gLookup(r)
             g = gLookup(g)
             b = gLookup(b)
         ElseIf Method = 1 Then
-            R = gLookup(R)
+            r = gLookup(r)
         ElseIf Method = 2 Then
             g = gLookup(g)
         ElseIf Method = 3 Then
@@ -341,7 +341,7 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

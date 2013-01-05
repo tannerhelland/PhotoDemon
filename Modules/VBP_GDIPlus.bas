@@ -375,7 +375,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     ' of compression types, we must adjust our code accordingly.
     If imgFormat = ImageTIFF Then
     
-        Select Case userPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
+        Select Case g_UserPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
         
             'Default settings (LZW for > 1bpp, CCITT Group 4 fax encoding for 1bpp)
             Case 0

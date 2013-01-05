@@ -1640,10 +1640,10 @@ End Sub
 Private Sub CmdCancel_Click()
     
     'Restore the original values for enabled or disabled plugins
-    imageFormats.FreeImageEnabled = pEnabled(0)
-    zLibEnabled = pEnabled(1)
-    ScanEnabled = pEnabled(2)
-    imageFormats.pngnqEnabled = pEnabled(3)
+    g_ImageFormats.FreeImageEnabled = pEnabled(0)
+    g_ZLibEnabled = pEnabled(1)
+    g_ScanEnabled = pEnabled(2)
+    g_ImageFormats.pngnqEnabled = pEnabled(3)
     
     Unload Me
     
@@ -1658,59 +1658,59 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Remember the current container the user is viewing
-    userPreferences.SetPreference_Long "Plugin Preferences", "LastPluginPreferencesPage", lstPlugins.ListIndex
+    g_UserPreferences.SetPreference_Long "Plugin Preferences", "LastPluginPreferencesPage", lstPlugins.ListIndex
     
     'Save all plugin-specific settings to the INI file
     
     'pngnq-s9 settings
         
         'Alpha extenuation
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", CBool(chkPngnqAlphaExtenuation.Value)
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", CBool(chkPngnqAlphaExtenuation.Value)
         
         'YUV
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqYUV", CBool(chkPngnqYUVA.Value)
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqYUV", CBool(chkPngnqYUVA.Value)
         
         'Color sample size
-        userPreferences.SetPreference_Long "Plugin Preferences", "PngnqColorSample", -1 * hsPngnqSample.Value
+        g_UserPreferences.SetPreference_Long "Plugin Preferences", "PngnqColorSample", -1 * hsPngnqSample.Value
         
         'Dithering
-        userPreferences.SetPreference_Long "Plugin Preferences", "PngnqDithering", hsPngnqDither.Value
+        g_UserPreferences.SetPreference_Long "Plugin Preferences", "PngnqDithering", hsPngnqDither.Value
             
     'Write all enabled/disabled plugin changes to the INI file
-    If imageFormats.FreeImageEnabled Then
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
+    If g_ImageFormats.FreeImageEnabled Then
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
     Else
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", True
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", True
     End If
             
     'zLib
-    If zLibEnabled Then
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", False
+    If g_ZLibEnabled Then
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", False
     Else
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", True
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", True
     End If
         
     'EZTwain
-    If ScanEnabled Then
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
+    If g_ScanEnabled Then
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
     Else
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", True
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", True
     End If
         
     'pngnq-s9
-    If imageFormats.pngnqEnabled Then
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", False
+    If g_ImageFormats.pngnqEnabled Then
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", False
     Else
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", True
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", True
     End If
     
     'If the user has changed any plugin enable/disable settings, a number of things must be refreshed program-wide
-    If (pEnabled(0) <> imageFormats.FreeImageEnabled) Or (pEnabled(1) <> zLibEnabled) Or (pEnabled(2) <> ScanEnabled) Or (pEnabled(3) <> imageFormats.pngnqEnabled) Then
+    If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngnqEnabled) Then
         LoadPlugins
         ApplyAllMenuIcons
         ResetMenuIcons
-        imageFormats.generateInputFormats
-        imageFormats.generateOutputFormats
+        g_ImageFormats.generateInputFormats
+        g_ImageFormats.generateOutputFormats
     End If
     
     Message "Plugin options saved."
@@ -1723,29 +1723,29 @@ End Sub
 Private Sub cmdReset_Click()
 
     'Set current container to zero
-    userPreferences.SetPreference_Long "Plugin Preferences", "LastPluginPreferencesPage", 0
+    g_UserPreferences.SetPreference_Long "Plugin Preferences", "LastPluginPreferencesPage", 0
     
     'Reset all plugin-specific settings in the INI file
     
     'pngnq-s9 settings
         
         'Alpha extenuation
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", False
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", False
         
         'YUV
-        userPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqYUV", True
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqYUV", True
         
         'Color sample size
-        userPreferences.SetPreference_Long "Plugin Preferences", "PngnqColorSample", 3
+        g_UserPreferences.SetPreference_Long "Plugin Preferences", "PngnqColorSample", 3
         
         'Dithering
-        userPreferences.SetPreference_Long "Plugin Preferences", "PngnqDithering", 5
+        g_UserPreferences.SetPreference_Long "Plugin Preferences", "PngnqDithering", 5
 
     'Enable all plugins if possible
-    userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
-    userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", False
-    userPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
-    userPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", False
+    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
+    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", False
+    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
+    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", False
     
     'Reload the plugins (from a system standpoint)
     LoadPlugins
@@ -1759,10 +1759,10 @@ End Sub
 Private Sub Form_Load()
     
     'Remember which plugins the user has enabled or disabled
-    pEnabled(0) = imageFormats.FreeImageEnabled
-    pEnabled(1) = zLibEnabled
-    pEnabled(2) = ScanEnabled
-    pEnabled(3) = imageFormats.pngnqEnabled
+    pEnabled(0) = g_ImageFormats.FreeImageEnabled
+    pEnabled(1) = g_ZLibEnabled
+    pEnabled(2) = g_ScanEnabled
+    pEnabled(3) = g_ImageFormats.pngnqEnabled
     
     'Populate the left-hand list box with all relevant plugins
     lstPlugins.Clear
@@ -1808,7 +1808,7 @@ Private Sub LoadAllPluginSettings()
     Next i
     
     'Enable the last container the user selected
-    lstPlugins.ListIndex = userPreferences.GetPreference_Long("Plugin Preferences", "LastPluginPreferencesPage", 0)
+    lstPlugins.ListIndex = g_UserPreferences.GetPreference_Long("Plugin Preferences", "LastPluginPreferencesPage", 0)
     picContainer(lstPlugins.ListIndex).Visible = True
     
     'Load all plugin settings from the INI file
@@ -1816,16 +1816,16 @@ Private Sub LoadAllPluginSettings()
     'pngnq-s9 settings
         
         'Alpha extenuation
-        If userPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then chkPngnqAlphaExtenuation.Value = vbChecked Else chkPngnqAlphaExtenuation.Value = vbUnchecked
+        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then chkPngnqAlphaExtenuation.Value = vbChecked Else chkPngnqAlphaExtenuation.Value = vbUnchecked
         
         'YUV
-        If userPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqYUV", True) Then chkPngnqYUVA.Value = vbChecked Else chkPngnqYUVA.Value = vbUnchecked
+        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqYUV", True) Then chkPngnqYUVA.Value = vbChecked Else chkPngnqYUVA.Value = vbUnchecked
         
         'Color sample size
-        hsPngnqSample.Value = -1 * userPreferences.GetPreference_Long("Plugin Preferences", "PngnqColorSample", 3)
+        hsPngnqSample.Value = -1 * g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqColorSample", 3)
         
         'Dithering
-        hsPngnqDither.Value = userPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5)
+        hsPngnqDither.Value = g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5)
         
 End Sub
 
@@ -1836,16 +1836,16 @@ Private Sub UpdatePluginLabels()
     Dim pluginStatus As Boolean
     
     'FreeImage
-    pluginStatus = popPluginLabel(0, "FreeImage", "3.15.4", isFreeImageAvailable, imageFormats.FreeImageEnabled)
+    pluginStatus = popPluginLabel(0, "FreeImage", "3.15.4", isFreeImageAvailable, g_ImageFormats.FreeImageEnabled)
     
     'zLib
-    pluginStatus = pluginStatus And popPluginLabel(1, "zLib", "1.2.5", isZLibAvailable, zLibEnabled)
+    pluginStatus = pluginStatus And popPluginLabel(1, "zLib", "1.2.5", isZLibAvailable, g_ZLibEnabled)
     
     'EZTwain
-    pluginStatus = pluginStatus And popPluginLabel(2, "EZTwain", "1.18.0", isEZTwainAvailable, ScanEnabled)
+    pluginStatus = pluginStatus And popPluginLabel(2, "EZTwain", "1.18.0", isEZTwainAvailable, g_ScanEnabled)
     
     'pngnq-s9
-    pluginStatus = pluginStatus And popPluginLabel(3, "pngnq-s9", "2.0.1", isPngnqAvailable, imageFormats.pngnqEnabled)
+    pluginStatus = pluginStatus And popPluginLabel(3, "pngnq-s9", "2.0.1", isPngnqAvailable, g_ImageFormats.pngnqEnabled)
     
     If pluginStatus Then
         lblPluginStatus.ForeColor = GOODCOLOR
@@ -1862,10 +1862,10 @@ Private Sub CollectAllVersionNumbers()
 
     'Start by analyzing plugin file metadata for version information.  This works for FreeImage and zLib (but
     ' do it for all four, just in case).
-    If isFreeImageAvailable Then CollectVersionInfo PluginPath & "freeimage.dll", 0 Else vString(0) = "none"
-    If isZLibAvailable Then CollectVersionInfo PluginPath & "zlibwapi.dll", 1 Else vString(1) = "none"
-    If isEZTwainAvailable Then CollectVersionInfo PluginPath & "eztw32.dll", 2 Else vString(2) = "none"
-    If isPngnqAvailable Then CollectVersionInfo PluginPath & "pngnq-s9.exe", 3 Else vString(3) = "none"
+    If isFreeImageAvailable Then CollectVersionInfo g_PluginPath & "freeimage.dll", 0 Else vString(0) = "none"
+    If isZLibAvailable Then CollectVersionInfo g_PluginPath & "zlibwapi.dll", 1 Else vString(1) = "none"
+    If isEZTwainAvailable Then CollectVersionInfo g_PluginPath & "eztw32.dll", 2 Else vString(2) = "none"
+    If isPngnqAvailable Then CollectVersionInfo g_PluginPath & "pngnq-s9.exe", 3 Else vString(3) = "none"
     
     'Special techniques are required for for EZTwain and pngnq-s9.
     
@@ -1946,19 +1946,19 @@ Private Sub lblDisable_Click(Index As Integer)
     
         'FreeImage
         Case 0
-            imageFormats.FreeImageEnabled = Not imageFormats.FreeImageEnabled
+            g_ImageFormats.FreeImageEnabled = Not g_ImageFormats.FreeImageEnabled
             
         'zLib
         Case 1
-            zLibEnabled = Not zLibEnabled
+            g_ZLibEnabled = Not g_ZLibEnabled
             
         'EZTwain
         Case 2
-            ScanEnabled = Not ScanEnabled
+            g_ScanEnabled = Not g_ScanEnabled
             
         'pngnq-s9
         Case 3
-            imageFormats.pngnqEnabled = Not imageFormats.pngnqEnabled
+            g_ImageFormats.pngnqEnabled = Not g_ImageFormats.pngnqEnabled
             
     End Select
     

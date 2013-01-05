@@ -345,7 +345,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim h As Single, S As Single, l As Single
         
     'Loop through each pixel in the image, converting values as we go
@@ -354,12 +354,12 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Get the hue and saturation
-        tRGBToHSL R, g, b, h, S, l
+        tRGBToHSL r, g, b, h, S, l
         
         'Apply the modifiers
         h = h + hModifier
@@ -375,10 +375,10 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
         If l > 1 Then l = 1
         
         'Convert back to RGB using our artificial hue value
-        tHSLToRGB h, S, l, R, g, b
+        tHSLToRGB h, S, l, r, g, b
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         

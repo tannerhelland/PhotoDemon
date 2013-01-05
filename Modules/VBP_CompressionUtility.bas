@@ -35,22 +35,22 @@ Dim dstFilename As String
 'Used to compare compression ratios
 Dim OriginalSize As Long, CompressedSize As Long
 
-'Is zLib available as a plugin?  (NOTE: this is now determined separately from zLibEnabled.)
+'Is zLib available as a plugin?  (NOTE: this is now determined separately from g_ZLibEnabled.)
 Public Function isZLibAvailable() As Boolean
-    If FileExist(PluginPath & "zlibwapi.dll") Then isZLibAvailable = True Else isZLibAvailable = False
+    If FileExist(g_PluginPath & "zlibwapi.dll") Then isZLibAvailable = True Else isZLibAvailable = False
 End Function
 
 'Return the current zLib version
 Public Function getZLibVersion() As Long
 
-    If Not zLibEnabled Then
+    If Not g_ZLibEnabled Then
         getZLibVersion = -1
         Exit Function
     End If
 
-    'Manually load the DLL from the "PluginPath" folder (should be App.Path\Data\Plugins)
+    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "zlibwapi.dll")
+    hLib = LoadLibrary(g_PluginPath & "zlibwapi.dll")
     
     'Check the version
     Dim zLibVer As Long
@@ -66,9 +66,9 @@ End Function
 'Compress a file
 Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispResults As Boolean = False) As Boolean
     
-    'Manually load the DLL from the "PluginPath" folder (should be App.Path\Data\Plugins)
+    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "zlibwapi.dll")
+    hLib = LoadLibrary(g_PluginPath & "zlibwapi.dll")
 
     'Used to strip the extension from the original filename
     Dim fExtension As String * 3
@@ -152,9 +152,9 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     
     On Error Resume Next
     
-    'Manually load the DLL from the "PluginPath" folder (should be App.Path\Data\Plugins)
+    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
     Dim hLib As Long
-    hLib = LoadLibrary(PluginPath & "zlibwapi.dll")
+    hLib = LoadLibrary(g_PluginPath & "zlibwapi.dll")
 
     'Allocate a temporary array for receiving the compressed data
     Dim DataBytes() As Byte

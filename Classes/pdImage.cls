@@ -336,6 +336,8 @@ Public Sub ClearUndos()
     
     'Using a temporary string, destroy every possible Undo file
     Dim tempFile As String
+    
+    Dim x As Long
     For x = 0 To UndoTotal
         tempFile = GenerateUndoFile(x)
         If FileExist(tempFile) Then Kill tempFile
@@ -374,12 +376,12 @@ End Function
 
 'Subroutine for generating an Undo/Redo filename
 Private Function GenerateUndoFile(ByVal uIndex As Integer) As String
-    GenerateUndoFile = userPreferences.getTempPath & "~cPDU" & imageID & "_" & uIndex & ".tmp"
+    GenerateUndoFile = g_UserPreferences.getTempPath & "~cPDU" & imageID & "_" & uIndex & ".tmp"
 End Function
 
 'Public routine for getting the filename of the current Undo file
 Public Function GetUndoFile()
-    GetUndoFile = userPreferences.getTempPath & "~cPDU" & imageID & "_" & UndoNum & ".tmp"
+    GetUndoFile = g_UserPreferences.getTempPath & "~cPDU" & imageID & "_" & UndoNum & ".tmp"
 End Function
 
 'If the class's size has somehow changed, this can be called to update it.  At present, it simply copies over the size of

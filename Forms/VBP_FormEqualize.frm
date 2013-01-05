@@ -303,7 +303,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim R As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long
     Dim h As Single, S As Single, l As Single
     Dim lInt As Long
     
@@ -320,18 +320,18 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     For y = initY To finalY
     
         'Get the source pixel color values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'Store those values in the histogram
-        rDataInt(R) = rDataInt(R) + 1
+        rDataInt(r) = rDataInt(r) + 1
         gDataInt(g) = gDataInt(g) + 1
         bDataInt(b) = bDataInt(b) + 1
         
         'Because luminance is slower to calculate, only calculate it if absolutely necessary
         If HandleL Then
-            lInt = getLuminance(R, g, b)
+            lInt = getLuminance(r, g, b)
             lDataInt(lInt) = lDataInt(lInt) + 1
         End If
         
@@ -414,23 +414,23 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     For y = initY To finalY
     
         'Get the RGB values
-        R = ImageData(QuickVal + 2, y)
+        r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
         'If luminance has been requested, calculate it before messing with any of the color channels
         If HandleL Then
-            tRGBToHSL R, g, b, h, S, l
-            tHSLToRGB h, S, lDataInt(Int(l * 255)) / 255, R, g, b
+            tRGBToHSL r, g, b, h, S, l
+            tHSLToRGB h, S, lDataInt(Int(l * 255)) / 255, r, g, b
         End If
         
         'Next, calculate new values for the color channels, based on what is being equalized
-        If HandleR Then R = rDataInt(R)
+        If HandleR Then r = rDataInt(r)
         If HandleG Then g = gDataInt(g)
         If HandleB Then b = bDataInt(b)
         
         'Assign our new values back into the pixel array
-        ImageData(QuickVal + 2, y) = R
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
         
