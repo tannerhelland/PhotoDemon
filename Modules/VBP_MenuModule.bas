@@ -96,7 +96,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
         End If
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
-        g_UserPreferences.SetPreference_Long "File Formats", "g_LastOpenFilter", g_LastOpenFilter
+        g_UserPreferences.SetPreference_Long "File Formats", "LastOpenFilter", g_LastOpenFilter
         
         'All done!
         PhotoDemon_OpenImageDialog = True
@@ -234,7 +234,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         g_UserPreferences.SetPreference_String "Program Paths", "MainSave", tempPathString
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
-        g_UserPreferences.SetPreference_Long "File Formats", "g_LastSaveFilter", g_LastSaveFilter
+        g_UserPreferences.SetPreference_Long "File Formats", "LastSaveFilter", g_LastSaveFilter
                         
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         MenuSaveAs = PhotoDemon_SaveImage(imageID, sFile, True)

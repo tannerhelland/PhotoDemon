@@ -349,13 +349,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "CustomFilter=" & FilterPath
         Print #fileNum, "Macro=" & MacroPath
         Print #fileNum, ""
-        
-        'Write out file format preferences
-        Print #fileNum, "[File Formats]"
-        Print #fileNum, "LastOpenFilter=1"   'Default to "All Compatible Graphics" filter for loading
-        Print #fileNum, "LastSaveFilter=-1"  'Mark the last-used save filter as "unknown"
-        Print #fileNum, ""
-        
+                
         'Write out general preferences
         Print #fileNum, "[General Preferences]"
         Print #fileNum, "AlphaCheckMode=0"
@@ -415,10 +409,6 @@ Private Sub createNewINIFile()
         Print #fileNum, "PngnqDithering=5"
         Print #fileNum, ""
         
-        'Write out tool preferences
-        Print #fileNum, "[Tool Preferences]"
-        Print #fileNum, "ClearSelectionAfterCrop=1"
-        
         'Write out batch conversion preferences
         Print #fileNum, "[Batch Preferences]"
         Print #fileNum, "DriveBox="
@@ -427,6 +417,17 @@ Private Sub createNewINIFile()
         Print #fileNum, "ListFolder=" & GetWindowsFolder(CSIDL_MY_DOCUMENTS)
         Print #fileNum, ""
         
+        'Write out file format preferences
+        Print #fileNum, "[File Formats]"
+        Print #fileNum, "LastOpenFilter=1"   'Default to "All Compatible Graphics" filter for loading
+        Print #fileNum, "LastSaveFilter=-1"  'Mark the last-used save filter as "unknown"
+        Print #fileNum, ""
+        
+        'Write out tool preferences
+        Print #fileNum, "[Tool Preferences]"
+        Print #fileNum, "ClearSelectionAfterCrop=1"
+        Print #fileNum, ""
+                
         'Finally, write out MRU placeholders
         Print #fileNum, "[MRU]"
         Print #fileNum, "NumberOfEntries=0"
