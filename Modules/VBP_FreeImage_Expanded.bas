@@ -29,7 +29,7 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
 Public Function isFreeImageAvailable() As Boolean
-    If FileExist(PluginPath & "freeimage.dll") Then isFreeImageAvailable = True Else isFreeImageAvailable = False
+    If FileExist(g_PluginPath & "freeimage.dll") Then isFreeImageAvailable = True Else isFreeImageAvailable = False
 End Function
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
@@ -42,14 +42,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     '****************************************************************************
     
     'Double-check that FreeImage.dll was located at start-up
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         LoadFreeImageV3_Advanced = False
         Exit Function
     End If
     
     'Load the FreeImage library from the plugin directory
     Dim hFreeImgLib As Long
-    hFreeImgLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hFreeImgLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     '****************************************************************************
     ' Determine image format
@@ -106,8 +106,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     '****************************************************************************
     
     Dim fi_multi_hDIB As Long
+    Dim chkPageCount As Long
     Dim needToCloseMulti As Boolean
-
+    
     If pageToLoad > 0 Then needToCloseMulti = True Else needToCloseMulti = False
     
     'If the image is a GIF, it might be animated.  Check for that now.
@@ -122,7 +123,6 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         End If
         
         'Check the "page count" (e.g. frames) of the loaded GIF
-        Dim chkPageCount As Long
         chkPageCount = FreeImage_GetPageCount(fi_multi_hDIB)
         
         FreeImage_CloseMultiBitmap fi_multi_hDIB
@@ -139,7 +139,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             End If
             
             'Based on the user's preference for multipage images, we can handle the image one of several ways
-            Select Case userPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0)
+            Select Case g_UserPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0)
             
                 'Prompt the user for an action
                 Case 0
@@ -206,18 +206,18 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'With all flags set and filetype correctly determined, import the image
     Dim fi_hDIB As Long
     
-    If pageToLoad = 0 Then
+    If (pageToLoad = 0) And (chkPageCount <= 1) Then
         Message "Importing image from file..."
         fi_hDIB = FreeImage_Load(fileFIF, srcFilename, fi_ImportFlags)
     Else
         If fileFIF = FIF_GIF Then
-            Message "Importing frame #" & pageToLoad & " from animated GIF file..."
+            Message "Importing frame #" & pageToLoad + 1 & " from animated GIF file..."
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
         ElseIf fileFIF = FIF_ICO Then
-            Message "Importing icon #" & pageToLoad & " from ICO file..."
+            Message "Importing icon #" & pageToLoad + 1 & " from ICO file..."
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , 0)
         Else
-            Message "Importing page #" & pageToLoad & " from multipage TIFF file..."
+            Message "Importing page #" & pageToLoad + 1 & " from multipage TIFF file..."
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename, , , , 0)
         End If
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
@@ -228,9 +228,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         
         'Check the bit-depth
         If FreeImage_GetBPP(fi_hDIB) < 32 Then
-    
+        
             'If this is the first frame of the icon, unload it and try again
-            If (pageToLoad = 0) Then
+            If (pageToLoad = 0) And (chkPageCount <= 1) Then
                 If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
                 fi_hDIB = FreeImage_Load(fileFIF, srcFilename, FILO_ICO_MAKEALPHA)
             
@@ -244,6 +244,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 'Now re-open it with the proper flags
                 fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , FILO_ICO_MAKEALPHA)
                 fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
+                                
             End If
             
         End If
@@ -332,7 +333,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
         'As of 25 Nov '12, the user can choose to disable tone-mapping (which makes HDR loading much faster, but reduces image quality).
         ' Check that preference before tone-mapping the image.
-        If userPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
+        If g_UserPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
             
             Message "Tone mapping HDR image to preserve tonal range..."
             
@@ -400,7 +401,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     If (fi_BPP = 64) Or (fi_BPP = 128) Then
     
         'Again, check for the user's preference on tone-mapping
-        If userPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
+        If g_UserPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
         
             Message "High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range..."
         
@@ -663,14 +664,14 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
     On Error GoTo isMultiImage_Error
     
     'Double-check that FreeImage.dll was located at start-up
-    If imageFormats.FreeImageEnabled = False Then
+    If g_ImageFormats.FreeImageEnabled = False Then
         isMultiImage = 0
         Exit Function
     End If
     
     'Load the FreeImage library from the plugin directory
     Dim hFreeImgLib As Long
-    hFreeImgLib = LoadLibrary(PluginPath & "FreeImage.dll")
+    hFreeImgLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     'Determine the file type.  (Currently, this feature only works on animated GIFs and multipage TIFFs.)
     Dim fileFIF As FREE_IMAGE_FORMAT
