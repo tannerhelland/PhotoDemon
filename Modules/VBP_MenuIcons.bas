@@ -471,10 +471,8 @@ Public Sub ApplyAllMenuIcons()
         .PutImageToVBMenu 148, 11, 5      'Stylize
             '--> Stylize sub-menu
             .PutImageToVBMenu 76, 0, 5, 11  'Diffuse
-            .PutImageToVBMenu 96, 1, 5, 11  'Diffuse More
-            .PutImageToVBMenu 97, 2, 5, 11  'Diffuse (Custom)
-            .PutImageToVBMenu 130, 4, 5, 11 'Solarize
-            .PutImageToVBMenu 133, 5, 5, 11 'Twins
+            .PutImageToVBMenu 130, 1, 5, 11 'Solarize
+            .PutImageToVBMenu 133, 2, 5, 11 'Twins
         .PutImageToVBMenu 98, 13, 5      'Custom Filter
         
         'Tools Menu

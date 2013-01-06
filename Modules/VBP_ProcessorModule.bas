@@ -502,9 +502,9 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Unsharp
                 FilterUnsharp
             Case Diffuse
-                FormDiffuse.Diffuse
+                FormDiffuse.DiffuseCustom 5, 5, False
             Case DiffuseMore
-                FormDiffuse.DiffuseMore
+                FormDiffuse.DiffuseCustom 25, 25, False
             Case CustomDiffuse
                 If LoadForm Then
                     FormDiffuse.Show 1, FormMain
