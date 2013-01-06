@@ -795,32 +795,41 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuViewSepBar1 
          Caption         =   "-"
       End
-      Begin VB.Menu MnuZoom161 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "16:1 (1600%)"
+         Index           =   0
       End
-      Begin VB.Menu MnuZoom81 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "8:1 (800%)"
+         Index           =   1
       End
-      Begin VB.Menu MnuZoom41 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "4:1 (400%)"
+         Index           =   2
       End
-      Begin VB.Menu MnuZoom21 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "2:1 (200%)"
+         Index           =   3
       End
-      Begin VB.Menu MnuActualSize 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "1:1 (actual size, 100%)"
+         Index           =   4
       End
-      Begin VB.Menu MnuZoom12 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "1:2 (50%)"
+         Index           =   5
       End
-      Begin VB.Menu MnuZoom14 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "1:4 (25%)"
+         Index           =   6
       End
-      Begin VB.Menu MnuZoom18 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "1:8 (12.5%)"
+         Index           =   7
       End
-      Begin VB.Menu MnuZoom116 
+      Begin VB.Menu MnuSpecificZoom 
          Caption         =   "1:16 (6.25%)"
+         Index           =   8
       End
       Begin VB.Menu MnuViewSepBar2 
          Caption         =   "-"
@@ -1044,8 +1053,9 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuFilterSepBar2 
          Caption         =   "-"
       End
-      Begin VB.Menu MnuArtisticUpper 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Artistic"
+         Index           =   0
          Begin VB.Menu MnuAntique 
             Caption         =   "Antique"
          End
@@ -1062,8 +1072,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Relief"
          End
       End
-      Begin VB.Menu MnuBlurUpper 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Blur"
+         Index           =   1
          Begin VB.Menu MnuAntialias 
             Caption         =   "Antialias"
          End
@@ -1095,8 +1106,17 @@ Begin VB.MDIForm FormMain
             Caption         =   "Grid blur"
          End
       End
-      Begin VB.Menu MnuEdge 
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Distort"
+         Index           =   2
+         Begin VB.Menu MnuDistortion 
+            Caption         =   "Swirl..."
+            Index           =   0
+         End
+      End
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Edge"
+         Index           =   3
          Begin VB.Menu MnuEmbossEngrave 
             Caption         =   "Emboss or engrave..."
          End
@@ -1107,8 +1127,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Find edges..."
          End
       End
-      Begin VB.Menu MnuOtherFilters 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Experimental"
+         Index           =   4
          Begin VB.Menu MnuAlien 
             Caption         =   "Alien"
          End
@@ -1131,8 +1152,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Vibrate"
          End
       End
-      Begin VB.Menu MnuNaturalFilters 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Natural"
+         Index           =   5
          Begin VB.Menu MnuAtmosperic 
             Caption         =   "Atmosphere"
          End
@@ -1161,8 +1183,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Water"
          End
       End
-      Begin VB.Menu MnuNoiseFilters 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Noise"
+         Index           =   6
          Begin VB.Menu MnuNoise 
             Caption         =   "Add noise..."
          End
@@ -1176,8 +1199,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Remove orphan pixels"
          End
       End
-      Begin VB.Menu MnuRank 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Rank"
+         Index           =   7
          Begin VB.Menu MnuMaximum 
             Caption         =   "Dilate (maximum)"
          End
@@ -1194,8 +1218,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Custom rank..."
          End
       End
-      Begin VB.Menu MnuSharpenUpper 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Sharpen"
+         Index           =   8
          Begin VB.Menu MnuUnsharp 
             Caption         =   "Remove blur (unsharp mask)"
          End
@@ -1209,8 +1234,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Sharpen more"
          End
       End
-      Begin VB.Menu MnuStylize 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Stylize"
+         Index           =   9
          Begin VB.Menu MnuDiffuse 
             Caption         =   "Diffuse"
          End
@@ -1678,10 +1704,6 @@ Private Sub MnuAbout_Click()
     
 End Sub
 
-Private Sub MnuActualSize_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = ZoomIndex100
-End Sub
-
 'Private Sub MnuAnimate_Click()
 '    Process Animate
 'End Sub
@@ -1913,6 +1935,10 @@ End Sub
 
 Private Sub MnuDiffuseMore_Click()
     Process DiffuseMore
+End Sub
+
+Private Sub MnuDistortion_Click(Index As Integer)
+    Process DistortSwirl, , , , , , , , , , True
 End Sub
 
 Private Sub MnuDonate_Click()
@@ -2359,6 +2385,33 @@ Private Sub MnuSolarize_Click()
     Process Solarize, , , , , , , , , , True
 End Sub
 
+'These menu items correspond to specific zoom values
+Private Sub MnuSpecificZoom_Click(Index As Integer)
+
+    Select Case Index
+    
+        Case 0
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 2
+        Case 1
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 4
+        Case 2
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 8
+        Case 3
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 10
+        Case 4
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = ZoomIndex100
+        Case 5
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 14
+        Case 6
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 16
+        Case 7
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 19
+        Case 8
+            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
+    End Select
+
+End Sub
+
 Private Sub MnuStartMacroRecording_Click()
     Process MacroStartRecording
 End Sub
@@ -2380,6 +2433,9 @@ Private Sub MnuTemperature_Click()
 End Sub
 
 Private Sub MnuTest_Click()
+    FormSwirl.Show 0, Me
+    Exit Sub
+    
     MenuTest
 End Sub
 
@@ -2596,38 +2652,6 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     lastAccelerator = Timer
     
-End Sub
-
-Private Sub MnuZoom116_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
-End Sub
-
-Private Sub MnuZoom12_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 14
-End Sub
-
-Private Sub MnuZoom14_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 16
-End Sub
-
-Private Sub MnuZoom161_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 2
-End Sub
-
-Private Sub MnuZoom18_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 19
-End Sub
-
-Private Sub MnuZoom21_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 10
-End Sub
-
-Private Sub MnuZoom41_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 8
-End Sub
-
-Private Sub MnuZoom81_Click()
-    If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 4
 End Sub
 
 Private Sub MnuZoomIn_Click()

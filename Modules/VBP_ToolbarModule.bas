@@ -93,15 +93,13 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 FormMain.MnuFitWindowToImage.Enabled = tState
                 FormMain.MnuZoomIn.Enabled = tState
                 FormMain.MnuZoomOut.Enabled = tState
-                FormMain.MnuZoom161.Enabled = tState
-                FormMain.MnuZoom81.Enabled = tState
-                FormMain.MnuZoom41.Enabled = tState
-                FormMain.MnuZoom21.Enabled = tState
-                FormMain.MnuActualSize.Enabled = tState
-                FormMain.MnuZoom12.Enabled = tState
-                FormMain.MnuZoom14.Enabled = tState
-                FormMain.MnuZoom18.Enabled = tState
-                FormMain.MnuZoom116.Enabled = tState
+                
+                Dim i As Long
+                
+                For i = 0 To FormMain.MnuSpecificZoom.Count - 1
+                    FormMain.MnuSpecificZoom(i).Enabled = tState
+                Next i
+                
             End If
         
         'Filter (top-level menu)

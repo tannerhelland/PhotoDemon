@@ -188,7 +188,7 @@ Public Sub LoadTheProgram()
     LoadMessage "Preparing program menus..."
     
     'If inside the IDE, disable the "Effects" -> "Test" menu
-    If (Not g_IsProgramCompiled) Then FormMain.MnuTest.Visible = False
+    If g_IsProgramCompiled Then FormMain.MnuTest.Visible = False Else FormMain.MnuTest.Visible = True
     
     'Load the most-recently-used file list (MRU)
     MRU_LoadFromINI
@@ -1020,15 +1020,15 @@ Public Sub LoadMenuShortcuts()
     FormMain.MnuFitOnScreen.Caption = FormMain.MnuFitOnScreen.Caption & vbTab & "0"
     FormMain.MnuZoomIn.Caption = FormMain.MnuZoomIn.Caption & vbTab & " +"
     FormMain.MnuZoomOut.Caption = FormMain.MnuZoomOut.Caption & vbTab & "-"
-    FormMain.MnuActualSize.Caption = FormMain.MnuActualSize.Caption & vbTab & "1"
-    FormMain.MnuZoom161.Caption = FormMain.MnuZoom161.Caption & vbTab & "5"
-    FormMain.MnuZoom81.Caption = FormMain.MnuZoom81.Caption & vbTab & "4"
-    FormMain.MnuZoom41.Caption = FormMain.MnuZoom41.Caption & vbTab & "3"
-    FormMain.MnuZoom21.Caption = FormMain.MnuZoom21.Caption & vbTab & "2"
-    FormMain.MnuZoom12.Caption = FormMain.MnuZoom12.Caption & vbTab & "Shift+2"
-    FormMain.MnuZoom14.Caption = FormMain.MnuZoom14.Caption & vbTab & "Shift+3"
-    FormMain.MnuZoom18.Caption = FormMain.MnuZoom18.Caption & vbTab & "Shift+4"
-    FormMain.MnuZoom116.Caption = FormMain.MnuZoom116.Caption & vbTab & "Shift+5"
+    FormMain.MnuSpecificZoom(0).Caption = FormMain.MnuSpecificZoom(0).Caption & vbTab & "5"
+    FormMain.MnuSpecificZoom(1).Caption = FormMain.MnuSpecificZoom(1).Caption & vbTab & "4"
+    FormMain.MnuSpecificZoom(2).Caption = FormMain.MnuSpecificZoom(2).Caption & vbTab & "3"
+    FormMain.MnuSpecificZoom(3).Caption = FormMain.MnuSpecificZoom(3).Caption & vbTab & "2"
+    FormMain.MnuSpecificZoom(4).Caption = FormMain.MnuSpecificZoom(4).Caption & vbTab & "1"
+    FormMain.MnuSpecificZoom(5).Caption = FormMain.MnuSpecificZoom(5).Caption & vbTab & "Shift+2"
+    FormMain.MnuSpecificZoom(6).Caption = FormMain.MnuSpecificZoom(6).Caption & vbTab & "Shift+3"
+    FormMain.MnuSpecificZoom(7).Caption = FormMain.MnuSpecificZoom(7).Caption & vbTab & "Shift+4"
+    FormMain.MnuSpecificZoom(8).Caption = FormMain.MnuSpecificZoom(8).Caption & vbTab & "Shift+5"
         
     'Image menu
     FormMain.MnuRotateClockwise.Caption = FormMain.MnuRotateClockwise.Caption & vbTab & "R"
