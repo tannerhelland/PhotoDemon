@@ -36,3 +36,6 @@ Public Const PD_CANVASSHADOWSTRENGTH As Long = 70
 
 'Constant for testing JP2/J2K support.  These may or may not become permanent pending the outcome of some rigorous testing.
 Public Const JP2_ENABLED As Boolean = True
+
+'Mathematic constants
+Public Const PI As Double = 3.14159265358979

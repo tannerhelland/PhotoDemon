@@ -426,55 +426,56 @@ Public Sub ApplyAllMenuIcons()
             .PutImageToVBMenu 93, 6, 5, 3   'Gaussian Blur
             .PutImageToVBMenu 94, 7, 5, 3   'Gaussian Blur More
             .PutImageToVBMenu 95, 9, 5, 3   'Grid Blur
-        .PutImageToVBMenu 77, 4, 5       'Edges
+        '.PutImageToVBMenu 77, 4, 5       'Distort
+        .PutImageToVBMenu 77, 5, 5       'Edges
             '--> Edges sub-menu
-            .PutImageToVBMenu 100, 0, 5, 4  'Emboss / Engrave
-            .PutImageToVBMenu 99, 1, 5, 4   'Enhance Edges
-            .PutImageToVBMenu 77, 2, 5, 4   'Find Edges
-        .PutImageToVBMenu 80, 5, 5       'Fun
+            .PutImageToVBMenu 100, 0, 5, 5  'Emboss / Engrave
+            .PutImageToVBMenu 99, 1, 5, 5   'Enhance Edges
+            .PutImageToVBMenu 77, 2, 5, 5   'Find Edges
+        .PutImageToVBMenu 80, 6, 5       'Fun
             '--> Fun sub-menu
-            .PutImageToVBMenu 126, 0, 5, 5  'Alien
-            .PutImageToVBMenu 127, 1, 5, 5  'Blacklight
-            .PutImageToVBMenu 128, 2, 5, 5  'Dream
-            .PutImageToVBMenu 129, 3, 5, 5  'Radioactive
-            .PutImageToVBMenu 131, 4, 5, 5  'Synthesize
-            .PutImageToVBMenu 147, 5, 5, 5  'Thermograph
-            .PutImageToVBMenu 134, 6, 5, 5  'Vibrate
-        .PutImageToVBMenu 78, 6, 5       'Natural
+            .PutImageToVBMenu 126, 0, 5, 6  'Alien
+            .PutImageToVBMenu 127, 1, 5, 6  'Blacklight
+            .PutImageToVBMenu 128, 2, 5, 6  'Dream
+            .PutImageToVBMenu 129, 3, 5, 6  'Radioactive
+            .PutImageToVBMenu 131, 4, 5, 6  'Synthesize
+            .PutImageToVBMenu 147, 5, 5, 6  'Thermograph
+            .PutImageToVBMenu 134, 6, 5, 6  'Vibrate
+        .PutImageToVBMenu 78, 7, 5       'Natural
             '--> Natural sub-menu
-            .PutImageToVBMenu 107, 0, 5, 6  'Atmosphere
-            .PutImageToVBMenu 108, 1, 5, 6  'Burn
-            .PutImageToVBMenu 109, 2, 5, 6  'Fog
-            .PutImageToVBMenu 110, 3, 5, 6  'Freeze
-            .PutImageToVBMenu 111, 4, 5, 6  'Lava
-            .PutImageToVBMenu 112, 5, 5, 6  'Ocean
-            .PutImageToVBMenu 113, 6, 5, 6  'Rainbow
-            .PutImageToVBMenu 114, 7, 5, 6  'Steel
-            .PutImageToVBMenu 115, 8, 5, 6  'Water
-        .PutImageToVBMenu 79, 7, 5       'Noise
+            .PutImageToVBMenu 107, 0, 5, 7  'Atmosphere
+            .PutImageToVBMenu 108, 1, 5, 7  'Burn
+            .PutImageToVBMenu 109, 2, 5, 7  'Fog
+            .PutImageToVBMenu 110, 3, 5, 7  'Freeze
+            .PutImageToVBMenu 111, 4, 5, 7  'Lava
+            .PutImageToVBMenu 112, 5, 5, 7  'Ocean
+            .PutImageToVBMenu 113, 6, 5, 7  'Rainbow
+            .PutImageToVBMenu 114, 7, 5, 7  'Steel
+            .PutImageToVBMenu 115, 8, 5, 7  'Water
+        .PutImageToVBMenu 79, 8, 5       'Noise
             '--> Noise sub-menu
-            .PutImageToVBMenu 116, 0, 5, 7  'Add Noise
-            .PutImageToVBMenu 117, 2, 5, 7  'Despeckle
-            .PutImageToVBMenu 118, 3, 5, 7  'Remove Orphan
-        .PutImageToVBMenu 81, 8, 5       'Rank
+            .PutImageToVBMenu 116, 0, 5, 8  'Add Noise
+            .PutImageToVBMenu 117, 2, 5, 8  'Despeckle
+            .PutImageToVBMenu 118, 3, 5, 8  'Remove Orphan
+        .PutImageToVBMenu 81, 9, 5       'Rank
             '--> Rank sub-menu
-            .PutImageToVBMenu 119, 0, 5, 8  'Dilate
-            .PutImageToVBMenu 120, 1, 5, 8  'Erode
-            .PutImageToVBMenu 121, 2, 5, 8  'Extreme
-            .PutImageToVBMenu 122, 4, 5, 8  'Custom Rank
-        .PutImageToVBMenu 82, 9, 5       'Sharpen
+            .PutImageToVBMenu 119, 0, 5, 9  'Dilate
+            .PutImageToVBMenu 120, 1, 5, 9  'Erode
+            .PutImageToVBMenu 121, 2, 5, 9  'Extreme
+            .PutImageToVBMenu 122, 4, 5, 9  'Custom Rank
+        .PutImageToVBMenu 82, 10, 5       'Sharpen
             '--> Sharpen sub-menu
-            .PutImageToVBMenu 124, 0, 5, 9  'Unsharp
-            .PutImageToVBMenu 82, 2, 5, 9   'Sharpen
-            .PutImageToVBMenu 123, 3, 5, 9  'Sharpen More
-        .PutImageToVBMenu 148, 10, 5      'Stylize
+            .PutImageToVBMenu 124, 0, 5, 10 'Unsharp
+            .PutImageToVBMenu 82, 2, 5, 10  'Sharpen
+            .PutImageToVBMenu 123, 3, 5, 10 'Sharpen More
+        .PutImageToVBMenu 148, 11, 5      'Stylize
             '--> Stylize sub-menu
-            .PutImageToVBMenu 76, 0, 5, 10  'Diffuse
-            .PutImageToVBMenu 96, 1, 5, 10  'Diffuse More
-            .PutImageToVBMenu 97, 2, 5, 10  'Diffuse (Custom)
-            .PutImageToVBMenu 130, 4, 5, 10 'Solarize
-            .PutImageToVBMenu 133, 5, 5, 10 'Twins
-        .PutImageToVBMenu 98, 12, 5      'Custom Filter
+            .PutImageToVBMenu 76, 0, 5, 11  'Diffuse
+            .PutImageToVBMenu 96, 1, 5, 11  'Diffuse More
+            .PutImageToVBMenu 97, 2, 5, 11  'Diffuse (Custom)
+            .PutImageToVBMenu 130, 4, 5, 11 'Solarize
+            .PutImageToVBMenu 133, 5, 5, 11 'Twins
+        .PutImageToVBMenu 98, 13, 5      'Custom Filter
         
         'Tools Menu
         .PutImageToVBMenu 37, 0, 6       'Macros

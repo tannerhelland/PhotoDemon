@@ -180,6 +180,9 @@ Option Explicit
     '-Image Mode (it's a kind of transformation, right?)
     Public Const ChangeImageMode24 As Long = 710
     Public Const ChangeImageMode32 As Long = 711
+    'This also includes DISTORT filters
+    '-Distort: Swirl
+    Public Const DistortSwirl As Long = 712
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -411,13 +414,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case StretchHistogram
                 FormHistogram.StretchHistogram
             Case Equalize
-                If LoadForm = True Then
+                If LoadForm Then
                     FormEqualize.Show 1, FormMain
                 Else
                     FormEqualize.EqualizeHistogram pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4
                 End If
             Case WhiteBalance
-                If LoadForm = True Then
+                If LoadForm Then
                     FormWhiteBalance.Show 1, FormMain
                 Else
                     FormWhiteBalance.AutoWhiteBalance pOPCODE
@@ -431,7 +434,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     If pType >= 200 And pType <= 299 Then
         Select Case pType
             Case BWImpressionist
-                If LoadForm = True Then
+                If LoadForm Then
                     FormBlackAndWhite.Show 1, FormMain
                 Else
                     'MenuBWImpressionist
@@ -463,7 +466,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Desaturate
                 FormGrayscale.MenuDesaturate
             Case GrayScale
-                If LoadForm = True Then
+                If LoadForm Then
                     FormGrayscale.Show 1, FormMain
                 Else
                     FormGrayscale.MenuGrayscale
@@ -503,19 +506,19 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case DiffuseMore
                 FormDiffuse.DiffuseMore
             Case CustomDiffuse
-                If LoadForm = True Then
+                If LoadForm Then
                     FormDiffuse.Show 1, FormMain
                 Else
                     FormDiffuse.DiffuseCustom pOPCODE, pOPCODE2, pOPCODE3
                 End If
             Case Mosaic
-                If LoadForm = True Then
+                If LoadForm Then
                     FormMosaic.Show 1, FormMain
                 Else
                     FormMosaic.MosaicFilter CInt(pOPCODE), CInt(pOPCODE2)
                 End If
             Case CustomRank
-                If LoadForm = True Then
+                If LoadForm Then
                     FormRank.Show 1, FormMain
                 Else
                     FormRank.CustomRankFilter CInt(pOPCODE), CByte(pOPCODE2)
@@ -535,7 +538,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     If pType >= 500 And pType <= 599 Then
         Select Case pType
             Case EmbossToColor
-                If LoadForm = True Then
+                If LoadForm Then
                     FormEmbossEngrave.Show 1, FormMain
                 Else
                     FormEmbossEngrave.FilterEmbossColor CLng(pOPCODE)
@@ -557,7 +560,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case SobelVertical
                 FormFindEdges.FilterSobelVertical pOPCODE
             Case Laplacian
-                If LoadForm = True Then
+                If LoadForm Then
                     FormFindEdges.Show 1, FormMain
                 Else
                     FormFindEdges.FilterLaplacian pOPCODE
@@ -577,7 +580,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     If pType >= 600 And pType <= 699 Then
         Select Case pType
             Case Rechannel
-                If LoadForm = True Then
+                If LoadForm Then
                     FormRechannel.Show 1, FormMain
                 Else
                     FormRechannel.RechannelImage CLng(pOPCODE)
@@ -593,13 +596,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case ColorShiftRight
                 MenuCShift pOPCODE
             Case BrightnessAndContrast
-                If LoadForm = True Then
+                If LoadForm Then
                     FormBrightnessContrast.Show 1, FormMain
                 Else
                     FormBrightnessContrast.BrightnessContrast CInt(pOPCODE), CSng(pOPCODE2), CBool(pOPCODE3)
                 End If
             Case GammaCorrection
-                If LoadForm = True Then
+                If LoadForm Then
                     FormGamma.Show 1, FormMain
                 Else
                     FormGamma.GammaCorrect CSng(pOPCODE), CByte(pOPCODE2)
@@ -621,19 +624,19 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case AutoShadows
                 MenuAutoEnhanceShadows
             Case ImageLevels
-                If LoadForm = True Then
+                If LoadForm Then
                     FormLevels.Show 1, FormMain
                 Else
                     FormLevels.MapImageLevels pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
                 End If
             Case Colorize
-                If LoadForm = True Then
+                If LoadForm Then
                     FormColorize.Show 1, FormMain
                 Else
                     FormColorize.ColorizeImage pOPCODE, pOPCODE2
                 End If
             Case ReduceColors
-                If LoadForm = True Then
+                If LoadForm Then
                     FormReduceColors.Show 1, FormMain
                 Else
                     If pOPCODE = REDUCECOLORS_AUTO Then
@@ -647,13 +650,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                     End If
                 End If
             Case AdjustTemperature
-                If LoadForm = True Then
+                If LoadForm Then
                     FormColorTemp.Show 1, FormMain
                 Else
                     FormColorTemp.ApplyTemperatureToImage pOPCODE, pOPCODE2, pOPCODE3
                 End If
             Case AdjustHSL
-                If LoadForm = True Then
+                If LoadForm Then
                     FormHSL.Show 1, FormMain
                 Else
                     FormHSL.AdjustImageHSL pOPCODE, pOPCODE2, pOPCODE3
@@ -667,7 +670,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Flip
                 MenuFlip
             Case FreeRotate
-                If LoadForm = True Then
+                If LoadForm Then
                     FormRotate.Show 1, FormMain
                 Else
                     FormRotate.RotateArbitrary pOPCODE, pOPCODE2
@@ -683,13 +686,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Isometric
                 FilterIsometric
             Case ImageSize
-                If LoadForm = True Then
+                If LoadForm Then
                     FormResize.Show 1, FormMain
                 Else
                     FormResize.ResizeImage CLng(pOPCODE), CLng(pOPCODE2), CByte(pOPCODE3)
                 End If
             Case Tile
-                If LoadForm = True Then
+                If LoadForm Then
                     FormTile.Show 1, FormMain
                 Else
                     FormTile.GenerateTile CByte(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
@@ -700,6 +703,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 ConvertImageColorDepth 24
             Case ChangeImageMode32
                 ConvertImageColorDepth 32
+            Case DistortSwirl
+                If LoadForm Then
+                    FormSwirl.Show 1, FormMain
+                Else
+                    FormSwirl.SwirlImage CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
+                End If
+                
         End Select
     End If
     
@@ -711,7 +721,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Atmospheric
                 MenuAtmospheric
             Case BlackLight
-                If LoadForm = True Then
+                If LoadForm Then
                     FormBlackLight.Show 1, FormMain
                 Else
                     FormBlackLight.fxBlackLight pOPCODE
@@ -719,7 +729,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Dream
                 MenuDream
             Case Posterize
-                If LoadForm = True Then
+                If LoadForm Then
                     FormPosterize.Show 1, FormMain
                 Else
                     FormPosterize.PosterizeImage CByte(pOPCODE)
@@ -727,19 +737,19 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Radioactive
                 MenuRadioactive
             Case Solarize
-                If LoadForm = True Then
+                If LoadForm Then
                     FormSolarize.Show 1, FormMain
                 Else
                     FormSolarize.SolarizeImage CByte(pOPCODE)
                 End If
             Case Twins
-                If LoadForm = True Then
+                If LoadForm Then
                     FormTwins.Show 1, FormMain
                 Else
                     FormTwins.GenerateTwins CByte(pOPCODE)
                 End If
             Case Fade
-                If LoadForm = True Then
+                If LoadForm Then
                     FormFade.Show 1, FormMain
                 Else
                     FormFade.FadeImage CSng(pOPCODE)
@@ -753,7 +763,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Water
                 MenuWater
             Case Noise
-                If LoadForm = True Then
+                If LoadForm Then
                     FormNoise.Show 1, FormMain
                 Else
                     FormNoise.AddNoise CInt(pOPCODE), CByte(pOPCODE2)
@@ -763,7 +773,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Lava
                 MenuLava
             Case CustomFilter
-                If LoadForm = True Then
+                If LoadForm Then
                     FormCustomFilter.Show 1, FormMain
                 Else
                     DoFilter , , pOPCODE
@@ -785,7 +795,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Despeckle
                 FormDespeckle.QuickDespeckle
             Case CustomDespeckle
-                If LoadForm = True Then
+                If LoadForm Then
                     FormDespeckle.Show 1, FormMain
                 Else
                     FormDespeckle.Despeckle pOPCODE
@@ -1142,6 +1152,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Convert to Photo Mode (RGB, 24bpp)"
         Case ChangeImageMode32
             GetNameOfProcess = "Convert to Web Mode (RGBA, 32bpp)"
+        Case DistortSwirl
+            GetNameOfProcess = "Swirl"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade
