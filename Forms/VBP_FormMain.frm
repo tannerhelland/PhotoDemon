@@ -703,8 +703,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Visual Basic binary file..."
          End
       End
-      Begin VB.Menu MnuFileSepBar2 
+      Begin VB.Menu MnuFileSepBar 
          Caption         =   "-"
+         Index           =   0
       End
       Begin VB.Menu MnuSave 
          Caption         =   "&Save"
@@ -713,7 +714,7 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuSaveAs 
          Caption         =   "Save &as..."
       End
-      Begin VB.Menu MnuFileSepBar3 
+      Begin VB.Menu MnuFileSepBar1 
          Caption         =   "-"
       End
       Begin VB.Menu MnuClose 
@@ -723,14 +724,14 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuCloseAll 
          Caption         =   "Close all"
       End
-      Begin VB.Menu MnuFileSepBar5 
+      Begin VB.Menu MnuFileSepBar2 
          Caption         =   "-"
       End
       Begin VB.Menu MnuBatchConvert 
-         Caption         =   "&Batch convert..."
+         Caption         =   "&Batch process..."
          Shortcut        =   ^B
       End
-      Begin VB.Menu MnuFileSepBar1 
+      Begin VB.Menu MnuFileSepBar3 
          Caption         =   "-"
       End
       Begin VB.Menu MnuPrint 
@@ -760,7 +761,7 @@ Begin VB.MDIForm FormMain
          Enabled         =   0   'False
          Shortcut        =   ^F
       End
-      Begin VB.Menu MnuEditSepBar1 
+      Begin VB.Menu MnuEditSepBar 
          Caption         =   "-"
       End
       Begin VB.Menu MnuCopy 
@@ -1237,17 +1238,8 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Stylize"
          Index           =   9
-         Begin VB.Menu MnuDiffuse 
-            Caption         =   "Diffuse"
-         End
-         Begin VB.Menu MnuDiffuseMore 
-            Caption         =   "Diffuse more"
-         End
          Begin VB.Menu MnuCustomDiffuse 
-            Caption         =   "Custom diffuse..."
-         End
-         Begin VB.Menu MnuStylizeSepBar0 
-            Caption         =   "-"
+            Caption         =   "Diffuse..."
          End
          Begin VB.Menu MnuSolarize 
             Caption         =   "Solarize..."
@@ -1927,14 +1919,6 @@ End Sub
 
 Private Sub MnuDespeckle_Click()
     Process Despeckle
-End Sub
-
-Private Sub MnuDiffuse_Click()
-    Process Diffuse
-End Sub
-
-Private Sub MnuDiffuseMore_Click()
-    Process DiffuseMore
 End Sub
 
 Private Sub MnuDistortion_Click(Index As Integer)
