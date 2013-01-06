@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormSwirl 
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Swirl Image"
+   Caption         =   " Swirl"
    ClientHeight    =   8730
    ClientLeft      =   -15
    ClientTop       =   225
@@ -56,7 +56,7 @@ Begin VB.Form FormSwirl
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
-      Caption         =   " fast"
+      Caption         =   " speed"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -77,7 +77,7 @@ Begin VB.Form FormSwirl
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
-      Caption         =   " high quality"
+      Caption         =   " quality"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -90,7 +90,7 @@ Begin VB.Form FormSwirl
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   1
-      Left            =   1680
+      Left            =   1800
       TabIndex        =   7
       Top             =   7590
       Width           =   2535
@@ -160,7 +160,7 @@ Begin VB.Form FormSwirl
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "swirl radius:"
+      Caption         =   "swirl radius (percentage):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -175,14 +175,14 @@ Begin VB.Form FormSwirl
       Left            =   240
       TabIndex        =   11
       Top             =   6480
-      Width           =   1305
+      Width           =   2715
    End
    Begin VB.Label lblInterpolation 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "interpolation:"
+      Caption         =   "render emphasis:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -197,14 +197,14 @@ Begin VB.Form FormSwirl
       Left            =   240
       TabIndex        =   6
       Top             =   7260
-      Width           =   1425
+      Width           =   1845
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "swirl angle:"
+      Caption         =   "swirl angle (degrees):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -219,7 +219,7 @@ Begin VB.Form FormSwirl
       Left            =   240
       TabIndex        =   2
       Top             =   5640
-      Width           =   1230
+      Width           =   2310
    End
 End
 Attribute VB_Name = "FormSwirl"
