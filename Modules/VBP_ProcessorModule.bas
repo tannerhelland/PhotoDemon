@@ -183,6 +183,8 @@ Option Explicit
     'This also includes DISTORT filters
     '-Distort: Swirl
     Public Const DistortSwirl As Long = 712
+    '-Distort: Lens distortion/correction
+    Public Const DistortLens As Long = 713
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -709,6 +711,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormSwirl.SwirlImage CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
                 End If
+            Case DistortLens
+                If LoadForm Then
+                    FormLens.Show 1, FormMain
+                Else
+                    FormLens.ApplyLensDistortion CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
+                End If
                 
         End Select
     End If
@@ -1154,6 +1162,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Convert to Web Mode (RGBA, 32bpp)"
         Case DistortSwirl
             GetNameOfProcess = "Swirl"
+        Case DistortLens
+            GetNameOfProcess = "Lens distortion"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade

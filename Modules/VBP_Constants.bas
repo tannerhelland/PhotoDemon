@@ -39,3 +39,5 @@ Public Const JP2_ENABLED As Boolean = True
 
 'Mathematic constants
 Public Const PI As Double = 3.14159265358979
+Public Const PI_HALF As Double = 1.5707963267949
+Public Const PI_DOUBLE As Double = 6.28318530717958
