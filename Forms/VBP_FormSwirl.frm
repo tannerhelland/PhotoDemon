@@ -72,7 +72,6 @@ Begin VB.Form FormSwirl
       Left            =   360
       TabIndex        =   8
       Top             =   7590
-      Value           =   -1  'True
       Width           =   1095
    End
    Begin VB.OptionButton OptInterpolate 
@@ -93,6 +92,7 @@ Begin VB.Form FormSwirl
       Left            =   1800
       TabIndex        =   7
       Top             =   7590
+      Value           =   -1  'True
       Width           =   2535
    End
    Begin VB.TextBox txtAngle 
@@ -160,7 +160,7 @@ Begin VB.Form FormSwirl
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "swirl radius (percentage):"
+      Caption         =   "radius (percentage):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -175,7 +175,7 @@ Begin VB.Form FormSwirl
       Left            =   240
       TabIndex        =   11
       Top             =   6480
-      Width           =   2715
+      Width           =   2145
    End
    Begin VB.Label lblInterpolation 
       Appearance      =   0  'Flat
