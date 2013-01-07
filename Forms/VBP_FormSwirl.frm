@@ -240,6 +240,10 @@ Attribute VB_Exposed = False
 'At present, the tool assumes that you want to swirl the image around its center.  The code is already set up to handle
 ' alternative center points - there simply needs to be a good user interface technique for establishing the center.
 '
+'Finally, the transformation used by this tool is a modified version of a transformation originally written by
+' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
+' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
+'
 '***************************************************************************
 
 Option Explicit
