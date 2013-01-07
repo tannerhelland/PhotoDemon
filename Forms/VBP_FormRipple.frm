@@ -3,7 +3,7 @@ Begin VB.Form FormRipple
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Ripple"
-   ClientHeight    =   10350
+   ClientHeight    =   10575
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
@@ -19,7 +19,7 @@ Begin VB.Form FormRipple
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   690
+   ScaleHeight     =   705
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -158,7 +158,7 @@ Begin VB.Form FormRipple
       Index           =   0
       Left            =   360
       TabIndex        =   5
-      Top             =   9270
+      Top             =   9360
       Value           =   -1  'True
       Width           =   1095
    End
@@ -179,7 +179,7 @@ Begin VB.Form FormRipple
       Index           =   1
       Left            =   1800
       TabIndex        =   4
-      Top             =   9270
+      Top             =   9360
       Width           =   2535
    End
    Begin VB.PictureBox picPreview 
@@ -202,7 +202,7 @@ Begin VB.Form FormRipple
       Height          =   495
       Left            =   4800
       TabIndex        =   1
-      Top             =   9720
+      Top             =   9960
       Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
@@ -211,13 +211,13 @@ Begin VB.Form FormRipple
       Height          =   495
       Left            =   3480
       TabIndex        =   0
-      Top             =   9720
+      Top             =   9960
       Width           =   1245
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "time passed (phase):"
+      Caption         =   "time (phase):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -233,7 +233,7 @@ Begin VB.Form FormRipple
       Left            =   240
       TabIndex        =   17
       Top             =   7320
-      Width           =   2220
+      Width           =   1425
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -318,7 +318,7 @@ Begin VB.Form FormRipple
       Index           =   2
       Left            =   240
       TabIndex        =   3
-      Top             =   8940
+      Top             =   9000
       Width           =   1845
    End
 End
@@ -613,17 +613,6 @@ Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 
-'Redraw the on-screen preview of the rotated image
-Private Sub updatePreview()
-
-    If OptInterpolate(0) Then
-        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), True, True, picPreview
-    Else
-        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), False, True, picPreview
-    End If
-
-End Sub
-
 Private Sub txtAmplitude_GotFocus()
     AutoSelectText txtAmplitude
 End Sub
@@ -658,4 +647,15 @@ End Sub
 Private Sub txtWavelength_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtWavelength
     If EntryValid(txtWavelength, hsWavelength.Min, hsWavelength.Max, False, False) Then hsWavelength.Value = Val(txtWavelength)
+End Sub
+
+'Redraw the on-screen preview of the transformed image
+Private Sub updatePreview()
+
+    If OptInterpolate(0) Then
+        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), True, True, picPreview
+    Else
+        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), False, True, picPreview
+    End If
+
 End Sub

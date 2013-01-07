@@ -3,7 +3,7 @@ Begin VB.Form FormLens
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Lens Correction and Distortion"
-   ClientHeight    =   8730
+   ClientHeight    =   8895
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
@@ -19,7 +19,7 @@ Begin VB.Form FormLens
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   582
+   ScaleHeight     =   593
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -71,7 +71,7 @@ Begin VB.Form FormLens
       Index           =   0
       Left            =   360
       TabIndex        =   8
-      Top             =   7590
+      Top             =   7680
       Value           =   -1  'True
       Width           =   1095
    End
@@ -92,7 +92,7 @@ Begin VB.Form FormLens
       Index           =   1
       Left            =   1800
       TabIndex        =   7
-      Top             =   7590
+      Top             =   7680
       Width           =   2535
    End
    Begin VB.TextBox txtIndex 
@@ -146,7 +146,7 @@ Begin VB.Form FormLens
       Height          =   495
       Left            =   4800
       TabIndex        =   1
-      Top             =   8040
+      Top             =   8280
       Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
@@ -155,7 +155,7 @@ Begin VB.Form FormLens
       Height          =   495
       Left            =   3480
       TabIndex        =   0
-      Top             =   8040
+      Top             =   8280
       Width           =   1245
    End
    Begin VB.Label lblHeight 
@@ -197,7 +197,7 @@ Begin VB.Form FormLens
       Height          =   285
       Left            =   240
       TabIndex        =   6
-      Top             =   7260
+      Top             =   7320
       Width           =   1845
    End
    Begin VB.Label lblAmount 
@@ -510,7 +510,16 @@ Private Sub txtIndex_KeyUp(KeyCode As Integer, Shift As Integer)
     End If
 End Sub
 
-'Redraw the on-screen preview of the rotated image
+Private Sub txtRadius_GotFocus()
+    AutoSelectText txtRadius
+End Sub
+
+Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtRadius
+    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
+End Sub
+
+'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
     If OptInterpolate(0) Then
@@ -519,13 +528,4 @@ Private Sub updatePreview()
         ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, False, True, picPreview
     End If
 
-End Sub
-
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
-End Sub
-
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
 End Sub

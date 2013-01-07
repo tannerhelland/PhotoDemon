@@ -3,7 +3,7 @@ Begin VB.Form FormSwirl
    AutoRedraw      =   -1  'True
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Swirl"
-   ClientHeight    =   8730
+   ClientHeight    =   8895
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
@@ -19,7 +19,7 @@ Begin VB.Form FormSwirl
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   582
+   ScaleHeight     =   593
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
@@ -71,7 +71,7 @@ Begin VB.Form FormSwirl
       Index           =   0
       Left            =   360
       TabIndex        =   8
-      Top             =   7590
+      Top             =   7680
       Value           =   -1  'True
       Width           =   1095
    End
@@ -92,7 +92,7 @@ Begin VB.Form FormSwirl
       Index           =   1
       Left            =   1800
       TabIndex        =   7
-      Top             =   7590
+      Top             =   7680
       Width           =   2535
    End
    Begin VB.TextBox txtAngle 
@@ -145,7 +145,7 @@ Begin VB.Form FormSwirl
       Height          =   495
       Left            =   4800
       TabIndex        =   1
-      Top             =   8040
+      Top             =   8280
       Width           =   1245
    End
    Begin VB.CommandButton CmdOK 
@@ -154,7 +154,7 @@ Begin VB.Form FormSwirl
       Height          =   495
       Left            =   3480
       TabIndex        =   0
-      Top             =   8040
+      Top             =   8280
       Width           =   1245
    End
    Begin VB.Label lblHeight 
@@ -196,7 +196,7 @@ Begin VB.Form FormSwirl
       Height          =   285
       Left            =   240
       TabIndex        =   6
-      Top             =   7260
+      Top             =   7320
       Width           =   1845
    End
    Begin VB.Label lblAmount 
@@ -204,7 +204,7 @@ Begin VB.Form FormSwirl
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "swirl angle (degrees):"
+      Caption         =   "swirl angle:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -219,7 +219,7 @@ Begin VB.Form FormSwirl
       Left            =   240
       TabIndex        =   2
       Top             =   5640
-      Width           =   2310
+      Width           =   1230
    End
 End
 Attribute VB_Name = "FormSwirl"
@@ -437,7 +437,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Create the preview
-    DrawPreviewImage picPreview
+    updatePreview
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -489,7 +489,16 @@ Private Sub txtAngle_KeyUp(KeyCode As Integer, Shift As Integer)
     End If
 End Sub
 
-'Redraw the on-screen preview of the rotated image
+Private Sub txtRadius_GotFocus()
+    AutoSelectText txtRadius
+End Sub
+
+Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtRadius
+    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
+End Sub
+
+'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
     If OptInterpolate(0) Then
@@ -498,13 +507,4 @@ Private Sub updatePreview()
         SwirlImage CDbl(hsAngle / 10), hsRadius.Value, False, True, picPreview
     End If
 
-End Sub
-
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
-End Sub
-
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
 End Sub
