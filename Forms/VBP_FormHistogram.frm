@@ -773,7 +773,7 @@ Private Sub Form_Resize()
     picH.Width = Me.ScaleWidth - picH.Left - 8
     picGradient.Width = Me.ScaleWidth - picGradient.Left - 8
     
-    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - 8
+    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
     For x = 0 To lineStats.Count - 1
         lineStats(x).x2 = Me.ScaleWidth - lineStats(x).x1
     Next x

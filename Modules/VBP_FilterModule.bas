@@ -831,23 +831,28 @@ End Function
 
 'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
 ' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
-Public Function getInterpolatedVal(ByVal x1 As Single, ByVal y1 As Single, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
-
-    Static cTotal As Long
+Public Function getInterpolatedVal(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
+        
+    'Retrieve the four surrounding pixel values
+    Static topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
+    topLeft = iData(Int(x1) * iDepth + iOffset, Int(y1))
+    topRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1))
+    bottomLeft = iData(Int(x1) * iDepth + iOffset, Int(y1 + 1))
+    bottomRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1 + 1))
     
-    'First, blend the top-left and bottom-left pixels
-    cTotal = BlendColors(iData(Int(x1) * iDepth + iOffset, Int(y1)), iData(Int(x1) * iDepth + iOffset, Int(y1) + 1), y1 - Int(y1))
+    'Calculate blend ratios
+    Static yBlend As Double
+    Static xBlend As Double, xBlendInv As Double
+    yBlend = y1 - Int(y1)
+    xBlend = x1 - Int(x1)
+    xBlendInv = 1 - xBlend
     
-    'Next, blend the top-right and bottom-right pixels
-    cTotal = cTotal + BlendColors(iData((Int(x1) + 1) * iDepth + iOffset, Int(y1)), iData((Int(x1) + 1) * iDepth + iOffset, Int(y1) + 1), y1 - Int(y1))
+    'Blend in the x-direction
+    Static topRowColor As Double, bottomRowColor As Double
+    topRowColor = topRight * xBlend + topLeft * xBlendInv
+    bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
-    'Next, blend the top-left and top-right pixels
-    cTotal = cTotal + BlendColors(iData(Int(x1) * iDepth + iOffset, Int(y1)), iData((Int(x1) + 1) * iDepth + iOffset, Int(y1)), x1 - Int(x1))
-    
-    'Finally, blend the bottom-left and bottom-right pixels
-    cTotal = cTotal + BlendColors(iData(Int(x1) * iDepth + iOffset, Int(y1) + 1), iData((Int(x1) + 1) * iDepth + iOffset, Int(y1) + 1), x1 - Int(x1))
-
-    'Divide by four and return that result
-    getInterpolatedVal = cTotal \ 4
+    'Blend in the y-direction
+    getInterpolatedVal = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
 
 End Function
