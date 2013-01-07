@@ -1164,32 +1164,41 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Natural"
          Index           =   5
-         Begin VB.Menu MnuAtmosperic 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Atmosphere"
+            Index           =   0
          End
-         Begin VB.Menu MnuBurn 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Burn"
+            Index           =   1
          End
-         Begin VB.Menu MnuFogEffect 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Fog"
+            Index           =   2
          End
-         Begin VB.Menu MnuFrozen 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Freeze"
+            Index           =   3
          End
-         Begin VB.Menu MnuLava 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Lava"
+            Index           =   4
          End
-         Begin VB.Menu MnuOcean 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Ocean"
+            Index           =   5
          End
-         Begin VB.Menu MnuRainbow 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Rainbow"
+            Index           =   6
          End
-         Begin VB.Menu MnuSteel 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Steel"
+            Index           =   7
          End
-         Begin VB.Menu MnuWater 
+         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Water"
+            Index           =   8
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1720,10 +1729,6 @@ Private Sub MnuArrangeIcons_Click()
     Me.Arrange vbArrangeIcons
 End Sub
 
-Private Sub MnuAtmosperic_Click()
-    Process Atmospheric
-End Sub
-
 Private Sub MnuAutoEnhanceHighlights_Click()
     Process AutoHighlights
 End Sub
@@ -1793,10 +1798,6 @@ Private Sub MnuBugReport_Click()
         OpenURL "http://www.tannerhelland.com/photodemon-contact/"
     End If
 
-End Sub
-
-Private Sub MnuBurn_Click()
-    Process Burn
 End Sub
 
 Private Sub MnuCascadeWindows_Click()
@@ -2020,14 +2021,6 @@ Private Sub MnuFitWindowToImage_Click()
     FitWindowToImage
 End Sub
 
-Private Sub MnuFogEffect_Click()
-    Process FogEffect
-End Sub
-
-Private Sub MnuFrozen_Click()
-    Process Frozen
-End Sub
-
 Private Sub MnuGamma_Click()
     Process GammaCorrection, , , , , , , , , , True
 End Sub
@@ -2119,10 +2112,6 @@ Private Sub MnuIsometric_Click()
     Process Isometric
 End Sub
 
-Private Sub MnuLava_Click()
-    Process Lava
-End Sub
-
 'The user can toggle the appearance of the left-hand panel from this menu.  This toggle is also stored in the INI file.
 Private Sub MnuLeftPanel_Click()
     
@@ -2163,6 +2152,50 @@ Private Sub MnuMosaic_Click()
     Process Mosaic, , , , , , , , , , True
 End Sub
 
+Private Sub MnuNatureFilter_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Atmosphere
+        Case 0
+            Process Atmospheric
+            
+        'Burn
+        Case 1
+            Process Burn
+        
+        'Fog
+        Case 2
+            Process FogEffect
+        
+        'Freeze
+        Case 3
+            Process Frozen
+        
+        'Lava
+        Case 4
+            Process Lava
+        
+        'Ocean
+        Case 5
+            Process Ocean
+        
+        'Rainbow
+        Case 6
+            Process Rainbow
+        
+        'Steel
+        Case 7
+            Process Steel
+        
+        'Water
+        Case 8
+            Process Water
+    
+    End Select
+
+End Sub
+
 Private Sub MnuNegative_Click()
     Process Negative
 End Sub
@@ -2183,10 +2216,6 @@ End Sub
 
 Private Sub MnuNoise_Click()
     Process Noise, , , , , , , , , , True
-End Sub
-
-Private Sub MnuOcean_Click()
-    Process Ocean
 End Sub
 
 Private Sub MnuPencil_Click()
@@ -2265,10 +2294,6 @@ End Sub
 
 Private Sub MnuRadioactive_Click()
     Process Radioactive
-End Sub
-
-Private Sub MnuRainbow_Click()
-    Process Rainbow
 End Sub
 
 Private Sub MnuReadLicense_Click()
@@ -2425,10 +2450,6 @@ Private Sub MnuStartMacroRecording_Click()
     Process MacroStartRecording
 End Sub
 
-Private Sub MnuSteel_Click()
-    Process Steel
-End Sub
-
 Private Sub MnuStopMacroRecording_Click()
     Process MacroStopRecording
 End Sub
@@ -2500,10 +2521,6 @@ End Sub
 Private Sub MnuVisitWebsite_Click()
     'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
     OpenURL "http://www.tannerhelland.com/photodemon"
-End Sub
-
-Private Sub MnuWater_Click()
-    Process Water
 End Sub
 
 Private Sub MnuWhiteBalance_Click()
