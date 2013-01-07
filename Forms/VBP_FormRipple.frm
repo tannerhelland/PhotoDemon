@@ -400,7 +400,7 @@ End Sub
 'Apply a "water ripple" effect to an image
 Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude As Double, ByVal ripplePhase As Double, ByVal rippleRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
 
-    If toPreview = False Then Message "Swirling image round and round..."
+    If toPreview = False Then Message "Simulating ripples across image surface..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
