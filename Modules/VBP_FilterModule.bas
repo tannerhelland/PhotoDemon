@@ -856,3 +856,53 @@ Public Function getInterpolatedVal(ByVal x1 As Double, ByVal y1 As Double, ByRef
     getInterpolatedVal = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
 
 End Function
+
+'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
+' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
+Public Function getInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, ByVal xMax As Long, yMax As Long, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
+        
+    'Retrieve the four surrounding pixel values
+    Static topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
+    topLeft = iData(Int(x1) * iDepth + iOffset, Int(y1))
+    If Int(x1) = xMax Then
+        topRight = iData(0 + iOffset, Int(y1))
+    Else
+        topRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1))
+    End If
+    If Int(y1) = yMax Then
+        bottomLeft = iData(Int(x1) * iDepth + iOffset, 0)
+    Else
+        bottomLeft = iData(Int(x1) * iDepth + iOffset, Int(y1 + 1))
+    End If
+    
+    If Int(x1) = xMax Then
+        If Int(y1) = yMax Then
+            bottomRight = iData(0 + iOffset, 0)
+        Else
+            bottomRight = iData(0 + iOffset, Int(y1 + 1))
+        End If
+    Else
+        If Int(y1) = yMax Then
+            bottomRight = iData(Int(x1 + 1) * iDepth + iOffset, 0)
+        Else
+            bottomRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1 + 1))
+        End If
+    End If
+    
+    'Calculate blend ratios
+    Static yBlend As Double
+    Static xBlend As Double, xBlendInv As Double
+    yBlend = y1 - Int(y1)
+    xBlend = x1 - Int(x1)
+    xBlendInv = 1 - xBlend
+    
+    'Blend in the x-direction
+    Static topRowColor As Double, bottomRowColor As Double
+    topRowColor = topRight * xBlend + topLeft * xBlendInv
+    bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
+    
+    'Blend in the y-direction
+    getInterpolatedValWrap = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
+
+End Function
+
