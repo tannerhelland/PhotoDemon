@@ -42,7 +42,7 @@ Begin VB.MDIForm FormMain
       Top             =   7560
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0   'False
+      enabled         =   0
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -266,12 +266,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":A6CA
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":A6F2
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltiptype     =   1
          tooltiptitle    =   "Open"
+         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -285,12 +285,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":B744
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":B76C
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltiptype     =   1
          tooltiptitle    =   "Save"
+         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -304,12 +304,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":C7BE
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":C7E6
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltiptype     =   1
          tooltiptitle    =   "Undo"
+         tooltiptype     =   1
          tooltipbackcolor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
@@ -324,12 +324,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":D838
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":D860
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltiptype     =   1
          tooltiptitle    =   "Redo"
+         tooltiptype     =   1
          tooltipbackcolor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
@@ -344,12 +344,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":E8B2
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":E8DA
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltiptype     =   1
          tooltiptitle    =   "Close"
+         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -363,12 +363,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":F92C
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":F954
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltiptype     =   1
          tooltiptitle    =   "Save As"
+         tooltiptype     =   1
       End
       Begin VB.Label lblSelSize 
          Appearance      =   0  'Flat
@@ -1077,6 +1077,10 @@ Begin VB.MDIForm FormMain
          Begin VB.Menu MnuDistortFilter 
             Caption         =   "Swirl..."
             Index           =   3
+         End
+         Begin VB.Menu MnuDistortFilter 
+            Caption         =   "Waves..."
+            Index           =   4
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1906,6 +1910,10 @@ Private Sub MnuDistortFilter_Click(Index As Integer)
         'Swirl
         Case 3
             Process DistortSwirl, , , , , , , , , , True
+        
+        'Waves
+        Case 4
+            Process DistortWaves, , , , , , , , , , True
     
     End Select
 

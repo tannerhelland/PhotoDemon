@@ -189,6 +189,8 @@ Option Explicit
     Public Const DistortRipple As Long = 714
     '-Distort: Pinch and whirl
     Public Const DistortPinchAndWhirl As Long = 715
+    '-Distort: Waves
+    Public Const DistortWaves As Long = 716
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -421,13 +423,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormHistogram.StretchHistogram
             Case Equalize
                 If LoadForm Then
-                    FormEqualize.Show 1, FormMain
+                    FormEqualize.Show vbModal, FormMain
                 Else
                     FormEqualize.EqualizeHistogram pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4
                 End If
             Case WhiteBalance
                 If LoadForm Then
-                    FormWhiteBalance.Show 1, FormMain
+                    FormWhiteBalance.Show vbModal, FormMain
                 Else
                     FormWhiteBalance.AutoWhiteBalance pOPCODE
                 End If
@@ -441,7 +443,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
         Select Case pType
             Case BWImpressionist
                 If LoadForm Then
-                    FormBlackAndWhite.Show 1, FormMain
+                    FormBlackAndWhite.Show vbModal, FormMain
                 Else
                     'MenuBWImpressionist
                 End If
@@ -473,7 +475,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormGrayscale.MenuDesaturate
             Case GrayScale
                 If LoadForm Then
-                    FormGrayscale.Show 1, FormMain
+                    FormGrayscale.Show vbModal, FormMain
                 Else
                     FormGrayscale.MenuGrayscale
                 End If
@@ -513,19 +515,19 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormDiffuse.DiffuseCustom 25, 25, False
             Case CustomDiffuse
                 If LoadForm Then
-                    FormDiffuse.Show 1, FormMain
+                    FormDiffuse.Show vbModal, FormMain
                 Else
                     FormDiffuse.DiffuseCustom pOPCODE, pOPCODE2, pOPCODE3
                 End If
             Case Mosaic
                 If LoadForm Then
-                    FormMosaic.Show 1, FormMain
+                    FormMosaic.Show vbModal, FormMain
                 Else
                     FormMosaic.MosaicFilter CInt(pOPCODE), CInt(pOPCODE2)
                 End If
             Case CustomRank
                 If LoadForm Then
-                    FormRank.Show 1, FormMain
+                    FormRank.Show vbModal, FormMain
                 Else
                     FormRank.CustomRankFilter CInt(pOPCODE), CByte(pOPCODE2)
                 End If
@@ -545,7 +547,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
         Select Case pType
             Case EmbossToColor
                 If LoadForm Then
-                    FormEmbossEngrave.Show 1, FormMain
+                    FormEmbossEngrave.Show vbModal, FormMain
                 Else
                     FormEmbossEngrave.FilterEmbossColor CLng(pOPCODE)
                 End If
@@ -567,7 +569,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormFindEdges.FilterSobelVertical pOPCODE
             Case Laplacian
                 If LoadForm Then
-                    FormFindEdges.Show 1, FormMain
+                    FormFindEdges.Show vbModal, FormMain
                 Else
                     FormFindEdges.FilterLaplacian pOPCODE
                 End If
@@ -587,7 +589,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
         Select Case pType
             Case Rechannel
                 If LoadForm Then
-                    FormRechannel.Show 1, FormMain
+                    FormRechannel.Show vbModal, FormMain
                 Else
                     FormRechannel.RechannelImage CLng(pOPCODE)
                 End If
@@ -603,13 +605,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuCShift pOPCODE
             Case BrightnessAndContrast
                 If LoadForm Then
-                    FormBrightnessContrast.Show 1, FormMain
+                    FormBrightnessContrast.Show vbModal, FormMain
                 Else
                     FormBrightnessContrast.BrightnessContrast CInt(pOPCODE), CSng(pOPCODE2), CBool(pOPCODE3)
                 End If
             Case GammaCorrection
                 If LoadForm Then
-                    FormGamma.Show 1, FormMain
+                    FormGamma.Show vbModal, FormMain
                 Else
                     FormGamma.GammaCorrect CSng(pOPCODE), CByte(pOPCODE2)
                 End If
@@ -631,19 +633,19 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuAutoEnhanceShadows
             Case ImageLevels
                 If LoadForm Then
-                    FormLevels.Show 1, FormMain
+                    FormLevels.Show vbModal, FormMain
                 Else
                     FormLevels.MapImageLevels pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
                 End If
             Case Colorize
                 If LoadForm Then
-                    FormColorize.Show 1, FormMain
+                    FormColorize.Show vbModal, FormMain
                 Else
                     FormColorize.ColorizeImage pOPCODE, pOPCODE2
                 End If
             Case ReduceColors
                 If LoadForm Then
-                    FormReduceColors.Show 1, FormMain
+                    FormReduceColors.Show vbModal, FormMain
                 Else
                     If pOPCODE = REDUCECOLORS_AUTO Then
                         FormReduceColors.ReduceImageColors_Auto pOPCODE2
@@ -657,13 +659,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 End If
             Case AdjustTemperature
                 If LoadForm Then
-                    FormColorTemp.Show 1, FormMain
+                    FormColorTemp.Show vbModal, FormMain
                 Else
                     FormColorTemp.ApplyTemperatureToImage pOPCODE, pOPCODE2, pOPCODE3
                 End If
             Case AdjustHSL
                 If LoadForm Then
-                    FormHSL.Show 1, FormMain
+                    FormHSL.Show vbModal, FormMain
                 Else
                     FormHSL.AdjustImageHSL pOPCODE, pOPCODE2, pOPCODE3
                 End If
@@ -677,7 +679,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuFlip
             Case FreeRotate
                 If LoadForm Then
-                    FormRotate.Show 1, FormMain
+                    FormRotate.Show vbModal, FormMain
                 Else
                     FormRotate.RotateArbitrary pOPCODE, pOPCODE2
                 End If
@@ -693,13 +695,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FilterIsometric
             Case ImageSize
                 If LoadForm Then
-                    FormResize.Show 1, FormMain
+                    FormResize.Show vbModal, FormMain
                 Else
                     FormResize.ResizeImage CLng(pOPCODE), CLng(pOPCODE2), CByte(pOPCODE3)
                 End If
             Case Tile
                 If LoadForm Then
-                    FormTile.Show 1, FormMain
+                    FormTile.Show vbModal, FormMain
                 Else
                     FormTile.GenerateTile CByte(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
                 End If
@@ -711,27 +713,33 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 ConvertImageColorDepth 32
             Case DistortSwirl
                 If LoadForm Then
-                    FormSwirl.Show 1, FormMain
+                    FormSwirl.Show vbModal, FormMain
                 Else
                     FormSwirl.SwirlImage CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
                 End If
             Case DistortLens
                 If LoadForm Then
-                    FormLens.Show 1, FormMain
+                    FormLens.Show vbModal, FormMain
                 Else
                     FormLens.ApplyLensDistortion CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
                 End If
             Case DistortRipple
                 If LoadForm Then
-                    FormRipple.Show 1, FormMain
+                    FormRipple.Show vbModal, FormMain
                 Else
                     FormRipple.RippleImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
                 End If
             Case DistortPinchAndWhirl
                 If LoadForm Then
-                    FormPinch.Show 1, FormMain
+                    FormPinch.Show vbModal, FormMain
                 Else
                     FormPinch.PinchImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CBool(pOPCODE4)
+                End If
+            Case DistortWaves
+                If LoadForm Then
+                    FormWaves.Show vbModal, FormMain
+                Else
+                    FormWaves.WaveImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
                 End If
                 
         End Select
@@ -746,7 +754,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuAtmospheric
             Case BlackLight
                 If LoadForm Then
-                    FormBlackLight.Show 1, FormMain
+                    FormBlackLight.Show vbModal, FormMain
                 Else
                     FormBlackLight.fxBlackLight pOPCODE
                 End If
@@ -754,7 +762,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuDream
             Case Posterize
                 If LoadForm Then
-                    FormPosterize.Show 1, FormMain
+                    FormPosterize.Show vbModal, FormMain
                 Else
                     FormPosterize.PosterizeImage CByte(pOPCODE)
                 End If
@@ -762,19 +770,19 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuRadioactive
             Case Solarize
                 If LoadForm Then
-                    FormSolarize.Show 1, FormMain
+                    FormSolarize.Show vbModal, FormMain
                 Else
                     FormSolarize.SolarizeImage CByte(pOPCODE)
                 End If
             Case Twins
                 If LoadForm Then
-                    FormTwins.Show 1, FormMain
+                    FormTwins.Show vbModal, FormMain
                 Else
                     FormTwins.GenerateTwins CByte(pOPCODE)
                 End If
             Case Fade
                 If LoadForm Then
-                    FormFade.Show 1, FormMain
+                    FormFade.Show vbModal, FormMain
                 Else
                     FormFade.FadeImage CSng(pOPCODE)
                 End If
@@ -788,7 +796,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuWater
             Case Noise
                 If LoadForm Then
-                    FormNoise.Show 1, FormMain
+                    FormNoise.Show vbModal, FormMain
                 Else
                     FormNoise.AddNoise CInt(pOPCODE), CByte(pOPCODE2)
                 End If
@@ -798,7 +806,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuLava
             Case CustomFilter
                 If LoadForm Then
-                    FormCustomFilter.Show 1, FormMain
+                    FormCustomFilter.Show vbModal, FormMain
                 Else
                     DoFilter , , pOPCODE
                 End If
@@ -820,7 +828,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormDespeckle.QuickDespeckle
             Case CustomDespeckle
                 If LoadForm Then
-                    FormDespeckle.Show 1, FormMain
+                    FormDespeckle.Show vbModal, FormMain
                 Else
                     FormDespeckle.Despeckle pOPCODE
                 End If
@@ -1184,6 +1192,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Ripple"
         Case DistortPinchAndWhirl
             GetNameOfProcess = "Pinch and whirl"
+        Case DistortWaves
+            GetNameOfProcess = "Waves"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade

@@ -116,6 +116,7 @@ Form=Forms\VBP_FormSwirl.frm
 Form=Forms\VBP_FormLens.frm
 Form=Forms\VBP_FormRipple.frm
 Form=Forms\VBP_FormPinch.frm
+Form=Forms\VBP_FormWaves.frm
 ResFile32="Resources\PD_icons.RES"
 IconForm="FormMain"
 Startup="Sub Main"
