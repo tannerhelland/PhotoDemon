@@ -112,7 +112,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     totalCount = 0
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
+    Dim R As Long, g As Long, b As Long
     Dim chkValue As Long
     Dim colorFound As Boolean
         
@@ -121,11 +121,11 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
         QuickVal = x * qvDepth
     For y = 0 To finalY
         
-        r = ImageData(QuickVal + 2, y)
+        R = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        chkValue = RGB(r, g, b)
+        chkValue = RGB(R, g, b)
         colorFound = False
         
         'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
@@ -159,17 +159,17 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     
     If totalCount = 2 Then
     
-        r = ExtractR(UniqueColors(0))
+        R = ExtractR(UniqueColors(0))
         g = ExtractG(UniqueColors(0))
         b = ExtractB(UniqueColors(0))
         
-        If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
+        If ((R = 0) And (g = 0) And (b = 0)) Or ((R = 255) And (g = 255) And (b = 255)) Then
             
-            r = ExtractR(UniqueColors(1))
+            R = ExtractR(UniqueColors(1))
             g = ExtractG(UniqueColors(1))
             b = ExtractB(UniqueColors(1))
             
-            If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
+            If ((R = 0) And (g = 0) And (b = 0)) Or ((R = 255) And (g = 255) And (b = 255)) Then
                 g_IsImageMonochrome = True
                 Erase UniqueColors
                 g_LastColorCount = totalCount
@@ -190,12 +190,12 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
         'Loop through all available colors
         For i = 0 To totalCount - 1
         
-            r = ExtractR(UniqueColors(i))
+            R = ExtractR(UniqueColors(i))
             g = ExtractG(UniqueColors(i))
             b = ExtractB(UniqueColors(i))
             
             'If any of the components do not match, this is not a grayscale image
-            If (r <> g) Or (g <> b) Or (r <> b) Then
+            If (R <> g) Or (g <> b) Or (R <> b) Then
                 g_IsImageGray = False
                 Exit For
             End If
@@ -482,3 +482,45 @@ End Function
 Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Single) As Byte
     BlendColors = ((1 - mixRatio) * Color1) + (mixRatio * Color2)
 End Function
+
+
+'Return the arctangent of two values (rise / run)
+Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
+ 
+    If (y = 0) And (x = 0) Then
+        Atan2 = 0
+        Exit Function
+    End If
+ 
+    If y > 0 Then
+        If x >= y Then
+            Atan2 = Atn(y / x)
+        ElseIf x <= -y Then
+            Atan2 = Atn(y / x) + PI
+        Else
+            Atan2 = PI_HALF - Atn(x / y)
+        End If
+    Else
+        If x >= -y Then
+            Atan2 = Atn(y / x)
+        ElseIf x <= y Then
+            Atan2 = Atn(y / x) - PI
+        Else
+            Atan2 = -Atn(x / y) - PI_HALF
+        End If
+    End If
+ 
+End Function
+
+'Arcsine function
+Public Function Asin(ByVal x As Double) As Double
+    If (x > 1) Or (x < -1) Then x = 1
+    Asin = Atan2(x, Sqr(1 - x * x))
+End Function
+
+'Arccosine function
+Public Function Acos(ByVal x As Double) As Double
+    If (x > 1) Or (x < -1) Then x = 1
+    Acos = Atan2(Sqr(1 - x * x), x)
+End Function
+

@@ -56,7 +56,7 @@ Begin VB.Form FormSwirl
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
-      Caption         =   " speed"
+      Caption         =   " quality"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -72,11 +72,12 @@ Begin VB.Form FormSwirl
       Left            =   360
       TabIndex        =   8
       Top             =   7590
+      Value           =   -1  'True
       Width           =   1095
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
-      Caption         =   " quality"
+      Caption         =   " speed"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -92,7 +93,6 @@ Begin VB.Form FormSwirl
       Left            =   1800
       TabIndex        =   7
       Top             =   7590
-      Value           =   -1  'True
       Width           =   2535
    End
    Begin VB.TextBox txtAngle 
@@ -231,13 +231,14 @@ Attribute VB_Exposed = False
 'Image "Swirl" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 05/January/12
-'Last update: initial build
+'Last updated: 06/January/12
+'Last update: applied additional optimizations and tweaks
 '
 'This tool allows the user to "swirl" an image at an arbitrary angle in 1/10 degree increments.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality swirl.
 '
-'At present, the tool assumes that you want to swirl the image around its center.
+'At present, the tool assumes that you want to swirl the image around its center.  The code is already set up to handle
+' alternative center points - there simply needs to be a good user interface technique for establishing the center.
 '
 '***************************************************************************
 
@@ -269,15 +270,16 @@ Private Sub cmdOK_Click()
     
     'Based on the user's selection, submit the proper processor request
     If OptInterpolate(0) Then
-        Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, False
-    Else
         Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, True
+    Else
+        Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, False
     End If
     
     Unload Me
     
 End Sub
 
+'Apply a "swirl" effect to an image
 Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
 
     'Reverse the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
@@ -350,7 +352,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
     
     Dim i As Long
     
-    'Radius is based off the smaller of the two dimensions - width or height
+    'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long
     tWidth = curLayerValues.Width
     tHeight = curLayerValues.Height
@@ -487,9 +489,9 @@ End Sub
 Private Sub updatePreview()
 
     If OptInterpolate(0) Then
-        SwirlImage CDbl(hsAngle / 10), hsRadius.Value, False, True, picPreview
-    Else
         SwirlImage CDbl(hsAngle / 10), hsRadius.Value, True, True, picPreview
+    Else
+        SwirlImage CDbl(hsAngle / 10), hsRadius.Value, False, True, picPreview
     End If
 
 End Sub
@@ -502,26 +504,3 @@ Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtRadius
     If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
 End Sub
-
-'Return the arctangent of two values (rise / run)
-Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
- 
-    If y > 0 Then
-      If x >= y Then
-        Atan2 = Atn(y / x)
-      ElseIf x <= -y Then
-        Atan2 = Atn(y / x) + PI
-      Else
-        Atan2 = PI / 2 - Atn(x / y)
-      End If
-    Else
-      If x >= -y Then
-        Atan2 = Atn(y / x)
-      ElseIf x <= y Then
-        Atan2 = Atn(y / x) - PI
-      Else
-        Atan2 = -Atn(x / y) - PI / 2
-      End If
-    End If
- 
-  End Function

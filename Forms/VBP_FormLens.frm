@@ -56,7 +56,7 @@ Begin VB.Form FormLens
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
-      Caption         =   " speed"
+      Caption         =   " quality"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -72,11 +72,12 @@ Begin VB.Form FormLens
       Left            =   360
       TabIndex        =   8
       Top             =   7590
+      Value           =   -1  'True
       Width           =   1095
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
-      Caption         =   " quality"
+      Caption         =   " speed"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -92,7 +93,6 @@ Begin VB.Form FormLens
       Left            =   1800
       TabIndex        =   7
       Top             =   7590
-      Value           =   -1  'True
       Width           =   2535
    End
    Begin VB.TextBox txtIndex 
@@ -205,7 +205,7 @@ Begin VB.Form FormLens
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "refractive index (lens strength):"
+      Caption         =   "lens strength (refractive index):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -232,13 +232,14 @@ Attribute VB_Exposed = False
 'Lens Correction and Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 05/January/12
-'Last update: initial build
+'Last updated: 06/January/12
+'Last update: applied additional optimizations and tweaks
 '
 'This tool allows the user to correct (or apply) a lens distortion to an image.  Bilinear interpolation
-' (via reverse-mapping) is available for a high-quality lens correction.
+' (via reverse-mapping) is available for high-quality lensing.
 '
-'At present, the tool assumes that you want to correct the image around the centerpoint.
+'At present, the tool assumes that you want to refract the image around its centerpoint.  The code is already set up to handle
+' alternative center points - there simply needs to be a good user interface technique for establishing the center.
 '
 '***************************************************************************
 
@@ -270,9 +271,9 @@ Private Sub cmdOK_Click()
     
     'Based on the user's selection, submit the proper processor request
     If OptInterpolate(0) Then
-        Process DistortLens, CDbl(hsIndex / 100), hsRadius.Value, False
-    Else
         Process DistortLens, CDbl(hsIndex / 100), hsRadius.Value, True
+    Else
+        Process DistortLens, CDbl(hsIndex / 100), hsRadius.Value, False
     End If
     
     Unload Me
@@ -367,9 +368,8 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     sRadiusH = tHeight * (lensRadius / 100)
     sRadiusH2 = sRadiusH * sRadiusH
     
-    'sRadius = Sqr(sRadiusW2 + sRadiusH2) / 2
-    'sRadius = sRadius * (lensRadius / 100)
-    'sRadius2 = sRadius * sRadius
+    Dim sRadiusMult As Double
+    sRadiusMult = sRadiusW * sRadiusH
               
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -381,18 +381,17 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
         nY = y - midY
         nX2 = nX * nX
         nY2 = nY * nY
-        
-        'Calculate distance automatically
-        'sDistance = (nX * nX) + (nY * nY)
                 
-        'Calculate remapped x and y values
+        'If the values are going to be out-of-bounds, simply maintain the current x and y values
         If nY2 >= (sRadiusH2 - ((sRadiusH2 * nX2) / sRadiusW2)) Then
             srcX = x
             srcY = y
+        
+        'Otherwise, reverse-map x and y back onto the original image using a reversed lens refraction calculation
         Else
         
             'Calculate theta
-            theta = Sqr((1 - (nX2 / sRadiusW2) - (nY2 / sRadiusH2)) * (sRadiusW * sRadiusH))
+            theta = Sqr((1 - (nX2 / sRadiusW2) - (nY2 / sRadiusH2)) * sRadiusMult)
             theta2 = theta * theta
             
             'Calculate the angle for x
@@ -402,6 +401,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
             secondAngle = PI_HALF - xAngle - secondAngle
             srcX = x - Tan(secondAngle) * theta
             
+            'Now do the same thing for y
             yAngle = Acos(nY / Sqr(nY2 + theta2))
             firstAngle = PI_HALF - yAngle
             secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
@@ -510,9 +510,9 @@ End Sub
 Private Sub updatePreview()
 
     If OptInterpolate(0) Then
-        ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, False, True, picPreview
-    Else
         ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, True, True, picPreview
+    Else
+        ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, False, True, picPreview
     End If
 
 End Sub
@@ -525,36 +525,3 @@ Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtRadius
     If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
 End Sub
-
-'Return the arctangent of two values (rise / run)
-Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
- 
-    If y > 0 Then
-        If x >= y Then
-            Atan2 = Atn(y / x)
-        ElseIf x <= -y Then
-            Atan2 = Atn(y / x) + PI
-        Else
-            Atan2 = PI / 2 - Atn(x / y)
-        End If
-    Else
-        If x >= -y Then
-            Atan2 = Atn(y / x)
-        ElseIf x <= y Then
-            Atan2 = Atn(y / x) - PI
-        Else
-            Atan2 = -Atn(x / y) - PI / 2
-        End If
-    End If
- 
-End Function
-
-Public Function Asin(ByVal x As Double) As Double
-    If (x > 1) Or (x < -1) Then x = 1
-    Asin = Atan2(x, Sqr(1 - x * x))
-End Function
-
-Public Function Acos(ByVal x As Double) As Double
-    If (x > 1) Or (x < -1) Then x = 1
-    Acos = Atan2(Sqr(1 - x * x), x)
-End Function
