@@ -255,6 +255,7 @@ Private Sub Form_Load()
     GenerateThankyou "Steve McMahon (CommonDialog interface, accelerator key handler, progress bar)", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateThankyou "chrfb of deviantart.com (PhotoDemon's icon, 'Ecqlipse 2', CC-BY-NC-SA-3.0)", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateThankyou "Everaldo and The Crystal Project (Crystal icons, LGPL-licensed, click for details)", "http://www.everaldo.com/crystal/"
+    GenerateThankyou "Jerry Huxtable (Distort filters, Apache 2.0)", "http://www.jhlabs.com/ie/index.html"
     GenerateThankyou "Yusuke Kamiyamane (Fugue icon set, CC-BY-3.0)", "http://p.yusukekamiyamane.com/"
     GenerateThankyou "The Tango Icon Library (public-domain)", "http://tango.freedesktop.org/"
     GenerateThankyou "Mark James (Silk icon set, CC-BY-2.5)", "http://www.famfamfam.com/lab/icons/silk/"
