@@ -187,6 +187,8 @@ Option Explicit
     Public Const DistortLens As Long = 713
     '-Distort: Water ripple
     Public Const DistortRipple As Long = 714
+    '-Distort: Pinch and whirl
+    Public Const DistortPinchAndWhirl As Long = 715
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -725,6 +727,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormRipple.RippleImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
                 End If
+            Case DistortPinchAndWhirl
+                If LoadForm Then
+                    FormPinch.Show 1, FormMain
+                Else
+                    FormPinch.PinchImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CBool(pOPCODE4)
+                End If
+                
         End Select
     End If
     
@@ -1173,6 +1182,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Lens distortion"
         Case DistortRipple
             GetNameOfProcess = "Ripple"
+        Case DistortPinchAndWhirl
+            GetNameOfProcess = "Pinch and whirl"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade
