@@ -59,9 +59,9 @@ Private Type ICONINFO
    yHotspot As Long
    hbmMask As Long
    hbmColor As Long
-   End Type
+End Type
 
-'This array will be used to store our icon handles so we can delete them on program exit
+'This array will be used to store our dynamically created icon handles so we can delete them on program exit
 Dim numOfIcons As Long
 Dim iconHandles() As Long
 
@@ -87,6 +87,13 @@ Public Const ALLOW_DYNAMIC_ICONS As Boolean = True
 'Private Const PICTYPE_BITMAP = 1
 'Private Const PICTYPE_ICON = 3
 
+'These arrays will track the resource identifiers and consequent numeric identifiers of all loaded icons.  The size of the array
+' is arbitrary; just make sure it's larger than the max number of loaded icons.
+Private iconNames(0 To 255) As String
+
+'We also need to track how many icons have been loaded; this counter will also be used to reference icons in the database
+Dim curIcon As Long
+
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
 Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
@@ -111,165 +118,10 @@ Public Sub LoadMenuIcons()
         
         .Init FormMain.hWnd, 16, 16
         
-        .AddImageFromStream LoadResData("OPENIMG", "CUSTOM")     '0
-        .AddImageFromStream LoadResData("OPENREC", "CUSTOM")     '1
-        .AddImageFromStream LoadResData("IMPORT", "CUSTOM")      '2
-        .AddImageFromStream LoadResData("SAVE", "CUSTOM")        '3
-        .AddImageFromStream LoadResData("SAVEAS", "CUSTOM")      '4
-        .AddImageFromStream LoadResData("CLOSE", "CUSTOM")       '5
-        .AddImageFromStream LoadResData("BCONVERT", "CUSTOM")    '6
-        .AddImageFromStream LoadResData("PRINT", "CUSTOM")       '7
-        .AddImageFromStream LoadResData("SCANNER", "CUSTOM")     '8
-        .AddImageFromStream LoadResData("DOWNLOAD", "CUSTOM")    '9
-        .AddImageFromStream LoadResData("SCREENCAP", "CUSTOM")   '10
-        .AddImageFromStream LoadResData("FRXIMPORT", "CUSTOM")   '11
-        .AddImageFromStream LoadResData("UNDO", "CUSTOM")        '12
-        .AddImageFromStream LoadResData("REDO", "CUSTOM")        '13
-        .AddImageFromStream LoadResData("REPEAT", "CUSTOM")      '14
-        .AddImageFromStream LoadResData("COPY", "CUSTOM")        '15
-        .AddImageFromStream LoadResData("PASTE", "CUSTOM")       '16
-        .AddImageFromStream LoadResData("CLEAR", "CUSTOM")       '17
-        .AddImageFromStream LoadResData("PREFERENCES", "CUSTOM") '18
-        .AddImageFromStream LoadResData("RESIZE", "CUSTOM")      '19
-        .AddImageFromStream LoadResData("ROTATECW", "CUSTOM")    '20
-        .AddImageFromStream LoadResData("ROTATECCW", "CUSTOM")   '21
-        .AddImageFromStream LoadResData("ROTATE180", "CUSTOM")   '22
-        .AddImageFromStream LoadResData("FLIP", "CUSTOM")        '23
-        .AddImageFromStream LoadResData("MIRROR", "CUSTOM")      '24
-        .AddImageFromStream LoadResData("PDWEBSITE", "CUSTOM")   '25
-        .AddImageFromStream LoadResData("FEEDBACK", "CUSTOM")    '26
-        .AddImageFromStream LoadResData("ABOUT", "CUSTOM")       '27
-        .AddImageFromStream LoadResData("FITWINIMG", "CUSTOM")   '28
-        .AddImageFromStream LoadResData("FITONSCREEN", "CUSTOM") '29
-        .AddImageFromStream LoadResData("TILEHOR", "CUSTOM")     '30
-        .AddImageFromStream LoadResData("TILEVER", "CUSTOM")     '31
-        .AddImageFromStream LoadResData("CASCADE", "CUSTOM")     '32
-        .AddImageFromStream LoadResData("ARNGICONS", "CUSTOM")   '33
-        .AddImageFromStream LoadResData("MINALL", "CUSTOM")      '34
-        .AddImageFromStream LoadResData("RESTOREALL", "CUSTOM")  '35
-        .AddImageFromStream LoadResData("OPENMACRO", "CUSTOM")   '36
-        .AddImageFromStream LoadResData("RECORD", "CUSTOM")      '37
-        .AddImageFromStream LoadResData("RECORDSTOP", "CUSTOM")  '38
-        .AddImageFromStream LoadResData("BUG", "CUSTOM")         '39
-        .AddImageFromStream LoadResData("FAVORITE", "CUSTOM")    '40
-        .AddImageFromStream LoadResData("UPDATES", "CUSTOM")     '41
-        .AddImageFromStream LoadResData("DUPLICATE", "CUSTOM")   '42
-        .AddImageFromStream LoadResData("EXIT", "CUSTOM")        '43
-        .AddImageFromStream LoadResData("CLEARRECENT", "CUSTOM") '44
-        .AddImageFromStream LoadResData("SCANNERSEL", "CUSTOM")  '45
-        .AddImageFromStream LoadResData("BRIGHT", "CUSTOM")      '46
-        .AddImageFromStream LoadResData("GAMMA", "CUSTOM")       '47
-        .AddImageFromStream LoadResData("LEVELS", "CUSTOM")      '48
-        .AddImageFromStream LoadResData("WHITEBAL", "CUSTOM")    '49
-        .AddImageFromStream LoadResData("HISTOGRAM", "CUSTOM")   '50
-        .AddImageFromStream LoadResData("EQUALIZE", "CUSTOM")    '51
-        .AddImageFromStream LoadResData("STRETCH", "CUSTOM")     '52
-        .AddImageFromStream LoadResData("COLORSHIFTR", "CUSTOM") '53
-        .AddImageFromStream LoadResData("COLORSHIFTL", "CUSTOM") '54
-        .AddImageFromStream LoadResData("RECHANNELR", "CUSTOM")  '55
-        .AddImageFromStream LoadResData("RECHANNELG", "CUSTOM")  '56
-        .AddImageFromStream LoadResData("RECHANNELB", "CUSTOM")  '57
-        .AddImageFromStream LoadResData("BLACKWHITE", "CUSTOM")  '58
-        .AddImageFromStream LoadResData("COLORIZE", "CUSTOM")    '59
-        .AddImageFromStream LoadResData("ENHANCE", "CUSTOM")     '60
-        .AddImageFromStream LoadResData("ENCONTRAST", "CUSTOM")  '61
-        .AddImageFromStream LoadResData("ENHIGHLIGHT", "CUSTOM") '62
-        .AddImageFromStream LoadResData("ENMIDTONE", "CUSTOM")   '63
-        .AddImageFromStream LoadResData("ENSHADOW", "CUSTOM")    '64
-        .AddImageFromStream LoadResData("GRAYSCALE", "CUSTOM")   '65
-        .AddImageFromStream LoadResData("INVERT", "CUSTOM")      '66
-        .AddImageFromStream LoadResData("INVCMYK", "CUSTOM")     '67
-        .AddImageFromStream LoadResData("INVHUE", "CUSTOM")      '68
-        .AddImageFromStream LoadResData("INVRGB", "CUSTOM")      '69
-        .AddImageFromStream LoadResData("POSTERIZE", "CUSTOM")   '70
-        .AddImageFromStream LoadResData("REDUCECOLORS", "CUSTOM") '71
-        .AddImageFromStream LoadResData("COUNTCOLORS", "CUSTOM") '72
-        .AddImageFromStream LoadResData("FADELAST", "CUSTOM")    '73
-        .AddImageFromStream LoadResData("ARTISTIC", "CUSTOM")    '74
-        .AddImageFromStream LoadResData("BLUR", "CUSTOM")        '75
-        .AddImageFromStream LoadResData("DIFFUSE", "CUSTOM")     '76
-        .AddImageFromStream LoadResData("EDGES", "CUSTOM")       '77
-        .AddImageFromStream LoadResData("NATURAL", "CUSTOM")     '78
-        .AddImageFromStream LoadResData("NOISE", "CUSTOM")       '79
-        .AddImageFromStream LoadResData("OTHER", "CUSTOM")       '80
-        .AddImageFromStream LoadResData("RANK", "CUSTOM")        '81
-        .AddImageFromStream LoadResData("SHARPEN", "CUSTOM")     '82
-        .AddImageFromStream LoadResData("ANTIQUE", "CUSTOM")     '83
-        .AddImageFromStream LoadResData("COMICBOOK", "CUSTOM")   '84
-        .AddImageFromStream LoadResData("MOSAIC", "CUSTOM")      '85
-        .AddImageFromStream LoadResData("PENCIL", "CUSTOM")      '86
-        .AddImageFromStream LoadResData("RELIEF", "CUSTOM")      '87
-        .AddImageFromStream LoadResData("ANTIALIAS", "CUSTOM")   '88
-        .AddImageFromStream LoadResData("SOFTEN", "CUSTOM")      '89
-        .AddImageFromStream LoadResData("SOFTENMORE", "CUSTOM")  '90
-        .AddImageFromStream LoadResData("BLUR2", "CUSTOM")       '91
-        .AddImageFromStream LoadResData("BLURMORE", "CUSTOM")    '92
-        .AddImageFromStream LoadResData("GAUSSBLUR", "CUSTOM")   '93
-        .AddImageFromStream LoadResData("GAUSSBLURMOR", "CUSTOM") '94
-        .AddImageFromStream LoadResData("GRIDBLUR", "CUSTOM")    '95
-        .AddImageFromStream LoadResData("DIFFUSEMORE", "CUSTOM") '96
-        .AddImageFromStream LoadResData("DIFFUSECUST", "CUSTOM") '97
-        .AddImageFromStream LoadResData("CUSTFILTER", "CUSTOM")  '98
-        .AddImageFromStream LoadResData("EDGEENHANCE", "CUSTOM") '99
-        .AddImageFromStream LoadResData("EMBOSS", "CUSTOM")      '100
-        .AddImageFromStream LoadResData("INVCOMPOUND", "CUSTOM") '101
-        .AddImageFromStream LoadResData("FADE", "CUSTOM")        '102
-        .AddImageFromStream LoadResData("FADELOW", "CUSTOM")     '103
-        .AddImageFromStream LoadResData("FADEHIGH", "CUSTOM")    '104
-        .AddImageFromStream LoadResData("CUSTOMFADE", "CUSTOM")  '105
-        .AddImageFromStream LoadResData("UNFADE", "CUSTOM")      '106
-        .AddImageFromStream LoadResData("ATMOSPHERE", "CUSTOM")  '107
-        .AddImageFromStream LoadResData("BURN", "CUSTOM")        '108
-        .AddImageFromStream LoadResData("FOG", "CUSTOM")         '109
-        .AddImageFromStream LoadResData("FREEZE", "CUSTOM")      '110
-        .AddImageFromStream LoadResData("LAVA", "CUSTOM")        '111
-        .AddImageFromStream LoadResData("OCEAN", "CUSTOM")       '112
-        .AddImageFromStream LoadResData("RAINBOW", "CUSTOM")     '113
-        .AddImageFromStream LoadResData("STEEL", "CUSTOM")       '114
-        .AddImageFromStream LoadResData("WATER", "CUSTOM")       '115
-        .AddImageFromStream LoadResData("ADDNOISE", "CUSTOM")    '116
-        .AddImageFromStream LoadResData("DESPECKLE", "CUSTOM")   '117
-        .AddImageFromStream LoadResData("REMOVEORPHAN", "CUSTOM") '118
-        .AddImageFromStream LoadResData("DILATE", "CUSTOM")      '119
-        .AddImageFromStream LoadResData("ERODE", "CUSTOM")       '120
-        .AddImageFromStream LoadResData("EXTREME", "CUSTOM")     '121
-        .AddImageFromStream LoadResData("CUSTRANK", "CUSTOM")    '122
-        .AddImageFromStream LoadResData("SHARPENMORE", "CUSTOM") '123
-        .AddImageFromStream LoadResData("UNSHARP", "CUSTOM")     '124
-        .AddImageFromStream LoadResData("ISOMETRIC", "CUSTOM")   '125
-        .AddImageFromStream LoadResData("ALIEN", "CUSTOM")       '126
-        .AddImageFromStream LoadResData("BLACKLIGHT", "CUSTOM")  '127
-        .AddImageFromStream LoadResData("DREAM", "CUSTOM")       '128
-        .AddImageFromStream LoadResData("RADIOACTIVE", "CUSTOM") '129
-        .AddImageFromStream LoadResData("SOLARIZE", "CUSTOM")    '130
-        .AddImageFromStream LoadResData("SYNTHESIZE", "CUSTOM")  '131
-        .AddImageFromStream LoadResData("TILE", "CUSTOM")        '132
-        .AddImageFromStream LoadResData("TWINS", "CUSTOM")       '133
-        .AddImageFromStream LoadResData("VIBRATE", "CUSTOM")     '134
-        .AddImageFromStream LoadResData("TEMPERATURE", "CUSTOM") '135
-        .AddImageFromStream LoadResData("ZOOMIN", "CUSTOM")      '136
-        .AddImageFromStream LoadResData("ZOOMOUT", "CUSTOM")     '137
-        .AddImageFromStream LoadResData("ZOOMACTUAL", "CUSTOM")  '138
-        .AddImageFromStream LoadResData("NEXTIMAGE", "CUSTOM")   '139
-        .AddImageFromStream LoadResData("PREVIMAGE", "CUSTOM")   '140
-        .AddImageFromStream LoadResData("DOWNLOADSRC", "CUSTOM") '141
-        .AddImageFromStream LoadResData("LICENSE", "CUSTOM")     '142
-        .AddImageFromStream LoadResData("SEPIA", "CUSTOM")       '143
-        .AddImageFromStream LoadResData("CROPSEL", "CUSTOM")     '144
-        .AddImageFromStream LoadResData("HSL", "CUSTOM")         '145
-        .AddImageFromStream LoadResData("ROTATEANY", "CUSTOM")   '146
-        .AddImageFromStream LoadResData("HEATMAP", "CUSTOM")     '147
-        .AddImageFromStream LoadResData("STYLIZE", "CUSTOM")     '148
-        .AddImageFromStream LoadResData("MODE24", "CUSTOM")      '149
-        .AddImageFromStream LoadResData("MODE32", "CUSTOM")      '150
-        .AddImageFromStream LoadResData("MODE24CHK", "CUSTOM")   '151
-        .AddImageFromStream LoadResData("MODE32CHK", "CUSTOM")   '152
-        .AddImageFromStream LoadResData("LEFTPANHIDE", "CUSTOM") '153
-        .AddImageFromStream LoadResData("LEFTPANSHOW", "CUSTOM") '154
-        .AddImageFromStream LoadResData("PLUGIN", "CUSTOM")      '155
-        
     End With
     
+    curIcon = 0
+        
     'Now that all menu icons are loaded, apply them to the proper menu entires
     ApplyAllMenuIcons
     
@@ -287,224 +139,257 @@ Public Sub LoadMenuIcons()
         
 End Sub
 
-'Apply loaded menu items to their proper menu entries.  DO NOT CALL THIS BEFORE LOADMENU ICONS (above)!
+'This new, simpler technique for adding menu icons requires only the menu location (including sub-menus) and the icon's identifer
+' in the resource file.  If the icon has already been loaded, it won't be loaded again; instead, the function will check the list
+' of loaded icons and automatically fill in the numeric identifier as necessary.
+Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
+
+    Static i As Long
+    Static iconLocation As Long
+    Static iconAlreadyLoaded As Boolean
+    
+    iconAlreadyLoaded = False
+    
+    'Loop through all icons that have been loaded, and see if this one has been requested already.
+    For i = 0 To curIcon
+        
+        If iconNames(i) = resID Then
+            iconAlreadyLoaded = True
+            iconLocation = i
+            Exit For
+        End If
+        
+    Next i
+    
+    'If the icon was not found, load it and add it to the list
+    If Not iconAlreadyLoaded Then
+        cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
+        iconNames(curIcon) = resID
+        iconLocation = curIcon
+        curIcon = curIcon + 1
+    End If
+    
+    'Place the icon onto the requested menu
+    If subSubMenu = -1 Then
+        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
+    Else
+        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
+    End If
+
+End Sub
+
+'Apply (and if necessary, dynamically load) menu icons to their proper menu entries.
 Public Sub ApplyAllMenuIcons()
 
-    With cMenuImage
+    'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
         
-        'File Menu
-        .PutImageToVBMenu 0, 0, 0       'Open Image
-        .PutImageToVBMenu 1, 1, 0       'Open recent
-        .PutImageToVBMenu 2, 2, 0       'Import
-        .PutImageToVBMenu 3, 4, 0       'Save
-        .PutImageToVBMenu 4, 5, 0       'Save As...
-        .PutImageToVBMenu 5, 7, 0       'Close
-        .PutImageToVBMenu 5, 8, 0       'Close All
-        .PutImageToVBMenu 6, 10, 0       'Batch conversion
-        .PutImageToVBMenu 7, 12, 0      'Print
-        .PutImageToVBMenu 43, 14, 0     'Exit
-        
-        '--> Import Sub-Menu
-        'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
-        If g_ScanEnabled Then
-            .PutImageToVBMenu 16, 0, 0, 2      'From Clipboard (Paste as New Image)
-            .PutImageToVBMenu 8, 2, 0, 2       'Scan Image
-            .PutImageToVBMenu 45, 3, 0, 2      'Select Scanner
-            .PutImageToVBMenu 9, 5, 0, 2       'Online Image
-            .PutImageToVBMenu 10, 7, 0, 2      'Screen Capture
-            .PutImageToVBMenu 11, 9, 0, 2      'Import from FRX
-        Else
-            .PutImageToVBMenu 16, 0, 0, 2      'From Clipboard (Paste as New Image)
-            .PutImageToVBMenu 9, 2, 0, 2       'Online Image
-            .PutImageToVBMenu 10, 4, 0, 2      'Screen Capture
-            .PutImageToVBMenu 11, 6, 0, 2      'Import from FRX
-        End If
-        
-        'Edit Menu
-        .PutImageToVBMenu 12, 0, 1      'Undo
-        .PutImageToVBMenu 13, 1, 1      'Redo
-        .PutImageToVBMenu 14, 2, 1      'Repeat Last Action
-        .PutImageToVBMenu 15, 4, 1      'Copy
-        .PutImageToVBMenu 16, 5, 1      'Paste
-        .PutImageToVBMenu 17, 6, 1      'Empty Clipboard
-        
-        'View Menu
-        .PutImageToVBMenu 29, 0, 2      'Fit on Screen
-        .PutImageToVBMenu 28, 1, 2      'Fit Viewport to Image
-        .PutImageToVBMenu 136, 3, 2     'Zoom In
-        .PutImageToVBMenu 137, 4, 2     'Zoom Out
-        .PutImageToVBMenu 138, 10, 2    'Zoom 100%
-        .PutImageToVBMenu 154, 16, 2    'Show/Hide the left-hand panel
-        
-        'Image Menu
-        .PutImageToVBMenu 42, 0, 3      'Duplicate
-        .PutImageToVBMenu 149, 2, 3     'Image Mode
-            '--> Image Mode sub-menu
-            .PutImageToVBMenu 149, 0, 3, 2   '24bpp
-            .PutImageToVBMenu 150, 1, 3, 2   '32bpp
-        .PutImageToVBMenu 19, 4, 3      'Resize
-        .PutImageToVBMenu 144, 5, 3     'Crop to Selection
-        .PutImageToVBMenu 24, 7, 3      'Mirror
-        .PutImageToVBMenu 23, 8, 3      'Flip
-        .PutImageToVBMenu 20, 10, 3      'Rotate Clockwise
-        .PutImageToVBMenu 21, 11, 3      'Rotate Counter-clockwise
-        .PutImageToVBMenu 22, 12, 3      'Rotate 180
-        'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
-        If g_ImageFormats.FreeImageEnabled Then
-            .PutImageToVBMenu 146, 13, 3     'Rotate Arbitrary
-            .PutImageToVBMenu 125, 15, 3     'Isometric
-            .PutImageToVBMenu 132, 16, 3     'Tile
-        Else
-            .PutImageToVBMenu 125, 14, 3     'Isometric
-            .PutImageToVBMenu 132, 15, 3     'Tile
-        End If
-        
-        'Color Menu
-        .PutImageToVBMenu 46, 0, 4      'Brightness/Contrast
-        .PutImageToVBMenu 47, 1, 4      'Gamma Correction
-        .PutImageToVBMenu 145, 2, 4     'HSL adjustment
-        .PutImageToVBMenu 48, 3, 4      'Levels
-        .PutImageToVBMenu 135, 4, 4     'Temperature
-        .PutImageToVBMenu 49, 5, 4      'White Balance
-        .PutImageToVBMenu 50, 7, 4      'Histogram
-            '--> Histogram sub-menu
-            .PutImageToVBMenu 50, 0, 4, 7   'Display Histogram
-            .PutImageToVBMenu 51, 2, 4, 7   'Equalize
-            .PutImageToVBMenu 52, 3, 4, 7   'Stretch
-        .PutImageToVBMenu 53, 9, 4      'Color Shift
-            '--> Color-Shift sub-menu
-            .PutImageToVBMenu 53, 0, 4, 9   'Shift Right
-            .PutImageToVBMenu 54, 1, 4, 9   'Shift Left
-        .PutImageToVBMenu 57, 10, 4      'Rechannel
-            '--> Rechannel sub-menu
-            '.PutImageToVBMenu 55, 0, 4, 9   'Red
-            '.PutImageToVBMenu 56, 1, 4, 9   'Green
-            '.PutImageToVBMenu 57, 2, 4, 9   'Blue
-        .PutImageToVBMenu 58, 12, 4      'Black and White
-        .PutImageToVBMenu 59, 13, 4      'Colorize
-        .PutImageToVBMenu 60, 14, 4      'Enhance
-            '--> Enhance sub-menu
-            .PutImageToVBMenu 61, 0, 4, 14   'Contrast
-            .PutImageToVBMenu 62, 1, 4, 14   'Highlights
-            .PutImageToVBMenu 63, 2, 4, 14   'Midtones
-            .PutImageToVBMenu 64, 3, 4, 14   'Shadows
-        .PutImageToVBMenu 102, 15, 4     'Fade
-            '--> Fade sub-menu
-            .PutImageToVBMenu 103, 0, 4, 15  'Low Fade
-            .PutImageToVBMenu 102, 1, 4, 15  'Medium Fade
-            .PutImageToVBMenu 104, 2, 4, 15  'High Fade
-            .PutImageToVBMenu 105, 3, 4, 15  'Custom Fade
-            .PutImageToVBMenu 106, 5, 4, 15  'Unfade
-        .PutImageToVBMenu 65, 16, 4      'Grayscale
-        .PutImageToVBMenu 66, 17, 4      'Invert
-            '--> Invert sub-menu
-            .PutImageToVBMenu 67, 0, 4, 17   'Invert CMYK
-            .PutImageToVBMenu 68, 1, 4, 17   'Invert Hue
-            .PutImageToVBMenu 69, 2, 4, 17   'Invert RGB
-            .PutImageToVBMenu 101, 4, 4, 17  'Compound Invert
-        .PutImageToVBMenu 70, 18, 4      'Posterize
-        .PutImageToVBMenu 143, 19, 4     'Sepia
-        .PutImageToVBMenu 72, 21, 4      'Count Colors
-        .PutImageToVBMenu 71, 22, 4      'Reduce Colors
-        
-        'Filters Menu
-        .PutImageToVBMenu 73, 0, 5       'Fade Last
-        .PutImageToVBMenu 74, 2, 5       'Artistic
-            '--> Artistic sub-menu
-            .PutImageToVBMenu 83, 0, 5, 2   'Antique (Sepia)
-            .PutImageToVBMenu 84, 1, 5, 2   'Comic Book
-            .PutImageToVBMenu 86, 2, 5, 2   'Pencil
-            .PutImageToVBMenu 85, 3, 5, 2   'Pixelate (Mosaic)
-            .PutImageToVBMenu 87, 4, 5, 2   'Relief
-        .PutImageToVBMenu 75, 3, 5       'Blur
-            '--> Blur sub-menu
-            .PutImageToVBMenu 88, 0, 5, 3   'Antialias
-            .PutImageToVBMenu 89, 2, 5, 3   'Soften
-            .PutImageToVBMenu 90, 3, 5, 3   'Soften More
-            .PutImageToVBMenu 91, 4, 5, 3   'Blur
-            .PutImageToVBMenu 92, 5, 5, 3   'Blur More
-            .PutImageToVBMenu 93, 6, 5, 3   'Gaussian Blur
-            .PutImageToVBMenu 94, 7, 5, 3   'Gaussian Blur More
-            .PutImageToVBMenu 95, 9, 5, 3   'Grid Blur
-        '.PutImageToVBMenu 77, 4, 5       'Distort
-        .PutImageToVBMenu 77, 5, 5       'Edges
-            '--> Edges sub-menu
-            .PutImageToVBMenu 100, 0, 5, 5  'Emboss / Engrave
-            .PutImageToVBMenu 99, 1, 5, 5   'Enhance Edges
-            .PutImageToVBMenu 77, 2, 5, 5   'Find Edges
-        .PutImageToVBMenu 80, 6, 5       'Fun
-            '--> Fun sub-menu
-            .PutImageToVBMenu 126, 0, 5, 6  'Alien
-            .PutImageToVBMenu 127, 1, 5, 6  'Blacklight
-            .PutImageToVBMenu 128, 2, 5, 6  'Dream
-            .PutImageToVBMenu 129, 3, 5, 6  'Radioactive
-            .PutImageToVBMenu 131, 4, 5, 6  'Synthesize
-            .PutImageToVBMenu 147, 5, 5, 6  'Thermograph
-            .PutImageToVBMenu 134, 6, 5, 6  'Vibrate
-        .PutImageToVBMenu 78, 7, 5       'Natural
-            '--> Natural sub-menu
-            .PutImageToVBMenu 107, 0, 5, 7  'Atmosphere
-            .PutImageToVBMenu 108, 1, 5, 7  'Burn
-            .PutImageToVBMenu 109, 2, 5, 7  'Fog
-            .PutImageToVBMenu 110, 3, 5, 7  'Freeze
-            .PutImageToVBMenu 111, 4, 5, 7  'Lava
-            .PutImageToVBMenu 112, 5, 5, 7  'Ocean
-            .PutImageToVBMenu 113, 6, 5, 7  'Rainbow
-            .PutImageToVBMenu 114, 7, 5, 7  'Steel
-            .PutImageToVBMenu 115, 8, 5, 7  'Water
-        .PutImageToVBMenu 79, 8, 5       'Noise
-            '--> Noise sub-menu
-            .PutImageToVBMenu 116, 0, 5, 8  'Add Noise
-            .PutImageToVBMenu 117, 2, 5, 8  'Despeckle
-            .PutImageToVBMenu 118, 3, 5, 8  'Remove Orphan
-        .PutImageToVBMenu 81, 9, 5       'Rank
-            '--> Rank sub-menu
-            .PutImageToVBMenu 119, 0, 5, 9  'Dilate
-            .PutImageToVBMenu 120, 1, 5, 9  'Erode
-            .PutImageToVBMenu 121, 2, 5, 9  'Extreme
-            .PutImageToVBMenu 122, 4, 5, 9  'Custom Rank
-        .PutImageToVBMenu 82, 10, 5       'Sharpen
-            '--> Sharpen sub-menu
-            .PutImageToVBMenu 124, 0, 5, 10 'Unsharp
-            .PutImageToVBMenu 82, 2, 5, 10  'Sharpen
-            .PutImageToVBMenu 123, 3, 5, 10 'Sharpen More
-        .PutImageToVBMenu 148, 11, 5      'Stylize
-            '--> Stylize sub-menu
-            .PutImageToVBMenu 76, 0, 5, 11  'Diffuse
-            .PutImageToVBMenu 130, 1, 5, 11 'Solarize
-            .PutImageToVBMenu 133, 2, 5, 11 'Twins
-        .PutImageToVBMenu 98, 13, 5      'Custom Filter
-        
-        'Tools Menu
-        .PutImageToVBMenu 37, 0, 6       'Macros
-            '--> Macro sub-menu
-            .PutImageToVBMenu 36, 0, 6, 0    'Open Macro
-            .PutImageToVBMenu 37, 2, 6, 0    'Start Recording
-            .PutImageToVBMenu 38, 3, 6, 0    'Stop Recording
-        .PutImageToVBMenu 18, 2, 6      'Options (Preferences)
-        .PutImageToVBMenu 155, 3, 6     'Plugin Manager
-        
-        'Window Menu
-        .PutImageToVBMenu 139, 0, 7    'Next image
-        .PutImageToVBMenu 140, 1, 7    'Previous image
-        .PutImageToVBMenu 33, 3, 7     'Arrange Icons
-        .PutImageToVBMenu 32, 4, 7     'Cascade
-        .PutImageToVBMenu 31, 5, 7     'Tile Horizontally
-        .PutImageToVBMenu 30, 6, 7     'Tile Vertically
-        .PutImageToVBMenu 34, 8, 7     'Minimize All
-        .PutImageToVBMenu 35, 9, 7     'Restore All
-        
-        'Help Menu
-        .PutImageToVBMenu 40, 0, 8     'Donate
-        .PutImageToVBMenu 41, 2, 8     'Check for updates
-        .PutImageToVBMenu 26, 3, 8     'Submit Feedback
-        .PutImageToVBMenu 39, 4, 8     'Submit Bug
-        .PutImageToVBMenu 25, 6, 8     'Visit the PhotoDemon website
-        .PutImageToVBMenu 141, 7, 8    'Download source code
-        .PutImageToVBMenu 142, 8, 8    'License
-        .PutImageToVBMenu 27, 10, 8    'About PD
+    'File Menu
+    AddMenuIcon "OPENIMG", 0, 0       'Open Image
+    AddMenuIcon "OPENREC", 0, 1       'Open recent
+    AddMenuIcon "IMPORT", 0, 2        'Import
+    AddMenuIcon "SAVE", 0, 4          'Save
+    AddMenuIcon "SAVEAS", 0, 5        'Save As...
+    AddMenuIcon "CLOSE", 0, 7         'Close
+    AddMenuIcon "CLOSE", 0, 8         'Close All
+    AddMenuIcon "BCONVERT", 0, 10     'Batch conversion
+    AddMenuIcon "PRINT", 0, 12        'Print
+    AddMenuIcon "EXIT", 0, 14         'Exit
     
-    End With
+    '--> Import Sub-Menu
+    'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
+    If g_ScanEnabled Then
+        AddMenuIcon "PASTE", 0, 2, 0      'From Clipboard (Paste as New Image)
+        AddMenuIcon "SCANNER", 0, 2, 2    'Scan Image
+        AddMenuIcon "SCANNERSEL", 0, 2, 3 'Select Scanner
+        AddMenuIcon "DOWNLOAD", 0, 2, 5   'Online Image
+        AddMenuIcon "SCREENCAP", 0, 2, 7  'Screen Capture
+        AddMenuIcon "FRXIMPORT", 0, 2, 9  'Import from FRX
+    Else
+        AddMenuIcon "PASTE", 0, 2, 0      'From Clipboard (Paste as New Image)
+        AddMenuIcon "DOWNLOAD", 0, 2, 2   'Online Image
+        AddMenuIcon "SCREENCAP", 0, 2, 4  'Screen Capture
+        AddMenuIcon "FRXIMPORT", 0, 2, 6  'Import from FRX
+    End If
+        
+    'Edit Menu
+    AddMenuIcon "UNDO", 1, 0        'Undo
+    AddMenuIcon "REDO", 1, 1        'Redo
+    AddMenuIcon "REPEAT", 1, 2      'Repeat Last Action
+    AddMenuIcon "COPY", 1, 4        'Copy
+    AddMenuIcon "PASTE", 1, 5       'Paste
+    AddMenuIcon "CLEAR", 1, 6       'Empty Clipboard
+    
+    'View Menu
+    AddMenuIcon "FITWINIMG", 2, 0     'Fit Viewport to Image
+    AddMenuIcon "FITONSCREEN", 2, 1   'Fit on Screen
+    AddMenuIcon "ZOOMIN", 2, 3        'Zoom In
+    AddMenuIcon "ZOOMOUT", 2, 4       'Zoom Out
+    AddMenuIcon "ZOOMACTUAL", 2, 10   'Zoom 100%
+    AddMenuIcon "LEFTPANSHOW", 2, 16  'Show/Hide the left-hand panel
+    
+    'Image Menu
+    AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
+    AddMenuIcon "MODE24", 3, 2         'Image Mode
+        '--> Image Mode sub-menu
+        AddMenuIcon "MODE24", 3, 2, 0  '24bpp
+        AddMenuIcon "MODE32", 3, 2, 1  '32bpp
+    AddMenuIcon "RESIZE", 3, 4         'Resize
+    AddMenuIcon "CROPSEL", 3, 5        'Crop to Selection
+    AddMenuIcon "MIRROR", 3, 7         'Mirror
+    AddMenuIcon "FLIP", 3, 8           'Flip
+    AddMenuIcon "ROTATECW", 3, 10      'Rotate Clockwise
+    AddMenuIcon "ROTATECCW", 3, 11     'Rotate Counter-clockwise
+    AddMenuIcon "ROTATE180", 3, 12     'Rotate 180
+    'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
+    If g_ImageFormats.FreeImageEnabled Then
+        AddMenuIcon "ROTATEANY", 3, 13 'Rotate Arbitrary
+        AddMenuIcon "ISOMETRIC", 3, 15 'Isometric
+        AddMenuIcon "TILE", 3, 16      'Tile
+    Else
+        AddMenuIcon "ISOMETRIC", 3, 14 'Isometric
+        AddMenuIcon "TILE", 3, 15      'Tile
+    End If
+    
+    'Color Menu
+    AddMenuIcon "BRIGHT", 4, 0      'Brightness/Contrast
+    AddMenuIcon "GAMMA", 4, 1      'Gamma Correction
+    AddMenuIcon "HSL", 4, 2     'HSL adjustment
+    AddMenuIcon "LEVELS", 4, 3      'Levels
+    AddMenuIcon "TEMPERATURE", 4, 4     'Temperature
+    AddMenuIcon "WHITEBAL", 4, 5      'White Balance
+    AddMenuIcon "HISTOGRAM", 4, 7      'Histogram
+        '--> Histogram sub-menu
+        AddMenuIcon "HISTOGRAM", 4, 7, 0  'Display Histogram
+        AddMenuIcon "EQUALIZE", 4, 7, 2   'Equalize
+        AddMenuIcon "STRETCH", 4, 7, 3  'Stretch
+    AddMenuIcon "COLORSHIFTR", 4, 9      'Color Shift
+        '--> Color-Shift sub-menu
+        AddMenuIcon "COLORSHIFTR", 4, 9, 0  'Shift Right
+        AddMenuIcon "COLORSHIFTL", 4, 9, 1  'Shift Left
+    AddMenuIcon "RECHANNELB", 4, 10      'Rechannel
+    AddMenuIcon "BLACKWHITE", 4, 12      'Black and White
+    AddMenuIcon "COLORIZE", 4, 13     'Colorize
+    AddMenuIcon "ENHANCE", 4, 14     'Enhance
+        '--> Enhance sub-menu
+        AddMenuIcon "ENCONTRAST", 4, 14, 0  'Contrast
+        AddMenuIcon "ENHIGHLIGHT", 4, 14, 1   'Highlights
+        AddMenuIcon "ENMIDTONE", 4, 14, 2  'Midtones
+        AddMenuIcon "ENSHADOW", 4, 14, 3  'Shadows
+    AddMenuIcon "FADE", 4, 15     'Fade
+        '--> Fade sub-menu
+        AddMenuIcon "FADELOW", 4, 15, 0 'Low Fade
+        AddMenuIcon "FADE", 4, 15, 1 'Medium Fade
+        AddMenuIcon "FADEHIGH", 4, 15, 2 'High Fade
+        AddMenuIcon "CUSTOMFADE", 4, 15, 3 'Custom Fade
+        AddMenuIcon "UNFADE", 4, 15, 5 'Unfade
+    AddMenuIcon "GRAYSCALE", 4, 16      'Grayscale
+    AddMenuIcon "INVERT", 4, 17     'Invert
+        '--> Invert sub-menu
+        AddMenuIcon "INVCMYK", 4, 17, 0  'Invert CMYK
+        AddMenuIcon "INVHUE", 4, 17, 1  'Invert Hue
+        AddMenuIcon "INVRGB", 4, 17, 2  'Invert RGB
+        AddMenuIcon "INVCOMPOUND", 4, 17, 4 'Compound Invert
+    AddMenuIcon "POSTERIZE", 4, 18      'Posterize
+    AddMenuIcon "SEPIA", 4, 19    'Sepia
+    AddMenuIcon "COUNTCOLORS", 4, 21     'Count Colors
+    AddMenuIcon "REDUCECOLORS", 4, 22      'Reduce Colors
+    
+    'Filters Menu
+    AddMenuIcon "FADELAST", 5, 0       'Fade Last
+    AddMenuIcon "ARTISTIC", 5, 2       'Artistic
+        '--> Artistic sub-menu
+        AddMenuIcon "ANTIQUE", 5, 2, 0   'Antique (Sepia)
+        AddMenuIcon "COMICBOOK", 5, 2, 1   'Comic Book
+        AddMenuIcon "PENCIL", 5, 2, 2   'Pencil
+        AddMenuIcon "MOSAIC", 5, 2, 3   'Pixelate (Mosaic)
+        AddMenuIcon "RELIEF", 5, 2, 4   'Relief
+    AddMenuIcon "BLUR", 5, 3      'Blur
+        '--> Blur sub-menu
+        AddMenuIcon "ANTIALIAS", 5, 3, 0   'Antialias
+        AddMenuIcon "SOFTEN", 5, 3, 2   'Soften
+        AddMenuIcon "SOFTENMORE", 5, 3, 3   'Soften More
+        AddMenuIcon "BLUR2", 5, 3, 4   'Blur
+        AddMenuIcon "BLURMORE", 5, 3, 5   'Blur More
+        AddMenuIcon "GAUSSBLUR", 5, 3, 6   'Gaussian Blur
+        AddMenuIcon "GAUSSBLURMOR", 5, 3, 7   'Gaussian Blur More
+        AddMenuIcon "GRIDBLUR", 5, 3, 9   'Grid Blur
+    'AddMenuIcon 77, 4, 5       'Distort
+    AddMenuIcon "EDGES", 5, 5       'Edges
+        '--> Edges sub-menu
+        AddMenuIcon "EMBOSS", 5, 5, 0  'Emboss / Engrave
+        AddMenuIcon "EDGEENHANCE", 5, 5, 1   'Enhance Edges
+        AddMenuIcon "EDGES", 5, 5, 2   'Find Edges
+    AddMenuIcon "OTHER", 5, 6      'Fun
+        '--> Fun sub-menu
+        AddMenuIcon "ALIEN", 5, 6, 0  'Alien
+        AddMenuIcon "BLACKLIGHT", 5, 6, 1  'Blacklight
+        AddMenuIcon "DREAM", 5, 6, 2  'Dream
+        AddMenuIcon "RADIOACTIVE", 5, 6, 3  'Radioactive
+        AddMenuIcon "SYNTHESIZE", 5, 6, 4  'Synthesize
+        AddMenuIcon "HEATMAP", 5, 6, 5  'Thermograph
+        AddMenuIcon "VIBRATE", 5, 6, 6  'Vibrate
+    AddMenuIcon "NATURAL", 5, 7       'Natural
+        '--> Natural sub-menu
+        AddMenuIcon "ATMOSPHERE", 5, 7, 0  'Atmosphere
+        AddMenuIcon "BURN", 5, 7, 1  'Burn
+        AddMenuIcon "FOG", 5, 7, 2  'Fog
+        AddMenuIcon "FREEZE", 5, 7, 3  'Freeze
+        AddMenuIcon "LAVA", 5, 7, 4  'Lava
+        AddMenuIcon "OCEAN", 5, 7, 5  'Ocean
+        AddMenuIcon "RAINBOW", 5, 7, 6  'Rainbow
+        AddMenuIcon "STEEL", 5, 7, 7  'Steel
+        AddMenuIcon "WATER", 5, 7, 8  'Water
+    AddMenuIcon "NOISE", 5, 8       'Noise
+        '--> Noise sub-menu
+        AddMenuIcon "ADDNOISE", 5, 8, 0  'Add Noise
+        AddMenuIcon "DESPECKLE", 5, 8, 2  'Despeckle
+        AddMenuIcon "REMOVEORPHAN", 5, 8, 3  'Remove Orphan
+    AddMenuIcon "RANK", 5, 9       'Rank
+        '--> Rank sub-menu
+        AddMenuIcon "DILATE", 5, 9, 0  'Dilate
+        AddMenuIcon "ERODE", 5, 9, 1  'Erode
+        AddMenuIcon "EXTREME", 5, 9, 2  'Extreme
+        AddMenuIcon "CUSTRANK", 5, 9, 4  'Custom Rank
+    AddMenuIcon "SHARPEN", 5, 10       'Sharpen
+        '--> Sharpen sub-menu
+        AddMenuIcon "UNSHARP", 5, 10, 0 'Unsharp
+        AddMenuIcon "SHARPEN", 5, 10, 2  'Sharpen
+        AddMenuIcon "SHARPENMORE", 5, 10, 3 'Sharpen More
+    AddMenuIcon "STYLIZE", 5, 11      'Stylize
+        '--> Stylize sub-menu
+        AddMenuIcon "DIFFUSE", 5, 11, 0  'Diffuse
+        AddMenuIcon "SOLARIZE", 5, 11, 1 'Solarize
+        AddMenuIcon "TWINS", 5, 11, 2 'Twins
+    AddMenuIcon "CUSTFILTER", 5, 13      'Custom Filter
+    
+    'Tools Menu
+    AddMenuIcon "RECORD", 6, 0       'Macros
+        '--> Macro sub-menu
+        AddMenuIcon "OPENMACRO", 6, 0, 0    'Open Macro
+        AddMenuIcon "RECORD", 6, 0, 2   'Start Recording
+        AddMenuIcon "RECORDSTOP", 6, 0, 3    'Stop Recording
+    AddMenuIcon "PREFERENCES", 6, 2      'Options (Preferences)
+    AddMenuIcon "PLUGIN", 6, 3     'Plugin Manager
+    
+    'Window Menu
+    AddMenuIcon "NEXTIMAGE", 7, 0    'Next image
+    AddMenuIcon "PREVIMAGE", 7, 1    'Previous image
+    AddMenuIcon "ARNGICONS", 7, 3     'Arrange Icons
+    AddMenuIcon "CASCADE", 7, 4     'Cascade
+    AddMenuIcon "TILEVER", 7, 5     'Tile Horizontally
+    AddMenuIcon "TILEHOR", 7, 6     'Tile Vertically
+    AddMenuIcon "MINALL", 7, 8     'Minimize All
+    AddMenuIcon "RESTOREALL", 7, 9     'Restore All
+    
+    'Help Menu
+    AddMenuIcon "FAVORITE", 8, 0     'Donate
+    AddMenuIcon "UPDATES", 8, 2     'Check for updates
+    AddMenuIcon "FEEDBACK", 8, 3     'Submit Feedback
+    AddMenuIcon "BUG", 8, 4     'Submit Bug
+    AddMenuIcon "PDWEBSITE", 8, 6     'Visit the PhotoDemon website
+    AddMenuIcon "DOWNLOADSRC", 8, 7    'Download source code
+    AddMenuIcon "LICENSE", 8, 8    'License
+    AddMenuIcon "ABOUT", 8, 10    'About PD
     
 End Sub
 
@@ -528,20 +413,20 @@ Public Sub ResetMenuIcons()
         
     'Redraw the Undo/Redo menus
     With cMenuImage
-        .PutImageToVBMenu 12, 0, 1 + posModifier    'Undo
-        .PutImageToVBMenu 13, 1, 1 + posModifier    'Redo
+        AddMenuIcon "UNDO", 1 + posModifier, 0     'Undo
+        AddMenuIcon "REDO", 1 + posModifier, 1     'Redo
     End With
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long
     numOfMRUFiles = MRU_ReturnCount()
-    cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0 + posModifier, 1
+    AddMenuIcon "CLEARRECENT", 0 + posModifier, 1, numOfMRUFiles + 1
     
     'Change the Show/Hide left icon panel to match
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
-        cMenuImage.PutImageToVBMenu 154, 16, 2 + posModifier    'Show the panel
+        AddMenuIcon "LEFTPANSHOW", 2 + posModifier, 16    'Show the panel
     Else
-        cMenuImage.PutImageToVBMenu 153, 16, 2 + posModifier    'Hide the panel
+        AddMenuIcon "LEFTPANHIDE", 2 + posModifier, 16     'Hide the panel
     End If
         
     'If the OS is Vista or later, render MRU icons to the Open Recent menu
@@ -585,19 +470,21 @@ End Sub
 
 'As a courtesy to the user, the Image -> Mode icon is dynamically changed to match the current image's mode
 Public Sub updateModeIcon(ByVal nMode As Boolean)
+    
     If nMode Then
         'Update the parent menu
-        cMenuImage.PutImageToVBMenu 150, 2, 3
+        AddMenuIcon "MODE32", 3, 2
         
         'Update the children menus as well
-        cMenuImage.PutImageToVBMenu 149, 0, 3, 2   '24bpp
-        cMenuImage.PutImageToVBMenu 152, 1, 3, 2   '32bpp
+        AddMenuIcon "MODE24", 3, 2, 0   '24bpp
+        AddMenuIcon "MODE32CHK", 3, 2, 1    '32bpp
         
     Else
-        cMenuImage.PutImageToVBMenu 149, 2, 3
-        cMenuImage.PutImageToVBMenu 151, 0, 3, 2
-        cMenuImage.PutImageToVBMenu 150, 1, 3, 2
+        AddMenuIcon "MODE24", 3, 2
+        AddMenuIcon "MODE24CHK", 3, 2, 0
+        AddMenuIcon "MODE32", 3, 2, 1
     End If
+    
 End Sub
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
