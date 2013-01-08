@@ -415,20 +415,20 @@ End Function
 ' DESCRIPTION:
 ' SHA-256 function (rotate right)
 '*******************************************************************************
-Private Function S(ByVal x As Long, _
+Private Function s(ByVal x As Long, _
                    ByVal n As Long) As Long
-    S = (RShift(x, (n And m_lOnBits(4))) Or LShift(x, (32 - (n And m_lOnBits(4)))))
+    s = (RShift(x, (n And m_lOnBits(4))) Or LShift(x, (32 - (n And m_lOnBits(4)))))
 End Function
 
 '*******************************************************************************
-' R (FUNCTION)
+' r (FUNCTION)
 '
 ' DESCRIPTION:
 ' SHA-256 function (just a right shift)
 '*******************************************************************************
-Private Function R(ByVal x As Long, _
+Private Function r(ByVal x As Long, _
                    ByVal n As Long) As Long
-    R = RShift(x, CInt(n And m_lOnBits(4)))
+    r = RShift(x, CInt(n And m_lOnBits(4)))
 End Function
 
 '*******************************************************************************
@@ -438,7 +438,7 @@ End Function
 ' SHA-256 function
 '*******************************************************************************
 Private Function Sigma0(ByVal x As Long) As Long
-    Sigma0 = (S(x, 2) Xor S(x, 13) Xor S(x, 22))
+    Sigma0 = (s(x, 2) Xor s(x, 13) Xor s(x, 22))
 End Function
 
 '*******************************************************************************
@@ -448,7 +448,7 @@ End Function
 ' SHA-256 function
 '*******************************************************************************
 Private Function Sigma1(ByVal x As Long) As Long
-    Sigma1 = (S(x, 6) Xor S(x, 11) Xor S(x, 25))
+    Sigma1 = (s(x, 6) Xor s(x, 11) Xor s(x, 25))
 End Function
 
 '*******************************************************************************
@@ -458,7 +458,7 @@ End Function
 ' SHA-256 function
 '*******************************************************************************
 Private Function Gamma0(ByVal x As Long) As Long
-    Gamma0 = (S(x, 7) Xor S(x, 18) Xor R(x, 3))
+    Gamma0 = (s(x, 7) Xor s(x, 18) Xor r(x, 3))
 End Function
 
 '*******************************************************************************
@@ -468,7 +468,7 @@ End Function
 ' SHA-256 function
 '*******************************************************************************
 Private Function Gamma1(ByVal x As Long) As Long
-    Gamma1 = (S(x, 17) Xor S(x, 19) Xor R(x, 10))
+    Gamma1 = (s(x, 17) Xor s(x, 19) Xor r(x, 10))
 End Function
 
 '*******************************************************************************
@@ -572,9 +572,9 @@ End Function
 ' a manner consistent with the string type.
 '*******************************************************************************
 Public Function SHA256(sMessage As String) As String
-    Dim HASH(7) As Long
+    Dim hash(7) As Long
     Dim M()     As Long
-    Dim W(63)   As Long
+    Dim w(63)   As Long
     Dim a       As Long
     Dim b       As Long
     Dim c       As Long
@@ -589,39 +589,39 @@ Public Function SHA256(sMessage As String) As String
     Dim T2      As Long
     
     ' Initial hash values
-    HASH(0) = &H6A09E667
-    HASH(1) = &HBB67AE85
-    HASH(2) = &H3C6EF372
-    HASH(3) = &HA54FF53A
-    HASH(4) = &H510E527F
-    HASH(5) = &H9B05688C
-    HASH(6) = &H1F83D9AB
-    HASH(7) = &H5BE0CD19
+    hash(0) = &H6A09E667
+    hash(1) = &HBB67AE85
+    hash(2) = &H3C6EF372
+    hash(3) = &HA54FF53A
+    hash(4) = &H510E527F
+    hash(5) = &H9B05688C
+    hash(6) = &H1F83D9AB
+    hash(7) = &H5BE0CD19
     
     ' Preprocessing. Append padding bits and length and convert to words
     M = ConvertToWordArray(sMessage)
     
     ' Main loop
     For i = 0 To UBound(M) Step 16
-        a = HASH(0)
-        b = HASH(1)
-        c = HASH(2)
-        d = HASH(3)
-        e = HASH(4)
-        f = HASH(5)
-        g = HASH(6)
-        h = HASH(7)
+        a = hash(0)
+        b = hash(1)
+        c = hash(2)
+        d = hash(3)
+        e = hash(4)
+        f = hash(5)
+        g = hash(6)
+        h = hash(7)
         
         For j = 0 To 63
             If j < 16 Then
-                W(j) = M(j + i)
+                w(j) = M(j + i)
             Else
-                W(j) = AddUnsigned(AddUnsigned(AddUnsigned(Gamma1(W(j - 2)), _
-                    W(j - 7)), Gamma0(W(j - 15))), W(j - 16))
+                w(j) = AddUnsigned(AddUnsigned(AddUnsigned(Gamma1(w(j - 2)), _
+                    w(j - 7)), Gamma0(w(j - 15))), w(j - 16))
             End If
                 
             T1 = AddUnsigned(AddUnsigned(AddUnsigned(AddUnsigned(h, Sigma1(e)), _
-                Ch(e, f, g)), K(j)), W(j))
+                Ch(e, f, g)), K(j)), w(j))
             T2 = AddUnsigned(Sigma0(a), Maj(a, b, c))
             
             h = g
@@ -634,23 +634,23 @@ Public Function SHA256(sMessage As String) As String
             a = AddUnsigned(T1, T2)
         Next
         
-        HASH(0) = AddUnsigned(a, HASH(0))
-        HASH(1) = AddUnsigned(b, HASH(1))
-        HASH(2) = AddUnsigned(c, HASH(2))
-        HASH(3) = AddUnsigned(d, HASH(3))
-        HASH(4) = AddUnsigned(e, HASH(4))
-        HASH(5) = AddUnsigned(f, HASH(5))
-        HASH(6) = AddUnsigned(g, HASH(6))
-        HASH(7) = AddUnsigned(h, HASH(7))
+        hash(0) = AddUnsigned(a, hash(0))
+        hash(1) = AddUnsigned(b, hash(1))
+        hash(2) = AddUnsigned(c, hash(2))
+        hash(3) = AddUnsigned(d, hash(3))
+        hash(4) = AddUnsigned(e, hash(4))
+        hash(5) = AddUnsigned(f, hash(5))
+        hash(6) = AddUnsigned(g, hash(6))
+        hash(7) = AddUnsigned(h, hash(7))
     Next
     
     ' Output the 256 bit digest
-    SHA256 = LCase(Right("00000000" & Hex(HASH(0)), 8) & _
-        Right("00000000" & Hex(HASH(1)), 8) & _
-        Right("00000000" & Hex(HASH(2)), 8) & _
-        Right("00000000" & Hex(HASH(3)), 8) & _
-        Right("00000000" & Hex(HASH(4)), 8) & _
-        Right("00000000" & Hex(HASH(5)), 8) & _
-        Right("00000000" & Hex(HASH(6)), 8) & _
-        Right("00000000" & Hex(HASH(7)), 8))
+    SHA256 = LCase(Right("00000000" & Hex(hash(0)), 8) & _
+        Right("00000000" & Hex(hash(1)), 8) & _
+        Right("00000000" & Hex(hash(2)), 8) & _
+        Right("00000000" & Hex(hash(3)), 8) & _
+        Right("00000000" & Hex(hash(4)), 8) & _
+        Right("00000000" & Hex(hash(5)), 8) & _
+        Right("00000000" & Hex(hash(6)), 8) & _
+        Right("00000000" & Hex(hash(7)), 8))
 End Function

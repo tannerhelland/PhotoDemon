@@ -909,9 +909,9 @@ End Function
 Private Sub SetPandU()
     Dim i As Integer
     Dim d() As Single
-    Dim W() As Single
+    Dim w() As Single
     ReDim d(nPoints) As Single
-    ReDim W(nPoints) As Single
+    ReDim w(nPoints) As Single
     'Routine to compute the parameters of our cubic spline.  Based on equations derived from some basic facts...
     'Each segment must be a cubic polynomial.  Curve segments must have equal first and second derivatives
     'at knots they share.  General algorithm taken from a book which has long since been lost.
@@ -928,15 +928,15 @@ Private Sub SetPandU()
         u(i) = iX(i + 1) - iX(i)
     Next
     For i = 2 To nPoints - 1
-        W(i) = 6# * ((iY(i + 1) - iY(i)) / u(i) - (iY(i) - iY(i - 1)) / u(i - 1))
+        w(i) = 6# * ((iY(i + 1) - iY(i)) / u(i) - (iY(i) - iY(i - 1)) / u(i - 1))
     Next
     For i = 2 To nPoints - 2
-        W(i + 1) = W(i + 1) - W(i) * u(i) / d(i)
+        w(i + 1) = w(i + 1) - w(i) * u(i) / d(i)
         d(i + 1) = d(i + 1) - u(i) * u(i) / d(i)
     Next
     p(1) = 0#
     For i = nPoints - 1 To 2 Step -1
-        p(i) = (W(i) - u(i) * p(i + 1)) / d(i)
+        p(i) = (w(i) - u(i) * p(i + 1)) / d(i)
     Next
     p(nPoints) = 0#
 End Sub
