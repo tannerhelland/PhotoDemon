@@ -206,7 +206,7 @@ Option Explicit
     Public Const Frozen As Long = 809
     Public Const Lava As Long = 810
     Public Const Burn As Long = 811
-    Public Const Ocean As Long = 812
+    'Public Const Ocean As Long = 812
     Public Const Water As Long = 813
     Public Const Steel As Long = 814
     Public Const FogEffect As Long = 828
@@ -820,8 +820,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 End If
             Case Burn
                 MenuBurn
-            Case Ocean
-                MenuOcean
+            'Case Ocean
+            '    MenuOcean
             Case Steel
                 MenuSteel
             Case FogEffect
@@ -1218,8 +1218,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Lava"
         Case Burn
             GetNameOfProcess = "Burn"
-        Case Ocean
-            GetNameOfProcess = "Ocean"
+        'Case Ocean
+        '    GetNameOfProcess = "Ocean"
         Case Water
             GetNameOfProcess = "Water"
         Case Steel

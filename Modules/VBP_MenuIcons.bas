@@ -313,7 +313,8 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "GAUSSBLUR", 5, 3, 6   'Gaussian Blur
         AddMenuIcon "GAUSSBLURMOR", 5, 3, 7   'Gaussian Blur More
         AddMenuIcon "GRIDBLUR", 5, 3, 9   'Grid Blur
-    'AddMenuIcon 77, 4, 5       'Distort
+    'AddMenuIcon "DISTORT", 5, 4       'Distort
+        '--> Distort sub-menu
     AddMenuIcon "EDGES", 5, 5       'Edges
         '--> Edges sub-menu
         AddMenuIcon "EMBOSS", 5, 5, 0  'Emboss / Engrave
@@ -335,10 +336,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "FOG", 5, 7, 2  'Fog
         AddMenuIcon "FREEZE", 5, 7, 3  'Freeze
         AddMenuIcon "LAVA", 5, 7, 4  'Lava
-        AddMenuIcon "OCEAN", 5, 7, 5  'Ocean
-        AddMenuIcon "RAINBOW", 5, 7, 6  'Rainbow
-        AddMenuIcon "STEEL", 5, 7, 7  'Steel
-        AddMenuIcon "WATER", 5, 7, 8  'Water
+        'AddMenuIcon "OCEAN", 5, 7, 5  'Ocean
+        AddMenuIcon "RAINBOW", 5, 7, 5  'Rainbow
+        AddMenuIcon "STEEL", 5, 7, 6  'Steel
+        AddMenuIcon "WATER", 5, 7, 7  'Water
     AddMenuIcon "NOISE", 5, 8       'Noise
         '--> Noise sub-menu
         AddMenuIcon "ADDNOISE", 5, 8, 0  'Add Noise

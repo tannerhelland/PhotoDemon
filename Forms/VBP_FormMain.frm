@@ -1197,20 +1197,16 @@ Begin VB.MDIForm FormMain
             Index           =   4
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Ocean"
+            Caption         =   "Rainbow"
             Index           =   5
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Rainbow"
+            Caption         =   "Steel"
             Index           =   6
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Steel"
+            Caption         =   "Underwater"
             Index           =   7
-         End
-         Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Water"
-            Index           =   8
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1927,7 +1923,7 @@ Private Sub MnuCustomDiffuse_Click()
 End Sub
 
 Private Sub MnuCustomFade_Click()
-    Process fade, , , , , , , , , , True
+    Process Fade, , , , , , , , , , True
 End Sub
 
 Private Sub MnuCustomFilter_Click()
@@ -2017,7 +2013,7 @@ Private Sub MnuExtreme_Click()
 End Sub
 
 Private Sub MnuFadeHigh_Click()
-    Process fade, 0.75
+    Process Fade, 0.75
 End Sub
 
 Private Sub MnuFadeLastEffect_Click()
@@ -2025,11 +2021,11 @@ Private Sub MnuFadeLastEffect_Click()
 End Sub
 
 Private Sub MnuFadeLow_Click()
-    Process fade, 0.25
+    Process Fade, 0.25
 End Sub
 
 Private Sub MnuFadeMedium_Click()
-    Process fade, 0.5
+    Process Fade, 0.5
 End Sub
 
 Private Sub MnuFindEdges_Click()
@@ -2199,21 +2195,17 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
         'Lava
         Case 4
             Process Lava
-        
-        'Ocean
-        Case 5
-            Process Ocean
-        
+                
         'Rainbow
-        Case 6
+        Case 5
             Process Rainbow
         
         'Steel
-        Case 7
+        Case 6
             Process Steel
         
         'Water
-        Case 8
+        Case 7
             Process Water
     
     End Select
