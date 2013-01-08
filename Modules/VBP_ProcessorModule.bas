@@ -191,6 +191,8 @@ Option Explicit
     Public Const DistortPinchAndWhirl As Long = 715
     '-Distort: Waves
     Public Const DistortWaves As Long = 716
+    '-Distort: Etched glass
+    Public Const DistortFiguredGlass As Long = 717
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -741,6 +743,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormWaves.WaveImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
                 End If
+            Case DistortFiguredGlass
+                If LoadForm Then
+                    FormFiguredGlass.Show vbModal, FormMain
+                Else
+                    FormFiguredGlass.FiguredGlassFX CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
+                End If
                 
         End Select
     End If
@@ -1194,6 +1202,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Pinch and whirl"
         Case DistortWaves
             GetNameOfProcess = "Waves"
+        Case DistortFiguredGlass
+            GetNameOfProcess = "Figured glass"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade
