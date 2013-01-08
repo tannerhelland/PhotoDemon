@@ -3,9 +3,8 @@ Attribute VB_Name = "Filters_Natural"
 '"Natural" Filters
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 8/April/02
-'Last updated: 05/September/12
-'Last update: rewrote all effects against new layer class.  I also heavily optimized each effect, so these
-'              filters should all be extremely quick.
+'Last updated: 08/January/13
+'Last update: completely rewrote the fog filter.  It now uses Perlin noise for much more realistic fog generation.
 '
 'Runs all nature-type filters.  Includes water, steel, burn, rainbow, etc.
 '
@@ -43,7 +42,7 @@ Public Sub MenuRainbow()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, S As Single, l As Single
+    Dim h As Single, s As Single, l As Single
     Dim hVal As Single
     
     'Apply the filter
@@ -62,10 +61,10 @@ Public Sub MenuRainbow()
         b = ImageData(QuickVal, y)
         
         'Use RGB to calculate hue, saturation, and luminance
-        tRGBToHSL r, g, b, h, S, l
+        tRGBToHSL r, g, b, h, s, l
         
         'Now convert those HSL values back to RGB, but substitute in our artificial hue value (calculated above)
-        tHSLToRGB hVal, S, l, r, g, b
+        tHSLToRGB hVal, s, l, r, g, b
         
         'Assign the new RGB values back into the array
         ImageData(QuickVal + 2, y) = r
@@ -85,7 +84,8 @@ Public Sub MenuRainbow()
     
 End Sub
 
-'This fog effect comes courtesy of Johannes B.  You can download his original project at http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42642&lngWId=1
+'As of PhotoDemon 5.4, this fog effect has been rewritten from the ground up.  Perlin noise is now used to generate
+' a more dramatic (and realistic) fog effect.
 Public Sub MenuFogEffect()
 
     Message "Generating artificial fog..."
@@ -103,6 +103,11 @@ Public Sub MenuFogEffect()
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
             
+    'Because interpolation may be used, it's necessary to keep pixel values within special ranges
+    Dim xLimit As Long, yLimit As Long
+    xLimit = finalX
+    yLimit = finalY
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
@@ -112,56 +117,93 @@ Public Sub MenuFogEffect()
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
+          
+    'Our etched glass effect requires some specialized variables
+        
+    'Invert turbulence
+    Dim fxTurbulence As Double
+    fxTurbulence = 2#
+        
+    Dim fxScale As Double
+    fxScale = (finalX + finalY) / 10
+        
+    'Sin and cosine look-up tables
+    Dim sinTable(0 To 255) As Double, cosTable(0 To 255) As Double
     
-    'Finally, a bunch of variables used in color calculation
+    'Populate the look-up tables
+    Dim fxAngle As Double
+    
+    Dim i As Long
+    For i = 0 To 255
+        fxAngle = (PI_DOUBLE * i) / (256 * fxTurbulence)
+        sinTable(i) = -fxScale * Sin(fxAngle)
+        cosTable(i) = fxScale * Cos(fxAngle)
+    Next i
+    
+    'Locate a random z-coordinate in the perlin noise space
+    Dim zOffset As Double
+    Randomize Timer
+    zOffset = Rnd
+    
+    'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
+    Dim srcX As Double, srcY As Double
+                                  
+    'This effect requires a noise function to operate.  I use Steve McMahon's excellent Perlin Noise class for this.
+    Dim cPerlin As cPerlin3D
+    Set cPerlin = New cPerlin3D
+        
     Dim r As Long, g As Long, b As Long
-    
-    'This value can be changed to adjust the "thickness" of the fog
-    Dim fogLimit As Long
-    fogLimit = 48
-    
-    'Apply the filter
+    Dim finalBlend As Single
+        
+    'Finally, an integer displacement will be used to move pixel values around
+    Dim pDisplace As Long
+                                  
+    'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
-        
+    
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
+    
+        'Calculate a displacement for this point
+        pDisplace = 127 * (1 + cPerlin.Noise(x / fxScale, y / fxScale, zOffset))
+        If pDisplace < 0 Then pDisplace = 0
+        If pDisplace > 255 Then pDisplace = 255
         
-        If r > 127 Then
-            r = r - fogLimit
-            If r < 127 Then r = 127
+        'Calculate a new source pixel using the sin and cos look-up tables and our calculated displacement
+        srcX = x + sinTable(pDisplace)
+        srcY = y + sinTable(pDisplace)
+        
+        'Calculate the distance between our current pixel and the source pixel
+        srcX = (srcX - x) / fxScale
+        srcY = (srcY - y) / fxScale
+        finalBlend = (srcX + srcY) / 2
+        
+        'We only want positive values for the blend
+        finalBlend = Abs(finalBlend)
+        
+        'And reduce the total blend amount slightly (as it tends to be quite heavy)
+        finalBlend = finalBlend * 0.7
+        
+        If finalBlend > 1 Then finalBlend = 1
+        If finalBlend < 0 Then finalBlend = 0
+        
+        'For RGB images, blend with gray to create "fog".  For transparent images, adjust the alpha channel.
+        If qvDepth = 3 Then
+            ImageData(QuickVal + 2, y) = BlendColors(r, 193, finalBlend)
+            ImageData(QuickVal + 1, y) = BlendColors(g, 190, finalBlend)
+            ImageData(QuickVal, y) = BlendColors(b, 201, finalBlend)
         Else
-            r = r + fogLimit
-            If r > 127 Then r = 127
+            ImageData(QuickVal + 3, y) = BlendColors(ImageData(QuickVal + 3, y), 0, finalBlend)
         End If
-        
-        If g > 127 Then
-            g = g - fogLimit
-            If g < 127 Then g = 127
-        Else
-            g = g + fogLimit
-            If g > 127 Then g = 127
-        End If
-        
-        If b > 127 Then
-            b = b - fogLimit
-            If b < 127 Then b = 127
-        Else
-            b = b + fogLimit
-            If b > 127 Then b = 127
-        End If
-        
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-        
+                
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-        
-    'With our work complete, point ImageData() away from the DIB and deallocate it
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
