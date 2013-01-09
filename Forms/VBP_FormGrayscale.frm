@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin VB.Form FormGrayscale 
-   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " "
    ClientHeight    =   6870

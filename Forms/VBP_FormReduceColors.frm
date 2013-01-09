@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin VB.Form FormReduceColors 
-   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Reduce Image Colors"
    ClientHeight    =   8310
