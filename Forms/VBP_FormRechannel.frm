@@ -598,6 +598,10 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub optChannel_Click(Index As Integer)
     RechannelImage Index, True, picEffect
 End Sub

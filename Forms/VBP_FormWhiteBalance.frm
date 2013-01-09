@@ -434,6 +434,10 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optio
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'When the horizontal scroll bar is moved, change the text box to match
 Private Sub hsIgnore_Change()
     txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")

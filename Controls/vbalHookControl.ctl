@@ -29,14 +29,14 @@ Attribute VB_Exposed = False
 ' You may access a complete copy of this license at the following link:
 ' http://creativecommons.org/licenses/by/1.0/
 
-'Many thanks to Steve McMahon for this excellent set of code (which ties into his keyboard accelerator user control)
+'Many thanks to Steve McMahon for this excellent set of code, which makes proper accelerator handling much easier.
 
 Option Explicit
 
 Implements IWindowsHook
 
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-Private Declare Function GetParent Lib "user32" (ByVal HWnd As Long) As Long
+Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetActiveWindow Lib "user32" () As Long
 
 Private Type tAccel
@@ -177,7 +177,7 @@ Attribute Key.VB_Description = "Gets the Key used to identify an accelerator."
 End Property
 Public Property Get IsActive() As Boolean
 Attribute IsActive.VB_Description = "Gets whether the form holding the accelerator control is the active form on the system or not."
-   If GetActiveWindow() = UserControl.Parent.HWnd Then
+   If GetActiveWindow() = UserControl.Parent.hWnd Then
       IsActive = True
    End If
 End Property

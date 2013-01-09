@@ -360,6 +360,10 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
    
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'When the horizontal scroll bar is moved, change the text box to match
 Private Sub hsGamma_Change()
     txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")

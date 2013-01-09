@@ -260,6 +260,10 @@ Private Sub renderPreview()
 
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Redraw the preview when the scroll bar is moved
 Private Sub hsThreshold_Change()
     renderPreview

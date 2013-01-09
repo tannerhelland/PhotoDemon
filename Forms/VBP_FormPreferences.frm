@@ -2915,6 +2915,10 @@ Private Sub DrawSampleCanvasBackground()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Allow the user to change the first checkerboard color for alpha channels
 Private Sub picAlphaOne_Click()
     

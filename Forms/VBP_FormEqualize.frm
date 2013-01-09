@@ -304,7 +304,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, S As Single, l As Single
+    Dim h As Single, s As Single, l As Single
     Dim lInt As Long
     
     'Histogram variables
@@ -420,8 +420,8 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
         
         'If luminance has been requested, calculate it before messing with any of the color channels
         If HandleL Then
-            tRGBToHSL r, g, b, h, S, l
-            tHSLToRGB h, S, lDataInt(Int(l * 255)) / 255, r, g, b
+            tRGBToHSL r, g, b, h, s, l
+            tHSLToRGB h, s, lDataInt(Int(l * 255)) / 255, r, g, b
         End If
         
         'Next, calculate new values for the color channels, based on what is being equalized
@@ -447,4 +447,8 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
     
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub

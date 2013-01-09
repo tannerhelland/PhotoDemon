@@ -278,3 +278,7 @@ Public Sub ShowDialog()
     Me.Show vbModal, FormMain
 
 End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub

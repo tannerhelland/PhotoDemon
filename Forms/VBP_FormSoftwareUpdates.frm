@@ -397,6 +397,10 @@ Private Sub Form_Load()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Open a browser window with the PhotoDemon download page
 Private Sub lblDirectPDDownload_Click()
     OpenURL "http://www.tannerhelland.com/photodemon/#download"

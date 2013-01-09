@@ -342,6 +342,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'The following four routines keep the value of the textbox and scroll bar in lock-step
 Private Sub hsNoise_Change()
     copyToTextBoxI txtNoise, hsNoise.Value

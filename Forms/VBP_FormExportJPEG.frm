@@ -384,6 +384,10 @@ Private Sub cmdShowHide_Click()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub hsQuality_Change()
     txtQuality.Text = hsQuality.Value
     updateComboBox
@@ -449,8 +453,8 @@ Private Sub toggleAdvancedSettings()
         lineSeparator.y1 = hsQuality.Top + 48
         lineSeparator.y2 = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 16
-        cmdOK.Top = cmdShowHide.Top
-        cmdCancel.Top = cmdOK.Top
+        CmdOK.Top = cmdShowHide.Top
+        CmdCancel.Top = CmdOK.Top
     
     Else
     
@@ -469,8 +473,8 @@ Private Sub toggleAdvancedSettings()
         lineSeparator.y1 = chkSubsample.Top + 48
         lineSeparator.y2 = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 16
-        cmdOK.Top = cmdShowHide.Top
-        cmdCancel.Top = cmdOK.Top
+        CmdOK.Top = cmdShowHide.Top
+        CmdCancel.Top = CmdOK.Top
     
     End If
 

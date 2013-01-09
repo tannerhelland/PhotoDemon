@@ -660,6 +660,8 @@ Private Sub Form_Unload(Cancel As Integer)
     
     UpdateMDIStatus
     
+    ReleaseFormTheming Me
+    
 End Sub
 
 Private Sub HScroll_Change()

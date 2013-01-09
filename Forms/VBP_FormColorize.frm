@@ -255,7 +255,7 @@ Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturati
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, S As Single, l As Single
+    Dim h As Single, s As Single, l As Single
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -268,11 +268,11 @@ Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturati
         b = ImageData(QuickVal, y)
         
         'Get the hue and saturation
-        tRGBToHSL r, g, b, h, S, l
+        tRGBToHSL r, g, b, h, s, l
         
         'Convert back to RGB using our artificial hue value
         If maintainSaturation Then
-            tHSLToRGB hToUse, S, l, r, g, b
+            tHSLToRGB hToUse, s, l, r, g, b
         Else
             tHSLToRGB hToUse, 0.5, l, r, g, b
         End If
@@ -332,6 +332,10 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 'When the hue scroll bar is changed, redraw the preview

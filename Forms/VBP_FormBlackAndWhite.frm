@@ -387,6 +387,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub hsThreshold_Change()
     copyToTextBoxI txtThreshold, hsThreshold.Value
     masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect

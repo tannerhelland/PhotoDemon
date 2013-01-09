@@ -10,6 +10,20 @@ Attribute VB_Name = "Misc_Interface"
 
 Option Explicit
 
+'Experimental subclassing to fix background color problems
+' Many thanks to pro VB programmer LaVolpe for this workaround for themed controls not respecting their owner's backcolor properly.
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
+Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
+Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
+Private Declare Function DefWindowProc Lib "user32.dll" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Const WM_PRINTCLIENT As Long = &H318
+Private Const WM_PAINT As Long = &HF&
+Private Const GWL_WNDPROC As Long = -4
+Private Const WM_DESTROY As Long = &H2
+
 'Used to set the cursor for an object to the system's hand cursor
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
@@ -87,14 +101,50 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
                         
                         
-        'STEP 4: apply theming.  This is a work in progress, and right now only two themes are available (light and dark).
-        ' There's no reason that more themes couldn't exist, but it's a lot of work to design and test them.
+        'STEP 4: subclass this form and force controls to render transparent borders properly.
+        If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
         
     Next
     
     'Refresh all non-MDI forms after making the changes above
     If tForm.Name <> "FormMain" Then tForm.Refresh
         
+End Sub
+
+Public Sub SubclassFrame(FramehWnd As Long, ReleaseSubclass As Boolean)
+    Dim prevProc As Long
+
+    prevProc = GetProp(FramehWnd, "scPproc")
+    If ReleaseSubclass Then
+        If prevProc Then
+            SetWindowLong FramehWnd, GWL_WNDPROC, prevProc
+            SetProp FramehWnd, "scPproc", 0&
+        End If
+    ElseIf prevProc = 0& Then
+        SetProp FramehWnd, "scPproc", GetWindowLong(FramehWnd, GWL_WNDPROC)
+        SetWindowLong FramehWnd, GWL_WNDPROC, AddressOf WndProc_Frame
+    End If
+End Sub
+
+Private Function WndProc_Frame(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    
+    Dim prevProc As Long
+    
+    prevProc = GetProp(hWnd, "scPproc")
+    If prevProc = 0& Then
+        WndProc_Frame = DefWindowProc(hWnd, uMsg, wParam, lParam)
+    ElseIf uMsg = WM_PRINTCLIENT Then
+        SendMessage hWnd, WM_PAINT, wParam, ByVal 0&
+    Else
+        If uMsg = WM_DESTROY Then SubclassFrame hWnd, True
+        WndProc_Frame = CallWindowProc(prevProc, hWnd, uMsg, wParam, lParam)
+    End If
+End Function
+
+'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
+' This function should be called when any themed form is unloaded.
+Public Sub ReleaseFormTheming(ByRef tForm As Form)
+    If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
 End Sub
 
 'Perform any drawing routines related to the main form

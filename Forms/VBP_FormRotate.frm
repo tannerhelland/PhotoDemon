@@ -401,6 +401,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Keep the scroll bar and the text box values in sync
 Private Sub hsAngle_Change()
     If userChange = True Then

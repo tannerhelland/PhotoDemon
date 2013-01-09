@@ -855,3 +855,7 @@ Private Sub cmbDPI_Change()
         UpdatePrintPreview True
     End If
 End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub

@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormGrayscale 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " "
    ClientHeight    =   6870
@@ -390,6 +391,7 @@ Begin VB.Form FormGrayscale
    End
    Begin VB.Label lblAdditional 
       AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
       Caption         =   "additional options for this method:"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -409,6 +411,7 @@ Begin VB.Form FormGrayscale
    End
    Begin VB.Label lblAlgorithm 
       AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
       Caption         =   "grayscale method:"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -1151,6 +1154,10 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
         
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 'When the "# of shades" horizontal scroll bar is changed, update the text box to match

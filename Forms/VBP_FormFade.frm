@@ -203,7 +203,7 @@ Private Sub cmdOK_Click()
     
     If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max) Then
         Me.Visible = False
-        Process Fade, CSng(hsPercent.Value / 100)
+        Process fade, CSng(hsPercent.Value / 100)
         Unload Me
     Else
         AutoSelectText txtPercent
@@ -381,6 +381,10 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 Private Sub hsPercent_Change()

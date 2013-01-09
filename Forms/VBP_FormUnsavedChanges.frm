@@ -315,3 +315,7 @@ Private Sub cmdAnswer_Click(Index As Integer)
     Me.Hide
 
 End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub

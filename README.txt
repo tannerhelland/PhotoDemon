@@ -170,8 +170,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.frez.co.uk/vb6.aspx)
 * Adrian Pellas-Rice, Kornel Lesinski, Stuart Coyle, Greg Roelofs, and Anthony Dekker for the pngnq-s9 tool
   (http://sourceforge.net/projects/pngnqs9/)
+* Jerry Huxtable and JHLabs for an excellent reference on Distort-style filters (Apache 2.0)
+  (http://www.jhlabs.com/ip/filters/index.html)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
+  * Zhu JinYong
+  * Robert Rayment
   * Herman Liu
   * Dave Jamison
-  * Robert Rayment
   * Alfred Hellmueller

@@ -450,6 +450,10 @@ Private Sub Form_Load()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Keep the scroll bar and the text box values in sync
 Private Sub hsTurbulence_Change()
     copyToTextBoxI txtTurbulence, hsTurbulence.Value

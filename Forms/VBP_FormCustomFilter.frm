@@ -1050,6 +1050,10 @@ Private Function SaveCustomFilter(ByRef dstFilterPath As String) As Boolean
     
 End Function
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub TxtBias_GotFocus()
     AutoSelectText txtBias
 End Sub

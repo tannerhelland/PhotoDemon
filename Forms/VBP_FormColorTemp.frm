@@ -382,7 +382,7 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, S As Single, l As Single
+    Dim h As Single, s As Single, l As Single
     Dim originalLuminance As Single
     Dim tmpR As Long, tmpG As Long, tmpB As Long
             
@@ -413,8 +413,8 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
         'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
         ' value with the original
         If preserveLuminance Then
-            tRGBToHSL r, g, b, h, S, l
-            tHSLToRGB h, S, originalLuminance, r, g, b
+            tRGBToHSL r, g, b, h, s, l
+            tHSLToRGB h, s, originalLuminance, r, g, b
         End If
         
         'Assign the new values to each color channel
@@ -472,6 +472,10 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 Private Sub hsStrength_Change()

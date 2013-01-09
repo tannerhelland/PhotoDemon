@@ -330,3 +330,7 @@ Private Sub Form_Load()
     makeFormPretty Me
 
 End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub

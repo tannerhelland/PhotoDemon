@@ -664,6 +664,10 @@ Private Function getPluginSize(ByVal hInternet As Long, ByVal pluginURL As Strin
     
 End Function
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Allow the user to visit any plugin homepage by clicking the plugin's name
 Private Sub lblInterfaceTitle_Click(Index As Integer)
     

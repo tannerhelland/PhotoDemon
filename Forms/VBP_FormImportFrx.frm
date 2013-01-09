@@ -337,6 +337,10 @@ TryBinaryImportAgain:
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub LstInfo_Click()
   
     Dim tmpImportLayer As pdLayer
@@ -357,7 +361,7 @@ Private Sub LstInfo_Click()
                 tmpImportLayer.CreateFromPicture m_cff(LstInfo.ListIndex + 1).Picture
                 If tmpImportLayer.getLayerWidth <> 0 And tmpImportLayer.getLayerHeight <> 0 Then tmpImportLayer.renderToPictureBox picDemo
                 
-                cmdOK.Enabled = True
+                CmdOK.Enabled = True
                 LblData.Visible = False
                 DoEvents
             
@@ -371,7 +375,7 @@ Private Sub LstInfo_Click()
                 picDemo.Picture = picDemo.Image
                 picDemo.Refresh
                 
-                cmdOK.Enabled = True
+                CmdOK.Enabled = True
                 LblData.Visible = False
                 DoEvents
             
@@ -380,7 +384,7 @@ Private Sub LstInfo_Click()
         Else
             picDemo.Picture = Nothing
             LblData.Visible = True
-            cmdOK.Enabled = False
+            CmdOK.Enabled = False
             If .ImageSize And (.ImageSize < 2 ^ 15) Then
                 LblData.Caption = "Binary data: " & StrConv(.Bits, vbUnicode)
             Else

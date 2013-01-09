@@ -1698,6 +1698,8 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     ' wouldn't want to re-load the problematic image anyway.)
     MRU_SaveToINI
     
+    ReleaseFormTheming Me
+    
 End Sub
 
 'Display the "About" form
@@ -1923,7 +1925,7 @@ Private Sub MnuCustomDiffuse_Click()
 End Sub
 
 Private Sub MnuCustomFade_Click()
-    Process Fade, , , , , , , , , , True
+    Process fade, , , , , , , , , , True
 End Sub
 
 Private Sub MnuCustomFilter_Click()
@@ -2013,7 +2015,7 @@ Private Sub MnuExtreme_Click()
 End Sub
 
 Private Sub MnuFadeHigh_Click()
-    Process Fade, 0.75
+    Process fade, 0.75
 End Sub
 
 Private Sub MnuFadeLastEffect_Click()
@@ -2021,11 +2023,11 @@ Private Sub MnuFadeLastEffect_Click()
 End Sub
 
 Private Sub MnuFadeLow_Click()
-    Process Fade, 0.25
+    Process fade, 0.25
 End Sub
 
 Private Sub MnuFadeMedium_Click()
-    Process Fade, 0.5
+    Process fade, 0.5
 End Sub
 
 Private Sub MnuFindEdges_Click()

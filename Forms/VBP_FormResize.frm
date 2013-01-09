@@ -357,6 +357,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 '*************************************************************************************
 'If "Preserve Size Ratio" is selected, this set of routines handles the preservation
 

@@ -310,6 +310,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsIntensity_Change()
     fxBlackLight hsIntensity.Value, True, picEffect

@@ -496,6 +496,10 @@ Private Sub cmdReset_Click()
 End Sub
 
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 '*********************************************************************************
 'The following 10 subroutines are for changing/scrolling any of the scrollbars
 'on the main form

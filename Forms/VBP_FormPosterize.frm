@@ -291,6 +291,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'The following routines are for keeping the text box and scroll bar values in lock-step
 Private Sub hsBits_Change()
     copyToTextBoxI txtBits, hsBits.Value

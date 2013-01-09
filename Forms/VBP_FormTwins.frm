@@ -303,6 +303,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub OptHorizontal_Click()
     GenerateTwins 1, True, picEffect
 End Sub

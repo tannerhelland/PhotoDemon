@@ -286,6 +286,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'When the horizontal scroll bar is moved, update the preview and text box to match
 Private Sub hsThreshold_Change()
     copyToTextBoxI txtThreshold, hsThreshold.Value

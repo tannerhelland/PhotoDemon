@@ -569,6 +569,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub hsAmplitude_Change()
     copyToTextBoxI txtAmplitude, hsAmplitude.Value
     updatePreview

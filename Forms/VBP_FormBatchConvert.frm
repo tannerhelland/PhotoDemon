@@ -1010,6 +1010,10 @@ Private Sub Form_Load()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Enable/disable the macro selection box and command button contingent on which macro option button is selected
 Private Sub optActions_Click(Index As Integer)
     If optActions(0).Value = True Then

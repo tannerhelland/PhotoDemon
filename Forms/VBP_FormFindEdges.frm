@@ -523,6 +523,10 @@ Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False
      
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub LstEdgeOptions_Click()
     UpdateDescriptions
 End Sub

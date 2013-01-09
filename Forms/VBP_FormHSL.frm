@@ -346,7 +346,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, S As Single, l As Single
+    Dim h As Single, s As Single, l As Single
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -359,23 +359,23 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
         b = ImageData(QuickVal, y)
         
         'Get the hue and saturation
-        tRGBToHSL r, g, b, h, S, l
+        tRGBToHSL r, g, b, h, s, l
         
         'Apply the modifiers
         h = h + hModifier
         If h > 5 Then h = h - 6
         If h < -1 Then h = h + 6
         
-        S = S * sModifier
-        If S < 0 Then S = 0
-        If S > 1 Then S = 1
+        s = s * sModifier
+        If s < 0 Then s = 0
+        If s > 1 Then s = 1
         
         l = l + lModifier
         If l < 0 Then l = 0
         If l > 1 Then l = 1
         
         'Convert back to RGB using our artificial hue value
-        tHSLToRGB h, S, l, r, g, b
+        tHSLToRGB h, s, l, r, g, b
         
         'Assign the new values to each color channel
         ImageData(QuickVal + 2, y) = r
@@ -408,6 +408,10 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 'When the hue scroll bar is changed, redraw the preview

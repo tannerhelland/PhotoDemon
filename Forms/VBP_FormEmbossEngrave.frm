@@ -286,6 +286,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'When the emboss/engrave options are clicked, redraw the preview
 Private Sub OptEmboss_Click()
     If OptEmboss.Value = True Then

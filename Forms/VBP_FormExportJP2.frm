@@ -250,6 +250,10 @@ Private Sub cmdOK_Click()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub hsQuality_Change()
     txtQuality.Text = hsQuality.Value
     updateComboBox

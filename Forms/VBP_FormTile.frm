@@ -538,6 +538,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'When the text boxes are changed, keep the scroll bar values in sync
 Private Sub TxtHeight_Change()
     textValidate TxtHeight

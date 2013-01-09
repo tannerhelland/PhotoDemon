@@ -439,6 +439,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub hsHeight_Change()
     copyToTextBoxI TxtHeight, hsHeight.Value
     MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect

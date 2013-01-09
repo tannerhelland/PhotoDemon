@@ -500,6 +500,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Everything below this line is related to updating the text boxes and scroll bars when one or the
 ' other is modified by the user.  When that happens, the preview window also gets updated.
 Private Sub hsBright_Change()

@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormReduceColors 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Reduce Image Colors"
    ClientHeight    =   8310
@@ -492,6 +493,10 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 'Enable/disable the manual settings depending on which option button has been selected

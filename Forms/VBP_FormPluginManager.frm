@@ -1938,6 +1938,10 @@ Private Function popPluginLabel(ByVal curPlugin As Long, ByRef pluginName As Str
     
 End Function
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'The user is now allowed to selectively disable/enable various plugins.  This can be used to test certain program
 ' parameters, or to force certain behaviors.
 Private Sub lblDisable_Click(Index As Integer)

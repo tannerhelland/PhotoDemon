@@ -314,6 +314,10 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
 
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 Private Sub lblEZTW32_Click()
     OpenURL "http://eztwain.com/ezt1faq.htm"
 End Sub

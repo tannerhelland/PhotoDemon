@@ -323,6 +323,10 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
 'Everything below this line relates to mirroring the input of the textboxes across the scrollbars (and vice versa)
 Private Sub hsX_Change()
     copyToTextBoxI txtX, hsX.Value

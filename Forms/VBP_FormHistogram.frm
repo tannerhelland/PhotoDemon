@@ -800,6 +800,7 @@ End Sub
 
 'UNLOAD form
 Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
     Message "Finished."
 End Sub
 
