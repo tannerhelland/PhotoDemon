@@ -1018,6 +1018,9 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     'Erase any existing picture
     dstPicture.Picture = LoadPicture("")
 
+    'Set a default backcolor
+    dstPicture.backColor = RGB(127, 127, 127) 'vbButtonShadow
+
     'If the target picture box is smaller than this layer, request halftoning
     If (dstPicture.ScaleWidth < layerWidth) Or (dstPicture.ScaleHeight < layerHeight) Then
         SetStretchBltMode dstPicture.hDC, STRETCHBLT_HALFTONE

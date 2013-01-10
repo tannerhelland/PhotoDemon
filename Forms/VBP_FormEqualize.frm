@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormEqualize 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Equalize Histogram"
-   ClientHeight    =   5265
+   ClientHeight    =   5580
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6270
@@ -18,13 +19,32 @@ Begin VB.Form FormEqualize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   351
+   ScaleHeight     =   372
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   4950
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   4950
+      Width           =   1365
+   End
    Begin VB.CheckBox chkLuminance 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "luminance"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -44,6 +64,7 @@ Begin VB.Form FormEqualize
    End
    Begin VB.CheckBox chkBlue 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "blue"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -63,6 +84,7 @@ Begin VB.Form FormEqualize
    End
    Begin VB.CheckBox chkGreen 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "green"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -82,6 +104,7 @@ Begin VB.Form FormEqualize
    End
    Begin VB.CheckBox chkRed 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "red"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -127,23 +150,12 @@ Begin VB.Form FormEqualize
       Top             =   120
       Width           =   2895
    End
-   Begin VB.CommandButton cmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4920
-      TabIndex        =   1
-      Top             =   4680
-      Width           =   1245
-   End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3600
-      TabIndex        =   0
-      Top             =   4680
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -825
+      TabIndex        =   11
+      Top             =   4800
+      Width           =   7095
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

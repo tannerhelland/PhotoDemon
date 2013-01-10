@@ -2,9 +2,10 @@ VERSION 5.00
 Begin VB.Form dialog_UnsavedChanges 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Unsaved Changes"
-   ClientHeight    =   4530
+   ClientHeight    =   4590
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9360
@@ -20,7 +21,7 @@ Begin VB.Form dialog_UnsavedChanges
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   302
+   ScaleHeight     =   306
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
@@ -32,7 +33,7 @@ Begin VB.Form dialog_UnsavedChanges
       Height          =   390
       Left            =   3960
       TabIndex        =   5
-      Top             =   4020
+      Top             =   4050
       Width           =   5175
    End
    Begin VB.PictureBox picPreview 
@@ -147,8 +148,8 @@ Begin VB.Form dialog_UnsavedChanges
    End
    Begin VB.Line lineBottom 
       BorderColor     =   &H8000000D&
-      X1              =   8
-      X2              =   616
+      X1              =   0
+      X2              =   624
       Y1              =   256
       Y2              =   256
    End
@@ -162,6 +163,13 @@ Begin VB.Form dialog_UnsavedChanges
       Top             =   360
       Width           =   4215
       WordWrap        =   -1  'True
+   End
+   Begin VB.Label lblBackground 
+      Height          =   735
+      Left            =   0
+      TabIndex        =   6
+      Top             =   3840
+      Width           =   9375
    End
 End
 Attribute VB_Name = "dialog_UnsavedChanges"

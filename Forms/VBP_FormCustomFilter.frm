@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormCustomFilter 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Filter"
-   ClientHeight    =   7590
+   ClientHeight    =   7620
    ClientLeft      =   150
    ClientTop       =   120
    ClientWidth     =   6285
@@ -18,11 +19,29 @@ Begin VB.Form FormCustomFilter
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   506
+   ScaleHeight     =   508
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   419
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3300
+      TabIndex        =   0
+      Top             =   6990
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4770
+      TabIndex        =   1
+      Top             =   6990
+      Width           =   1365
+   End
    Begin VB.TextBox txtBias 
       Alignment       =   2  'Center
       BeginProperty Font 
@@ -89,24 +108,6 @@ Begin VB.Form FormCustomFilter
       TabStop         =   0   'False
       Top             =   120
       Width           =   2895
-   End
-   Begin VB.CommandButton cmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4920
-      TabIndex        =   1
-      Top             =   6960
-      Width           =   1245
-   End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3600
-      TabIndex        =   0
-      Top             =   6960
-      Width           =   1245
    End
    Begin VB.TextBox TxtWeight 
       Alignment       =   2  'Center
@@ -684,8 +685,17 @@ Begin VB.Form FormCustomFilter
       TooltipType     =   1
       TooltipTitle    =   "Save Current Filter"
    End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -720
+      TabIndex        =   40
+      Top             =   6840
+      Width           =   7095
+   End
    Begin VB.Label lblAdditional 
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
       Caption         =   "additional settings:"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -705,6 +715,8 @@ Begin VB.Form FormCustomFilter
    End
    Begin VB.Label lblOffset 
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
       Caption         =   "offset:"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -724,6 +736,8 @@ Begin VB.Form FormCustomFilter
    End
    Begin VB.Label lblDivisor 
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
       Caption         =   "divisor:"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -743,6 +757,8 @@ Begin VB.Form FormCustomFilter
    End
    Begin VB.Label lblLoadSave 
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
       Caption         =   "load / save filter:"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -762,6 +778,8 @@ Begin VB.Form FormCustomFilter
    End
    Begin VB.Label lblConvolution 
       AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
       Caption         =   "convolution matrix:"
       BeginProperty Font 
          Name            =   "Tahoma"

@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormRank 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Rank Filter"
-   ClientHeight    =   6030
+   ClientHeight    =   6165
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,11 +19,29 @@ Begin VB.Form FormRank
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   402
+   ScaleHeight     =   411
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   5550
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   5550
+      Width           =   1365
+   End
    Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -118,23 +137,12 @@ Begin VB.Form FormRank
       Top             =   3720
       Width           =   3135
    End
-   Begin VB.CommandButton cmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   11
       Top             =   5400
-      Width           =   1245
-   End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   5400
-      Width           =   1245
+      Width           =   7095
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

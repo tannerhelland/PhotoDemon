@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form dialog_ExportJP2 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG 2000 Export Options"
-   ClientHeight    =   2910
+   ClientHeight    =   3180
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   7335
@@ -18,11 +19,29 @@ Begin VB.Form dialog_ExportJP2
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   194
+   ScaleHeight     =   212
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   489
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   4320
+      TabIndex        =   0
+      Top             =   2550
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   5790
+      TabIndex        =   1
+      Top             =   2550
+      Width           =   1365
+   End
    Begin VB.HScrollBar hsQuality 
       Height          =   330
       LargeChange     =   5
@@ -73,22 +92,12 @@ Begin VB.Form dialog_ExportJP2
       Top             =   1230
       Width           =   735
    End
-   Begin VB.CommandButton CmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   5880
-      TabIndex        =   1
-      Top             =   2280
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   4560
-      TabIndex        =   0
-      Top             =   2280
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   8
+      Top             =   2400
+      Width           =   7335
    End
    Begin VB.Label lblBefore 
       AutoSize        =   -1  'True

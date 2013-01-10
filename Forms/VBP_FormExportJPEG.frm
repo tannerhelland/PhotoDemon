@@ -1,11 +1,12 @@
 VERSION 5.00
 Begin VB.Form dialog_ExportJPEG 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Export Options"
-   ClientHeight    =   5385
+   ClientHeight    =   5220
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   7335
+   ClientWidth     =   7440
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,21 +19,40 @@ Begin VB.Form dialog_ExportJPEG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   359
+   ScaleHeight     =   348
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   489
+   ScaleWidth      =   496
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   4440
+      TabIndex        =   0
+      Top             =   4590
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   5910
+      TabIndex        =   1
+      Top             =   4590
+      Width           =   1365
+   End
    Begin VB.CommandButton cmdShowHide 
       Caption         =   "<<  Hide advanced settings"
       Height          =   495
-      Left            =   240
+      Left            =   360
       TabIndex        =   12
-      Top             =   4680
+      Top             =   4590
       Width           =   2685
    End
    Begin VB.CheckBox chkThumbnail 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " embed thumbnail image"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -72,6 +92,7 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin VB.CheckBox chkSubsample 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " use specific subsampling:"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -92,6 +113,7 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin VB.CheckBox chkProgressive 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " use progressive encoding"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -112,6 +134,7 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin VB.CheckBox chkOptimize 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " optimize (takes slightly longer, but results in a smaller file)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -134,14 +157,14 @@ Begin VB.Form dialog_ExportJPEG
    Begin VB.HScrollBar hsQuality 
       Height          =   330
       LargeChange     =   5
-      Left            =   2520
+      Left            =   2760
       Max             =   99
       Min             =   1
       TabIndex        =   5
       TabStop         =   0   'False
       Top             =   645
       Value           =   90
-      Width           =   3735
+      Width           =   3645
    End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
@@ -159,7 +182,7 @@ Begin VB.Form dialog_ExportJPEG
       Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   630
-      Width           =   1815
+      Width           =   2055
    End
    Begin VB.TextBox txtQuality 
       Alignment       =   2  'Center
@@ -174,29 +197,19 @@ Begin VB.Form dialog_ExportJPEG
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   6360
+      Left            =   6510
       MaxLength       =   2
       TabIndex        =   2
       Text            =   "90"
-      Top             =   630
+      Top             =   645
       Width           =   735
    End
-   Begin VB.CommandButton CmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   5880
-      TabIndex        =   1
-      Top             =   4680
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   4560
-      TabIndex        =   0
-      Top             =   4680
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   13
+      Top             =   4440
+      Width           =   7455
    End
    Begin VB.Line lineSeparator 
       BorderColor     =   &H8000000F&
@@ -452,7 +465,8 @@ Private Sub toggleAdvancedSettings()
         'Move all other controls accordingly
         lineSeparator.y1 = hsQuality.Top + 48
         lineSeparator.y2 = lineSeparator.y1
-        cmdShowHide.Top = lineSeparator.y1 + 16
+        lblBackground.Top = lineSeparator.y1
+        cmdShowHide.Top = lineSeparator.y1 + 10
         CmdOK.Top = cmdShowHide.Top
         CmdCancel.Top = CmdOK.Top
     
@@ -472,7 +486,8 @@ Private Sub toggleAdvancedSettings()
         'Move all other controls accordingly
         lineSeparator.y1 = chkSubsample.Top + 48
         lineSeparator.y2 = lineSeparator.y1
-        cmdShowHide.Top = lineSeparator.y1 + 16
+        lblBackground.Top = lineSeparator.y1
+        cmdShowHide.Top = lineSeparator.y1 + 10
         CmdOK.Top = cmdShowHide.Top
         CmdCancel.Top = CmdOK.Top
     

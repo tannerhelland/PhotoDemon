@@ -1,9 +1,10 @@
 VERSION 5.00
 Begin VB.Form FormLevels 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Adjust Image Levels"
-   ClientHeight    =   6615
+   ClientHeight    =   6765
    ClientLeft      =   45
    ClientTop       =   195
    ClientWidth     =   6255
@@ -19,11 +20,29 @@ Begin VB.Form FormLevels
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   441
+   ScaleHeight     =   451
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   6150
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   6150
+      Width           =   1365
+   End
    Begin VB.HScrollBar hsOutL 
       Height          =   220
       Left            =   1680
@@ -73,28 +92,10 @@ Begin VB.Form FormLevels
       Appearance      =   0  'Flat
       Caption         =   "&Reset"
       Height          =   495
-      Left            =   240
+      Left            =   180
       TabIndex        =   7
-      Top             =   6000
-      Width           =   1215
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   6000
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
-      Top             =   6000
-      Width           =   1245
+      Top             =   6150
+      Width           =   1455
    End
    Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
@@ -141,6 +142,13 @@ Begin VB.Form FormLevels
       TabIndex        =   9
       Top             =   120
       Width           =   2895
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   29
+      Top             =   6000
+      Width           =   7095
    End
    Begin VB.Label Label9 
       Alignment       =   1  'Right Justify

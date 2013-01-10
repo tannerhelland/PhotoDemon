@@ -1,33 +1,52 @@
 VERSION 5.00
 Begin VB.Form FormTile 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tile Image"
-   ClientHeight    =   8415
+   ClientHeight    =   8685
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   561
+   ScaleHeight     =   579
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   8070
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   8070
+      Width           =   1365
+   End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   &H80000008&
       Height          =   5100
       Left            =   240
@@ -117,11 +136,9 @@ Begin VB.Form FormTile
       Top             =   6000
       Width           =   3375
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
+   Begin VB.Label lblBackground 
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "MS Sans Serif"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -129,29 +146,11 @@ Begin VB.Form FormTile
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
-      Top             =   7800
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   7800
-      Width           =   1245
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   14
+      Top             =   7920
+      Width           =   7095
    End
    Begin VB.Label lblDescription 
       Alignment       =   2  'Center

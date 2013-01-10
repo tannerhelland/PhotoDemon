@@ -1,13 +1,14 @@
 VERSION 5.00
 Begin VB.Form FormFindEdges 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Find Edges"
-   ClientHeight    =   6615
+   ClientHeight    =   6780
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6270
    BeginProperty Font 
-      Name            =   "Arial"
+      Name            =   "Tahoma"
       Size            =   8.25
       Charset         =   0
       Weight          =   400
@@ -18,14 +19,33 @@ Begin VB.Form FormFindEdges
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   441
+   ScaleHeight     =   452
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   6150
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   6150
+      Width           =   1365
+   End
    Begin VB.CheckBox chkInvert 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " use black background"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -89,42 +109,6 @@ Begin VB.Form FormFindEdges
       Top             =   120
       Width           =   2895
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   3600
-      TabIndex        =   0
-      Top             =   6000
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   4875
-      TabIndex        =   1
-      Top             =   6000
-      Width           =   1245
-   End
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -141,6 +125,22 @@ Begin VB.Form FormFindEdges
       TabIndex        =   2
       Top             =   3480
       Width           =   2895
+   End
+   Begin VB.Label lblBackground 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   855
+      Left            =   -825
+      TabIndex        =   10
+      Top             =   6000
+      Width           =   7095
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

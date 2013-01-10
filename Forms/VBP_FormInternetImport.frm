@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormInternetImport 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Download Image"
-   ClientHeight    =   1965
+   ClientHeight    =   2340
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9735
@@ -18,28 +19,28 @@ Begin VB.Form FormInternetImport
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   131
+   ScaleHeight     =   156
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   649
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton cmdOK 
+   Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   7080
-      TabIndex        =   1
-      Top             =   1320
-      Width           =   1215
+      Left            =   6720
+      TabIndex        =   0
+      Top             =   1710
+      Width           =   1365
    End
-   Begin VB.CommandButton cmdCancel 
+   Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   8400
-      TabIndex        =   2
-      Top             =   1320
-      Width           =   1215
+      Left            =   8190
+      TabIndex        =   1
+      Top             =   1710
+      Width           =   1365
    End
    Begin VB.TextBox txtURL 
       BeginProperty Font 
@@ -54,10 +55,10 @@ Begin VB.Form FormInternetImport
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   240
-      TabIndex        =   0
+      TabIndex        =   2
       Text            =   "http://"
       Top             =   720
-      Width           =   9375
+      Width           =   9255
    End
    Begin VB.Label lblCopyrightWarning 
       Appearance      =   0  'Flat
@@ -68,8 +69,15 @@ Begin VB.Form FormInternetImport
       Height          =   495
       Left            =   240
       TabIndex        =   4
-      Top             =   1425
-      Width           =   6615
+      Top             =   1755
+      Width           =   6375
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   5
+      Top             =   1560
+      Width           =   9735
    End
    Begin VB.Label lblDownloadPath 
       AutoSize        =   -1  'True
@@ -334,3 +342,4 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+

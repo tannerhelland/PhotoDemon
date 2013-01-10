@@ -1,9 +1,10 @@
 VERSION 5.00
 Begin VB.Form FormDespeckle 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Advanced Despeckle"
-   ClientHeight    =   2535
+   ClientHeight    =   2700
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   5820
@@ -19,11 +20,29 @@ Begin VB.Form FormDespeckle
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   169
+   ScaleHeight     =   180
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   388
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   2820
+      TabIndex        =   0
+      Top             =   2070
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4290
+      TabIndex        =   1
+      Top             =   2070
+      Width           =   1365
+   End
    Begin VB.HScrollBar hsDespeckle 
       Height          =   255
       Left            =   240
@@ -34,23 +53,12 @@ Begin VB.Form FormDespeckle
       Value           =   5
       Width           =   5295
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3120
-      TabIndex        =   0
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -1200
+      TabIndex        =   6
       Top             =   1920
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4440
-      TabIndex        =   1
-      Top             =   1920
-      Width           =   1245
+      Width           =   7095
    End
    Begin VB.Label strong 
       Alignment       =   1  'Right Justify

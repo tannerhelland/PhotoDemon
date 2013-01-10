@@ -2,6 +2,7 @@ VERSION 5.00
 Begin VB.Form FormHistogram 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Histogram"
    ClientHeight    =   8445
@@ -27,6 +28,7 @@ Begin VB.Form FormHistogram
    StartUpPosition =   1  'CenterOwner
    Begin VB.CheckBox chkChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Luminance"
       ForeColor       =   &H80000008&
       Height          =   375
@@ -39,6 +41,7 @@ Begin VB.Form FormHistogram
    End
    Begin VB.CheckBox chkChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Blue"
       ForeColor       =   &H80000008&
       Height          =   375
@@ -51,6 +54,7 @@ Begin VB.Form FormHistogram
    End
    Begin VB.CheckBox chkChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Green"
       ForeColor       =   &H80000008&
       Height          =   375
@@ -63,6 +67,7 @@ Begin VB.Form FormHistogram
    End
    Begin VB.CheckBox chkChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Red"
       ForeColor       =   &H80000008&
       Height          =   375
@@ -75,6 +80,7 @@ Begin VB.Form FormHistogram
    End
    Begin VB.CheckBox chkLog 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Use logarithmic values"
       ForeColor       =   &H80000008&
       Height          =   375
@@ -85,6 +91,7 @@ Begin VB.Form FormHistogram
    End
    Begin VB.CheckBox chkSmooth 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Use smooth lines"
       ForeColor       =   &H80000008&
       Height          =   375
@@ -376,6 +383,13 @@ Begin VB.Form FormHistogram
       TabIndex        =   4
       Top             =   6000
       Width           =   1215
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   25
+      Top             =   7560
+      Width           =   11895
    End
 End
 Attribute VB_Name = "FormHistogram"

@@ -2,6 +2,7 @@ VERSION 5.00
 Begin VB.Form dialog_MultiImage 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Multiple Images Found"
    ClientHeight    =   3930
@@ -100,6 +101,13 @@ Begin VB.Form dialog_MultiImage
       CaptionEffects  =   0
       TooltipType     =   1
       TooltipTitle    =   "Load One Image Only"
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   4
+      Top             =   3120
+      Width           =   5700
    End
    Begin VB.Line lineSeparator 
       BorderColor     =   &H8000000D&

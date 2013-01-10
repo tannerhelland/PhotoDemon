@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormColorize 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Colorize Options"
-   ClientHeight    =   5940
+   ClientHeight    =   6255
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,17 +19,36 @@ Begin VB.Form FormColorize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   396
+   ScaleHeight     =   417
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   5595
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   5595
+      Width           =   1365
+   End
    Begin VB.CheckBox chkSaturation 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "preserve existing saturation"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -37,9 +57,9 @@ Begin VB.Form FormColorize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   435
-      Left            =   1560
+      Left            =   240
       TabIndex        =   3
-      Top             =   4560
+      Top             =   4680
       Value           =   1  'Checked
       Width           =   4215
    End
@@ -122,23 +142,12 @@ Begin VB.Form FormColorize
       Top             =   3960
       Width           =   5310
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
-      Top             =   5280
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   5280
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   9
+      Top             =   5400
+      Width           =   7095
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

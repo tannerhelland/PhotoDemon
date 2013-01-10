@@ -1,9 +1,10 @@
 VERSION 5.00
 Begin VB.Form dialog_AlphaCutoff 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Please Choose A Transparency Threshold"
-   ClientHeight    =   9210
+   ClientHeight    =   9135
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   7035
@@ -19,7 +20,7 @@ Begin VB.Form dialog_AlphaCutoff
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   614
+   ScaleHeight     =   609
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   469
    ShowInTaskbar   =   0   'False
@@ -48,12 +49,13 @@ Begin VB.Form dialog_AlphaCutoff
       Width           =   5760
    End
    Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   5400
+      Left            =   5550
       TabIndex        =   1
       Top             =   8520
-      Width           =   1245
+      Width           =   1365
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -62,7 +64,14 @@ Begin VB.Form dialog_AlphaCutoff
       Left            =   4080
       TabIndex        =   0
       Top             =   8520
-      Width           =   1245
+      Width           =   1365
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   8
+      Top             =   8370
+      Width           =   7095
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -127,7 +136,7 @@ Begin VB.Form dialog_AlphaCutoff
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "transparency strength:"
+      Caption         =   "transparency cut-off:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -143,7 +152,7 @@ Begin VB.Form dialog_AlphaCutoff
       Left            =   240
       TabIndex        =   2
       Top             =   6720
-      Width           =   2385
+      Width           =   2205
    End
 End
 Attribute VB_Name = "dialog_AlphaCutoff"

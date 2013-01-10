@@ -1,6 +1,7 @@
 VERSION 5.00
 Begin VB.Form FormSoftwareUpdate 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Update Notifier"
    ClientHeight    =   6015

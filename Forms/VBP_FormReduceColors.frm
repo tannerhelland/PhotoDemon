@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormReduceColors 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Reduce Image Colors"
-   ClientHeight    =   8310
+   ClientHeight    =   8460
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6480
@@ -18,11 +19,29 @@ Begin VB.Form FormReduceColors
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   554
+   ScaleHeight     =   564
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   432
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3480
+      TabIndex        =   0
+      Top             =   7830
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4950
+      TabIndex        =   1
+      Top             =   7830
+      Width           =   1365
+   End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -83,6 +102,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.OptionButton OptQuant 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "PhotoDemon Advanced (manual)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -163,6 +183,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.CheckBox chkColorDither 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " Use error diffusion dithering"
       ForeColor       =   &H00800000&
       Height          =   255
@@ -174,6 +195,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.CheckBox chkSmartColors 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " Use realistic coloring"
       ForeColor       =   &H00800000&
       Height          =   255
@@ -185,6 +207,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.OptionButton OptQuant 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Xiaolin Wu (automatic)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -206,6 +229,7 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.OptionButton OptQuant 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "NeuQuant by Anthony Dekker (automatic)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -224,24 +248,15 @@ Begin VB.Form FormReduceColors
       Top             =   4080
       Width           =   4095
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3720
-      TabIndex        =   0
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -600
+      TabIndex        =   24
       Top             =   7680
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   5040
-      TabIndex        =   1
-      Top             =   7680
-      Width           =   1245
+      Width           =   7095
    End
    Begin VB.Label lblWarning 
+      BackStyle       =   0  'Transparent
       Caption         =   "Note: some options on this page have been disabled because the FreeImage plugin could not be found."
       ForeColor       =   &H000000C0&
       Height          =   1095

@@ -1,9 +1,10 @@
 VERSION 5.00
 Begin VB.Form FormRechannel 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Rechannel"
-   ClientHeight    =   6630
+   ClientHeight    =   6780
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
@@ -19,13 +20,32 @@ Begin VB.Form FormRechannel
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   442
+   ScaleHeight     =   452
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   6150
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   6150
+      Width           =   1365
+   End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "key (black)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -46,6 +66,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "yellow"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -66,6 +87,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "magenta"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -86,6 +108,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "cyan"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -106,6 +129,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "yellow"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -126,6 +150,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "magenta"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -146,6 +171,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "cyan"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -166,6 +192,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "blue"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -186,6 +213,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "green"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -252,6 +280,7 @@ Begin VB.Form FormRechannel
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "red"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -271,23 +300,12 @@ Begin VB.Form FormRechannel
       Value           =   -1  'True
       Width           =   1455
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   19
       Top             =   6000
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   6000
-      Width           =   1245
+      Width           =   7095
    End
    Begin VB.Label lblCMYK 
       Appearance      =   0  'Flat

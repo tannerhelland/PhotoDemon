@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormResize 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   4230
+   ClientHeight    =   4500
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   4005
@@ -18,11 +19,29 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   282
+   ScaleHeight     =   300
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   267
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdResize 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   1050
+      TabIndex        =   0
+      Top             =   3870
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   2520
+      TabIndex        =   1
+      Top             =   3870
+      Width           =   1365
+   End
    Begin VB.VScrollBar VSHeight 
       Height          =   420
       Left            =   2430
@@ -30,7 +49,7 @@ Begin VB.Form FormResize
       Min             =   1
       TabIndex        =   12
       TabStop         =   0   'False
-      Top             =   1170
+      Top             =   1200
       Value           =   15000
       Width           =   270
    End
@@ -41,7 +60,7 @@ Begin VB.Form FormResize
       Min             =   1
       TabIndex        =   11
       TabStop         =   0   'False
-      Top             =   540
+      Top             =   570
       Value           =   15000
       Width           =   270
    End
@@ -101,17 +120,9 @@ Begin VB.Form FormResize
       Top             =   2880
       Width           =   3375
    End
-   Begin VB.CommandButton cmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   2760
-      TabIndex        =   1
-      Top             =   3600
-      Width           =   1125
-   End
    Begin VB.CheckBox ChkRatio 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "maintain current aspect ratio"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -130,14 +141,12 @@ Begin VB.Form FormResize
       Value           =   1  'Checked
       Width           =   3015
    End
-   Begin VB.CommandButton CmdResize 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   1560
-      TabIndex        =   0
-      Top             =   3600
-      Width           =   1125
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -3000
+      TabIndex        =   13
+      Top             =   3720
+      Width           =   7095
    End
    Begin VB.Label lblHeightUnit 
       Appearance      =   0  'Flat
@@ -369,8 +378,10 @@ Private Sub txtHeight_GotFocus()
 End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate TxtHeight
-    ChangeToHeight
+    If (KeyCode <> vbKeyTab) And (KeyCode <> vbKeyShift) Then
+        textValidate TxtHeight
+        ChangeToHeight
+    End If
 End Sub
 
 Private Sub TxtHeight_LostFocus()
@@ -382,8 +393,10 @@ Private Sub txtWidth_GotFocus()
 End Sub
 
 Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate TxtWidth
-    ChangeToWidth
+    If (KeyCode <> vbKeyTab) And (KeyCode <> vbKeyShift) Then
+        textValidate TxtWidth
+        ChangeToWidth
+    End If
 End Sub
 
 Private Sub TxtWidth_LostFocus()
@@ -415,7 +428,7 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
         Dim hLib As Long
         hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
         
-        Message "Resampling image using the FreeImage library..."
+        Message "Resampling image using the FreeImage plugin..."
         
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long

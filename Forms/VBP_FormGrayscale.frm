@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormGrayscale 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " "
-   ClientHeight    =   6870
+   ClientHeight    =   6885
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   10350
@@ -18,12 +19,30 @@ Begin VB.Form FormGrayscale
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   458
+   ScaleHeight     =   459
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   690
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   7320
+      TabIndex        =   0
+      Top             =   6270
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   8790
+      TabIndex        =   1
+      Top             =   6270
+      Width           =   1365
+   End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -122,26 +141,9 @@ Begin VB.Form FormGrayscale
       Top             =   4080
       Width           =   3975
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   7560
-      TabIndex        =   0
-      Top             =   6270
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   8880
-      TabIndex        =   1
-      Top             =   6270
-      Width           =   1245
-   End
    Begin VB.PictureBox picChannel 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   375
@@ -153,6 +155,7 @@ Begin VB.Form FormGrayscale
       Width           =   3855
       Begin VB.OptionButton optChannel 
          Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "blue"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -173,6 +176,7 @@ Begin VB.Form FormGrayscale
       End
       Begin VB.OptionButton optChannel 
          Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "red"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -194,6 +198,7 @@ Begin VB.Form FormGrayscale
       End
       Begin VB.OptionButton optChannel 
          Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "green"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -215,6 +220,7 @@ Begin VB.Form FormGrayscale
    End
    Begin VB.PictureBox picDecompose 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   375
@@ -226,6 +232,7 @@ Begin VB.Form FormGrayscale
       Width           =   3975
       Begin VB.OptionButton optDecompose 
          Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "maximum"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -246,6 +253,7 @@ Begin VB.Form FormGrayscale
       End
       Begin VB.OptionButton optDecompose 
          Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   "minimum"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -289,13 +297,6 @@ Begin VB.Form FormGrayscale
       TabIndex        =   21
       Top             =   6375
       Width           =   3495
-   End
-   Begin VB.Line Line1 
-      BorderColor     =   &H8000000D&
-      X1              =   264
-      X2              =   680
-      Y1              =   406
-      Y2              =   406
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent
@@ -342,7 +343,7 @@ Begin VB.Form FormGrayscale
       Appearance      =   0  'Flat
       BackColor       =   &H00404040&
       ForeColor       =   &H80000008&
-      Height          =   6855
+      Height          =   6870
       Left            =   0
       TabIndex        =   18
       Top             =   0
@@ -427,6 +428,13 @@ Begin VB.Form FormGrayscale
       TabIndex        =   10
       Top             =   3645
       Width           =   1950
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   3240
+      TabIndex        =   22
+      Top             =   6120
+      Width           =   7095
    End
 End
 Attribute VB_Name = "FormGrayscale"

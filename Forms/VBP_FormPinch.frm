@@ -1,9 +1,10 @@
 VERSION 5.00
 Begin VB.Form FormPinch 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Pinch and Whirl"
-   ClientHeight    =   9855
+   ClientHeight    =   10035
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
@@ -19,11 +20,29 @@ Begin VB.Form FormPinch
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   657
+   ScaleHeight     =   669
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   9390
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   9390
+      Width           =   1365
+   End
    Begin VB.TextBox txtAmount 
       Alignment       =   2  'Center
       BeginProperty Font 
@@ -85,6 +104,7 @@ Begin VB.Form FormPinch
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " quality"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -106,6 +126,7 @@ Begin VB.Form FormPinch
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " speed"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -168,23 +189,12 @@ Begin VB.Form FormPinch
       Top             =   240
       Width           =   5760
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   15
       Top             =   9240
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   9240
-      Width           =   1245
+      Width           =   7095
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

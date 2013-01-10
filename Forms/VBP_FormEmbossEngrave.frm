@@ -1,13 +1,14 @@
 VERSION 5.00
 Begin VB.Form FormEmbossEngrave 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Emboss/Engrave"
-   ClientHeight    =   6030
+   ClientHeight    =   6165
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
    BeginProperty Font 
-      Name            =   "Arial"
+      Name            =   "Tahoma"
       Size            =   8.25
       Charset         =   0
       Weight          =   400
@@ -18,11 +19,29 @@ Begin VB.Form FormEmbossEngrave
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   402
+   ScaleHeight     =   411
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   5550
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   5550
+      Width           =   1365
+   End
    Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -71,6 +90,7 @@ Begin VB.Form FormEmbossEngrave
    End
    Begin VB.OptionButton OptEmboss 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "emboss"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -91,6 +111,7 @@ Begin VB.Form FormEmbossEngrave
    End
    Begin VB.OptionButton OptEngrave 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "engrave"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -108,45 +129,18 @@ Begin VB.Form FormEmbossEngrave
       Top             =   3420
       Width           =   1335
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   4920
-      TabIndex        =   1
-      Top             =   5400
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   3600
-      TabIndex        =   0
-      Top             =   5400
-      Width           =   1245
-   End
    Begin VB.PictureBox PicColor 
       Appearance      =   0  'Flat
       BackColor       =   &H00FF8080&
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H80000008&
       Height          =   495
       Left            =   360
@@ -158,6 +152,7 @@ Begin VB.Form FormEmbossEngrave
    End
    Begin VB.CheckBox ChkToColor 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "use custom background color (click colored box to change)..."
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -174,6 +169,22 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   4
       Top             =   4080
       Width           =   5655
+   End
+   Begin VB.Label lblBackground 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   10
+      Top             =   5400
+      Width           =   7095
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

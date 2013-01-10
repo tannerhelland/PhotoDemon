@@ -1,9 +1,10 @@
 VERSION 5.00
 Begin VB.Form FormRotate 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Rotate Image"
-   ClientHeight    =   8730
+   ClientHeight    =   8940
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
@@ -19,13 +20,32 @@ Begin VB.Form FormRotate
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   582
+   ScaleHeight     =   596
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   8310
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   8310
+      Width           =   1365
+   End
    Begin VB.OptionButton OptRotate 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "adjust canvas to fit rotated image"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -47,6 +67,7 @@ Begin VB.Form FormRotate
    End
    Begin VB.OptionButton OptRotate 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "leave the canvas at its current size"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -109,23 +130,12 @@ Begin VB.Form FormRotate
       Top             =   240
       Width           =   5760
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
-      Top             =   8040
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   8040
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   9
+      Top             =   8160
+      Width           =   7095
    End
    Begin VB.Label lblRotatedCanvas 
       Appearance      =   0  'Flat

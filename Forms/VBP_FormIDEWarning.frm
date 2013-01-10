@@ -2,6 +2,7 @@ VERSION 5.00
 Begin VB.Form dialog_IDEWarning 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Visual Basic IDE Detected"
    ClientHeight    =   6600
@@ -138,8 +139,8 @@ Begin VB.Form dialog_IDEWarning
    End
    Begin VB.Line lineSeparator 
       BorderColor     =   &H8000000D&
-      X1              =   8
-      X2              =   592
+      X1              =   0
+      X2              =   600
       Y1              =   376
       Y2              =   376
    End
@@ -163,6 +164,13 @@ Begin VB.Form dialog_IDEWarning
       Top             =   390
       Width           =   7695
       WordWrap        =   -1  'True
+   End
+   Begin VB.Label Label1 
+      Height          =   975
+      Left            =   0
+      TabIndex        =   6
+      Top             =   5640
+      Width           =   9060
    End
 End
 Attribute VB_Name = "dialog_IDEWarning"

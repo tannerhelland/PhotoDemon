@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormNoise 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Add Noise"
-   ClientHeight    =   5655
+   ClientHeight    =   6075
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6270
@@ -18,11 +19,29 @@ Begin VB.Form FormNoise
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   377
+   ScaleHeight     =   405
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   418
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3255
+      TabIndex        =   0
+      Top             =   5430
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4725
+      TabIndex        =   1
+      Top             =   5430
+      Width           =   1365
+   End
    Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -101,6 +120,7 @@ Begin VB.Form FormNoise
    End
    Begin VB.CheckBox ChkM 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "monochromatic noise only"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -118,22 +138,12 @@ Begin VB.Form FormNoise
       Top             =   4440
       Width           =   3255
    End
-   Begin VB.CommandButton CmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4920
-      TabIndex        =   1
-      Top             =   5040
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3600
-      TabIndex        =   0
-      Top             =   5040
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -825
+      TabIndex        =   10
+      Top             =   5280
+      Width           =   7095
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

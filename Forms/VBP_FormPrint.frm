@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormPrint 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Print Image"
-   ClientHeight    =   5415
+   ClientHeight    =   5220
    ClientLeft      =   45
    ClientTop       =   270
    ClientWidth     =   7575
@@ -19,11 +20,29 @@ Begin VB.Form FormPrint
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   361
+   ScaleHeight     =   348
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   505
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&Print"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   4560
+      TabIndex        =   0
+      Top             =   4590
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   6030
+      TabIndex        =   1
+      Top             =   4590
+      Width           =   1365
+   End
    Begin VB.PictureBox picOut 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -102,6 +121,7 @@ Begin VB.Form FormPrint
    End
    Begin VB.CheckBox chkFit 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Fit to page"
       ForeColor       =   &H00800000&
       Height          =   240
@@ -113,6 +133,7 @@ Begin VB.Form FormPrint
    End
    Begin VB.CheckBox chkCenter 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "Center on page"
       ForeColor       =   &H00800000&
       Height          =   240
@@ -191,30 +212,12 @@ Begin VB.Form FormPrint
          Width           =   3015
       End
    End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "&Print"
-      Default         =   -1  'True
-      Height          =   555
-      Left            =   4800
-      TabIndex        =   0
-      Top             =   4680
-      Width           =   1260
-   End
-   Begin VB.CommandButton cmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   555
-      Left            =   6120
-      TabIndex        =   1
-      Top             =   4680
-      Width           =   1260
-   End
-   Begin VB.Line Line2 
-      BorderColor     =   &H80000002&
-      X1              =   496
-      X2              =   8
-      Y1              =   288
-      Y2              =   288
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   24
+      Top             =   4440
+      Width           =   7575
    End
    Begin VB.Line Line1 
       BorderColor     =   &H80000002&
@@ -859,3 +862,4 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+

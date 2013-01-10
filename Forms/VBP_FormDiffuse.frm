@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormDiffuse 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Diffuse"
-   ClientHeight    =   6480
+   ClientHeight    =   6780
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,11 +19,29 @@ Begin VB.Form FormDiffuse
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   432
+   ScaleHeight     =   452
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   6150
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   6150
+      Width           =   1365
+   End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -127,6 +146,7 @@ Begin VB.Form FormDiffuse
    End
    Begin VB.CheckBox ChkWrap 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "wrap edge values"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -144,22 +164,12 @@ Begin VB.Form FormDiffuse
       Top             =   5280
       Width           =   2175
    End
-   Begin VB.CommandButton CmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4920
-      TabIndex        =   1
-      Top             =   5880
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3600
-      TabIndex        =   0
-      Top             =   5880
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   13
+      Top             =   6000
+      Width           =   7095
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

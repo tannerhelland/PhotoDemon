@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form dialog_ExportColorDepth 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Please Choose Exported Color Depth"
    ClientHeight    =   4500
@@ -23,8 +24,27 @@ Begin VB.Form dialog_ExportColorDepth
    ScaleWidth      =   434
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3480
+      TabIndex        =   0
+      Top             =   3870
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4950
+      TabIndex        =   1
+      Top             =   3870
+      Width           =   1365
+   End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " 32 bpp (16 million colors + full transparency)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -46,6 +66,7 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " 24 bpp (16 million colors)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -66,6 +87,7 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " 8 bpp (256 colors or full grayscale)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -86,6 +108,7 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " 4 bpp (16 shades of gray)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -106,6 +129,7 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " 1 bpp (monochrome)"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -124,22 +148,12 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   840
       Width           =   3135
    End
-   Begin VB.CommandButton CmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4920
-      TabIndex        =   1
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -600
+      TabIndex        =   8
       Top             =   3720
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3600
-      TabIndex        =   0
-      Top             =   3720
-      Width           =   1245
+      Width           =   7095
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

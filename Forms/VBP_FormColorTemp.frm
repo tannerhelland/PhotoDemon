@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormColorTemp 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Adjust Color Temperature"
-   ClientHeight    =   6735
+   ClientHeight    =   7020
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,11 +19,29 @@ Begin VB.Form FormColorTemp
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   449
+   ScaleHeight     =   468
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   6390
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   6390
+      Width           =   1365
+   End
    Begin VB.HScrollBar hsStrength 
       Height          =   255
       Left            =   240
@@ -152,26 +171,16 @@ Begin VB.Form FormColorTemp
       Top             =   4080
       Width           =   4575
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
-      Top             =   6120
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   6120
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   15
+      Top             =   6240
+      Width           =   7095
    End
    Begin VB.Label lblCool 
       AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
       Caption         =   "cool tones"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -191,6 +200,7 @@ Begin VB.Form FormColorTemp
    End
    Begin VB.Label lblWarm 
       AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
       Caption         =   "warm tones"
       BeginProperty Font 
          Name            =   "Tahoma"

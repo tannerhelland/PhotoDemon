@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormImportFrx 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Import From VB Binary File"
-   ClientHeight    =   5445
+   ClientHeight    =   5685
    ClientLeft      =   45
    ClientTop       =   210
    ClientWidth     =   7710
@@ -18,11 +19,29 @@ Begin VB.Form FormImportFrx
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   363
+   ScaleHeight     =   379
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   514
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   0
+      Top             =   5070
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   6180
+      TabIndex        =   1
+      Top             =   5070
+      Width           =   1365
+   End
    Begin VB.PictureBox picDemo 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -84,25 +103,6 @@ Begin VB.Form FormImportFrx
       Visible         =   0   'False
       Width           =   255
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "Cancel"
-      Height          =   495
-      Left            =   6240
-      TabIndex        =   1
-      Top             =   4800
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "OK"
-      Default         =   -1  'True
-      Enabled         =   0   'False
-      Height          =   495
-      Left            =   4920
-      TabIndex        =   0
-      Top             =   4800
-      Width           =   1245
-   End
    Begin VB.ListBox LstInfo 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -119,6 +119,13 @@ Begin VB.Form FormImportFrx
       TabIndex        =   2
       Top             =   1440
       Width           =   3600
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   10
+      Top             =   4920
+      Width           =   7815
    End
    Begin VB.Image imgTemp 
       Appearance      =   0  'Flat

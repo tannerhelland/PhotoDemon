@@ -4,7 +4,7 @@ Begin VB.Form FormAbout
    BackColor       =   &H00FFFFFF&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
-   ClientHeight    =   9735
+   ClientHeight    =   9630
    ClientLeft      =   2340
    ClientTop       =   1875
    ClientWidth     =   9000
@@ -22,21 +22,20 @@ Begin VB.Form FormAbout
    Icon            =   "VBP_FormAbout.frx":0000
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   649
+   ScaleHeight     =   642
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   600
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
-   Begin VB.CommandButton cmdOK 
-      Cancel          =   -1  'True
+   Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
-      Height          =   465
-      Left            =   7320
+      Height          =   495
+      Left            =   7440
       TabIndex        =   0
-      Top             =   9120
-      Width           =   1485
+      Top             =   9000
+      Width           =   1365
    End
    Begin VB.Label lblzLib 
       AutoSize        =   -1  'True

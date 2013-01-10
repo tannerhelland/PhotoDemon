@@ -1,24 +1,61 @@
 VERSION 5.00
 Begin VB.Form FormTwins 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Generate Twins"
-   ClientHeight    =   5055
+   ClientHeight    =   5220
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   337
+   ScaleHeight     =   348
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   4590
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   4590
+      Width           =   1365
+   End
    Begin VB.PictureBox picEffect 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H80000008&
       Height          =   2730
       Left            =   3240
@@ -33,6 +70,15 @@ Begin VB.Form FormTwins
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H80000008&
       Height          =   2730
       Left            =   120
@@ -45,6 +91,7 @@ Begin VB.Form FormTwins
    End
    Begin VB.OptionButton OptVertical 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "vertical"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -64,6 +111,7 @@ Begin VB.Form FormTwins
    End
    Begin VB.OptionButton OptHorizontal 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   "horizontal"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -82,11 +130,9 @@ Begin VB.Form FormTwins
       Value           =   -1  'True
       Width           =   1575
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
+   Begin VB.Label lblBackground 
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "MS Sans Serif"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -94,29 +140,11 @@ Begin VB.Form FormTwins
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   8
       Top             =   4440
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   4440
-      Width           =   1245
+      Width           =   7095
    End
    Begin VB.Label lblAfter 
       AutoSize        =   -1  'True

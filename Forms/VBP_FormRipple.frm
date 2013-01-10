@@ -1,9 +1,10 @@
 VERSION 5.00
 Begin VB.Form FormRipple 
    AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Ripple"
-   ClientHeight    =   10575
+   ClientHeight    =   10740
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   6255
@@ -19,11 +20,29 @@ Begin VB.Form FormRipple
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   705
+   ScaleHeight     =   716
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   10110
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   10110
+      Width           =   1365
+   End
    Begin VB.HScrollBar hsPhase 
       Height          =   255
       Left            =   360
@@ -143,6 +162,7 @@ Begin VB.Form FormRipple
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " quality"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -164,6 +184,7 @@ Begin VB.Form FormRipple
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " speed"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -196,23 +217,12 @@ Begin VB.Form FormRipple
       Top             =   240
       Width           =   5760
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   18
       Top             =   9960
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   9960
-      Width           =   1245
+      Width           =   7095
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

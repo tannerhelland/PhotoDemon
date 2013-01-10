@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormPluginManager 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PhotoDemon Plugin Manager"
-   ClientHeight    =   6150
+   ClientHeight    =   6165
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   10815
@@ -18,11 +19,29 @@ Begin VB.Form FormPluginManager
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   410
+   ScaleHeight     =   411
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   721
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   7800
+      TabIndex        =   0
+      Top             =   5550
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   9270
+      TabIndex        =   1
+      Top             =   5550
+      Width           =   1365
+   End
    Begin VB.CommandButton cmdReset 
       Caption         =   "&Reset all plugin options"
       Height          =   495
@@ -31,24 +50,6 @@ Begin VB.Form FormPluginManager
       ToolTipText     =   "Use this to reset all plugin-related options to their default state.  This action cannot be undone."
       Top             =   5520
       Width           =   2775
-   End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   7920
-      TabIndex        =   2
-      Top             =   5520
-      Width           =   1245
-   End
-   Begin VB.CommandButton cmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   9240
-      TabIndex        =   1
-      Top             =   5520
-      Width           =   1245
    End
    Begin VB.ListBox lstPlugins 
       BeginProperty Font 
@@ -63,12 +64,13 @@ Begin VB.Form FormPluginManager
       ForeColor       =   &H00404040&
       Height          =   4920
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   240
       Width           =   2775
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4935
@@ -91,6 +93,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.CheckBox chkPngnqAlphaExtenuation 
          Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   " when reducing alpha channels, attempt to preserve values of 0 and 255"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -121,6 +124,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.CheckBox chkPngnqYUVA 
          Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          Caption         =   " analyze colors using YUV instead of RGB (slower, but higher quality)"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -291,6 +295,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "custom license, see PNGNQ-S9-LICENSE file"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -336,6 +341,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "http://sourceforge.net/projects/pngnqs9/"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -404,6 +410,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblPluginVersionTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "XX.XX.XX"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -426,6 +433,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblPluginVersion 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "XX.XX.XX"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -493,6 +501,7 @@ Begin VB.Form FormPluginManager
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4935
@@ -550,6 +559,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblPluginVersion 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "XX.XX.XX"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -572,6 +582,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblPluginVersionTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "XX.XX.XX"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -640,6 +651,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "http://www.eztwain.com/eztwain1.htm"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -685,6 +697,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "public domain"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -708,6 +721,7 @@ Begin VB.Form FormPluginManager
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4935
@@ -721,6 +735,8 @@ Begin VB.Form FormPluginManager
       Width           =   7695
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
          Caption         =   "zLib License"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -766,6 +782,8 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
          Caption         =   "http://www.zlib.net/"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -834,6 +852,8 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblPluginVersionTitle 
          AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
          Caption         =   "XX.XX.XX"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -856,6 +876,8 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblPluginVersion 
          AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
          Caption         =   "XX.XX.XX"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -923,6 +945,7 @@ Begin VB.Form FormPluginManager
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4935
@@ -980,6 +1003,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblPluginVersion 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "XX.XX.XX"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1002,6 +1026,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblPluginVersionTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "XX.XX.XX"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1070,6 +1095,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "http://freeimage.sourceforge.net/"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1115,6 +1141,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblLink 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "FreeImage Public License (FIPL)"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1138,6 +1165,7 @@ Begin VB.Form FormPluginManager
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4935
@@ -1192,6 +1220,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "pngnq-s9"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1214,6 +1243,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "zLib"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1236,6 +1266,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "EZTwain"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1258,6 +1289,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "FreeImage"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1280,6 +1312,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblInterfaceSubheader 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "status:"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1302,6 +1335,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblStatus 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "installed, enabled, and up to date"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1322,6 +1356,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblInterfaceSubheader 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "status:"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1344,6 +1379,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblStatus 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "installed, enabled, and up to date"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1364,6 +1400,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblInterfaceSubheader 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "status:"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1386,6 +1423,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblStatus 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "installed, enabled, and up to date"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1406,6 +1444,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblInterfaceSubheader 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "status:"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1428,6 +1467,7 @@ Begin VB.Form FormPluginManager
       End
       Begin VB.Label lblStatus 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "installed, enabled, and up to date"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1449,6 +1489,7 @@ Begin VB.Form FormPluginManager
       Begin VB.Label lblDisable 
          Alignment       =   1  'Right Justify
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "Disable FreeImage"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1472,6 +1513,7 @@ Begin VB.Form FormPluginManager
       Begin VB.Label lblDisable 
          Alignment       =   1  'Right Justify
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "Disable zLib"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1495,6 +1537,7 @@ Begin VB.Form FormPluginManager
       Begin VB.Label lblDisable 
          Alignment       =   1  'Right Justify
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "Disable EZTwain"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1518,6 +1561,7 @@ Begin VB.Form FormPluginManager
       Begin VB.Label lblDisable 
          Alignment       =   1  'Right Justify
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "Disable pngnq-s9"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -1538,6 +1582,13 @@ Begin VB.Form FormPluginManager
          Top             =   4005
          Width           =   1470
       End
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   74
+      Top             =   5400
+      Width           =   10815
    End
 End
 Attribute VB_Name = "FormPluginManager"

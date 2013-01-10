@@ -1,8 +1,9 @@
 VERSION 5.00
 Begin VB.Form FormBlackAndWhite 
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Black/White Color Conversion"
-   ClientHeight    =   8580
+   ClientHeight    =   8820
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   6255
@@ -18,11 +19,29 @@ Begin VB.Form FormBlackAndWhite
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   572
+   ScaleHeight     =   588
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   417
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton CmdOK 
+      Caption         =   "&OK"
+      Default         =   -1  'True
+      Height          =   495
+      Left            =   3240
+      TabIndex        =   0
+      Top             =   8190
+      Width           =   1365
+   End
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
+      Height          =   495
+      Left            =   4710
+      TabIndex        =   1
+      Top             =   8190
+      Width           =   1365
+   End
    Begin VB.PictureBox picBWColor 
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
@@ -64,7 +83,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   330
       Left            =   360
       Style           =   2  'Dropdown List
-      TabIndex        =   11
+      TabIndex        =   5
       Top             =   5280
       Width           =   4935
    End
@@ -87,7 +106,7 @@ Begin VB.Form FormBlackAndWhite
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   120
       Width           =   2895
    End
@@ -110,7 +129,7 @@ Begin VB.Form FormBlackAndWhite
       ScaleHeight     =   180
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   191
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   120
       Width           =   2895
    End
@@ -119,7 +138,7 @@ Begin VB.Form FormBlackAndWhite
       Left            =   360
       Max             =   254
       Min             =   1
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   3840
       Value           =   127
       Width           =   4935
@@ -139,13 +158,14 @@ Begin VB.Form FormBlackAndWhite
       Height          =   315
       Left            =   5400
       MaxLength       =   3
-      TabIndex        =   2
+      TabIndex        =   3
       Text            =   "127"
       Top             =   3810
       Width           =   660
    End
    Begin VB.CheckBox chkAutoThreshold 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       Caption         =   " have PhotoDemon estimate the ideal threshold for this image"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -163,27 +183,12 @@ Begin VB.Form FormBlackAndWhite
       Top             =   4320
       Width           =   5655
    End
-   Begin VB.CommandButton CmdCancel 
-      BackColor       =   &H00C0C0C0&
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4920
-      TabIndex        =   1
-      Top             =   7950
-      Width           =   1245
-   End
-   Begin VB.CommandButton CmdOK 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00E0E0E0&
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3600
-      MaskColor       =   &H00000000&
-      TabIndex        =   0
-      Top             =   7950
-      Width           =   1245
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -840
+      TabIndex        =   16
+      Top             =   8040
+      Width           =   7095
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -241,7 +246,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   240
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   4920
       Width           =   2130
    End
@@ -251,7 +256,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   735
       Left            =   240
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   7080
       Width           =   5775
    End
@@ -271,7 +276,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   240
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   2880
       Width           =   480
    End
@@ -291,7 +296,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   240
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   3480
       Width           =   1080
    End
