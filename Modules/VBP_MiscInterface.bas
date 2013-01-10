@@ -100,8 +100,17 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         ' at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
                         
-                        
-        'STEP 4: subclass this form and force controls to render transparent borders properly.
+        'STEP 4: correct tab stops so that the OK button is always 0, and Cancel is always 1
+        If (TypeOf eControl Is CommandButton) Then
+            If (eControl.Caption = "&OK") Then
+                If eControl.TabIndex <> 0 Then eControl.TabIndex = 0
+            End If
+        End If
+        If (TypeOf eControl Is CommandButton) Then
+            If (eControl.Caption = "&Cancel") Then eControl.TabIndex = 1
+        End If
+        
+        'STEP 5: subclass this form and force controls to render transparent borders properly.
         If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
         
     Next
