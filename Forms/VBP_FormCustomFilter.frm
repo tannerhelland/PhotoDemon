@@ -3,10 +3,10 @@ Begin VB.Form FormCustomFilter
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Filter"
-   ClientHeight    =   7620
+   ClientHeight    =   6540
    ClientLeft      =   150
    ClientTop       =   120
-   ClientWidth     =   6285
+   ClientWidth     =   10395
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,27 +19,27 @@ Begin VB.Form FormCustomFilter
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   508
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   419
+   ScaleWidth      =   693
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3300
+      Left            =   7380
       TabIndex        =   0
-      Top             =   6990
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4770
+      Left            =   8850
       TabIndex        =   1
-      Top             =   6990
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.TextBox txtBias 
@@ -55,59 +55,11 @@ Begin VB.Form FormCustomFilter
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   4920
+      Left            =   8880
       TabIndex        =   28
       Text            =   "1"
-      Top             =   4560
+      Top             =   3720
       Width           =   735
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   32
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   31
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.TextBox TxtWeight 
       Alignment       =   2  'Center
@@ -122,10 +74,10 @@ Begin VB.Form FormCustomFilter
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   4920
+      Left            =   6960
       TabIndex        =   27
       Text            =   "1"
-      Top             =   4080
+      Top             =   3720
       Width           =   735
    End
    Begin VB.TextBox TxtF 
@@ -142,10 +94,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   24
-      Left            =   2760
+      Left            =   8520
       TabIndex        =   26
       Text            =   "0"
-      Top             =   6000
+      Top             =   2640
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -162,10 +114,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   23
-      Left            =   2160
+      Left            =   7920
       TabIndex        =   25
       Text            =   "0"
-      Top             =   6000
+      Top             =   2640
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -182,10 +134,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   22
-      Left            =   1560
+      Left            =   7320
       TabIndex        =   24
       Text            =   "0"
-      Top             =   6000
+      Top             =   2640
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -202,10 +154,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   21
-      Left            =   960
+      Left            =   6720
       TabIndex        =   23
       Text            =   "0"
-      Top             =   6000
+      Top             =   2640
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -222,10 +174,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   20
-      Left            =   360
+      Left            =   6120
       TabIndex        =   22
       Text            =   "0"
-      Top             =   6000
+      Top             =   2640
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -242,10 +194,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   19
-      Left            =   2760
+      Left            =   8520
       TabIndex        =   21
       Text            =   "0"
-      Top             =   5520
+      Top             =   2160
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -262,10 +214,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   18
-      Left            =   2160
+      Left            =   7920
       TabIndex        =   20
       Text            =   "0"
-      Top             =   5520
+      Top             =   2160
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -282,10 +234,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   17
-      Left            =   1560
+      Left            =   7320
       TabIndex        =   19
       Text            =   "0"
-      Top             =   5520
+      Top             =   2160
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -302,10 +254,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   16
-      Left            =   960
+      Left            =   6720
       TabIndex        =   18
       Text            =   "0"
-      Top             =   5520
+      Top             =   2160
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -322,10 +274,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00400000&
       Height          =   360
       Index           =   15
-      Left            =   360
+      Left            =   6120
       TabIndex        =   17
       Text            =   "0"
-      Top             =   5520
+      Top             =   2160
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -342,10 +294,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   14
-      Left            =   2760
+      Left            =   8520
       TabIndex        =   16
       Text            =   "0"
-      Top             =   5040
+      Top             =   1680
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -362,10 +314,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   13
-      Left            =   2160
+      Left            =   7920
       TabIndex        =   15
       Text            =   "0"
-      Top             =   5040
+      Top             =   1680
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -382,10 +334,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   12
-      Left            =   1560
+      Left            =   7320
       TabIndex        =   14
       Text            =   "1"
-      Top             =   5040
+      Top             =   1680
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -402,10 +354,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   11
-      Left            =   960
+      Left            =   6720
       TabIndex        =   13
       Text            =   "0"
-      Top             =   5040
+      Top             =   1680
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -422,10 +374,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00400000&
       Height          =   360
       Index           =   10
-      Left            =   360
+      Left            =   6120
       TabIndex        =   12
       Text            =   "0"
-      Top             =   5040
+      Top             =   1680
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -442,10 +394,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   9
-      Left            =   2760
+      Left            =   8520
       TabIndex        =   11
       Text            =   "0"
-      Top             =   4560
+      Top             =   1200
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -462,10 +414,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   8
-      Left            =   2160
+      Left            =   7920
       TabIndex        =   10
       Text            =   "0"
-      Top             =   4560
+      Top             =   1200
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -482,10 +434,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   7
-      Left            =   1560
+      Left            =   7320
       TabIndex        =   9
       Text            =   "0"
-      Top             =   4560
+      Top             =   1200
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -502,10 +454,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   6
-      Left            =   960
+      Left            =   6720
       TabIndex        =   8
       Text            =   "0"
-      Top             =   4560
+      Top             =   1200
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -522,10 +474,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00400000&
       Height          =   360
       Index           =   5
-      Left            =   360
+      Left            =   6120
       TabIndex        =   7
       Text            =   "0"
-      Top             =   4560
+      Top             =   1200
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -542,10 +494,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   4
-      Left            =   2760
+      Left            =   8520
       TabIndex        =   6
       Text            =   "0"
-      Top             =   4080
+      Top             =   720
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -562,10 +514,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   3
-      Left            =   2160
+      Left            =   7920
       TabIndex        =   5
       Text            =   "0"
-      Top             =   4080
+      Top             =   720
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -582,10 +534,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   2
-      Left            =   1560
+      Left            =   7320
       TabIndex        =   4
       Text            =   "0"
-      Top             =   4080
+      Top             =   720
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -602,10 +554,10 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00800000&
       Height          =   360
       Index           =   1
-      Left            =   960
+      Left            =   6720
       TabIndex        =   3
       Text            =   "0"
-      Top             =   4080
+      Top             =   720
       Width           =   540
    End
    Begin VB.TextBox TxtF 
@@ -622,17 +574,17 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00400000&
       Height          =   360
       Index           =   0
-      Left            =   360
+      Left            =   6120
       TabIndex        =   2
       Text            =   "0"
-      Top             =   4080
+      Top             =   720
       Width           =   540
    End
    Begin PhotoDemon.jcbutton cmdOpen 
       Height          =   615
-      Left            =   3840
+      Left            =   6120
       TabIndex        =   29
-      Top             =   5730
+      Top             =   4800
       Width           =   900
       _ExtentX        =   1588
       _ExtentY        =   1085
@@ -659,9 +611,9 @@ Begin VB.Form FormCustomFilter
    End
    Begin PhotoDemon.jcbutton cmdSave 
       Height          =   615
-      Left            =   4920
+      Left            =   7200
       TabIndex        =   30
-      Top             =   5730
+      Top             =   4800
       Width           =   900
       _ExtentX        =   1588
       _ExtentY        =   1085
@@ -685,12 +637,21 @@ Begin VB.Form FormCustomFilter
       TooltipType     =   1
       TooltipTitle    =   "Save Current Filter"
    End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   37
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+   End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -720
-      TabIndex        =   40
-      Top             =   6840
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   36
+      Top             =   5760
+      Width           =   10455
    End
    Begin VB.Label lblAdditional 
       AutoSize        =   -1  'True
@@ -708,9 +669,9 @@ Begin VB.Form FormCustomFilter
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   3720
-      TabIndex        =   39
-      Top             =   3600
+      Left            =   6000
+      TabIndex        =   35
+      Top             =   3240
       Width           =   2010
    End
    Begin VB.Label lblOffset 
@@ -720,7 +681,7 @@ Begin VB.Form FormCustomFilter
       Caption         =   "offset:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -728,11 +689,11 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   3960
-      TabIndex        =   38
-      Top             =   4560
-      Width           =   675
+      Height          =   270
+      Left            =   8040
+      TabIndex        =   34
+      Top             =   3735
+      Width           =   645
    End
    Begin VB.Label lblDivisor 
       AutoSize        =   -1  'True
@@ -741,7 +702,7 @@ Begin VB.Form FormCustomFilter
       Caption         =   "divisor:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -749,17 +710,17 @@ Begin VB.Form FormCustomFilter
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   3960
-      TabIndex        =   36
-      Top             =   4095
-      Width           =   795
+      Height          =   270
+      Left            =   6120
+      TabIndex        =   32
+      Top             =   3735
+      Width           =   675
    End
    Begin VB.Label lblLoadSave 
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "load / save filter:"
+      Caption         =   "load / save filter data:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -771,10 +732,10 @@ Begin VB.Form FormCustomFilter
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   3720
-      TabIndex        =   37
-      Top             =   5250
-      Width           =   1800
+      Left            =   6000
+      TabIndex        =   33
+      Top             =   4320
+      Width           =   2325
    End
    Begin VB.Label lblConvolution 
       AutoSize        =   -1  'True
@@ -792,50 +753,10 @@ Begin VB.Form FormCustomFilter
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   35
-      Top             =   3600
+      Left            =   6000
+      TabIndex        =   31
+      Top             =   240
       Width           =   2070
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   34
-      Top             =   2880
-      Width           =   480
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   33
-      Top             =   2880
-      Width           =   360
    End
 End
 Attribute VB_Name = "FormCustomFilter"
@@ -915,18 +836,15 @@ Private Sub CmdCancel_Click()
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Draw the left preview
-    DrawPreviewImage picPreview
-    
+        
     'If a filter has been used previously, load it from the temp file
     If g_HasCreatedFilter = True Then OpenCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
-    
-    'Draw the right preview
-    updatePreview
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Render a preview
+    updatePreview
     
 End Sub
 
@@ -1131,7 +1049,7 @@ Private Sub updatePreview()
     g_FilterBias = Val(txtBias.Text)
         
     'Apply the preview
-    DoFilter "Preview", False, , True, picEffect
+    DoFilter "Preview", False, , True, fxPreview
     
 End Sub
 

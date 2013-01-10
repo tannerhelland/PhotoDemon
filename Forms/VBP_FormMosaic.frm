@@ -3,10 +3,10 @@ Begin VB.Form FormMosaic
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Mosaic Options"
-   ClientHeight    =   6390
+   ClientHeight    =   6510
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6270
+   ClientWidth     =   12090
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,9 +19,9 @@ Begin VB.Form FormMosaic
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   426
+   ScaleHeight     =   434
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   418
+   ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
@@ -29,83 +29,37 @@ Begin VB.Form FormMosaic
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   5760
+      Top             =   5880
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   5760
+      Top             =   5880
       Width           =   1365
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   9
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   8
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.HScrollBar hsHeight 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   64
       Min             =   1
       TabIndex        =   5
-      Top             =   4800
+      Top             =   3000
       Value           =   2
       Width           =   4935
    End
    Begin VB.HScrollBar hsWidth 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   64
       Min             =   1
       TabIndex        =   3
-      Top             =   3840
+      Top             =   2040
       Value           =   2
       Width           =   4935
    End
@@ -122,10 +76,10 @@ Begin VB.Form FormMosaic
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       TabIndex        =   4
       Text            =   "2"
-      Top             =   4740
+      Top             =   2940
       Width           =   615
    End
    Begin VB.TextBox txtWidth 
@@ -141,58 +95,27 @@ Begin VB.Form FormMosaic
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       TabIndex        =   2
       Text            =   "2"
-      Top             =   3780
+      Top             =   1980
       Width           =   615
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   9
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   12
-      Top             =   5610
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   11
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   10
-      Top             =   2880
-      Width           =   480
+      Left            =   0
+      TabIndex        =   8
+      Top             =   5730
+      Width           =   12135
    End
    Begin VB.Label lblWidth 
       AutoSize        =   -1  'True
@@ -209,9 +132,9 @@ Begin VB.Form FormMosaic
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   7
-      Top             =   3480
+      Top             =   1680
       Width           =   1305
    End
    Begin VB.Label lblHeight 
@@ -229,9 +152,9 @@ Begin VB.Form FormMosaic
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   6
-      Top             =   4440
+      Top             =   2640
       Width           =   1380
    End
 End
@@ -280,7 +203,7 @@ End Sub
 
 'Apply a mosaic effect (sometimes called "pixelize") to an image
 ' Inputs: width and height of the desired mosaic tiles (in pixels), optional preview settings
-Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Repainting image in mosaic style..."
     
@@ -434,13 +357,10 @@ Private Sub Form_Activate()
     'Note the current image's width and height, which will be needed to adjust the preview effect
     iWidth = pdImages(CurrentImage).Width
     iHeight = pdImages(CurrentImage).Height
-    
-    'Draw a preview of the current image in the left picture box
-    DrawPreviewImage picPreview
-    
+        
     hsWidth.Max = pdImages(CurrentImage).Width
     hsHeight.Max = pdImages(CurrentImage).Height
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -453,22 +373,22 @@ End Sub
 
 Private Sub hsHeight_Change()
     copyToTextBoxI TxtHeight, hsHeight.Value
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
 End Sub
 
 Private Sub hsWidth_Change()
     copyToTextBoxI TxtWidth, hsWidth.Value
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
 End Sub
 
 Private Sub hsHeight_Scroll()
     copyToTextBoxI TxtHeight, hsHeight.Value
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
 End Sub
 
 Private Sub hsWidth_Scroll()
     copyToTextBoxI TxtWidth, hsWidth.Value
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, picEffect
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
 End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)

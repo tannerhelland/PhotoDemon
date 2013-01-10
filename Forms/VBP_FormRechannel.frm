@@ -4,10 +4,10 @@ Begin VB.Form FormRechannel
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Rechannel"
-   ClientHeight    =   6780
+   ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   6255
+   ClientWidth     =   12000
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,27 +20,27 @@ Begin VB.Form FormRechannel
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   452
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   800
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9000
       TabIndex        =   0
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10470
       TabIndex        =   1
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.OptionButton OptChannel 
@@ -59,9 +59,9 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   9
-      Left            =   4440
+      Left            =   10200
       TabIndex        =   10
-      Top             =   5280
+      Top             =   3600
       Width           =   1695
    End
    Begin VB.OptionButton OptChannel 
@@ -80,9 +80,9 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   8
-      Left            =   4440
+      Left            =   8880
       TabIndex        =   9
-      Top             =   4800
+      Top             =   3600
       Width           =   1695
    End
    Begin VB.OptionButton OptChannel 
@@ -101,9 +101,9 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   7
-      Left            =   4440
+      Left            =   7320
       TabIndex        =   8
-      Top             =   4320
+      Top             =   3600
       Width           =   1695
    End
    Begin VB.OptionButton OptChannel 
@@ -122,9 +122,9 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   6
-      Left            =   4440
+      Left            =   6120
       TabIndex        =   7
-      Top             =   3840
+      Top             =   3600
       Width           =   1695
    End
    Begin VB.OptionButton OptChannel 
@@ -143,9 +143,9 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   5
-      Left            =   2280
+      Left            =   8880
       TabIndex        =   6
-      Top             =   4800
+      Top             =   2640
       Width           =   1815
    End
    Begin VB.OptionButton OptChannel 
@@ -164,9 +164,9 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   4
-      Left            =   2280
+      Left            =   7320
       TabIndex        =   5
-      Top             =   4320
+      Top             =   2640
       Width           =   1695
    End
    Begin VB.OptionButton OptChannel 
@@ -185,9 +185,9 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   3
-      Left            =   2280
+      Left            =   6120
       TabIndex        =   4
-      Top             =   3840
+      Top             =   2640
       Width           =   1695
    End
    Begin VB.OptionButton OptChannel 
@@ -206,9 +206,9 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   2
-      Left            =   240
+      Left            =   8760
       TabIndex        =   3
-      Top             =   4800
+      Top             =   1680
       Width           =   1455
    End
    Begin VB.OptionButton OptChannel 
@@ -227,56 +227,10 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   1
-      Left            =   240
+      Left            =   7320
       TabIndex        =   2
-      Top             =   4320
+      Top             =   1680
       Width           =   1455
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   13
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   12
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.OptionButton OptChannel 
       Appearance      =   0  'Flat
@@ -294,18 +248,27 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   0
-      Left            =   240
+      Left            =   6120
       TabIndex        =   11
-      Top             =   3840
+      Top             =   1680
       Value           =   -1  'True
       Width           =   1455
    End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   16
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+   End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   19
-      Top             =   6000
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   15
+      Top             =   5760
+      Width           =   12015
    End
    Begin VB.Label lblCMYK 
       Appearance      =   0  'Flat
@@ -324,9 +287,9 @@ Begin VB.Form FormRechannel
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   4320
-      TabIndex        =   18
-      Top             =   3360
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   3240
       Width           =   1695
    End
    Begin VB.Label lblCMY 
@@ -346,9 +309,9 @@ Begin VB.Form FormRechannel
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   2160
-      TabIndex        =   17
-      Top             =   3360
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   2280
       Width           =   1560
    End
    Begin VB.Label lblRGB 
@@ -368,50 +331,10 @@ Begin VB.Form FormRechannel
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   120
-      TabIndex        =   16
-      Top             =   3360
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   1320
       Width           =   1530
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   15
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   14
-      Top             =   2880
-      Width           =   480
    End
 End
 Attribute VB_Name = "FormRechannel"
@@ -461,19 +384,18 @@ Private Sub cmdOK_Click()
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Create the image previews
-    DrawPreviewImage picPreview
-    RechannelImage 0, True, picEffect
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Render a preview
+    RechannelImage 0, True, fxPreview
     
 End Sub
 
 
 'Rechannel an image (red, green, blue, cyan, magenta, yellow)
-Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     'Based on the channel the user has selected, display a user-friendly description of this filter
     Dim cName As String
@@ -621,5 +543,5 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub optChannel_Click(Index As Integer)
-    RechannelImage Index, True, picEffect
+    RechannelImage Index, True, fxPreview
 End Sub

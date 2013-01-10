@@ -3,10 +3,10 @@ Begin VB.Form FormHSL
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Adjust Hue / Saturation / Lightness"
-   ClientHeight    =   7020
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6255
+   ClientWidth     =   12090
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,27 +19,27 @@ Begin VB.Form FormHSL
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   468
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   6390
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   6390
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.TextBox txtLuminance 
@@ -55,20 +55,20 @@ Begin VB.Form FormHSL
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       MaxLength       =   4
-      TabIndex        =   14
+      TabIndex        =   10
       Text            =   "0"
-      Top             =   5475
+      Top             =   3435
       Width           =   615
    End
    Begin VB.HScrollBar hsLuminance 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   100
       Min             =   -100
-      TabIndex        =   12
-      Top             =   5520
+      TabIndex        =   8
+      Top             =   3480
       Width           =   4935
    End
    Begin VB.TextBox txtSaturation 
@@ -84,20 +84,20 @@ Begin VB.Form FormHSL
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       MaxLength       =   4
-      TabIndex        =   11
+      TabIndex        =   7
       Text            =   "0"
-      Top             =   4635
+      Top             =   2595
       Width           =   615
    End
    Begin VB.HScrollBar hsSaturation 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   100
       Min             =   -100
-      TabIndex        =   9
-      Top             =   4680
+      TabIndex        =   5
+      Top             =   2640
       Width           =   4935
    End
    Begin VB.TextBox txtHue 
@@ -113,74 +113,37 @@ Begin VB.Form FormHSL
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       MaxLength       =   4
-      TabIndex        =   8
-      Text            =   "0"
-      Top             =   3795
-      Width           =   615
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
       TabIndex        =   4
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   3
-      Top             =   120
-      Width           =   2895
+      Text            =   "0"
+      Top             =   1755
+      Width           =   615
    End
    Begin VB.HScrollBar hsHue 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   180
       Min             =   -180
       TabIndex        =   2
-      Top             =   3840
+      Top             =   1800
       Width           =   4935
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   12
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   15
-      Top             =   6240
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   11
+      Top             =   5760
+      Width           =   12135
    End
    Begin VB.Label lblLuminance 
       AutoSize        =   -1  'True
@@ -197,9 +160,9 @@ Begin VB.Form FormHSL
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   13
-      Top             =   5160
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   3120
       Width           =   1020
    End
    Begin VB.Label lblSaturation 
@@ -217,9 +180,9 @@ Begin VB.Form FormHSL
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   10
-      Top             =   4320
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   2280
       Width           =   1140
    End
    Begin VB.Label lblHue 
@@ -237,49 +200,9 @@ Begin VB.Form FormHSL
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   7
-      Top             =   3480
-      Width           =   480
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   6
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   5
-      Top             =   2880
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   1440
       Width           =   480
    End
 End
@@ -319,7 +242,7 @@ End Sub
 
 'Colorize an image using a hue defined between -1 and 5
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
-Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, ByVal lModifier As Single, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, ByVal lModifier As Single, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Adjusting hue, saturation, and luminance values..."
     
@@ -406,15 +329,12 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Create a copy of the image on the preview window
-    DrawPreviewImage picPreview
-    
-    'Display the previewed effect in the neighboring window
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, picEffect
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Display the previewed effect in the neighboring window
+    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
     
 End Sub
 
@@ -425,32 +345,32 @@ End Sub
 'When the hue scroll bar is changed, redraw the preview
 Private Sub hsHue_Change()
     copyToTextBoxI txtHue, hsHue.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, picEffect
+    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub hsHue_Scroll()
     copyToTextBoxI txtHue, hsHue.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, picEffect
+    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub hsLuminance_Change()
     copyToTextBoxI txtLuminance, hsLuminance.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, picEffect
+    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub hsLuminance_Scroll()
     copyToTextBoxI txtLuminance, hsLuminance.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, picEffect
+    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub hsSaturation_Change()
     copyToTextBoxI txtSaturation, hsSaturation.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, picEffect
+    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub hsSaturation_Scroll()
     copyToTextBoxI txtSaturation, hsSaturation.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, picEffect
+    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub txtHue_GotFocus()

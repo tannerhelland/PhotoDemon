@@ -3,10 +3,10 @@ Begin VB.Form FormBlackLight
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Black Light Options"
-   ClientHeight    =   5325
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6285
+   ClientWidth     =   12030
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,82 +19,36 @@ Begin VB.Form FormBlackLight
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   355
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   419
+   ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3330
+      Left            =   9030
       TabIndex        =   0
-      Top             =   4710
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4800
+      Left            =   10500
       TabIndex        =   1
-      Top             =   4710
+      Top             =   5910
       Width           =   1365
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   5
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.HScrollBar hsIntensity 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   10
       Min             =   1
       TabIndex        =   2
-      Top             =   3840
+      Top             =   2760
       Value           =   2
       Width           =   4935
    End
@@ -111,59 +65,28 @@ Begin VB.Form FormBlackLight
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       MaxLength       =   2
       TabIndex        =   3
       Text            =   "2"
-      Top             =   3780
+      Top             =   2700
       Width           =   615
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   6
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -720
-      TabIndex        =   9
-      Top             =   4560
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   8
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   7
-      Top             =   2880
-      Width           =   480
+      Left            =   0
+      TabIndex        =   5
+      Top             =   5760
+      Width           =   12135
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -180,9 +103,9 @@ Begin VB.Form FormBlackLight
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   4
-      Top             =   3480
+      Top             =   2400
       Width           =   975
    End
 End
@@ -225,7 +148,7 @@ End Sub
 
 'Perform a blacklight filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
-Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Illuminating image with imaginary blacklight..."
     
@@ -307,11 +230,8 @@ End Sub
 
 Private Sub Form_Activate()
 
-    'Create a copy of the original image to the preview picture box
-    DrawPreviewImage picPreview
-    
-    'Draw a preview of the effect on the neighboring picture box
-    fxBlackLight hsIntensity.Value, True, picEffect
+    'Draw a preview of the effect
+    fxBlackLight hsIntensity.Value, True, fxPreview
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -324,12 +244,12 @@ End Sub
 
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsIntensity_Change()
-    fxBlackLight hsIntensity.Value, True, picEffect
+    fxBlackLight hsIntensity.Value, True, fxPreview
     copyToTextBoxI txtIntensity, hsIntensity.Value
 End Sub
 
 Private Sub hsIntensity_Scroll()
-    fxBlackLight hsIntensity.Value, True, picEffect
+    fxBlackLight hsIntensity.Value, True, fxPreview
     copyToTextBoxI txtIntensity, hsIntensity.Value
 End Sub
 

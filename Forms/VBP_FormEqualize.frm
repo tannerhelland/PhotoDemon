@@ -3,10 +3,10 @@ Begin VB.Form FormEqualize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Equalize Histogram"
-   ClientHeight    =   5580
+   ClientHeight    =   6555
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6270
+   ClientWidth     =   12105
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,27 +19,27 @@ Begin VB.Form FormEqualize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   372
+   ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   418
+   ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   4950
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   4950
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CheckBox chkLuminance 
@@ -57,9 +57,9 @@ Begin VB.Form FormEqualize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   4440
-      TabIndex        =   10
-      Top             =   3960
+      Left            =   10200
+      TabIndex        =   6
+      Top             =   2760
       Width           =   1695
    End
    Begin VB.CheckBox chkBlue 
@@ -77,9 +77,9 @@ Begin VB.Form FormEqualize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   3120
-      TabIndex        =   9
-      Top             =   3960
+      Left            =   8880
+      TabIndex        =   5
+      Top             =   2760
       Width           =   1215
    End
    Begin VB.CheckBox chkGreen 
@@ -97,9 +97,9 @@ Begin VB.Form FormEqualize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   1680
-      TabIndex        =   8
-      Top             =   3960
+      Left            =   7440
+      TabIndex        =   4
+      Top             =   2760
       Width           =   1335
    End
    Begin VB.CheckBox chkRed 
@@ -117,85 +117,26 @@ Begin VB.Form FormEqualize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   480
-      TabIndex        =   7
-      Top             =   3960
+      Left            =   6240
+      TabIndex        =   3
+      Top             =   2760
       Width           =   1095
    End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   2730
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
       Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   4
+      TabIndex        =   8
       Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   3
-      Top             =   120
-      Width           =   2895
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -825
-      TabIndex        =   11
-      Top             =   4800
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   6
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   5
-      Top             =   2880
-      Width           =   480
+      Left            =   15
+      TabIndex        =   7
+      Top             =   5760
+      Width           =   12135
    End
    Begin VB.Label lblEqualize 
       AutoSize        =   -1  'True
@@ -212,9 +153,9 @@ Begin VB.Form FormEqualize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   2
-      Top             =   3480
+      Top             =   2280
       Width           =   945
    End
 End
@@ -241,19 +182,19 @@ Option Explicit
 
 'Whenever a check box is changed, redraw the preview
 Private Sub chkBlue_Click()
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, picEffect
+    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub chkGreen_Click()
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, picEffect
+    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub chkLuminance_Click()
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, picEffect
+    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
 End Sub
 
 Private Sub chkRed_Click()
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, picEffect
+    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
 End Sub
 
 'OK button
@@ -274,9 +215,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Create the previews
-    DrawPreviewImage picPreview
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, picEffect
+    'Render a preview
+    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -285,7 +225,7 @@ End Sub
 
 'Equalize the red, green, blue, and/or Luminance channels of an image
 ' (Technically Luminance isn't a channel, but you know what I mean.)
-Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean, ByVal HandleB As Boolean, ByVal HandleL As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean, ByVal HandleB As Boolean, ByVal HandleL As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Analyzing image histogram..."
     

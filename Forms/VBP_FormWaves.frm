@@ -4,10 +4,10 @@ Begin VB.Form FormWaves
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Waves"
-   ClientHeight    =   10860
+   ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   6255
+   ClientWidth     =   12090
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,27 +20,27 @@ Begin VB.Form FormWaves
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   724
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   10230
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   10230
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.TextBox txtWavelengthY 
@@ -56,20 +56,20 @@ Begin VB.Form FormWaves
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   15
+      TabIndex        =   14
       Text            =   "1"
-      Top             =   7620
+      Top             =   2940
       Width           =   735
    End
    Begin VB.HScrollBar hsWavelengthY 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   50
       Min             =   1
-      TabIndex        =   14
-      Top             =   7680
+      TabIndex        =   13
+      Top             =   3000
       Value           =   1
       Width           =   4815
    End
@@ -86,27 +86,27 @@ Begin VB.Form FormWaves
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   13
+      TabIndex        =   12
       Text            =   "0"
-      Top             =   8460
+      Top             =   3780
       Width           =   735
    End
    Begin VB.HScrollBar hsAmplitudeY 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   200
-      TabIndex        =   12
-      Top             =   8520
+      TabIndex        =   11
+      Top             =   3840
       Width           =   4815
    End
    Begin VB.HScrollBar hsAmplitudeX 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   200
-      TabIndex        =   10
-      Top             =   6840
+      TabIndex        =   9
+      Top             =   2160
       Value           =   20
       Width           =   4815
    End
@@ -123,20 +123,20 @@ Begin VB.Form FormWaves
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   9
+      TabIndex        =   8
       Text            =   "20"
-      Top             =   6780
+      Top             =   2100
       Width           =   735
    End
    Begin VB.HScrollBar hsWavelengthX 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   50
       Min             =   1
-      TabIndex        =   7
-      Top             =   6000
+      TabIndex        =   6
+      Top             =   1320
       Value           =   30
       Width           =   4815
    End
@@ -153,11 +153,11 @@ Begin VB.Form FormWaves
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   6
+      TabIndex        =   5
       Text            =   "30"
-      Top             =   5940
+      Top             =   1260
       Width           =   735
    End
    Begin VB.OptionButton OptInterpolate 
@@ -176,9 +176,9 @@ Begin VB.Form FormWaves
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   0
-      Left            =   360
-      TabIndex        =   5
-      Top             =   9360
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   4680
       Value           =   -1  'True
       Width           =   1095
    End
@@ -198,31 +198,26 @@ Begin VB.Form FormWaves
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   1
-      Left            =   1800
-      TabIndex        =   4
-      Top             =   9360
+      Left            =   7560
+      TabIndex        =   3
+      Top             =   4680
       Width           =   2535
    End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   5100
-      Left            =   240
-      ScaleHeight     =   338
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   382
-      TabIndex        =   2
-      Top             =   240
-      Width           =   5760
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   18
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   18
-      Top             =   10080
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   17
+      Top             =   5760
+      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -240,9 +235,9 @@ Begin VB.Form FormWaves
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   4
-      Left            =   240
-      TabIndex        =   17
-      Top             =   7320
+      Left            =   6000
+      TabIndex        =   16
+      Top             =   2640
       Width           =   2115
    End
    Begin VB.Label lblTitle 
@@ -261,9 +256,9 @@ Begin VB.Form FormWaves
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   1
-      Left            =   240
-      TabIndex        =   16
-      Top             =   8160
+      Left            =   6000
+      TabIndex        =   15
+      Top             =   3480
       Width           =   3090
    End
    Begin VB.Label lblTitle 
@@ -282,9 +277,9 @@ Begin VB.Form FormWaves
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   3
-      Left            =   240
-      TabIndex        =   11
-      Top             =   6480
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   1800
       Width           =   3390
    End
    Begin VB.Label lblTitle 
@@ -303,9 +298,9 @@ Begin VB.Form FormWaves
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   240
-      TabIndex        =   8
-      Top             =   5640
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   960
       Width           =   2415
    End
    Begin VB.Label lblTitle 
@@ -326,9 +321,9 @@ Begin VB.Form FormWaves
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   2
-      Left            =   240
-      TabIndex        =   3
-      Top             =   9000
+      Left            =   6000
+      TabIndex        =   2
+      Top             =   4320
       Width           =   1845
    End
 End
@@ -404,7 +399,7 @@ Private Sub cmdOK_Click()
 End Sub
 
 'Apply a "wave-like" effect to an image
-Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, ByVal yWavelength As Double, ByVal yAmplitude As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, ByVal yWavelength As Double, ByVal yAmplitude As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Dipping image in virtual wave pool..."
     
@@ -514,15 +509,15 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Create the preview
-    updatePreview
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
     'Mark scroll bar changes as coming from the user
     userChange = True
+    
+    'Create the preview
+    updatePreview
     
 End Sub
 
@@ -614,9 +609,9 @@ End Sub
 Private Sub updatePreview()
 
     If OptInterpolate(0) Then
-        WaveImage CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), True, True, picPreview
+        WaveImage CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), True, True, fxPreview
     Else
-        WaveImage CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), False, True, picPreview
+        WaveImage CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), False, True, fxPreview
     End If
 
 End Sub

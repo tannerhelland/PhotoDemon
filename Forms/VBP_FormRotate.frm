@@ -4,10 +4,10 @@ Begin VB.Form FormRotate
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Rotate Image"
-   ClientHeight    =   8940
+   ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   6255
+   ClientWidth     =   12105
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,27 +20,27 @@ Begin VB.Form FormRotate
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   596
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   8310
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   8310
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.OptionButton OptRotate 
@@ -59,9 +59,9 @@ Begin VB.Form FormRotate
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   0
-      Left            =   360
-      TabIndex        =   8
-      Top             =   6990
+      Left            =   6120
+      TabIndex        =   7
+      Top             =   3270
       Value           =   -1  'True
       Width           =   5535
    End
@@ -81,9 +81,9 @@ Begin VB.Form FormRotate
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   1
-      Left            =   360
-      TabIndex        =   7
-      Top             =   7380
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   3660
       Width           =   5655
    End
    Begin VB.TextBox txtAngle 
@@ -99,43 +99,38 @@ Begin VB.Form FormRotate
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   6
-      TabIndex        =   5
+      TabIndex        =   4
       Text            =   "0.0"
-      Top             =   6000
+      Top             =   2280
       Width           =   735
    End
    Begin VB.HScrollBar hsAngle 
       Height          =   255
       LargeChange     =   10
-      Left            =   360
+      Left            =   6120
       Max             =   1800
       Min             =   -1800
-      TabIndex        =   4
-      Top             =   6060
+      TabIndex        =   3
+      Top             =   2340
       Width           =   4815
    End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   5100
-      Left            =   240
-      ScaleHeight     =   338
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   382
-      TabIndex        =   3
-      Top             =   240
-      Width           =   5760
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   9
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   9
-      Top             =   8160
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   8
+      Top             =   5760
+      Width           =   12135
    End
    Begin VB.Label lblRotatedCanvas 
       Appearance      =   0  'Flat
@@ -154,9 +149,9 @@ Begin VB.Form FormRotate
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   6
-      Top             =   6600
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   2880
       Width           =   2340
    End
    Begin VB.Label lblAmount 
@@ -176,9 +171,9 @@ Begin VB.Form FormRotate
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   2
-      Top             =   5640
+      Top             =   1920
       Width           =   1560
    End
 End
@@ -323,8 +318,9 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 'If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor
                 
                 'Finally, render the preview and erase the temporary layer to conserve memory
-                'tmpLayer.renderToPictureBox picPreview
-                DrawPreviewImage picPreview, True, tmpLayer
+                DrawPreviewImage fxPreview.getPreviewPic, True, tmpLayer
+                fxPreview.setFXImage tmpLayer
+                
                 tmpLayer.eraseLayer
                 Set tmpLayer = Nothing
             
@@ -359,7 +355,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         
     Else
         Message "Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled."
-        MsgBox "The FreeImage plugin is required for image rotation.  Please go to Edit -> Preferences -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.", vbApplicationModal + vbOKOnly + vbInformation, "FreeImage plugin missing"
+        MsgBox "The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.", vbApplicationModal + vbOKOnly + vbInformation, "FreeImage plugin missing"
     End If
         
 End Sub
@@ -370,45 +366,28 @@ Private Sub Form_Activate()
     ' previewing immensely (especially for large images, like 10+ megapixel photos)
     Set smallLayer = New pdLayer
             
-    Dim dstWidth As Single, dstHeight As Single
-    dstWidth = picPreview.ScaleWidth
-    dstHeight = picPreview.ScaleHeight
-    
-    Dim srcWidth As Single, srcHeight As Single
-    srcWidth = pdImages(CurrentImage).Width
-    srcHeight = pdImages(CurrentImage).Height
-    
-    'Calculate the aspect ratio of this layer and the target picture box
-    Dim srcAspect As Single, dstAspect As Single
-    srcAspect = srcWidth / srcHeight
-    dstAspect = dstWidth / dstHeight
-    
+    'Determine a new image size that preserves the current aspect ratio
     Dim dWidth As Long, dHeight As Long
+    convertAspectRatio pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, dWidth, dHeight
             
-    'Use that aspect ratio to determine a new image size
-    If srcAspect > dstAspect Then
-        dWidth = dstWidth
-        dHeight = CSng(srcHeight / srcWidth) * dWidth + 0.5
-    Else
-        dHeight = dstHeight
-        dWidth = CSng(srcWidth / srcHeight) * dHeight + 0.5
-    End If
-            
-    'Create a new, smaller image
-    If (dstWidth < pdImages(CurrentImage).Width) Or (dstHeight < pdImages(CurrentImage).Height) Then
+    'Create a new, smaller image at those dimensions
+    If (dWidth < pdImages(CurrentImage).Width) Or (dHeight < pdImages(CurrentImage).Height) Then
         smallLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, dWidth, dHeight, True
     Else
         smallLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
     End If
-    
-    'Render a preview
-    updatePreview
-    
+        
+    'Give the preview object a copy of this image data so it can show it to the user if requested
+    fxPreview.setOriginalImage smallLayer
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
     userChange = True
     
+    'Render a preview
+    updatePreview
+        
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

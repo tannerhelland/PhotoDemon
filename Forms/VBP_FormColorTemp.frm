@@ -3,10 +3,10 @@ Begin VB.Form FormColorTemp
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Adjust Color Temperature"
-   ClientHeight    =   7020
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6255
+   ClientWidth     =   12330
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,36 +19,36 @@ Begin VB.Form FormColorTemp
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   468
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   822
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9360
       TabIndex        =   0
-      Top             =   6390
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10830
       TabIndex        =   1
-      Top             =   6390
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.HScrollBar hsStrength 
       Height          =   255
-      Left            =   240
+      Left            =   6120
       Max             =   100
       Min             =   1
-      TabIndex        =   11
-      Top             =   5400
+      TabIndex        =   7
+      Top             =   3600
       Value           =   55
       Width           =   5055
    End
@@ -65,11 +65,11 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11280
       MaxLength       =   3
-      TabIndex        =   10
+      TabIndex        =   6
       Text            =   "50"
-      Top             =   5355
+      Top             =   3555
       Width           =   735
    End
    Begin VB.TextBox txtTemperature 
@@ -85,66 +85,20 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11280
       MaxLength       =   5
-      TabIndex        =   9
-      Text            =   "5500"
-      Top             =   3675
-      Width           =   735
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
       TabIndex        =   5
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   4
-      Top             =   120
-      Width           =   2895
+      Text            =   "5500"
+      Top             =   1875
+      Width           =   735
    End
    Begin VB.HScrollBar hsTemperature 
       Height          =   255
-      Left            =   240
+      Left            =   6120
       Max             =   150
       Min             =   10
       TabIndex        =   2
-      Top             =   3720
+      Top             =   1920
       Value           =   55
       Width           =   5055
    End
@@ -163,20 +117,29 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   480
+      Left            =   6360
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   303
       TabIndex        =   3
-      Top             =   4080
+      Top             =   2280
       Width           =   4575
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   12
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   15
-      Top             =   6240
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   11
+      Top             =   5760
+      Width           =   12375
    End
    Begin VB.Label lblCool 
       AutoSize        =   -1  'True
@@ -193,9 +156,9 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   4245
-      TabIndex        =   14
-      Top             =   4560
+      Left            =   10125
+      TabIndex        =   10
+      Top             =   2760
       Width           =   735
    End
    Begin VB.Label lblWarm 
@@ -213,9 +176,9 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   480
-      TabIndex        =   13
-      Top             =   4560
+      Left            =   6360
+      TabIndex        =   9
+      Top             =   2760
       Width           =   840
    End
    Begin VB.Label lblStrength 
@@ -233,15 +196,15 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   120
-      TabIndex        =   12
-      Top             =   5040
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   3240
       Width           =   960
    End
    Begin VB.Label lblTemperature 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "new temperature:"
+      Caption         =   "new temperature (K):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -253,50 +216,10 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   120
-      TabIndex        =   8
-      Top             =   3360
-      Width           =   1890
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   7
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   6
-      Top             =   2880
-      Width           =   480
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   1560
+      Width           =   2280
    End
 End
 Attribute VB_Name = "FormColorTemp"
@@ -362,7 +285,7 @@ End Sub
 
 'Cast an image with a new temperature value
 ' Input: desired temperature, whether to preserve luminance or not, and a blend ratio between 1 and 100
-Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal tempStrength As Single = 25, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal tempStrength As Single = 25, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Applying new temperature to image..."
     
@@ -472,15 +395,12 @@ Private Sub Form_Activate()
     Next x
     
     picTempDemo.Picture = picTempDemo.Image
-    
-    'Create a copy of the image on the preview window
-    DrawPreviewImage picPreview
-    
-    'Display the previewed effect in the neighboring window
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Display the previewed effect in the neighboring window
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
     
 End Sub
 
@@ -490,23 +410,23 @@ End Sub
 
 Private Sub hsStrength_Change()
     copyToTextBoxI txtStrength, hsStrength
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
 End Sub
 
 Private Sub hsStrength_Scroll()
     copyToTextBoxI txtStrength, hsStrength
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
 End Sub
 
 'When the hue scroll bar is changed, redraw the preview
 Private Sub hsTemperature_Change()
     copyToTextBoxI txtTemperature, hsTemperature * 100
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
 End Sub
 
 Private Sub hsTemperature_Scroll()
     copyToTextBoxI txtTemperature, hsTemperature * 100
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, picEffect
+    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
 End Sub
 
 'Given a temperature (in Kelvin), generate the RGB equivalent of an ideal black body

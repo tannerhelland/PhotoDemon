@@ -3,10 +3,10 @@ Begin VB.Form FormEmbossEngrave
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Emboss/Engrave"
-   ClientHeight    =   6165
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6255
+   ClientWidth     =   11820
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,74 +19,28 @@ Begin VB.Form FormEmbossEngrave
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   411
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   8880
       TabIndex        =   0
-      Top             =   5550
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10350
       TabIndex        =   1
-      Top             =   5550
+      Top             =   5910
       Width           =   1365
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   7
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.OptionButton OptEmboss 
       Appearance      =   0  'Flat
@@ -103,9 +57,9 @@ Begin VB.Form FormEmbossEngrave
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   1560
+      Left            =   7200
       TabIndex        =   2
-      Top             =   3420
+      Top             =   1620
       Value           =   -1  'True
       Width           =   1215
    End
@@ -124,9 +78,9 @@ Begin VB.Form FormEmbossEngrave
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   3480
+      Left            =   9120
       TabIndex        =   3
-      Top             =   3420
+      Top             =   1620
       Width           =   1335
    End
    Begin VB.PictureBox PicColor 
@@ -143,11 +97,11 @@ Begin VB.Form FormEmbossEngrave
       EndProperty
       ForeColor       =   &H80000008&
       Height          =   495
-      Left            =   360
+      Left            =   6000
       ScaleHeight     =   465
       ScaleWidth      =   5505
       TabIndex        =   5
-      Top             =   4560
+      Top             =   2760
       Width           =   5535
    End
    Begin VB.CheckBox ChkToColor 
@@ -165,10 +119,19 @@ Begin VB.Form FormEmbossEngrave
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   360
+      Left            =   6000
       TabIndex        =   4
-      Top             =   4080
+      Top             =   2280
       Width           =   5655
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   7
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -181,50 +144,10 @@ Begin VB.Form FormEmbossEngrave
          Strikethrough   =   0   'False
       EndProperty
       Height          =   855
-      Left            =   -840
-      TabIndex        =   10
-      Top             =   5400
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   9
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   8
-      Top             =   2880
-      Width           =   480
+      Left            =   0
+      TabIndex        =   6
+      Top             =   5760
+      Width           =   11895
    End
 End
 Attribute VB_Name = "FormEmbossEngrave"
@@ -247,11 +170,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub ChkToColor_Click()
-    If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
-    Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
-    End If
+    UpdateEmbossPreview
 End Sub
 
 'CANCEL button
@@ -280,20 +199,13 @@ Private Sub Form_Activate()
     
     'Remember the last emboss/engrave color selection
     PicColor.backColor = g_EmbossEngraveColor
-    
-    'Draw a preview of the current image to the left box
-    DrawPreviewImage picPreview
-    
-    'Draw a preview of the emboss/engrave effect to the right box
-    If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
-    Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
-    End If
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     setHandCursor PicColor
+    
+    'Render a preview of the emboss/engrave effect
+    UpdateEmbossPreview
     
 End Sub
 
@@ -303,19 +215,11 @@ End Sub
 
 'When the emboss/engrave options are clicked, redraw the preview
 Private Sub OptEmboss_Click()
-    If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
-    Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
-    End If
+    UpdateEmbossPreview
 End Sub
 
 Private Sub OptEngrave_Click()
-    If OptEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
-    Else
-        If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
-    End If
+    UpdateEmbossPreview
 End Sub
 
 'Clicking on the picture box allows the user to select a new color
@@ -330,18 +234,14 @@ Private Sub PicColor_Click()
     If CD1.VBChooseColor(retColor, True, True, False, Me.hWnd) Then
         PicColor.backColor = retColor
         ChkToColor.Value = vbChecked
-        If OptEmboss.Value = True Then
-            If ChkToColor.Value = vbChecked Then FilterEmbossColor PicColor.backColor, True, picEffect Else FilterEmbossColor RGB(127, 127, 127), True, picEffect
-        Else
-            If ChkToColor.Value = vbChecked Then FilterEngraveColor PicColor.backColor, True, picEffect Else FilterEngraveColor RGB(127, 127, 127), True, picEffect
-        End If
+        UpdateEmbossPreview
     End If
     
 End Sub
 
 'Emboss an image
 ' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
-Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Embossing image..."
     
@@ -449,7 +349,7 @@ End Sub
 
 'Engrave an image
 ' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
-Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Embossing image..."
         
@@ -553,4 +453,13 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
  
+End Sub
+
+'Render a new preview
+Private Sub UpdateEmbossPreview()
+    If OptEmboss.Value Then
+        If CBool(ChkToColor.Value) Then FilterEmbossColor PicColor.backColor, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
+    Else
+        If CBool(ChkToColor.Value) Then FilterEngraveColor PicColor.backColor, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview
+    End If
 End Sub

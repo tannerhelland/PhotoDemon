@@ -21,7 +21,7 @@ Public Const CUSTOM_FILTER_VERSION_2003 = &H80000000
 Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
 
 'The omnipotent DoFilter routine - it takes whatever is in g_FM() - the "filter matrix" and applies it to the image
-Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByVal InvertResult As Boolean = False, Optional ByVal srcFilterFile As String = "", Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByVal InvertResult As Boolean = False, Optional ByVal srcFilterFile As String = "", Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     'If requested, load the custom filter data from a file
     If srcFilterFile <> "" Then

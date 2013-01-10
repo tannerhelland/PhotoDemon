@@ -3,10 +3,10 @@ Begin VB.Form FormFindEdges
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Find Edges"
-   ClientHeight    =   6780
+   ClientHeight    =   6525
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6270
+   ClientWidth     =   12195
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,9 +19,9 @@ Begin VB.Form FormFindEdges
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   452
+   ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   418
+   ScaleWidth      =   813
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
@@ -29,18 +29,18 @@ Begin VB.Form FormFindEdges
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9240
       TabIndex        =   0
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10710
       TabIndex        =   1
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CheckBox chkInvert 
@@ -58,55 +58,9 @@ Begin VB.Form FormFindEdges
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   3240
-      TabIndex        =   9
-      Top             =   5160
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
+      Left            =   9120
       TabIndex        =   5
-      Top             =   120
+      Top             =   3240
       Width           =   2895
    End
    Begin VB.ListBox LstEdgeOptions 
@@ -120,11 +74,20 @@ Begin VB.Form FormFindEdges
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   1980
-      Left            =   120
+      Height          =   2460
+      Left            =   6000
       TabIndex        =   2
-      Top             =   3480
+      Top             =   1320
       Width           =   2895
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   7
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -137,50 +100,10 @@ Begin VB.Form FormFindEdges
          Strikethrough   =   0   'False
       EndProperty
       Height          =   855
-      Left            =   -825
-      TabIndex        =   10
-      Top             =   6000
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   8
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   7
-      Top             =   2880
-      Width           =   480
+      Left            =   15
+      TabIndex        =   6
+      Top             =   5760
+      Width           =   12255
    End
    Begin VB.Label Label1 
       BackStyle       =   0  'Transparent
@@ -196,9 +119,9 @@ Begin VB.Form FormFindEdges
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   4
-      Top             =   3450
+      Top             =   1320
       Width           =   2055
    End
    Begin VB.Label LblDesc 
@@ -217,9 +140,9 @@ Begin VB.Form FormFindEdges
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   1575
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   3
-      Top             =   3840
+      Top             =   1800
       Width           =   2895
       WordWrap        =   -1  'True
    End
@@ -284,9 +207,6 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Draw a preview of the current image to the left box
-    DrawPreviewImage picPreview
-    
     'Generate a list box with all the various edge detection algorithms
     LstEdgeOptions.AddItem "Prewitt Horizontal"
     LstEdgeOptions.AddItem "Prewitt Vertical"
@@ -299,16 +219,16 @@ Private Sub Form_Activate()
     LstEdgeOptions.AddItem "PhotoDemon Cubic"
     
     LstEdgeOptions.ListIndex = 5
+        
+    'Assign the system hand cursor to all relevant objects
+    makeFormPretty Me
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
     UpdateDescriptions
     
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
-    
 End Sub
 
-Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
     ReDim g_FM(-1 To 1, -1 To 1) As Long
     g_FM(-1, -1) = -4
@@ -322,7 +242,7 @@ Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optio
     DoFilter "Hilite edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 5
     ReDim g_FM(-2 To 2, -2 To 2) As Long
     g_FM(-1, -2) = 1
@@ -335,7 +255,7 @@ Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolea
     DoFilter "PhotoDemon cubic edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
     ReDim g_FM(-1 To 1, -1 To 1) As Long
     g_FM(-1, -1) = -1
@@ -348,7 +268,7 @@ Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boole
     DoFilter "PhotoDemon linear edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
     ReDim g_FM(-1 To 1, -1 To 1) As Long
     g_FM(-1, -1) = -1
@@ -362,7 +282,7 @@ Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = F
     DoFilter "Prewitt horizontal edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
     ReDim g_FM(-1 To 1, -1 To 1) As Long
     g_FM(-1, -1) = 1
@@ -376,7 +296,7 @@ Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = Fal
     DoFilter "Prewitt vertical edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
     ReDim g_FM(-1 To 1, -1 To 1) As Long
     g_FM(-1, -1) = -1
@@ -390,7 +310,7 @@ Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = Fal
     DoFilter "Sobel horizontal edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
     ReDim g_FM(-1 To 1, -1 To 1) As Long
     g_FM(-1, -1) = 1
@@ -404,7 +324,7 @@ Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False
     DoFilter "Sobel vertical edge detection", Not blackBackground, , toPreview, dstPic
 End Sub
 
-Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
     ReDim g_FM(-1 To 1, -1 To 1) As Long
     g_FM(-1, 0) = -1
@@ -419,7 +339,7 @@ End Sub
 
 'This code is a modified version of an algorithm originally developed by Manuel Augusto Santos.  A link to his original
 ' implementation is available from the "Help -> About PhotoDemon" menu option.
-Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Tracing image edges with virtual paintbrush..."
     
@@ -539,31 +459,31 @@ Private Sub UpdateDescriptions()
     l = LstEdgeOptions.List(LstEdgeOptions.ListIndex)
     If l = "Prewitt Horizontal" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
-        FilterPrewittHorizontal CBool(chkInvert.Value), True, picEffect
+        FilterPrewittHorizontal CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Prewitt Vertical" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
-        FilterPrewittVertical CBool(chkInvert.Value), True, picEffect
+        FilterPrewittVertical CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Sobel Horizontal" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
-        FilterSobelHorizontal CBool(chkInvert.Value), True, picEffect
+        FilterSobelHorizontal CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Sobel Vertical" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
-        FilterSobelVertical CBool(chkInvert.Value), True, picEffect
+        FilterSobelVertical CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Laplacian" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
-        FilterLaplacian CBool(chkInvert.Value), True, picEffect
+        FilterLaplacian CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Artistic Contour" Then
         LblDesc = "Algorithm designed to present a clean, artistic prediction of image edges."
-        FilterSmoothContour CBool(chkInvert.Value), True, picEffect
+        FilterSmoothContour CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Hilite" Then
         LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
-        FilterHilite CBool(chkInvert.Value), True, picEffect
+        FilterHilite CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "PhotoDemon Linear" Then
         LblDesc = "Simple mathematical routine based on linear relationships between diagonal pixels."
-        PhotoDemonLinearEdgeDetection CBool(chkInvert.Value), True, picEffect
+        PhotoDemonLinearEdgeDetection CBool(chkInvert.Value), True, fxPreview
     Else
         LblDesc = "Advanced mathematical routine based on cubic relationships between diagonal pixels."
-        PhotoDemonCubicEdgeDetection CBool(chkInvert.Value), True, picEffect
+        PhotoDemonCubicEdgeDetection CBool(chkInvert.Value), True, fxPreview
     End If
 End Sub
 

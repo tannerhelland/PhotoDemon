@@ -3,10 +3,10 @@ Begin VB.Form FormNoise
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Add Noise"
-   ClientHeight    =   6075
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6270
+   ClientWidth     =   12120
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,82 +19,36 @@ Begin VB.Form FormNoise
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   405
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   418
+   ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3255
+      Left            =   9135
       TabIndex        =   0
-      Top             =   5430
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4725
+      Left            =   10605
       TabIndex        =   1
-      Top             =   5430
+      Top             =   5910
       Width           =   1365
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   7
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.HScrollBar hsNoise 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   500
       Min             =   1
       TabIndex        =   3
-      Top             =   3840
+      Top             =   2760
       Value           =   1
       Width           =   4935
    End
@@ -111,17 +65,17 @@ Begin VB.Form FormNoise
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       MaxLength       =   3
       TabIndex        =   2
       Text            =   "1"
-      Top             =   3780
+      Top             =   2700
       Width           =   615
    End
    Begin VB.CheckBox ChkM 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
-      Caption         =   "monochromatic noise only"
+      Caption         =   " monochromatic noise only"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -133,62 +87,31 @@ Begin VB.Form FormNoise
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   465
-      Left            =   360
+      Left            =   6120
       TabIndex        =   4
-      Top             =   4440
+      Top             =   3360
       Width           =   3255
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   7
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -825
-      TabIndex        =   10
-      Top             =   5280
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   9
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   8
-      Top             =   2880
-      Width           =   480
+      Left            =   -120
+      TabIndex        =   6
+      Top             =   5760
+      Width           =   12375
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "amount:"
+      Caption         =   "noise amount:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -200,10 +123,10 @@ Begin VB.Form FormNoise
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   5
-      Top             =   3480
-      Width           =   900
+      Top             =   2400
+      Width           =   1530
    End
 End
 Attribute VB_Name = "FormNoise"
@@ -225,7 +148,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub ChkM_Click()
-    AddNoise hsNoise.Value, ChkM.Value, True, picEffect
+    AddNoise hsNoise.Value, ChkM.Value, True, fxPreview
 End Sub
 
 'CANCEL button
@@ -246,7 +169,7 @@ End Sub
 
 'Subroutine for adding noise to an image
 ' Inputs: Amount of noise, monochromatic or not, preview settings
-Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Increasing image noise..."
     
@@ -342,13 +265,12 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
 End Sub
 
 Private Sub Form_Activate()
-
-    'Create the previews
-    DrawPreviewImage picPreview
-    AddNoise hsNoise.Value, ChkM.Value, True, picEffect
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Render a preview
+    AddNoise hsNoise.Value, ChkM.Value, True, fxPreview
     
 End Sub
 
@@ -359,12 +281,12 @@ End Sub
 'The following four routines keep the value of the textbox and scroll bar in lock-step
 Private Sub hsNoise_Change()
     copyToTextBoxI txtNoise, hsNoise.Value
-    AddNoise hsNoise.Value, ChkM.Value, True, picEffect
+    AddNoise hsNoise.Value, ChkM.Value, True, fxPreview
 End Sub
 
 Private Sub hsNoise_Scroll()
     copyToTextBoxI txtNoise, hsNoise.Value
-    AddNoise hsNoise.Value, ChkM.Value, True, picEffect
+    AddNoise hsNoise.Value, ChkM.Value, True, fxPreview
 End Sub
 
 Private Sub txtNoise_KeyUp(KeyCode As Integer, Shift As Integer)

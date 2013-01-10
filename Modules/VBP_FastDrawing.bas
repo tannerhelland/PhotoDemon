@@ -49,21 +49,40 @@ End Type
 
 Public curLayerValues As FilterInfo
 
+'This function can be used to populate a valid SAFEARRAY2D structure against any layer
+Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcLayer As pdLayer)
+    
+    'Populate a relevant SafeArray variable for the supplied layer
+    With srcSA
+        .cbElements = 1
+        .cDims = 2
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = srcLayer.getLayerHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = srcLayer.getLayerArrayWidth
+        .pvData = srcLayer.getLayerDIBits
+    End With
+    
+End Sub
 
-'prepPixelData's job is to copy the relevant layer into a temporary object, which is what individual filters and effects
-' will operate on.  prepPixelData() also populates the relevant SafeArray object and a host of other variables, which
+
+'prepImageData's job is to copy the relevant layer into a temporary object, which is what individual filters and effects
+' will operate on.  prepImageData() also populates the relevant SafeArray object and a host of other variables, which
 ' filters and effects can then copy locally to ensure the fastest possible runtime speed.
 '
-'If the filter will be rendering a preview only, it can specify the picture box that will receive the preview effect.
+'If the filter will be rendering a preview only, it can specify the fxPreview control that will receive the preview effect.
 ' This function will automatically adjust its parameters accordingly, and the filter routine will not have to make any
 ' modifications to its code.
 '
 'Finally, the calling routine can optionally specify a different progress bar maximum value.  By default, this is the current
 ' layer's width, but some routines run vertically and the progress bar needs to be changed accordingly.
-Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewPictureBox As PictureBox, Optional newProgBarMax As Long = -1)
+Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1)
 
     'Prepare our temporary layer
     Set workingLayer = New pdLayer
+    
+    'Prepare a reference to a picture box (only needed when previewing)
+    Dim previewPictureBox As PictureBox
     
     'If this is not a preview, simply copy the current layer without modification
     If isPreview = False Then
@@ -81,6 +100,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     
         'Start by calculating the aspect ratio of both the current image and the previewing picture box
         Dim dstWidth As Single, dstHeight As Single
+        Set previewPictureBox = previewTarget.getPreviewPic
         dstWidth = previewPictureBox.ScaleWidth
         dstHeight = previewPictureBox.ScaleHeight
     
@@ -112,6 +132,9 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         Else
             workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight
         End If
+        
+        'Give the preview object a copy of this image data so it can show it to the user if requested
+        If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingLayer
         
     End If
     
@@ -149,29 +172,14 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
 
 End Sub
 
-'This function can be used to populate a valid SAFEARRAY2D structure against any layer
-Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcLayer As pdLayer)
-    
-    'Populate a relevant SafeArray variable for the supplied layer
-    With srcSA
-        .cbElements = 1
-        .cDims = 2
-        .Bounds(0).lBound = 0
-        .Bounds(0).cElements = srcLayer.getLayerHeight
-        .Bounds(1).lBound = 0
-        .Bounds(1).cElements = srcLayer.getLayerArrayWidth
-        .pvData = srcLayer.getLayerDIBits
-    End With
-    
-End Sub
 
 'The counterpart to prepImageData, finalizeImageData copies the working layer back into its source then renders it
 ' to the screen.  Like prepImageData(), a preview target can also be named.  In this case, finalizeImageData will rely on
 ' the values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS be called before this routine.
-Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewPictureBox As PictureBox)
+Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl)
 
     'If this is not a preview, our job is simple - get the newly processed DIB rendered to the screen.
-    If isPreview = False Then
+    If Not isPreview Then
         
         Message "Rendering image to screen..."
         
@@ -199,7 +207,10 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor
     
         'Allow workingLayer to paint itself to the target picture box
-        workingLayer.renderToPictureBox previewPictureBox
+        workingLayer.renderToPictureBox previewTarget.getPreviewPic
+        
+        'Give the preview object a copy of the layer data used to generate the preview
+        previewTarget.setFXImage workingLayer
         
         'workingLayer has served its purpose, so erase it from memory
         Set workingLayer = Nothing
@@ -207,3 +218,4 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
     End If
     
 End Sub
+

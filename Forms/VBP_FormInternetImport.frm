@@ -6,7 +6,7 @@ Begin VB.Form FormInternetImport
    ClientHeight    =   2340
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   9735
+   ClientWidth     =   10050
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,14 +21,14 @@ Begin VB.Form FormInternetImport
    MinButton       =   0   'False
    ScaleHeight     =   156
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   649
+   ScaleWidth      =   670
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   6720
+      Left            =   7080
       TabIndex        =   0
       Top             =   1710
       Width           =   1365
@@ -37,7 +37,7 @@ Begin VB.Form FormInternetImport
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   8190
+      Left            =   8550
       TabIndex        =   1
       Top             =   1710
       Width           =   1365
@@ -58,7 +58,7 @@ Begin VB.Form FormInternetImport
       TabIndex        =   2
       Text            =   "http://"
       Top             =   720
-      Width           =   9255
+      Width           =   9615
    End
    Begin VB.Label lblCopyrightWarning 
       Appearance      =   0  'Flat
@@ -70,14 +70,14 @@ Begin VB.Form FormInternetImport
       Left            =   240
       TabIndex        =   4
       Top             =   1755
-      Width           =   6375
+      Width           =   6735
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
       TabIndex        =   5
       Top             =   1560
-      Width           =   9735
+      Width           =   10095
    End
    Begin VB.Label lblDownloadPath 
       AutoSize        =   -1  'True

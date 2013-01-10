@@ -3,10 +3,10 @@ Begin VB.Form FormBrightnessContrast
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Brightness/Contrast"
-   ClientHeight    =   6780
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6270
+   ClientWidth     =   12075
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,91 +19,45 @@ Begin VB.Form FormBrightnessContrast
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   452
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   418
+   ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   10
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   9
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.HScrollBar hsContrast 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   100
       Min             =   -100
       TabIndex        =   4
-      Top             =   4680
+      Top             =   3000
       Width           =   4935
    End
    Begin VB.HScrollBar hsBright 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   255
       Min             =   -255
       TabIndex        =   2
-      Top             =   3840
+      Top             =   2160
       Width           =   4935
    End
    Begin VB.TextBox txtContrast 
@@ -119,11 +73,11 @@ Begin VB.Form FormBrightnessContrast
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       MaxLength       =   3
       TabIndex        =   5
       Text            =   "0"
-      Top             =   4620
+      Top             =   2940
       Width           =   615
    End
    Begin VB.TextBox txtBrightness 
@@ -139,11 +93,11 @@ Begin VB.Form FormBrightnessContrast
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5400
+      Left            =   11160
       MaxLength       =   3
       TabIndex        =   3
       Text            =   "0"
-      Top             =   3780
+      Top             =   2100
       Width           =   615
    End
    Begin VB.CheckBox chkSample 
@@ -161,58 +115,27 @@ Begin VB.Form FormBrightnessContrast
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   360
+      Left            =   6120
       TabIndex        =   6
-      Top             =   5280
+      Top             =   3600
       Value           =   1  'Checked
       Width           =   5655
    End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   10
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+   End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   13
-      Top             =   6000
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   12
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   11
-      Top             =   2880
-      Width           =   480
+      Left            =   0
+      TabIndex        =   9
+      Top             =   5760
+      Width           =   12135
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -229,9 +152,9 @@ Begin VB.Form FormBrightnessContrast
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   8
-      Top             =   4335
+      Top             =   2655
       Width           =   930
    End
    Begin VB.Label LblBrightness 
@@ -249,9 +172,9 @@ Begin VB.Form FormBrightnessContrast
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   7
-      Top             =   3480
+      Top             =   1800
       Width           =   1185
    End
 End
@@ -283,7 +206,7 @@ Dim previewSampledContrast As Long
 
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
-    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
+    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, fxPreview Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, fxPreview
 End Sub
 
 'CANCEL button
@@ -323,7 +246,7 @@ End Sub
 
 'Single routine for modifying both brightness and contrast.  Brightness is in the range (-255,255) while
 ' contrast is (-100,100).  Optionally, the image can be sampled to obtain a true midpoint for the contrast function.
-Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Optional ByVal TrueContrast As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Optional ByVal TrueContrast As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Adjusting image brightness..."
     
@@ -495,15 +418,12 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Op
 End Sub
 
 Private Sub Form_Activate()
-
-    'Initialize the preview windows
-    DrawPreviewImage picPreview
     
     previewHasSampled = 0
     previewSampledContrast = 0
     
    'Create the preview
-    BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
+    BrightnessContrast hsBright.Value, hsContrast.Value, False, True, fxPreview
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -518,22 +438,22 @@ End Sub
 ' other is modified by the user.  When that happens, the preview window also gets updated.
 Private Sub hsBright_Change()
     copyToTextBoxI txtBrightness, hsBright.Value
-    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
+    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, fxPreview Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsBright_Scroll()
     copyToTextBoxI txtBrightness, hsBright.Value
-    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
+    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, fxPreview Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsContrast_Change()
     copyToTextBoxI txtContrast, hsContrast.Value
-    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
+    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, fxPreview Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsContrast_Scroll()
     copyToTextBoxI txtContrast, hsContrast.Value
-    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, picEffect Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, picEffect
+    If chkSample.Value = vbChecked Then BrightnessContrast hsBright.Value, hsContrast.Value, True, True, fxPreview Else BrightnessContrast hsBright.Value, hsContrast.Value, False, True, fxPreview
 End Sub
 
 Private Sub txtBrightness_GotFocus()

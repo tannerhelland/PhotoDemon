@@ -4,10 +4,10 @@ Begin VB.Form FormLens
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Lens Correction and Distortion"
-   ClientHeight    =   9195
+   ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   6255
+   ClientWidth     =   12090
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,27 +20,27 @@ Begin VB.Form FormLens
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   613
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   8550
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   8550
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.TextBox txtRadius 
@@ -56,20 +56,20 @@ Begin VB.Form FormLens
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   10
+      TabIndex        =   9
       Text            =   "50"
-      Top             =   6780
+      Top             =   2940
       Width           =   735
    End
    Begin VB.HScrollBar hsRadius 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   100
       Min             =   1
-      TabIndex        =   9
-      Top             =   6840
+      TabIndex        =   8
+      Top             =   3000
       Value           =   50
       Width           =   4815
    End
@@ -89,9 +89,9 @@ Begin VB.Form FormLens
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   0
-      Left            =   360
-      TabIndex        =   8
-      Top             =   7680
+      Left            =   6120
+      TabIndex        =   7
+      Top             =   3840
       Value           =   -1  'True
       Width           =   1095
    End
@@ -111,9 +111,9 @@ Begin VB.Form FormLens
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   1
-      Left            =   1800
-      TabIndex        =   7
-      Top             =   7680
+      Left            =   7560
+      TabIndex        =   6
+      Top             =   3840
       Width           =   2535
    End
    Begin VB.TextBox txtIndex 
@@ -129,44 +129,39 @@ Begin VB.Form FormLens
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   6
-      TabIndex        =   5
+      TabIndex        =   4
       Text            =   "1.20"
-      Top             =   6000
+      Top             =   2160
       Width           =   735
    End
    Begin VB.HScrollBar hsIndex 
       Height          =   255
       LargeChange     =   10
-      Left            =   360
+      Left            =   6120
       Max             =   500
       Min             =   90
-      TabIndex        =   4
-      Top             =   6060
+      TabIndex        =   3
+      Top             =   2220
       Value           =   120
       Width           =   4815
    End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   5100
-      Left            =   240
-      ScaleHeight     =   338
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   382
-      TabIndex        =   3
-      Top             =   240
-      Width           =   5760
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   12
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   12
-      Top             =   8400
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   11
+      Top             =   5760
+      Width           =   12135
    End
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
@@ -183,9 +178,9 @@ Begin VB.Form FormLens
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   11
-      Top             =   6480
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   2640
       Width           =   2145
    End
    Begin VB.Label lblInterpolation 
@@ -205,9 +200,9 @@ Begin VB.Form FormLens
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   6
-      Top             =   7320
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   3480
       Width           =   1845
    End
    Begin VB.Label lblAmount 
@@ -227,9 +222,9 @@ Begin VB.Form FormLens
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   2
-      Top             =   5640
+      Top             =   1800
       Width           =   3330
    End
 End
@@ -295,7 +290,7 @@ Private Sub cmdOK_Click()
 End Sub
 
 'Apply lens distortion (or correction) to an image
-Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     refractiveIndex = 1 / refractiveIndex
 
@@ -537,9 +532,9 @@ End Sub
 Private Sub updatePreview()
 
     If OptInterpolate(0) Then
-        ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, True, True, picPreview
+        ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, True, True, fxPreview
     Else
-        ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, False, True, picPreview
+        ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, False, True, fxPreview
     End If
 
 End Sub

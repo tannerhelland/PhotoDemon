@@ -4,10 +4,10 @@ Begin VB.Form FormRipple
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Ripple"
-   ClientHeight    =   10740
+   ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   6255
+   ClientWidth     =   12105
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,35 +20,35 @@ Begin VB.Form FormRipple
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   716
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   10110
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   10110
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.HScrollBar hsPhase 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   360
-      TabIndex        =   16
-      Top             =   7680
+      TabIndex        =   15
+      Top             =   2880
       Width           =   4815
    End
    Begin VB.TextBox txtPhase 
@@ -64,19 +64,19 @@ Begin VB.Form FormRipple
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   15
+      TabIndex        =   14
       Text            =   "0"
-      Top             =   7620
+      Top             =   2820
       Width           =   735
    End
    Begin VB.HScrollBar hsAmplitude 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   100
-      TabIndex        =   13
-      Top             =   6840
+      TabIndex        =   12
+      Top             =   2040
       Value           =   10
       Width           =   4815
    End
@@ -93,20 +93,20 @@ Begin VB.Form FormRipple
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   12
+      TabIndex        =   11
       Text            =   "10"
-      Top             =   6780
+      Top             =   1980
       Width           =   735
    End
    Begin VB.HScrollBar hsWavelength 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   200
       Min             =   1
-      TabIndex        =   10
-      Top             =   6000
+      TabIndex        =   9
+      Top             =   1200
       Value           =   16
       Width           =   4815
    End
@@ -123,11 +123,11 @@ Begin VB.Form FormRipple
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   9
+      TabIndex        =   8
       Text            =   "16"
-      Top             =   5940
+      Top             =   1140
       Width           =   735
    End
    Begin VB.TextBox txtRadius 
@@ -143,20 +143,20 @@ Begin VB.Form FormRipple
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5280
+      Left            =   11040
       MaxLength       =   3
-      TabIndex        =   7
+      TabIndex        =   6
       Text            =   "100"
-      Top             =   8460
+      Top             =   3660
       Width           =   735
    End
    Begin VB.HScrollBar hsRadius 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   100
       Min             =   1
-      TabIndex        =   6
-      Top             =   8520
+      TabIndex        =   5
+      Top             =   3720
       Value           =   100
       Width           =   4815
    End
@@ -176,9 +176,9 @@ Begin VB.Form FormRipple
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   0
-      Left            =   360
-      TabIndex        =   5
-      Top             =   9360
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   4560
       Value           =   -1  'True
       Width           =   1095
    End
@@ -198,31 +198,26 @@ Begin VB.Form FormRipple
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   1
-      Left            =   1800
-      TabIndex        =   4
-      Top             =   9360
+      Left            =   7560
+      TabIndex        =   3
+      Top             =   4560
       Width           =   2535
    End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   5100
-      Left            =   240
-      ScaleHeight     =   338
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   382
-      TabIndex        =   2
-      Top             =   240
-      Width           =   5760
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   18
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   18
-      Top             =   9960
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   17
+      Top             =   5760
+      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -240,9 +235,9 @@ Begin VB.Form FormRipple
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   4
-      Left            =   240
-      TabIndex        =   17
-      Top             =   7320
+      Left            =   6000
+      TabIndex        =   16
+      Top             =   2520
       Width           =   1425
    End
    Begin VB.Label lblTitle 
@@ -261,9 +256,9 @@ Begin VB.Form FormRipple
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   3
-      Left            =   240
-      TabIndex        =   14
-      Top             =   6480
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   1680
       Width           =   3120
    End
    Begin VB.Label lblTitle 
@@ -282,9 +277,9 @@ Begin VB.Form FormRipple
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   240
-      TabIndex        =   11
-      Top             =   5640
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   840
       Width           =   3270
    End
    Begin VB.Label lblTitle 
@@ -303,9 +298,9 @@ Begin VB.Form FormRipple
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   1
-      Left            =   240
-      TabIndex        =   8
-      Top             =   8160
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   3360
       Width           =   2145
    End
    Begin VB.Label lblTitle 
@@ -326,9 +321,9 @@ Begin VB.Form FormRipple
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   2
-      Left            =   240
-      TabIndex        =   3
-      Top             =   9000
+      Left            =   6000
+      TabIndex        =   2
+      Top             =   4200
       Width           =   1845
    End
 End
@@ -408,7 +403,7 @@ Private Sub cmdOK_Click()
 End Sub
 
 'Apply a "water ripple" effect to an image
-Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude As Double, ByVal ripplePhase As Double, ByVal rippleRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude As Double, ByVal ripplePhase As Double, ByVal rippleRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Simulating ripples across image surface..."
     
@@ -567,15 +562,15 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Create the preview
-    updatePreview
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
     'Mark scroll bar changes as coming from the user
     userChange = True
+    
+    'Create the preview
+    updatePreview
     
 End Sub
 
@@ -667,9 +662,9 @@ End Sub
 Private Sub updatePreview()
 
     If OptInterpolate(0) Then
-        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), True, True, picPreview
+        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), True, True, fxPreview
     Else
-        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), False, True, picPreview
+        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), False, True, fxPreview
     End If
 
 End Sub

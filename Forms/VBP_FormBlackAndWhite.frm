@@ -3,10 +3,10 @@ Begin VB.Form FormBlackAndWhite
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Black/White Color Conversion"
-   ClientHeight    =   8820
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6255
+   ClientWidth     =   12150
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,27 +19,27 @@ Begin VB.Form FormBlackAndWhite
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   588
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9120
       TabIndex        =   0
-      Top             =   8190
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10590
       TabIndex        =   1
-      Top             =   8190
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.PictureBox picBWColor 
@@ -48,11 +48,11 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H80000008&
       Height          =   495
       Index           =   1
-      Left            =   3240
+      Left            =   9000
       ScaleHeight     =   465
       ScaleWidth      =   2745
-      TabIndex        =   15
-      Top             =   6240
+      TabIndex        =   11
+      Top             =   3360
       Width           =   2775
    End
    Begin VB.PictureBox picBWColor 
@@ -61,11 +61,11 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H80000008&
       Height          =   495
       Index           =   0
-      Left            =   360
+      Left            =   6120
       ScaleHeight     =   465
       ScaleWidth      =   2745
-      TabIndex        =   14
-      Top             =   6240
+      TabIndex        =   10
+      Top             =   3360
       Width           =   2775
    End
    Begin VB.ComboBox cboDither 
@@ -81,65 +81,19 @@ Begin VB.Form FormBlackAndWhite
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   330
-      Left            =   360
+      Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   5
-      Top             =   5280
+      Top             =   2400
       Width           =   4935
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   8
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   7
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.HScrollBar hsThreshold 
       Height          =   255
-      Left            =   360
+      Left            =   6120
       Max             =   254
       Min             =   1
       TabIndex        =   2
-      Top             =   3840
+      Top             =   960
       Value           =   127
       Width           =   4935
    End
@@ -156,11 +110,11 @@ Begin VB.Form FormBlackAndWhite
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5400
+      Left            =   11160
       MaxLength       =   3
       TabIndex        =   3
       Text            =   "127"
-      Top             =   3810
+      Top             =   930
       Width           =   660
    End
    Begin VB.CheckBox chkAutoThreshold 
@@ -178,17 +132,26 @@ Begin VB.Form FormBlackAndWhite
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   360
-      Left            =   360
+      Left            =   6120
       TabIndex        =   4
-      Top             =   4320
+      Top             =   1440
       Width           =   5655
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   13
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   16
-      Top             =   8040
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   12
+      Top             =   5760
+      Width           =   12255
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -205,30 +168,10 @@ Begin VB.Form FormBlackAndWhite
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   13
-      Top             =   5880
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   3000
       Width           =   3945
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   12
-      Top             =   2880
-      Width           =   360
    End
    Begin VB.Label lblDither 
       AutoSize        =   -1  'True
@@ -245,9 +188,9 @@ Begin VB.Form FormBlackAndWhite
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   11
-      Top             =   4920
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   2040
       Width           =   2130
    End
    Begin VB.Label lblBWDisclaimer 
@@ -255,30 +198,10 @@ Begin VB.Form FormBlackAndWhite
       Caption         =   $"VBP_FormBlackAndWhite.frx":0000
       ForeColor       =   &H00404040&
       Height          =   735
-      Left            =   240
-      TabIndex        =   10
-      Top             =   7080
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   4200
       Width           =   5775
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   9
-      Top             =   2880
-      Width           =   480
    End
    Begin VB.Label lblHeader 
       AutoSize        =   -1  'True
@@ -295,9 +218,9 @@ Begin VB.Form FormBlackAndWhite
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   6
-      Top             =   3480
+      Top             =   600
       Width           =   1080
    End
 End
@@ -322,7 +245,7 @@ Option Explicit
 
 Private Sub cboDither_Click()
     If CBool(chkAutoThreshold.Value) Then txtThreshold.Text = calculateOptimalThreshold(cboDither.ListIndex)
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
 End Sub
 
 'When the auto threshold button is clicked, disable the scroll bar and text box and calculate the optimal value immediately
@@ -337,7 +260,7 @@ Private Sub chkAutoThreshold_Click()
         txtThreshold.Enabled = True
     End If
     
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
     
 End Sub
 
@@ -380,15 +303,14 @@ Private Sub Form_Activate()
     cboDither.AddItem "Atkinson / Classic Macintosh", 11
     cboDither.ListIndex = 11
     DoEvents
-    
-    'Draw the previews
-    DrawPreviewImage picPreview
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     setHandCursor picBWColor(0)
     setHandCursor picBWColor(1)
+    
+    'Draw the preview
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
     
 End Sub
 
@@ -398,13 +320,13 @@ End Sub
 
 Private Sub hsThreshold_Change()
     copyToTextBoxI txtThreshold, hsThreshold.Value
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
 End Sub
 
 Private Sub hsThreshold_Scroll()
     chkAutoThreshold.Value = vbUnchecked
     copyToTextBoxI txtThreshold, hsThreshold.Value
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
+    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
 End Sub
 
 'Allow the user to select a custom color for each
@@ -418,7 +340,7 @@ Private Sub picBWColor_Click(Index As Integer)
     
     If comDlg.VBChooseColor(newColor, True, True, False, Me.hWnd) Then
         picBWColor(Index).backColor = newColor
-        masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, picEffect
+        masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
     End If
     
 End Sub
@@ -502,7 +424,7 @@ Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
 End Function
 
 'Convert an image to black and white (1-bit image)
-Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal DitherMethod As Long = 0, Optional ByVal lowColor As Long = &H0, Optional ByVal highColor As Long = &HFFFFFF, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal DitherMethod As Long = 0, Optional ByVal lowColor As Long = &H0, Optional ByVal highColor As Long = &HFFFFFF, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Converting image to two colors..."
     

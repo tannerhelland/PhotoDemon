@@ -3,10 +3,10 @@ Begin VB.Form FormDiffuse
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom Diffuse"
-   ClientHeight    =   6780
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6255
+   ClientWidth     =   12210
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,90 +19,44 @@ Begin VB.Form FormDiffuse
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   452
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   814
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9240
       TabIndex        =   0
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10710
       TabIndex        =   1
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   10
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   9
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.HScrollBar hsY 
       Height          =   255
-      Left            =   240
+      Left            =   6120
       Max             =   10
       TabIndex        =   5
-      Top             =   4680
+      Top             =   3000
       Value           =   5
       Width           =   5055
    End
    Begin VB.HScrollBar hsX 
       Height          =   255
-      Left            =   240
+      Left            =   6120
       Max             =   10
       TabIndex        =   3
-      Top             =   3840
+      Top             =   2160
       Value           =   5
       Width           =   5055
    End
@@ -119,10 +73,10 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5400
+      Left            =   11280
       TabIndex        =   2
       Text            =   "0"
-      Top             =   3810
+      Top             =   2130
       Width           =   615
    End
    Begin VB.TextBox txtY 
@@ -138,10 +92,10 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   315
-      Left            =   5400
+      Left            =   11280
       TabIndex        =   4
       Text            =   "0"
-      Top             =   4650
+      Top             =   2970
       Width           =   615
    End
    Begin VB.CheckBox ChkWrap 
@@ -159,57 +113,26 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   240
+      Left            =   6120
       TabIndex        =   6
-      Top             =   5280
+      Top             =   3600
       Width           =   2175
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   10
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   13
-      Top             =   6000
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   12
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   11
-      Top             =   2880
-      Width           =   480
+      Left            =   0
+      TabIndex        =   9
+      Top             =   5760
+      Width           =   12255
    End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
@@ -226,9 +149,9 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   120
+      Left            =   6000
       TabIndex        =   8
-      Top             =   4320
+      Top             =   2640
       Width           =   1785
    End
    Begin VB.Label Label1 
@@ -246,9 +169,9 @@ Begin VB.Form FormDiffuse
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   120
+      Left            =   6000
       TabIndex        =   7
-      Top             =   3480
+      Top             =   1800
       Width           =   2085
    End
 End
@@ -276,7 +199,7 @@ Option Explicit
 Dim iWidth As Long, iHeight As Long
 
 Private Sub ChkWrap_Click()
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 'CANCEL button
@@ -321,15 +244,12 @@ Private Sub Form_Activate()
     hsY.Max = pdImages(CurrentImage).Height - 1
     hsX.Value = hsX.Max \ 2
     hsY.Value = hsY.Max \ 2
-    
-    'Draw the left preview box (the original image)
-    DrawPreviewImage picPreview
-    
-    'Draw the right preview box (the diffused effect)
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Render a preview of the effect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
     
 End Sub
 
@@ -340,22 +260,22 @@ End Sub
 'Everything below this line relates to mirroring the input of the textboxes across the scrollbars (and vice versa)
 Private Sub hsX_Change()
     copyToTextBoxI txtX, hsX.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsX_Scroll()
     copyToTextBoxI txtX, hsX.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsY_Change()
     copyToTextBoxI txtY, hsY.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsY_Scroll()
     copyToTextBoxI txtY, hsY.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, picEffect Else DiffuseCustom hsX.Value, hsY.Value, False, True, picEffect
+    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 Private Sub txtX_GotFocus()
@@ -378,7 +298,7 @@ End Sub
 
 'Custom diffuse effect
 ' Inputs: diameter in x direction, diameter in y direction, whether or not to wrap edge pixels, and optional preview settings
-Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal wrapPixels As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal wrapPixels As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Simulating large image explosion..."
     

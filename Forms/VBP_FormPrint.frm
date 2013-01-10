@@ -141,7 +141,7 @@ Begin VB.Form FormPrint
       TabIndex        =   7
       Top             =   2760
       Value           =   1  'Checked
-      Width           =   1455
+      Width           =   2055
    End
    Begin VB.ComboBox cbOrientation 
       ForeColor       =   &H00800000&

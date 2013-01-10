@@ -3,10 +3,10 @@ Begin VB.Form FormColorize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Colorize Options"
-   ClientHeight    =   6255
+   ClientHeight    =   6570
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6255
+   ClientWidth     =   12345
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,27 +19,27 @@ Begin VB.Form FormColorize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   417
+   ScaleHeight     =   438
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   823
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9360
       TabIndex        =   0
-      Top             =   5595
+      Top             =   5925
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10830
       TabIndex        =   1
-      Top             =   5595
+      Top             =   5925
       Width           =   1365
    End
    Begin VB.CheckBox chkSaturation 
@@ -57,65 +57,19 @@ Begin VB.Form FormColorize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   435
-      Left            =   240
+      Left            =   6240
       TabIndex        =   3
-      Top             =   4680
+      Top             =   3240
       Value           =   1  'Checked
       Width           =   4215
    End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   6
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   5
-      Top             =   120
-      Width           =   2895
-   End
    Begin VB.HScrollBar hsHue 
       Height          =   255
-      Left            =   240
+      Left            =   6240
       Max             =   359
       Min             =   1
       TabIndex        =   2
-      Top             =   3600
+      Top             =   2160
       Value           =   180
       Width           =   5775
    End
@@ -134,60 +88,49 @@ Begin VB.Form FormColorize
       EndProperty
       ForeColor       =   &H80000008&
       Height          =   375
-      Left            =   480
+      Left            =   6480
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   352
       TabIndex        =   4
-      Top             =   3960
+      Top             =   2520
       Width           =   5310
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   6
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "color to apply:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   1680
+      Width           =   1545
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   9
-      Top             =   5400
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   8
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   7
-      Top             =   2880
-      Width           =   480
+      Left            =   0
+      TabIndex        =   5
+      Top             =   5760
+      Width           =   12375
    End
 End
 Attribute VB_Name = "FormColorize"
@@ -211,7 +154,7 @@ Option Explicit
 
 'When the "maintain saturation" check box is clicked, redraw the image
 Private Sub chkSaturation_Click()
-    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, picEffect Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, picEffect
+    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview
 End Sub
 
 'CANCEL button
@@ -234,7 +177,7 @@ End Sub
 
 'Colorize an image using a hue defined between -1 and 5
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
-Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Colorizing image..."
     
@@ -332,14 +275,11 @@ Private Sub Form_Activate()
     
     picHueDemo.Picture = picHueDemo.Image
     
-    'Create a copy of the image on the preview window
-    DrawPreviewImage picPreview
-    
-    'Display the previewed effect in the neighboring window
-    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, picEffect Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, picEffect
-    
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Display the previewed effect in the neighboring window
+    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview
     
 End Sub
 
@@ -349,9 +289,9 @@ End Sub
 
 'When the hue scroll bar is changed, redraw the preview
 Private Sub hsHue_Change()
-    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, picEffect Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, picEffect
+    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview
 End Sub
 
 Private Sub hsHue_Scroll()
-    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, picEffect Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, picEffect
+    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview
 End Sub

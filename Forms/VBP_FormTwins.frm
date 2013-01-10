@@ -4,10 +4,10 @@ Begin VB.Form FormTwins
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Generate Twins"
-   ClientHeight    =   5220
+   ClientHeight    =   6525
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   6255
+   ClientWidth     =   9555
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,74 +20,28 @@ Begin VB.Form FormTwins
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   348
+   ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   637
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   6600
       TabIndex        =   0
-      Top             =   4590
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   8070
       TabIndex        =   1
-      Top             =   4590
+      Top             =   5910
       Width           =   1365
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   5
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   4
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.OptionButton OptVertical 
       Appearance      =   0  'Flat
@@ -104,9 +58,9 @@ Begin VB.Form FormTwins
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   255
-      Left            =   3240
+      Left            =   7920
       TabIndex        =   3
-      Top             =   3600
+      Top             =   2640
       Width           =   2175
    End
    Begin VB.OptionButton OptHorizontal 
@@ -124,11 +78,40 @@ Begin VB.Form FormTwins
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   255
-      Left            =   1560
+      Left            =   6240
       TabIndex        =   2
-      Top             =   3600
+      Top             =   2640
       Value           =   -1  'True
       Width           =   1575
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   5
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+   End
+   Begin VB.Label lblAlgorithm 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "twin orientation:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   2160
+      Width           =   1755
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -141,50 +124,10 @@ Begin VB.Form FormTwins
          Strikethrough   =   0   'False
       EndProperty
       Height          =   855
-      Left            =   -840
-      TabIndex        =   8
-      Top             =   4440
-      Width           =   7095
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   7
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   6
-      Top             =   2880
-      Width           =   480
+      Left            =   0
+      TabIndex        =   4
+      Top             =   5760
+      Width           =   11295
    End
 End
 Attribute VB_Name = "FormTwins"
@@ -222,7 +165,7 @@ Private Sub cmdOK_Click()
 End Sub
 
 'This routine mirrors and alphablends an image, making it "tilable" or symmetrical
-Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
    
     If toPreview = False Then Message "Generating image twin..."
     
@@ -321,13 +264,12 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Create the image previews
-    DrawPreviewImage picPreview
-    GenerateTwins 1, True, picEffect
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Render an image preview
+    GenerateTwins 1, True, fxPreview
     
 End Sub
 
@@ -336,9 +278,9 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub OptHorizontal_Click()
-    GenerateTwins 1, True, picEffect
+    GenerateTwins 1, True, fxPreview
 End Sub
 
 Private Sub OptVertical_Click()
-    GenerateTwins 0, True, picEffect
+    GenerateTwins 0, True, fxPreview
 End Sub

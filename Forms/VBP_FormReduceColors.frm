@@ -3,10 +3,10 @@ Begin VB.Form FormReduceColors
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Reduce Image Colors"
-   ClientHeight    =   8460
+   ClientHeight    =   6525
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6480
+   ClientWidth     =   12315
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,84 +19,56 @@ Begin VB.Form FormReduceColors
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   564
+   ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   432
+   ScaleWidth      =   821
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3480
+      Left            =   9360
       TabIndex        =   0
-      Top             =   7830
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4950
+      Left            =   10830
       TabIndex        =   1
-      Top             =   7830
+      Top             =   5910
       Width           =   1365
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   21
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3360
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   20
-      Top             =   120
-      Width           =   2895
    End
    Begin VB.HScrollBar hsBlue 
       Height          =   255
-      Left            =   2520
+      Left            =   8280
       Max             =   64
       Min             =   2
       TabIndex        =   10
-      Top             =   6195
+      Top             =   3675
       Value           =   6
       Width           =   3015
    End
    Begin VB.HScrollBar hsGreen 
       Height          =   255
-      Left            =   2520
+      Left            =   8280
       Max             =   64
       Min             =   2
       TabIndex        =   8
-      Top             =   5805
+      Top             =   3285
       Value           =   7
       Width           =   3015
    End
    Begin VB.HScrollBar hsRed 
       Height          =   255
-      Left            =   2520
+      Left            =   8280
       Max             =   64
       Min             =   2
       TabIndex        =   6
-      Top             =   5415
+      Top             =   2895
       Value           =   6
       Width           =   3015
    End
@@ -116,9 +88,9 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00800000&
       Height          =   255
       Index           =   2
-      Left            =   360
+      Left            =   6120
       TabIndex        =   4
-      Top             =   4440
+      Top             =   1920
       Width           =   3495
    End
    Begin VB.TextBox TxtB 
@@ -134,11 +106,11 @@ Begin VB.Form FormReduceColors
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5640
+      Left            =   11400
       MaxLength       =   3
       TabIndex        =   9
       Text            =   "6"
-      Top             =   6150
+      Top             =   3630
       Width           =   615
    End
    Begin VB.TextBox TxtG 
@@ -154,11 +126,11 @@ Begin VB.Form FormReduceColors
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5640
+      Left            =   11400
       MaxLength       =   3
       TabIndex        =   7
       Text            =   "7"
-      Top             =   5760
+      Top             =   3240
       Width           =   615
    End
    Begin VB.TextBox TxtR 
@@ -174,11 +146,11 @@ Begin VB.Form FormReduceColors
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   5640
+      Left            =   11400
       MaxLength       =   3
       TabIndex        =   5
       Text            =   "6"
-      Top             =   5370
+      Top             =   2850
       Width           =   615
    End
    Begin VB.CheckBox chkColorDither 
@@ -187,9 +159,9 @@ Begin VB.Form FormReduceColors
       Caption         =   " Use error diffusion dithering"
       ForeColor       =   &H00800000&
       Height          =   255
-      Left            =   840
+      Left            =   6600
       TabIndex        =   11
-      Top             =   7110
+      Top             =   4590
       Value           =   1  'Checked
       Width           =   2655
    End
@@ -199,9 +171,9 @@ Begin VB.Form FormReduceColors
       Caption         =   " Use realistic coloring"
       ForeColor       =   &H00800000&
       Height          =   255
-      Left            =   3600
+      Left            =   9360
       TabIndex        =   12
-      Top             =   7110
+      Top             =   4590
       Value           =   1  'Checked
       Width           =   2535
    End
@@ -221,9 +193,9 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00800000&
       Height          =   255
       Index           =   0
-      Left            =   360
+      Left            =   6120
       TabIndex        =   2
-      Top             =   3720
+      Top             =   1200
       Value           =   -1  'True
       Width           =   2775
    End
@@ -243,69 +215,38 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00800000&
       Height          =   255
       Index           =   1
-      Left            =   360
+      Left            =   6120
       TabIndex        =   3
-      Top             =   4080
+      Top             =   1560
       Width           =   4095
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   21
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -600
-      TabIndex        =   24
-      Top             =   7680
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   20
+      Top             =   5760
+      Width           =   12375
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
       Caption         =   "Note: some options on this page have been disabled because the FreeImage plugin could not be found."
       ForeColor       =   &H000000C0&
       Height          =   1095
-      Left            =   4470
+      Left            =   10230
       TabIndex        =   19
-      Top             =   3600
+      Top             =   1080
       Visible         =   0   'False
       Width           =   1815
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3480
-      TabIndex        =   23
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   360
-      TabIndex        =   22
-      Top             =   2880
-      Width           =   480
    End
    Begin VB.Label lblOptions 
       Appearance      =   0  'Flat
@@ -324,9 +265,9 @@ Begin VB.Form FormReduceColors
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
+      Left            =   6000
       TabIndex        =   18
-      Top             =   5040
+      Top             =   2520
       Width           =   3300
    End
    Begin VB.Label lblBlue 
@@ -334,9 +275,9 @@ Begin VB.Form FormReduceColors
       Caption         =   "Possible blue values (2-64):"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   360
+      Left            =   6120
       TabIndex        =   17
-      Top             =   6225
+      Top             =   3705
       Width           =   2175
    End
    Begin VB.Label lblGreen 
@@ -344,9 +285,9 @@ Begin VB.Form FormReduceColors
       Caption         =   "Possible green values (2-64):"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   360
+      Left            =   6120
       TabIndex        =   16
-      Top             =   5835
+      Top             =   3315
       Width           =   2535
    End
    Begin VB.Label lblRed 
@@ -354,9 +295,9 @@ Begin VB.Form FormReduceColors
       Caption         =   "Possible red values (2-64):"
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   360
+      Left            =   6120
       TabIndex        =   15
-      Top             =   5445
+      Top             =   2925
       Width           =   2175
    End
    Begin VB.Label lblMaxColors 
@@ -365,9 +306,9 @@ Begin VB.Form FormReduceColors
       Caption         =   "These parameters allow for a maximum of 252 colors in the quantized image."
       ForeColor       =   &H00400000&
       Height          =   195
-      Left            =   360
+      Left            =   6120
       TabIndex        =   14
-      Top             =   6675
+      Top             =   4155
       Width           =   5505
    End
    Begin VB.Label lblQuantMethod 
@@ -387,9 +328,9 @@ Begin VB.Form FormReduceColors
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   405
-      Left            =   240
+      Left            =   6000
       TabIndex        =   13
-      Top             =   3360
+      Top             =   840
       Width           =   2265
    End
 End
@@ -499,13 +440,12 @@ Private Sub Form_Activate()
         OptQuant(0).Value = True
         DisplayManualOptions False
     End If
-    
-    'Draw the previews
-    DrawPreviewImage picPreview
-    updateReductionPreview
-    
+        
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+    
+    'Render a preview
+    updateReductionPreview
     
 End Sub
 
@@ -621,7 +561,7 @@ Private Sub DisplayManualOptions(ByVal toDisplay As Boolean)
 End Sub
 
 'Automatic 8-bit color reduction via the FreeImage DLL.
-Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
     If pdImages(CurrentImage).selectionActive Then
@@ -693,7 +633,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
 End Sub
 
 'Bit RGB color reduction (no error diffusion)
-Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Applying manual RGB modifications to image..."
     
@@ -859,7 +799,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
 End Sub
 
 'Error Diffusion dithering to x# shades of color per component
-Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Applying manual RGB modifications to image..."
     
@@ -1094,22 +1034,22 @@ End Sub
 'Use this sub to update the on-screen preview
 Private Sub updateReductionPreview()
     If OptQuant(0).Value = True Then
-        ReduceImageColors_Auto FIQ_WUQUANT, True, picEffect
+        ReduceImageColors_Auto FIQ_WUQUANT, True, fxPreview
     ElseIf OptQuant(1).Value = True Then
-        ReduceImageColors_Auto FIQ_NNQUANT, True, picEffect
+        ReduceImageColors_Auto FIQ_NNQUANT, True, fxPreview
     Else
         If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then
             If chkColorDither.Value = vbUnchecked Then
                 If chkSmartColors.Value = vbUnchecked Then
-                    ReduceImageColors_BitRGB TxtR, TxtG, TxtB, False, True, picEffect
+                    ReduceImageColors_BitRGB TxtR, TxtG, TxtB, False, True, fxPreview
                 Else
-                    ReduceImageColors_BitRGB TxtR, TxtG, TxtB, True, True, picEffect
+                    ReduceImageColors_BitRGB TxtR, TxtG, TxtB, True, True, fxPreview
                 End If
             Else
                 If chkSmartColors.Value = vbUnchecked Then
-                    ReduceImageColors_BitRGB_ErrorDif TxtR, TxtG, TxtB, False, True, picEffect
+                    ReduceImageColors_BitRGB_ErrorDif TxtR, TxtG, TxtB, False, True, fxPreview
                 Else
-                    ReduceImageColors_BitRGB_ErrorDif TxtR, TxtG, TxtB, True, True, picEffect
+                    ReduceImageColors_BitRGB_ErrorDif TxtR, TxtG, TxtB, True, True, fxPreview
                 End If
             End If
         End If

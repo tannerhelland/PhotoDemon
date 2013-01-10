@@ -4,10 +4,10 @@ Begin VB.Form FormTile
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tile Image"
-   ClientHeight    =   8685
+   ClientHeight    =   6525
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   6255
+   ClientWidth     =   11595
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,42 +20,28 @@ Begin VB.Form FormTile
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   579
+   ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   773
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   8640
       TabIndex        =   0
-      Top             =   8070
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10110
       TabIndex        =   1
-      Top             =   8070
+      Top             =   5910
       Width           =   1365
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   5100
-      Left            =   240
-      ScaleHeight     =   338
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   382
-      TabIndex        =   12
-      Top             =   240
-      Width           =   5760
    End
    Begin VB.TextBox TxtWidth 
       Alignment       =   2  'Center
@@ -70,10 +56,10 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   1200
+      Left            =   6720
       TabIndex        =   7
       Text            =   "N/A"
-      Top             =   6660
+      Top             =   2940
       Width           =   855
    End
    Begin VB.TextBox TxtHeight 
@@ -89,31 +75,31 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   4080
+      Left            =   9600
       TabIndex        =   6
       Text            =   "N/A"
-      Top             =   6660
+      Top             =   2940
       Width           =   855
    End
    Begin VB.VScrollBar VSWidth 
       Height          =   420
-      Left            =   2070
+      Left            =   7590
       Max             =   32766
       Min             =   1
       TabIndex        =   5
       TabStop         =   0   'False
-      Top             =   6600
+      Top             =   2880
       Value           =   15000
       Width           =   270
    End
    Begin VB.VScrollBar VSHeight 
       Height          =   420
-      Left            =   4950
+      Left            =   10470
       Max             =   32766
       Min             =   1
       TabIndex        =   4
       TabStop         =   0   'False
-      Top             =   6600
+      Top             =   2880
       Value           =   15000
       Width           =   270
    End
@@ -130,11 +116,20 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   720
+      Left            =   6240
       Style           =   2  'Dropdown List
       TabIndex        =   3
-      Top             =   6000
+      Top             =   2280
       Width           =   3375
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   14
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -147,13 +142,12 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       Height          =   855
-      Left            =   -840
-      TabIndex        =   14
-      Top             =   7920
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   13
+      Top             =   5760
+      Width           =   11655
    End
    Begin VB.Label lblDescription 
-      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
@@ -169,10 +163,10 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   435
-      Left            =   120
-      TabIndex        =   13
-      Top             =   7260
-      Width           =   5955
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   3720
+      Width           =   5355
    End
    Begin VB.Label lblWidth 
       AutoSize        =   -1  'True
@@ -189,9 +183,9 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   480
+      Left            =   6000
       TabIndex        =   11
-      Top             =   6705
+      Top             =   2985
       Width           =   525
    End
    Begin VB.Label lblHeight 
@@ -209,9 +203,9 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   3360
+      Left            =   8880
       TabIndex        =   10
-      Top             =   6705
+      Top             =   2985
       Width           =   585
    End
    Begin VB.Label lblWidthType 
@@ -228,9 +222,9 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   2490
+      Left            =   8010
       TabIndex        =   9
-      Top             =   6705
+      Top             =   2985
       Width           =   855
    End
    Begin VB.Label lblHeightType 
@@ -247,9 +241,9 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   255
-      Left            =   5370
+      Left            =   10890
       TabIndex        =   8
-      Top             =   6705
+      Top             =   2985
       Width           =   855
    End
    Begin VB.Label lblAmount 
@@ -269,9 +263,9 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   405
-      Left            =   480
+      Left            =   6000
       TabIndex        =   2
-      Top             =   5640
+      Top             =   1920
       Width           =   2670
    End
 End
@@ -419,7 +413,7 @@ End Sub
 ' 2 - custom size, as number of tiles
 ' The other two parameters are width and height, or tiles in x and y direction
 Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional yTarget As Long, Optional ByVal isPreview As Boolean = False)
-    
+        
     'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
@@ -482,7 +476,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         If isPreview = False Then SetProgBarVal x
     Next x
     
-    If isPreview = False Then
+    If Not isPreview Then
     
         SetProgBarVal xLoop
     
@@ -507,7 +501,9 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     Else
     
         'Render the preview and erase the temporary layer to conserve memory
-        tmpLayer.renderToPictureBox picPreview
+        tmpLayer.renderToPictureBox fxPreview.getPreviewPic
+        fxPreview.setFXImage tmpLayer
+        
         tmpLayer.eraseLayer
         Set tmpLayer = Nothing
         
@@ -523,6 +519,9 @@ Private Sub Form_Activate()
     cboTarget.AddItem "Specific number of tiles", 2
     cboTarget.ListIndex = 0
     DoEvents
+    
+    'Give the preview object a copy of this image data so it can show it to the user if requested
+    fxPreview.setOriginalImage pdImages(CurrentImage).mainLayer
     
     'Render a preview
     redrawPreview = True

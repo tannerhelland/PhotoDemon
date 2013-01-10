@@ -4,10 +4,10 @@ Begin VB.Form FormLevels
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Adjust Image Levels"
-   ClientHeight    =   6765
+   ClientHeight    =   6525
    ClientLeft      =   45
    ClientTop       =   195
-   ClientWidth     =   6255
+   ClientWidth     =   12180
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,135 +20,98 @@ Begin VB.Form FormLevels
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   451
+   ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   417
+   ScaleWidth      =   812
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   3240
+      Left            =   9240
       TabIndex        =   0
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   4710
+      Left            =   10710
       TabIndex        =   1
-      Top             =   6150
+      Top             =   5910
       Width           =   1365
    End
    Begin VB.HScrollBar hsOutL 
       Height          =   220
-      Left            =   1680
+      Left            =   7440
       Max             =   255
       TabIndex        =   5
-      Top             =   5040
+      Top             =   3360
       Width           =   3975
    End
    Begin VB.HScrollBar hsOutR 
       Height          =   220
-      Left            =   1680
+      Left            =   7440
       Max             =   255
       TabIndex        =   6
-      Top             =   5280
+      Top             =   3600
       Value           =   255
       Width           =   3975
    End
    Begin VB.HScrollBar hsInR 
       Height          =   220
-      Left            =   1680
+      Left            =   7440
       Max             =   255
       Min             =   2
       TabIndex        =   4
-      Top             =   4200
+      Top             =   2520
       Value           =   255
       Width           =   3975
    End
    Begin VB.HScrollBar hsInL 
       Height          =   220
-      Left            =   1680
+      Left            =   7440
       Max             =   253
       TabIndex        =   2
-      Top             =   3720
+      Top             =   2040
       Width           =   3975
    End
    Begin VB.HScrollBar hsInM 
       Height          =   220
-      Left            =   1680
+      Left            =   7440
       Max             =   254
       Min             =   1
       TabIndex        =   3
-      Top             =   3960
+      Top             =   2280
       Value           =   127
       Width           =   3975
    End
    Begin VB.CommandButton cmdReset 
       Appearance      =   0  'Flat
-      Caption         =   "&Reset"
+      Caption         =   "&Reset levels"
       Height          =   495
-      Left            =   180
+      Left            =   6000
       TabIndex        =   7
-      Top             =   6150
+      Top             =   5880
       Width           =   1455
    End
-   Begin VB.PictureBox picEffect 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
-      Left            =   3240
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   8
-      Top             =   120
-      Width           =   2895
-   End
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   2730
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
       Left            =   120
-      ScaleHeight     =   180
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   191
-      TabIndex        =   9
+      TabIndex        =   26
       Top             =   120
-      Width           =   2895
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -840
-      TabIndex        =   29
-      Top             =   6000
-      Width           =   7095
+      Left            =   0
+      TabIndex        =   25
+      Top             =   5760
+      Width           =   12255
    End
    Begin VB.Label Label9 
       Alignment       =   1  'Right Justify
@@ -157,9 +120,9 @@ Begin VB.Form FormLevels
       Caption         =   "0"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   1560
-      TabIndex        =   28
-      Top             =   3720
+      Left            =   7320
+      TabIndex        =   24
+      Top             =   2040
       Width           =   90
    End
    Begin VB.Label Label7 
@@ -169,9 +132,9 @@ Begin VB.Form FormLevels
       Caption         =   "1"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   1545
-      TabIndex        =   27
-      Top             =   5040
+      Left            =   7305
+      TabIndex        =   23
+      Top             =   3360
       Width           =   90
    End
    Begin VB.Label Label4 
@@ -181,50 +144,10 @@ Begin VB.Form FormLevels
       Caption         =   "1"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   1545
-      TabIndex        =   26
-      Top             =   5280
+      Left            =   7305
+      TabIndex        =   22
+      Top             =   3600
       Width           =   90
-   End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "after"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   3360
-      TabIndex        =   25
-      Top             =   2880
-      Width           =   360
-   End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "before"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   24
-      Top             =   2880
-      Width           =   480
    End
    Begin VB.Label lblOutput 
       AutoSize        =   -1  'True
@@ -241,9 +164,9 @@ Begin VB.Form FormLevels
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   405
-      Left            =   240
-      TabIndex        =   23
-      Top             =   4650
+      Left            =   6000
+      TabIndex        =   21
+      Top             =   2970
       Width           =   1440
    End
    Begin VB.Label lblOutputL 
@@ -252,9 +175,9 @@ Begin VB.Form FormLevels
       Caption         =   "Left limit:"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   360
-      TabIndex        =   22
-      Top             =   5040
+      Left            =   6120
+      TabIndex        =   20
+      Top             =   3360
       Width           =   660
    End
    Begin VB.Label Label1 
@@ -266,9 +189,9 @@ Begin VB.Form FormLevels
       Caption         =   "255"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   5745
-      TabIndex        =   21
-      Top             =   5040
+      Left            =   11505
+      TabIndex        =   19
+      Top             =   3360
       Width           =   270
    End
    Begin VB.Label Label2 
@@ -277,9 +200,9 @@ Begin VB.Form FormLevels
       Caption         =   "Right limit:"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   360
-      TabIndex        =   20
-      Top             =   5280
+      Left            =   6120
+      TabIndex        =   18
+      Top             =   3600
       Width           =   750
    End
    Begin VB.Label Label3 
@@ -291,9 +214,9 @@ Begin VB.Form FormLevels
       Caption         =   "255"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   5745
-      TabIndex        =   19
-      Top             =   5280
+      Left            =   11505
+      TabIndex        =   17
+      Top             =   3600
       Width           =   270
    End
    Begin VB.Label lblInput 
@@ -311,9 +234,9 @@ Begin VB.Form FormLevels
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   405
-      Left            =   240
-      TabIndex        =   18
-      Top             =   3330
+      Left            =   6000
+      TabIndex        =   16
+      Top             =   1650
       Width           =   1290
    End
    Begin VB.Label Label5 
@@ -325,9 +248,9 @@ Begin VB.Form FormLevels
       Caption         =   "255"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   5745
-      TabIndex        =   17
-      Top             =   4200
+      Left            =   11505
+      TabIndex        =   15
+      Top             =   2520
       Width           =   270
    End
    Begin VB.Label Label6 
@@ -336,9 +259,9 @@ Begin VB.Form FormLevels
       Caption         =   "Right limit:"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   360
-      TabIndex        =   16
-      Top             =   4200
+      Left            =   6120
+      TabIndex        =   14
+      Top             =   2520
       Width           =   750
    End
    Begin VB.Label lblLeftR 
@@ -349,9 +272,9 @@ Begin VB.Form FormLevels
       Caption         =   "253"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   5745
-      TabIndex        =   15
-      Top             =   3720
+      Left            =   11505
+      TabIndex        =   13
+      Top             =   2040
       Width           =   270
    End
    Begin VB.Label Label8 
@@ -360,9 +283,9 @@ Begin VB.Form FormLevels
       Caption         =   "Left limit:"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   360
-      TabIndex        =   14
-      Top             =   3720
+      Left            =   6120
+      TabIndex        =   12
+      Top             =   2040
       Width           =   660
    End
    Begin VB.Label lblMiddleR 
@@ -373,9 +296,9 @@ Begin VB.Form FormLevels
       Caption         =   "254"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   5745
-      TabIndex        =   13
-      Top             =   3960
+      Left            =   11505
+      TabIndex        =   11
+      Top             =   2280
       Width           =   270
    End
    Begin VB.Label Label10 
@@ -384,9 +307,9 @@ Begin VB.Form FormLevels
       Caption         =   "Midtones:"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   360
-      TabIndex        =   12
-      Top             =   3960
+      Left            =   6120
+      TabIndex        =   10
+      Top             =   2280
       Width           =   705
    End
    Begin VB.Label lblMiddleL 
@@ -396,9 +319,9 @@ Begin VB.Form FormLevels
       Caption         =   "1"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   1545
-      TabIndex        =   11
-      Top             =   3960
+      Left            =   7305
+      TabIndex        =   9
+      Top             =   2280
       Width           =   90
    End
    Begin VB.Label lblRightL 
@@ -408,9 +331,9 @@ Begin VB.Form FormLevels
       Caption         =   "2"
       ForeColor       =   &H00800000&
       Height          =   195
-      Left            =   1545
-      TabIndex        =   10
-      Top             =   4200
+      Left            =   7305
+      TabIndex        =   8
+      Top             =   2520
       Width           =   90
    End
 End
@@ -465,11 +388,7 @@ Private Sub cmdOK_Click()
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Draw preview images to the top picture boxes
-    DrawPreviewImage picPreview
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
-    
+   
     'Set the default midtone scrollbar ratio to 1/2
     midRatio = 0.5
     
@@ -479,6 +398,9 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
+    'Draw a preview image
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
+
 End Sub
 
 'This will reset the scrollbars to default levels
@@ -514,19 +436,19 @@ End Sub
 '*********************************************************************************
 Private Sub hsInL_Change()
     FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
 End Sub
 
 Private Sub hsInL_Scroll()
     FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
 End Sub
 
 Private Sub hsInM_Change()
     If iRefresh = True Then
         midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
         FixScrollBars True
-        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
     End If
 End Sub
 
@@ -534,39 +456,39 @@ Private Sub hsInM_Scroll()
     If iRefresh = True Then
         midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
         FixScrollBars True
-        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
     End If
 End Sub
 
 Private Sub hsInR_Change()
     FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
 End Sub
 
 Private Sub hsInR_Scroll()
     FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
 End Sub
 
 Private Sub hsOutL_Change()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
 End Sub
 
 Private Sub hsOutL_Scroll()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
 End Sub
 
 Private Sub hsOutR_Change()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
 End Sub
 
 Private Sub hsOutR_Scroll()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, picEffect
+    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
 End Sub
 
 
 'Draw an image based on user-adjusted input and output levels
-Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As PictureBox)
+Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Mapping new image levels..."
     
