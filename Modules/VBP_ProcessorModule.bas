@@ -193,12 +193,14 @@ Option Explicit
     Public Const DistortWaves As Long = 716
     '-Distort: Etched glass
     Public Const DistortFiguredGlass As Long = 717
+    '-Distort: Kaleidoscope
+    Public Const DistortKaleidoscope As Long = 718
     
     'Other filters; numbers 800-899
     '-Compound invert
     '800-802 used to be specific CompoundInvert values; this is superceded by passing the values to CompoundInvert, which has been moved with the other Inverts
     '-Fade
-    Public Const Fade As Long = 803
+    Public Const fade As Long = 803
     '804-806 used to be specific Fade values; these have been superceded by passing the values to Fade
     Public Const Unfade As Long = 807
     '-Natural
@@ -749,6 +751,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormFiguredGlass.FiguredGlassFX CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
                 End If
+            Case DistortKaleidoscope
+                If LoadForm Then
+                    FormKaleidoscope.Show vbModal, FormMain
+                Else
+                    FormKaleidoscope.KaleidoscopeImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
+                End If
                 
         End Select
     End If
@@ -788,7 +796,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormTwins.GenerateTwins CByte(pOPCODE)
                 End If
-            Case Fade
+            Case fade
                 If LoadForm Then
                     FormFade.Show vbModal, FormMain
                 Else
@@ -1206,7 +1214,7 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Figured glass"
             
         'Miscellaneous filters; numbers 800-899
-        Case Fade
+        Case fade
             GetNameOfProcess = "Fade"
         Case Unfade
             GetNameOfProcess = "Unfade"

@@ -3,9 +3,8 @@ Attribute VB_Name = "Menu_Icon_Handler"
 'Specialized Icon Handler
 'Copyright ©2011-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 12/August/12
-'Last update: Added ResetMenuIcons, which redraws menu icons that may have been dropped due to the menu
-'             caption changing (necessary for Undo/Redo text updating)
+'Last updated: 08/January/13
+'Last update: completely rewrote the icon load mechanism
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of
 ' icon-related functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written
@@ -37,10 +36,12 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, lpObject As Any) As Long
 Private Declare Function GetBkColor Lib "gdi32" (ByVal hDC As Long) As Long
-'Private Declare Function OleCreatePictureIndirect Lib "olepro32.dll" (lppictDesc As pictDesc, riid As Guid, ByVal fown As Long, ipic As IPicture) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
+
+'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'Types required by the above API calls
 Private Type Bitmap
@@ -68,34 +69,12 @@ Dim iconHandles() As Long
 'This constant is used for testing only.  It should always be set to TRUE for production code.
 Public Const ALLOW_DYNAMIC_ICONS As Boolean = True
 
-'The types and constants below (commented out) can be used to generate an icon object for use within VB
-
-'Private Type Guid
-'   Data1 As Long
-'   Data2 As Integer
-'   Data3 As Integer
-'   Data4(7) As Byte
-'   End Type
-
-'Private Type pictDesc
-'   cbSizeofStruct As Long
-'   picType As Long
-'   hImage As Long
-'End Type
-
-'Constants required by the icon-related API calls
-'Private Const PICTYPE_BITMAP = 1
-'Private Const PICTYPE_ICON = 3
-
 'These arrays will track the resource identifiers and consequent numeric identifiers of all loaded icons.  The size of the array
 ' is arbitrary; just make sure it's larger than the max number of loaded icons.
 Private iconNames(0 To 255) As String
 
 'We also need to track how many icons have been loaded; this counter will also be used to reference icons in the database
 Dim curIcon As Long
-
-'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'clsMenuImage does the heavy lifting for inserting icons into menus
 Dim cMenuImage As clsMenuImage
@@ -137,45 +116,6 @@ Public Sub LoadMenuIcons()
         cMRUIcons.Init FormMain.hWnd, 64, 64
     End If
         
-End Sub
-
-'This new, simpler technique for adding menu icons requires only the menu location (including sub-menus) and the icon's identifer
-' in the resource file.  If the icon has already been loaded, it won't be loaded again; instead, the function will check the list
-' of loaded icons and automatically fill in the numeric identifier as necessary.
-Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
-
-    Static i As Long
-    Static iconLocation As Long
-    Static iconAlreadyLoaded As Boolean
-    
-    iconAlreadyLoaded = False
-    
-    'Loop through all icons that have been loaded, and see if this one has been requested already.
-    For i = 0 To curIcon
-        
-        If iconNames(i) = resID Then
-            iconAlreadyLoaded = True
-            iconLocation = i
-            Exit For
-        End If
-        
-    Next i
-    
-    'If the icon was not found, load it and add it to the list
-    If Not iconAlreadyLoaded Then
-        cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
-        iconNames(curIcon) = resID
-        iconLocation = curIcon
-        curIcon = curIcon + 1
-    End If
-    
-    'Place the icon onto the requested menu
-    If subSubMenu = -1 Then
-        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
-    Else
-        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
-    End If
-
 End Sub
 
 'Apply (and if necessary, dynamically load) menu icons to their proper menu entries.
@@ -220,8 +160,8 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "CLEAR", 1, 6          'Empty Clipboard
     
     'View Menu
-    AddMenuIcon "FITWINIMG", 2, 0      'Fit Viewport to Image
-    AddMenuIcon "FITONSCREEN", 2, 1    'Fit on Screen
+    AddMenuIcon "FITONSCREEN", 2, 0    'Fit on Screen
+    AddMenuIcon "FITWINIMG", 2, 1      'Fit Viewport to Image
     AddMenuIcon "ZOOMIN", 2, 3         'Zoom In
     AddMenuIcon "ZOOMOUT", 2, 4        'Zoom Out
     AddMenuIcon "ZOOMACTUAL", 2, 10    'Zoom 100%
@@ -316,11 +256,12 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "DISTORT", 5, 4      'Distort
         '--> Distort sub-menu
         AddMenuIcon "FIGGLASS", 5, 4, 0       'Figured glass
-        AddMenuIcon "LENSDISTORT", 5, 4, 1    'Lens distortion (fish-eye)
-        AddMenuIcon "PINCHWHIRL", 5, 4, 2     'Pinch and whirl
-        AddMenuIcon "RIPPLE", 5, 4, 3         'Ripple
-        AddMenuIcon "SWIRL", 5, 4, 4          'Swirl
-        AddMenuIcon "WAVES", 5, 4, 5          'Waves
+        AddMenuIcon "KALEIDOSCOPE", 5, 4, 1   'Kaleidoscope
+        AddMenuIcon "LENSDISTORT", 5, 4, 2    'Lens distortion (fish-eye)
+        AddMenuIcon "PINCHWHIRL", 5, 4, 3     'Pinch and whirl
+        AddMenuIcon "RIPPLE", 5, 4, 4         'Ripple
+        AddMenuIcon "SWIRL", 5, 4, 5          'Swirl
+        AddMenuIcon "WAVES", 5, 4, 6          'Waves
         
     AddMenuIcon "EDGES", 5, 5        'Edges
         '--> Edges sub-menu
@@ -399,6 +340,45 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "LICENSE", 8, 8      'License
     AddMenuIcon "ABOUT", 8, 10       'About PD
     
+End Sub
+
+'This new, simpler technique for adding menu icons requires only the menu location (including sub-menus) and the icon's identifer
+' in the resource file.  If the icon has already been loaded, it won't be loaded again; instead, the function will check the list
+' of loaded icons and automatically fill in the numeric identifier as necessary.
+Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
+
+    Static i As Long
+    Static iconLocation As Long
+    Static iconAlreadyLoaded As Boolean
+    
+    iconAlreadyLoaded = False
+    
+    'Loop through all icons that have been loaded, and see if this one has been requested already.
+    For i = 0 To curIcon
+        
+        If iconNames(i) = resID Then
+            iconAlreadyLoaded = True
+            iconLocation = i
+            Exit For
+        End If
+        
+    Next i
+    
+    'If the icon was not found, load it and add it to the list
+    If Not iconAlreadyLoaded Then
+        cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
+        iconNames(curIcon) = resID
+        iconLocation = curIcon
+        curIcon = curIcon + 1
+    End If
+    
+    'Place the icon onto the requested menu
+    If subSubMenu = -1 Then
+        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
+    Else
+        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
+    End If
+
 End Sub
 
 'When menu captions are changed, the associated images are lost.  This forces a reset.
@@ -762,29 +742,6 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
 
     'When an MDI child form is maximized, the icon is not updated properly. This requires further investigation to solve.
     'If imgForm.WindowState = vbMaximized Then DoEvents
-   
-    'The chunk of code below will generate an actual icon object for use within VB. I don't use this mechanism because
-    ' VB will internally convert the icon to 256-colors before assigning it to the form <sigh>.  Rather than do that,
-    ' I use an alternate API call above to assign the new icon in its transparent, full color glory.
-    
-    'Dim iGuid As Guid
-    'With iGuid
-    ' .Data1 = &H20400
-    ' .Data4(0) = &HC0
-    ' .Data4(7) = &H46
-    'End With
-    
-    'Dim pDesc As pictDesc
-    'With pDesc
-    ' .cbSizeofStruct = Len(pDesc)
-    ' .picType = PICTYPE_ICON
-    ' .hImage = generatedIcon
-    'End With
-    
-    'Dim icoObject As IPicture
-    'OleCreatePictureIndirect pDesc, iGuid, 1, icoObject
-    
-    'imgForm.Icon = icoObject
    
 End Sub
 'Needs to be run only once, at the start of the program

@@ -1115,24 +1115,28 @@ Begin VB.MDIForm FormMain
             Index           =   0
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Lens distortion (fish-eye)..."
+            Caption         =   "Kaleiodoscope..."
             Index           =   1
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Pinch and whirl..."
+            Caption         =   "Lens distortion (fish-eye)..."
             Index           =   2
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Ripple..."
+            Caption         =   "Pinch and whirl..."
             Index           =   3
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Swirl..."
+            Caption         =   "Ripple..."
             Index           =   4
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Waves..."
+            Caption         =   "Swirl..."
             Index           =   5
+         End
+         Begin VB.Menu MnuDistortFilter 
+            Caption         =   "Waves..."
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1949,24 +1953,28 @@ Private Sub MnuDistortFilter_Click(Index As Integer)
         Case 0
             Process DistortFiguredGlass, , , , , , , , , , True
         
-        'Lens distort
+        'Kaleidoscope
         Case 1
+            Process DistortKaleidoscope, , , , , , , , , , True
+            
+        'Lens distort
+        Case 2
             Process DistortLens, , , , , , , , , , True
         
         'Pinch and whirl
-        Case 2
+        Case 3
             Process DistortPinchAndWhirl, , , , , , , , , , True
         
         'Ripple
-        Case 3
+        Case 4
             Process DistortRipple, , , , , , , , , , True
     
         'Swirl
-        Case 4
+        Case 5
             Process DistortSwirl, , , , , , , , , , True
         
         'Waves
-        Case 5
+        Case 6
             Process DistortWaves, , , , , , , , , , True
     
     End Select
