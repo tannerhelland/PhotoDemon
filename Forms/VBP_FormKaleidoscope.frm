@@ -125,7 +125,7 @@ Begin VB.Form FormKaleidoscope
    Begin VB.HScrollBar hsRadius 
       Height          =   255
       Left            =   6120
-      Max             =   200
+      Max             =   100
       TabIndex        =   8
       Top             =   3750
       Value           =   100
