@@ -351,7 +351,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     midY = midY + initY
     
     'Calculation values
-    Dim sRadius As Double, sRadius2 As Double, sDistance As Double
+    Dim sRadius As Double
     Dim theta As Double, theta2 As Double
     Dim xAngle As Double, yAngle As Double
     Dim firstAngle As Double, secondAngle As Double

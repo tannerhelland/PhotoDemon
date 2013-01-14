@@ -648,9 +648,7 @@ Public Sub convertToCMYK32()
         CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
         
         Dim x As Long, y As Long, QuickX As Long
-                        
-        Dim r As Long, g As Long, b As Long
-        
+                                
         Dim cyan As Long, magenta As Long, yellow As Long, K As Long
         
         Dim qvDepth As Long

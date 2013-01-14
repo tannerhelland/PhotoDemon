@@ -483,9 +483,7 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
               
     sRadius = sRadius * (rippleRadius / 100)
     sRadius2 = sRadius * sRadius
-              
-    Dim sResult As Double
-              
+                            
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
