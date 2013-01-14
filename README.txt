@@ -8,35 +8,33 @@ What makes PhotoDemon preferable to other photo editing tools?
 -------------------------------------------------------------------------------------
 :: Portable and lightweight
 	PhotoDemon is designed to be run as a standalone .exe.  No installer is provided
-	or required.  An INI file is used to store program settings, and if no INI is
-	found, PhotoDemon will generate one for you.  PhotoDemon does not touch the
-	Windows registry, and aside from a temporary file folder – which you can specify
-	in the Preferences dialog – it leaves no trace of itself on your hard drive.
+	or required.  PhotoDemon does not touch the Windows registry, and aside from a
+	temporary file folder – which you can specify in the Options dialog – it leaves
+	no trace of itself on your hard drive.
 
-:: Powerful macro and batch conversion support
+:: Powerful macro and batch processor support
 	PhotoDemon provides full macro support.  Simply hit “Record Macro”, then perform
 	as many actions as you’d like.  When finished, save that macro to the hard drive
 	so you can repeat it at any point in the future.  Macros fully integrate with a
-	built-in batch conversion tool – simply choose a saved macro and a folder or list
-	of images, and PhotoDemon will apply that macro to every image automagically.  For
-	large batches (50+ images), PhotoDemon will give you a running estimate of
-	time-to-completion.
+	built-in batch processing tool – simply choose a saved macro and a folder or list
+	of images, and PhotoDemon will apply that macro to every image automagically.
 		
 :: Emphasis on usability
 	Most free, open-source image editors are usability nightmares.  PhotoDemon tries
 	not to be.  The interface was built with input from professional designers – not
-	just software engineers – and small touches like unlimited Undo/Redo, “Fade last
-	effect,” keyboard accelerators, effect previews, mouse wheel and forward-back
+	just software engineers – and small touches like unlimited Undo/Redo, "Fade last
+	effect", keyboard accelerators, effect previews, mouse wheel and forward-back
 	button support, and descriptive menu icons make PhotoDemon useful to novices and
 	professionals alike.
 	
 :: A comprehensive selection of image editing tools and filters
-	2D transformations: image resizing, rotation, isometric conversion.  Color tools:
-	image levels, white balance, grayscale, sepia, color reduction, full-featured
-	histogram (including equalization and stretching).  Filters: blur, sharpen, edge
-	detection, solarize, despeckle, dilate/erode, diffuse, mosaic, and many more.
-	70+ in the current build – and that’s not including a custom filter tool that
-	allows you to build your own 5×5 convolution filters.
+	2D transformations: image resize, crop rotate, isometric conversion.
+	Color tools: image levels, white balance, grayscale, sepia, color reduction,
+	full-featured histogram (including equalization and stretching).
+	Filters: blur, sharpen, edge detection, solarize, despeckle, dilate/erode,
+	diffuse, mosaic, pinch and swirl, lens diffraction, and many more.
+	70+ tools in the current build – and that’s not including a custom filter tool
+	that allows you to construct your own filters.
 
 
 	
@@ -90,7 +88,7 @@ If you can't contribute monetarily to the project, here are other ways to help:
   https://github.com/tannerhelland/PhotoDemon
   ...or this dedicated PhotoDemon feedback form:
   http://www.tannerhelland.com/photodemon-contact/
-* Are you a VB6 fiend?  I'm always open to outside bug fixes and feature implementations
+* Are you a VB6 coder?  I'm always open to outside bug fixes and feature implementations
   from fellow VB6 programmers.
 * Tell friends, family, and other websites about PhotoDemon.  If you know a site that
   tests or reviews image processing tools, email and ask if they've tried it.
@@ -104,7 +102,7 @@ PhotoDemon is Copyright (c) 2013 by Tanner Helland, www.tannerhelland.com
 
 PhotoDemon is released under a BSD license. You may read more about this license at the following location: http://creativecommons.org/licenses/BSD/.  A full copy of this license is included at the bottom of this section.
 
-Parts of this source code were written by third-parties and may be subject to additional licenses.  Documentation within a specific source code file supercedes the BSD license governing this project as a whole.
+Sections of this source code were written by third-parties and may be subject to additional licenses.  Documentation within a specific source code file supercedes the BSD license governing this project as a whole.
 
 Questions regarding licensing should be directed to: www.tannerhelland.com/contact
 
