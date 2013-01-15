@@ -236,7 +236,7 @@ Attribute VB_Exposed = False
 'Image "Swirl" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 06/January/12
+'Last updated: 06/January/13
 'Last update: applied additional optimizations and tweaks
 '
 'This tool allows the user to "swirl" an image at an arbitrary angle in 1/10 degree increments.  Bilinear interpolation
