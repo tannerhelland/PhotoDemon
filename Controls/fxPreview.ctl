@@ -59,6 +59,28 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon Effect Preview custom control
+'Copyright ©2012-2013 by Tanner Helland
+'Created: 10/January/13
+'Last updated: 14/January/13
+'Last update: miscellaneous optimizations and bugfixes
+'
+'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
+' This worked well enough when there were only a handful of tools available, but as the complexity of the program
+' - and its various effects and tools - has grown, it has become more and more painful to update the preview
+' system, because any changes have to be mirrored across a huge number of forms.
+'
+'Thus, this control was born.  It is now used on every single effect form in place of a regular picture box.  This
+' allows me to add preview-related features just once - to the base control - and every tool will automatically
+' reap the benefits.
+'
+'At present, there isn't much to the control.  It is capable of storing a copy of the original image and any
+' filter-modified versions of the image.  The user can toggle between these by using the command link below the
+' main picture box.  This replaces the side-by-side "before and after" of past versions.
+'
+'***************************************************************************
+
 Option Explicit
 
 'Has this control been given a copy of the original image?
@@ -170,11 +192,7 @@ Private Sub UserControl_InitProperties()
     
 End Sub
 
-'Redraw the user control
-Private Sub UserControl_Paint()
-    'redrawControl
-End Sub
-
+'Redraw the user control after it has been resized
 Private Sub UserControl_Resize()
     redrawControl
 End Sub
@@ -195,10 +213,6 @@ Private Sub redrawControl()
     
     'Adjust the preview picture box's height to be just above the "show original image" link
     lblBeforeToggle.Top = ScaleHeight - 24
-    
-    Dim newPreviewHeight As Long
-    newPreviewHeight = lblBeforeToggle.Top - (ScaleHeight - (lblBeforeToggle.Height + lblBeforeToggle.Top))
-    
-    picPreview.Height = newPreviewHeight
-    
+    picPreview.Height = lblBeforeToggle.Top - (ScaleHeight - (lblBeforeToggle.Height + lblBeforeToggle.Top))
+        
 End Sub
