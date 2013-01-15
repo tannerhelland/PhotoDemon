@@ -259,9 +259,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "KALEIDOSCOPE", 5, 4, 1   'Kaleidoscope
         AddMenuIcon "LENSDISTORT", 5, 4, 2    'Lens distortion (fish-eye)
         AddMenuIcon "PINCHWHIRL", 5, 4, 3     'Pinch and whirl
-        AddMenuIcon "RIPPLE", 5, 4, 4         'Ripple
-        AddMenuIcon "SWIRL", 5, 4, 5          'Swirl
-        AddMenuIcon "WAVES", 5, 4, 6          'Waves
+        AddMenuIcon "POLAR", 5, 4, 4          'Polar conversion
+        AddMenuIcon "RIPPLE", 5, 4, 5         'Ripple
+        AddMenuIcon "SWIRL", 5, 4, 6          'Swirl
+        AddMenuIcon "WAVES", 5, 4, 7          'Waves
         
     AddMenuIcon "EDGES", 5, 5        'Edges
         '--> Edges sub-menu
@@ -284,7 +285,6 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "FOG", 5, 7, 2            'Fog
         AddMenuIcon "FREEZE", 5, 7, 3         'Freeze
         AddMenuIcon "LAVA", 5, 7, 4           'Lava
-        'AddMenuIcon "OCEAN", 5, 7, 5  'Ocean
         AddMenuIcon "RAINBOW", 5, 7, 5        'Rainbow
         AddMenuIcon "STEEL", 5, 7, 6          'Steel
         AddMenuIcon "RAIN", 5, 7, 7           'Water

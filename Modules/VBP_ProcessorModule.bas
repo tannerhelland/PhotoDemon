@@ -195,6 +195,8 @@ Option Explicit
     Public Const DistortFiguredGlass As Long = 717
     '-Distort: Kaleidoscope
     Public Const DistortKaleidoscope As Long = 718
+    '-Distort: Polar conversion
+    Public Const ConvertPolar As Long = 719
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -757,6 +759,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormKaleidoscope.KaleidoscopeImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
                 End If
+            Case ConvertPolar
+                If LoadForm Then
+                    FormPolar.Show vbModal, FormMain
+                Else
+                    FormPolar.ConvertToPolar CLng(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
+                End If
                 
         End Select
     End If
@@ -1212,6 +1220,10 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Waves"
         Case DistortFiguredGlass
             GetNameOfProcess = "Figured glass"
+        Case DistortKaleidoscope
+            GetNameOfProcess = "Kaleidoscope"
+        Case ConvertPolar
+            GetNameOfProcess = "Polar conversion"
             
         'Miscellaneous filters; numbers 800-899
         Case fade

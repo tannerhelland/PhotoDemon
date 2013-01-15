@@ -1111,7 +1111,7 @@ Begin VB.MDIForm FormMain
          Caption         =   "Distort"
          Index           =   2
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Figured Glass..."
+            Caption         =   "Figured Glass (dents)..."
             Index           =   0
          End
          Begin VB.Menu MnuDistortFilter 
@@ -1127,16 +1127,20 @@ Begin VB.MDIForm FormMain
             Index           =   3
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Ripple..."
+            Caption         =   "Polar conversion..."
             Index           =   4
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Swirl..."
+            Caption         =   "Ripple..."
             Index           =   5
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Waves..."
+            Caption         =   "Swirl..."
             Index           =   6
+         End
+         Begin VB.Menu MnuDistortFilter 
+            Caption         =   "Waves..."
+            Index           =   7
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1965,16 +1969,20 @@ Private Sub MnuDistortFilter_Click(Index As Integer)
         Case 3
             Process DistortPinchAndWhirl, , , , , , , , , , True
         
-        'Ripple
+        'Polar conversion
         Case 4
+            Process ConvertPolar, , , , , , , , , , True
+        
+        'Ripple
+        Case 5
             Process DistortRipple, , , , , , , , , , True
     
         'Swirl
-        Case 5
+        Case 6
             Process DistortSwirl, , , , , , , , , , True
         
         'Waves
-        Case 6
+        Case 7
             Process DistortWaves, , , , , , , , , , True
     
     End Select
