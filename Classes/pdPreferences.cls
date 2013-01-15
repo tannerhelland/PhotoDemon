@@ -390,7 +390,8 @@ Private Sub createNewINIFile()
         Print #fileNum, "TGARLE=0"
         Print #fileNum, "TIFFCMYK=0"
         Print #fileNum, "TIFFCompression=0"
-        Print #fileNum, "UseFancyFonts=0"
+        'On Vista and later, Segoe UI is used as the interface font instead of Tahoma
+        If g_IsVistaOrLater Then Print #fileNum, "UseFancyFonts=1" Else Print #fileNum, "UseFancyFonts=0"
         Print #fileNum, "UseToneMapping=1"
         Print #fileNum, "ValidateAlphaChannels=1"
         Print #fileNum, "VerifyInitialColorDepth=1"
