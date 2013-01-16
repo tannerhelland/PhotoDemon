@@ -350,7 +350,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'If we've reached this point, one or both scroll bars are enabled.  The time has come to calculate their values.
     'Horizontal scroll bar comes first.
-    Static newScrollMax As Long
+    Dim newScrollMax As Long
     
     If hScrollEnabled Then
     

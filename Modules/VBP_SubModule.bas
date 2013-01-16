@@ -283,7 +283,7 @@ Public Sub displayImageCoordinates(ByVal x1 As Single, ByVal y1 As Single, ByRef
     If isMouseOverImage(x1, y1, srcForm) Then
             
         'Grab the current zoom value
-        Static ZoomVal As Single
+        Dim ZoomVal As Single
         ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
             
         'Calculate x and y positions, while taking into account zoom and scroll values
@@ -312,7 +312,7 @@ End Sub
 Public Sub findNearestImageCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form)
 
     'Grab the current zoom value
-    Static ZoomVal As Single
+    Dim ZoomVal As Single
     ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
 
     'Calculate x and y positions, while taking into account zoom and scroll values
@@ -341,7 +341,7 @@ End Sub
 Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form) As Long
 
     'Grab the current zoom value
-    Static ZoomVal As Single
+    Dim ZoomVal As Single
     ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
 
     'Calculate x and y positions, while taking into account zoom and scroll values
@@ -355,14 +355,14 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
 
     'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
-    Static tLeft As Single, tTop As Single, tRight As Single, tBottom As Single
+    Dim tLeft As Single, tTop As Single, tRight As Single, tBottom As Single
     tLeft = pdImages(srcForm.Tag).mainSelection.selLeft
     tTop = pdImages(srcForm.Tag).mainSelection.selTop
     tRight = pdImages(srcForm.Tag).mainSelection.selLeft + pdImages(srcForm.Tag).mainSelection.selWidth
     tBottom = pdImages(srcForm.Tag).mainSelection.selTop + pdImages(srcForm.Tag).mainSelection.selHeight
     
     'Adjust the mouseAccuracy value based on the current zoom value
-    Static mouseAccuracy As Single
+    Dim mouseAccuracy As Single
     mouseAccuracy = mouseSelAccuracy * (1 / ZoomVal)
     
     'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
@@ -372,7 +372,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     End If
     
     'If we made it here, this mouse location is worth evaluating.  Corners get preference, so check them first.
-    Static nwDist As Single, neDist As Single, seDist As Single, swDist As Single
+    Dim nwDist As Single, neDist As Single, seDist As Single, swDist As Single
     
     nwDist = distanceTwoPoints(x1, y1, tLeft, tTop)
     neDist = distanceTwoPoints(x1, y1, tRight, tTop)
@@ -380,8 +380,8 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     seDist = distanceTwoPoints(x1, y1, tRight, tBottom)
     
     'Find the smallest distance for this mouse position
-    Static minDistance As Single
-    Static closestPoint As Long
+    Dim minDistance As Single
+    Dim closestPoint As Long
     minDistance = mouseAccuracy
     closestPoint = -1
     
@@ -412,7 +412,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     End If
 
     'If we're at this line of code, a closest corner was not found.  So check edges next.
-    Static nDist As Single, eDist As Single, sDist As Single, wDist As Single
+    Dim nDist As Single, eDist As Single, sDist As Single, wDist As Single
     
     nDist = distanceOneDimension(y1, tTop)
     eDist = distanceOneDimension(x1, tRight)

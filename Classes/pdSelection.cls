@@ -394,11 +394,11 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     'updateInternalCoords
     
     'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates
-    Static ZoomVal As Single
+    Dim ZoomVal As Single
     ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
     
-    Static dstLeft As Single, dstRight As Single
-    Static dstTop As Single, dstBottom As Single
+    Dim dstLeft As Single, dstRight As Single
+    Dim dstTop As Single, dstBottom As Single
         
     dstLeft = ((selLeft - dstForm.HScroll.Value) * ZoomVal) + imgLeft
     dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * ZoomVal) + imgLeft + 0.5
@@ -406,13 +406,13 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * ZoomVal) + imgTop + 0.5
     
     'Several draw methods use the same variables.  Declare those here.
-    Static iData() As Byte
-    Static tmpSA As SAFEARRAY2D
-    Static x As Long, y As Long
-    Static QuickVal As Long
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    Dim x As Long, y As Long
+    Dim QuickVal As Long
     
     'Just to be safe, declare some bounding variables in advance as well
-    Static rightBound As Long, bottomBound As Long
+    Dim rightBound As Long, bottomBound As Long
     rightBound = imgLeft + ImgWidth - 1
     bottomBound = imgTop + ImgHeight - 1
             
@@ -470,7 +470,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             'Use look-up tables to highlight the active parts of the image
             Dim rData(0 To 255) As Byte, gData(0 To 255) As Byte, bData(0 To 255) As Byte
             
-            Static newR As Long, newG As Long, newB As Long
+            Dim newR As Long, newG As Long, newB As Long
             
             If renderType = sHighlightBlue Then
                 newR = 112
@@ -516,7 +516,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
         Case Else
         
             'Store the destination DC to a local variable
-            Static DstDC As Long
+            Dim DstDC As Long
             DstDC = dstLayer.getLayerDC
             
             'Since we'll be using the API to draw our selection area, we need to initialize several brushes

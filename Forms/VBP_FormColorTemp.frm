@@ -435,7 +435,7 @@ End Sub
 '        Because of that, I can't guarantee great precision - but the function works well enough for photo-manipulation purposes.
 Private Sub getRGBfromTemperature(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByVal tmpKelvin As Long)
 
-    Static tmpCalc As Double
+    Dim tmpCalc As Double
 
     'Temperature must fall between 1000 and 40000 degrees
     If tmpKelvin < 1000 Then tmpKelvin = 1000

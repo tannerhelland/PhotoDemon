@@ -347,9 +347,9 @@ End Sub
 ' of loaded icons and automatically fill in the numeric identifier as necessary.
 Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
 
-    Static i As Long
-    Static iconLocation As Long
-    Static iconAlreadyLoaded As Boolean
+    Dim i As Long
+    Dim iconLocation As Long
+    Dim iconAlreadyLoaded As Boolean
     
     iconAlreadyLoaded = False
     

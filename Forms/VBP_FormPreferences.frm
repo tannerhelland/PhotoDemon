@@ -2456,7 +2456,7 @@ End Sub
 'When a new filetype is selected on the File Formats settings page, display the matching options
 Private Sub cmbFiletype_Click()
     
-    Static ftID As Long
+    Dim ftID As Long
     For ftID = 0 To cmbFiletype.ListCount - 1
         If ftID = cmbFiletype.ListIndex Then picFileContainer(ftID).Visible = True Else picFileContainer(ftID).Visible = False
     Next ftID
@@ -2483,7 +2483,7 @@ End Sub
 'When the category is changed, only display the controls in that category
 Private Sub cmdCategory_Click(Index As Integer)
     
-    Static catID As Long
+    Dim catID As Long
     For catID = 0 To cmdCategory.Count - 1
         If catID = Index Then
             picContainer(catID).Visible = True

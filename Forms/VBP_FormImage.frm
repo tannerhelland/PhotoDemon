@@ -229,7 +229,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
             If pdImages(Me.Tag).selectionActive Then
             
                 'Check the mouse coordinates of this click.
-                Static sCheck As Long
+                Dim sCheck As Long
                 sCheck = findNearestSelectionCoordinates(x, y, Me)
                 
                 'If that function did not return zero, notify the selection and exit
@@ -332,7 +332,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             ' 7 - S edge
             ' 8 - W edge
             ' 9 - interior of selection, not near a corner or edge
-            Static sCheck As Long
+            Dim sCheck As Long
             sCheck = findNearestSelectionCoordinates(x, y, Me)
             
             'Based on that return value, assign a new mouse cursor to the form

@@ -41,3 +41,17 @@ Public Const JP2_ENABLED As Boolean = True
 Public Const PI As Double = 3.14159265358979
 Public Const PI_HALF As Double = 1.5707963267949
 Public Const PI_DOUBLE As Double = 6.28318530717958
+
+'Edge-handling methods for distort-style filters
+Public Enum EDGE_OPERATOR
+    EDGE_CLAMP = 0
+    EDGE_REFLECT = 1
+    EDGE_WRAP = 2
+    EDGE_ERASE = 3
+End Enum
+#If False Then
+    Const EDGE_CLAMP = 0
+    Const EDGE_REFLECT = 1
+    Const EDGE_WRAP = 2
+    Const EDGE_ERASE = 3
+#End If

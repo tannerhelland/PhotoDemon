@@ -789,7 +789,7 @@ Private Sub cmdOK_Click()
             sFile(0) = tmpFilename
             
             'Check to see if the image file is a multipage file
-            Static howManyPages As Long
+            Dim howManyPages As Long
             
             howManyPages = isMultiImage(tmpFilename)
             
@@ -802,7 +802,7 @@ Private Sub cmdOK_Click()
             End If
             
             'Now, loop through each page or frame (if applicable), load the image, and process it.
-            Static curPage As Long
+            Dim curPage As Long
             For curPage = 0 To howManyPages - 1
             
                 'Load the current image

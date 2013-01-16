@@ -1263,9 +1263,9 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     If layerColorDepth <> 32 Then Exit Sub
 
     'DEBUG: These variables can be used to run timing tests on the composite routine.
-    'Static TotalTime As Long
+    'Dim TotalTime As Long
     'Dim StartTime As Long
-    'Static numOfRuns As Long
+    'Dim numOfRuns As Long
     'StartTime = GetTickCount
 
     'Start, as always, with a SafeArray

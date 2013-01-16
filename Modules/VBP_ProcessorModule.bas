@@ -721,7 +721,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm Then
                     FormSwirl.Show vbModal, FormMain
                 Else
-                    FormSwirl.SwirlImage CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
+                    FormSwirl.SwirlImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
                 End If
             Case DistortLens
                 If LoadForm Then
@@ -733,25 +733,25 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm Then
                     FormRipple.Show vbModal, FormMain
                 Else
-                    FormRipple.RippleImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
+                    FormRipple.RippleImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CLng(pOPCODE5), CBool(pOPCODE6)
                 End If
             Case DistortPinchAndWhirl
                 If LoadForm Then
                     FormPinch.Show vbModal, FormMain
                 Else
-                    FormPinch.PinchImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CBool(pOPCODE4)
+                    FormPinch.PinchImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CLng(pOPCODE4), CBool(pOPCODE5)
                 End If
             Case DistortWaves
                 If LoadForm Then
                     FormWaves.Show vbModal, FormMain
                 Else
-                    FormWaves.WaveImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
+                    FormWaves.WaveImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CLng(pOPCODE5), CBool(pOPCODE6)
                 End If
             Case DistortFiguredGlass
                 If LoadForm Then
                     FormFiguredGlass.Show vbModal, FormMain
                 Else
-                    FormFiguredGlass.FiguredGlassFX CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
+                    FormFiguredGlass.FiguredGlassFX CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
                 End If
             Case DistortKaleidoscope
                 If LoadForm Then
@@ -763,7 +763,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm Then
                     FormPolar.Show vbModal, FormMain
                 Else
-                    FormPolar.ConvertToPolar CLng(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
+                    FormPolar.ConvertToPolar CLng(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
                 End If
                 
         End Select

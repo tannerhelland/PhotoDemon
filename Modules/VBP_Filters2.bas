@@ -159,7 +159,7 @@ Public Sub MenuHeatMap()
     Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
     Dim hVal As Single, sVal As Single, lVal As Single
-    Dim h As Single, S As Single, l As Single
+    Dim h As Single, s As Single, l As Single
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
@@ -198,7 +198,7 @@ Public Sub MenuHeatMap()
         sVal = 0.8
         
         'Use RGB to calculate hue, saturation, and luminance
-        tRGBToHSL r, g, b, h, S, l
+        tRGBToHSL r, g, b, h, s, l
         
         'Now convert those HSL values back to RGB, but substitute in our artificial hue value (calculated above)
         tHSLToRGB hVal, sVal, lVal, r, g, b
@@ -907,7 +907,7 @@ Public Sub MenuTest()
     Dim r As Long, g As Long, b As Long, grayVal As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim hVal As Single, sVal As Single, lVal As Single
-    Dim h As Single, S As Single, l As Single
+    Dim h As Single, s As Single, l As Single
         
     'Apply the filter
     For x = initX To finalX
@@ -961,12 +961,11 @@ Public Function getLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) 
 End Function
 
 'HSL <-> RGB conversion routines
-Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, S As Single, l As Single)
+Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, s As Single, l As Single)
     
-    Static Max As Single
-    Static Min As Single
-    Static delta As Single
-    Static rR As Single, rG As Single, rB As Single
+    Dim Max As Single, Min As Single
+    Dim delta As Single
+    Dim rR As Single, rG As Single, rB As Single
     
     rR = r / 255
     rG = g / 255
@@ -985,15 +984,15 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, S As Single, 
         
     'If the maximum and minimum are identical, this image is gray, meaning it has no saturation and an undefined hue.
     If Max = Min Then
-        S = 0
+        s = 0
         h = 0
     Else
         
         'Calculate saturation
         If l <= 0.5 Then
-            S = (Max - Min) / (Max + Min)
+            s = (Max - Min) / (Max + Min)
         Else
-            S = (Max - Min) / (2 - Max - Min)
+            s = (Max - Min) / (2 - Max - Min)
         End If
         
         'Calculate hue
@@ -1022,19 +1021,19 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, S As Single, 
 End Sub
 
 'Convert HSL values to RGB values
-Public Sub tHSLToRGB(h As Single, S As Single, l As Single, r As Long, g As Long, b As Long)
+Public Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long, b As Long)
 
-    Static rR As Single, rG As Single, rB As Single
-    Static Min As Single, Max As Single
+    Dim rR As Single, rG As Single, rB As Single
+    Dim Min As Single, Max As Single
 
     'Unsaturated pixels do not technically have hue - they only have luminance
-    If S = 0 Then
+    If s = 0 Then
         rR = l: rG = l: rB = l
     Else
         If l <= 0.5 Then
-            Min = l * (1 - S)
+            Min = l * (1 - s)
         Else
-            Min = l - S * (1 - l)
+            Min = l - s * (1 - l)
         End If
       
         Max = 2 * l - Min

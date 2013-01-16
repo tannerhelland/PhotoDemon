@@ -834,21 +834,21 @@ End Function
 Public Function getInterpolatedVal(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
         
     'Retrieve the four surrounding pixel values
-    Static topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
+    Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
     topLeft = iData(Int(x1) * iDepth + iOffset, Int(y1))
     topRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1))
     bottomLeft = iData(Int(x1) * iDepth + iOffset, Int(y1 + 1))
     bottomRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1 + 1))
     
     'Calculate blend ratios
-    Static yBlend As Double
-    Static xBlend As Double, xBlendInv As Double
+    Dim yBlend As Double
+    Dim xBlend As Double, xBlendInv As Double
     yBlend = y1 - Int(y1)
     xBlend = x1 - Int(x1)
     xBlendInv = 1 - xBlend
     
     'Blend in the x-direction
-    Static topRowColor As Double, bottomRowColor As Double
+    Dim topRowColor As Double, bottomRowColor As Double
     topRowColor = topRight * xBlend + topLeft * xBlendInv
     bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
@@ -862,7 +862,7 @@ End Function
 Public Function getInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, ByVal xMax As Long, yMax As Long, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
         
     'Retrieve the four surrounding pixel values
-    Static topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
+    Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
     topLeft = iData(Int(x1) * iDepth + iOffset, Int(y1))
     If Int(x1) = xMax Then
         topRight = iData(0 + iOffset, Int(y1))
@@ -890,14 +890,14 @@ Public Function getInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, B
     End If
     
     'Calculate blend ratios
-    Static yBlend As Double
-    Static xBlend As Double, xBlendInv As Double
+    Dim yBlend As Double
+    Dim xBlend As Double, xBlendInv As Double
     yBlend = y1 - Int(y1)
     xBlend = x1 - Int(x1)
     xBlendInv = 1 - xBlend
     
     'Blend in the x-direction
-    Static topRowColor As Double, bottomRowColor As Double
+    Dim topRowColor As Double, bottomRowColor As Double
     topRowColor = topRight * xBlend + topLeft * xBlendInv
     bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
