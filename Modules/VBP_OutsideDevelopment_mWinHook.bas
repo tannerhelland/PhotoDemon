@@ -15,30 +15,13 @@ Option Explicit
 ' ===========================================================================
 ' API Calls:
 ' ===========================================================================
-Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpFn As Long, ByVal hmod As Long, ByVal dwThreadId As Long) As Long
+Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadId As Long) As Long
 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function GetCurrentThreadId Lib "kernel32" () As Long
 Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSrc As Any, ByVal ByteLen As Long)
 
-Public Enum EHTHookTypeConstants
-   [_WH_MIN] = -1
-   WH_CALLWNDPROC = 4
-   WH_CBT = 5
-   WH_DEBUG = 9
-   WH_FOREGROUNDIDLE = 11
-   WH_GETMESSAGE = 3
-   'WH_HARDWARE = 8 ' Not implemented in Win32
-   WH_JOURNALRECORD = 0
-   WH_JOURNALPLAYBACK = 1
-   WH_KEYBOARD = 2
-   WH_MOUSE = 7
-   WH_MSGFILTER = (-1)
-   WH_SHELL = 10
-   WH_SYSMSGFILTER = 6
-   WH_CALLWNDPROCRET = 12
-   [_WH_MAX] = 14
-End Enum
+
 Public Enum EHTHookErrorConstants
    eehHookBase = vbObjectError + 1048
 End Enum
@@ -48,7 +31,7 @@ Public Type POINTAPI
    y As Long
 End Type
 Public Type Msg '{     /* msg */
-   HWnd As Long     '\\ The window whose Winproc will receive the message
+   hWnd As Long     '\\ The window whose Winproc will receive the message
    Message As Long  '\\ The message number
    wParam As Long
    lParam As Long
@@ -58,7 +41,7 @@ Public Type Msg '{     /* msg */
 End Type
 Public Type MOUSEHOOKSTRUCT '{ // ms
     pt As POINTAPI
-    HWnd As Long
+    hWnd As Long
     wHitTestCode As Long
     dwExtraInfo As Long
 End Type
@@ -66,14 +49,14 @@ Public Type CWPSTRUCT
    lParam As Long
    wParam As Long
    Message As Long
-   HWnd As Long
+   hWnd As Long
 End Type
 Public Type CWPRETSTRUCT
     lResult As Long
     lParam As Long
     wParam As Long
     Message As Long
-    HWnd As Long
+    hWnd As Long
 End Type
 Public Const HC_ACTION = 0
 Public Const HC_GETNEXT = 1
@@ -82,7 +65,7 @@ Public Const HC_SKIP = 2
 Public Const HC_SYSMODALOFF = 5
 Public Const HC_SYSMODALON = 4
 
-Declare Function ScreenToClient Lib "user32" (ByVal HWnd As Long, lpPoint As POINTAPI) As Long
+Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, lpPoint As POINTAPI) As Long
 
 ' To Report API errors:
 Private Const FORMAT_MESSAGE_ALLOCATE_BUFFER = &H100
@@ -98,15 +81,15 @@ Private Declare Function FormatMessage Lib "kernel32" Alias "FormatMessageA" (By
 ' Implementation
 ' ===========================================================================
 ' Hook handles:
-Private m_hHook([_WH_MIN] To [_WH_MAX]) As Long
+Private m_hHook(-1 To 14) As Long 'WH_MSGFILTER = -1 WH_MOUSE_LL = 14
 ' Hook consumers:
 Private Type tHookConsumer
    lPtr As Long                     ' Pointer to consumer object
-   eType As EHTHookTypeConstants    ' Type of hook
+   eType As eHookType    ' Type of hook
 End Type
 Private m_tHookConsumer() As tHookConsumer
 Private m_iConsumerCount As Long
-Private m_eValidItem As EHTHookTypeConstants
+Private m_eValidItem As eHookType
 #Const debugmsg = 0
 
 Public Sub debugmsg(ByVal sMsg As String)
@@ -117,7 +100,7 @@ Public Sub debugmsg(ByVal sMsg As String)
    #End If
 End Sub
 
-Public Property Get ValidlParamType() As EHTHookTypeConstants
+Public Property Get ValidlParamType() As eHookType
    ValidlParamType = m_eValidItem
 End Property
 
@@ -152,10 +135,10 @@ End Function
 
 Public Function InstallHook( _
       ByRef IHook As IWindowsHook, _
-      ByVal eType As EHTHookTypeConstants _
+      ByVal eType As eHookType _
    ) As Boolean
 Dim hHook As Long
-Dim lpFn As Long
+Dim lpfn As Long
 Dim lErr As Long
 Dim lPtr As Long
 Dim i As Long
@@ -166,27 +149,27 @@ Dim iAvailSlot As Long
    If (m_hHook(eType) = 0) Then
       Select Case eType
       Case WH_CALLWNDPROC
-         lpFn = HookAddress(AddressOf CallWndProc)
+         lpfn = HookAddress(AddressOf CallWndProc)
       Case WH_CALLWNDPROCRET
-         lpFn = HookAddress(AddressOf CallWndProcRet)
+         lpfn = HookAddress(AddressOf CallWndProcRet)
       Case WH_MSGFILTER
-         lpFn = HookAddress(AddressOf MessageProc)
+         lpfn = HookAddress(AddressOf MessageProc)
       Case WH_MOUSE
-         lpFn = HookAddress(AddressOf MouseProc)
+         lpfn = HookAddress(AddressOf MouseProc)
       Case WH_KEYBOARD
-         lpFn = HookAddress(AddressOf KeyboardProc)
+         lpfn = HookAddress(AddressOf KeyboardProc)
       Case WH_GETMESSAGE
-         lpFn = HookAddress(AddressOf GetMsgProc)
+         lpfn = HookAddress(AddressOf GetMsgProc)
       Case WH_FOREGROUNDIDLE
-         lpFn = HookAddress(AddressOf ForegroundIdleProc)
+         lpfn = HookAddress(AddressOf ForegroundIdleProc)
       Case WH_SHELL
-         lpFn = HookAddress(AddressOf ShellProc)
+         lpfn = HookAddress(AddressOf ShellProc)
       Case Else
          Err.Raise eehHookBase + 1, App.EXEName & ".cVBALHook", "Unsupported Hook Type."
       End Select
       ' Add the hook:
-      If lpFn <> 0 Then
-         hHook = SetWindowsHookEx(eType, lpFn, 0&, GetCurrentThreadId())
+      If lpfn <> 0 Then
+         hHook = SetWindowsHookEx(eType, lpfn, 0&, GetCurrentThreadId())
          ' If we succeeded then set up the hook type:
          If (hHook <> 0) Then
             ' Succeeded; store the handle so we can restore it
@@ -326,7 +309,7 @@ Private Function KeyboardProc(ByVal nCode As Long, ByVal wParam As Long, ByVal l
    End If
    KeyboardProc = CallNextHookEx(m_hHook(WH_KEYBOARD), nCode, wParam, lParam)
 End Function
-Private Function HookCall(ByVal eType As EHTHookTypeConstants, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Function HookCall(ByVal eType As eHookType, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Dim oItem As IWindowsHook
 Dim i As Long
 Dim bConsume As Boolean
@@ -350,7 +333,7 @@ End Function
 
 Public Function RemoveHook( _
       ByVal IHook As IWindowsHook, _
-      ByVal eType As EHTHookTypeConstants _
+      ByVal eType As eHookType _
    )
 Dim i As Long
 Dim lPtr As Long
