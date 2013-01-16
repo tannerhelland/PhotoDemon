@@ -25,6 +25,25 @@ Begin VB.Form FormRipple
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cmbEdges 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   19
+      Top             =   3975
+      Width           =   4860
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -48,7 +67,7 @@ Begin VB.Form FormRipple
       Left            =   6120
       Max             =   360
       TabIndex        =   15
-      Top             =   2880
+      Top             =   2280
       Width           =   4815
    End
    Begin VB.TextBox txtPhase 
@@ -68,7 +87,7 @@ Begin VB.Form FormRipple
       MaxLength       =   3
       TabIndex        =   14
       Text            =   "0"
-      Top             =   2820
+      Top             =   2220
       Width           =   735
    End
    Begin VB.HScrollBar hsAmplitude 
@@ -76,8 +95,8 @@ Begin VB.Form FormRipple
       Left            =   6120
       Max             =   100
       TabIndex        =   12
-      Top             =   2040
-      Value           =   10
+      Top             =   1440
+      Value           =   80
       Width           =   4815
    End
    Begin VB.TextBox txtAmplitude 
@@ -96,8 +115,8 @@ Begin VB.Form FormRipple
       Left            =   11040
       MaxLength       =   3
       TabIndex        =   11
-      Text            =   "10"
-      Top             =   1980
+      Text            =   "80"
+      Top             =   1380
       Width           =   735
    End
    Begin VB.HScrollBar hsWavelength 
@@ -106,7 +125,7 @@ Begin VB.Form FormRipple
       Max             =   200
       Min             =   1
       TabIndex        =   9
-      Top             =   1200
+      Top             =   600
       Value           =   16
       Width           =   4815
    End
@@ -127,7 +146,7 @@ Begin VB.Form FormRipple
       MaxLength       =   3
       TabIndex        =   8
       Text            =   "16"
-      Top             =   1140
+      Top             =   540
       Width           =   735
    End
    Begin VB.TextBox txtRadius 
@@ -147,7 +166,7 @@ Begin VB.Form FormRipple
       MaxLength       =   3
       TabIndex        =   6
       Text            =   "100"
-      Top             =   3660
+      Top             =   3060
       Width           =   735
    End
    Begin VB.HScrollBar hsRadius 
@@ -156,7 +175,7 @@ Begin VB.Form FormRipple
       Max             =   100
       Min             =   1
       TabIndex        =   5
-      Top             =   3720
+      Top             =   3120
       Value           =   100
       Width           =   4815
    End
@@ -178,7 +197,7 @@ Begin VB.Form FormRipple
       Index           =   0
       Left            =   6120
       TabIndex        =   4
-      Top             =   4560
+      Top             =   4890
       Value           =   -1  'True
       Width           =   1095
    End
@@ -200,7 +219,7 @@ Begin VB.Form FormRipple
       Index           =   1
       Left            =   7560
       TabIndex        =   3
-      Top             =   4560
+      Top             =   4890
       Width           =   2535
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -211,6 +230,27 @@ Begin VB.Form FormRipple
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "if pixels lie outside the image..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   20
+      Top             =   3600
+      Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -237,7 +277,7 @@ Begin VB.Form FormRipple
       Index           =   4
       Left            =   6000
       TabIndex        =   16
-      Top             =   2520
+      Top             =   1920
       Width           =   1425
    End
    Begin VB.Label lblTitle 
@@ -258,7 +298,7 @@ Begin VB.Form FormRipple
       Index           =   3
       Left            =   6000
       TabIndex        =   13
-      Top             =   1680
+      Top             =   1080
       Width           =   3120
    End
    Begin VB.Label lblTitle 
@@ -279,7 +319,7 @@ Begin VB.Form FormRipple
       Index           =   0
       Left            =   6000
       TabIndex        =   10
-      Top             =   840
+      Top             =   240
       Width           =   3270
    End
    Begin VB.Label lblTitle 
@@ -300,7 +340,7 @@ Begin VB.Form FormRipple
       Index           =   1
       Left            =   6000
       TabIndex        =   7
-      Top             =   3360
+      Top             =   2760
       Width           =   2145
    End
    Begin VB.Label lblTitle 
@@ -323,7 +363,7 @@ Begin VB.Form FormRipple
       Index           =   2
       Left            =   6000
       TabIndex        =   2
-      Top             =   4200
+      Top             =   4530
       Width           =   1845
    End
 End
@@ -336,8 +376,8 @@ Attribute VB_Exposed = False
 'Image "Ripple" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 06/January/13
-'Last updated: 06/January/12
-'Last update: initial build
+'Last updated: 15/January/13
+'Last update: added support for custom edge handling
 '
 'This tool allows the user to apply a "water ripple" distortion to an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality result.
@@ -359,6 +399,14 @@ Option Explicit
 
 'Use this to prevent the text box and scroll bar from updating each other in an endless loop
 Dim userChange As Boolean
+
+Private Sub cmbEdges_Click()
+    updatePreview
+End Sub
+
+Private Sub cmbEdges_Scroll()
+    updatePreview
+End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -392,18 +440,14 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptInterpolate(0) Then
-        Process DistortRipple, CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), True
-    Else
-        Process DistortRipple, CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), False
-    End If
+    Process DistortRipple, CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), CLng(cmbEdges.ListIndex), OptInterpolate(0)
     
     Unload Me
     
 End Sub
 
 'Apply a "water ripple" effect to an image
-Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude As Double, ByVal ripplePhase As Double, ByVal rippleRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude As Double, ByVal ripplePhase As Double, ByVal rippleRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Simulating ripples across image surface..."
     
@@ -432,20 +476,15 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
             
-    'Because interpolation may be used, it's necessary to keep pixel values within special ranges
-    Dim xLimit As Long, yLimit As Long
-    If useBilinear Then
-        xLimit = finalX - 1
-        yLimit = finalY - 1
-    Else
-        xLimit = finalX
-        yLimit = finalY
-    End If
-            
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -518,28 +557,8 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
             
         End If
         
-        'Make sure the source coordinates are in-bounds
-        If srcX < 0 Then srcX = 0
-        If srcY < 0 Then srcY = 0
-        If srcX > xLimit Then srcX = xLimit
-        If srcY > yLimit Then srcY = yLimit
-        
-        'Interpolate the result if desired, otherwise use nearest-neighbor
-        If useBilinear Then
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = getInterpolatedVal(srcX, srcY, srcImageData, i, qvDepth)
-            Next i
-        
-        Else
-        
-            QuickVal2 = Int(srcX) * qvDepth
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = srcImageData(QuickVal2 + i, Int(srcY))
-            Next i
-                
-        End If
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If toPreview = False Then
@@ -560,7 +579,11 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
 End Sub
 
 Private Sub Form_Activate()
-        
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_REFLECT
+    
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
@@ -659,10 +682,6 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    If OptInterpolate(0) Then
-        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), True, True, fxPreview
-    Else
-        RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), False, True, fxPreview
-    End If
-
+    RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
+    
 End Sub

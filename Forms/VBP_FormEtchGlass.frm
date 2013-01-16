@@ -25,6 +25,25 @@ Begin VB.Form FormFiguredGlass
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cmbEdges 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   13
+      Top             =   3255
+      Width           =   4860
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -49,7 +68,7 @@ Begin VB.Form FormFiguredGlass
       Max             =   100
       Min             =   1
       TabIndex        =   10
-      Top             =   1860
+      Top             =   1620
       Value           =   50
       Width           =   4815
    End
@@ -70,7 +89,7 @@ Begin VB.Form FormFiguredGlass
       MaxLength       =   3
       TabIndex        =   9
       Text            =   "50"
-      Top             =   1800
+      Top             =   1560
       Width           =   735
    End
    Begin VB.TextBox txtTurbulence 
@@ -90,7 +109,7 @@ Begin VB.Form FormFiguredGlass
       MaxLength       =   3
       TabIndex        =   7
       Text            =   "50"
-      Top             =   2580
+      Top             =   2340
       Width           =   735
    End
    Begin VB.HScrollBar hsTurbulence 
@@ -99,7 +118,7 @@ Begin VB.Form FormFiguredGlass
       Max             =   100
       Min             =   1
       TabIndex        =   6
-      Top             =   2640
+      Top             =   2400
       Value           =   50
       Width           =   4815
    End
@@ -121,7 +140,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   0
       Left            =   6120
       TabIndex        =   5
-      Top             =   3480
+      Top             =   4170
       Value           =   -1  'True
       Width           =   1095
    End
@@ -143,7 +162,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   1
       Left            =   7560
       TabIndex        =   4
-      Top             =   3480
+      Top             =   4170
       Width           =   2535
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -152,8 +171,29 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   12
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "if pixels lie outside the image..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   2880
+      Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -180,7 +220,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   1
       Left            =   6000
       TabIndex        =   8
-      Top             =   2280
+      Top             =   2040
       Width           =   1200
    End
    Begin VB.Label lblTitle 
@@ -203,7 +243,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   2
       Left            =   6000
       TabIndex        =   3
-      Top             =   3120
+      Top             =   3810
       Width           =   1845
    End
    Begin VB.Label lblTitle 
@@ -226,7 +266,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   0
       Left            =   6000
       TabIndex        =   2
-      Top             =   1440
+      Top             =   1200
       Width           =   600
    End
 End
@@ -239,8 +279,8 @@ Attribute VB_Exposed = False
 'Image "Figured Glass" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 08/January/13
-'Last updated: 08/January/13
-'Last update: initial build
+'Last updated: 15/January/13
+'Last update: added support for custom edge handling
 '
 'This tool allows the user to apply a distort operation to an image that mimicks seeing it through warped glass, perhaps
 ' glass tiles of some sort.  Many different names are used for this effect - Paint.NET calls it "dents" (which I quite
@@ -266,6 +306,14 @@ Dim userChange As Boolean
 'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
 Dim m_zOffset As Double
 
+Private Sub cmbEdges_Click()
+    updatePreview
+End Sub
+
+Private Sub cmbEdges_Scroll()
+    updatePreview
+End Sub
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -288,18 +336,14 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptInterpolate(0) Then
-        Process DistortFiguredGlass, CDbl(hsScale), CDbl(hsTurbulence / 100), True
-    Else
-        Process DistortFiguredGlass, CDbl(hsScale), CDbl(hsTurbulence / 100), False
-    End If
+    Process DistortFiguredGlass, CDbl(hsScale), CDbl(hsTurbulence / 100), CLng(cmbEdges.ListIndex), OptInterpolate(0)
     
     Unload Me
     
 End Sub
 
 'Apply a "figured glass" effect to an image
-Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Projecting image through simulated glass..."
     
@@ -327,21 +371,16 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
-            
-    'Because interpolation may be used, it's necessary to keep pixel values within special ranges
-    Dim xLimit As Long, yLimit As Long
-    If useBilinear Then
-        xLimit = finalX - 1
-        yLimit = finalY - 1
-    Else
-        xLimit = finalX
-        yLimit = finalY
-    End If
-
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -390,28 +429,8 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
         srcX = x + sinTable(pDisplace)
         srcY = y + sinTable(pDisplace)
         
-        'Make sure the source coordinates are in-bounds
-        If srcX < 0 Then srcX = 0
-        If srcY < 0 Then srcY = 0
-        If srcX > xLimit Then srcX = xLimit
-        If srcY > yLimit Then srcY = yLimit
-        
-        'Interpolate the result if desired, otherwise use nearest-neighbor
-        If useBilinear Then
-                
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = getInterpolatedVal(srcX, srcY, srcImageData, i, qvDepth)
-            Next i
-        
-        Else
-        
-            QuickVal2 = Int(srcX) * qvDepth
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = srcImageData(QuickVal2 + i, Int(srcY))
-            Next i
-                
-        End If
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If toPreview = False Then
@@ -432,6 +451,10 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
 End Sub
 
 Private Sub Form_Activate()
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, 1
     
     'Create the preview
     updatePreview
@@ -502,10 +525,6 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    If OptInterpolate(0) Then
-        FiguredGlassFX CDbl(hsScale), CDbl(hsTurbulence / 100), True, True, fxPreview
-    Else
-        FiguredGlassFX CDbl(hsScale), CDbl(hsTurbulence / 100), False, True, fxPreview
-    End If
-
+    FiguredGlassFX CDbl(hsScale), CDbl(hsTurbulence / 100), CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
+    
 End Sub

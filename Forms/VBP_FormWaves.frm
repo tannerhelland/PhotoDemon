@@ -25,6 +25,25 @@ Begin VB.Form FormWaves
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cmbEdges 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   20
+      Top             =   3975
+      Width           =   4860
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -60,7 +79,7 @@ Begin VB.Form FormWaves
       MaxLength       =   3
       TabIndex        =   14
       Text            =   "1"
-      Top             =   2940
+      Top             =   2220
       Width           =   735
    End
    Begin VB.HScrollBar hsWavelengthY 
@@ -69,7 +88,7 @@ Begin VB.Form FormWaves
       Max             =   50
       Min             =   1
       TabIndex        =   13
-      Top             =   3000
+      Top             =   2280
       Value           =   1
       Width           =   4815
    End
@@ -90,7 +109,7 @@ Begin VB.Form FormWaves
       MaxLength       =   3
       TabIndex        =   12
       Text            =   "0"
-      Top             =   3780
+      Top             =   3060
       Width           =   735
    End
    Begin VB.HScrollBar hsAmplitudeY 
@@ -98,7 +117,7 @@ Begin VB.Form FormWaves
       Left            =   6120
       Max             =   200
       TabIndex        =   11
-      Top             =   3840
+      Top             =   3120
       Width           =   4815
    End
    Begin VB.HScrollBar hsAmplitudeX 
@@ -106,7 +125,7 @@ Begin VB.Form FormWaves
       Left            =   6120
       Max             =   200
       TabIndex        =   9
-      Top             =   2160
+      Top             =   1440
       Value           =   20
       Width           =   4815
    End
@@ -127,7 +146,7 @@ Begin VB.Form FormWaves
       MaxLength       =   3
       TabIndex        =   8
       Text            =   "20"
-      Top             =   2100
+      Top             =   1380
       Width           =   735
    End
    Begin VB.HScrollBar hsWavelengthX 
@@ -136,7 +155,7 @@ Begin VB.Form FormWaves
       Max             =   50
       Min             =   1
       TabIndex        =   6
-      Top             =   1320
+      Top             =   600
       Value           =   30
       Width           =   4815
    End
@@ -157,7 +176,7 @@ Begin VB.Form FormWaves
       MaxLength       =   3
       TabIndex        =   5
       Text            =   "30"
-      Top             =   1260
+      Top             =   540
       Width           =   735
    End
    Begin VB.OptionButton OptInterpolate 
@@ -178,7 +197,7 @@ Begin VB.Form FormWaves
       Index           =   0
       Left            =   6120
       TabIndex        =   4
-      Top             =   4680
+      Top             =   4860
       Value           =   -1  'True
       Width           =   1095
    End
@@ -200,7 +219,7 @@ Begin VB.Form FormWaves
       Index           =   1
       Left            =   7560
       TabIndex        =   3
-      Top             =   4680
+      Top             =   4860
       Width           =   2535
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -209,8 +228,29 @@ Begin VB.Form FormWaves
       TabIndex        =   18
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "if pixels lie outside the image..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   19
+      Top             =   3600
+      Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -237,7 +277,7 @@ Begin VB.Form FormWaves
       Index           =   4
       Left            =   6000
       TabIndex        =   16
-      Top             =   2640
+      Top             =   1920
       Width           =   2115
    End
    Begin VB.Label lblTitle 
@@ -258,7 +298,7 @@ Begin VB.Form FormWaves
       Index           =   1
       Left            =   6000
       TabIndex        =   15
-      Top             =   3480
+      Top             =   2760
       Width           =   3090
    End
    Begin VB.Label lblTitle 
@@ -279,7 +319,7 @@ Begin VB.Form FormWaves
       Index           =   3
       Left            =   6000
       TabIndex        =   10
-      Top             =   1800
+      Top             =   1080
       Width           =   3390
    End
    Begin VB.Label lblTitle 
@@ -300,7 +340,7 @@ Begin VB.Form FormWaves
       Index           =   0
       Left            =   6000
       TabIndex        =   7
-      Top             =   960
+      Top             =   240
       Width           =   2415
    End
    Begin VB.Label lblTitle 
@@ -323,7 +363,7 @@ Begin VB.Form FormWaves
       Index           =   2
       Left            =   6000
       TabIndex        =   2
-      Top             =   4320
+      Top             =   4500
       Width           =   1845
    End
 End
@@ -336,8 +376,8 @@ Attribute VB_Exposed = False
 'Image "Waves" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 07/January/13
-'Last updated: 07/January/12
-'Last update: initial build
+'Last updated: 15/January/13
+'Last update: added user-settable options for edge handling
 '
 'This tool allows the user to apply a "waves" distortion to an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality result.
@@ -355,6 +395,14 @@ Option Explicit
 
 'Use this to prevent the text box and scroll bar from updating each other in an endless loop
 Dim userChange As Boolean
+
+Private Sub cmbEdges_Click()
+    updatePreview
+End Sub
+
+Private Sub cmbEdges_Scroll()
+    updatePreview
+End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -388,21 +436,17 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptInterpolate(0) Then
-        Process DistortWaves, CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), True
-    Else
-        Process DistortWaves, CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), False
-    End If
-    
+    Process DistortWaves, CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), CLng(cmbEdges.ListIndex), OptInterpolate(0)
+        
     Unload Me
     
 End Sub
 
 'Apply a "wave-like" effect to an image
-Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, ByVal yWavelength As Double, ByVal yAmplitude As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, ByVal yWavelength As Double, ByVal yAmplitude As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Dipping image in virtual wave pool..."
-    
+        
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -428,15 +472,15 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
             
-    'Because interpolation may be used, it's necessary to keep pixel values within special ranges
-    Dim xLimit As Long, yLimit As Long
-    xLimit = finalX
-    yLimit = finalY
-            
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -466,36 +510,16 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
         
         srcX = x + Sin(nX) * xAmplitude
         srcY = y + Sin(nY) * yAmplitude
-        
-        'Make sure the source coordinates are in-bounds
-        If srcX < 0 Then srcX = finalX - srcX
-        If srcY < 0 Then srcY = finalY - srcY
-        If srcX > xLimit Then srcX = srcX - xLimit
-        If srcY > yLimit Then srcY = srcY - yLimit
-        
-        'Interpolate the result if desired, otherwise use nearest-neighbor
-        If useBilinear Then
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = getInterpolatedValWrap(srcX, srcY, xLimit, yLimit, srcImageData, i, qvDepth)
-            Next i
-        
-        Else
-        
-            QuickVal2 = Int(srcX) * qvDepth
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = srcImageData(QuickVal2 + i, Int(srcY))
-            Next i
                 
-        End If
-                
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+                        
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
     Next x
-    
+            
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
@@ -505,11 +529,15 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
-        
+            
 End Sub
 
 Private Sub Form_Activate()
         
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_REFLECT
+    
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
@@ -608,10 +636,6 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    If OptInterpolate(0) Then
-        WaveImage CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), True, True, fxPreview
-    Else
-        WaveImage CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), False, True, fxPreview
-    End If
-
+    WaveImage CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
+    
 End Sub

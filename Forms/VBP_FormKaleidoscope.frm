@@ -126,6 +126,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   255
       Left            =   6120
       Max             =   100
+      Min             =   1
       TabIndex        =   8
       Top             =   3750
       Value           =   100
@@ -149,7 +150,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   0
       Left            =   6120
       TabIndex        =   7
-      Top             =   4560
+      Top             =   4530
       Value           =   -1  'True
       Width           =   1095
    End
@@ -171,7 +172,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   1
       Left            =   7560
       TabIndex        =   6
-      Top             =   4560
+      Top             =   4530
       Width           =   2535
    End
    Begin VB.TextBox txtAngle 
@@ -304,7 +305,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   2
       Left            =   6000
       TabIndex        =   5
-      Top             =   4200
+      Top             =   4170
       Width           =   1845
    End
    Begin VB.Label lblTitle 
@@ -340,8 +341,8 @@ Attribute VB_Exposed = False
 'Image "Kaleiodoscope" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 14/January/13
-'Last updated: 14/January/13
-'Last update: initial build
+'Last updated: 15/January/13
+'Last update: added use of pdFilterSupport class for better interpolation and edge handling
 '
 'This tool allows the user to apply a simulated kaleidoscope distort to the image.  A number of variables can be
 ' set as part of the transformation; simply playing with the sliders should give a good indication of how they
@@ -394,12 +395,8 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptInterpolate(0) Then
-        Process DistortKaleidoscope, CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, True
-    Else
-        Process DistortKaleidoscope, CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, False
-    End If
-    
+    Process DistortKaleidoscope, CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, OptInterpolate(0)
+        
     Unload Me
     
 End Sub
@@ -433,21 +430,16 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
-            
-    'Because interpolation may be used, it's necessary to keep pixel values within special ranges
-    Dim xLimit As Long, yLimit As Long
-    If useBilinear Then
-        xLimit = finalX - 1
-        yLimit = finalY - 1
-    Else
-        xLimit = finalX
-        yLimit = finalY
-    End If
-
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, EDGE_CLAMP, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -485,9 +477,7 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
               
     sRadius = sRadius * (effectRadius / 100)
-    
-    'sRadius = effectRadius
-              
+                  
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
@@ -510,8 +500,6 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
             tRadius = sRadius / Cos(theta)
             sDistance = tRadius * convertTriangle(sDistance / tRadius)
 
-            'Debug.Print convertTriangle(sDistance / tRadius)
-
         Else
             tRadius = sDistance
         End If
@@ -521,30 +509,8 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
         srcX = midX + sDistance * Cos(theta)
         srcY = midY + sDistance * Sin(theta)
         
-        'Debug.Print srcX & "," & srcY
-        
-        'Make sure the source coordinates are in-bounds
-        If srcX < 0 Then srcX = 0
-        If srcY < 0 Then srcY = 0
-        If srcX > xLimit Then srcX = xLimit
-        If srcY > yLimit Then srcY = yLimit
-        
-        'Interpolate the result if desired, otherwise use nearest-neighbor
-        If useBilinear Then
-                
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = getInterpolatedVal(srcX, srcY, srcImageData, i, qvDepth)
-            Next i
-        
-        Else
-        
-            QuickVal2 = Int(srcX) * qvDepth
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = srcImageData(QuickVal2 + i, Int(srcY))
-            Next i
-                
-        End If
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If toPreview = False Then
@@ -681,18 +647,14 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    If OptInterpolate(0) Then
-        KaleidoscopeImage CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, True, True, fxPreview
-    Else
-        KaleidoscopeImage CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, False, True, fxPreview
-    End If
-
+    KaleidoscopeImage CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, OptInterpolate(0), True, fxPreview
+    
 End Sub
 
 'Return a repeating triangle shape in the range [0, 1] with wavelength 1
 Private Function convertTriangle(ByVal trInput As Double) As Double
 
-    Static tmpCalc As Double
+    Dim tmpCalc As Double
     tmpCalc = Modulo(trInput, 1)
     convertTriangle = IIf(tmpCalc < 0.5, tmpCalc, 1 - tmpCalc)
     

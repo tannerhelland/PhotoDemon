@@ -25,6 +25,25 @@ Begin VB.Form FormSwirl
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cmbEdges 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   13
+      Top             =   3225
+      Width           =   4860
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -60,7 +79,7 @@ Begin VB.Form FormSwirl
       MaxLength       =   3
       TabIndex        =   9
       Text            =   "100"
-      Top             =   2820
+      Top             =   2340
       Width           =   735
    End
    Begin VB.HScrollBar hsRadius 
@@ -69,7 +88,7 @@ Begin VB.Form FormSwirl
       Max             =   100
       Min             =   1
       TabIndex        =   8
-      Top             =   2880
+      Top             =   2400
       Value           =   100
       Width           =   4815
    End
@@ -91,7 +110,7 @@ Begin VB.Form FormSwirl
       Index           =   0
       Left            =   6120
       TabIndex        =   7
-      Top             =   3720
+      Top             =   4080
       Value           =   -1  'True
       Width           =   1095
    End
@@ -113,7 +132,7 @@ Begin VB.Form FormSwirl
       Index           =   1
       Left            =   7560
       TabIndex        =   6
-      Top             =   3720
+      Top             =   4080
       Width           =   2535
    End
    Begin VB.TextBox txtAngle 
@@ -133,7 +152,7 @@ Begin VB.Form FormSwirl
       MaxLength       =   6
       TabIndex        =   4
       Text            =   "0.0"
-      Top             =   2040
+      Top             =   1560
       Width           =   735
    End
    Begin VB.HScrollBar hsAngle 
@@ -143,7 +162,7 @@ Begin VB.Form FormSwirl
       Max             =   1800
       Min             =   -1800
       TabIndex        =   3
-      Top             =   2100
+      Top             =   1620
       Width           =   4815
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -152,8 +171,29 @@ Begin VB.Form FormSwirl
       TabIndex        =   12
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "if pixels lie outside the image..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   2850
+      Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -179,7 +219,7 @@ Begin VB.Form FormSwirl
       Height          =   285
       Left            =   6000
       TabIndex        =   10
-      Top             =   2520
+      Top             =   2040
       Width           =   2145
    End
    Begin VB.Label lblInterpolation 
@@ -201,7 +241,7 @@ Begin VB.Form FormSwirl
       Height          =   285
       Left            =   6000
       TabIndex        =   5
-      Top             =   3360
+      Top             =   3720
       Width           =   1845
    End
    Begin VB.Label lblAmount 
@@ -223,7 +263,7 @@ Begin VB.Form FormSwirl
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   1680
+      Top             =   1200
       Width           =   1230
    End
 End
@@ -236,8 +276,8 @@ Attribute VB_Exposed = False
 'Image "Swirl" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 06/January/13
-'Last update: applied additional optimizations and tweaks
+'Last updated: 15/January/13
+'Last update: added support for custom edge handling
 '
 'This tool allows the user to "swirl" an image at an arbitrary angle in 1/10 degree increments.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality swirl.
@@ -255,6 +295,14 @@ Option Explicit
 
 'Use this to prevent the text box and scroll bar from updating each other in an endless loop
 Dim userChange As Boolean
+
+Private Sub cmbEdges_Click()
+    updatePreview
+End Sub
+
+Private Sub cmbEdges_Scroll()
+    updatePreview
+End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -278,18 +326,14 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptInterpolate(0) Then
-        Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, True
-    Else
-        Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, False
-    End If
-    
+    Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0)
+        
     Unload Me
     
 End Sub
 
 'Apply a "swirl" effect to an image
-Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     'Reverse the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
     swirlAngle = -(swirlAngle / 10)
@@ -321,20 +365,15 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
             
-    'Because interpolation may be used, it's necessary to keep pixel values within special ranges
-    Dim xLimit As Long, yLimit As Long
-    If useBilinear Then
-        xLimit = finalX - 1
-        yLimit = finalY - 1
-    Else
-        xLimit = finalX
-        yLimit = finalY
-    End If
-            
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -398,28 +437,8 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
             
         End If
         
-        'Make sure the source coordinates are in-bounds
-        If srcX < 0 Then srcX = 0
-        If srcY < 0 Then srcY = 0
-        If srcX > xLimit Then srcX = xLimit
-        If srcY > yLimit Then srcY = yLimit
-        
-        'Interpolate the result if desired, otherwise use nearest-neighbor
-        If useBilinear Then
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = getInterpolatedVal(srcX, srcY, srcImageData, i, qvDepth)
-            Next i
-        
-        Else
-        
-            QuickVal2 = Int(srcX) * qvDepth
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = srcImageData(QuickVal2 + i, Int(srcY))
-            Next i
-                
-        End If
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If toPreview = False Then
@@ -440,7 +459,11 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
 End Sub
 
 Private Sub Form_Activate()
-        
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_CLAMP
+    
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
@@ -510,10 +533,6 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    If OptInterpolate(0) Then
-        SwirlImage CDbl(hsAngle / 10), hsRadius.Value, True, True, fxPreview
-    Else
-        SwirlImage CDbl(hsAngle / 10), hsRadius.Value, False, True, fxPreview
-    End If
-
+    SwirlImage CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
+    
 End Sub

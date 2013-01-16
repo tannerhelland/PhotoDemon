@@ -25,6 +25,25 @@ Begin VB.Form FormPolar
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cmbEdges 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   12
+      Top             =   3225
+      Width           =   4860
+   End
    Begin VB.ComboBox cboConvert 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -41,7 +60,7 @@ Begin VB.Form FormPolar
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   11
-      Top             =   2040
+      Top             =   1320
       Width           =   4815
    End
    Begin VB.CommandButton CmdOK 
@@ -79,7 +98,7 @@ Begin VB.Form FormPolar
       MaxLength       =   3
       TabIndex        =   7
       Text            =   "100"
-      Top             =   2940
+      Top             =   2220
       Width           =   735
    End
    Begin VB.HScrollBar hsRadius 
@@ -88,7 +107,7 @@ Begin VB.Form FormPolar
       Max             =   100
       Min             =   1
       TabIndex        =   6
-      Top             =   3000
+      Top             =   2280
       Value           =   100
       Width           =   4815
    End
@@ -110,7 +129,7 @@ Begin VB.Form FormPolar
       Index           =   0
       Left            =   6120
       TabIndex        =   5
-      Top             =   3840
+      Top             =   4170
       Value           =   -1  'True
       Width           =   1095
    End
@@ -132,7 +151,7 @@ Begin VB.Form FormPolar
       Index           =   1
       Left            =   7560
       TabIndex        =   4
-      Top             =   3840
+      Top             =   4170
       Width           =   2535
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -143,6 +162,27 @@ Begin VB.Form FormPolar
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "if pixels lie outside the image..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   2850
+      Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -168,7 +208,7 @@ Begin VB.Form FormPolar
       Height          =   285
       Left            =   6000
       TabIndex        =   8
-      Top             =   2640
+      Top             =   1920
       Width           =   2145
    End
    Begin VB.Label lblInterpolation 
@@ -190,7 +230,7 @@ Begin VB.Form FormPolar
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   3480
+      Top             =   3810
       Width           =   1845
    End
    Begin VB.Label lblConvert 
@@ -212,7 +252,7 @@ Begin VB.Form FormPolar
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   1680
+      Top             =   960
       Width           =   2325
    End
 End
@@ -225,8 +265,8 @@ Attribute VB_Exposed = False
 'Image Polar Coordinate Conversion Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/January/13
-'Last updated: 14/January/13
-'Last update: initial build
+'Last updated: 15/January/13
+'Last update: added support for custom edge handling
 '
 'This tool allows the user to convert an image between rectangular and polar coordinates.  An optional polar
 ' inversion technique is also supplied (as this is used by Paint.NET).
@@ -247,6 +287,14 @@ Private Sub cboConvert_Scroll()
     updatePreview
 End Sub
 
+Private Sub cmbEdges_Click()
+    updatePreview
+End Sub
+
+Private Sub cmbEdges_Scroll()
+    updatePreview
+End Sub
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -264,7 +312,7 @@ Private Sub cmdOK_Click()
     Me.Visible = False
         
     'Based on the user's selections, submit the proper processor request
-    Process ConvertPolar, cboConvert.ListIndex, hsRadius.Value, OptInterpolate(0)
+    Process ConvertPolar, cboConvert.ListIndex, hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0)
     
     Unload Me
     
@@ -275,7 +323,7 @@ End Sub
 ' 0) Convert rectangular to polar
 ' 1) Convert polar to rectangular
 ' 2) Polar inversion
-Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Performing polar coordinate conversion..."
     
@@ -303,21 +351,16 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
-            
-    'Because interpolation may be used, it's necessary to keep pixel values within special ranges
-    Dim xLimit As Long, yLimit As Long
-    If useBilinear Then
-        xLimit = finalX - 1
-        yLimit = finalY - 1
-    Else
-        xLimit = finalX
-        yLimit = finalY
-    End If
-            
+                
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -335,7 +378,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
     
     'Rotation values
     Dim theta As Double, sRadius As Double, sRadius2 As Double, sDistance As Double
-    Dim r As Double, m As Double, t As Double
+    Dim r As Double, M As Double, t As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -488,28 +531,8 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
             
         End Select
         
-        'Make sure the source coordinates are in-bounds
-        If srcX < 0 Then srcX = 0
-        If srcY < 0 Then srcY = 0
-        If srcX > xLimit Then srcX = xLimit
-        If srcY > yLimit Then srcY = yLimit
-        
-        'Interpolate the result if desired, otherwise use nearest-neighbor
-        If useBilinear Then
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = getInterpolatedVal(srcX, srcY, srcImageData, i, qvDepth)
-            Next i
-        
-        Else
-        
-            QuickVal2 = Int(srcX) * qvDepth
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = srcImageData(QuickVal2 + i, Int(srcY))
-            Next i
-                
-        End If
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If toPreview = False Then
@@ -530,7 +553,11 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
 End Sub
 
 Private Sub Form_Activate()
-        
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_ERASE
+    
     'Populate the polar conversion technique drop-down
     cboConvert.AddItem "Rectangular to polar", 0
     cboConvert.AddItem "Polar to rectangular", 1
@@ -576,12 +603,13 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
     
-    ConvertToPolar cboConvert.ListIndex, hsRadius.Value, OptInterpolate(0), True, fxPreview
+    ConvertToPolar cboConvert.ListIndex, hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
     
 End Sub
 
-'This is a modified module function; it handles negative values specially to ensure they work with our transform
+'This is a modified module function; it handles negative values specially to ensure they work with our kaleidoscope function
 Private Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
     If Modulo < 0 Then Modulo = Modulo + Divisor
 End Function
+

@@ -288,3 +288,15 @@ Public Sub ClearImageCoordinatesDisplay()
     FormMain.lblCoordinates.Caption = ""
     FormMain.lblCoordinates.Refresh
 End Sub
+
+'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
+Public Sub popDistortEdgeBox(ByRef cmbEdges As ComboBox, Optional ByVal defaultEdgeMethod As EDGE_OPERATOR)
+
+    cmbEdges.Clear
+    cmbEdges.AddItem " clamp them to the nearest available pixel"
+    cmbEdges.AddItem " reflect them across the nearest edge"
+    cmbEdges.AddItem " wrap them around the image"
+    cmbEdges.AddItem " erase them"
+    cmbEdges.ListIndex = defaultEdgeMethod
+    
+End Sub

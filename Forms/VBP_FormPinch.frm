@@ -25,6 +25,25 @@ Begin VB.Form FormPinch
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cmbEdges 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   16
+      Top             =   3855
+      Width           =   4860
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -59,8 +78,8 @@ Begin VB.Form FormPinch
       Left            =   11040
       MaxLength       =   4
       TabIndex        =   12
-      Text            =   "0"
-      Top             =   1740
+      Text            =   "20"
+      Top             =   1260
       Width           =   735
    End
    Begin VB.HScrollBar hsAmount 
@@ -69,7 +88,8 @@ Begin VB.Form FormPinch
       Max             =   100
       Min             =   -100
       TabIndex        =   11
-      Top             =   1800
+      Top             =   1320
+      Value           =   20
       Width           =   4815
    End
    Begin VB.TextBox txtRadius 
@@ -89,7 +109,7 @@ Begin VB.Form FormPinch
       MaxLength       =   3
       TabIndex        =   9
       Text            =   "100"
-      Top             =   3420
+      Top             =   2940
       Width           =   735
    End
    Begin VB.HScrollBar hsRadius 
@@ -98,7 +118,7 @@ Begin VB.Form FormPinch
       Max             =   100
       Min             =   1
       TabIndex        =   8
-      Top             =   3480
+      Top             =   3000
       Value           =   100
       Width           =   4815
    End
@@ -120,7 +140,7 @@ Begin VB.Form FormPinch
       Index           =   0
       Left            =   6120
       TabIndex        =   7
-      Top             =   4320
+      Top             =   4770
       Value           =   -1  'True
       Width           =   1095
    End
@@ -142,7 +162,7 @@ Begin VB.Form FormPinch
       Index           =   1
       Left            =   7560
       TabIndex        =   6
-      Top             =   4320
+      Top             =   4770
       Width           =   2535
    End
    Begin VB.TextBox txtAngle 
@@ -162,7 +182,7 @@ Begin VB.Form FormPinch
       MaxLength       =   6
       TabIndex        =   4
       Text            =   "0.0"
-      Top             =   2640
+      Top             =   2160
       Width           =   735
    End
    Begin VB.HScrollBar hsAngle 
@@ -172,7 +192,7 @@ Begin VB.Form FormPinch
       Max             =   3600
       Min             =   -3600
       TabIndex        =   3
-      Top             =   2700
+      Top             =   2220
       Width           =   4815
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -183,6 +203,27 @@ Begin VB.Form FormPinch
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "if pixels lie outside the image..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   17
+      Top             =   3480
+      Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -209,7 +250,7 @@ Begin VB.Form FormPinch
       Index           =   3
       Left            =   6000
       TabIndex        =   13
-      Top             =   1440
+      Top             =   960
       Width           =   1545
    End
    Begin VB.Label lblTitle 
@@ -230,7 +271,7 @@ Begin VB.Form FormPinch
       Index           =   1
       Left            =   6000
       TabIndex        =   10
-      Top             =   3120
+      Top             =   2640
       Width           =   2145
    End
    Begin VB.Label lblTitle 
@@ -253,7 +294,7 @@ Begin VB.Form FormPinch
       Index           =   2
       Left            =   6000
       TabIndex        =   5
-      Top             =   3960
+      Top             =   4410
       Width           =   1845
    End
    Begin VB.Label lblTitle 
@@ -276,7 +317,7 @@ Begin VB.Form FormPinch
       Index           =   0
       Left            =   6000
       TabIndex        =   2
-      Top             =   2280
+      Top             =   1800
       Width           =   1260
    End
 End
@@ -289,8 +330,8 @@ Attribute VB_Exposed = False
 'Image "Pinch and Whirl" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 06/January/12
-'Last update: applied additional optimizations and tweaks
+'Last updated: 15/January/13
+'Last update: added support for custom edge handling
 '
 'This tool allows the user to "pinch" an image.  Negative pinch values result in a "bulging" effect.  A "whirl"
 ' component has also been added, as that seems to be standard for this tool in other software.  Bilinear interpolation
@@ -309,6 +350,14 @@ Option Explicit
 
 'Use this to prevent the text box and scroll bar from updating each other in an endless loop
 Dim userChange As Boolean
+
+Private Sub cmbEdges_Click()
+    updatePreview
+End Sub
+
+Private Sub cmbEdges_Scroll()
+    updatePreview
+End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -337,18 +386,14 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptInterpolate(0) Then
-        Process DistortPinchAndWhirl, CDbl(hsAmount / 100), CDbl(hsAngle / 10), hsRadius.Value, True
-    Else
-        Process DistortPinchAndWhirl, CDbl(hsAmount / 100), CDbl(hsAngle / 10), hsRadius.Value, False
-    End If
+    Process DistortPinchAndWhirl, CDbl(hsAmount / 100), CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0)
     
     Unload Me
     
 End Sub
 
 'Apply a "pinch and whirl" effect to an image
-Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, ByVal effectRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Pinching and whirling image..."
     
@@ -376,21 +421,16 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
-            
-    'Because interpolation may be used, it's necessary to keep pixel values within special ranges
-    Dim xLimit As Long, yLimit As Long
-    If useBilinear Then
-        xLimit = finalX - 1
-        yLimit = finalY - 1
-    Else
-        xLimit = finalX
-        yLimit = finalY
-    End If
-
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -476,28 +516,8 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
                         
         End If
         
-        'Make sure the source coordinates are in-bounds
-        If srcX < 0 Then srcX = 0
-        If srcY < 0 Then srcY = 0
-        If srcX > xLimit Then srcX = xLimit
-        If srcY > yLimit Then srcY = yLimit
-        
-        'Interpolate the result if desired, otherwise use nearest-neighbor
-        If useBilinear Then
-                
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = getInterpolatedVal(srcX, srcY, srcImageData, i, qvDepth)
-            Next i
-        
-        Else
-        
-            QuickVal2 = Int(srcX) * qvDepth
-        
-            For i = 0 To qvDepth - 1
-                dstImageData(QuickVal + i, y) = srcImageData(QuickVal2 + i, Int(srcY))
-            Next i
-                
-        End If
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If toPreview = False Then
@@ -518,6 +538,10 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
 End Sub
 
 Private Sub Form_Activate()
+        
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, 0
         
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -607,10 +631,6 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    If OptInterpolate(0) Then
-        PinchImage CDbl(hsAmount / 100), CDbl(hsAngle / 10), hsRadius.Value, True, True, fxPreview
-    Else
-        PinchImage CDbl(hsAmount / 100), CDbl(hsAngle / 10), hsRadius.Value, False, True, fxPreview
-    End If
-
+    PinchImage CDbl(hsAmount / 100), CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
+    
 End Sub
