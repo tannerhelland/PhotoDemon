@@ -721,7 +721,7 @@ Public Sub MenuRadioactive()
 End Sub
 
 'Stretch out the contrast and convert the image to dramatic black and white.  "Comic book" filter.
-Public Sub MenuComicBook()
+Public Sub MenuFilmNoir()
 
     Message "Embuing image with the essence of F. Miller..."
     

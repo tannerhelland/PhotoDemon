@@ -239,19 +239,20 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "ARTISTIC", 5, 2        'Artistic
         '--> Artistic sub-menu
         AddMenuIcon "ANTIQUE", 5, 2, 0        'Antique (Sepia)
-        AddMenuIcon "COMICBOOK", 5, 2, 1      'Comic Book
+        AddMenuIcon "FILMNOIR", 5, 2, 1       'Film Noir
         AddMenuIcon "PENCIL", 5, 2, 2         'Pencil
         AddMenuIcon "MOSAIC", 5, 2, 3         'Pixelate (Mosaic)
         AddMenuIcon "RELIEF", 5, 2, 4         'Relief
     AddMenuIcon "BLUR", 5, 3            'Blur
         '--> Blur sub-menu
         AddMenuIcon "ANTIALIAS", 5, 3, 0      'Antialias
-        AddMenuIcon "SOFTEN", 5, 3, 2         'Soften
-        AddMenuIcon "SOFTENMORE", 5, 3, 3     'Soften More
-        AddMenuIcon "BLUR2", 5, 3, 4          'Blur
-        AddMenuIcon "BLURMORE", 5, 3, 5       'Blur More
-        AddMenuIcon "GAUSSBLUR", 5, 3, 6      'Gaussian Blur
-        AddMenuIcon "GRIDBLUR", 5, 3, 8       'Grid Blur
+        AddMenuIcon "SOFTEN", 5, 3, 1         'Soften
+        AddMenuIcon "SOFTENMORE", 5, 3, 2     'Soften More
+        AddMenuIcon "BLUR2", 5, 3, 3          'Blur
+        AddMenuIcon "BLURMORE", 5, 3, 4       'Blur More
+        AddMenuIcon "GAUSSBLUR", 5, 3, 5      'Gaussian Blur
+        AddMenuIcon "GRIDBLUR", 5, 3, 6       'Grid Blur
+        AddMenuIcon "SMARTBLUR", 5, 3, 7      'Smart Blur
     AddMenuIcon "DISTORT", 5, 4      'Distort
         '--> Distort sub-menu
         AddMenuIcon "FIGGLASS", 5, 4, 0       'Figured glass
