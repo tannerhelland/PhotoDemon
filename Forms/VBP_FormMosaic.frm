@@ -25,6 +25,26 @@ Begin VB.Form FormMosaic
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin VB.CheckBox chkUnison 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      Caption         =   " keep both dimensions in sync"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   10
+      Top             =   3600
+      Width           =   4935
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -181,6 +201,15 @@ Option Explicit
 ' original image width in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
+Dim userChange As Boolean
+
+Private Sub chkUnison_Click()
+    userChange = False
+    If CBool(chkUnison) Then hsHeight.Value = hsWidth.Value
+    userChange = True
+    updatePreview
+End Sub
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -188,16 +217,16 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
-    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max) Then
-        If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max) Then
+    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max) Then
+        If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max) Then
             Me.Visible = False
             Process Mosaic, hsWidth.Value, hsHeight.Value
             Unload Me
         Else
-            AutoSelectText TxtHeight
+            AutoSelectText txtHeight
         End If
     Else
-        AutoSelectText TxtWidth
+        AutoSelectText txtWidth
     End If
 End Sub
 
@@ -259,7 +288,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
     'A number of other variables are required for the nested For..Next loops
     Dim dstXLoop As Long, dstYLoop As Long
     Dim initXLoop As Long, initYLoop As Long
-    Dim i As Long, j As Long
+    Dim I As Long, J As Long
     
     'We also need to count how many pixels must be averaged in each mosaic tile
     Dim NumOfPixels As Long
@@ -278,26 +307,26 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
         dstXLoop = (x + 1) * BlockSizeX - 1
         dstYLoop = (y + 1) * BlockSizeY - 1
         
-        For i = initXLoop To dstXLoop
-            QuickVal = i * qvDepth
-        For j = initYLoop To dstYLoop
+        For I = initXLoop To dstXLoop
+            QuickVal = I * qvDepth
+        For J = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
-            If i > finalX Or j > finalY Then GoTo NextMosiacPixel1
+            If I > finalX Or J > finalY Then GoTo NextMosiacPixel1
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            r = r + srcImageData(QuickVal + 2, j)
-            g = g + srcImageData(QuickVal + 1, j)
-            b = b + srcImageData(QuickVal, j)
+            r = r + srcImageData(QuickVal + 2, J)
+            g = g + srcImageData(QuickVal + 1, J)
+            b = b + srcImageData(QuickVal, J)
             
             'Count this as a valid pixel
             NumOfPixels = NumOfPixels + 1
             
 NextMosiacPixel1:
         
-        Next j
-        Next i
+        Next J
+        Next I
         
         'If this tile is completely off of the image, don't worry about it and go to the next one
         If NumOfPixels = 0 Then GoTo NextMosaicPixel3
@@ -309,22 +338,22 @@ NextMosiacPixel1:
         
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
-        For i = initXLoop To dstXLoop
-            QuickVal = i * qvDepth
-        For j = initYLoop To dstYLoop
+        For I = initXLoop To dstXLoop
+            QuickVal = I * qvDepth
+        For J = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
-            If i > finalX Or j > finalY Then GoTo NextMosiacPixel2
+            If I > finalX Or J > finalY Then GoTo NextMosiacPixel2
             
             'Set the pixel
-            dstImageData(QuickVal + 2, j) = r
-            dstImageData(QuickVal + 1, j) = g
-            dstImageData(QuickVal, j) = b
+            dstImageData(QuickVal + 2, J) = r
+            dstImageData(QuickVal + 1, J) = g
+            dstImageData(QuickVal, J) = b
             
 NextMosiacPixel2:
 
-        Next j
-        Next i
+        Next J
+        Next I
 
 NextMosaicPixel3:
 
@@ -354,12 +383,17 @@ End Sub
 
 Private Sub Form_Activate()
 
+    userChange = False
+
     'Note the current image's width and height, which will be needed to adjust the preview effect
     iWidth = pdImages(CurrentImage).Width
     iHeight = pdImages(CurrentImage).Height
         
     hsWidth.Max = pdImages(CurrentImage).Width
     hsHeight.Max = pdImages(CurrentImage).Height
+    
+    userChange = True
+    
     MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
     
     'Assign the system hand cursor to all relevant objects
@@ -372,40 +406,79 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub hsHeight_Change()
-    copyToTextBoxI TxtHeight, hsHeight.Value
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
+    userChange = False
+    copyToTextBoxI txtHeight, hsHeight.Value
+    If CBool(chkUnison) Then syncScrollBars False
+    userChange = True
+    updatePreview
 End Sub
 
 Private Sub hsWidth_Change()
-    copyToTextBoxI TxtWidth, hsWidth.Value
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
+    userChange = False
+    copyToTextBoxI txtWidth, hsWidth.Value
+    If CBool(chkUnison) Then syncScrollBars True
+    userChange = True
+    updatePreview
 End Sub
 
 Private Sub hsHeight_Scroll()
-    copyToTextBoxI TxtHeight, hsHeight.Value
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
+    userChange = False
+    copyToTextBoxI txtHeight, hsHeight.Value
+    If CBool(chkUnison) Then syncScrollBars False
+    userChange = True
+    updatePreview
 End Sub
 
 Private Sub hsWidth_Scroll()
-    copyToTextBoxI TxtWidth, hsWidth.Value
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
+    userChange = False
+    copyToTextBoxI txtWidth, hsWidth.Value
+    If CBool(chkUnison) Then syncScrollBars True
+    userChange = True
+    updatePreview
 End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate TxtHeight
-    If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(TxtHeight)
+    userChange = False
+    textValidate txtHeight
+    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(txtHeight)
+    userChange = True
+    updatePreview
 End Sub
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText TxtHeight
+    AutoSelectText txtHeight
 End Sub
 
 Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate TxtWidth
-    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(TxtWidth)
+    userChange = False
+    textValidate txtWidth
+    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(txtWidth)
+    userChange = True
+    updatePreview
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText TxtWidth
+    AutoSelectText txtWidth
 End Sub
 
+'Keep the two scroll bars in sync.  Some extra work has to be done to makes sure scrollbar max values aren't exceeded.
+Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
+    
+    If hsWidth.Value = hsHeight.Value Then Exit Sub
+    
+    Dim tmpVal As Long
+    
+    If srcHorizontal Then
+        tmpVal = hsWidth.Value
+        If tmpVal < hsHeight.Max Then hsHeight.Value = hsWidth.Value Else hsHeight.Value = hsHeight.Max
+    Else
+        tmpVal = hsHeight.Value
+        If tmpVal < hsWidth.Max Then hsWidth.Value = hsHeight.Value Else hsWidth.Value = hsWidth.Max
+    End If
+    
+End Sub
+
+'Redraw the effect preview
+Private Sub updatePreview()
+    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
+End Sub
