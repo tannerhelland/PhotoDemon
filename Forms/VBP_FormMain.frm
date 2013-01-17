@@ -1485,9 +1485,6 @@ Private Sub MDIForm_Load()
     'The bulk of the loading code actually takes place inside the LoadTheprogram subroutine (which can be found in the "Loading" module)
     LoadTheProgram
     
-    
-    
-    
     'Allow the selection scroll bars to be updated
     updateSelLeftBar = True
     updateSelTopBar = True
@@ -1606,7 +1603,10 @@ Private Sub MDIForm_Load()
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
     If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPreference_Boolean("General Preferences", "DisplayIDEWarning", True)) Then displayIDEWarning
-               
+     
+    'Finally, return focus to the main form
+    FormMain.SetFocus
+     
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
