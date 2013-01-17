@@ -48,7 +48,7 @@ Begin VB.Form FormPolar
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -56,12 +56,12 @@ Begin VB.Form FormPolar
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
+      Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   11
       Top             =   1320
-      Width           =   4815
+      Width           =   4860
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -386,7 +386,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
-    Dim i As Long
+    Dim I As Long
     
     'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long

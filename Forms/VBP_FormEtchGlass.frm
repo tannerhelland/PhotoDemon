@@ -171,8 +171,8 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   12
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

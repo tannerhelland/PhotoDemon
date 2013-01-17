@@ -101,10 +101,10 @@ Begin VB.Form FormDiffuse
    Begin VB.CheckBox ChkWrap 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
-      Caption         =   "wrap edge values"
+      Caption         =   " wrap edge values"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
