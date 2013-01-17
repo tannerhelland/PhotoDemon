@@ -40,9 +40,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -266,7 +266,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":A6CA
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":A6F2
          disabledpicturemode=   1
          captioneffects  =   0
@@ -285,7 +285,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":B744
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":B76C
          disabledpicturemode=   1
          captioneffects  =   0
@@ -304,7 +304,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":C7BE
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":C7E6
          disabledpicturemode=   1
          captioneffects  =   0
@@ -324,7 +324,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":D838
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":D860
          disabledpicturemode=   1
          captioneffects  =   0
@@ -344,7 +344,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":E8B2
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":E8DA
          disabledpicturemode=   1
          captioneffects  =   0
@@ -363,7 +363,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":F92C
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":F954
          disabledpicturemode=   1
          captioneffects  =   0
@@ -1009,20 +1009,25 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Artistic"
          Index           =   0
-         Begin VB.Menu MnuAntique 
+         Begin VB.Menu MnuArtistic 
             Caption         =   "Antique"
+            Index           =   0
          End
-         Begin VB.Menu MnuComicBook 
-            Caption         =   "Comic book"
+         Begin VB.Menu MnuArtistic 
+            Caption         =   "Film noir"
+            Index           =   1
          End
-         Begin VB.Menu MnuPencil 
+         Begin VB.Menu MnuArtistic 
             Caption         =   "Pencil drawing"
+            Index           =   2
          End
-         Begin VB.Menu MnuMosaic 
+         Begin VB.Menu MnuArtistic 
             Caption         =   "Pixelate (mosaic)..."
+            Index           =   3
          End
-         Begin VB.Menu MnuRelief 
+         Begin VB.Menu MnuArtistic 
             Caption         =   "Relief"
+            Index           =   4
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1033,36 +1038,32 @@ Begin VB.MDIForm FormMain
             Index           =   0
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "-"
+            Caption         =   "Soften"
             Index           =   1
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Soften"
+            Caption         =   "Soften more"
             Index           =   2
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Soften more"
+            Caption         =   "Blur"
             Index           =   3
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Blur"
+            Caption         =   "Blur more"
             Index           =   4
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Blur more"
+            Caption         =   "Gaussian blur..."
             Index           =   5
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Gaussian blur..."
+            Caption         =   "Grid blur"
             Index           =   6
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "-"
+            Caption         =   "Smart blur..."
             Index           =   7
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Grid blur"
-            Index           =   8
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1689,16 +1690,37 @@ Private Sub MnuAbout_Click()
     
 End Sub
 
-'Private Sub MnuAnimate_Click()
-'    Process Animate
-'End Sub
-
-Private Sub MnuAntique_Click()
-    Process Antique
-End Sub
-
 Private Sub MnuArrangeIcons_Click()
     Me.Arrange vbArrangeIcons
+End Sub
+
+'All artistic filters are launched here
+Private Sub MnuArtistic_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Antique
+        Case 0
+            Process Antique
+            
+        'Comic book
+        Case 1
+            Process FilmNoir
+        
+        'Pencil drawing
+        Case 2
+            Process Pencil
+        
+        'Pixelate (mosaic)
+        Case 3
+            Process Mosaic, , , , , , , , , , True
+        
+        'Relief
+        Case 4
+            Process Relief
+    
+    End Select
+
 End Sub
 
 Private Sub MnuAutoEnhanceHighlights_Click()
@@ -1734,35 +1756,33 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
         Case 0
             Process Antialias
         
-        'Separator bar
-        Case 1
-        
         'Soften
-        Case 2
+        Case 1
             Process Soften
         
         'Soften more
-        Case 3
+        Case 2
             Process SoftenMore
         
         'Blur
-        Case 4
+        Case 3
             Process Blur
         
         'Blur more
-        Case 5
+        Case 4
             Process BlurMore
         
         'Gaussian blur
-        Case 6
+        Case 5
             Process GaussianBlur, , , , , , , , , , True
-        
-        'Separator bar
-        Case 7
-        
+                
         'Grid blur
-        Case 8
+        Case 6
             Process GridBlur
+            
+        'Smart Blur
+        Case 7
+            Process SmartBlur, , , , , , , , , , True
     
     End Select
 
@@ -1887,10 +1907,6 @@ End Sub
 
 Private Sub MnuColorize_Click()
     Process Colorize, , , , , , , , , , True
-End Sub
-
-Private Sub MnuComicBook_Click()
-    Process ComicBook
 End Sub
 
 Private Sub MnuCompoundInvert_Click()
@@ -2163,10 +2179,6 @@ Private Sub MnuMinimum_Click()
     Process CustomRank, 1, 1
 End Sub
 
-Private Sub MnuMosaic_Click()
-    Process Mosaic, , , , , , , , , , True
-End Sub
-
 Private Sub MnuNatureFilter_Click(Index As Integer)
 
     Select Case Index
@@ -2227,10 +2239,6 @@ End Sub
 
 Private Sub MnuNoise_Click()
     Process Noise, , , , , , , , , , True
-End Sub
-
-Private Sub MnuPencil_Click()
-    Process Pencil
 End Sub
 
 Private Sub MnuCopy_Click()
@@ -2343,10 +2351,6 @@ End Sub
 
 Private Sub MnuRepeatLast_Click()
     Process LastCommand
-End Sub
-
-Private Sub MnuRelief_Click()
-    Process Relief
 End Sub
 
 Private Sub MnuResample_Click()

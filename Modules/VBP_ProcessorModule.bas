@@ -64,7 +64,7 @@ Option Explicit
     Public Const BWOrderedDither As Long = 203
     Public Const BWDiffusionDither As Long = 204
     Public Const Threshold As Long = 205
-    Public Const ComicBook As Long = 206
+    Public Const FilmNoir As Long = 206
     Public Const BWEnhancedDither As Long = 207
     Public Const BWFloydSteinberg As Long = 208
     Public Const BWMaster As Long = 210 'Added 9/2012 - this is a single BW conversion routine to rule them all
@@ -101,7 +101,8 @@ Option Explicit
     Public Const GridBlur As Long = 415
     '-Gaussian Blur
     Public Const GaussianBlur As Long = 416
-    'Public Const GaussianBlurMore As Long = 417
+    'Smart Blur
+    Public Const SmartBlur As Long = 417
     '-Antialias
     Public Const Antialias As Long = 418
     
@@ -463,8 +464,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 'MenuBWDiffusionDither
             Case Threshold
                 'MenuThreshold pOPCODE
-            Case ComicBook
-                MenuComicBook
+            Case FilmNoir
+                MenuFilmNoir
             Case BWEnhancedDither
                 'MenuBWEnhancedDither
             Case BWFloydSteinberg
@@ -547,8 +548,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormGaussianBlur.GaussianBlurFilter CLng(pOPCODE)
                 End If
-            'Case GaussianBlurMore
-                'FilterGaussianBlurMore
+            Case SmartBlur
+                If LoadForm Then
+                    FormSmartBlur.Show vbModal, FormMain
+                Else
+                    FormSmartBlur.SmartBlurFilter CLng(pOPCODE), CByte(pOPCODE2), CBool(pOPCODE3)
+                End If
         End Select
     End If
     
@@ -1054,8 +1059,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Black and White (Diffusion Dither)"
         Case Threshold
             GetNameOfProcess = "Black and White (Threshold)"
-        Case ComicBook
-            GetNameOfProcess = "Comic Book"
+        Case FilmNoir
+            GetNameOfProcess = "Film Noir"
         Case BWEnhancedDither
             GetNameOfProcess = "Black and White (Santos Enhanced)"
         Case BWFloydSteinberg
@@ -1108,6 +1113,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Grid Blur"
         Case GaussianBlur
             GetNameOfProcess = "Gaussian Blur"
+        Case SmartBlur
+            GetNameOfProcess = "Smart Blur"
         Case Antialias
             GetNameOfProcess = "Antialias"
     
