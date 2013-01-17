@@ -101,7 +101,7 @@ Option Explicit
     Public Const GridBlur As Long = 415
     '-Gaussian Blur
     Public Const GaussianBlur As Long = 416
-    Public Const GaussianBlurMore As Long = 417
+    'Public Const GaussianBlurMore As Long = 417
     '-Antialias
     Public Const Antialias As Long = 418
     
@@ -542,9 +542,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case Antialias
                 FilterAntialias
             Case GaussianBlur
-                FilterGaussianBlur
-            Case GaussianBlurMore
-                FilterGaussianBlurMore
+                If LoadForm Then
+                    FormGaussianBlur.Show vbModal, FormMain
+                Else
+                    FormGaussianBlur.GaussianBlurFilter CLng(pOPCODE)
+                End If
+            'Case GaussianBlurMore
+                'FilterGaussianBlurMore
         End Select
     End If
     
@@ -1104,8 +1108,6 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Grid Blur"
         Case GaussianBlur
             GetNameOfProcess = "Gaussian Blur"
-        Case GaussianBlurMore
-            GetNameOfProcess = "Gaussian Blur More"
         Case Antialias
             GetNameOfProcess = "Antialias"
     
@@ -1238,8 +1240,6 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Lava"
         Case Burn
             GetNameOfProcess = "Burn"
-        'Case Ocean
-        '    GetNameOfProcess = "Ocean"
         Case Water
             GetNameOfProcess = "Water"
         Case Steel

@@ -251,8 +251,7 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "BLUR2", 5, 3, 4          'Blur
         AddMenuIcon "BLURMORE", 5, 3, 5       'Blur More
         AddMenuIcon "GAUSSBLUR", 5, 3, 6      'Gaussian Blur
-        AddMenuIcon "GAUSSBLURMOR", 5, 3, 7   'Gaussian Blur More
-        AddMenuIcon "GRIDBLUR", 5, 3, 9       'Grid Blur
+        AddMenuIcon "GRIDBLUR", 5, 3, 8       'Grid Blur
     AddMenuIcon "DISTORT", 5, 4      'Distort
         '--> Distort sub-menu
         AddMenuIcon "FIGGLASS", 5, 4, 0       'Figured glass

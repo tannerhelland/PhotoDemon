@@ -260,26 +260,18 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   465
          Width           =   900
-         _ExtentX        =   1588
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":A6CA
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipType     =   1
-         TooltipTitle    =   "Open"
+         _extentx        =   1588
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":A6CA
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":A6F2
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
+         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -287,26 +279,18 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   1560
          Width           =   900
-         _ExtentX        =   1588
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":B71C
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipType     =   1
-         TooltipTitle    =   "Save"
+         _extentx        =   1588
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":B744
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":B76C
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Save"
+         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -314,27 +298,19 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   2880
          Width           =   900
-         _ExtentX        =   1588
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":C76E
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipType     =   1
-         TooltipTitle    =   "Undo"
-         TooltipBackColor=   -2147483643
+         _extentx        =   1588
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":C7BE
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":C7E6
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Undo"
+         tooltiptype     =   1
+         tooltipbackcolor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -342,27 +318,19 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   2880
          Width           =   900
-         _ExtentX        =   1588
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":D7C0
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipType     =   1
-         TooltipTitle    =   "Redo"
-         TooltipBackColor=   -2147483643
+         _extentx        =   1588
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":D838
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":D860
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Redo"
+         tooltiptype     =   1
+         tooltipbackcolor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
          Height          =   615
@@ -370,26 +338,18 @@ Begin VB.MDIForm FormMain
          TabIndex        =   12
          Top             =   465
          Width           =   900
-         _ExtentX        =   1588
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":E812
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipType     =   1
-         TooltipTitle    =   "Close"
+         _extentx        =   1588
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":E8B2
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":E8DA
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Close"
+         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -397,26 +357,18 @@ Begin VB.MDIForm FormMain
          TabIndex        =   13
          Top             =   1560
          Width           =   900
-         _ExtentX        =   1588
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":F864
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipType     =   1
-         TooltipTitle    =   "Save As"
+         _extentx        =   1588
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":F92C
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":F954
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Save As"
+         tooltiptype     =   1
       End
       Begin VB.Label lblSelSize 
          Appearance      =   0  'Flat
@@ -1076,35 +1028,41 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Blur"
          Index           =   1
-         Begin VB.Menu MnuAntialias 
+         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Antialias"
+            Index           =   0
          End
-         Begin VB.Menu BlurSepBar1 
+         Begin VB.Menu MnuBlurFilter 
             Caption         =   "-"
+            Index           =   1
          End
-         Begin VB.Menu MnuSoften 
+         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Soften"
+            Index           =   2
          End
-         Begin VB.Menu MnuSoftenMore 
+         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Soften more"
+            Index           =   3
          End
-         Begin VB.Menu MnuBlur 
+         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Blur"
+            Index           =   4
          End
-         Begin VB.Menu MnuBlurMore 
+         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Blur more"
+            Index           =   5
          End
-         Begin VB.Menu MnuGaussianBlur 
-            Caption         =   "Gaussian blur"
+         Begin VB.Menu MnuBlurFilter 
+            Caption         =   "Gaussian blur..."
+            Index           =   6
          End
-         Begin VB.Menu MnuGaussianBlurMore 
-            Caption         =   "Gaussian blur more"
-         End
-         Begin VB.Menu BlurSepBar2 
+         Begin VB.Menu MnuBlurFilter 
             Caption         =   "-"
+            Index           =   7
          End
-         Begin VB.Menu MnuGridBlur 
+         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Grid blur"
+            Index           =   8
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1735,10 +1693,6 @@ End Sub
 '    Process Animate
 'End Sub
 
-Private Sub MnuAntialias_Click()
-    Process Antialias
-End Sub
-
 Private Sub MnuAntique_Click()
     Process Antique
 End Sub
@@ -1771,12 +1725,47 @@ Private Sub MnuBlackLight_Click()
     Process BlackLight, , , , , , , , , , True
 End Sub
 
-Private Sub MnuBlur_Click()
-    Process Blur
-End Sub
+'All blur filters are handled here
+Private Sub MnuBlurFilter_Click(Index As Integer)
 
-Private Sub MnuBlurMore_Click()
-    Process BlurMore
+    Select Case Index
+    
+        'Antialias
+        Case 0
+            Process Antialias
+        
+        'Separator bar
+        Case 1
+        
+        'Soften
+        Case 2
+            Process Soften
+        
+        'Soften more
+        Case 3
+            Process SoftenMore
+        
+        'Blur
+        Case 4
+            Process Blur
+        
+        'Blur more
+        Case 5
+            Process BlurMore
+        
+        'Gaussian blur
+        Case 6
+            Process GaussianBlur, , , , , , , , , , True
+        
+        'Separator bar
+        Case 7
+        
+        'Grid blur
+        Case 8
+            Process GridBlur
+    
+    End Select
+
 End Sub
 
 Public Sub MnuBrightness_Click()
@@ -2063,20 +2052,8 @@ Private Sub MnuGamma_Click()
     Process GammaCorrection, , , , , , , , , , True
 End Sub
 
-Private Sub MnuGaussianBlur_Click()
-    Process GaussianBlur
-End Sub
-
-Private Sub MnuGaussianBlurMore_Click()
-    Process GaussianBlurMore
-End Sub
-
 Private Sub MnuGrayscale_Click()
     Process GrayScale, , , , , , , , , , True
-End Sub
-
-Private Sub MnuGridBlur_Click()
-    Process GridBlur
 End Sub
 
 Private Sub MnuHeatmap_Click()
@@ -2439,14 +2416,6 @@ End Sub
 
 Private Sub MnuSharpenMore_Click()
     Process SharpenMore
-End Sub
-
-Private Sub MnuSoften_Click()
-    Process Soften
-End Sub
-
-Private Sub MnuSoftenMore_Click()
-    Process SoftenMore
 End Sub
 
 Private Sub MnuSolarize_Click()
