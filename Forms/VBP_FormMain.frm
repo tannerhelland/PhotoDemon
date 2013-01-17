@@ -1415,8 +1415,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These functions are used to scroll through consecutive MDI windows without flickering
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
-Private Declare Function GetWindow Lib "user32" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 
 'Use to prevent scroll bar / text box combos from getting stuck in update loops
 Private updateSelLeftBar As Boolean, updateSelTopBar As Boolean
@@ -1429,12 +1429,12 @@ Private Sub cmbSelRender_Click()
     
     If NumOfWindows > 0 Then
     
-        Dim I As Long
-        For I = 0 To NumOfImagesLoaded
-            If (Not pdImages(I) Is Nothing) Then
-                If pdImages(I).IsActive And pdImages(I).selectionActive Then RenderViewport pdImages(I).containingForm
+        Dim i As Long
+        For i = 0 To NumOfImagesLoaded
+            If (Not pdImages(i) Is Nothing) Then
+                If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
             End If
-        Next I
+        Next i
     
     End If
     
@@ -1824,12 +1824,12 @@ Private Sub MnuCascadeWindows_Click()
     
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
-    Dim I As Long
-    For I = 0 To NumOfImagesLoaded
-        If (Not pdImages(I) Is Nothing) Then
-            If pdImages(I).IsActive Then PrepareViewport pdImages(I).containingForm, "Cascade"
+    Dim i As Long
+    For i = 0 To NumOfImagesLoaded
+        If (Not pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
         End If
-    Next I
+    Next i
     
 End Sub
 
@@ -1883,12 +1883,12 @@ Private Sub MnuCloseAll_Click()
     g_ClosingAllImages = True
 
     'Go through each image object and close the containing form
-    Dim I As Long
-    For I = 0 To NumOfImagesLoaded
-        If (Not pdImages(I) Is Nothing) Then
-            If pdImages(I).IsActive Then Unload pdImages(I).containingForm
+    Dim i As Long
+    For i = 0 To NumOfImagesLoaded
+        If (Not pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then Unload pdImages(i).containingForm
         End If
-    Next I
+    Next i
 
     'Reset the "closing all images" flag
     g_ClosingAllImages = False
@@ -2241,7 +2241,7 @@ Private Sub MnuNextImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.hwnd, 5)
+    MDIClient = GetWindow(FormMain.hWnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
@@ -2311,7 +2311,7 @@ Private Sub MnuPreviousImage_Click()
     
     'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
     Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.hwnd, 5)
+    MDIClient = GetWindow(FormMain.hWnd, 5)
         
     'Use the API to instruct the MDI window to move one window forward or back
     SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
@@ -2509,12 +2509,12 @@ Private Sub MnuTileHorizontally_Click()
     
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
-    Dim I As Long
-    For I = 0 To NumOfImagesLoaded
-        If (Not pdImages(I) Is Nothing) Then
-            If pdImages(I).IsActive Then PrepareViewport pdImages(I).containingForm, "Tile horizontally"
+    Dim i As Long
+    For i = 0 To NumOfImagesLoaded
+        If (Not pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
         End If
-    Next I
+    Next i
     
 End Sub
 
@@ -2523,12 +2523,12 @@ Private Sub MnuTileVertically_Click()
     
     'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
     ' may not get triggered - it's a particular VB quirk)
-    Dim I As Long
-    For I = 0 To NumOfImagesLoaded
-        If (Not pdImages(I) Is Nothing) Then
-            If pdImages(I).IsActive Then PrepareViewport pdImages(I).containingForm, "Tile vertically"
+    Dim i As Long
+    For i = 0 To NumOfImagesLoaded
+        If (Not pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
         End If
-    Next I
+    Next i
     
 End Sub
 
@@ -2684,7 +2684,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
         'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
         Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.hwnd, 5)
+        MDIClient = GetWindow(FormMain.hWnd, 5)
         
         'Use the API to instruct the MDI window to move one window forward or back
         If ctlAccelerator.Key(nIndex) = "Prev_Image" Then
@@ -2696,16 +2696,16 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     End If
     
     'MRU files
-    Dim I As Integer
-    For I = 0 To 9
-        If ctlAccelerator.Key(nIndex) = ("MRU_" & I) Then
-            If FormMain.mnuRecDocs.Count > I Then
-                If FormMain.mnuRecDocs(I).Enabled = True Then
-                    FormMain.mnuRecDocs_Click I
+    Dim i As Integer
+    For i = 0 To 9
+        If ctlAccelerator.Key(nIndex) = ("MRU_" & i) Then
+            If FormMain.mnuRecDocs.Count > i Then
+                If FormMain.mnuRecDocs(i).Enabled = True Then
+                    FormMain.mnuRecDocs_Click i
                 End If
             End If
         End If
-    Next I
+    Next i
     
     lastAccelerator = Timer
     

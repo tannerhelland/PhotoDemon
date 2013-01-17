@@ -386,7 +386,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
-    Dim I As Long
+    Dim i As Long
     
     'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long

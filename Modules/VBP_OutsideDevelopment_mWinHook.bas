@@ -30,7 +30,7 @@ Public Type POINTAPI
    x As Long
    y As Long
 End Type
-Public Type Msg '{     /* msg */
+Public Type msg '{     /* msg */
    hWnd As Long     '\\ The window whose Winproc will receive the message
    Message As Long  '\\ The message number
    wParam As Long

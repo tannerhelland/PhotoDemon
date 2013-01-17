@@ -134,14 +134,14 @@ noWriteAccess:
 End Function
 
 'Straight from MSDN - generate a "browse for folder" dialog
-Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
+Public Function BrowseForFolder(ByVal srchWnd As Long) As String
     
     Dim objShell As Shell
     Dim objFolder As Folder
     Dim returnString As String
         
     Set objShell = New Shell
-    Set objFolder = objShell.BrowseForFolder(srcHwnd, "Please select a folder:", 0)
+    Set objFolder = objShell.BrowseForFolder(srchWnd, "Please select a folder:", 0)
             
     If (Not objFolder Is Nothing) Then returnString = objFolder.Items.Item.Path Else returnString = ""
     

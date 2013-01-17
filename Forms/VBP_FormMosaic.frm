@@ -217,16 +217,16 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max) Then
-        If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max) Then
+    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max) Then
+        If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max) Then
             Me.Visible = False
             Process Mosaic, hsWidth.Value, hsHeight.Value
             Unload Me
         Else
-            AutoSelectText txtHeight
+            AutoSelectText TxtHeight
         End If
     Else
-        AutoSelectText txtWidth
+        AutoSelectText TxtWidth
     End If
 End Sub
 
@@ -288,7 +288,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
     'A number of other variables are required for the nested For..Next loops
     Dim dstXLoop As Long, dstYLoop As Long
     Dim initXLoop As Long, initYLoop As Long
-    Dim I As Long, J As Long
+    Dim i As Long, j As Long
     
     'We also need to count how many pixels must be averaged in each mosaic tile
     Dim NumOfPixels As Long
@@ -307,26 +307,26 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
         dstXLoop = (x + 1) * BlockSizeX - 1
         dstYLoop = (y + 1) * BlockSizeY - 1
         
-        For I = initXLoop To dstXLoop
-            QuickVal = I * qvDepth
-        For J = initYLoop To dstYLoop
+        For i = initXLoop To dstXLoop
+            QuickVal = i * qvDepth
+        For j = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
-            If I > finalX Or J > finalY Then GoTo NextMosiacPixel1
+            If i > finalX Or j > finalY Then GoTo NextMosiacPixel1
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            r = r + srcImageData(QuickVal + 2, J)
-            g = g + srcImageData(QuickVal + 1, J)
-            b = b + srcImageData(QuickVal, J)
+            r = r + srcImageData(QuickVal + 2, j)
+            g = g + srcImageData(QuickVal + 1, j)
+            b = b + srcImageData(QuickVal, j)
             
             'Count this as a valid pixel
             NumOfPixels = NumOfPixels + 1
             
 NextMosiacPixel1:
         
-        Next J
-        Next I
+        Next j
+        Next i
         
         'If this tile is completely off of the image, don't worry about it and go to the next one
         If NumOfPixels = 0 Then GoTo NextMosaicPixel3
@@ -338,22 +338,22 @@ NextMosiacPixel1:
         
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
-        For I = initXLoop To dstXLoop
-            QuickVal = I * qvDepth
-        For J = initYLoop To dstYLoop
+        For i = initXLoop To dstXLoop
+            QuickVal = i * qvDepth
+        For j = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
-            If I > finalX Or J > finalY Then GoTo NextMosiacPixel2
+            If i > finalX Or j > finalY Then GoTo NextMosiacPixel2
             
             'Set the pixel
-            dstImageData(QuickVal + 2, J) = r
-            dstImageData(QuickVal + 1, J) = g
-            dstImageData(QuickVal, J) = b
+            dstImageData(QuickVal + 2, j) = r
+            dstImageData(QuickVal + 1, j) = g
+            dstImageData(QuickVal, j) = b
             
 NextMosiacPixel2:
 
-        Next J
-        Next I
+        Next j
+        Next i
 
 NextMosaicPixel3:
 
@@ -407,7 +407,7 @@ End Sub
 
 Private Sub hsHeight_Change()
     userChange = False
-    copyToTextBoxI txtHeight, hsHeight.Value
+    copyToTextBoxI TxtHeight, hsHeight.Value
     If CBool(chkUnison) Then syncScrollBars False
     userChange = True
     updatePreview
@@ -415,7 +415,7 @@ End Sub
 
 Private Sub hsWidth_Change()
     userChange = False
-    copyToTextBoxI txtWidth, hsWidth.Value
+    copyToTextBoxI TxtWidth, hsWidth.Value
     If CBool(chkUnison) Then syncScrollBars True
     userChange = True
     updatePreview
@@ -423,7 +423,7 @@ End Sub
 
 Private Sub hsHeight_Scroll()
     userChange = False
-    copyToTextBoxI txtHeight, hsHeight.Value
+    copyToTextBoxI TxtHeight, hsHeight.Value
     If CBool(chkUnison) Then syncScrollBars False
     userChange = True
     updatePreview
@@ -431,7 +431,7 @@ End Sub
 
 Private Sub hsWidth_Scroll()
     userChange = False
-    copyToTextBoxI txtWidth, hsWidth.Value
+    copyToTextBoxI TxtWidth, hsWidth.Value
     If CBool(chkUnison) Then syncScrollBars True
     userChange = True
     updatePreview
@@ -439,26 +439,26 @@ End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
     userChange = False
-    textValidate txtHeight
-    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(txtHeight)
+    textValidate TxtHeight
+    If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(TxtHeight)
     userChange = True
     updatePreview
 End Sub
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText txtHeight
+    AutoSelectText TxtHeight
 End Sub
 
 Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
     userChange = False
-    textValidate txtWidth
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(txtWidth)
+    textValidate TxtWidth
+    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(TxtWidth)
     userChange = True
     updatePreview
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText txtWidth
+    AutoSelectText TxtWidth
 End Sub
 
 'Keep the two scroll bars in sync.  Some extra work has to be done to makes sure scrollbar max values aren't exceeded.

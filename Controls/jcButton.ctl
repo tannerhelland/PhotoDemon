@@ -582,13 +582,13 @@ Private Const SWP_NOACTIVATE As Long = &H10
 Private Const SWP_NOMOVE As Long = &H2
 Private Const SWP_NOSIZE As Long = &H1
 Private Const SWP_SHOWWINDOW As Long = &H40
-Private Const HWND_TOPMOST As Long = -&H1
+Private Const hWnd_TOPMOST As Long = -&H1
 Private Const CW_USEDEFAULT As Long = &H80000000
 
 ''Tooltip Window Constants
 Private Const TTS_NOPREFIX As Long = &H2
 Private Const TTF_TRANSPARENT As Long = &H100
-Private Const TTF_IDISHWND As Long = &H1
+Private Const TTF_IDIShWnd As Long = &H1
 Private Const WS_EX_LAYOUTRTL As Long = &H400000
 Private Const TTF_CENTERTIP As Long = &H2
 Private Const TTM_ADDTOOLA As Long = (WM_USER + 4)
@@ -679,7 +679,7 @@ Private m_lTooltipType  As enumTooltipStyle
 Private m_lttBackColor  As Long
 Private m_lttCentered   As Boolean
 Private m_bttRTL        As Boolean              'Right to Left reading
-Private m_lttHwnd       As Long
+Private m_ltthWnd       As Long
 Private m_hMode         As Long                 'Added this, as tooltips
 'were not displayed in
 'compiled exe. (Thanks to Jim Jose)
@@ -864,8 +864,8 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long
 '* Modified by Dana Seaman
 '****************************************************************************
 
-Dim b                As Long, h As Long, f As Long, I As Long, newW As Long
-Dim tmpDC            As Long, TmpBmp As Long, TmpObj As Long
+Dim b                As Long, h As Long, f As Long, i As Long, newW As Long
+Dim TmpDC            As Long, TmpBmp As Long, TmpObj As Long
 Dim Sr2DC            As Long, Sr2Bmp As Long, Sr2Obj As Long
 Dim DataDest()       As RGBTRIPLE, DataSrc() As RGBTRIPLE
 Dim Info             As BITMAPINFO, BrushRGB As RGBTRIPLE, gCol As Long
@@ -915,11 +915,11 @@ Dim hBrush           As Long
         DeleteObject hBrush
     End If
 
-    tmpDC = CreateCompatibleDC(srcDC)
+    TmpDC = CreateCompatibleDC(srcDC)
     Sr2DC = CreateCompatibleDC(srcDC)
     TmpBmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
     Sr2Bmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
-    TmpObj = SelectObject(tmpDC, TmpBmp)
+    TmpObj = SelectObject(TmpDC, TmpBmp)
     Sr2Obj = SelectObject(Sr2DC, Sr2Bmp)
     ReDim DataDest(DstW * DstH * 3 - 1)
     ReDim DataSrc(UBound(DataDest))
@@ -931,9 +931,9 @@ Dim hBrush           As Long
         .biBitCount = 24
     End With
 
-    BitBlt tmpDC, 0, 0, DstW, DstH, DstDC, dstX, dstY, vbSrcCopy
+    BitBlt TmpDC, 0, 0, DstW, DstH, DstDC, dstX, dstY, vbSrcCopy
     BitBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, vbSrcCopy
-    GetDIBits tmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
+    GetDIBits TmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
     GetDIBits Sr2DC, Sr2Bmp, 0, DstH, DataSrc(0), Info, 0
 
     If BrushColor > 0 Then
@@ -950,21 +950,21 @@ Dim hBrush           As Long
     For h = 0 To DstH - 1
         f = h * DstW
         For b = 0 To newW
-            I = f + b
+            i = f + b
             If m_Buttonstate = eStateOver Then
                 a1 = OverOpacity
             Else
                 a1 = IIf(m_bEnabled, m_PictureOpacity, bDisOpacity)
             End If
             a2 = 255 - a1
-            If GetNearestColor(hDC, CLng(DataSrc(I).rgbRed) + 256& * DataSrc(I).rgbGreen + 65536 * DataSrc(I).rgbBlue) <> TransColor Then
-                With DataDest(I)
+            If GetNearestColor(hDC, CLng(DataSrc(i).rgbRed) + 256& * DataSrc(i).rgbGreen + 65536 * DataSrc(i).rgbBlue) <> TransColor Then
+                With DataDest(i)
                     If BrushColor > -1 Then
                         If MonoMask Then
-                            If (CLng(DataSrc(I).rgbRed) + DataSrc(I).rgbGreen + DataSrc(I).rgbBlue) <= 384 Then DataDest(I) = BrushRGB
+                            If (CLng(DataSrc(i).rgbRed) + DataSrc(i).rgbGreen + DataSrc(i).rgbBlue) <= 384 Then DataDest(i) = BrushRGB
                         Else
                             If a1 = 255 Then
-                                DataDest(I) = BrushRGB
+                                DataDest(i) = BrushRGB
                             ElseIf a1 > 0 Then
                                 .rgbRed = (a2 * .rgbRed + a1 * BrushRGB.rgbRed) \ 256
                                 .rgbGreen = (a2 * .rgbGreen + a1 * BrushRGB.rgbGreen) \ 256
@@ -973,7 +973,7 @@ Dim hBrush           As Long
                         End If
                     Else
                         If isGreyscale Then
-                            gCol = CLng(DataSrc(I).rgbRed * 0.3) + DataSrc(I).rgbGreen * 0.59 + DataSrc(I).rgbBlue * 0.11
+                            gCol = CLng(DataSrc(i).rgbRed * 0.3) + DataSrc(i).rgbGreen * 0.59 + DataSrc(i).rgbBlue * 0.11
                             If a1 = 255 Then
                                 .rgbRed = gCol: .rgbGreen = gCol: .rgbBlue = gCol
                             ElseIf a1 > 0 Then
@@ -984,29 +984,29 @@ Dim hBrush           As Long
                         Else
                             If a1 = 255 Then
                                 If picEffect = epeLighter Then
-                                    .rgbRed = aLighten(DataSrc(I).rgbRed)
-                                    .rgbGreen = aLighten(DataSrc(I).rgbGreen)
-                                    .rgbBlue = aLighten(DataSrc(I).rgbBlue)
+                                    .rgbRed = aLighten(DataSrc(i).rgbRed)
+                                    .rgbGreen = aLighten(DataSrc(i).rgbGreen)
+                                    .rgbBlue = aLighten(DataSrc(i).rgbBlue)
                                 ElseIf picEffect = epeDarker Then
-                                    .rgbRed = aDarken(DataSrc(I).rgbRed)
-                                    .rgbGreen = aDarken(DataSrc(I).rgbGreen)
-                                    .rgbBlue = aDarken(DataSrc(I).rgbBlue)
+                                    .rgbRed = aDarken(DataSrc(i).rgbRed)
+                                    .rgbGreen = aDarken(DataSrc(i).rgbGreen)
+                                    .rgbBlue = aDarken(DataSrc(i).rgbBlue)
                                 Else
-                                    DataDest(I) = DataSrc(I)
+                                    DataDest(i) = DataSrc(i)
                                 End If
                             ElseIf a1 > 0 Then
                                 If (picEffect = epeLighter) Then
-                                    .rgbRed = (a2 * .rgbRed + a1 * aLighten(DataSrc(I).rgbRed)) \ 256
-                                    .rgbGreen = (a2 * .rgbGreen + a1 * aLighten(DataSrc(I).rgbGreen)) \ 256
-                                    .rgbBlue = (a2 * .rgbBlue + a1 * aLighten(DataSrc(I).rgbBlue)) \ 256
+                                    .rgbRed = (a2 * .rgbRed + a1 * aLighten(DataSrc(i).rgbRed)) \ 256
+                                    .rgbGreen = (a2 * .rgbGreen + a1 * aLighten(DataSrc(i).rgbGreen)) \ 256
+                                    .rgbBlue = (a2 * .rgbBlue + a1 * aLighten(DataSrc(i).rgbBlue)) \ 256
                                 ElseIf picEffect = epeDarker Then
-                                    .rgbRed = (a2 * .rgbRed + a1 * aDarken(DataSrc(I).rgbRed)) \ 256
-                                    .rgbGreen = (a2 * .rgbGreen + a1 * aDarken(DataSrc(I).rgbGreen)) \ 256
-                                    .rgbBlue = (a2 * .rgbBlue + a1 * aDarken(DataSrc(I).rgbBlue)) \ 256
+                                    .rgbRed = (a2 * .rgbRed + a1 * aDarken(DataSrc(i).rgbRed)) \ 256
+                                    .rgbGreen = (a2 * .rgbGreen + a1 * aDarken(DataSrc(i).rgbGreen)) \ 256
+                                    .rgbBlue = (a2 * .rgbBlue + a1 * aDarken(DataSrc(i).rgbBlue)) \ 256
                                 Else
-                                    .rgbRed = (a2 * .rgbRed + a1 * DataSrc(I).rgbRed) \ 256
-                                    .rgbGreen = (a2 * .rgbGreen + a1 * DataSrc(I).rgbGreen) \ 256
-                                    .rgbBlue = (a2 * .rgbBlue + a1 * DataSrc(I).rgbBlue) \ 256
+                                    .rgbRed = (a2 * .rgbRed + a1 * DataSrc(i).rgbRed) \ 256
+                                    .rgbGreen = (a2 * .rgbGreen + a1 * DataSrc(i).rgbGreen) \ 256
+                                    .rgbBlue = (a2 * .rgbBlue + a1 * DataSrc(i).rgbBlue) \ 256
                                 End If
                             End If
                         End If
@@ -1020,10 +1020,10 @@ Dim hBrush           As Long
     SetDIBitsToDevice DstDC, dstX, dstY, DstW, DstH, 0, 0, 0, DstH, DataDest(0), Info, 0
 
     Erase DataDest, DataSrc
-    DeleteObject SelectObject(tmpDC, TmpObj)
+    DeleteObject SelectObject(TmpDC, TmpObj)
     DeleteObject SelectObject(Sr2DC, Sr2Obj)
     If SrcPic.Type = vbPicTypeIcon Then DeleteObject SelectObject(srcDC, tObj)
-    DeleteDC tmpDC
+    DeleteDC TmpDC
     DeleteDC Sr2DC
     DeleteObject tObj
     DeleteDC srcDC
@@ -1037,8 +1037,8 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Lo
 '* Author  : Dana Seaman                                                    *
 '****************************************************************************
 
-Dim b                As Long, h As Long, f As Long, I As Long, newW As Long
-Dim tmpDC            As Long, TmpBmp As Long, TmpObj As Long
+Dim b                As Long, h As Long, f As Long, i As Long, newW As Long
+Dim TmpDC            As Long, TmpBmp As Long, TmpObj As Long
 Dim Sr2DC            As Long, Sr2Bmp As Long, Sr2Obj As Long
 Dim DataDest()       As RGBQUAD, DataSrc() As RGBQUAD
 Dim Info             As BITMAPINFO, BrushRGB As RGBQUAD, gCol As Long
@@ -1080,12 +1080,12 @@ Dim a1               As Long
 
     tObj = SelectObject(srcDC, SrcPic)
 
-    tmpDC = CreateCompatibleDC(srcDC)
+    TmpDC = CreateCompatibleDC(srcDC)
     Sr2DC = CreateCompatibleDC(srcDC)
 
     TmpBmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
     Sr2Bmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
-    TmpObj = SelectObject(tmpDC, TmpBmp)
+    TmpObj = SelectObject(TmpDC, TmpBmp)
     Sr2Obj = SelectObject(Sr2DC, Sr2Bmp)
 
     With Info.bmiHeader
@@ -1099,9 +1099,9 @@ Dim a1               As Long
     ReDim DataDest(Info.bmiHeader.biSizeImage - 1)
     ReDim DataSrc(UBound(DataDest))
 
-    BitBlt tmpDC, 0, 0, DstW, DstH, DstDC, dstX, dstY, vbSrcCopy
+    BitBlt TmpDC, 0, 0, DstW, DstH, DstDC, dstX, dstY, vbSrcCopy
     BitBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, vbSrcCopy
-    GetDIBits tmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
+    GetDIBits TmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
     GetDIBits Sr2DC, Sr2Bmp, 0, DstH, DataSrc(0), Info, 0
 
     If BrushColor <> -1 Then
@@ -1115,21 +1115,21 @@ Dim a1               As Long
     For h = 0 To DstH - 1
         f = h * DstW
         For b = 0 To newW
-            I = f + b
+            i = f + b
             If m_bEnabled Then
                 If m_Buttonstate = eStateOver Then
-                    a1 = (CLng(DataSrc(I).rgbAlpha) * OverOpacity) \ 255
+                    a1 = (CLng(DataSrc(i).rgbAlpha) * OverOpacity) \ 255
                 Else
-                    a1 = (CLng(DataSrc(I).rgbAlpha) * m_PictureOpacity) \ 255
+                    a1 = (CLng(DataSrc(i).rgbAlpha) * m_PictureOpacity) \ 255
                 End If
             Else
-                a1 = (CLng(DataSrc(I).rgbAlpha) * bDisOpacity) \ 255
+                a1 = (CLng(DataSrc(i).rgbAlpha) * bDisOpacity) \ 255
             End If
             a2 = 255 - a1
-            With DataDest(I)
+            With DataDest(i)
                 If BrushColor <> -1 Then
                     If a1 = 255 Then
-                        DataDest(I) = BrushRGB
+                        DataDest(i) = BrushRGB
                     ElseIf a1 > 0 Then
                         .rgbRed = (a2 * .rgbRed + a1 * BrushRGB.rgbRed) \ 256
                         .rgbGreen = (a2 * .rgbGreen + a1 * BrushRGB.rgbGreen) \ 256
@@ -1137,7 +1137,7 @@ Dim a1               As Long
                     End If
                 Else
                     If isGreyscale Then
-                        gCol = CLng(DataSrc(I).rgbRed * 0.3) + DataSrc(I).rgbGreen * 0.59 + DataSrc(I).rgbBlue * 0.11
+                        gCol = CLng(DataSrc(i).rgbRed * 0.3) + DataSrc(i).rgbGreen * 0.59 + DataSrc(i).rgbBlue * 0.11
                         If a1 = 255 Then
                             .rgbRed = gCol: .rgbGreen = gCol: .rgbBlue = gCol
                         ElseIf a1 > 0 Then
@@ -1148,29 +1148,29 @@ Dim a1               As Long
                     Else
                         If a1 = 255 Then
                             If (picEffect = epeLighter) Then
-                                .rgbRed = aLighten(DataSrc(I).rgbRed)
-                                .rgbGreen = aLighten(DataSrc(I).rgbGreen)
-                                .rgbBlue = aLighten(DataSrc(I).rgbBlue)
+                                .rgbRed = aLighten(DataSrc(i).rgbRed)
+                                .rgbGreen = aLighten(DataSrc(i).rgbGreen)
+                                .rgbBlue = aLighten(DataSrc(i).rgbBlue)
                             ElseIf picEffect = epeDarker Then
-                                .rgbRed = aDarken(DataSrc(I).rgbRed)
-                                .rgbGreen = aDarken(DataSrc(I).rgbGreen)
-                                .rgbBlue = aDarken(DataSrc(I).rgbBlue)
+                                .rgbRed = aDarken(DataSrc(i).rgbRed)
+                                .rgbGreen = aDarken(DataSrc(i).rgbGreen)
+                                .rgbBlue = aDarken(DataSrc(i).rgbBlue)
                             Else
-                                DataDest(I) = DataSrc(I)
+                                DataDest(i) = DataSrc(i)
                             End If
                         ElseIf a1 > 0 Then
                             If (picEffect = epeLighter) Then
-                                .rgbRed = (a2 * .rgbRed + a1 * aLighten(DataSrc(I).rgbRed)) \ 256
-                                .rgbGreen = (a2 * .rgbGreen + a1 * aLighten(DataSrc(I).rgbGreen)) \ 256
-                                .rgbBlue = (a2 * .rgbBlue + a1 * aLighten(DataSrc(I).rgbBlue)) \ 256
+                                .rgbRed = (a2 * .rgbRed + a1 * aLighten(DataSrc(i).rgbRed)) \ 256
+                                .rgbGreen = (a2 * .rgbGreen + a1 * aLighten(DataSrc(i).rgbGreen)) \ 256
+                                .rgbBlue = (a2 * .rgbBlue + a1 * aLighten(DataSrc(i).rgbBlue)) \ 256
                             ElseIf picEffect = epeDarker Then
-                                .rgbRed = (a2 * .rgbRed + a1 * aDarken(DataSrc(I).rgbRed)) \ 256
-                                .rgbGreen = (a2 * .rgbGreen + a1 * aDarken(DataSrc(I).rgbGreen)) \ 256
-                                .rgbBlue = (a2 * .rgbBlue + a1 * aDarken(DataSrc(I).rgbBlue)) \ 256
+                                .rgbRed = (a2 * .rgbRed + a1 * aDarken(DataSrc(i).rgbRed)) \ 256
+                                .rgbGreen = (a2 * .rgbGreen + a1 * aDarken(DataSrc(i).rgbGreen)) \ 256
+                                .rgbBlue = (a2 * .rgbBlue + a1 * aDarken(DataSrc(i).rgbBlue)) \ 256
                             Else
-                                .rgbRed = (a2 * .rgbRed + a1 * DataSrc(I).rgbRed) \ 256
-                                .rgbGreen = (a2 * .rgbGreen + a1 * DataSrc(I).rgbGreen) \ 256
-                                .rgbBlue = (a2 * .rgbBlue + a1 * DataSrc(I).rgbBlue) \ 256
+                                .rgbRed = (a2 * .rgbRed + a1 * DataSrc(i).rgbRed) \ 256
+                                .rgbGreen = (a2 * .rgbGreen + a1 * DataSrc(i).rgbGreen) \ 256
+                                .rgbBlue = (a2 * .rgbBlue + a1 * DataSrc(i).rgbBlue) \ 256
                             End If
                         End If
                     End If
@@ -1183,10 +1183,10 @@ Dim a1               As Long
     SetDIBitsToDevice DstDC, dstX, dstY, DstW, DstH, 0, 0, 0, DstH, DataDest(0), Info, 0
 
     Erase DataDest, DataSrc
-    DeleteObject SelectObject(tmpDC, TmpObj)
+    DeleteObject SelectObject(TmpDC, TmpObj)
     DeleteObject SelectObject(Sr2DC, Sr2Obj)
     If SrcPic.Type = vbPicTypeIcon Then DeleteObject SelectObject(srcDC, tObj)
-    DeleteDC tmpDC
+    DeleteDC TmpDC
     DeleteDC Sr2DC
     DeleteObject tObj
     DeleteDC srcDC
@@ -1240,10 +1240,10 @@ Dim dG               As Long
 Dim dB               As Long
 
 Dim Scan             As Long
-Dim I                As Long
+Dim i                As Long
 Dim iEnd             As Long
 Dim iOffset          As Long
-Dim J                As Long
+Dim j                As Long
 Dim jEnd             As Long
 Dim iGrad            As Long
 
@@ -1290,9 +1290,9 @@ Dim iGrad            As Long
         '-- Special case (1-pixel wide gradient)
         lGrad(0) = (b1 \ 2 + b2 \ 2) + 256 * (g1 \ 2 + g2 \ 2) + 65536 * (r1 \ 2 + r2 \ 2)
     Else
-        For I = 0 To iEnd
-            lGrad(I) = b1 + (dB * I) \ iEnd + 256 * (g1 + (dG * I) \ iEnd) + 65536 * (r1 + (dR * I) \ iEnd)
-        Next I
+        For i = 0 To iEnd
+            lGrad(i) = b1 + (dB * i) \ iEnd + 256 * (g1 + (dG * i) \ iEnd) + 65536 * (r1 + (dR * i) \ iEnd)
+        Next i
     End If
 
     '-- Size DIB array
@@ -1306,45 +1306,45 @@ Dim iGrad            As Long
 
     Case [gdHorizontal]
 
-        For J = 0 To jEnd
-            For I = iOffset To iEnd + iOffset
-                lBits(I) = lGrad(I - iOffset)
-            Next I
+        For j = 0 To jEnd
+            For i = iOffset To iEnd + iOffset
+                lBits(i) = lGrad(i - iOffset)
+            Next i
             iOffset = iOffset + Scan
-        Next J
+        Next j
 
     Case [gdVertical]
 
-        For J = jEnd To 0 Step -1
-            For I = iOffset To iEnd + iOffset
-                lBits(I) = lGrad(J)
-            Next I
+        For j = jEnd To 0 Step -1
+            For i = iOffset To iEnd + iOffset
+                lBits(i) = lGrad(j)
+            Next i
             iOffset = iOffset + Scan
-        Next J
+        Next j
 
     Case [gdDownwardDiagonal]
 
         iOffset = jEnd * Scan
-        For J = 1 To jEnd + 1
-            For I = iOffset To iEnd + iOffset
-                lBits(I) = lGrad(iGrad)
+        For j = 1 To jEnd + 1
+            For i = iOffset To iEnd + iOffset
+                lBits(i) = lGrad(iGrad)
                 iGrad = iGrad + 1
-            Next I
+            Next i
             iOffset = iOffset - Scan
-            iGrad = J
-        Next J
+            iGrad = j
+        Next j
 
     Case [gdUpwardDiagonal]
 
         iOffset = 0
-        For J = 1 To jEnd + 1
-            For I = iOffset To iEnd + iOffset
-                lBits(I) = lGrad(iGrad)
+        For j = 1 To jEnd + 1
+            For i = iOffset To iEnd + iOffset
+                lBits(i) = lGrad(iGrad)
                 iGrad = iGrad + 1
-            Next I
+            Next i
             iOffset = iOffset + Scan
-            iGrad = J
-        Next J
+            iGrad = j
+        Next j
     End Select
 
     '-- Define DIB header
@@ -1938,18 +1938,18 @@ End Sub
 
 Private Sub SetAccessKey()
 
-Dim I                As Long
+Dim i                As Long
 
     UserControl.AccessKeys = vbNullString
     If Len(m_Caption) > 1 Then
-        I = InStr(1, m_Caption, "&", vbTextCompare)
-        If (I < Len(m_Caption)) And (I > 0) Then
-            If Mid$(m_Caption, I + 1, 1) <> "&" Then
-                AccessKeys = LCase$(Mid$(m_Caption, I + 1, 1))
+        i = InStr(1, m_Caption, "&", vbTextCompare)
+        If (i < Len(m_Caption)) And (i > 0) Then
+            If Mid$(m_Caption, i + 1, 1) <> "&" Then
+                AccessKeys = LCase$(Mid$(m_Caption, i + 1, 1))
             Else
-                I = InStr(I + 2, m_Caption, "&", vbTextCompare)
-                If Mid$(m_Caption, I + 1, 1) <> "&" Then
-                    AccessKeys = LCase$(Mid$(m_Caption, I + 1, 1))
+                i = InStr(i + 2, m_Caption, "&", vbTextCompare)
+                If Mid$(m_Caption, i + 1, 1) <> "&" Then
+                    AccessKeys = LCase$(Mid$(m_Caption, i + 1, 1))
                 End If
             End If
         End If
@@ -2737,7 +2737,7 @@ Private Sub UserControl_DblClick()
 
     If m_lDownButton = 1 Then                    'React to only Left button
 
-        SetCapture (hWnd)                         'Preserve Hwnd on DoubleClick
+        SetCapture (hWnd)                         'Preserve hWnd on DoubleClick
         If m_Buttonstate <> eStateDown Then m_Buttonstate = eStateDown
         RedrawButton
         UserControl_MouseDown m_lDownButton, m_lDShift, m_lDX, m_lDY
@@ -2766,14 +2766,14 @@ End Sub
 
 Private Sub UserControl_Initialize()
 
-Dim I                As Long
+Dim i                As Long
 Dim OS               As OSVERSIONINFO
 
 'Prebuid Lighten/Darken arrays
 
-    For I = 0 To 255
-        aLighten(I) = Lighten(I)
-        aDarken(I) = Darken(I)
+    For i = 0 To 255
+        aLighten(i) = Lighten(i)
+        aDarken(i) = Darken(i)
     Next
 
     ' --Get the operating system version for text drawing purposes.
@@ -2990,8 +2990,8 @@ Const GCL_STYLE         As Long = (-26)
     If (Not m_bEnabled) Or m_bPopupShown Or m_Buttonstate = eStateDown Then Exit Sub
 
     ' --Destroy any previous tooltip
-    If m_lttHwnd <> 0 Then
-        DestroyWindow m_lttHwnd
+    If m_ltthWnd <> 0 Then
+        DestroyWindow m_ltthWnd
     End If
 
     lWinStyle = TTS_ALWAYSTIP Or TTS_NOPREFIX
@@ -3000,16 +3000,16 @@ Const GCL_STYLE         As Long = (-26)
     If m_lTooltipType = TooltipBalloon Then lWinStyle = lWinStyle Or TTS_BALLOON
 
     If m_bttRTL Then
-        m_lttHwnd = CreateWindowEx(WS_EX_LAYOUTRTL, TOOLTIPS_CLASSA, vbNullString, lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.hWnd, 0&, App.hInstance, 0&)
+        m_ltthWnd = CreateWindowEx(WS_EX_LAYOUTRTL, TOOLTIPS_CLASSA, vbNullString, lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.hWnd, 0&, App.hInstance, 0&)
     Else
-        m_lttHwnd = CreateWindowEx(0&, TOOLTIPS_CLASSA, vbNullString, lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.hWnd, 0&, App.hInstance, 0&)
+        m_ltthWnd = CreateWindowEx(0&, TOOLTIPS_CLASSA, vbNullString, lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.hWnd, 0&, App.hInstance, 0&)
     End If
 
-    SetClassLong m_lttHwnd, GCL_STYLE, GetClassLong(m_lttHwnd, GCL_STYLE) Or CS_DROPSHADOW
+    SetClassLong m_ltthWnd, GCL_STYLE, GetClassLong(m_ltthWnd, GCL_STYLE) Or CS_DROPSHADOW
 
     'make our tooltip window a topmost window
     ' This is creating some problems as noted by K-Zero
-    'SetWindowPos m_lttHwnd, HWND_TOPMOST, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE
+    'SetWindowPos m_ltthWnd, hWnd_TOPMOST, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE
 
     ''get the rect of the parent control
     GetClientRect UserControl.hWnd, lpRect
@@ -3019,9 +3019,9 @@ Const GCL_STYLE         As Long = (-26)
         With ttipW
             ' --if we want it centered, then set that flag
             If m_lttCentered Then
-                .lFlags = TTF_SUBCLASS Or TTF_CENTERTIP Or TTF_IDISHWND
+                .lFlags = TTF_SUBCLASS Or TTF_CENTERTIP Or TTF_IDIShWnd
             Else
-                .lFlags = TTF_SUBCLASS Or TTF_IDISHWND
+                .lFlags = TTF_SUBCLASS Or TTF_IDIShWnd
             End If
 
             ' --set the hWnd prop to our parent control's hWnd
@@ -3033,7 +3033,7 @@ Const GCL_STYLE         As Long = (-26)
             .lpRect = lpRect
         End With
         ' --add the tooltip structure
-        SendMessage m_lttHwnd, TTM_ADDTOOLW, 0&, ttipW
+        SendMessage m_ltthWnd, TTM_ADDTOOLW, 0&, ttipW
     Else
         ' --set our tooltip info structure for << WinNT
         With ttip
@@ -3053,7 +3053,7 @@ Const GCL_STYLE         As Long = (-26)
             .lpRect = lpRect
         End With
         ' --add the tooltip structure
-        SendMessage m_lttHwnd, TTM_ADDTOOLA, 0&, ttip
+        SendMessage m_ltthWnd, TTM_ADDTOOLA, 0&, ttip
     End If
 
     'if we want a title or we want an icon
@@ -3061,16 +3061,16 @@ Const GCL_STYLE         As Long = (-26)
         If m_WindowsNT Then
             lPtr = StrPtr(m_sTooltiptitle)
             If lPtr Then
-                SendMessage m_lttHwnd, TTM_SETTITLEW, m_lToolTipIcon, ByVal lPtr
+                SendMessage m_ltthWnd, TTM_SETTITLEW, m_lToolTipIcon, ByVal lPtr
             End If
         Else
-            SendMessage m_lttHwnd, TTM_SETTITLE, CLng(m_lToolTipIcon), ByVal m_sTooltiptitle
+            SendMessage m_ltthWnd, TTM_SETTITLE, CLng(m_lToolTipIcon), ByVal m_sTooltiptitle
         End If
 
     End If
-    SendMessage m_lttHwnd, TTM_SETMAXTIPWIDTH, 0, 240 'for Multiline capability
+    SendMessage m_ltthWnd, TTM_SETMAXTIPWIDTH, 0, 240 'for Multiline capability
     If m_lttBackColor <> Empty Then
-        SendMessage m_lttHwnd, TTM_SETTIPBKCOLOR, TranslateColor(m_lttBackColor), 0&
+        SendMessage m_ltthWnd, TTM_SETTIPBKCOLOR, TranslateColor(m_lttBackColor), 0&
     End If
 
 End Sub
@@ -4309,8 +4309,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
         Case WM_SETCURSOR
             If m_bHandPointer Then
-               m_lCursor = LoadCursor(0&, IDC_HAND)
-               If m_lCursor Then SetCursor m_lCursor: bHandled = True     'Load System Hand pointer
+               'Tanner edit: manage the hand cursor myself, rather than having each button do it separately
+               SetCursor hc_Handle_Hand
+               bHandled = True
             End If
             
         End Select

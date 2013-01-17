@@ -535,7 +535,7 @@ Function VBGetOpenFileName(FileName As String, _
 
     'Message "Preparing common dialog interface..."
 
-    Dim opfile As OPENFILENAME, S As String
+    Dim opfile As OPENFILENAME, s As String
     
     m_lApiReturn = 0
     m_lExtendedError = 0
@@ -568,22 +568,22 @@ With opfile
     For i = 1 To Len(Filter)
         Ch = Mid$(Filter, i, 1)
         If Ch = "|" Or Ch = ":" Then
-            S = S & vbNullChar
+            s = s & vbNullChar
         Else
-            S = S & Ch
+            s = s & Ch
         End If
     Next
     ' Put double null at end
-    S = S & vbNullChar & vbNullChar
-    .lpstrFilter = S
+    s = s & vbNullChar & vbNullChar
+    .lpstrFilter = s
     .nFilterIndex = FilterIndex
 
     ' Pad file and file title buffers to maximum path
-    S = FileName & String$(MAX_PATH - Len(FileName), 0)
-    .lpstrFile = S
+    s = FileName & String$(MAX_PATH - Len(FileName), 0)
+    .lpstrFile = s
     .nMaxFile = MAX_PATH
-    S = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
-    .lpstrFileTitle = S
+    s = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
+    .lpstrFileTitle = s
     .nMaxFileTitle = MAX_FILE
     ' All other fields set to zero
     
@@ -633,8 +633,8 @@ With opfile
     End Select
 End With
 End Function
-Private Function StrZToStr(S As String) As String
-    StrZToStr = Left$(S, lstrlen(S))
+Private Function StrZToStr(s As String) As String
+    StrZToStr = Left$(s, lstrlen(s))
 End Function
 
 Function VBGetSaveFileName(FileName As String, _
@@ -648,7 +648,7 @@ Function VBGetSaveFileName(FileName As String, _
                            Optional Owner As Long = -1, _
                            Optional Flags As Long) As Boolean
             
-    Dim opfile As OPENFILENAME, S As String
+    Dim opfile As OPENFILENAME, s As String
 
     m_lApiReturn = 0
     m_lExtendedError = 0
@@ -675,22 +675,22 @@ With opfile
     For i = 1 To Len(Filter)
         Ch = Mid$(Filter, i, 1)
         If Ch = "|" Or Ch = ":" Then
-            S = S & vbNullChar
+            s = s & vbNullChar
         Else
-            S = S & Ch
+            s = s & Ch
         End If
     Next
     ' Put double null at end
-    S = S & vbNullChar & vbNullChar
-    .lpstrFilter = S
+    s = s & vbNullChar & vbNullChar
+    .lpstrFilter = s
     .nFilterIndex = FilterIndex
 
     ' Pad file and file title buffers to maximum path
-    S = FileName & String$(MAX_PATH - Len(FileName), 0)
-    .lpstrFile = S
+    s = FileName & String$(MAX_PATH - Len(FileName), 0)
+    .lpstrFile = s
     .nMaxFile = MAX_PATH
-    S = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
-    .lpstrFileTitle = S
+    s = FileTitle & String$(MAX_FILE - Len(FileTitle), 0)
+    .lpstrFileTitle = s
     .nMaxFileTitle = MAX_FILE
     ' All other fields zero
     
@@ -727,7 +727,7 @@ End With
 End Function
 
 Private Function FilterLookup(ByVal sFilters As String, ByVal iCur As Long) As String
-    Dim iStart As Long, iEnd As Long, S As String
+    Dim iStart As Long, iEnd As Long, s As String
     iStart = 1
     If sFilters = "" Then Exit Function
     Do
@@ -736,13 +736,13 @@ Private Function FilterLookup(ByVal sFilters As String, ByVal iCur As Long) As S
         If iEnd = 0 Then Exit Function
         iEnd = InStr(iEnd + 1, sFilters, vbNullChar)
         If iEnd Then
-            S = Mid$(sFilters, iStart, iEnd - iStart)
+            s = Mid$(sFilters, iStart, iEnd - iStart)
         Else
-            S = Mid$(sFilters, iStart)
+            s = Mid$(sFilters, iStart)
         End If
         iStart = iEnd + 1
         If iCur = 1 Then
-            FilterLookup = S
+            FilterLookup = s
             Exit Function
         End If
         iCur = iCur - 1
@@ -874,21 +874,21 @@ End Sub
 #End If
 
 
-Private Sub StrToBytes(ab() As Byte, S As String)
+Private Sub StrToBytes(ab() As Byte, s As String)
     If IsArrayEmpty(ab) Then
         ' Assign to empty array
-        ab = StrConv(S, vbFromUnicode)
+        ab = StrConv(s, vbFromUnicode)
     Else
         Dim cab As Long
         ' Copy to existing array, padding or truncating if necessary
         cab = UBound(ab) - LBound(ab) + 1
-        If Len(S) < cab Then S = S & String$(cab - Len(S), 0)
+        If Len(s) < cab Then s = s & String$(cab - Len(s), 0)
         'If UnicodeTypeLib Then
         '    Dim st As String
         '    st = StrConv(s, vbFromUnicode)
         '    CopyMemoryStr ab(LBound(ab)), st, cab
         'Else
-            CopyMemoryStr ab(LBound(ab)), S, cab
+            CopyMemoryStr ab(LBound(ab)), s, cab
         'End If
     End If
 End Sub

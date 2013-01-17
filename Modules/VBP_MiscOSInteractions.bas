@@ -112,7 +112,7 @@ Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = F
     Dim lngReturn As Long
     Dim strModuleName As String
     Dim lngSize As Long
-    Dim lngHwndProcess As Long
+    Dim lnghWndProcess As Long
     Dim lngLoop As Long
     Dim pmc As PROCESS_MEMORY_COUNTERS
     Dim lRet As Long
@@ -150,11 +150,11 @@ Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = F
     For lngLoop = 1 To lngNumElements
 
         'Get a handle to the Process and Open
-        lngHwndProcess = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0, lngProcessIDs(lngLoop))
+        lnghWndProcess = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0, lngProcessIDs(lngLoop))
     
-        If lngHwndProcess <> 0 Then
+        If lnghWndProcess <> 0 Then
             'Get an array of the module handles for the specified process
-            lngReturn = EnumProcessModules(lngHwndProcess, lngModules(1), 200, lngCBSize2)
+            lngReturn = EnumProcessModules(lnghWndProcess, lngModules(1), 200, lngCBSize2)
 
             'If the Module Array is retrieved, Get the ModuleFileName
             If lngReturn <> 0 Then
@@ -166,7 +166,7 @@ Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = F
                 lngSize = 500
 
                 'Get Process Name
-                lngReturn = GetModuleFileNameExA(lngHwndProcess, lngModules(1), strModuleName, lngSize)
+                lngReturn = GetModuleFileNameExA(lnghWndProcess, lngModules(1), strModuleName, lngSize)
 
                 'Remove trailing spaces
                 strProcessName = Left$(strModuleName, lngReturn)
@@ -178,7 +178,7 @@ Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = F
                     'Get the Site of the Memory Structure
                     pmc.cb = LenB(pmc)
           
-                    lRet = GetProcessMemoryInfo(lngHwndProcess, pmc, pmc.cb)
+                    lRet = GetProcessMemoryInfo(lnghWndProcess, pmc, pmc.cb)
               
                     If returnPeakValue Then
                         GetPhotoDemonMemoryUsage = pmc.PeakWorkingSetSize / 1024
@@ -193,7 +193,7 @@ Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = F
         End If
     
         'Close the handle to this process
-        lngReturn = CloseHandle(lngHwndProcess)
+        lngReturn = CloseHandle(lnghWndProcess)
         
     Next lngLoop
 

@@ -359,11 +359,11 @@ Public Sub copyLayerToClipboard()
         If (OpenClipboard(0) <> 0) Then
                
             'Get a handle to the current desktop, and create a compatible clipboard device context in it
-            Dim desktopHWnd As Long
-            desktopHWnd = GetDesktopWindow
+            Dim desktophWnd As Long
+            desktophWnd = GetDesktopWindow
             
             Dim desktopDC As Long, clipboardDC As Long
-            desktopDC = GetDC(desktopHWnd)
+            desktopDC = GetDC(desktophWnd)
             clipboardDC = CreateCompatibleDC(desktopDC)
             
             'Make sure the clipboard was able to receive a compatible device context
@@ -416,7 +416,7 @@ Public Sub copyLayerToClipboard()
             End If
             
             'Release (DON'T DELETE!) our control of the current desktop device context
-            ReleaseDC desktopHWnd, desktopDC
+            ReleaseDC desktophWnd, desktopDC
             
         End If
         

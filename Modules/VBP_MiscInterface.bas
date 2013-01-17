@@ -12,13 +12,13 @@ Option Explicit
 
 'Experimental subclassing to fix background color problems
 ' Many thanks to pro VB programmer LaVolpe for this workaround for themed controls not respecting their owner's backcolor properly.
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
-Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hwnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hwnd As Long, ByVal lpString As String) As Long
-Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" (ByVal hwnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
-Private Declare Function DefWindowProc Lib "user32.dll" Alias "DefWindowProcA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
+Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
+Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
+Private Declare Function DefWindowProc Lib "user32.dll" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Const WM_PRINTCLIENT As Long = &H318
 Private Const WM_PAINT As Long = &HF&
 Private Const GWL_WNDPROC As Long = -4
@@ -26,7 +26,7 @@ Private Const WM_DESTROY As Long = &H2
 
 'Used to set the cursor for an object to the system's hand cursor
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
-Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
 
 Public Const IDC_APPSTARTING = 32650&
@@ -48,14 +48,14 @@ Private Const GCL_HCURSOR = (-12)
 
 'These variables will hold the values of all custom-loaded cursors.
 ' They need to be deleted (via DestroyCursor) when the program exits; this is handled by unloadAllCursors.
-Dim hc_Handle_Arrow As Long
-Dim hc_Handle_Cross As Long
-Dim hc_Handle_Hand As Long
-Dim hc_Handle_SizeAll As Long
-Dim hc_Handle_SizeNESW As Long
-Dim hc_Handle_SizeNS As Long
-Dim hc_Handle_SizeNWSE As Long
-Dim hc_Handle_SizeWE As Long
+Private hc_Handle_Arrow As Long
+Private hc_Handle_Cross As Long
+Public hc_Handle_Hand As Long       'The hand cursor handle is used by the jcButton control as well, so it is declared publicly.
+Private hc_Handle_SizeAll As Long
+Private hc_Handle_SizeNESW As Long
+Private hc_Handle_SizeNS As Long
+Private hc_Handle_SizeNWSE As Long
+Private hc_Handle_SizeWE As Long
 
 'Because VB6 apps tend to look pretty lame on modern version of Windows, we do a bit of beautification to every form when
 ' it's loaded.  This routine is nice because every form calls it at least once, so we can make centralized changes without
@@ -113,7 +113,7 @@ Public Sub makeFormPretty(ByRef tForm As Form)
     Next
     
     'STEP 5: subclass this form and force controls to render transparent borders properly.
-    If g_IsProgramCompiled Then SubclassFrame tForm.hwnd, False
+    If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
     
     'Refresh all non-MDI forms after making the changes above
     If tForm.Name <> "FormMain" Then tForm.Refresh
@@ -135,25 +135,25 @@ Public Sub SubclassFrame(FramehWnd As Long, ReleaseSubclass As Boolean)
     End If
 End Sub
 
-Private Function WndProc_Frame(ByVal hwnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Function WndProc_Frame(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
     Dim prevProc As Long
     
-    prevProc = GetProp(hwnd, "scPproc")
+    prevProc = GetProp(hWnd, "scPproc")
     If prevProc = 0& Then
-        WndProc_Frame = DefWindowProc(hwnd, uMsg, wParam, lParam)
+        WndProc_Frame = DefWindowProc(hWnd, uMsg, wParam, lParam)
     ElseIf uMsg = WM_PRINTCLIENT Then
-        SendMessage hwnd, WM_PAINT, wParam, ByVal 0&
+        SendMessage hWnd, WM_PAINT, wParam, ByVal 0&
     Else
-        If uMsg = WM_DESTROY Then SubclassFrame hwnd, True
-        WndProc_Frame = CallWindowProc(prevProc, hwnd, uMsg, wParam, lParam)
+        If uMsg = WM_DESTROY Then SubclassFrame hWnd, True
+        WndProc_Frame = CallWindowProc(prevProc, hWnd, uMsg, wParam, lParam)
     End If
 End Function
 
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Form)
-    If g_IsProgramCompiled Then SubclassFrame tForm.hwnd, False
+    If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
 End Sub
 
 'Perform any drawing routines related to the main form
@@ -199,49 +199,49 @@ End Sub
 Public Sub setHandCursor(ByRef tControl As Control)
     tControl.MouseIcon = LoadPicture("")
     tControl.MousePointer = 0
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_Hand
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Hand
 End Sub
 
 'Set a single object to use the arrow cursor
 Public Sub setArrowCursorToObject(ByRef tControl As Control)
     tControl.MouseIcon = LoadPicture("")
     tControl.MousePointer = 0
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_Arrow
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
 End Sub
 
 'Set a single form to use the arrow cursor
 Public Sub setArrowCursor(ByRef tControl As Form)
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_Arrow
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
 End Sub
 
 'Set a single form to use the cross cursor
 Public Sub setCrossCursor(ByRef tControl As Form)
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_Cross
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Cross
 End Sub
     
 'Set a single form to use the Size All cursor
 Public Sub setSizeAllCursor(ByRef tControl As Form)
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_SizeAll
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeAll
 End Sub
 
 'Set a single form to use the Size NESW cursor
 Public Sub setSizeNESWCursor(ByRef tControl As Form)
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_SizeNESW
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNESW
 End Sub
 
 'Set a single form to use the Size NS cursor
 Public Sub setSizeNSCursor(ByRef tControl As Form)
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_SizeNS
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNS
 End Sub
 
 'Set a single form to use the Size NWSE cursor
 Public Sub setSizeNWSECursor(ByRef tControl As Form)
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_SizeNWSE
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNWSE
 End Sub
 
 'Set a single form to use the Size WE cursor
 Public Sub setSizeWECursor(ByRef tControl As Form)
-    SetClassLong tControl.hwnd, GCL_HCURSOR, hc_Handle_SizeWE
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeWE
 End Sub
 
 'Display the specified size in the main form's status bar

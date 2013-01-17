@@ -26,7 +26,7 @@ End Sub
 
 'Pass this function a string array, and it will fill it with a list of files selected by the user.
 ' The commondialog filters are automatically set according to image formats supported by the program.
-Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal ownerHWnd As Long) As Boolean
+Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal ownerhWnd As Long) As Boolean
 
     'Common dialog interface
     Dim CC As cCommonDialog
@@ -40,7 +40,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     Dim sFileList As String
     
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
-    If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, "Open an image", , ownerHWnd, 0) Then
+    If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, "Open an image", , ownerhWnd, 0) Then
         
         Message "Preparing to load image..."
         

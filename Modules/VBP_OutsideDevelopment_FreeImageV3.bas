@@ -2012,7 +2012,7 @@ Public Type FIRGBAF
 End Type
 
 Public Type FICOMPLEX
-   R As Double           ' real part
+   r As Double           ' real part
    i As Double           ' imaginary part
 End Type
 
