@@ -78,12 +78,11 @@ Begin VB.Form FormGaussianBlur
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormGaussianBlur.frx":0000
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -182,7 +181,7 @@ End Sub
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Convolving image with separable gaussian kernel..."
+    If toPreview = False Then Message "Applying gaussian blur..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -261,7 +260,6 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
     'Normalize the kernel so that all values sum to 1
     For i = -gRadius To gRadius
         gKernel(i) = gKernel(i) / sumVal
-        Message i & ":" & gKernel(i) & ":" & stdDev
     Next i
     
     'We now have a normalized 1-dimensional gaussian kernel available for convolution.
@@ -310,10 +308,10 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
         Next i
         
         'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
-        srcImageData(QuickVal + 2, y) = rSum '\ numPixels
-        srcImageData(QuickVal + 1, y) = gSum '\ numPixels
-        srcImageData(QuickVal, y) = bSum '\ numPixels
-        If qvDepth = 4 Then srcImageData(QuickVal + 3, y) = aSum '\ numPixels
+        srcImageData(QuickVal + 2, y) = rSum
+        srcImageData(QuickVal + 1, y) = gSum
+        srcImageData(QuickVal, y) = bSum
+        If qvDepth = 4 Then srcImageData(QuickVal + 3, y) = aSum
         
     Next y
         If toPreview = False Then
@@ -352,10 +350,10 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
         Next i
         
         'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
-        dstImageData(QuickVal + 2, y) = rSum '\ numPixels
-        dstImageData(QuickVal + 1, y) = gSum '\ numPixels
-        dstImageData(QuickVal, y) = bSum '\ numPixels
-        If qvDepth = 4 Then srcImageData(QuickVal + 3, y) = aSum '\ numPixels
+        dstImageData(QuickVal + 2, y) = rSum
+        dstImageData(QuickVal + 1, y) = gSum
+        dstImageData(QuickVal, y) = bSum
+        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aSum
         
     Next y
         If toPreview = False Then
@@ -388,7 +386,10 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'If the program is not compiled, display a special warning for this tool
-    If Not g_IsProgramCompiled Then lblIDEWarning.Visible = True
+    If Not g_IsProgramCompiled Then
+        lblIDEWarning.Caption = "WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20."
+        lblIDEWarning.Visible = True
+    End If
     
 End Sub
 
