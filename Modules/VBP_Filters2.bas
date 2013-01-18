@@ -80,7 +80,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     numPixels = (gRadius * 2) + 1
     
     'Calculate a standard deviation (sigma) using the GIMP formula:
-    Dim stdDev As Single, stdDev2 As Single
+    Dim stdDev As Single, stdDev2 As Single, stdDev3 As Single
     If gRadius > 1 Then
         stdDev = Sqr(-(gRadius * gRadius) / (2 * Log(1# / 255#)))
     'Note that this is my addition - for a radius of 1 the GIMP formula results in too small of a sigma value
@@ -88,6 +88,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
         stdDev = 0.5
     End If
     stdDev2 = stdDev * stdDev
+    stdDev3 = stdDev * 3
     
     'Populate the kernel using that sigma
     Dim i As Long
@@ -96,12 +97,34 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     
     For i = -gRadius To gRadius
         curVal = (1 / (Sqr(PI_DOUBLE) * stdDev)) * (EULER ^ (-1 * ((i * i) / (2 * stdDev2))))
-        sumVal = sumVal + curVal
-        gKernel(i) = curVal
-    Next i
         
-    'Normalize the kernel so that all values sum to 1
-    For i = -gRadius To gRadius
+        'Ignore values less than 3 sigma
+        If curVal < stdDev3 Then
+            sumVal = sumVal + curVal
+            gKernel(i) = curVal
+        Else
+            gKernel(i) = 0
+        End If
+    Next i
+    
+    'Find new bounds, which may exist if parts of the kernel lie outside the 3-sigma relevance limit
+    Dim gLB As Long, gUB As Long
+    
+    gLB = -gRadius
+    gUB = gRadius
+    If gRadius > 1 Then
+        For i = gLB To 0
+            If gKernel(i) = 0 Then gLB = i + 1
+        Next i
+    
+        For i = gUB To 0 Step -1
+            If gKernel(i) = 0 Then gUB = i - 1
+        Next i
+                
+    End If
+        
+    'Finally, normalize the kernel so that all values sum to 1
+    For i = -gLB To gUB
         gKernel(i) = gKernel(i) / sumVal
     Next i
     
@@ -130,7 +153,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
         bSum = 0
         
         'Apply the convolution to the intermediate gaussian array
-        For i = -gRadius To gRadius
+        For i = gLB To gUB
         
             curFactor = gKernel(i)
             chkX = x + i
@@ -138,13 +161,12 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
             'We need to give special treatment to pixels that lie off the image
             If chkX < initX Then chkX = initX
             If chkX > finalX Then chkX = finalX
-            
+                
             QuickValInner = chkX * qvDepth
-            
+                
             rSum = rSum + srcImageData(QuickValInner + 2, y) * curFactor
             gSum = gSum + srcImageData(QuickValInner + 1, y) * curFactor
             bSum = bSum + srcImageData(QuickValInner, y) * curFactor
-            If chkAlpha Then aSum = aSum + srcImageData(QuickValInner + 3, y) * curFactor
                     
         Next i
                 
@@ -158,14 +180,14 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
             
             aSum = 0
             
-            For i = -gRadius To gRadius
+            For i = gLB To gUB
             
                 curFactor = gKernel(i)
                 chkX = x + i
                 If chkX < initX Then chkX = initX
                 If chkX > finalX Then chkX = finalX
                 aSum = aSum + srcImageData(chkX * qvDepth + 3, y) * curFactor
-                        
+                
             Next i
             
             GaussImageData(QuickVal + 3, y) = aSum
@@ -191,7 +213,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
         aSum = 0
     
         'Apply the convolution to the destination array, using the gaussian array as the source.
-        For i = -gRadius To gRadius
+        For i = gLB To gUB
         
             curFactor = gKernel(i)
             chkY = y + i
@@ -215,7 +237,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
         If chkAlpha Then
         
             'Apply the convolution to the destination array, using the gaussian array as the source.
-            For i = -gRadius To gRadius
+            For i = gLB To gUB
                 curFactor = gKernel(i)
                 chkY = y + i
                 If chkY < initY Then chkY = initY
