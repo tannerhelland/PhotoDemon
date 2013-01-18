@@ -296,20 +296,6 @@ Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
     LoadCustomFilterData = True
 End Function
 
-'A very, very gentle softening effect
-Public Sub FilterAntialias()
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
-    g_FM(-1, 0) = 1
-    g_FM(1, 0) = 1
-    g_FM(0, -1) = 1
-    g_FM(0, 1) = 1
-    g_FM(0, 0) = 6
-    g_FilterWeight = 10
-    g_FilterBias = 0
-    DoFilter "Antialias"
-End Sub
-
 '"Soften an image" (aka, apply a gentle 3x3 blur)
 Public Sub FilterSoften()
     
