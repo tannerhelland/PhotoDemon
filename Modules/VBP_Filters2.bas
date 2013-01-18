@@ -34,13 +34,13 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Create one more local array.  This will contain the intermediate copy of the gaussian blur, which must be done in two passes
-    Dim GaussLayer As pdLayer
-    Set GaussLayer = New pdLayer
-    GaussLayer.createFromExistingLayer srcLayer
+    Dim gaussLayer As pdLayer
+    Set gaussLayer = New pdLayer
+    gaussLayer.createFromExistingLayer srcLayer
     
     Dim GaussImageData() As Byte
     Dim gaussSA As SAFEARRAY2D
-    prepSafeArray gaussSA, GaussLayer
+    prepSafeArray gaussSA, gaussLayer
     CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -116,18 +116,18 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
         For i = gLB To 0
             If gKernel(i) = 0 Then gLB = i + 1
         Next i
-    
+   
         For i = gUB To 0 Step -1
             If gKernel(i) = 0 Then gUB = i - 1
         Next i
-                
+   
     End If
-        
+    
     'Finally, normalize the kernel so that all values sum to 1
-    For i = -gLB To gUB
+    For i = gLB To gUB
         gKernel(i) = gKernel(i) / sumVal
     Next i
-    
+        
     'We now have a normalized 1-dimensional gaussian kernel available for convolution.
     
     'Color variables - in this case, sums for each color component
@@ -266,8 +266,8 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     Erase dstImageData
     
     'We can also erase our intermediate gaussian layer
-    GaussLayer.eraseLayer
-    Set GaussLayer = Nothing
+    gaussLayer.eraseLayer
+    Set gaussLayer = Nothing
     
     gb_Processing = False
     
@@ -514,11 +514,11 @@ Public Sub MenuComicBook()
     Dim GaussImageData() As Byte
     Dim gaussSA As SAFEARRAY2D
     
-    Dim GaussLayer As pdLayer
-    Set GaussLayer = New pdLayer
-    GaussLayer.createFromExistingLayer workingLayer
+    Dim gaussLayer As pdLayer
+    Set gaussLayer = New pdLayer
+    gaussLayer.createFromExistingLayer workingLayer
     
-    prepSafeArray gaussSA, GaussLayer
+    prepSafeArray gaussSA, gaussLayer
     CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
         
     Dim GaussImageData2() As Byte
@@ -528,7 +528,7 @@ Public Sub MenuComicBook()
     Set GaussLayer2 = New pdLayer
     GaussLayer2.createFromExistingLayer workingLayer
     
-    prepSafeArray gaussSA2, GaussLayer
+    prepSafeArray gaussSA2, gaussLayer
     CopyMemory ByVal VarPtrArray(GaussImageData2()), VarPtr(gaussSA2), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -736,8 +736,8 @@ Public Sub MenuComicBook()
     CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
     Erase GaussImageData
     
-    GaussLayer.eraseLayer
-    Set GaussLayer = Nothing
+    gaussLayer.eraseLayer
+    Set gaussLayer = Nothing
     
     'The last thing we need to do is sketch in the edges of the image.
     
