@@ -150,8 +150,8 @@ Begin VB.Form FormSmartBlur
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -523,7 +523,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
     If toPreview = False Then Message "Finding image edges and replacing with blurred data as necessary..."
         
     Dim blendVal As Single
-        
+    
     'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
     For x = initX To finalX
         QuickVal = x * qvDepth
@@ -542,7 +542,8 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
         b2 = GaussImageData(QuickVal, y)
         
         'Calculate a delta between the two
-        tDelta = Abs(tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000))
+        tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
+        If tDelta < 0 Then tDelta = -tDelta
                 
         'If the delta is below the specified threshold, replace it with the blurred data.
         If smoothEdges Then
@@ -557,7 +558,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
         
         Else
         
-            If tDelta < gThreshold Then
+            If tDelta <= gThreshold Then
                 If gThreshold <> 0 Then blendVal = 1 - (tDelta / gThreshold) Else blendVal = 1
                 dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
                 dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
