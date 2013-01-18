@@ -371,7 +371,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
         
     If toPreview = False Then Message "Applying smart blur..."
         
-    Dim blendVal As Single
+    Dim blendVal As Double
     
     'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
     For x = initX To finalX

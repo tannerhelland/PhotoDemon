@@ -569,7 +569,7 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
     Dim newLevels(0 To 255) As Byte
     
     'Fill the look-up table with appropriately mapped input limits
-    Dim pStep As Single
+    Dim pStep As Double
     pStep = 255 / (CSng(inRLimit) - CSng(inLLimit))
     For x = 0 To 255
         If x < inLLimit Then

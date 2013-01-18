@@ -330,7 +330,7 @@ Private Function AAColour(ByVal Colour As Long, _
                          ByVal dy As Long, ByVal dx As Long, _
                          ByVal BackColour As Long) As Long
 
-  Dim f As Single, c As UDT_LONG, iRGB As RGBA, pRGB As RGBA, cw As Single
+  Dim f As Double, c As UDT_LONG, iRGB As RGBA, pRGB As RGBA, cw As Double
 
   If (dx Or dy) <> 0 Then   'floating point I'm afraid
     If dx > dy Then

@@ -144,7 +144,7 @@ End Sub
 
 'Subroutine for fading an image to grayscale
 'NOTE!! fadeRatio has been changed from a Long to a Single.  Change the code accordingly when rewriting!
-Public Sub FadeImage(ByVal fadeRatio As Single, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub FadeImage(ByVal fadeRatio As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Fading image..."
     

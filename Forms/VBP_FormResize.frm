@@ -290,12 +290,12 @@ End Sub
 Private Sub CmdResize_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
-    If Not EntryValid(TxtWidth, 1, 32767, True, True) Then
-        AutoSelectText TxtWidth
+    If Not EntryValid(txtWidth, 1, 32767, True, True) Then
+        AutoSelectText txtWidth
         Exit Sub
     End If
-    If Not EntryValid(TxtHeight, 1, 32767, True, True) Then
-        AutoSelectText TxtHeight
+    If Not EntryValid(txtHeight, 1, 32767, True, True) Then
+        AutoSelectText txtHeight
         Exit Sub
     End If
     
@@ -304,19 +304,19 @@ Private Sub CmdResize_Click()
     'Resample based on the combo box entry...
     Select Case cboResample.ListIndex
         Case 0
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_NORMAL
+            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_NORMAL
         Case 1
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_HALFTONE
+            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_HALFTONE
         Case 2
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BILINEAR
+            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_BILINEAR
         Case 3
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BSPLINE
+            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_BSPLINE
         Case 4
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BICUBIC_MITCHELL
+            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_BICUBIC_MITCHELL
         Case 5
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BICUBIC_CATMULL
+            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_BICUBIC_CATMULL
         Case 6
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_LANCZOS
+            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_LANCZOS
     End Select
     
     Unload Me
@@ -331,14 +331,14 @@ End Sub
 Private Sub Form_Activate()
     
     'Add one to the displayed width and height, since we store them -1 for loops
-    TxtWidth.Text = pdImages(CurrentImage).Width
-    TxtHeight.Text = pdImages(CurrentImage).Height
+    txtWidth.Text = pdImages(CurrentImage).Width
+    txtHeight.Text = pdImages(CurrentImage).Height
     
     'Make the scroll bars match the text boxes
     updateWidthBar = False
     updateHeightBar = False
-    VSWidth.Value = Abs(32767 - CInt(TxtWidth))
-    VSHeight.Value = Abs(32767 - CInt(TxtHeight))
+    VSWidth.Value = Abs(32767 - CInt(txtWidth))
+    VSHeight.Value = Abs(32767 - CInt(txtHeight))
     updateWidthBar = True
     updateHeightBar = True
     
@@ -374,12 +374,12 @@ End Sub
 'If "Preserve Size Ratio" is selected, this set of routines handles the preservation
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText TxtHeight
+    AutoSelectText txtHeight
 End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
     If (KeyCode <> vbKeyTab) And (KeyCode <> vbKeyShift) Then
-        textValidate TxtHeight
+        textValidate txtHeight
         ChangeToHeight
     End If
 End Sub
@@ -389,12 +389,12 @@ Private Sub TxtHeight_LostFocus()
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText TxtWidth
+    AutoSelectText txtWidth
 End Sub
 
 Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
     If (KeyCode <> vbKeyTab) And (KeyCode <> vbKeyShift) Then
-        textValidate TxtWidth
+        textValidate txtWidth
         ChangeToWidth
     End If
 End Sub
@@ -405,15 +405,15 @@ End Sub
 
 Private Sub UpdateHeightBox()
     updateHeightBar = False
-    TxtHeight = Int((CDbl(Val(TxtWidth)) * hRatio) + 0.5)
-    VSHeight.Value = Abs(32767 - Val(TxtHeight))
+    txtHeight = Int((CDbl(Val(txtWidth)) * hRatio) + 0.5)
+    VSHeight.Value = Abs(32767 - Val(txtHeight))
     updateHeightBar = True
 End Sub
 
 Private Sub UpdateWidthBox()
     updateWidthBar = False
-    TxtWidth = Int((CDbl(Val(TxtHeight)) * wRatio) + 0.5)
-    VSWidth.Value = Abs(32767 - Val(TxtWidth))
+    txtWidth = Int((CDbl(Val(txtHeight)) * wRatio) + 0.5)
+    VSWidth.Value = Abs(32767 - Val(txtWidth))
     updateWidthBar = True
 End Sub
 '*************************************************************************************
@@ -470,22 +470,22 @@ End Sub
 ' relative to the associated text box
 Private Sub VSHeight_Change()
     If updateHeightBar = True Then
-        TxtHeight = Abs(32767 - CStr(VSHeight.Value))
+        txtHeight = Abs(32767 - CStr(VSHeight.Value))
         ChangeToHeight
     End If
 End Sub
 
 Private Sub VSWidth_Change()
     If updateWidthBar = True Then
-        TxtWidth = Abs(32767 - CStr(VSWidth.Value))
+        txtWidth = Abs(32767 - CStr(VSWidth.Value))
         ChangeToWidth
     End If
 End Sub
 
 Private Sub ChangeToWidth()
-    If EntryValid(TxtWidth, 1, 32767, False, False) Then
+    If EntryValid(txtWidth, 1, 32767, False, False) Then
         updateWidthBar = False
-        VSWidth.Value = Abs(32767 - CInt(TxtWidth))
+        VSWidth.Value = Abs(32767 - CInt(txtWidth))
         updateWidthBar = True
         If ChkRatio.Value = vbChecked Then
             UpdateHeightBox
@@ -494,9 +494,9 @@ Private Sub ChangeToWidth()
 End Sub
 
 Private Sub ChangeToHeight()
-    If EntryValid(TxtHeight, 1, 32767, False, False) Then
+    If EntryValid(txtHeight, 1, 32767, False, False) Then
         updateHeightBar = False
-        VSHeight.Value = Abs(32767 - CInt(TxtHeight))
+        VSHeight.Value = Abs(32767 - CInt(txtHeight))
         updateHeightBar = True
         If ChkRatio.Value = vbChecked Then
             UpdateWidthBox
@@ -509,7 +509,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
 
     'If the image contains an active selection, automatically resize it to match the new image.
     Dim selActive As Boolean
-    Dim tsLeft As Single, tsTop As Single, tsWidth As Single, tsHeight As Single
+    Dim tsLeft As Double, tsTop As Double, tsWidth As Double, tsHeight As Double
     
     If pdImages(CurrentImage).selectionActive Then
         selActive = True
@@ -617,7 +617,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 'Resampling requires many variables
                 
                 'Scaled ratios between the old x and y values and the new ones
-                Dim xScale As Single, yScale As Single
+                Dim xScale As Double, yScale As Double
                 xScale = (pdImages(CurrentImage).Width - 1) / iWidth
                 yScale = (pdImages(CurrentImage).Height - 1) / iHeight
     
@@ -625,10 +625,10 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 Dim IntrplX As Long, IntrplY As Long
                 
                 'Calculation variables
-                Dim CalcX As Single, CalcY As Single, invCalcX As Single, invCalcY As Single
+                Dim CalcX As Double, CalcY As Double, invCalcX As Double, invCalcY As Double
                 
                 'Values we'll use to interpolate the new pixel
-                Dim r1 As Single, r2 As Single, r3 As Single, r4 As Single
+                Dim r1 As Double, r2 As Double, r3 As Double, r4 As Double
                 Dim r As Long
                 
                 'Interpolated results (horizontal and vertical)
@@ -639,7 +639,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                             
                 'Coordinate variables for source and destination
                 Dim x As Long, y As Long, i As Long
-                Dim dstX As Single, dstY As Single
+                Dim dstX As Double, dstY As Double
                             
                 For x = 0 To iWidth - 1
                     

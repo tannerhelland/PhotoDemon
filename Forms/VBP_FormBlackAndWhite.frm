@@ -471,8 +471,8 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     Dim xModQuick As Long
     Dim DitherTable() As Byte
     Dim xLeft As Long, xRight As Long, yDown As Long
-    Dim errorVal As Single
-    Dim dDivisor As Single
+    Dim errorVal As Double
+    Dim dDivisor As Double
     
     'Process the image based on the dither method requested
     Select Case DitherMethod
@@ -908,9 +908,9 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
-        Dim dErrors() As Single
+        Dim dErrors() As Double
         
-        ReDim dErrors(0 To workingLayer.getLayerWidth, 0 To workingLayer.getLayerHeight) As Single
+        ReDim dErrors(0 To workingLayer.getLayerWidth, 0 To workingLayer.getLayerHeight) As Double
         
         Dim QuickX As Long, QuickY As Long
         

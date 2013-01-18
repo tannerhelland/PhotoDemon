@@ -728,14 +728,8 @@ Attribute MouseEnter.VB_Description = "Occrus when the cursor moves around the b
 Public Event MouseLeave()
 Attribute MouseLeave.VB_Description = "Occurs when the cursor leaves/moves outside the button."
 Public Event MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-Attribute MouseMove.VB_Description = "Occurs when the cursor moves over the button."
-Attribute MouseMove.VB_UserMemId = -606
 Public Event MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
-Attribute MouseUp.VB_Description = "Occurs when the user releases the mouse button while the button has the focus."
-Attribute MouseUp.VB_UserMemId = -607
 Public Event MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-Attribute MouseDown.VB_Description = "Occurs when the user presses the mouse button while the button has the focus."
-Attribute MouseDown.VB_UserMemId = -605
 Public Event KeyDown(KeyCode As Integer, Shift As Integer)
 Attribute KeyDown.VB_Description = "Occurs when the user presses a key while the button has the focus."
 Attribute KeyDown.VB_UserMemId = -602

@@ -507,11 +507,11 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then icoSize = 32 Else icoSize = 16
 
     'Determine aspect ratio
-    Dim aspectRatio As Single
+    Dim aspectRatio As Double
     aspectRatio = CSng(pdImages(imgForm.Tag).Width) / CSng(pdImages(imgForm.Tag).Height)
     
     'The target icon's width and height, x and y positioning
-    Dim tIcoWidth As Single, tIcoHeight As Single, TX As Single, TY As Single
+    Dim tIcoWidth As Double, tIcoHeight As Double, TX As Double, TY As Double
     
     'If the form is wider than it is tall...
     If aspectRatio > 1 Then

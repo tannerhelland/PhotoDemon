@@ -436,14 +436,14 @@ Option Explicit
 Dim histogramGenerated As Boolean
 
 'Histogram data for each particular type (r/g/b/luminance)
-Dim hData(0 To 3, 0 To 255) As Single
-Dim hDataLog(0 To 3, 0 To 255) As Single
+Dim hData(0 To 3, 0 To 255) As Double
+Dim hDataLog(0 To 3, 0 To 255) As Double
 
 'Maximum histogram values (r/g/b/luminance)
-'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Dim HMax(0 To 3) As Single
-Dim hMax As Single, hMaxLog As Single
-Dim channelMax(0 To 3) As Single
-Dim channelMaxLog(0 To 3) As Single
+'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Dim HMax(0 To 3) As Double
+Dim hMax As Double, hMaxLog As Double
+Dim channelMax(0 To 3) As Double
+Dim channelMaxLog(0 To 3) As Double
 Dim channelMaxPosition(0 To 3) As Byte
 Dim maxChannel As Byte          'This identifies the channel with the highest value (red, green, or blue)
 
@@ -455,10 +455,10 @@ Dim x As Long, y As Long
 
 'Modified cubic spline variables:
 Dim nPoints As Integer
-Private iX() As Single
-Private iY() As Single
-Private p() As Single
-Private u() As Single
+Private iX() As Double
+Private iY() As Double
+Private p() As Double
+Private u() As Double
 Private results() As Long   'Stores the y-values for each x-value in the final spline
 
 'When channels are enabled or disabled, redraw the histogram
@@ -834,7 +834,7 @@ Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As
     b2 = (Color2 \ 65536) And 255
     
     'Calculation variables for the gradiency
-    Dim VR As Single, VG As Single, VB As Single
+    Dim VR As Double, VG As Double, VB As Double
     
     'Size of the picture box we'll be drawing to
     Dim iWidth As Long, iHeight As Long
@@ -866,10 +866,10 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     
     'Create an array consisting of 256 points, where each point corresponds to a histogram value
     nPoints = 256
-    ReDim iX(nPoints) As Single
-    ReDim iY(nPoints) As Single
-    ReDim p(nPoints) As Single
-    ReDim u(nPoints) As Single
+    ReDim iX(nPoints) As Double
+    ReDim iY(nPoints) As Double
+    ReDim p(nPoints) As Double
+    ReDim u(nPoints) As Double
     
     'Now, populate the iX and iY arrays with the histogram values for the specified channel (0-3, corresponds to hType above)
     Dim i As Long
@@ -887,7 +887,7 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     
     'Now run a loop through the knots, calculating spline values as we go
     Call SetPandU
-    Dim Xpos As Long, Ypos As Single
+    Dim Xpos As Long, Ypos As Double
     For i = 1 To nPoints - 1
         For Xpos = iX(i) To iX(i + 1)
             Ypos = getCurvePoint(i, Xpos)
@@ -908,25 +908,25 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
 End Function
 
 'Original required spline function:
-Private Function getCurvePoint(ByVal i As Long, ByVal v As Single) As Single
-    Dim t As Single
+Private Function getCurvePoint(ByVal i As Long, ByVal v As Double) As Double
+    Dim t As Double
     'derived curve equation (which uses p's and u's for coefficients)
     t = (v - iX(i)) / u(i)
     getCurvePoint = t * iY(i + 1) + (1 - t) * iY(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
 End Function
 
 'Original required spline function:
-Private Function f(x As Single) As Single
+Private Function f(x As Double) As Double
         f = x * x * x - x
 End Function
 
 'Original required spline function:
 Private Sub SetPandU()
     Dim i As Integer
-    Dim d() As Single
-    Dim w() As Single
-    ReDim d(nPoints) As Single
-    ReDim w(nPoints) As Single
+    Dim d() As Double
+    Dim w() As Double
+    ReDim d(nPoints) As Double
+    ReDim w(nPoints) As Double
     'Routine to compute the parameters of our cubic spline.  Based on equations derived from some basic facts...
     'Each segment must be a cubic polynomial.  Curve segments must have equal first and second derivatives
     'at knots they share.  General algorithm taken from a book which has long since been lost.

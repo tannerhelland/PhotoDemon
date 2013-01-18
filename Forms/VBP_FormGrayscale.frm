@@ -500,7 +500,7 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     Dim r As Long, g As Long, b As Long, grayVal As Long
     
     'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
-    Dim conversionFactor As Single
+    Dim conversionFactor As Double
     conversionFactor = (255 / (numOfShades - 1))
     
     'Build a look-up table for our custom grayscale conversion results
@@ -584,7 +584,7 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     Dim r As Long, g As Long, b As Long, grayVal As Long
     
     'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
-    Dim conversionFactor As Single
+    Dim conversionFactor As Double
     conversionFactor = (255 / (numOfShades - 1))
     
     'Build another look-up table for our initial grayscale index calculation
@@ -595,10 +595,10 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     
     'Unfortunately, this algorithm (unlike its non-dithering counterpart) is not well-suited to using a look-up table,
     ' so all calculations have been moved into the loop
-    Dim grayTempCalc As Single
+    Dim grayTempCalc As Double
     
     'This value tracks the drifting error of our conversions, which allows us to dither
-    Dim errorValue As Single
+    Dim errorValue As Double
     errorValue = 0
         
     'Loop through each pixel in the image, converting values as we go

@@ -177,7 +177,7 @@ End Sub
 
 'Colorize an image using a hue defined between -1 and 5
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
-Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Colorizing image..."
     
@@ -207,7 +207,7 @@ Public Sub ColorizeImage(ByVal hToUse As Single, Optional ByVal maintainSaturati
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
+    Dim h As Double, s As Double, l As Double
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -253,7 +253,7 @@ End Sub
 Private Sub Form_Activate()
 
     'This short routine is for drawing the picture box below the hue slider
-    Dim hVal As Single
+    Dim hVal As Double
     Dim r As Long, g As Long, b As Long
     
     'Simple gradient-ish code implementation of drawing hue

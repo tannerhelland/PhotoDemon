@@ -164,7 +164,7 @@ Private Sub Form_Activate()
 End Sub
 
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
-Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Single = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Preparing histogram data..."
     

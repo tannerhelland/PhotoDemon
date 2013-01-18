@@ -12,15 +12,9 @@ Attribute VB_Name = "Filters_Miscellaneous"
 
 Option Explicit
 
-Dim gb_Processing As Boolean
-
 'Given two layers, fill one with a gaussian-blur version of the other.
 Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = 2)
-    
-    If gb_Processing Then Exit Sub
-    
-    gb_Processing = True
-        
+            
     'Create a local array and point it at the pixel data of the destination image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -73,14 +67,14 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     progBarCheck = findBestProgBarValue()
     
     'Create a one-dimensional Gaussian kernel using the requested radius
-    Dim gKernel() As Single
-    ReDim gKernel(-gRadius To gRadius) As Single
+    Dim gKernel() As Double
+    ReDim gKernel(-gRadius To gRadius) As Double
     
     Dim numPixels As Long
     numPixels = (gRadius * 2) + 1
     
     'Calculate a standard deviation (sigma) using the GIMP formula:
-    Dim stdDev As Single, stdDev2 As Single, stdDev3 As Single
+    Dim stdDev As Double, stdDev2 As Double, stdDev3 As Double
     If gRadius > 1 Then
         stdDev = Sqr(-(gRadius * gRadius) / (2 * Log(1# / 255#)))
     'Note that this is my addition - for a radius of 1 the GIMP formula results in too small of a sigma value
@@ -92,7 +86,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     
     'Populate the kernel using that sigma
     Dim i As Long
-    Dim curVal As Single, sumVal As Single
+    Dim curVal As Double, sumVal As Double
     sumVal = 0
     
     For i = -gRadius To gRadius
@@ -131,7 +125,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     'We now have a normalized 1-dimensional gaussian kernel available for convolution.
     
     'Color variables - in this case, sums for each color component
-    Dim rSum As Single, gSum As Single, bSum As Single, aSum As Single
+    Dim rSum As Double, gSum As Double, bSum As Double, aSum As Double
     
     'We now convolve the image twice - once in the horizontal direction, then again in the vertical direction.  This is
     ' referred to as "separable" convolution, and it's much faster than than traditional convolution, especially for
@@ -141,7 +135,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     'First, perform a horizontal convolution.
         
     Dim chkX As Long
-    Dim curFactor As Single
+    Dim curFactor As Double
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -266,11 +260,9 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     Erase dstImageData
     
     'We can also erase our intermediate gaussian layer
-    gaussLayer.eraseLayer
-    Set gaussLayer = Nothing
-    
-    gb_Processing = False
-    
+    'gaussLayer.eraseLayer
+    'Set gaussLayer = Nothing
+        
 End Sub
 
 'Convert the image's color depth to a new value.  (Currently, only 24bpp and 32bpp is allowed.)
@@ -419,8 +411,8 @@ Public Sub MenuHeatMap()
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
-    Dim hVal As Single, sVal As Single, lVal As Single
-    Dim h As Single, s As Single, l As Single
+    Dim hVal As Double, sVal As Double, lVal As Double
+    Dim h As Double, s As Double, l As Double
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
@@ -556,14 +548,14 @@ Public Sub MenuComicBook()
     Next x
         
     'Create a one-dimensional Gaussian kernel using the requested radius
-    Dim gKernel() As Single
-    ReDim gKernel(-gRadius To gRadius) As Single
+    Dim gKernel() As Double
+    ReDim gKernel(-gRadius To gRadius) As Double
     
     Dim numPixels As Long
     numPixels = (gRadius * 2) + 1
     
     'Calculate a standard deviation (sigma) using the GIMP formula:
-    Dim stdDev As Single, stdDev2 As Single
+    Dim stdDev As Double, stdDev2 As Double
     If gRadius > 1 Then
         stdDev = Sqr(-(gRadius * gRadius) / (2 * Log(1# / 255#)))
     'Note that this is my addition - for a radius of 1, the GIMP formula creates too small of a sigma value
@@ -574,7 +566,7 @@ Public Sub MenuComicBook()
     
     'Populate the kernel using that sigma
     Dim i As Long
-    Dim curVal As Single, sumVal As Single
+    Dim curVal As Double, sumVal As Double
     sumVal = 0
     
     For i = -gRadius To gRadius
@@ -594,7 +586,7 @@ Public Sub MenuComicBook()
     Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     Dim tDelta As Long
-    Dim rSum As Single, gSum As Single, bSum As Single, aSum As Single
+    Dim rSum As Double, gSum As Double, bSum As Double, aSum As Double
     
     'We now convolve the image twice - once in the horizontal direction, then again in the vertical direction.  This is
     ' referred to as "separable" convolution, and it's much faster than than traditional convolution, especially for
@@ -604,7 +596,7 @@ Public Sub MenuComicBook()
     'First, perform a horizontal convolution.
         
     Dim chkX As Long
-    Dim curFactor As Single
+    Dim curFactor As Double
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -694,7 +686,7 @@ Public Sub MenuComicBook()
     GaussLayer2.eraseLayer
     Set GaussLayer2 = Nothing
             
-    Dim blendVal As Single
+    Dim blendVal As Double
     
     Message "Animating image (stage 3 of 4)..."
     
@@ -1018,7 +1010,7 @@ Public Sub MenuAntique()
     
     'We're going to use gamma conversion as part of the effect; gamma is easily optimized via a look-up table
     Dim gammaLookUp(0 To 255) As Byte
-    Dim tmpVal As Single
+    Dim tmpVal As Double
     For x = 0 To 255
         tmpVal = x / 255
         tmpVal = tmpVal ^ (1 / 1.6)
@@ -1116,7 +1108,7 @@ Public Sub MenuSepia()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim newR As Single, newG As Single, newB As Single
+    Dim newR As Double, newG As Double, newB As Double
         
     'Apply the filter
     For x = initX To finalX
@@ -1510,8 +1502,8 @@ Public Sub MenuTest()
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, grayVal As Long
     Dim newR As Long, newG As Long, newB As Long
-    Dim hVal As Single, sVal As Single, lVal As Single
-    Dim h As Single, s As Single, l As Single
+    Dim hVal As Double, sVal As Double, lVal As Double
+    Dim h As Double, s As Double, l As Double
         
     'Apply the filter
     For x = initX To finalX
@@ -1565,11 +1557,11 @@ Public Function getLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) 
 End Function
 
 'HSL <-> RGB conversion routines
-Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, s As Single, l As Single)
+Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, l As Double)
     
-    Dim Max As Single, Min As Single
-    Dim delta As Single
-    Dim rR As Single, rG As Single, rB As Single
+    Dim Max As Double, Min As Double
+    Dim delta As Double
+    Dim rR As Double, rG As Double, rB As Double
     
     rR = r / 255
     rG = g / 255
@@ -1625,10 +1617,10 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Single, s As Single, 
 End Sub
 
 'Convert HSL values to RGB values
-Public Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long, b As Long)
+Public Sub tHSLToRGB(h As Double, s As Double, l As Double, r As Long, g As Long, b As Long)
 
-    Dim rR As Single, rG As Single, rB As Single
-    Dim Min As Single, Max As Single
+    Dim rR As Double, rG As Double, rB As Double
+    Dim Min As Double, Max As Double
 
     'Unsaturated pixels do not technically have hue - they only have luminance
     If s = 0 Then
@@ -1695,7 +1687,7 @@ Public Sub tHSLToRGB(h As Single, s As Single, l As Single, r As Long, g As Long
 End Sub
 
 'Return the maximum of three variables
-Public Function Maximum(rR As Single, rG As Single, rB As Single) As Single
+Public Function Maximum(rR As Double, rG As Double, rB As Double) As Double
    If (rR > rG) Then
       If (rR > rB) Then
          Maximum = rR
@@ -1712,7 +1704,7 @@ Public Function Maximum(rR As Single, rG As Single, rB As Single) As Single
 End Function
 
 'Return the minimum of three variables
-Public Function Minimum(rR As Single, rG As Single, rB As Single) As Single
+Public Function Minimum(rR As Double, rG As Double, rB As Double) As Double
    If (rR < rG) Then
       If (rR < rB) Then
          Minimum = rR

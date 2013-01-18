@@ -285,7 +285,7 @@ End Sub
 
 'Cast an image with a new temperature value
 ' Input: desired temperature, whether to preserve luminance or not, and a blend ratio between 1 and 100
-Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal tempStrength As Single = 25, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal tempStrength As Double = 25, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Applying new temperature to image..."
     
@@ -315,8 +315,8 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
-    Dim originalLuminance As Single
+    Dim h As Double, s As Double, l As Double
+    Dim originalLuminance As Double
     Dim tmpR As Long, tmpG As Long, tmpB As Long
             
     'Get the corresponding RGB values for this temperature

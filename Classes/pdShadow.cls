@@ -122,7 +122,7 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     
     'Loop through the image, alpha-blending a drop shadow effect as we go
     Dim x As Long, y As Long
-    Dim distPixels As Single
+    Dim distPixels As Double
     
     For x = 0 To loopSize
         QuickX = x * 3

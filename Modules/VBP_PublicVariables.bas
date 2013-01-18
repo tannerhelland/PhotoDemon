@@ -59,11 +59,6 @@ Public g_PluginPath As String
 'Command line (used here for processing purposes)
 Public g_CommandLine As String
 
-'Commonly used loop variables
-'Public x As Long
-'Public y As Long
-'Public z As Long
-
 'Is scanner/digital camera support enabled?
 Public g_ScanEnabled As Boolean
 
@@ -174,3 +169,7 @@ Public g_AlphaCutoff As Byte
 'When an image has its colors counted, the image's ID is stored here.  Other functions can use this to see if the
 ' current color count is relevant for a given image (e.g. if the image being worked on has just had its colors counted).
 Public g_LastImageScanned As Long
+
+'Some actions take a long time to execute.  This global variable can be used to track if a function is still running.
+' Just make sure to initialize it properly (in case the last function didn't!).
+Public g_Processing As Boolean

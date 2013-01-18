@@ -105,7 +105,7 @@ Dim lMouseDown As Boolean, rMouseDown As Boolean
 Dim hasMouseMoved As Long
 
 'Track initial mouse button locations
-Dim initMouseX As Single, initMouseY As Single
+Dim initMouseX As Double, initMouseY As Double
 
 'Used to prevent the obnoxious blinking effect of the main image scroll bars
 Private Declare Function DestroyCaret Lib "user32" () As Long
@@ -204,7 +204,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
-    Dim imgX As Single, imgY As Single
+    Dim imgX As Double, imgY As Double
     imgX = -1
     imgY = -1
     
@@ -278,7 +278,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     hasMouseMoved = hasMouseMoved + 1
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
-    Dim imgX As Single, imgY As Single
+    Dim imgX As Double, imgY As Double
     imgX = -1
     imgY = -1
     

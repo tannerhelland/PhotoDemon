@@ -237,7 +237,7 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
             Dim x As Long, y As Long, QuickX As Long
             
             Dim chkAlpha As Byte
-            Dim tmpAlpha As Single
+            Dim tmpAlpha As Double
             
             trnsX = -1
                 
@@ -1023,16 +1023,16 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         SetStretchBltMode dstPicture.hDC, STRETCHBLT_COLORONCOLOR
     End If
     
-    Dim dstWidth As Single, dstHeight As Single
+    Dim dstWidth As Double, dstHeight As Double
     dstWidth = dstPicture.ScaleWidth
     dstHeight = dstPicture.ScaleHeight
     
-    Dim srcWidth As Single, srcHeight As Single
+    Dim srcWidth As Double, srcHeight As Double
     srcWidth = layerWidth
     srcHeight = layerHeight
     
     'Calculate the aspect ratio of this layer and the target picture box
-    Dim srcAspect As Single, dstAspect As Single
+    Dim srcAspect As Double, dstAspect As Double
     srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
     
@@ -1275,7 +1275,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, QuickX As Long
-    Dim checkAlpha As Byte, tmpAlpha As Single
+    Dim checkAlpha As Byte, tmpAlpha As Double
     
     'If no color is specified, apply a checkerboard pattern
     Dim r1 As Long, g1 As Long, b1 As Long
@@ -1380,7 +1380,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
 End Sub
 
 'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
-Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Single) As Byte
+Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
     Blend2Colors = (mixRatio * Color1) + ((1 - mixRatio) * Color2)
     'Alternate blend formula from Robert Rayment - my own testing shows no measurable speed difference between the two methods
     'Blend2Colors = mixRatio * (CInt(Color1) - Color2) + Color2 '169
@@ -1407,7 +1407,7 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
     CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
     
     Dim x As Long, y As Long, QuickX As Long
-    Dim checkAlpha As Byte, tmpAlpha As Single
+    Dim checkAlpha As Byte, tmpAlpha As Double
     
     'If no color is specified, apply a checkerboard pattern
     Dim r1 As Long, g1 As Long, b1 As Long
@@ -1532,7 +1532,7 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, QuickX As Long
-    Dim checkAlpha As Boolean, initAlpha As Single
+    Dim checkAlpha As Boolean, initAlpha As Double
     checkAlpha = False
     
     'Determine the alpha value of the top-left pixel.  This will be used as our baseline value.
@@ -1631,7 +1631,7 @@ Public Sub fixPremultipliedAlpha()
     Dim x As Long, y As Long, QuickX As Long
     
     Dim r As Long, g As Long, b As Long
-    Dim tmpAlpha As Byte, tmpAlphaModifier As Single
+    Dim tmpAlpha As Byte, tmpAlphaModifier As Double
 
     'Loop through the image, removing the effects of pre-multiplication as we go
     For x = 0 To layerWidth - 1

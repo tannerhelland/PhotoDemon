@@ -42,8 +42,8 @@ Public Sub MenuRainbow()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
-    Dim hVal As Single
+    Dim h As Double, s As Double, l As Double
+    Dim hVal As Double
     
     'Apply the filter
     For x = initX To finalX
@@ -153,7 +153,7 @@ Public Sub MenuFogEffect()
     Set cPerlin = New cPerlin3D
         
     Dim r As Long, g As Long, b As Long
-    Dim finalBlend As Single
+    Dim finalBlend As Double
         
     'Finally, an integer displacement will be used to move pixel values around
     Dim pDisplace As Long

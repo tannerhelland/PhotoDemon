@@ -92,8 +92,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'We use these to ensure that the splash shows for at least 1 second
-Private Const LOADTIME As Single = 1#
-Dim OT As Single
+Private Const LOADTIME As Double = 1#
+Dim OT As Double
 
 'The form is loaded invisibly, so this code is placed in the _Activate event instead of the more common _Load event
 Private Sub Form_Activate()

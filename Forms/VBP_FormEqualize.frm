@@ -256,13 +256,13 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
+    Dim h As Double, s As Double, l As Double
     Dim lInt As Long
     
     'Histogram variables
-    Dim rData(0 To 255) As Single, gData(0 To 255) As Single, bData(0 To 255) As Single
+    Dim rData(0 To 255) As Double, gData(0 To 255) As Double, bData(0 To 255) As Double
     Dim rDataInt(0 To 255) As Long, gDataInt(0 To 255) As Long, bDataInt(0 To 255) As Long
-    Dim lData(0 To 255) As Single
+    Dim lData(0 To 255) As Double
     Dim lDataInt(0 To 255) As Long
         
     'Loop through each pixel in the image, converting values as we go.
@@ -294,7 +294,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     Next x
     
     'Compute a scaling factor based on the number of pixels in the image
-    Dim scaleFactor As Single
+    Dim scaleFactor As Double
     scaleFactor = 255 / (curLayerValues.Width * curLayerValues.Height)
     
     'Compute red if requested

@@ -663,7 +663,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim mR As Single, mG As Single, mB As Single
+    Dim mR As Double, mG As Double, mB As Double
     Dim cR As Long, cG As Long, cb As Long
     
     'New code for so-called "Intelligent Coloring"
@@ -832,8 +832,8 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     Dim r As Long, g As Long, b As Long
     Dim cR As Long, cG As Long, cb As Long
     Dim iR As Long, iG As Long, iB As Long
-    Dim mR As Single, mG As Single, mB As Single
-    Dim eR As Single, eG As Single, eB As Single
+    Dim mR As Double, mG As Double, mB As Double
+    Dim eR As Double, eG As Double, eB As Double
     
     'New code for so-called "Intelligent Coloring"
     Dim rLookup() As Long

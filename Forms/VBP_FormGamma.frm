@@ -218,7 +218,7 @@ End Sub
 
 'Basic gamma correction.  It's a simple function - use an exponent to adjust R/G/B values.
 ' Inputs: new gamma level, which channels to adjust (r/g/b/all), and optional preview information
-Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub GammaCorrect(ByVal Gamma As Double, ByVal Method As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
      
     If toPreview = False Then Message "Adjusting gamma values..."
     
@@ -251,7 +251,7 @@ Public Sub GammaCorrect(ByVal Gamma As Single, ByVal Method As Byte, Optional By
     
     'Gamma can be easily applied using a look-up table
     Dim gLookup(0 To 255) As Byte
-    Dim tmpVal As Single
+    Dim tmpVal As Double
     
     For x = 0 To 255
         tmpVal = x / 255

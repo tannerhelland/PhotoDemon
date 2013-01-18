@@ -634,7 +634,7 @@ Public Sub FilterIsometric()
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Make note of the current image's width and height
-    Dim hWidth As Single
+    Dim hWidth As Double
     Dim oWidth As Long, oHeight As Long
     oWidth = curLayerValues.Width - 1
     oHeight = curLayerValues.Height - 1
@@ -662,7 +662,7 @@ Public Sub FilterIsometric()
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
     
-    Dim srcX As Single, srcY As Single
+    Dim srcX As Double, srcY As Double
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -739,11 +739,11 @@ Public Sub FilterIsometric()
 End Sub
 
 'These two functions translate a normal (x,y) coordinate to an isometric plane
-Private Function getIsometricX(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Single
+Private Function getIsometricX(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Double
     getIsometricX = (xc / 2) - yc + tWidth
 End Function
 
-Private Function getIsometricY(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Single
+Private Function getIsometricY(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Double
     getIsometricY = (xc / 2) + yc - tWidth
 End Function
 

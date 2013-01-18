@@ -242,7 +242,7 @@ End Sub
 
 'Colorize an image using a hue defined between -1 and 5
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
-Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, ByVal lModifier As Single, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, ByVal lModifier As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Adjusting hue, saturation, and luminance values..."
     
@@ -277,7 +277,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Single, ByVal sModifier As Single, 
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, s As Single, l As Single
+    Dim h As Double, s As Double, l As Double
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX

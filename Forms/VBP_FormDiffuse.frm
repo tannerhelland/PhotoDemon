@@ -351,7 +351,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     
     'hDX and hDY are the half-values (or radius) of the diffuse area.  Pre-calculating them is faster than recalculating
     ' them every time we need to access a radius value.
-    Dim hDX As Single, hDY As Single
+    Dim hDX As Double, hDY As Double
     hDX = xDiffuse / 2
     hDY = yDiffuse / 2
     

@@ -764,7 +764,7 @@ Private Sub cmdOK_Click()
     'Let's also give the user an estimate of how long this is going to take.  We'll estimate time by determining an
     ' approximate "time-per-image" value, then multiplying that by the amount of time remaining.  The progress bar
     ' will display this, automatically updated, as each image is completed.
-    Dim timeStarted As Single, timeElapsed As Single, timeRemaining As Single, timePerFile As Single
+    Dim timeStarted As Double, timeElapsed As Double, timeRemaining As Double, timePerFile As Double
     Dim numFilesProcessed As Long, numFilesRemaining As Long
     Dim minutesRemaining As Long, secondsRemaining As Long
     Dim timeMsg As String

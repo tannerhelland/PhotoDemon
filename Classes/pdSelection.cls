@@ -106,8 +106,8 @@ End Enum
 Private sType As SelectionType
 
 'The outer boundaries of the current selection
-Private x1 As Single, x2 As Single
-Private y1 As Single, y2 As Single
+Private x1 As Double, x2 As Double
+Private y1 As Double, y2 As Double
 
 'When a selection is "locked in", the x and y values are converted to these values
 Public selLeft As Long, selTop As Long
@@ -117,7 +117,7 @@ Public selWidth As Long, selHeight As Long
 Private lockedIn As Boolean
 
 'When the selection is moved, it's necessary to know the difference between the current mouse point and the original left / top values
-Private moveXDist As Single, moveYDist As Single
+Private moveXDist As Double, moveYDist As Double
 
 'Is this selection requesting text box updates?  Because if it is, ignore external requests to update.
 Public rejectRefreshRequests As Boolean
@@ -143,7 +143,7 @@ End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
 ' Note that this this should only be called after a transformation type has been set.
-Public Sub setInitialTransformCoordinates(ByVal x As Single, y As Single)
+Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
 
     'If new transform coordinates are being set, this selection must be "unlocked"
     lockedIn = False
@@ -229,7 +229,7 @@ Public Sub setInitialTransformCoordinates(ByVal x As Single, y As Single)
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and stores them internally
-Public Sub setInitialCoordinates(ByVal x As Single, y As Single)
+Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
     
     'If new initial coordinates are being set, this selection must be "unlocked"
     lockedIn = False
@@ -250,7 +250,7 @@ Public Sub setInitialCoordinates(ByVal x As Single, y As Single)
 End Sub
 
 'Takes x and y coordinates (from a _MouseMove event, typically) and stores them internally
-Public Sub setAdditionalCoordinates(ByVal x As Single, y As Single)
+Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
     
     'Check for transformation mode activation
     If transformModeActive Then
@@ -394,11 +394,11 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     'updateInternalCoords
     
     'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates
-    Dim ZoomVal As Single
+    Dim ZoomVal As Double
     ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
     
-    Dim dstLeft As Single, dstRight As Single
-    Dim dstTop As Single, dstBottom As Single
+    Dim dstLeft As Double, dstRight As Double
+    Dim dstTop As Double, dstBottom As Double
         
     dstLeft = ((selLeft - dstForm.HScroll.Value) * ZoomVal) + imgLeft
     dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * ZoomVal) + imgLeft + 0.5

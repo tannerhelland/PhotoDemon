@@ -154,7 +154,7 @@ Public Sub MenuNegative()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, S As Single, l As Single
+    Dim h As Double, s As Double, l As Double
     
     'Apply the filter
     For x = initX To finalX
@@ -167,10 +167,10 @@ Public Sub MenuNegative()
         b = ImageData(QuickVal, y)
         
         'Use those to calculate hue and saturation
-        tRGBToHSL r, g, b, h, S, l
+        tRGBToHSL r, g, b, h, s, l
         
         'Convert those HSL values back to RGB, but substitute inverted luminance
-        tHSLToRGB h, S, 1 - l, r, g, b
+        tHSLToRGB h, s, 1 - l, r, g, b
         
         'Assign the new RGB values back into the array
         ImageData(QuickVal + 2, y) = r
@@ -220,7 +220,7 @@ Public Sub MenuInvertHue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim h As Single, S As Single, l As Single
+    Dim h As Double, s As Double, l As Double
     
     'Apply the filter
     For x = initX To finalX
@@ -233,13 +233,13 @@ Public Sub MenuInvertHue()
         b = ImageData(QuickVal, y)
         
         'Use those to calculate hue, saturation, and luminance
-        tRGBToHSL r, g, b, h, S, l
+        tRGBToHSL r, g, b, h, s, l
         
         'Invert hue
         h = 6 - (h + 1) - 1
         
         'Convert the newly calculated HSL values back to RGB
-        tHSLToRGB h, S, l, r, g, b
+        tHSLToRGB h, s, l, r, g, b
         
         'Assign the new RGB values back into the array
         ImageData(QuickVal + 2, y) = r
@@ -447,7 +447,7 @@ Public Sub MenuAutoEnhanceHighlights()
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim grayVal As Long
-    Dim blendValue As Single
+    Dim blendValue As Double
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
@@ -457,7 +457,7 @@ Public Sub MenuAutoEnhanceHighlights()
     
     'We use an exponential curve (^3) to apply the enhancement.  Look-up tables make this process much faster.
     ' (Note that 16581375 is 255^3)
-    Dim eLookup(0 To 255) As Single
+    Dim eLookup(0 To 255) As Double
     For x = 0 To 255
         eLookup(x) = (x * x * x) / 16581375
     Next x
@@ -542,7 +542,7 @@ Public Sub MenuAutoEnhanceMidtones()
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim grayVal As Long
-    Dim blendValue As Single
+    Dim blendValue As Double
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
@@ -557,7 +557,7 @@ Public Sub MenuAutoEnhanceMidtones()
     Next x
     
     'We use a sine function to apply the enhancement.  Look-up tables make this process much faster.
-    Dim sLookup(0 To 255) As Single
+    Dim sLookup(0 To 255) As Double
     For x = 0 To 255
         sLookup(x) = Sin((x * 3.1415927) / 255)
     Next x
@@ -643,7 +643,7 @@ Public Sub MenuAutoEnhanceShadows()
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim grayVal As Long
-    Dim blendValue As Single
+    Dim blendValue As Double
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
@@ -653,7 +653,7 @@ Public Sub MenuAutoEnhanceShadows()
     
     'We use an exponential curve (^3) to apply the enhancement.  Look-up tables make this process much faster.
     ' (Note that 16581375 is 255^3)
-    Dim eLookup(0 To 255) As Single
+    Dim eLookup(0 To 255) As Double
     For x = 0 To 255
         eLookup(x) = (x * x * x) / 16581375
     Next x

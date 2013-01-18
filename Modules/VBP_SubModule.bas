@@ -14,7 +14,7 @@ Attribute VB_Name = "Misc_Uncategorized"
 Option Explicit
 
 'Distance value for mouse_over events and selections; a literal "radius" below which the mouse cursor is considered "over" a point
-Private Const mouseSelAccuracy As Single = 8
+Private Const mouseSelAccuracy As Double = 8
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
@@ -22,7 +22,7 @@ Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_C
 'Convert a width and height pair to a new max width and height, while preserving aspect ratio
 Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long)
     
-    Dim srcAspect As Single, dstAspect As Single
+    Dim srcAspect As Double, dstAspect As Double
     srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
     
@@ -278,12 +278,12 @@ End Function
 'Calculate and display the current mouse position.
 ' INPUTS: x and y coordinates of the mouse cursor, current form, and optionally two long-type variables to receive the relative
 '          coordinates (e.g. location on the image) of the current mouse position.
-Public Sub displayImageCoordinates(ByVal x1 As Single, ByVal y1 As Single, ByRef srcForm As Form, Optional ByRef copyX As Single, Optional ByRef copyY As Single)
+Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcForm As Form, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
 
     If isMouseOverImage(x1, y1, srcForm) Then
             
         'Grab the current zoom value
-        Dim ZoomVal As Single
+        Dim ZoomVal As Double
         ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
             
         'Calculate x and y positions, while taking into account zoom and scroll values
@@ -309,10 +309,10 @@ Public Sub displayImageCoordinates(ByVal x1 As Single, ByVal y1 As Single, ByRef
 End Sub
 
 'If an x or y location is NOT in the image, find the nearest coordinate that IS in the image
-Public Sub findNearestImageCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form)
+Public Sub findNearestImageCoordinates(ByRef x1 As Double, ByRef y1 As Double, ByRef srcForm As Form)
 
     'Grab the current zoom value
-    Dim ZoomVal As Single
+    Dim ZoomVal As Double
     ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
 
     'Calculate x and y positions, while taking into account zoom and scroll values
@@ -341,7 +341,7 @@ End Sub
 Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form) As Long
 
     'Grab the current zoom value
-    Dim ZoomVal As Single
+    Dim ZoomVal As Double
     ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
 
     'Calculate x and y positions, while taking into account zoom and scroll values
@@ -355,14 +355,14 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
 
     'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
-    Dim tLeft As Single, tTop As Single, tRight As Single, tBottom As Single
+    Dim tLeft As Double, tTop As Double, tRight As Double, tBottom As Double
     tLeft = pdImages(srcForm.Tag).mainSelection.selLeft
     tTop = pdImages(srcForm.Tag).mainSelection.selTop
     tRight = pdImages(srcForm.Tag).mainSelection.selLeft + pdImages(srcForm.Tag).mainSelection.selWidth
     tBottom = pdImages(srcForm.Tag).mainSelection.selTop + pdImages(srcForm.Tag).mainSelection.selHeight
     
     'Adjust the mouseAccuracy value based on the current zoom value
-    Dim mouseAccuracy As Single
+    Dim mouseAccuracy As Double
     mouseAccuracy = mouseSelAccuracy * (1 / ZoomVal)
     
     'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
@@ -372,7 +372,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     End If
     
     'If we made it here, this mouse location is worth evaluating.  Corners get preference, so check them first.
-    Dim nwDist As Single, neDist As Single, seDist As Single, swDist As Single
+    Dim nwDist As Double, neDist As Double, seDist As Double, swDist As Double
     
     nwDist = distanceTwoPoints(x1, y1, tLeft, tTop)
     neDist = distanceTwoPoints(x1, y1, tRight, tTop)
@@ -380,7 +380,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     seDist = distanceTwoPoints(x1, y1, tRight, tBottom)
     
     'Find the smallest distance for this mouse position
-    Dim minDistance As Single
+    Dim minDistance As Double
     Dim closestPoint As Long
     minDistance = mouseAccuracy
     closestPoint = -1
@@ -412,7 +412,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     End If
 
     'If we're at this line of code, a closest corner was not found.  So check edges next.
-    Dim nDist As Single, eDist As Single, sDist As Single, wDist As Single
+    Dim nDist As Double, eDist As Double, sDist As Double, wDist As Double
     
     nDist = distanceOneDimension(y1, tTop)
     eDist = distanceOneDimension(x1, tRight)
@@ -456,12 +456,12 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
 End Function
 
 'Return the distance between two values on the same line
-Public Function distanceOneDimension(ByVal x1 As Single, ByVal x2 As Single) As Single
+Public Function distanceOneDimension(ByVal x1 As Double, ByVal x2 As Double) As Double
     distanceOneDimension = Sqr((x1 - x2) ^ 2)
 End Function
 
 'Return the distance between two points
-Public Function distanceTwoPoints(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Single
+Public Function distanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
     distanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 End Function
 
@@ -479,7 +479,7 @@ Public Function ExtractB(ByVal CurrentColor As Long) As Integer
 End Function
 
 'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
-Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Single) As Byte
+Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
     BlendColors = ((1 - mixRatio) * Color1) + (mixRatio * Color2)
 End Function
 

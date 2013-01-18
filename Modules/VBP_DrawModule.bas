@@ -39,11 +39,11 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     Dim tmpLayer As pdLayer
     
     'Start by calculating the aspect ratio of both the current image and the previewing picture box
-    Dim dstWidth As Single, dstHeight As Single
+    Dim dstWidth As Double, dstHeight As Double
     dstWidth = dstPicture.ScaleWidth
     dstHeight = dstPicture.ScaleHeight
     
-    Dim srcWidth As Single, srcHeight As Single
+    Dim srcWidth As Double, srcHeight As Double
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     If pdImages(CurrentImage).selectionActive Then
@@ -109,7 +109,7 @@ End Sub
 Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal Color2 As Long, Optional ByVal drawHorizontal As Boolean = False)
 
     'Calculation variables (used to interpolate between the gradient colors)
-    Dim VR As Single, VG As Single, VB As Single
+    Dim VR As Double, VG As Double, VB As Double
     Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color

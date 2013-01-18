@@ -25,7 +25,7 @@ Public Const ZoomIndex100 As Long = 11
 
 'Width and height values of the image AFTER zoom has been applied.  (For example, if the image is 100x100
 ' and the zoom value is 200%, zWidth and zHeight will be 200.)
-Dim zWidth As Single, zHeight As Single
+Dim zWidth As Double, zHeight As Double
 
 'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
 Dim srcWidth As Double, srcHeight As Double

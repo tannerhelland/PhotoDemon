@@ -447,7 +447,7 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
     
-    Dim cK As Single, mK As Single, yK As Single, bK As Single, invBK As Single
+    Dim cK As Double, mK As Double, yK As Double, bK As Double, invBK As Double
     
     'After all that work, the Rechannel code itself is relatively small and unexciting!
     For x = initX To finalX

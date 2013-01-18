@@ -492,10 +492,10 @@ Option Explicit
 Dim isInternetConnected As Boolean
 
 'Download sizes of the four core plugins
-Dim zLibSize As Single
-Dim freeImageSize As Single
-Dim ezTW32Size As Single
-Dim pngnqSize As Single
+Dim zLibSize As Double
+Dim freeImageSize As Double
+Dim ezTW32Size As Double
+Dim pngnqSize As Double
 
 'Download size estimates if the user is not connected to the Internet
 Private Const estZLibSize As Long = 139000
@@ -504,7 +504,7 @@ Private Const estEzTW32Size As Long = 27000
 Private Const estPngnqSize As Long = 298000
 
 'Total expected download size, amount download thus far
-Dim totalDownloadSize As Single, curDownloadSize As Single
+Dim totalDownloadSize As Double, curDownloadSize As Double
 
 'Number of files to download
 Dim numOfFiles As Long, curNumOfFiles As Long
@@ -798,7 +798,7 @@ Private Function downloadAllPlugins() As Boolean
     
     lblDownloadInfo.Caption = "All downloads successful.  This screen will automatically close in three seconds."
     
-    Dim OT As Single
+    Dim OT As Double
     OT = Timer
     Do While Timer - OT < 3#
         DoEvents

@@ -352,7 +352,7 @@ End Enum
 
 'Base DPI defaults to the current screen DPI (VB uses this as the default when sending an image to the printer via PaintPicture.)
 ' We use a variety of tricky math to adjust this, and in turn adjust the print quality of the image.
-Dim baseDPI As Single, desiredDPI As Single
+Dim baseDPI As Double, desiredDPI As Double
 
 'Changing the orientation box forces a refresh of the preview
 Private Sub cbOrientation_Click()
@@ -469,7 +469,7 @@ Private Sub Form_Load()
     cbQuality.ListIndex = 3
 
     'Set image orientation based on its aspect ratio (as compared to an 8.5" x 11" sheet of paper)
-    Dim imgAspect As Single, paperAspect As Single
+    Dim imgAspect As Double, paperAspect As Double
     imgAspect = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
     paperAspect = 8.5 / 11
     
@@ -493,7 +493,7 @@ Private Sub Form_Load()
     Set pic = New StdPicture
     Set pic = picOut.Picture
     
-    Dim tPrnPicWidth As Single, tPrnPicHeight As Single
+    Dim tPrnPicWidth As Double, tPrnPicHeight As Double
     tPrnPicWidth = Printer.ScaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
     tPrnPicHeight = Printer.ScaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
     Dim dpiX As Double, dpiY As Double
@@ -729,7 +729,7 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         PrnPicWidth = (PrnPicWidth / Printer.ScaleWidth) * iSrc.ScaleWidth
         PrnPicHeight = (PrnPicHeight / Printer.ScaleHeight) * iSrc.ScaleHeight
     Else
-        Dim tmpOX As Double, tmpOY As Double, tmpWidth As Single, tmpHeight As Single
+        Dim tmpOX As Double, tmpOY As Double, tmpWidth As Double, tmpHeight As Double
         tmpOX = (OffsetY / Printer.ScaleHeight) * iSrc.ScaleWidth
         tmpOY = (OffsetX / Printer.ScaleWidth) * iSrc.ScaleHeight
         tmpWidth = (PrnPicHeight / Printer.ScaleHeight) * iSrc.ScaleWidth
@@ -813,13 +813,13 @@ Private Sub UpdatePaperSize()
     Dim pWidth As Double, pHeight As Double
     pWidth = Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
     pHeight = Printer.ScaleY(Printer.Height, Printer.ScaleMode, vbInches)
-    Dim TxtWidth As String, TxtHeight As String
-    TxtWidth = Format(pWidth, "#0.##")
-    TxtHeight = Format(pHeight, "#0.##")
-    If Right(TxtWidth, 1) = "." Then TxtWidth = Left$(TxtWidth, Len(TxtWidth) - 1)
-    If Right(TxtHeight, 1) = "." Then TxtHeight = Left$(TxtHeight, Len(TxtHeight) - 1)
+    Dim txtWidth As String, txtHeight As String
+    txtWidth = Format(pWidth, "#0.##")
+    txtHeight = Format(pHeight, "#0.##")
+    If Right(txtWidth, 1) = "." Then txtWidth = Left$(txtWidth, Len(txtWidth) - 1)
+    If Right(txtHeight, 1) = "." Then txtHeight = Left$(txtHeight, Len(txtHeight) - 1)
     
-    lblPaperSize = "Paper size: " & TxtWidth & """ x  " & TxtHeight & """"
+    lblPaperSize = "Paper size: " & txtWidth & """ x  " & txtHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
     Dim aspectRatio As Double
@@ -848,7 +848,7 @@ Private Sub UpdatePaperSize()
 End Sub
 
 'Display the assumed DPI that results from the current print settings
-Private Sub UpdateDPI(ByVal eDPI As Single)
+Private Sub UpdateDPI(ByVal eDPI As Double)
     cmbDPI = Int(eDPI + 0.5)
 End Sub
 

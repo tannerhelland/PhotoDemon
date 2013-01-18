@@ -246,7 +246,7 @@ End Sub
 
 'Single routine for modifying both brightness and contrast.  Brightness is in the range (-255,255) while
 ' contrast is (-100,100).  Optionally, the image can be sampled to obtain a true midpoint for the contrast function.
-Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Single, Optional ByVal TrueContrast As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Optional ByVal TrueContrast As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Adjusting image brightness..."
     

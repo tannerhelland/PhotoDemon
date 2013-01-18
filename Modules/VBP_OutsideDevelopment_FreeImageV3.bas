@@ -1999,16 +1999,16 @@ Public Type FIRGBA16
 End Type
 
 Public Type FIRGBF
-   Red As Single
-   Green As Single
-   Blue As Single
+   Red As Double
+   Green As Double
+   Blue As Double
 End Type
 
 Public Type FIRGBAF
-   Red As Single
-   Green As Single
-   Blue As Single
-   Alpha As Single
+   Red As Double
+   Green As Double
+   Blue As Double
+   Alpha As Double
 End Type
 
 Public Type FICOMPLEX
@@ -12387,7 +12387,7 @@ Dim lLength As Long
       Call CopyMemory(Buffer(0), cCurrency, lLength)
    
    Case vbSingle
-      Dim sSingle As Single
+      Dim sSingle As Double
       sSingle = Value
       lLength = 4
       Call CopyMemory(Buffer(0), sSingle, lLength)
