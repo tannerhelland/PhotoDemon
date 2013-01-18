@@ -304,54 +304,34 @@ End Sub
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Creating blurred copy of image..."
-        
+    If toPreview = False Then Message "Analyzing image in preparation for smart blur..."
+            
+    'More color variables - in this case, sums for each color component
+    Dim r As Long, g As Long, b As Long
+    Dim r2 As Long, g2 As Long, b2 As Long
+    Dim tDelta As Long
+    
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent already edited pixels from screwing up our results for later pixels.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
     srcLayer.createFromExistingLayer workingLayer
     
-    prepSafeArray srcSA, srcLayer
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'We now need two more copies of the image; these are for the gaussian blur kernel, which operates in two passes.
-    Dim GaussImageData() As Byte
-    Dim gaussSA As SAFEARRAY2D
+    Dim gaussLayer As pdLayer
+    Set gaussLayer = New pdLayer
+    gaussLayer.createFromExistingLayer workingLayer
     
-    Dim GaussLayer As pdLayer
-    Set GaussLayer = New pdLayer
-    GaussLayer.createFromExistingLayer workingLayer
-    
-    prepSafeArray gaussSA, GaussLayer
-    CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
-        
-    Dim GaussImageData2() As Byte
-    Dim gaussSA2 As SAFEARRAY2D
-    
-    Dim GaussLayer2 As pdLayer
-    Set GaussLayer2 = New pdLayer
-    GaussLayer2.createFromExistingLayer workingLayer
-    
-    prepSafeArray gaussSA2, GaussLayer
-    CopyMemory ByVal VarPtrArray(GaussImageData2()), VarPtr(gaussSA2), 4
-        
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
-            
+    
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         If iWidth > iHeight Then
@@ -361,6 +341,23 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
         End If
         If gRadius = 0 Then gRadius = 1
     End If
+    
+    CreateGaussianBlurLayer gRadius, srcLayer, gaussLayer, toPreview, 3
+        
+    'Now that we have a gaussian layer created in gaussLayer, we can point arrays toward it and the source layer
+    Dim dstImageData() As Byte
+    prepImageData dstSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    Dim GaussImageData() As Byte
+    Dim gaussSA As SAFEARRAY2D
+    prepSafeArray gaussSA, gaussLayer
+    CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -370,157 +367,9 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    SetProgBarMax finalX * 3
     progBarCheck = findBestProgBarValue()
-    
-    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookUp(0 To 765) As Byte
-    For x = 0 To 765
-        grayLookUp(x) = x \ 3
-    Next x
         
-    'Create a one-dimensional Gaussian kernel using the requested radius
-    Dim gKernel() As Single
-    ReDim gKernel(-gRadius To gRadius) As Single
-    
-    Dim numPixels As Long
-    numPixels = (gRadius * 2) + 1
-    
-    'Calculate a standard deviation (sigma) using the GIMP formula:
-    Dim stdDev As Single, stdDev2 As Single
-    If gRadius > 1 Then
-        stdDev = Sqr(-(gRadius * gRadius) / (2 * Log(1# / 255#)))
-    'Note that this is my addition - for a radius of 1, the GIMP formula creates too small of a sigma value
-    Else
-        stdDev = 0.5
-    End If
-    stdDev2 = stdDev * stdDev
-    
-    'Populate the kernel using that sigma
-    Dim i As Long
-    Dim curVal As Single, sumVal As Single
-    sumVal = 0
-    
-    For i = -gRadius To gRadius
-        curVal = (1 / (Sqr(PI_DOUBLE) * stdDev)) * (EULER ^ (-1 * ((i * i) / (2 * stdDev2))))
-        sumVal = sumVal + curVal
-        gKernel(i) = curVal
-    Next i
-        
-    'Normalize the kernel so that all values sum to 1
-    For i = -gRadius To gRadius
-        gKernel(i) = gKernel(i) / sumVal
-    Next i
-    
-    'We now have a normalized 1-dimensional gaussian kernel available for convolution.
-    
-    'More color variables - in this case, sums for each color component
-    Dim r As Long, g As Long, b As Long
-    Dim r2 As Long, g2 As Long, b2 As Long
-    Dim tDelta As Long
-    Dim rSum As Single, gSum As Single, bSum As Single, aSum As Single
-    
-    'We now convolve the image twice - once in the horizontal direction, then again in the vertical direction.  This is
-    ' referred to as "separable" convolution, and it's much faster than than traditional convolution, especially for
-    ' large radii (the exact speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel
-    ' of 9x9) the processing time is 4.5x faster).
-    
-    'First, perform a horizontal convolution.
-        
-    Dim chkX As Long
-    Dim curFactor As Single
-        
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-    
-        rSum = 0
-        gSum = 0
-        bSum = 0
-        aSum = 0
-    
-        'Apply the convolution to the source array.  (This is a little confusing because we need to convolve the image
-        ' twice - so first we modify the source, then we use that to modify the destination on the second pass.)
-        For i = -gRadius To gRadius
-        
-            curFactor = gKernel(i)
-            chkX = x + i
-            
-            'We need to give special treatment to pixels that lie off the image
-            If chkX < initX Then chkX = initX
-            If chkX > finalX Then chkX = finalX
-            
-            QuickValInner = chkX * qvDepth
-            
-            rSum = rSum + srcImageData(QuickValInner + 2, y) * curFactor
-            gSum = gSum + srcImageData(QuickValInner + 1, y) * curFactor
-            bSum = bSum + srcImageData(QuickValInner, y) * curFactor
-            If qvDepth = 4 Then aSum = aSum + srcImageData(QuickValInner + 3, y) * curFactor
-                    
-        Next i
-        
-        'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
-        GaussImageData2(QuickVal + 2, y) = rSum
-        GaussImageData2(QuickVal + 1, y) = gSum
-        GaussImageData2(QuickVal, y) = bSum
-        If qvDepth = 4 Then GaussImageData2(QuickVal + 3, y) = aSum
-        
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
-        End If
-    Next x
-    
-    'The GaussImageData2 array now contains a horizontally convolved image.  We now need to convolve it vertically.
-    Dim chkY As Long
-    
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-    
-        rSum = 0
-        gSum = 0
-        bSum = 0
-        aSum = 0
-    
-        'Apply the convolution to the source array.  (This is a little confusing because we need to convolve the image
-        ' twice - so first we modify the source, then we use that to modify the destination on the second pass.)
-        For i = -gRadius To gRadius
-        
-            curFactor = gKernel(i)
-            chkY = y + i
-            
-            'We need to give special treatment to pixels that lie off the image
-            If chkY < initY Then chkY = initY
-            If chkY > finalY Then chkY = finalY
-                        
-            rSum = rSum + GaussImageData2(QuickVal + 2, chkY) * curFactor
-            gSum = gSum + GaussImageData2(QuickVal + 1, chkY) * curFactor
-            bSum = bSum + GaussImageData2(QuickVal, chkY) * curFactor
-            If qvDepth = 4 Then aSum = aSum + GaussImageData2(QuickVal + 3, chkY) * curFactor
-                    
-        Next i
-        
-        'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
-        GaussImageData(QuickVal + 2, y) = rSum
-        GaussImageData(QuickVal + 1, y) = gSum
-        GaussImageData(QuickVal, y) = bSum
-        If qvDepth = 4 Then GaussImageData(QuickVal + 3, y) = aSum
-        
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal (x + finalX)
-        End If
-    Next x
-        
-    'We now have a blurred copy of the image.  This means we can release our temporary gaussian array.
-    CopyMemory ByVal VarPtrArray(GaussImageData2), 0&, 4
-    Erase GaussImageData2
-    GaussLayer2.eraseLayer
-    Set GaussLayer2 = Nothing
-    
-    If toPreview = False Then Message "Finding image edges and replacing with blurred data as necessary..."
+    If toPreview = False Then Message "Applying smart blur..."
         
     Dim blendVal As Single
     
@@ -578,8 +427,8 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
     CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
     Erase GaussImageData
     
-    GaussLayer.eraseLayer
-    Set GaussLayer = Nothing
+    gaussLayer.eraseLayer
+    Set gaussLayer = Nothing
     
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
