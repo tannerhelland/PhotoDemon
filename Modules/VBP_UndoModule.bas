@@ -41,7 +41,7 @@ Public Sub RestoreImage()
     Message "Restoring Undo data..."
     pdImages(CurrentImage).Undo
     
-    'Set the undo, redo, fade last effect buttons to their proper state
+    'Set the undo, redo, Fade last effect buttons to their proper state
     tInit tUndo, pdImages(CurrentImage).UndoState
     tInit tRedo, pdImages(CurrentImage).RedoState
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
@@ -97,7 +97,7 @@ Public Sub RedoImageRestore()
     Message "Restoring Redo data..."
     pdImages(CurrentImage).Redo
     
-    'Set the undo, redo, fade last effect buttons to their proper state
+    'Set the undo, redo, Fade last effect buttons to their proper state
     tInit tUndo, pdImages(CurrentImage).UndoState
     tInit tRedo, pdImages(CurrentImage).RedoState
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState

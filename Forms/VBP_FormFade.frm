@@ -119,7 +119,7 @@ Attribute VB_Exposed = False
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 11/7/01
 'Last updated: 19/June/12
-'Last update: condensed all fade routines into a single, percentage-based one.  The speed increase provided by
+'Last update: condensed all Fade routines into a single, percentage-based one.  The speed increase provided by
 '             individual routines for various values was not proportionate to the extra code required.
 '
 'Module for handling the fade-style filter.  All it does is alpha-blend a grayscale copy of the image at the
@@ -134,7 +134,7 @@ Private Sub cmdOK_Click()
     
     If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max) Then
         Me.Visible = False
-        Process fade, CSng(hsPercent.Value / 100)
+        Process Fade, CSng(hsPercent.Value / 100)
         Unload Me
     Else
         AutoSelectText txtPercent
@@ -219,7 +219,7 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
-'Unfade is literally a reverse fade - rather than pushing values toward gray, we push them away from it
+'UnFade is literally a reverse Fade - rather than pushing values toward gray, we push them away from it
 Public Sub UnfadeImage(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Unfading image..."

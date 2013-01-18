@@ -66,10 +66,10 @@ Dim bb As Long
    y = y - Int(y)
    z = z - Int(z)
    
-   ' Compute fade curves for each of x,y,z
-   u = fade(x)
-   v = fade(y)
-   w = fade(z)
+   ' Compute Fade curves for each of x,y,z
+   u = Fade(x)
+   v = Fade(y)
+   w = Fade(z)
    
    ' Hash coordinates of the 8 cube corners:
    a = p(iX) + iY
@@ -91,8 +91,8 @@ Dim bb As Long
    
 End Function
 
-Private Function fade(ByVal t As Double) As Double
-   fade = t * t * t * (t * (t * 6# - 15#) + 10#)
+Private Function Fade(ByVal t As Double) As Double
+   Fade = t * t * t * (t * (t * 6# - 15#) + 10#)
 End Function
 Private Function lerp(ByVal t As Double, ByVal a As Double, ByVal b As Double) As Double
    lerp = a + t * (b - a)
