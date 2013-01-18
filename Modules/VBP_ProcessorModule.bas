@@ -103,8 +103,8 @@ Option Explicit
     Public Const GaussianBlur As Long = 416
     'Smart Blur
     Public Const SmartBlur As Long = 417
-    '-Antialias
-    Public Const Antialias As Long = 418
+    'Box Blur
+    Public Const BoxBlur As Long = 418
     
     'Edge filters; numbers 500-599
     '-Emboss
@@ -540,8 +540,6 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 End If
             Case GridBlur
                 FilterGridBlur
-            Case Antialias
-                FilterAntialias
             Case GaussianBlur
                 If LoadForm Then
                     FormGaussianBlur.Show vbModal, FormMain
@@ -553,6 +551,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                     FormSmartBlur.Show vbModal, FormMain
                 Else
                     FormSmartBlur.SmartBlurFilter CLng(pOPCODE), CByte(pOPCODE2), CBool(pOPCODE3)
+                End If
+            Case BoxBlur
+                If LoadForm Then
+                    FormBoxBlur.Show vbModal, FormMain
+                Else
+                    FormBoxBlur.BoxBlurFilter CLng(pOPCODE)
                 End If
         End Select
     End If
@@ -1113,9 +1117,9 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Gaussian Blur"
         Case SmartBlur
             GetNameOfProcess = "Smart Blur"
-        Case Antialias
-            GetNameOfProcess = "Antialias"
-    
+        Case BoxBlur
+            GetNameOfProcess = "Box Blur"
+        
         'Edge filters; numbers 500-599
         Case EmbossToColor
             GetNameOfProcess = "Emboss"

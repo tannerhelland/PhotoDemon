@@ -246,14 +246,14 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "RELIEF", 5, 2, 5         'Relief
     AddMenuIcon "BLUR", 5, 3            'Blur
         '--> Blur sub-menu
-        AddMenuIcon "ANTIALIAS", 5, 3, 0      'Antialias
-        AddMenuIcon "SOFTEN", 5, 3, 1         'Soften
-        AddMenuIcon "SOFTENMORE", 5, 3, 2     'Soften More
-        AddMenuIcon "BLUR2", 5, 3, 3          'Blur
-        AddMenuIcon "BLURMORE", 5, 3, 4       'Blur More
-        AddMenuIcon "GAUSSBLUR", 5, 3, 5      'Gaussian Blur
-        AddMenuIcon "GRIDBLUR", 5, 3, 6       'Grid Blur
-        AddMenuIcon "SMARTBLUR", 5, 3, 7      'Smart Blur
+        AddMenuIcon "SOFTEN", 5, 3, 0         'Soften
+        AddMenuIcon "SOFTENMORE", 5, 3, 1     'Soften More
+        AddMenuIcon "BLUR2", 5, 3, 2          'Blur
+        AddMenuIcon "BLURMORE", 5, 3, 3       'Blur More
+        AddMenuIcon "BOXBLUR", 5, 3, 5        'Box Blur
+        AddMenuIcon "GAUSSBLUR", 5, 3, 6      'Gaussian Blur
+        AddMenuIcon "GRIDBLUR", 5, 3, 7       'Grid Blur
+        AddMenuIcon "SMARTBLUR", 5, 3, 8      'Smart Blur
     AddMenuIcon "DISTORT", 5, 4      'Distort
         '--> Distort sub-menu
         AddMenuIcon "FIGGLASS", 5, 4, 0       'Figured glass
