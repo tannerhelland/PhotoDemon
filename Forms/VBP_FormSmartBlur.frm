@@ -117,7 +117,7 @@ Begin VB.Form FormSmartBlur
    Begin VB.HScrollBar hsRadius 
       Height          =   255
       Left            =   6120
-      Max             =   200
+      Max             =   50
       Min             =   1
       TabIndex        =   2
       Top             =   2760
