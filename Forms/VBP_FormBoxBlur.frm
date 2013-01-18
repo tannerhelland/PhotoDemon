@@ -211,7 +211,7 @@ Attribute VB_Exposed = False
 '
 'This is a heavily optimized box blur.  An "accumulation" technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
-' This is how the algorithm performs so extremely fast, despite being written in pure VB.
+' This allows the algorithm to perform extremely well, despite being written in pure VB.
 '
 'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before
 ' applying any box blur of a large radius.
