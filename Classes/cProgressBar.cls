@@ -172,6 +172,10 @@ Private m_sTag As String
 Private m_tLastR As RECT
 Private m_hWndLast As Long
 
+'Tanner's updates 18 Jan '13: force a repaint of the window upon updating
+Private Const RDW_UPDATENOW As Long = 256 'Updates the specified redraw area immediately.
+Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByRef lprcUpdate As RECT, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
+
 Public Property Get Tag() As String
    Tag = m_sTag
 End Property
@@ -291,7 +295,9 @@ Public Sub Draw()
       DrawToDC m_obj.hWnd, m_obj.hDC, tR.Left, tR.Top, tR.Right, tR.Bottom
       Me.DrawObject.Picture = Me.DrawObject.Image
       Me.DrawObject.Refresh
-      DoEvents
+      Replacement_DoEvents FormMain.hWnd
+      'RedrawWindow Me.DrawObject.hWnd, tR, ByVal 0&, RDW_UPDATENOW
+      'DoEvents
    Else
       ' Could use this to automatically paint the owner object
       ' when setting Min,Max,Value,Text etc

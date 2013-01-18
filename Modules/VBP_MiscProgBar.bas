@@ -9,6 +9,31 @@ Attribute VB_Name = "Misc_ProgressBar"
 
 Option Explicit
 
+Private Type winMsg
+    hWnd As Long
+    sysMsg As Long
+    wParam As Long
+    lParam As Long
+    msgTime As Long
+    ptX As Long
+    ptY As Long
+End Type
+Private Declare Function TranslateMessage Lib "user32" (lpMsg As winMsg) As Long
+Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As winMsg) As Long
+Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+
+'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
+' it only processing messages for the supplies hWnd.
+Public Sub Replacement_DoEvents(ByVal srchWnd As Long)
+
+    Dim tmpMsg As winMsg
+    Do While PeekMessage(tmpMsg, srchWnd, 0&, 0&, &H1&)
+        TranslateMessage tmpMsg
+        DispatchMessage tmpMsg
+    Loop
+    
+End Sub
+
 'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
 Public Sub SetProgBarMax(ByVal pbVal As Long)
