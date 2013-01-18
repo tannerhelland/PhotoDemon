@@ -180,8 +180,8 @@ End Sub
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    
-    If Not toPreview Then Message "Applying gaussian blur..."
+        
+    If Not toPreview Then message "Applying gaussian blur..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -212,12 +212,12 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
     
     CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    'srcLayer.eraseLayer
+    'Set srcLayer = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
     finalizeImageData toPreview, dstPic
-
+        
 End Sub
 
 Private Sub Form_Activate()
@@ -234,8 +234,12 @@ Private Sub Form_Activate()
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
+        hsRadius.Max = 50
         lblIDEWarning.Caption = "WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20."
         lblIDEWarning.Visible = True
+    Else
+        '32bpp images take quite a bit longer to process.  Limit the radius to 100 in this case.
+        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then hsRadius.Max = 100 Else hsRadius.Max = 200
     End If
     
 End Sub
