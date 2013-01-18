@@ -181,6 +181,9 @@ End Sub
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
+    
+    If Not toPreview Then Message "Applying gaussian blur..."
+        
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
