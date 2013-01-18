@@ -556,7 +556,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm Then
                     FormBoxBlur.Show vbModal, FormMain
                 Else
-                    FormBoxBlur.BoxBlurFilter CLng(pOPCODE)
+                    FormBoxBlur.BoxBlurFilter CLng(pOPCODE), CLng(pOPCODE2)
                 End If
         End Select
     End If

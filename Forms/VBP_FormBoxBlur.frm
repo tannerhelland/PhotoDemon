@@ -24,6 +24,84 @@ Begin VB.Form FormBoxBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.TextBox txtWidth 
+      Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   11160
+      TabIndex        =   9
+      Text            =   "2"
+      Top             =   2220
+      Width           =   615
+   End
+   Begin VB.TextBox txtHeight 
+      Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   11160
+      TabIndex        =   8
+      Text            =   "2"
+      Top             =   3180
+      Width           =   615
+   End
+   Begin VB.HScrollBar hsWidth 
+      Height          =   255
+      Left            =   6120
+      Max             =   500
+      Min             =   1
+      TabIndex        =   7
+      Top             =   2280
+      Value           =   2
+      Width           =   4935
+   End
+   Begin VB.HScrollBar hsHeight 
+      Height          =   255
+      Left            =   6120
+      Max             =   500
+      Min             =   1
+      TabIndex        =   6
+      Top             =   3240
+      Value           =   2
+      Width           =   4935
+   End
+   Begin VB.CheckBox chkUnison 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      Caption         =   " keep both dimensions in sync"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   3840
+      Width           =   4935
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,44 +120,54 @@ Begin VB.Form FormBoxBlur
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   500
-      Min             =   1
-      TabIndex        =   2
-      Top             =   2760
-      Value           =   5
-      Width           =   4935
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   3
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
+   Begin VB.Label lblHeight 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "box height:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   3
-      TabIndex        =   3
-      Text            =   "5"
-      Top             =   2700
-      Width           =   615
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   2880
+      Width           =   1215
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
-      TabIndex        =   6
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+   Begin VB.Label lblWidth 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "box width:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   1920
+      Width           =   1140
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -95,7 +183,7 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H000000FF&
       Height          =   735
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
@@ -104,29 +192,9 @@ Begin VB.Form FormBoxBlur
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   5760
       Width           =   12135
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   2400
-      Width           =   735
    End
 End
 Attribute VB_Name = "FormBoxBlur"
@@ -156,6 +224,15 @@ Option Explicit
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
+Dim userChange As Boolean
+
+Private Sub chkUnison_Click()
+    userChange = False
+    If CBool(chkUnison) Then hsHeight.Value = hsWidth.Value
+    userChange = True
+    updatePreview
+End Sub
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -164,19 +241,26 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
 
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
-        Me.Visible = False
-        Process BoxBlur, hsRadius.Value
-        Unload Me
-    Else
-        AutoSelectText txtRadius
+    'Validate text box entries
+    If Not EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, True, True) Then
+        AutoSelectText txtWidth
+        Exit Sub
     End If
+    
+    If Not EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, True, True) Then
+        AutoSelectText txtHeight
+        Exit Sub
+    End If
+    
+    Me.Visible = False
+    Process BoxBlur, hsWidth.Value, hsHeight.Value
+    Unload Me
     
 End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub BoxBlurFilter(ByVal bRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Applying box blur to image..."
         
@@ -207,18 +291,16 @@ Public Sub BoxBlurFilter(ByVal bRadius As Long, Optional ByVal toPreview As Bool
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        If iWidth > iHeight Then
-            bRadius = (bRadius / iWidth) * curLayerValues.Width
-        Else
-            bRadius = (bRadius / iHeight) * curLayerValues.Height
-        End If
-        If bRadius = 0 Then bRadius = 1
+        hRadius = (hRadius / iWidth) * curLayerValues.Width
+        vRadius = (vRadius / iHeight) * curLayerValues.Height
+        If hRadius = 0 Then hRadius = 1
+        If vRadius = 0 Then vRadius = 1
     End If
     
     'I'm preemptively enabling variable x and y radii for this function, even though they're set simultaneously at present.
     Dim xRadius As Long, yRadius As Long
-    xRadius = bRadius
-    yRadius = bRadius
+    xRadius = hRadius
+    yRadius = vRadius
     
     'Just to be safe, make sure the radius isn't larger than the image itself
     If xRadius > (finalX - initX) Then xRadius = finalX - initX
@@ -486,6 +568,8 @@ End Sub
 
 Private Sub Form_Activate()
 
+    userChange = True
+
     'Note the current image's width and height, which will be needed to adjust the preview effect
     iWidth = pdImages(CurrentImage).Width
     iHeight = pdImages(CurrentImage).Height
@@ -508,28 +592,81 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'The next three routines keep the scroll bar and text box values in sync
-Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
+'These routines keep the scroll bar and text box values in sync
+
+Private Sub hsHeight_Change()
+    userChange = False
+    copyToTextBoxI txtHeight, hsHeight.Value
+    If CBool(chkUnison) Then syncScrollBars False
+    userChange = True
     updatePreview
 End Sub
 
-Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
+Private Sub hsWidth_Change()
+    userChange = False
+    copyToTextBoxI txtWidth, hsWidth.Value
+    If CBool(chkUnison) Then syncScrollBars True
+    userChange = True
     updatePreview
 End Sub
 
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
+Private Sub hsHeight_Scroll()
+    userChange = False
+    copyToTextBoxI txtHeight, hsHeight.Value
+    If CBool(chkUnison) Then syncScrollBars False
+    userChange = True
+    updatePreview
 End Sub
 
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then
-        hsRadius.Value = Val(txtRadius)
+Private Sub hsWidth_Scroll()
+    userChange = False
+    copyToTextBoxI txtWidth, hsWidth.Value
+    If CBool(chkUnison) Then syncScrollBars True
+    userChange = True
+    updatePreview
+End Sub
+
+Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
+    userChange = False
+    textValidate txtHeight
+    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(txtHeight)
+    userChange = True
+    updatePreview
+End Sub
+
+Private Sub txtHeight_GotFocus()
+    AutoSelectText txtHeight
+End Sub
+
+Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
+    userChange = False
+    textValidate txtWidth
+    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(txtWidth)
+    userChange = True
+    updatePreview
+End Sub
+
+Private Sub txtWidth_GotFocus()
+    AutoSelectText txtWidth
+End Sub
+
+'Keep the two scroll bars in sync.  Some extra work has to be done to makes sure scrollbar max values aren't exceeded.
+Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
+    
+    If hsWidth.Value = hsHeight.Value Then Exit Sub
+    
+    Dim tmpVal As Long
+    
+    If srcHorizontal Then
+        tmpVal = hsWidth.Value
+        If tmpVal < hsHeight.Max Then hsHeight.Value = hsWidth.Value Else hsHeight.Value = hsHeight.Max
+    Else
+        tmpVal = hsHeight.Value
+        If tmpVal < hsWidth.Max Then hsWidth.Value = hsHeight.Value Else hsWidth.Value = hsWidth.Max
     End If
+    
+End Sub
+Private Sub updatePreview()
+    BoxBlurFilter hsWidth.Value, hsHeight.Value, True, fxPreview
 End Sub
 
-Private Sub updatePreview()
-    BoxBlurFilter hsRadius.Value, True, fxPreview
-End Sub
