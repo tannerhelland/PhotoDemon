@@ -99,12 +99,12 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     Else
     
         'Start by calculating the aspect ratio of both the current image and the previewing picture box
-        Dim dstWidth As Single, dstHeight As Single
+        Dim dstWidth As Double, dstHeight As Double
         Set previewPictureBox = previewTarget.getPreviewPic
         dstWidth = previewPictureBox.ScaleWidth
         dstHeight = previewPictureBox.ScaleHeight
     
-        Dim srcWidth As Single, srcHeight As Single
+        Dim srcWidth As Double, srcHeight As Double
         
         'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
         If pdImages(CurrentImage).selectionActive Then
@@ -118,7 +118,12 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         'Now, use that aspect ratio to determine a proper size for our temporary layer
         Dim newWidth As Long, newHeight As Long
     
-        convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
+        If (srcWidth > dstWidth) Or (srcHeight > dstHeight) Then
+            convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
+        Else
+            newWidth = srcWidth
+            newHeight = srcHeight
+        End If
         
         'And finally, create our workingLayer using these values
         If pdImages(CurrentImage).selectionActive Then
@@ -191,6 +196,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         End If
                 
         'workingLayer has served its purpose, so erase it from memory
+        workingLayer.eraseLayer
         Set workingLayer = Nothing
                 
         'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
@@ -213,6 +219,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         previewTarget.setFXImage workingLayer
         
         'workingLayer has served its purpose, so erase it from memory
+        workingLayer.eraseLayer
         Set workingLayer = Nothing
         
     End If
