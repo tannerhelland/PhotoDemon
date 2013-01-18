@@ -180,27 +180,17 @@ End Sub
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    
-    If toPreview = False Then Message "Applying gaussian blur..."
-    
+        
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
     srcLayer.createFromExistingLayer workingLayer
-    
-    prepSafeArray srcSA, srcLayer
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
+            
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
@@ -218,157 +208,12 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
         If gRadius = 0 Then gRadius = 1
     End If
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    SetProgBarMax finalX * 2
-    progBarCheck = findBestProgBarValue()
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
     
-    'Create a one-dimensional Gaussian kernel using the requested radius
-    Dim gKernel() As Single
-    ReDim gKernel(-gRadius To gRadius) As Single
-    
-    Dim numPixels As Long
-    numPixels = (gRadius * 2) + 1
-    
-    'Calculate a standard deviation (sigma) using the GIMP formula:
-    Dim stdDev As Single, stdDev2 As Single
-    If gRadius > 1 Then
-        stdDev = Sqr(-(gRadius * gRadius) / (2 * Log(1# / 255#)))
-    'Note that this is my addition - for a radius of 1 the GIMP formula results in too small of a sigma value
-    Else
-        stdDev = 0.5
-    End If
-    stdDev2 = stdDev * stdDev
-    
-    'Populate the kernel using that sigma
-    Dim i As Long
-    Dim curVal As Single, sumVal As Single
-    sumVal = 0
-    
-    For i = -gRadius To gRadius
-        curVal = (1 / (Sqr(PI_DOUBLE) * stdDev)) * (EULER ^ (-1 * ((i * i) / (2 * stdDev2))))
-        sumVal = sumVal + curVal
-        gKernel(i) = curVal
-    Next i
-        
-    'Normalize the kernel so that all values sum to 1
-    For i = -gRadius To gRadius
-        gKernel(i) = gKernel(i) / sumVal
-    Next i
-    
-    'We now have a normalized 1-dimensional gaussian kernel available for convolution.
-    
-    'Color variables - in this case, sums for each color component
-    Dim rSum As Single, gSum As Single, bSum As Single, aSum As Single
-    
-    'We now convolve the image twice - once in the horizontal direction, then again in the vertical direction.  This is
-    ' referred to as "separable" convolution, and it's much faster than than traditional convolution, especially for
-    ' large radii (the exact speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel
-    ' of 9x9) the processing time is 4.5x faster).
-    
-    'First, perform a horizontal convolution.
-        
-    Dim chkX As Long
-    Dim curFactor As Single
-        
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-    
-        rSum = 0
-        gSum = 0
-        bSum = 0
-        aSum = 0
-    
-        'Apply the convolution to the source array.  (This is a little confusing because we need to convolve the image
-        ' twice - so first we modify the source, then we use that to modify the destination on the second pass.)
-        For i = -gRadius To gRadius
-        
-            curFactor = gKernel(i)
-            chkX = x + i
-            
-            'We need to give special treatment to pixels that lie off the image
-            If chkX < initX Then chkX = initX
-            If chkX > finalX Then chkX = finalX
-            
-            QuickValInner = chkX * qvDepth
-            
-            rSum = rSum + dstImageData(QuickValInner + 2, y) * curFactor
-            gSum = gSum + dstImageData(QuickValInner + 1, y) * curFactor
-            bSum = bSum + dstImageData(QuickValInner, y) * curFactor
-            If qvDepth = 4 Then aSum = aSum + dstImageData(QuickValInner + 3, y) * curFactor
-                    
-        Next i
-        
-        'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
-        srcImageData(QuickVal + 2, y) = rSum
-        srcImageData(QuickVal + 1, y) = gSum
-        srcImageData(QuickVal, y) = bSum
-        If qvDepth = 4 Then srcImageData(QuickVal + 3, y) = aSum
-        
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
-        End If
-    Next x
-    
-    'The source array now contains a horizontally convolved image.  We now need to convolve it vertically.
-    Dim chkY As Long
-    
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-    
-        rSum = 0
-        gSum = 0
-        bSum = 0
-        aSum = 0
-    
-        'Apply the convolution to the source array.  (This is a little confusing because we need to convolve the image
-        ' twice - so first we modify the source, then we use that to modify the destination on the second pass.)
-        For i = -gRadius To gRadius
-        
-            curFactor = gKernel(i)
-            chkY = y + i
-            
-            'We need to give special treatment to pixels that lie off the image
-            If chkY < initY Then chkY = initY
-            If chkY > finalY Then chkY = finalY
-                        
-            rSum = rSum + srcImageData(QuickVal + 2, chkY) * curFactor
-            gSum = gSum + srcImageData(QuickVal + 1, chkY) * curFactor
-            bSum = bSum + srcImageData(QuickVal, chkY) * curFactor
-            If qvDepth = 4 Then aSum = aSum + srcImageData(QuickVal + 3, chkY) * curFactor
-                    
-        Next i
-        
-        'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
-        dstImageData(QuickVal + 2, y) = rSum
-        dstImageData(QuickVal + 1, y) = gSum
-        dstImageData(QuickVal, y) = bSum
-        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aSum
-        
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal (x + finalX)
-        End If
-    Next x
-    
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
     finalizeImageData toPreview, dstPic
 
 End Sub
