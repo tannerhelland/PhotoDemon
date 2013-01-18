@@ -203,9 +203,9 @@ Option Explicit
     '-Compound invert
     '800-802 used to be specific CompoundInvert values; this is superceded by passing the values to CompoundInvert, which has been moved with the other Inverts
     '-Fade
-    Public Const fade As Long = 803
+    Public Const Fade As Long = 803
     '804-806 used to be specific Fade values; these have been superceded by passing the values to Fade
-    Public Const Unfade As Long = 807
+    Public Const UnFade As Long = 807
     '-Natural
     Public Const Atmospheric As Long = 808
     Public Const Frozen As Long = 809
@@ -235,7 +235,7 @@ Option Explicit
     Public Const Despeckle As Long = 831
     Public Const CustomDespeckle As Long = 832
     Public Const HeatMap As Long = 833
-    Public Const Animate As Long = 840
+    Public Const ComicBook As Long = 840
     
     'Relative processes
     Public Const LastCommand As Long = 900
@@ -813,13 +813,13 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormTwins.GenerateTwins CByte(pOPCODE)
                 End If
-            Case fade
+            Case Fade
                 If LoadForm Then
                     FormFade.Show vbModal, FormMain
                 Else
                     FormFade.FadeImage CSng(pOPCODE)
                 End If
-            Case Unfade
+            Case UnFade
                 FormFade.UnfadeImage
             Case Alien
                 MenuAlien
@@ -845,8 +845,6 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 End If
             Case Burn
                 MenuBurn
-            'Case Ocean
-            '    MenuOcean
             Case Steel
                 MenuSteel
             Case FogEffect
@@ -865,17 +863,17 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormDespeckle.Despeckle pOPCODE
                 End If
-            Case Animate
-                MenuAnimate
             Case Sepia
                 MenuSepia
             Case HeatMap
                 MenuHeatMap
+            Case ComicBook
+                MenuComicBook
         
         End Select
     End If
     
-    'Finally, check to see if the user wants us to fade the last effect applied to the image...
+    'Finally, check to see if the user wants us to Fade the last effect applied to the image...
     If pType = FadeLastEffect Then MenuFadeLastEffect
     
     'Restore the mouse pointer to its default value; if we are running a batch conversion, however, leave it busy
@@ -1235,9 +1233,9 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Polar conversion"
             
         'Miscellaneous filters; numbers 800-899
-        Case fade
+        Case Fade
             GetNameOfProcess = "Fade"
-        Case Unfade
+        Case UnFade
             GetNameOfProcess = "Unfade"
         Case Atmospheric
             GetNameOfProcess = "Atmosphere"
@@ -1285,8 +1283,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Despeckle"
         Case CustomDespeckle
             GetNameOfProcess = "Custom Despeckle"
-        Case Animate
-            GetNameOfProcess = "Animate"
+        Case ComicBook
+            GetNameOfProcess = "Comic book"
         Case Sepia
             GetNameOfProcess = "Sepia"
         Case HeatMap

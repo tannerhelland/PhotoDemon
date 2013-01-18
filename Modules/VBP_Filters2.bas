@@ -220,14 +220,357 @@ Public Sub MenuHeatMap()
     
 End Sub
 
-'Right now this is a work in progress; it's somewhat based off... <description forthcoming>
-Public Sub MenuAnimate()
-
-    MsgBox "Sorry, but this filter is still under heavy development.  It's disabled right now due to some instability in the code.  Stay tuned for updates!", vbInformation + vbOKOnly + vbApplicationModal, "Animate filter disabled... for now"
+'A very neat comic-book filter that actually blends together a number of other filters into one!
+Public Sub MenuComicBook()
     
-    Message "Animate filter canceled"
+    Dim gRadius As Long
+    gRadius = 20
     
-    Exit Sub
+    Dim gThreshold As Long
+    gThreshold = 8
+    
+    Message "Animating image (stage 1 of 4)..."
+        
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent already edited pixels from screwing up our results for later pixels.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer workingLayer
+    
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'We now need two more copies of the image; these are for the gaussian blur kernel, which operates in two passes.
+    Dim GaussImageData() As Byte
+    Dim gaussSA As SAFEARRAY2D
+    
+    Dim GaussLayer As pdLayer
+    Set GaussLayer = New pdLayer
+    GaussLayer.createFromExistingLayer workingLayer
+    
+    prepSafeArray gaussSA, GaussLayer
+    CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
+        
+    Dim GaussImageData2() As Byte
+    Dim gaussSA2 As SAFEARRAY2D
+    
+    Dim GaussLayer2 As pdLayer
+    Set GaussLayer2 = New pdLayer
+    GaussLayer2.createFromExistingLayer workingLayer
+    
+    prepSafeArray gaussSA2, GaussLayer
+    CopyMemory ByVal VarPtrArray(GaussImageData2()), VarPtr(gaussSA2), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curLayerValues.Left
+    initY = curLayerValues.Top
+    finalX = curLayerValues.Right
+    finalY = curLayerValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
+    qvDepth = curLayerValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    SetProgBarMax finalX * 4
+    progBarCheck = findBestProgBarValue()
+    
+    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
+    Dim grayLookUp(0 To 765) As Byte
+    For x = 0 To 765
+        grayLookUp(x) = x \ 3
+    Next x
+        
+    'Create a one-dimensional Gaussian kernel using the requested radius
+    Dim gKernel() As Single
+    ReDim gKernel(-gRadius To gRadius) As Single
+    
+    Dim numPixels As Long
+    numPixels = (gRadius * 2) + 1
+    
+    'Calculate a standard deviation (sigma) using the GIMP formula:
+    Dim stdDev As Single, stdDev2 As Single
+    If gRadius > 1 Then
+        stdDev = Sqr(-(gRadius * gRadius) / (2 * Log(1# / 255#)))
+    'Note that this is my addition - for a radius of 1, the GIMP formula creates too small of a sigma value
+    Else
+        stdDev = 0.5
+    End If
+    stdDev2 = stdDev * stdDev
+    
+    'Populate the kernel using that sigma
+    Dim i As Long
+    Dim curVal As Single, sumVal As Single
+    sumVal = 0
+    
+    For i = -gRadius To gRadius
+        curVal = (1 / (Sqr(PI_DOUBLE) * stdDev)) * (EULER ^ (-1 * ((i * i) / (2 * stdDev2))))
+        sumVal = sumVal + curVal
+        gKernel(i) = curVal
+    Next i
+        
+    'Normalize the kernel so that all values sum to 1
+    For i = -gRadius To gRadius
+        gKernel(i) = gKernel(i) / sumVal
+    Next i
+    
+    'We now have a normalized 1-dimensional gaussian kernel available for convolution.
+    
+    'More color variables - in this case, sums for each color component
+    Dim r As Long, g As Long, b As Long
+    Dim r2 As Long, g2 As Long, b2 As Long
+    Dim tDelta As Long
+    Dim rSum As Single, gSum As Single, bSum As Single, aSum As Single
+    
+    'We now convolve the image twice - once in the horizontal direction, then again in the vertical direction.  This is
+    ' referred to as "separable" convolution, and it's much faster than than traditional convolution, especially for
+    ' large radii (the exact speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel
+    ' of 9x9) the processing time is 4.5x faster).
+    
+    'First, perform a horizontal convolution.
+        
+    Dim chkX As Long
+    Dim curFactor As Single
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        rSum = 0
+        gSum = 0
+        bSum = 0
+        aSum = 0
+    
+        'Apply the convolution to the source array.  (This is a little confusing because we need to convolve the image
+        ' twice - so first we modify the source, then we use that to modify the destination on the second pass.)
+        For i = -gRadius To gRadius
+        
+            curFactor = gKernel(i)
+            chkX = x + i
+            
+            'We need to give special treatment to pixels that lie off the image
+            If chkX < initX Then chkX = initX
+            If chkX > finalX Then chkX = finalX
+            
+            QuickValInner = chkX * qvDepth
+            
+            rSum = rSum + srcImageData(QuickValInner + 2, y) * curFactor
+            gSum = gSum + srcImageData(QuickValInner + 1, y) * curFactor
+            bSum = bSum + srcImageData(QuickValInner, y) * curFactor
+            If qvDepth = 4 Then aSum = aSum + srcImageData(QuickValInner + 3, y) * curFactor
+                    
+        Next i
+        
+        'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
+        GaussImageData2(QuickVal + 2, y) = rSum
+        GaussImageData2(QuickVal + 1, y) = gSum
+        GaussImageData2(QuickVal, y) = bSum
+        If qvDepth = 4 Then GaussImageData2(QuickVal + 3, y) = aSum
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+    
+    'The GaussImageData2 array now contains a horizontally convolved image.  We now need to convolve it vertically.
+    Dim chkY As Long
+    
+    Message "Animating image (stage 2 of 4)..."
+    
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        rSum = 0
+        gSum = 0
+        bSum = 0
+        aSum = 0
+    
+        'Apply the convolution to the source array.  (This is a little confusing because we need to convolve the image
+        ' twice - so first we modify the source, then we use that to modify the destination on the second pass.)
+        For i = -gRadius To gRadius
+        
+            curFactor = gKernel(i)
+            chkY = y + i
+            
+            'We need to give special treatment to pixels that lie off the image
+            If chkY < initY Then chkY = initY
+            If chkY > finalY Then chkY = finalY
+                        
+            rSum = rSum + GaussImageData2(QuickVal + 2, chkY) * curFactor
+            gSum = gSum + GaussImageData2(QuickVal + 1, chkY) * curFactor
+            bSum = bSum + GaussImageData2(QuickVal, chkY) * curFactor
+            If qvDepth = 4 Then aSum = aSum + GaussImageData2(QuickVal + 3, chkY) * curFactor
+                    
+        Next i
+        
+        'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
+        GaussImageData(QuickVal + 2, y) = rSum
+        GaussImageData(QuickVal + 1, y) = gSum
+        GaussImageData(QuickVal, y) = bSum
+        If qvDepth = 4 Then GaussImageData(QuickVal + 3, y) = aSum
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal (x + finalX)
+    Next x
+        
+    'We now have a blurred copy of the image.  This means we can release our temporary gaussian array.
+    CopyMemory ByVal VarPtrArray(GaussImageData2), 0&, 4
+    Erase GaussImageData2
+    GaussLayer2.eraseLayer
+    Set GaussLayer2 = Nothing
+            
+    Dim blendVal As Single
+    
+    Message "Animating image (stage 3 of 4)..."
+    
+    'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        'Retrieve the original image's pixels
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
+        
+        tDelta = (213 * r + 715 * g + 72 * b) \ 1000
+        
+        'Now, retrieve the gaussian pixels
+        r2 = GaussImageData(QuickVal + 2, y)
+        g2 = GaussImageData(QuickVal + 1, y)
+        b2 = GaussImageData(QuickVal, y)
+        
+        'Calculate a delta between the two
+        tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
+        If tDelta < 0 Then tDelta = -tDelta
+                
+        'If the delta is below the specified threshold, replace it with the blurred data.
+        If tDelta > gThreshold Then
+            If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
+            dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
+            dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
+            dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+        End If
+                
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalX * 2)
+    Next x
+        
+    'With our blur complete, release the gaussian array and temporary image
+    CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
+    Erase GaussImageData
+    
+    GaussLayer.eraseLayer
+    Set GaussLayer = Nothing
+    
+    'The last thing we need to do is sketch in the edges of the image.
+    
+    Message "Animating image (stage 4 of 4)..."
+    
+    'We can't do this at the borders of the image, so shrink the functional area by one in each dimension.
+    initX = initX + 1
+    initY = initY + 1
+    finalX = finalX - 1
+    finalY = finalY - 1
+    
+    Dim QuickValRight As Long, QuickValLeft As Long, tmpColor As Long, tMin As Long
+    Dim z As Long
+        
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+        QuickValRight = (x + 1) * qvDepth
+        QuickValLeft = (x - 1) * qvDepth
+    For y = initY To finalY
+        For z = 0 To 2
+    
+            tMin = 255
+            tmpColor = srcImageData(QuickValRight + z, y)
+            If tmpColor < tMin Then tMin = tmpColor
+            tmpColor = srcImageData(QuickValRight + z, y - 1)
+            If tmpColor < tMin Then tMin = tmpColor
+            tmpColor = srcImageData(QuickValRight + z, y + 1)
+            If tmpColor < tMin Then tMin = tmpColor
+            tmpColor = srcImageData(QuickValLeft + z, y)
+            If tmpColor < tMin Then tMin = tmpColor
+            tmpColor = srcImageData(QuickValLeft + z, y - 1)
+            If tmpColor < tMin Then tMin = tmpColor
+            tmpColor = srcImageData(QuickValLeft + z, y + 1)
+            If tmpColor < tMin Then tMin = tmpColor
+            tmpColor = srcImageData(QuickVal + z, y)
+            If tmpColor < tMin Then tMin = tmpColor
+            tmpColor = srcImageData(QuickVal + z, y - 1)
+            If tmpColor < tMin Then tMin = tmpColor
+            tmpColor = srcImageData(QuickVal + z, y + 1)
+            If tmpColor < tMin Then tMin = tmpColor
+            
+            If tMin > 255 Then tMin = 255
+            If tMin < 0 Then tMin = 0
+            
+            Select Case z
+            
+                Case 0
+                    b = 255 - (srcImageData(QuickVal, y) - tMin)
+            
+                Case 1
+                    g = 255 - (srcImageData(QuickVal + 1, y) - tMin)
+                    
+                Case 2
+                    r = 255 - (srcImageData(QuickVal + 2, y) - tMin)
+            
+            End Select
+                    
+        Next z
+        
+        'Calculate a corresponding grayscale value for this pixel
+        'tmpColor = grayLookUp(r + g + b)
+        
+        'blendVal = (tmpColor / 255)
+        
+        'We will be blending this sketched pixel with the original according to its luminosity
+        'dstImageData(QuickVal + 2, y) = BlendColors(r, dstImageData(QuickVal + 2, y), blendVal)
+        'dstImageData(QuickVal + 1, y) = BlendColors(g, dstImageData(QuickVal + 1, y), blendVal)
+        'dstImageData(QuickVal, y) = BlendColors(b, dstImageData(QuickVal, y), blendVal)
+        
+        r2 = dstImageData(QuickVal + 2, y)
+        g2 = dstImageData(QuickVal + 1, y)
+        b2 = dstImageData(QuickVal, y)
+        
+        r = ((CSng(r) / 255) * (CSng(r2) / 255)) * 255
+        g = ((CSng(g) / 255) * (CSng(g2) / 255)) * 255
+        b = ((CSng(b) / 255) * (CSng(b2) / 255)) * 255
+        
+        dstImageData(QuickVal + 2, y) = r
+        dstImageData(QuickVal + 1, y) = g
+        dstImageData(QuickVal, y) = b
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalX * 3)
+    Next x
+    
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
 
 End Sub
 
