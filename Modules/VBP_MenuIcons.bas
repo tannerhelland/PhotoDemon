@@ -302,9 +302,9 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "CUSTRANK", 5, 9, 4       'Custom Rank
     AddMenuIcon "SHARPEN", 5, 10     'Sharpen
         '--> Sharpen sub-menu
-        AddMenuIcon "UNSHARP", 5, 10, 0       'Unsharp
-        AddMenuIcon "SHARPEN", 5, 10, 2       'Sharpen
-        AddMenuIcon "SHARPENMORE", 5, 10, 3   'Sharpen More
+        AddMenuIcon "SHARPEN", 5, 10, 0       'Sharpen
+        AddMenuIcon "SHARPENMORE", 5, 10, 1   'Sharpen More
+        AddMenuIcon "UNSHARP", 5, 10, 3       'Unsharp
     AddMenuIcon "STYLIZE", 5, 11     'Stylize
         '--> Stylize sub-menu
         AddMenuIcon "DIFFUSE", 5, 11, 0       'Diffuse
