@@ -244,14 +244,18 @@ End Sub
 
 'Populate a text box with a given floating-point value.  This is done constantly across the program, so I use a sub to handle it, as
 ' there may be additional validations that need to be performed, and it's nice to be able to adjust those from a single location.
-Public Sub copyToTextBoxF(ByVal srcValue As Double, ByRef dstTextBox As TextBox)
+Public Sub copyToTextBoxF(ByVal srcValue As Double, ByRef dstTextBox As TextBox, Optional ByVal numOfSD As Long = 2)
 
     'Remember the current cursor position
     Dim cursorPos As Long
     cursorPos = dstTextBox.SelStart
 
     'PhotoDemon never allows more than two significant digits for floating-point text boxes
-    dstTextBox = Format(CStr(srcValue), "#0.00")
+    If numOfSD = 2 Then
+        dstTextBox = Format(CStr(srcValue), "#0.00")
+    Else
+        dstTextBox = Format(CStr(srcValue), "#0.0")
+    End If
     dstTextBox.Refresh
     
     'Restore the cursor to its original position
