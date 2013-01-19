@@ -77,8 +77,8 @@ Begin VB.Form FormWhiteBalance
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -378,14 +378,12 @@ End Sub
 
 'When the horizontal scroll bar is moved, change the text box to match
 Private Sub hsIgnore_Change()
-    txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")
-    txtIgnore.Refresh
+    copyToTextBoxF CSng(hsIgnore) / 100, txtIgnore
     AutoWhiteBalance CSng(Val(txtIgnore)), True, fxPreview
 End Sub
 
 Private Sub hsIgnore_Scroll()
-    txtIgnore.Text = Format(CSng(hsIgnore.Value) / 100, "0.00")
-    txtIgnore.Refresh
+    copyToTextBoxF CSng(hsIgnore) / 100, txtIgnore
     AutoWhiteBalance CSng(Val(txtIgnore)), True, fxPreview
 End Sub
 
