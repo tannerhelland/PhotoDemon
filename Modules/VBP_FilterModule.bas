@@ -482,31 +482,6 @@ Public Sub FilterSharpenMore()
   
 End Sub
 
-'"Unsharp" an image - it's a stupid name, but that's the industry standard.  Basically, blur the image, then subtract that from the original image.
-Public Sub FilterUnsharp()
-
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
-    
-    g_FM(-1, -1) = -1
-    g_FM(0, -1) = -2
-    g_FM(1, -1) = -1
-    
-    g_FM(-1, 0) = -2
-    g_FM(0, 0) = 24
-    g_FM(1, 0) = -2
-    
-    g_FM(-1, 1) = -1
-    g_FM(0, 1) = -2
-    g_FM(1, 1) = -1
-    
-    g_FilterWeight = 12
-    g_FilterBias = 0
-    
-    DoFilter "Unsharp"
-  
-  End Sub
-
 'Apply a grid blur to an image; basically, blur every vertical line, then every horizontal line, then average the results
 Public Sub FilterGridBlur()
 

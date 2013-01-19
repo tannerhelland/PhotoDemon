@@ -1,8 +1,8 @@
 VERSION 5.00
-Begin VB.Form FormSmartBlur 
+Begin VB.Form FormUnsharpMask 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Smart Blur"
+   Caption         =   " Unsharp Masking"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -24,48 +24,44 @@ Begin VB.Form FormSmartBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.OptionButton OptEdges 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " edges"
+   Begin VB.TextBox txtAmount 
+      Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00404040&
+      ForeColor       =   &H00800000&
       Height          =   360
-      Index           =   1
-      Left            =   7920
+      Left            =   11160
+      MaxLength       =   4
       TabIndex        =   12
-      Top             =   1800
-      Width           =   2535
+      Text            =   "1.0"
+      Top             =   2715
+      Width           =   615
    End
-   Begin VB.OptionButton OptEdges 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " non-edges"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   0
+   Begin VB.HScrollBar hsAmount 
+      Height          =   255
       Left            =   6120
+      Max             =   110
+      Min             =   11
       TabIndex        =   11
-      Top             =   1800
-      Value           =   -1  'True
-      Width           =   1575
+      Top             =   2760
+      Value           =   21
+      Width           =   4935
+   End
+   Begin VB.HScrollBar hsThreshold 
+      Height          =   255
+      Left            =   6120
+      Max             =   255
+      TabIndex        =   9
+      Top             =   3720
+      Value           =   50
+      Width           =   4935
    End
    Begin VB.TextBox txtThreshold 
       Alignment       =   2  'Center
@@ -82,19 +78,10 @@ Begin VB.Form FormSmartBlur
       Height          =   360
       Left            =   11160
       MaxLength       =   3
-      TabIndex        =   9
+      TabIndex        =   8
       Text            =   "50"
       Top             =   3660
       Width           =   615
-   End
-   Begin VB.HScrollBar hsThreshold 
-      Height          =   255
-      Left            =   6120
-      Max             =   255
-      TabIndex        =   8
-      Top             =   3720
-      Value           =   50
-      Width           =   4935
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -117,10 +104,10 @@ Begin VB.Form FormSmartBlur
    Begin VB.HScrollBar hsRadius 
       Height          =   255
       Left            =   6120
-      Max             =   50
+      Max             =   200
       Min             =   1
       TabIndex        =   2
-      Top             =   2760
+      Top             =   1800
       Value           =   5
       Width           =   4935
    End
@@ -141,7 +128,7 @@ Begin VB.Form FormSmartBlur
       MaxLength       =   3
       TabIndex        =   3
       Text            =   "5"
-      Top             =   2700
+      Top             =   1740
       Width           =   615
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -150,15 +137,15 @@ Begin VB.Form FormSmartBlur
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.Label lblTitle 
+   Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "apply blur to:"
+      Caption         =   "amount:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -170,11 +157,10 @@ Begin VB.Form FormSmartBlur
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Index           =   2
       Left            =   6000
       TabIndex        =   13
-      Top             =   1440
-      Width           =   1440
+      Top             =   2400
+      Width           =   900
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -224,7 +210,7 @@ Begin VB.Form FormSmartBlur
       Top             =   5760
       Width           =   12135
    End
-   Begin VB.Label lblTitle 
+   Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "radius:"
@@ -239,33 +225,35 @@ Begin VB.Form FormSmartBlur
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Index           =   0
       Left            =   6000
       TabIndex        =   4
-      Top             =   2400
+      Top             =   1440
       Width           =   735
    End
 End
-Attribute VB_Name = "FormSmartBlur"
+Attribute VB_Name = "FormUnsharpMask"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'"Smart" Blur Tool
+'Unsharp Masking Tool
 'Copyright ©2012-2013 by Tanner Helland
-'Created: 17/January/13
+'Created: 03/March/01
 'Last updated: 17/January/13
-'Last update: initial build
+'Last update: rewrote as a full tool, instead of a single hard-coded 5x5 implementation
 '
-'To my knowledge, this tool is the first of its kind in VB6 - an intelligent blur tool that selectively blurs
-' edges differently from smooth areas of an image.  The user can specify the threshold to use, as well as whether
-' to more strongly blur edges or smooth sections.
-'
-'The use of separable kernels helps this function remain swift, despite all the different things it's handling.
+'To my knowledge, this tool is the first of its kind in VB6 - a variable radius Unsharp Mask filter
+' that utilizes all three traditional controls (radius, amount, and threshold) and is based on a
+' true Gaussian kernel.
+
+'The use of separable kernels makes this much, much faster than a standard unsharp mask function.  The
+' exact speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel
+' of 9x9) the processing time is 4.5x faster.  For a radius of 100, this is 100x faster than a
+' traditional method.
 '
 'Despite this, it's still quite slow in the IDE.  I STRONGLY recommend compiling the project before
-' applying any actions at a large radius.
+' applying any action at a large radius.
 '
 '***************************************************************************
 
@@ -294,23 +282,23 @@ Private Sub cmdOK_Click()
         Exit Sub
     End If
     
+    If Not EntryValid(txtAmount, CSng(hsAmount.Min - 10) / 10, CSng(hsAmount.Max - 10) / 10, True, True) Then
+        AutoSelectText txtAmount
+        Exit Sub
+    End If
+
     Me.Visible = False
-    Process SmartBlur, hsRadius.Value, hsThreshold.Value, OptEdges(1)
+    Process Unsharp, hsRadius, hsAmount, hsThreshold
     Unload Me
     
 End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    
-    If toPreview = False Then Message "Analyzing image in preparation for smart blur..."
-            
-    'More color variables - in this case, sums for each color component
-    Dim r As Long, g As Long, b As Long
-    Dim r2 As Long, g2 As Long, b2 As Long
-    Dim tDelta As Long
-    
+Public Sub UnsharpMask(ByVal umRadius As Long, ByVal umAmount As Long, ByVal umThreshold As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+        
+    If Not toPreview Then Message "Applying unsharp mask (step 1 of 2)..."
+        
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
@@ -320,11 +308,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
     srcLayer.createFromExistingLayer workingLayer
-    
-    Dim gaussLayer As pdLayer
-    Set gaussLayer = New pdLayer
-    gaussLayer.createFromExistingLayer workingLayer
-    
+            
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
@@ -335,30 +319,24 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         If iWidth > iHeight Then
-            gRadius = (gRadius / iWidth) * curLayerValues.Width
+            umRadius = (umRadius / iWidth) * curLayerValues.Width
         Else
-            gRadius = (gRadius / iHeight) * curLayerValues.Height
+            umRadius = (umRadius / iHeight) * curLayerValues.Height
         End If
-        If gRadius = 0 Then gRadius = 1
+        If umRadius = 0 Then umRadius = 1
     End If
     
-    CreateGaussianBlurLayer gRadius, srcLayer, gaussLayer, toPreview, 3
-        
-    'Now that we have a gaussian layer created in gaussLayer, we can point arrays toward it and the source layer
+    CreateGaussianBlurLayer umRadius, workingLayer, srcLayer, toPreview, 3
+    
+    'Now that we have a gaussian layer created in workingLayer, we can point arrays toward it and the source layer
     Dim dstImageData() As Byte
-    prepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
     prepSafeArray srcSA, srcLayer
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    Dim GaussImageData() As Byte
-    Dim gaussSA As SAFEARRAY2D
-    prepSafeArray gaussSA, gaussLayer
-    CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
-            
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
@@ -369,9 +347,22 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
         
-    If toPreview = False Then Message "Applying smart blur..."
+    If Not toPreview Then Message "Applying unsharp mask (step 2 of 2)..."
         
+    'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
+    Dim scaleFactor As Double, invScaleFactor As Double
+    scaleFactor = CDbl(umAmount) / 10
+    invScaleFactor = 1 - scaleFactor
+
     Dim blendVal As Double
+    
+    'More color variables - in this case, sums for each color component
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim tLumDelta As Long
+    
+    umThreshold = umThreshold \ 5
     
     'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
     For x = initX To finalX
@@ -379,66 +370,71 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
     For y = initY To finalY
         
         'Retrieve the original image's pixels
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
-        
-        tDelta = (213 * r + 715 * g + 72 * b) \ 1000
+        r = dstImageData(QuickVal + 2, y)
+        g = dstImageData(QuickVal + 1, y)
+        b = dstImageData(QuickVal, y)
         
         'Now, retrieve the gaussian pixels
-        r2 = GaussImageData(QuickVal + 2, y)
-        g2 = GaussImageData(QuickVal + 1, y)
-        b2 = GaussImageData(QuickVal, y)
+        r2 = srcImageData(QuickVal + 2, y)
+        g2 = srcImageData(QuickVal + 1, y)
+        b2 = srcImageData(QuickVal, y)
         
-        'Calculate a delta between the two
-        tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
-        If tDelta < 0 Then tDelta = -tDelta
+        tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
+                        
+        'If the delta is below the specified threshold, sharpen it
+        If tLumDelta > umThreshold Then
+                        
+            newR = (scaleFactor * r) + (invScaleFactor * r2)
+            If newR > 255 Then newR = 255
+            If newR < 0 Then newR = 0
                 
-        'If the delta is below the specified threshold, replace it with the blurred data.
-        If smoothEdges Then
-        
-            If tDelta > gThreshold Then
-                If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
-                dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-                dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-                dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-                If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+            newG = (scaleFactor * g) + (invScaleFactor * g2)
+            If newG > 255 Then newG = 255
+            If newG < 0 Then newG = 0
+                
+            newB = (scaleFactor * b) + (invScaleFactor * b2)
+            If newB > 255 Then newB = 255
+            If newB < 0 Then newB = 0
+            
+            blendVal = tLumDelta / 255
+            
+            newR = BlendColors(newR, r, blendVal)
+            newG = BlendColors(newG, g, blendVal)
+            newB = BlendColors(newB, b, blendVal)
+            
+            dstImageData(QuickVal + 2, y) = newR
+            dstImageData(QuickVal + 1, y) = newG
+            dstImageData(QuickVal, y) = newB
+            
+            If qvDepth = 4 Then
+                a2 = srcImageData(QuickVal + 3, y)
+                a = dstImageData(QuickVal + 3, y)
+                newA = (scaleFactor * a) + (invScaleFactor * a2)
+                If newA > 255 Then newA = 255
+                If newA < 0 Then newA = 0
+                dstImageData(QuickVal + 3, y) = BlendColors(newA, a, blendVal)
             End If
-        
-        Else
-        
-            If tDelta <= gThreshold Then
-                If gThreshold <> 0 Then blendVal = 1 - (tDelta / gThreshold) Else blendVal = 1
-                dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-                dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-                dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-                If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
-            End If
-        
+            
         End If
-        
+                
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalX * 2)
         End If
     Next x
-        
-    'With our work complete, release all arrays
-    CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
-    Erase GaussImageData
-    
-    gaussLayer.eraseLayer
-    Set gaussLayer = Nothing
     
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
+    
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
     
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
-    
+        
 End Sub
 
 Private Sub Form_Activate()
@@ -455,8 +451,12 @@ Private Sub Form_Activate()
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
+        hsRadius.Max = 50
         lblIDEWarning.Caption = "WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20."
         lblIDEWarning.Visible = True
+    Else
+        '32bpp images take quite a bit longer to process.  Limit the radius to 100 in this case.
+        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then hsRadius.Max = 100 Else hsRadius.Max = 200
     End If
     
 End Sub
@@ -465,6 +465,27 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+'When the horizontal scroll bar is moved, change the text box to match
+Private Sub hsAmount_Change()
+    copyToTextBoxF CSng(hsAmount - 10) / 10, txtAmount, 1
+    updatePreview
+End Sub
+
+Private Sub hsAmount_Scroll()
+    copyToTextBoxF CSng(hsAmount - 10) / 10, txtAmount, 1
+    updatePreview
+End Sub
+
+Private Sub txtAmount_GotFocus()
+    AutoSelectText txtAmount
+End Sub
+
+Private Sub txtAmount_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtAmount, , True
+    If EntryValid(txtAmount, CSng(hsAmount.Min - 10) / 10, CSng(hsAmount.Max - 10) / 10, False, False) Then
+        hsAmount = Val(txtAmount) * 10
+    End If
+End Sub
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsRadius_Change()
     copyToTextBoxI txtRadius, hsRadius.Value
@@ -483,10 +504,6 @@ End Sub
 
 Private Sub hsThreshold_Scroll()
     copyToTextBoxI txtThreshold, hsThreshold.Value
-    updatePreview
-End Sub
-
-Private Sub OptEdges_Click(Index As Integer)
     updatePreview
 End Sub
 
@@ -512,7 +529,6 @@ Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
     End If
 End Sub
 
-'Render a new effect preview
 Private Sub updatePreview()
-    SmartBlurFilter hsRadius.Value, hsThreshold.Value, OptEdges(1), True, fxPreview
+    UnsharpMask hsRadius, hsAmount, hsThreshold, True, fxPreview
 End Sub

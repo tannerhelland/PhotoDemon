@@ -515,7 +515,11 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Case SharpenMore
                 FilterSharpenMore
             Case Unsharp
-                FilterUnsharp
+                If LoadForm Then
+                    FormUnsharpMask.Show vbModal, FormMain
+                Else
+                    FormUnsharpMask.UnsharpMask CLng(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
+                End If
             Case Diffuse
                 FormDiffuse.DiffuseCustom 5, 5, False
             Case DiffuseMore
