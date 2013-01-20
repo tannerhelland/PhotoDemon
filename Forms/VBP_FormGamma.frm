@@ -517,22 +517,23 @@ Private Sub updatePreview()
     
     Dim prevX As Double, prevY As Double
     Dim curX As Double, curY As Double
-    
     Dim x As Long, y As Long
+    
     Dim xWidth As Long, yHeight As Long
     xWidth = picChart.ScaleWidth
     yHeight = picChart.ScaleHeight
         
-    Dim tmpVal As Double
-    
+    'Clear out the old chart and draw a gray line across the diagonal for reference
     picChart.Picture = LoadPicture("")
-    
     picChart.ForeColor = RGB(127, 127, 127)
     DrawLineWuAA picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
-        
-    Dim gamVal As Double
     
+    Dim gamVal As Double, tmpVal As Double
+    
+    'Draw each of the current gamma curves for the user's reference
     For y = 0 To 2
+        
+        'If all channels are in sync, draw only blue; otherwise, color each channel individually
         gamVal = Val(txtGamma(y))
         If (txtGamma(0) = txtGamma(1)) And (txtGamma(1) = txtGamma(2)) Then
             picChart.ForeColor = RGB(0, 0, 255)
@@ -548,25 +549,30 @@ Private Sub updatePreview()
             End Select
             
         End If
+        
         prevX = 0
         prevY = yHeight
         curX = 0
         curY = yHeight
-    For x = 0 To xWidth
-        tmpVal = x / xWidth
-        tmpVal = tmpVal ^ (1 / gamVal)
-        tmpVal = yHeight - (tmpVal * yHeight)
-        curY = tmpVal
-        curX = x
-        'picChart.Line (curX, curY)-(prevX, prevY)
-        DrawLineWuAA picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
-        prevX = curX
-        prevY = curY
-    Next x
+    
+        'Draw the next channel (with antialiasing!)
+        For x = 0 To xWidth
+            tmpVal = x / xWidth
+            tmpVal = tmpVal ^ (1 / gamVal)
+            tmpVal = yHeight - (tmpVal * yHeight)
+            curY = tmpVal
+            curX = x
+            DrawLineWuAA picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+            prevX = curX
+            prevY = curY
+        Next x
+        
     Next y
     
     picChart.Picture = picChart.Image
     picChart.Refresh
 
+    'Once the chart is done, redraw the gamma preview as well
     GammaCorrect CSng(Val(txtGamma(0))), CSng(Val(txtGamma(1))), CSng(Val(txtGamma(2))), True, fxPreview
+    
 End Sub
