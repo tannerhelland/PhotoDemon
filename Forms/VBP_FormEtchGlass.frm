@@ -393,7 +393,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     fxTurbulence = 1.01 - fxTurbulence
         
     'Sin and cosine look-up tables
-    Dim sinTable(0 To 255) As Double, cosTable(0 To 255) As Double
+    Dim sinTable(0 To 255) As Single, cosTable(0 To 255) As Single
     
     'Populate the look-up tables
     Dim fxAngle As Double
