@@ -150,8 +150,8 @@ Begin VB.Form FormSmartBlur
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -342,7 +342,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
         If gRadius = 0 Then gRadius = 1
     End If
     
-    CreateGaussianBlurLayer gRadius, srcLayer, gaussLayer, toPreview, 3
+    CreateGaussianBlurLayer gRadius, srcLayer, gaussLayer, toPreview, finalY * 2 + finalX
         
     'Now that we have a gaussian layer created in gaussLayer, we can point arrays toward it and the source layer
     Dim dstImageData() As Byte
@@ -419,7 +419,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
         
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalX * 2)
+            If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalY * 2)
         End If
     Next x
         

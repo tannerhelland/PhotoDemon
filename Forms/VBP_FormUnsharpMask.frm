@@ -137,8 +137,8 @@ Begin VB.Form FormUnsharpMask
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -326,7 +326,7 @@ Public Sub UnsharpMask(ByVal umRadius As Long, ByVal umAmount As Long, ByVal umT
         If umRadius = 0 Then umRadius = 1
     End If
     
-    CreateGaussianBlurLayer umRadius, workingLayer, srcLayer, toPreview, 3
+    CreateGaussianBlurLayer umRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX
     
     'Now that we have a gaussian layer created in workingLayer, we can point arrays toward it and the source layer
     Dim dstImageData() As Byte
@@ -419,7 +419,7 @@ Public Sub UnsharpMask(ByVal umRadius As Long, ByVal umAmount As Long, ByVal umT
                 
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalX * 2)
+            If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalY * 2)
         End If
     Next x
     

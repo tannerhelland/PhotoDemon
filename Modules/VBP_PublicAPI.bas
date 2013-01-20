@@ -25,6 +25,15 @@ Public Type SAFEARRAY2D
     Bounds(1)  As SAFEARRAYBOUND
 End Type
 
+Public Type SAFEARRAY1D
+    cDims      As Integer
+    fFeatures  As Integer
+    cbElements As Long
+    cLocks     As Long
+    pvData     As Long
+    cElements As Long
+    lBound   As Long
+End Type
 
 'Drawing calls
 Public Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal rastOp As Long) As Boolean

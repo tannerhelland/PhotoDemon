@@ -212,12 +212,12 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
     
     CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
     
-    'srcLayer.eraseLayer
-    'Set srcLayer = Nothing
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
     finalizeImageData toPreview, dstPic
-        
+            
 End Sub
 
 Private Sub Form_Activate()

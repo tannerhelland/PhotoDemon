@@ -13,7 +13,7 @@ Attribute VB_Name = "Filters_Miscellaneous"
 Option Explicit
 
 'Given two layers, fill one with a gaussian-blur version of the other.
-Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = 2)
+Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1)
             
     'Create a local array and point it at the pixel data of the destination image
     Dim dstImageData() As Byte
@@ -63,12 +63,16 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    SetProgBarMax finalX * modifyProgBarMax
+    If modifyProgBarMax = -1 Then
+        SetProgBarMax finalY + finalY
+    Else
+        SetProgBarMax modifyProgBarMax
+    End If
     progBarCheck = findBestProgBarValue()
     
     'Create a one-dimensional Gaussian kernel using the requested radius
-    Dim gKernel() As Double
-    ReDim gKernel(-gRadius To gRadius) As Double
+    Dim gKernel() As Single
+    ReDim gKernel(-gRadius To gRadius) As Single
     
     Dim numPixels As Long
     numPixels = (gRadius * 2) + 1
@@ -127,6 +131,44 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     'Color variables - in this case, sums for each color component
     Dim rSum As Double, gSum As Double, bSum As Double, aSum As Double
     
+    'To increase speed, we now build a look-up table of gaussian values.  This can be used in place of floating-point multiplication.
+    Dim glLookup() As Single
+    ReDim glLookup(0 To 255, gLB To gUB) As Single
+    For x = gLB To gUB
+        For y = 0 To 255
+            glLookup(y, x) = y * gKernel(x)
+        Next y
+    Next x
+        
+    'Next, prepare 1D arrays that will be used to point at source and destination pixel data.  VB accesses 1D arrays more quickly
+    ' than 2D arrays, and this technique shaves precious time off the final calculation.
+    Dim scanlineSize As Long
+    scanlineSize = srcLayer.getLayerArrayWidth
+    Dim origDIBPointer As Long
+    origDIBPointer = srcLayer.getLayerDIBits
+    Dim dstDIBPointer As Long
+    dstDIBPointer = gaussLayer.getLayerDIBits
+    
+    Dim tmpImageData() As Byte
+    Dim tmpSA As SAFEARRAY1D
+    With tmpSA
+        .cbElements = 1
+        .cDims = 1
+        .lBound = 0
+        .cElements = scanlineSize
+        .pvData = origDIBPointer
+    End With
+        
+    Dim tmpDstImageData() As Byte
+    Dim tmpDstSA As SAFEARRAY1D
+    With tmpDstSA
+        .cbElements = 1
+        .cDims = 1
+        .lBound = 0
+        .cElements = scanlineSize
+        .pvData = dstDIBPointer
+    End With
+    
     'We now convolve the image twice - once in the horizontal direction, then again in the vertical direction.  This is
     ' referred to as "separable" convolution, and it's much faster than than traditional convolution, especially for
     ' large radii (the exact speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel
@@ -135,39 +177,50 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     'First, perform a horizontal convolution.
         
     Dim chkX As Long
-    Dim curFactor As Double
-        
+    
     'Loop through each pixel in the image, converting values as we go
+    For y = 0 To finalY
+        
+        'Accessing multidimensional arrays in VB is slow.  We cheat this by pointing a one-dimensional array
+        ' at the current source and destination lines, then using that to access pixel data.
+        tmpSA.pvData = origDIBPointer + scanlineSize * y
+        CopyMemory ByVal VarPtrArray(tmpImageData()), VarPtr(tmpSA), 4
+        
+        tmpDstSA.pvData = dstDIBPointer + scanlineSize * y
+        CopyMemory ByVal VarPtrArray(tmpDstImageData()), VarPtr(tmpDstSA), 4
+                
     For x = initX To finalX
+        
         QuickVal = x * qvDepth
-    For y = initY To finalY
     
         rSum = 0
         gSum = 0
         bSum = 0
-        
+                
         'Apply the convolution to the intermediate gaussian array
         For i = gLB To gUB
-        
-            curFactor = gKernel(i)
+                        
             chkX = x + i
             
             'We need to give special treatment to pixels that lie off the image
-            If chkX < initX Then chkX = initX
-            If chkX > finalX Then chkX = finalX
-                
+            If chkX < initX Then
+                chkX = initX
+            Else
+                If chkX > finalX Then chkX = finalX
+            End If
+            
             QuickValInner = chkX * qvDepth
                 
-            rSum = rSum + srcImageData(QuickValInner + 2, y) * curFactor
-            gSum = gSum + srcImageData(QuickValInner + 1, y) * curFactor
-            bSum = bSum + srcImageData(QuickValInner, y) * curFactor
-                    
+            rSum = rSum + glLookup(tmpImageData(QuickValInner + 2), i)
+            gSum = gSum + glLookup(tmpImageData(QuickValInner + 1), i)
+            bSum = bSum + glLookup(tmpImageData(QuickValInner), i)
+       
         Next i
                 
         'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
-        GaussImageData(QuickVal + 2, y) = rSum
-        GaussImageData(QuickVal + 1, y) = gSum
-        GaussImageData(QuickVal, y) = bSum
+        tmpDstImageData(QuickVal + 2) = rSum
+        tmpDstImageData(QuickVal + 1) = gSum
+        tmpDstImageData(QuickVal) = bSum
         
         'If alpha must be checked, do it now
         If chkAlpha Then
@@ -176,30 +229,43 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
             
             For i = gLB To gUB
             
-                curFactor = gKernel(i)
+                'curFactor = gKernel(i)
                 chkX = x + i
                 If chkX < initX Then chkX = initX
                 If chkX > finalX Then chkX = finalX
-                aSum = aSum + srcImageData(chkX * qvDepth + 3, y) * curFactor
+                aSum = aSum + glLookup(tmpImageData(chkX * qvDepth + 3), i)
                 
             Next i
             
-            GaussImageData(QuickVal + 3, y) = aSum
+            tmpDstImageData(QuickVal + 3) = aSum
             
         End If
         
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
-        End If
     Next x
+        If Not suppressMessages Then
+            If (y And progBarCheck) = 0 Then SetProgBarVal y
+        End If
+    Next y
+    
+    CopyMemory ByVal VarPtrArray(tmpImageData()), 0&, 4
+    CopyMemory ByVal VarPtrArray(tmpDstImageData()), 0&, 4
+    
+    dstDIBPointer = dstLayer.getLayerDIBits
+    tmpDstSA.pvData = dstDIBPointer
     
     'The source array now contains a horizontally convolved image.  We now need to convolve it vertically.
     Dim chkY As Long
     
-    For x = initX To finalX
-        QuickVal = x * qvDepth
     For y = initY To finalY
+    
+        'Accessing multidimensional arrays in VB is slow.  We cheat this by pointing a one-dimensional array
+        ' at the current destination line, then using that to access pixel data.
+        tmpDstSA.pvData = dstDIBPointer + scanlineSize * y
+        CopyMemory ByVal VarPtrArray(tmpDstImageData()), VarPtr(tmpDstSA), 4
+    
+    For x = initX To finalX
+    
+        QuickVal = x * qvDepth
     
         rSum = 0
         gSum = 0
@@ -209,47 +275,51 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
         'Apply the convolution to the destination array, using the gaussian array as the source.
         For i = gLB To gUB
         
-            curFactor = gKernel(i)
             chkY = y + i
             
             'We need to give special treatment to pixels that lie off the image
-            If chkY < initY Then chkY = initY
-            If chkY > finalY Then chkY = finalY
-                        
-            rSum = rSum + GaussImageData(QuickVal + 2, chkY) * curFactor
-            gSum = gSum + GaussImageData(QuickVal + 1, chkY) * curFactor
-            bSum = bSum + GaussImageData(QuickVal, chkY) * curFactor
+            If chkY < initY Then
+                chkY = initY
+            Else
+                If chkY > finalY Then chkY = finalY
+            End If
+                                    
+            rSum = rSum + glLookup(GaussImageData(QuickVal + 2, chkY), i)
+            gSum = gSum + glLookup(GaussImageData(QuickVal + 1, chkY), i)
+            bSum = bSum + glLookup(GaussImageData(QuickVal, chkY), i)
                     
         Next i
         
         'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
-        dstImageData(QuickVal + 2, y) = rSum
-        dstImageData(QuickVal + 1, y) = gSum
-        dstImageData(QuickVal, y) = bSum
+        tmpDstImageData(QuickVal + 2) = rSum
+        tmpDstImageData(QuickVal + 1) = gSum
+        tmpDstImageData(QuickVal) = bSum
         
         'If alpha must be checked, do it now
         If chkAlpha Then
         
             'Apply the convolution to the destination array, using the gaussian array as the source.
             For i = gLB To gUB
-                curFactor = gKernel(i)
+                'curFactor = gKernel(i)
                 chkY = y + i
                 If chkY < initY Then chkY = initY
                 If chkY > finalY Then chkY = finalY
-                aSum = aSum + GaussImageData(QuickVal + 3, chkY) * curFactor
+                aSum = aSum + glLookup(GaussImageData(QuickVal + 3, chkY), i)
             Next i
         
-            dstImageData(QuickVal + 3, y) = aSum
+            tmpDstImageData(QuickVal + 3) = aSum
         
         End If
                 
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal (x + finalX)
-        End If
     Next x
-    
+        If Not suppressMessages Then
+            If (y And progBarCheck) = 0 Then SetProgBarVal (y + finalY)
+        End If
+    Next y
+        
     'With our work complete, point all ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(tmpDstImageData()), 0&, 4
+    
     CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
     Erase GaussImageData
     
@@ -260,8 +330,8 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     Erase dstImageData
     
     'We can also erase our intermediate gaussian layer
-    'gaussLayer.eraseLayer
-    'Set gaussLayer = Nothing
+    gaussLayer.eraseLayer
+    Set gaussLayer = Nothing
         
 End Sub
 
