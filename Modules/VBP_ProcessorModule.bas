@@ -636,7 +636,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 If LoadForm Then
                     FormGamma.Show vbModal, FormMain
                 Else
-                    FormGamma.GammaCorrect CSng(pOPCODE), CByte(pOPCODE2)
+                    FormGamma.GammaCorrect CSng(pOPCODE), CSng(pOPCODE2), CSng(pOPCODE3)
                 End If
             Case Invert
                 MenuInvert

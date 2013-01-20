@@ -24,6 +24,105 @@ Begin VB.Form FormGamma
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.TextBox txtGamma 
+      Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Index           =   2
+      Left            =   11160
+      MaxLength       =   4
+      TabIndex        =   14
+      Text            =   "1.00"
+      Top             =   4620
+      Width           =   615
+   End
+   Begin VB.HScrollBar hsGamma 
+      Height          =   255
+      Index           =   2
+      Left            =   6120
+      Max             =   300
+      Min             =   1
+      TabIndex        =   13
+      Top             =   4680
+      Value           =   100
+      Width           =   4935
+   End
+   Begin VB.TextBox txtGamma 
+      Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Index           =   1
+      Left            =   11160
+      MaxLength       =   4
+      TabIndex        =   11
+      Text            =   "1.00"
+      Top             =   3780
+      Width           =   615
+   End
+   Begin VB.HScrollBar hsGamma 
+      Height          =   255
+      Index           =   1
+      Left            =   6120
+      Max             =   300
+      Min             =   1
+      TabIndex        =   10
+      Top             =   3840
+      Value           =   100
+      Width           =   4935
+   End
+   Begin VB.CheckBox chkUnison 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      Caption         =   " keep all colors in sync"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   9
+      Top             =   5160
+      Value           =   1  'Checked
+      Width           =   4935
+   End
+   Begin VB.PictureBox picChart 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   2415
+      Left            =   8280
+      ScaleHeight     =   159
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   231
+      TabIndex        =   7
+      Top             =   120
+      Width           =   3495
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -44,11 +143,12 @@ Begin VB.Form FormGamma
    End
    Begin VB.HScrollBar hsGamma 
       Height          =   255
+      Index           =   0
       Left            =   6120
-      Max             =   200
+      Max             =   300
       Min             =   1
-      TabIndex        =   3
-      Top             =   3240
+      TabIndex        =   2
+      Top             =   3000
       Value           =   100
       Width           =   4935
    End
@@ -65,40 +165,85 @@ Begin VB.Form FormGamma
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
+      Index           =   0
       Left            =   11160
       MaxLength       =   4
-      TabIndex        =   4
+      TabIndex        =   3
       Text            =   "1.00"
-      Top             =   3180
+      Top             =   2940
       Width           =   615
    End
-   Begin VB.ComboBox CboChannel 
-      BackColor       =   &H00FFFFFF&
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   6
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "blue:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   2160
-      Width           =   1935
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   3
+      Left            =   6000
+      TabIndex        =   15
+      Top             =   4320
+      Width           =   540
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "green:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   3480
+      Width           =   690
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "new gamma curve:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   2
+      Left            =   6000
       TabIndex        =   8
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      Top             =   1170
+      Width           =   2040
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -112,14 +257,14 @@ Begin VB.Form FormGamma
       EndProperty
       Height          =   855
       Left            =   0
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   5760
       Width           =   12135
    End
-   Begin VB.Label Label2 
+   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "strength:"
+      Caption         =   "red:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -131,30 +276,11 @@ Begin VB.Form FormGamma
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   1
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2880
-      Width           =   960
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "channel:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   1800
-      Width           =   900
+      TabIndex        =   4
+      Top             =   2640
+      Width           =   435
    End
 End
 Attribute VB_Name = "FormGamma"
@@ -166,8 +292,8 @@ Attribute VB_Exposed = False
 'Gamma Correction Handler
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 12/May/01
-'Last updated: 09/September/12
-'Last update: rewrote all code against the new layer class
+'Last updated: 19/January/13
+'Last update: added a gamma chart to the form
 '
 'Updated version of the gamma handler; fully optimized, it uses a look-up
 ' table and can correct any color channel.
@@ -176,9 +302,23 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Update the preview when the user changes the channel combo box
-Private Sub CboChannel_Click()
-    GammaCorrect CSng(Val(txtGamma)), CByte(CboChannel.ListIndex), True, fxPreview
+Dim userChange As Boolean
+
+Private Sub chkUnison_Click()
+    
+    If CBool(chkUnison) Then
+        Dim newGamma As Double
+        newGamma = CSng(hsGamma(0) + hsGamma(1) + hsGamma(2)) / 3
+    
+        userChange = False
+        hsGamma(0) = newGamma
+        hsGamma(1) = newGamma
+        hsGamma(2) = newGamma
+        userChange = True
+    End If
+    
+    updatePreview
+    
 End Sub
 
 'CANCEL button
@@ -189,36 +329,35 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
-    If EntryValid(txtGamma, hsGamma.Min / 100, hsGamma.Max / 100) Then
-        Me.Visible = False
-        Process GammaCorrection, CSng(Val(txtGamma)), CByte(CboChannel.ListIndex)
-        Unload Me
-    Else
-        AutoSelectText txtGamma
-    End If
+    Dim i As Long
+    
+    For i = 0 To 2
+        If Not EntryValid(txtGamma(i), hsGamma(i).Min / 100, hsGamma(i).Max / 100, True, True) Then
+            AutoSelectText txtGamma(i)
+            Exit Sub
+        End If
+    Next i
+        
+    Me.Visible = False
+    Process GammaCorrection, CSng(Val(txtGamma(0))), CSng(Val(txtGamma(1))), CSng(Val(txtGamma(2)))
+    Unload Me
 End Sub
 
 Private Sub Form_Activate()
     
-    'Populate the channels that gamma correction can operate on
-    CboChannel.AddItem "RGB", 0
-    CboChannel.AddItem "Red", 1
-    CboChannel.AddItem "Green", 2
-    CboChannel.AddItem "Blue", 3
-    CboChannel.ListIndex = 0
-    DoEvents
+    userChange = True
         
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
     'Finally, render a preview
-    GammaCorrect CSng(Val(txtGamma)), CByte(CboChannel.ListIndex), True, fxPreview
+    updatePreview
     
 End Sub
 
 'Basic gamma correction.  It's a simple function - use an exponent to adjust R/G/B values.
 ' Inputs: new gamma level, which channels to adjust (r/g/b/all), and optional preview information
-Public Sub GammaCorrect(ByVal Gamma As Double, ByVal Method As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bGamma As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
      
     If toPreview = False Then Message "Adjusting gamma values..."
     
@@ -250,19 +389,28 @@ Public Sub GammaCorrect(ByVal Gamma As Double, ByVal Method As Byte, Optional By
     Dim r As Long, g As Long, b As Long
     
     'Gamma can be easily applied using a look-up table
-    Dim gLookup(0 To 255) As Byte
+    Dim gLookup(0 To 2, 0 To 255) As Byte
     Dim tmpVal As Double
     
+    For y = 0 To 2
     For x = 0 To 255
         tmpVal = x / 255
-        tmpVal = tmpVal ^ (1 / Gamma)
+        Select Case y
+            Case 0
+                tmpVal = tmpVal ^ (1 / rGamma)
+            Case 1
+                tmpVal = tmpVal ^ (1 / gGamma)
+            Case 2
+                tmpVal = tmpVal ^ (1 / bGamma)
+        End Select
         tmpVal = tmpVal * 255
         
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
         
-        gLookup(x) = tmpVal
+        gLookup(y, x) = tmpVal
     Next x
+    Next y
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -273,24 +421,11 @@ Public Sub GammaCorrect(ByVal Gamma As Double, ByVal Method As Byte, Optional By
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
-        
-        'Correct the gamma values according to the channel requested by the user
-        If Method = 0 Then
-            r = gLookup(r)
-            g = gLookup(g)
-            b = gLookup(b)
-        ElseIf Method = 1 Then
-            r = gLookup(r)
-        ElseIf Method = 2 Then
-            g = gLookup(g)
-        ElseIf Method = 3 Then
-            b = gLookup(b)
-        End If
-        
+                
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, y) = gLookup(0, r)
+        ImageData(QuickVal + 1, y) = gLookup(1, g)
+        ImageData(QuickVal, y) = gLookup(2, b)
         
     Next y
         If toPreview = False Then
@@ -312,24 +447,126 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'When the horizontal scroll bar is moved, change the text box to match
-Private Sub hsGamma_Change()
-    txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
-    txtGamma.Refresh
-    GammaCorrect CSng(Val(txtGamma)), CByte(CboChannel.ListIndex), True, fxPreview
+Private Sub hsGamma_Change(Index As Integer)
+    
+    copyToTextBoxF CSng(hsGamma(Index).Value) / 100, txtGamma(Index)
+        
+    If userChange Then
+        userChange = False
+        
+        If CBool(chkUnison) Then
+            Select Case Index
+                Case 0
+                    hsGamma(1).Value = hsGamma(0).Value
+                    hsGamma(2).Value = hsGamma(0).Value
+                Case 1
+                    hsGamma(0).Value = hsGamma(1).Value
+                    hsGamma(2).Value = hsGamma(1).Value
+                Case 2
+                    hsGamma(0).Value = hsGamma(2).Value
+                    hsGamma(1).Value = hsGamma(2).Value
+            End Select
+        End If
+        
+        userChange = True
+        
+        updatePreview
+    End If
+        
 End Sub
 
-Private Sub hsGamma_Scroll()
-    txtGamma.Text = Format(CSng(hsGamma.Value) / 100, "0.00")
-    txtGamma.Refresh
-    GammaCorrect CSng(Val(txtGamma)), CByte(CboChannel.ListIndex), True, fxPreview
+Private Sub hsGamma_Scroll(Index As Integer)
+    
+    copyToTextBoxF CSng(hsGamma(Index).Value) / 100, txtGamma(Index)
+        
+    If userChange Then
+        userChange = False
+        
+        If CBool(chkUnison) Then
+            Select Case Index
+                Case 0
+                    hsGamma(1).Value = hsGamma(0).Value
+                    hsGamma(2).Value = hsGamma(0).Value
+                Case 1
+                    hsGamma(0).Value = hsGamma(1).Value
+                    hsGamma(2).Value = hsGamma(1).Value
+                Case 2
+                    hsGamma(0).Value = hsGamma(2).Value
+                    hsGamma(1).Value = hsGamma(2).Value
+            End Select
+        End If
+        
+        userChange = True
+        
+        updatePreview
+    End If
 End Sub
 
-Private Sub txtGamma_GotFocus()
+Private Sub txtGamma_GotFocus(Index As Integer)
     AutoSelectText txtGamma
 End Sub
 
 'If the user changes the gamma value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
-Private Sub txtGamma_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtGamma, , True
-    If EntryValid(txtGamma, hsGamma.Min / 100, hsGamma.Max / 100, False, False) Then hsGamma.Value = Val(txtGamma) * 100
+Private Sub txtGamma_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
+    textValidate txtGamma(Index), , True
+    If EntryValid(txtGamma(Index), hsGamma(Index).Min / 100, hsGamma(Index).Max / 100, False, False) And userChange Then hsGamma(Index).Value = Val(txtGamma(Index)) * 100
+End Sub
+
+'Redraw the preview effect and the gamma chart
+Private Sub updatePreview()
+    
+    Dim prevX As Double, prevY As Double
+    Dim curX As Double, curY As Double
+    
+    Dim x As Long, y As Long
+    Dim xWidth As Long, yHeight As Long
+    xWidth = picChart.ScaleWidth
+    yHeight = picChart.ScaleHeight
+        
+    Dim tmpVal As Double
+    
+    picChart.Picture = LoadPicture("")
+    
+    picChart.ForeColor = RGB(127, 127, 127)
+    DrawLineWuAA picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
+        
+    Dim gamVal As Double
+    
+    For y = 0 To 2
+        gamVal = Val(txtGamma(y))
+        If (txtGamma(0) = txtGamma(1)) And (txtGamma(1) = txtGamma(2)) Then
+            picChart.ForeColor = RGB(0, 0, 255)
+        Else
+        
+            Select Case y
+                Case 0
+                    picChart.ForeColor = RGB(255, 0, 0)
+                Case 1
+                    picChart.ForeColor = RGB(0, 192, 0)
+                Case 2
+                    picChart.ForeColor = RGB(0, 0, 255)
+            End Select
+            
+        End If
+        prevX = 0
+        prevY = yHeight
+        curX = 0
+        curY = yHeight
+    For x = 0 To xWidth
+        tmpVal = x / xWidth
+        tmpVal = tmpVal ^ (1 / gamVal)
+        tmpVal = yHeight - (tmpVal * yHeight)
+        curY = tmpVal
+        curX = x
+        'picChart.Line (curX, curY)-(prevX, prevY)
+        DrawLineWuAA picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+        prevX = curX
+        prevY = curY
+    Next x
+    Next y
+    
+    picChart.Picture = picChart.Image
+    picChart.Refresh
+
+    GammaCorrect CSng(Val(txtGamma(0))), CSng(Val(txtGamma(1))), CSng(Val(txtGamma(2))), True, fxPreview
 End Sub
