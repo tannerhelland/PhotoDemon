@@ -186,18 +186,19 @@ Option Explicit
     Public Const DistortSwirl As Long = 712
     '-Distort: Lens distortion/correction
     Public Const DistortLens As Long = 713
+    Public Const DistortLensFix As Long = 714
     '-Distort: Water ripple
-    Public Const DistortRipple As Long = 714
+    Public Const DistortRipple As Long = 715
     '-Distort: Pinch and whirl
-    Public Const DistortPinchAndWhirl As Long = 715
+    Public Const DistortPinchAndWhirl As Long = 716
     '-Distort: Waves
-    Public Const DistortWaves As Long = 716
+    Public Const DistortWaves As Long = 717
     '-Distort: Etched glass
-    Public Const DistortFiguredGlass As Long = 717
+    Public Const DistortFiguredGlass As Long = 718
     '-Distort: Kaleidoscope
-    Public Const DistortKaleidoscope As Long = 718
+    Public Const DistortKaleidoscope As Long = 719
     '-Distort: Polar conversion
-    Public Const ConvertPolar As Long = 719
+    Public Const ConvertPolar As Long = 720
     
     'Other filters; numbers 800-899
     '-Compound invert
@@ -746,6 +747,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 Else
                     FormLens.ApplyLensDistortion CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
                 End If
+            Case DistortLensFix
+                If LoadForm Then
+                    FormLensCorrect.Show vbModal, FormMain
+                Else
+                    FormLensCorrect.ApplyLensCorrection CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CLng(pOPCODE4), CBool(pOPCODE5)
+                End If
             Case DistortRipple
                 If LoadForm Then
                     FormRipple.Show vbModal, FormMain
@@ -1226,7 +1233,9 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
         Case DistortSwirl
             GetNameOfProcess = "Swirl"
         Case DistortLens
-            GetNameOfProcess = "Lens distortion"
+            GetNameOfProcess = "Apply lens distortion"
+        Case DistortLensFix
+            GetNameOfProcess = "Correct lens distortion"
         Case DistortRipple
             GetNameOfProcess = "Ripple"
         Case DistortPinchAndWhirl

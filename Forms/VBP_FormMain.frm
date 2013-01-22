@@ -40,9 +40,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -1078,36 +1078,40 @@ Begin VB.MDIForm FormMain
          Caption         =   "Distort"
          Index           =   2
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Figured glass (dents)..."
+            Caption         =   "Apply lens distortion..."
             Index           =   0
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Kaleiodoscope..."
+            Caption         =   "Correct existing lens distortion..."
             Index           =   1
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Lens distortion (fish-eye)..."
+            Caption         =   "Figured glass (dents)..."
             Index           =   2
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Pinch and whirl..."
+            Caption         =   "Kaleiodoscope..."
             Index           =   3
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Polar conversion..."
+            Caption         =   "Pinch and whirl..."
             Index           =   4
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Ripple..."
+            Caption         =   "Polar conversion..."
             Index           =   5
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Swirl..."
+            Caption         =   "Ripple..."
             Index           =   6
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Waves..."
+            Caption         =   "Swirl..."
             Index           =   7
+         End
+         Begin VB.Menu MnuDistortFilter 
+            Caption         =   "Waves..."
+            Index           =   8
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1974,36 +1978,40 @@ Private Sub MnuDistortFilter_Click(Index As Integer)
 
     Select Case Index
     
-        'Etched glass
+        'Apply lens distort
         Case 0
+            Process DistortLens, , , , , , , , , , True
+        
+        'Remove lens distort
+        Case 1
+            Process DistortLensFix, , , , , , , , , , True
+            
+        'Etched glass
+        Case 2
             Process DistortFiguredGlass, , , , , , , , , , True
         
         'Kaleidoscope
-        Case 1
-            Process DistortKaleidoscope, , , , , , , , , , True
-            
-        'Lens distort
-        Case 2
-            Process DistortLens, , , , , , , , , , True
-        
-        'Pinch and whirl
         Case 3
+            Process DistortKaleidoscope, , , , , , , , , , True
+                
+        'Pinch and whirl
+        Case 4
             Process DistortPinchAndWhirl, , , , , , , , , , True
         
         'Polar conversion
-        Case 4
+        Case 5
             Process ConvertPolar, , , , , , , , , , True
         
         'Ripple
-        Case 5
+        Case 6
             Process DistortRipple, , , , , , , , , , True
     
         'Swirl
-        Case 6
+        Case 7
             Process DistortSwirl, , , , , , , , , , True
         
         'Waves
-        Case 7
+        Case 8
             Process DistortWaves, , , , , , , , , , True
     
     End Select

@@ -256,14 +256,15 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "SMARTBLUR", 5, 3, 8      'Smart Blur
     AddMenuIcon "DISTORT", 5, 4      'Distort
         '--> Distort sub-menu
-        AddMenuIcon "FIGGLASS", 5, 4, 0       'Figured glass
-        AddMenuIcon "KALEIDOSCOPE", 5, 4, 1   'Kaleidoscope
-        AddMenuIcon "LENSDISTORT", 5, 4, 2    'Lens distortion (fish-eye)
-        AddMenuIcon "PINCHWHIRL", 5, 4, 3     'Pinch and whirl
-        AddMenuIcon "POLAR", 5, 4, 4          'Polar conversion
-        AddMenuIcon "RIPPLE", 5, 4, 5         'Ripple
-        AddMenuIcon "SWIRL", 5, 4, 6          'Swirl
-        AddMenuIcon "WAVES", 5, 4, 7          'Waves
+        AddMenuIcon "LENSDISTORT", 5, 4, 0    'Apply lens distortion
+        AddMenuIcon "FIXLENS", 5, 4, 1        'Remove or correct existing lens distortion
+        AddMenuIcon "FIGGLASS", 5, 4, 2       'Figured glass
+        AddMenuIcon "KALEIDOSCOPE", 5, 4, 3   'Kaleidoscope
+        AddMenuIcon "PINCHWHIRL", 5, 4, 4     'Pinch and whirl
+        AddMenuIcon "POLAR", 5, 4, 5          'Polar conversion
+        AddMenuIcon "RIPPLE", 5, 4, 6         'Ripple
+        AddMenuIcon "SWIRL", 5, 4, 7          'Swirl
+        AddMenuIcon "WAVES", 5, 4, 8          'Waves
         
     AddMenuIcon "EDGES", 5, 5        'Edges
         '--> Edges sub-menu

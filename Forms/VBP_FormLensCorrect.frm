@@ -1,9 +1,9 @@
 VERSION 5.00
-Begin VB.Form FormLens 
+Begin VB.Form FormLensCorrect 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Apply Lens Distortion"
+   Caption         =   " Correct or Fix Lens Distortion"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
@@ -25,6 +25,56 @@ Begin VB.Form FormLens
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cmbEdges 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   16
+      Top             =   3735
+      Width           =   4860
+   End
+   Begin VB.HScrollBar hsZoom 
+      Height          =   255
+      LargeChange     =   10
+      Left            =   6120
+      Max             =   300
+      Min             =   100
+      TabIndex        =   14
+      Top             =   2100
+      Value           =   150
+      Width           =   4815
+   End
+   Begin VB.TextBox txtZoom 
+      Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   11040
+      MaxLength       =   6
+      TabIndex        =   13
+      Text            =   "1.50"
+      Top             =   2040
+      Width           =   735
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -59,8 +109,8 @@ Begin VB.Form FormLens
       Left            =   11040
       MaxLength       =   3
       TabIndex        =   9
-      Text            =   "50"
-      Top             =   2940
+      Text            =   "100"
+      Top             =   2820
       Width           =   735
    End
    Begin VB.HScrollBar hsRadius 
@@ -69,8 +119,8 @@ Begin VB.Form FormLens
       Max             =   100
       Min             =   1
       TabIndex        =   8
-      Top             =   3000
-      Value           =   50
+      Top             =   2880
+      Value           =   100
       Width           =   4815
    End
    Begin VB.OptionButton OptInterpolate 
@@ -91,7 +141,7 @@ Begin VB.Form FormLens
       Index           =   0
       Left            =   6120
       TabIndex        =   7
-      Top             =   3840
+      Top             =   4650
       Value           =   -1  'True
       Width           =   1095
    End
@@ -113,10 +163,10 @@ Begin VB.Form FormLens
       Index           =   1
       Left            =   7560
       TabIndex        =   6
-      Top             =   3840
+      Top             =   4650
       Width           =   2535
    End
-   Begin VB.TextBox txtIndex 
+   Begin VB.TextBox txtStrength 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -132,19 +182,19 @@ Begin VB.Form FormLens
       Left            =   11040
       MaxLength       =   6
       TabIndex        =   4
-      Text            =   "1.20"
-      Top             =   2160
+      Text            =   "3.00"
+      Top             =   1200
       Width           =   735
    End
-   Begin VB.HScrollBar hsIndex 
+   Begin VB.HScrollBar hsStrength 
       Height          =   255
       LargeChange     =   10
       Left            =   6120
-      Max             =   500
+      Max             =   1000
       Min             =   100
       TabIndex        =   3
-      Top             =   2220
-      Value           =   120
+      Top             =   1260
+      Value           =   300
       Width           =   4815
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -155,6 +205,49 @@ Begin VB.Form FormLens
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "if pixels lie outside the corrected area..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   17
+      Top             =   3360
+      Width           =   4170
+   End
+   Begin VB.Label Label1 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "correction zoom:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   15
+      Top             =   1680
+      Width           =   1800
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -180,7 +273,7 @@ Begin VB.Form FormLens
       Height          =   285
       Left            =   6000
       TabIndex        =   10
-      Top             =   2640
+      Top             =   2520
       Width           =   2145
    End
    Begin VB.Label lblInterpolation 
@@ -202,15 +295,15 @@ Begin VB.Form FormLens
       Height          =   285
       Left            =   6000
       TabIndex        =   5
-      Top             =   3480
+      Top             =   4290
       Width           =   1845
    End
-   Begin VB.Label lblAmount 
+   Begin VB.Label lblStrength 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "lens strength (refractive index):"
+      Caption         =   "correction strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -224,33 +317,31 @@ Begin VB.Form FormLens
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   1800
-      Width           =   3330
+      Top             =   840
+      Width           =   2085
    End
 End
-Attribute VB_Name = "FormLens"
+Attribute VB_Name = "FormLensCorrect"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Lens Correction and Distortion
-'Copyright ©2012-2013 by Tanner Helland
-'Created: 05/January/13
-'Last updated: 15/January/13
-'Last update: use pdFilterSupport class for better interpolation and edge handling
+'Fix Lens Distort Tool
+'Copyright ©2011-2013 by Tanner Helland
+'Created: 22/January/13
+'Last updated: 22/January/13
+'Last update: initial build
 '
-'This tool allows the user to apply a lens distortion to an image.  Bilinear interpolation
-' (via reverse-mapping) is available for high-quality lensing.
+'This tool allows the user to correct an existing lens distortion on an image.  Bilinear interpolation
+' (via reverse-mapping) is available for a higher quality correction.
 '
-'For correcting lens distortion, please see FormLensCorrect.
+'A zoom parameter is also provided to help the user determine how much of the image they are willing
+' to sacrifice as part of the correction.  If the distort is quite high, there is no real way to
+' correct the image without cutting off parts of it (see sample images at http://photo.net/learn/fisheye/).
 '
-'At present, the tool assumes that you want to refract the image around its centerpoint.  The code is already set up to handle
-' alternative center points - there simply needs to be a good user interface technique for establishing the center.
-'
-'Finally, the transformation used by this tool is a modified version of a transformation originally written by
-' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
-' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
+'For optimal quality, I suggest zooming out a ways, applying the correction, then cropping the resultant
+' image to the desired shape.
 '
 '***************************************************************************
 
@@ -258,6 +349,14 @@ Option Explicit
 
 'Use this to prevent the text box and scroll bar from updating each other in an endless loop
 Dim userChange As Boolean
+
+Private Sub cmbEdges_Click()
+    updatePreview
+End Sub
+
+Private Sub cmbEdges_Scroll()
+    updatePreview
+End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -268,8 +367,13 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(txtIndex * 100, hsIndex.Min, hsIndex.Max, True, True) Then
-        AutoSelectText txtIndex
+    If Not EntryValid(txtStrength * 100, hsStrength.Min, hsStrength.Max, True, True) Then
+        AutoSelectText txtStrength
+        Exit Sub
+    End If
+
+    If Not EntryValid(txtZoom * 100, hsZoom.Min, hsZoom.Max, True, True) Then
+        AutoSelectText txtZoom
         Exit Sub
     End If
 
@@ -281,22 +385,16 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptInterpolate(0) Then
-        Process DistortLens, CDbl(hsIndex / 100), hsRadius.Value, True
-    Else
-        Process DistortLens, CDbl(hsIndex / 100), hsRadius.Value, False
-    End If
+    Process DistortLensFix, CDbl(hsStrength / 100), CDbl(hsZoom / 100), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0)
     
     Unload Me
     
 End Sub
 
-'Apply a new lens distortion to an image
-Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Correct lens distortion in an image
+Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Double, ByVal lensRadius As Double, ByVal useBilinear As Boolean, ByVal edgeHandling As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    refractiveIndex = 1 / refractiveIndex
-
-    If toPreview = False Then Message "Projecting image through simulated lens..."
+    If toPreview = False Then Message "Correcting image distortion..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -322,7 +420,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
-            
+                
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
@@ -331,14 +429,14 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, EDGE_CLAMP, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
           
-    'Lensing requires some specialized variables
+    'Lens distort correction requires a number of specialized variables
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -347,72 +445,55 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     midY = CDbl(finalY - initY) / 2
     midY = midY + initY
     
-    'Calculation values
-    Dim sRadius As Double
-    Dim theta As Double, theta2 As Double
-    Dim xAngle As Double, yAngle As Double
-    Dim firstAngle As Double, secondAngle As Double
+    'Rotation values
+    Dim theta As Double, sRadius As Double, sRadius2 As Double, sDistance As Double
+    Dim r As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
-    Dim nX2 As Double, nY2 As Double
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
     Dim i As Long
     
-    'Radius is based off the smaller of the two dimensions - width or height
+    'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long
     tWidth = curLayerValues.Width
     tHeight = curLayerValues.Height
-    Dim sRadiusW As Double, sRadiusH As Double
-    Dim sRadiusW2 As Double, sRadiusH2 As Double
-    
-    sRadiusW = tWidth * (lensRadius / 100)
-    sRadiusW2 = sRadiusW * sRadiusW
-    sRadiusH = tHeight * (lensRadius / 100)
-    sRadiusH2 = sRadiusH * sRadiusH
-    
-    Dim sRadiusMult As Double
-    sRadiusMult = sRadiusW * sRadiusH
+    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
+              
+    Dim refDistance As Double
+    refDistance = sRadius * 2 / fixStrength
+              
+    sRadius = sRadius * (lensRadius / 100)
+    sRadius2 = sRadius * sRadius
               
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
-    
+                            
         'Remap the coordinates around a center point of (0, 0)
         nX = x - midX
         nY = y - midY
-        nX2 = nX * nX
-        nY2 = nY * nY
-                
-        'If the values are going to be out-of-bounds, simply maintain the current x and y values
-        If nY2 >= (sRadiusH2 - ((sRadiusH2 * nX2) / sRadiusW2)) Then
-            srcX = x
-            srcY = y
         
-        'Otherwise, reverse-map x and y back onto the original image using a reversed lens refraction calculation
+        'Calculate distance automatically
+        sDistance = (nX * nX) + (nY * nY)
+        
+        If sDistance <= sRadius2 Then
+            
+            sDistance = Sqr(sDistance)
+            r = sDistance / refDistance
+            
+            If r = 0 Then theta = 1 Else theta = Atn(r) / r
+            srcX = midX + theta * nX * fixZoom
+            srcY = midY + theta * nY * fixZoom
+            
         Else
         
-            'Calculate theta
-            theta = Sqr((1 - (nX2 / sRadiusW2) - (nY2 / sRadiusH2)) * sRadiusMult)
-            theta2 = theta * theta
-            
-            'Calculate the angle for x
-            xAngle = Acos(nX / Sqr(nX2 + theta2))
-            firstAngle = PI_HALF - xAngle
-            secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
-            secondAngle = PI_HALF - xAngle - secondAngle
-            srcX = x - Tan(secondAngle) * theta
-            
-            'Now do the same thing for y
-            yAngle = Acos(nY / Sqr(nY2 + theta2))
-            firstAngle = PI_HALF - yAngle
-            secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
-            secondAngle = PI_HALF - yAngle - secondAngle
-            srcY = y - Tan(secondAngle) * theta
+            srcX = x
+            srcY = y
             
         End If
         
@@ -420,7 +501,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
     Next x
@@ -439,6 +520,10 @@ End Sub
 
 Private Sub Form_Activate()
     
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_ERASE
+    
     'Draw a preview of the effect
     updatePreview
         
@@ -455,17 +540,32 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Keep the scroll bar and the text box values in sync
-Private Sub hsIndex_Change()
+Private Sub hsStrength_Change()
     If userChange Then
-        txtIndex.Text = Format(CDbl(hsIndex.Value) / 100, "0.00")
-        txtIndex.Refresh
+        txtStrength.Text = Format(CDbl(hsStrength.Value) / 100, "0.00")
+        txtStrength.Refresh
     End If
     updatePreview
 End Sub
 
-Private Sub hsIndex_Scroll()
-    txtIndex.Text = Format(CDbl(hsIndex.Value) / 100, "0.00")
-    txtIndex.Refresh
+Private Sub hsStrength_Scroll()
+    txtStrength.Text = Format(CDbl(hsStrength.Value) / 100, "0.00")
+    txtStrength.Refresh
+    updatePreview
+End Sub
+
+'Keep the scroll bar and the text box values in sync
+Private Sub hsZoom_Change()
+    If userChange Then
+        txtZoom.Text = Format(CDbl(hsZoom.Value) / 100, "0.00")
+        txtZoom.Refresh
+    End If
+    updatePreview
+End Sub
+
+Private Sub hsZoom_Scroll()
+    txtZoom.Text = Format(CDbl(hsZoom.Value) / 100, "0.00")
+    txtZoom.Refresh
     updatePreview
 End Sub
 
@@ -483,15 +583,15 @@ Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 
-Private Sub txtIndex_GotFocus()
-    AutoSelectText txtIndex
+Private Sub txtStrength_GotFocus()
+    AutoSelectText txtStrength
 End Sub
 
-Private Sub txtIndex_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtIndex, True, True
-    If EntryValid(txtIndex, hsIndex.Min / 100, hsIndex.Max / 100, False, False) Then
+Private Sub txtStrength_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtStrength, True, True
+    If EntryValid(txtStrength, hsStrength.Min / 100, hsStrength.Max / 100, False, False) Then
         userChange = False
-        hsIndex.Value = Val(txtIndex) * 100
+        hsStrength.Value = Val(txtStrength) * 100
         userChange = True
     End If
 End Sub
@@ -505,13 +605,18 @@ Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
     If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
 End Sub
 
+Private Sub txtZoom_GotFocus()
+    AutoSelectText txtZoom
+End Sub
+
+Private Sub txtZoom_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtZoom
+    If EntryValid(txtZoom, hsZoom.Min, hsZoom.Max, False, False) Then hsZoom.Value = Val(txtZoom)
+End Sub
+
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    If OptInterpolate(0) Then
-        ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, True, True, fxPreview
-    Else
-        ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, False, True, fxPreview
-    End If
-
+    ApplyLensCorrection CDbl(hsStrength / 100), CDbl(hsZoom / 100), hsRadius.Value, OptInterpolate(0), CLng(cmbEdges.ListIndex), True, fxPreview
+    
 End Sub
