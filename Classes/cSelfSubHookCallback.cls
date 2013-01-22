@@ -512,7 +512,6 @@ Public Function shk_SetHook(ByVal HookType As eHookType, _
     
     Dim nAddr           As Long
     Dim nID             As Long
-    Dim nMyID           As Long
     Dim bIDE            As Boolean
     Dim z_ScMem         As Long                 'Thunk base address
 
@@ -874,7 +873,6 @@ Public Function scb_SetCallbackAddr(ByVal nParamCount As Long, _
 
     Dim z_ScMem       As Long                                   'Thunk base address
     Dim z_Cb()    As Long                                       'Callback thunk array
-    Dim nValue    As Long
     Dim nCallback As Long
     Dim bIDE      As Boolean
       

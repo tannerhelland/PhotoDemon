@@ -192,13 +192,6 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
     srcLayer.createFromExistingLayer workingLayer
-            
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then

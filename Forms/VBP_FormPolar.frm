@@ -160,8 +160,8 @@ Begin VB.Form FormPolar
       TabIndex        =   10
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -354,7 +354,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
                 
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -378,16 +378,14 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
     
     'Rotation values
     Dim theta As Double, sRadius As Double, sRadius2 As Double, sDistance As Double
-    Dim r As Double, M As Double, t As Double
+    Dim r As Double, t As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
-    
-    Dim i As Long
-    
+        
     'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long
     tWidth = curLayerValues.Width

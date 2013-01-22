@@ -510,19 +510,6 @@ Private Type TRACKMOUSEEVENT_STRUCT
     dwHoverTime          As Long
 End Type
 
-'for subclass
-Private Type SubClassDatatype
-    hWnd                         As Long
-    nAddrSclass                  As Long
-    nAddrOrig                    As Long
-    nMsgCountA                   As Long
-    nMsgCountB                   As Long
-    aMsgTabelA()                 As Long
-    aMsgTabelB()                 As Long
-End Type
-
-'for subclass
-Private SubclassData()          As SubClassDatatype                                       'Subclass data array
 Private TrackUser32     As Boolean
 
 'Kernel32 declares used by the Subclasser
@@ -630,7 +617,6 @@ Private m_bIsDown       As Boolean              'Is button is pressed?
 Private m_bMouseInCtl   As Boolean              'Is Mouse in Control
 Private m_bHasFocus     As Boolean              'Has focus?
 Private m_bHandPointer  As Boolean              'Use Hand Pointer
-Private m_lCursor       As Long
 Private m_bDefault      As Boolean              'Is Default?
 Private m_DropDownSymbol As enumSymbol
 Private m_bDropDownSep  As Boolean

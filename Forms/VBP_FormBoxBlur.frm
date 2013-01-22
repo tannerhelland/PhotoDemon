@@ -322,7 +322,6 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
     NumOfPixels = 0
             
     'Blurring takes a lot of variables
-    Dim r As Long, g As Long, b As Long, a As Long
     Dim rTotal As Long, gTotal As Long, bTotal As Long, aTotal As Long
     Dim lbX As Long, lbY As Long, ubX As Long, ubY As Long
     Dim obuX As Boolean, obuY As Boolean, oblY As Boolean

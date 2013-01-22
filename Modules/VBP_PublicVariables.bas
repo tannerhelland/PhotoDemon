@@ -172,4 +172,4 @@ Public g_LastImageScanned As Long
 
 'Some actions take a long time to execute.  This global variable can be used to track if a function is still running.
 ' Just make sure to initialize it properly (in case the last function didn't!).
-Public g_Processing As Boolean
+'Public g_Processing As Boolean

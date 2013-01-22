@@ -361,7 +361,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value

@@ -137,8 +137,8 @@ Begin VB.Form FormUnsharpMask
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -339,7 +339,7 @@ Public Sub UnsharpMask(ByVal umRadius As Long, ByVal umAmount As Long, ByVal umT
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value

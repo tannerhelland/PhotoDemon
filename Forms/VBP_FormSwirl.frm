@@ -367,7 +367,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickVal2 As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -397,9 +397,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
-    
-    Dim i As Long
-    
+        
     'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long
     tWidth = curLayerValues.Width
