@@ -278,6 +278,7 @@ End Sub
 
 'Pass AutoSelectText a text box and it will select all text currently in the text box
 Public Function AutoSelectText(ByRef tBox As TextBox)
+    If tBox.Visible = False Then Exit Function
     tBox.SetFocus
     tBox.SelStart = 0
     tBox.SelLength = Len(tBox.Text)
