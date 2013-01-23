@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 03/September/12
-'Last update: completely rewrote everything against the new layer class.
+'Last updated: 23/January/13
+'Last update: began implementing translation support
 '
 'Module for handling any and all program loading.  This includes the program itself,
 'files, and anything else the program needs to take from the hard drive.
@@ -40,12 +40,12 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Detecting Windows® version..."
     
-    'Next, detect the version of Windows we're running on.  PhotoDemon is only concerned with "Vista or later", which lets it
-    ' know that certain features are guaranteed to be available.
+    'Note that PhotoDemon is only concerned with "Vista or later", which lets it know that certain features are
+    ' guaranteed to be available (such as the Segoe UI font, which may not exist on XP installs).
     g_IsVistaOrLater = getVistaOrLaterStatus
-        
-        
-        
+    
+    
+    
     '*************************************************************************************************************************************
     ' Initialize the user preferences (settings) handler
     '*************************************************************************************************************************************
@@ -64,9 +64,27 @@ Public Sub LoadTheProgram()
             
     'Before loading plugins, we need to initialize the image format handler (as the plugins interact with it)
     Set g_ImageFormats = New pdFormats
-            
-            
-            
+    
+    
+    
+    '*************************************************************************************************************************************
+    ' Initialize the translation (language) engine
+    '*************************************************************************************************************************************
+    
+    'Initialize a new language engine.
+    Set g_Language = New pdTranslate
+        
+    LoadMessage "Determining which language to use..."
+        
+    'Determine which language to use.  (This function will take into account the system language at first-run, so it can
+    ' estimate which language to present to the user.)
+    g_Language.DetermineLanguage
+    
+    'Apply that language to the program.
+    g_Language.ApplyLanguage
+    
+    
+    
     '*************************************************************************************************************************************
     ' Check for the presence of plugins (as other functions rely on these to initialize themselves)
     '*************************************************************************************************************************************

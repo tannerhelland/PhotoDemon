@@ -116,6 +116,12 @@ Private FilterPath As String
 Private INIPath As String
 Private TempPath As String
 Private IconPath As String
+Private LanguagePath As String
+
+'Return the current Language directory
+Public Function getLanguagePath() As String
+    getLanguagePath = LanguagePath
+End Function
 
 'Return the current temporary directory
 Public Function getTempPath() As String
@@ -189,12 +195,16 @@ Public Sub initializePaths()
     DataPath = ProgramPath & "Data\"
     If Not DirectoryExist(DataPath) Then MkDir DataPath
     
-    'Within the \Data subfolder, check for two more folders - one for saved Macros and another for saved convolution filters
+    'Within the \Data subfolder, check for three more folders - saved Macros, saved convolution filters...
     MacroPath = DataPath & "Macros\"
     If Not DirectoryExist(MacroPath) Then MkDir MacroPath
     
     FilterPath = DataPath & "Filters\"
     If Not DirectoryExist(FilterPath) Then MkDir FilterPath
+    
+    '...and a folder for any available translations
+    LanguagePath = DataPath & "Languages\"
+    If Not DirectoryExist(LanguagePath) Then MkDir LanguagePath
     
     'Finally, if it does not exist, create a folder to hold the MRU icons
     IconPath = DataPath & "Icons\"
@@ -328,6 +338,13 @@ End Sub
 'Create a new INI file from scratch
 Private Sub createNewINIFile()
 
+    'This function is used to determine whether PhotoDemon is being run for the first time.  Why do it here?
+    ' 1) When first downloaded, PhotoDemon doesn't come with an INI.  Thus this routine MUST be called.
+    ' 2) When preferences are reset, this file is deleted.  That is an appropriate time to mark the program as "first run".
+    ' 3) If the user moves PhotoDemon but leaves behind the old INI file.  There's no easy way to check this, but
+    '     treating the program as if its being run for the first time is as good a plan as any.
+    g_IsFirstRun = True
+
     'This routine needs to open a file.  To prevent "duplicate declarations in current scope," use a free file value
     Dim fileNum As Integer
     fileNum = FreeFile
@@ -362,6 +379,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "CanvasDropShadow=1"
         Print #fileNum, "CheckForUpdates=1"
         Print #fileNum, "ConfirmClosingUnsaved=1"
+        Print #fileNum, "CurrentLanguageFile="
         Print #fileNum, "DefaultSaveFormat=0"
         Print #fileNum, "DisplayIDEWarning=1"
         Print #fileNum, "DynamicTaskbarIcon=1"

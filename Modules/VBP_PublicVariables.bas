@@ -12,6 +12,9 @@ Public g_UserPreferences As pdPreferences
 'Main file format compatibility handler
 Public g_ImageFormats As pdFormats
 
+'Main language and translation handler
+Public g_Language As pdTranslate
+
 'Progress bar class
 Public g_ProgBar As cProgressBar
 
@@ -173,3 +176,7 @@ Public g_LastImageScanned As Long
 'Some actions take a long time to execute.  This global variable can be used to track if a function is still running.
 ' Just make sure to initialize it properly (in case the last function didn't!).
 'Public g_Processing As Boolean
+
+'If this is the first time the user has run PhotoDemon (as determined by the lack of an .INI file), this variable will
+' be set to TRUE early in the load process.  Other routines can then modify their behavior accordingly.
+Public g_IsFirstRun As Boolean
