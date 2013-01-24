@@ -29,6 +29,14 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Basic information about a language file is stored in this type of variable
+Private Type pdLanguageFile
+    langID As String
+    langName As String
+    langVersion As String
+    langStatus As String
+End Type
+
 'Language-related API calls
 Private Declare Function GetSystemDefaultLangID Lib "kernel32" () As Integer
 Private Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
@@ -38,6 +46,10 @@ Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoA" (By
 Private Const LOCALE_USER_DEFAULT = &H400
 Private Const LOCALE_SISO639LANGNAME As Long = &H59   'ISO 639 abbreviated language name, e.g. "en" for "English"
 Private Const LOCALE_SISO3166CTRYNAME As Long = &H5A   'ISO 4166 abbreviated country/region name, e.g. "US" for "United States"
+
+'Array of currently available languages
+Private numOfLanguages As Long
+Private availableLanguages() As pdLanguageFile
 
 'Which language file is currently active.  This may not be the same one as the INI file (for example, when the
 ' program is first run, PhotoDemon has to estimate which language file to use).
@@ -60,6 +72,9 @@ Public Sub DetermineLanguage()
     
         Dim curLangID As String
         curLangID = getDefaultUserLanguage()
+        
+        'Next, see what languages are available in the language folder
+        checkAvailableLanguages
         
         'TODO: Compare the full language ID (language and region) against language files available in the
         '       Languages folder.  If an exact match is found, present that as the default program language.
@@ -120,4 +135,174 @@ Private Function GetSpecificLocaleInfo(ByVal lInfo As Long) As String
     Else
         GetSpecificLocaleInfo = ""
     End If
+End Function
+
+'Search the Languages folder, and make a list of all available languages
+Private Sub checkAvailableLanguages()
+    
+    numOfLanguages = 0
+    ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
+    
+    'Scan the MRU icon directory for .xml files.  Ignore anything that isn't XML.
+    Dim chkFile As String, curFileAsText As String
+    chkFile = Dir(g_UserPreferences.getLanguagePath & "*.xml", vbNormal)
+        
+    Do While chkFile <> ""
+        
+        'MsgBox "here" & vbCrLf & chkFile
+        
+        'Load the first 512 bytes of the file into a string (this is done to keep this routine fast)
+        curFileAsText = getPartialFileAsString(g_UserPreferences.getLanguagePath & chkFile)
+        
+        'If the file has actual contents, investigate further.
+        If Len(curFileAsText) > 0 Then
+        
+            'Is the .xml file a valid xml file?  Check the header to make sure.
+            If verifyXMLHeader(curFileAsText) Then
+            
+                'If this is a valid language file, get the language information (if available).
+                fillLanguageInfo curFileAsText, availableLanguages(numOfLanguages)
+                numOfLanguages = numOfLanguages + 1
+            
+            End If
+            
+        End If
+        
+        'Retrieve the next file and repeat
+        chkFile = Dir
+    
+    Loop
+    
+    'Resize the array to contain only the number of languages found
+    ReDim Preserve availableLanguages(0 To numOfLanguages - 1) As pdLanguageFile
+    
+    'TESTING: display the info we retrieved
+    Dim i As Long
+    For i = 0 To numOfLanguages - 1
+        MsgBox availableLanguages(i).langID & vbCrLf & availableLanguages(i).langName & vbCrLf & availableLanguages(i).langStatus & vbCrLf & availableLanguages(i).langVersion
+    Next i
+    
+End Sub
+
+'Given a language file (or partial language file), extract the key language information and place it in the passed variable.
+Private Sub fillLanguageInfo(ByRef fileString As String, ByRef targetLangHolder As pdLanguageFile)
+
+    'First, get the language ID - this is the most important value, and technically the only REQUIRED one.
+    targetLangHolder.langID = getTextBetweenTags(fileString, "langid")
+    targetLangHolder.langName = getTextBetweenTags(fileString, "langname")
+    targetLangHolder.langVersion = getTextBetweenTags(fileString, "langversion")
+    targetLangHolder.langStatus = getTextBetweenTags(fileString, "langstatus")
+    
+End Sub
+
+'Given a file (as a String) and a tag (without brackets), return the text between that tag.
+' NOTE: this function will always return the first occurence of the specified tag, starting at the specified search position.
+' If the tag is not found, a blank string will be returned.
+Private Function getTextBetweenTags(ByRef fileText As String, ByRef fTag As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
+
+    Dim tagStart As Long, tagEnd As Long
+    tagStart = InStr(searchLocation, fileText, "<" & fTag & ">", vbTextCompare)
+
+    'If the tag was found in the file, we also need to find the closing tag.
+    If tagStart > 0 Then
+    
+        tagEnd = InStr(tagStart, fileText, "</" & fTag & ">", vbTextCompare)
+        
+        'If the closing tag exists, return everything between that and the opening tag
+        If tagEnd > tagStart Then
+            
+            'Increment the tag start location by the length of the tag plus two (+1 for each bracket: <>)
+            tagStart = tagStart + Len(fTag) + 2
+            
+            'If the user passed a long, they want to know where this tag was found - return the location just after the
+            ' location where the closing tag was located.
+            If whereTagFound <> -1 Then whereTagFound = tagEnd + Len(fTag) + 2
+            getTextBetweenTags = Mid(fileText, tagStart, tagEnd - tagStart)
+            
+        Else
+            getTextBetweenTags = "ERROR: specified tag wasn't properly closed!"
+        End If
+        
+    Else
+        getTextBetweenTags = ""
+    End If
+
+End Function
+
+'Given an XML file (or sometimes, just the first 1024 bytes of an XML file), check to see if it has a valid XML header.
+' Also, check to see if it's a PhotoDemon language file or just a random XML file.
+Private Function verifyXMLHeader(ByRef fileContents As String) As Boolean
+        
+    'Check for "<?xml" in the file.  We don't care about encoding, etc - just that to keep things quick.
+    If InStr(1, fileContents, "<?xml", vbTextCompare) > 0 Then
+    
+        'If an XML header is found, check to see if a <language> tag exists too.
+        If InStr(1, fileContents, "<language>", vbTextCompare) > 0 Then
+        
+            'Next, ensure that a language id (tag <langid>) exists
+            If InStr(1, fileContents, "<langid>", vbTextCompare) > 0 Then
+            
+                'And finally, make sure the file contains at least one <phrase> tag
+                If InStr(1, fileContents, "<phrase>", vbTextCompare) > 0 Then
+                    verifyXMLHeader = True
+                Else
+                    verifyXMLHeader = False
+                End If
+            
+            Else
+                verifyXMLHeader = False
+            End If
+        
+        Else
+            verifyXMLHeader = False
+        End If
+    
+    Else
+        verifyXMLHeader = False
+    End If
+
+End Function
+
+'Retrieve only the first 1024 bytes of a file as a string.
+Private Function getPartialFileAsString(ByVal fName As String) As String
+        
+    ' ensure that the file exists
+    If FileExist(fName) Then
+        
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
+        Dim fileLen As Long
+    
+        Open fName For Binary As #fileNum
+            fileLen = LOF(fileNum)
+            If fileLen > 1024 Then fileLen = 1024
+            getPartialFileAsString = Space$(fileLen)
+            Get #fileNum, , getPartialFileAsString
+        Close #fileNum
+    
+    Else
+        getPartialFileAsString = ""
+    End If
+    
+End Function
+
+'Retrieve an entire file and return it as a string.
+Private Function getFileAsString(ByVal fName As String) As String
+        
+    ' ensure that the file exists
+    If FileExist(fName) Then
+        
+        Dim fileNum As Integer
+        fileNum = FreeFile
+    
+        Open fName For Binary As #fileNum
+            getFileAsString = Space$(LOF(fileNum))
+            Get #fileNum, , getFileAsString
+        Close #fileNum
+    
+    Else
+        getFileAsString = ""
+    End If
+    
 End Function
