@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<language>
+
+	<langid>en-US</langid>
+	<langname>English (US)</langname>
+	<langversion>1.0.0</langversion>
+	<langstatus>Complete</langstatus>
+	
+	<author url="http://www.tannerhelland.com">Tanner Helland</author>
+
+	<phrase>
+		<object></object>
+		<original></original>
+		<translation></translation>
+	</phrase>
+
+</language>
