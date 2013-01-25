@@ -40,9 +40,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -260,18 +260,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   465
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":A6CA
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":A6F2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         tooltiptype     =   1
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":A6CA
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -279,18 +287,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   1560
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":B744
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":B76C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Save"
-         tooltiptype     =   1
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":B71C
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Save"
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -298,19 +314,27 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   2880
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":C7BE
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":C7E6
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Undo"
-         tooltiptype     =   1
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":C76E
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Undo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -318,19 +342,27 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   2880
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":D838
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":D860
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Redo"
-         tooltiptype     =   1
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":D7C0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Redo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
          Height          =   615
@@ -338,18 +370,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   12
          Top             =   465
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":E8B2
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":E8DA
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Close"
-         tooltiptype     =   1
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":E812
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Close"
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -357,18 +397,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   13
          Top             =   1560
          Width           =   900
-         _extentx        =   1588
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":F92C
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":F954
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Save As"
-         tooltiptype     =   1
+         _ExtentX        =   1588
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":F864
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipType     =   1
+         TooltipTitle    =   "Save As"
       End
       Begin VB.Label lblSelSize 
          Appearance      =   0  'Flat
@@ -1268,8 +1316,22 @@ Begin VB.MDIForm FormMain
    End
    Begin VB.Menu MnuTools 
       Caption         =   "&Tools"
-      Begin VB.Menu MnuMacro 
+      Begin VB.Menu mnuTool 
+         Caption         =   "Language"
+         Index           =   0
+         Begin VB.Menu mnuLanguages 
+            Caption         =   "English (US)"
+            Checked         =   -1  'True
+            Index           =   0
+         End
+      End
+      Begin VB.Menu mnuTool 
+         Caption         =   "-"
+         Index           =   1
+      End
+      Begin VB.Menu mnuTool 
          Caption         =   "&Macros"
+         Index           =   2
          Begin VB.Menu MnuPlayMacroRecording 
             Caption         =   "Play saved macro..."
          End
@@ -1284,14 +1346,17 @@ Begin VB.MDIForm FormMain
             Enabled         =   0   'False
          End
       End
-      Begin VB.Menu MnuToolsSepBar1 
+      Begin VB.Menu mnuTool 
          Caption         =   "-"
+         Index           =   3
       End
-      Begin VB.Menu MnuPreferences 
+      Begin VB.Menu mnuTool 
          Caption         =   "Options"
+         Index           =   4
       End
-      Begin VB.Menu MnuPlugins 
+      Begin VB.Menu mnuTool 
          Caption         =   "Plugin manager"
+         Index           =   5
          Shortcut        =   ^M
       End
    End
@@ -1329,40 +1394,51 @@ Begin VB.MDIForm FormMain
          Caption         =   "&Restore all windows"
       End
    End
-   Begin VB.Menu MnuHelp 
+   Begin VB.Menu MnuHelpTop 
       Caption         =   "&Help"
-      Begin VB.Menu MnuDonate 
+      Begin VB.Menu MnuHelp 
          Caption         =   "Support PhotoDemon with a small donation (thank you!)"
+         Index           =   0
       End
-      Begin VB.Menu MnuHelpSepBar0 
+      Begin VB.Menu MnuHelp 
          Caption         =   "-"
+         Index           =   1
       End
-      Begin VB.Menu MnuCheckUpdates 
+      Begin VB.Menu MnuHelp 
          Caption         =   "Check for &updates"
+         Index           =   2
       End
-      Begin VB.Menu MnuEmailAuthor 
+      Begin VB.Menu MnuHelp 
          Caption         =   "Submit feedback..."
+         Index           =   3
       End
-      Begin VB.Menu MnuBugReport 
+      Begin VB.Menu MnuHelp 
          Caption         =   "Submit bug report..."
+         Index           =   4
       End
-      Begin VB.Menu MnuHelpSepBar1 
+      Begin VB.Menu MnuHelp 
          Caption         =   "-"
+         Index           =   5
       End
-      Begin VB.Menu MnuVisitWebsite 
+      Begin VB.Menu MnuHelp 
          Caption         =   "&Visit the PhotoDemon website"
+         Index           =   6
       End
-      Begin VB.Menu MnuDownloadSource 
+      Begin VB.Menu MnuHelp 
          Caption         =   "Download PhotoDemon's source code"
+         Index           =   7
       End
-      Begin VB.Menu MnuReadLicense 
+      Begin VB.Menu MnuHelp 
          Caption         =   "Read PhotoDemon's license and terms of use"
+         Index           =   8
       End
-      Begin VB.Menu MnuHelpSepBar2 
+      Begin VB.Menu MnuHelp 
          Caption         =   "-"
+         Index           =   9
       End
-      Begin VB.Menu MnuAbout 
+      Begin VB.Menu MnuHelp 
          Caption         =   "&About PhotoDemon"
+         Index           =   10
       End
    End
 End
@@ -1685,27 +1761,6 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     
 End Sub
 
-'Display the "About" form
-Private Sub MnuAbout_Click()
-    
-    'Before we can display the "About" form, we need to paint the PhotoDemon logo to it.
-    Dim logoWidth As Long, logoHeight As Long
-    Dim logoAspectRatio As Double
-    
-    logoWidth = FormMain.picLogo.ScaleWidth
-    logoHeight = FormMain.picLogo.ScaleHeight
-    logoAspectRatio = CDbl(logoWidth) / CDbl(logoHeight)
-    
-    FormAbout.Visible = False
-    SetStretchBltMode FormAbout.hDC, STRETCHBLT_HALFTONE
-    StretchBlt FormAbout.hDC, 0, 0, FormAbout.ScaleWidth, FormAbout.ScaleWidth / logoAspectRatio, FormMain.picLogo.hDC, 0, 0, logoWidth, logoHeight, vbSrcCopy
-    FormAbout.Picture = FormAbout.Image
-    
-    'With the painting done, we can now display the form.
-    FormAbout.Show 1, FormMain
-    
-End Sub
-
 Private Sub MnuArrangeIcons_Click()
     Me.Arrange vbArrangeIcons
 End Sub
@@ -1812,41 +1867,6 @@ Public Sub MnuBrightness_Click()
     Process BrightnessAndContrast, , , , , , , , , , True
 End Sub
 
-Private Sub MnuBugReport_Click()
-    
-    'GitHub requires a login for submitting Issues; check for that first
-    Dim msgReturn As VbMsgBoxResult
-    
-    'If the user has previously been prompted about having a GitHub account, use their previous answer
-    If g_UserPreferences.doesValueExist("General Preferences", "HasGitHubAccount") Then
-    
-        Dim hasGitHub As Boolean
-        hasGitHub = g_UserPreferences.GetPreference_Boolean("General Preferences", "HasGitHubAccount", False)
-        
-        If hasGitHub Then msgReturn = vbYes Else msgReturn = vbNo
-    
-    'If this is the first time they are submitting feedback, ask them if they have a GitHub account
-    Else
-    
-        msgReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for making " & PROGRAMNAME & " better")
-        
-        'If their answer was anything but "Cancel", store that answer to file
-        If msgReturn = vbYes Then g_UserPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", True
-        If msgReturn = vbNo Then g_UserPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", False
-        
-    End If
-    
-    'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
-    If msgReturn = vbYes Then
-        'Shell a browser window with the GitHub issue report form
-        OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
-    ElseIf msgReturn = vbNo Then
-        'Shell a browser window with the tannerhelland.com PhotoDemon contact form
-        OpenURL "http://www.tannerhelland.com/photodemon-contact/"
-    End If
-
-End Sub
-
 Private Sub MnuCascadeWindows_Click()
     
     Me.Arrange vbCascade
@@ -1859,38 +1879,6 @@ Private Sub MnuCascadeWindows_Click()
             If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
         End If
     Next i
-    
-End Sub
-
-'This allows the user to manually check for updates.
-Private Sub MnuCheckUpdates_Click()
-        
-    Message "Checking for software updates..."
-    
-    Dim updateNeeded As Long
-    updateNeeded = CheckForSoftwareUpdate
-    
-    'CheckForSoftwareUpdate can return one of three values:
-    ' 0 - something went wrong (no Internet connection, etc)
-    ' 1 - the check was successful, but this version is up-to-date
-    ' 2 - the check was successful, and an update is available
-        
-    Select Case updateNeeded
-        
-        Case 0
-            Message "An error occurred while checking for updates.  Please try again later."
-            
-        Case 1
-            Message "This copy of PhotoDemon is the newest available.  (Version " & App.Major & "." & App.Minor & "." & App.Revision & ")"
-                
-            'Because the software is up-to-date, we can mark this as a successful check in the INI file
-            g_UserPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
-                
-        Case 2
-            Message "Software update found!  Launching update notifier..."
-            FormSoftwareUpdate.Show 1, Me
-            
-    End Select
     
 End Sub
 
@@ -2018,16 +2006,6 @@ Private Sub MnuDistortFilter_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuDonate_Click()
-    'Launch the default web browser with the tannerhelland.com donation page
-    OpenURL "http://www.tannerhelland.com/donate"
-End Sub
-
-Private Sub MnuDownloadSource_Click()
-    'Launch the default web browser with PhotoDemon's GitHub page
-    OpenURL "https://github.com/tannerhelland/PhotoDemon"
-End Sub
-
 Private Sub MnuDream_Click()
     Process Dream
 End Sub
@@ -2042,13 +2020,6 @@ End Sub
 
 Private Sub MnuEdgeEnhance_Click()
     Process EdgeEnhance
-End Sub
-
-Private Sub MnuEmailAuthor_Click()
-    
-    'Shell a browser window with the tannerhelland.com contact form
-    OpenURL "http://www.tannerhelland.com/photodemon-contact/"
-
 End Sub
 
 Private Sub MnuEmbossEngrave_Click()
@@ -2098,6 +2069,114 @@ End Sub
 
 Private Sub MnuHeatmap_Click()
     Process HeatMap
+End Sub
+
+'All help menu entries are launched from here
+Private Sub MnuHelp_Click(Index As Integer)
+
+    Select Case Index
+        
+        'Donations are so very, very welcome!
+        Case 0
+            OpenURL "http://www.tannerhelland.com/donate"
+            
+        'Check for updates
+        Case 2
+            Message "Checking for software updates..."
+    
+            Dim updateNeeded As Long
+            updateNeeded = CheckForSoftwareUpdate
+    
+            'CheckForSoftwareUpdate can return one of three values:
+            ' 0 - something went wrong (no Internet connection, etc)
+            ' 1 - the check was successful, but this version is up-to-date
+            ' 2 - the check was successful, and an update is available
+            Select Case updateNeeded
+        
+                Case 0
+                    Message "An error occurred while checking for updates.  Please try again later."
+                    
+                Case 1
+                    Message "This copy of PhotoDemon is the newest available.  (Version " & App.Major & "." & App.Minor & "." & App.Revision & ")"
+                        
+                    'Because the software is up-to-date, we can mark this as a successful check in the INI file
+                    g_UserPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
+                        
+                Case 2
+                    Message "Software update found!  Launching update notifier..."
+                    FormSoftwareUpdate.Show 1, Me
+                
+            End Select
+        
+        'Submit feedback
+        Case 3
+            OpenURL "http://www.tannerhelland.com/photodemon-contact/"
+        
+        'Submit bug report
+        Case 4
+            'GitHub requires a login for submitting Issues; check for that first
+            Dim msgReturn As VbMsgBoxResult
+            
+            'If the user has previously been prompted about having a GitHub account, use their previous answer
+            If g_UserPreferences.doesValueExist("General Preferences", "HasGitHubAccount") Then
+            
+                Dim hasGitHub As Boolean
+                hasGitHub = g_UserPreferences.GetPreference_Boolean("General Preferences", "HasGitHubAccount", False)
+                
+                If hasGitHub Then msgReturn = vbYes Else msgReturn = vbNo
+            
+            'If this is the first time they are submitting feedback, ask them if they have a GitHub account
+            Else
+            
+                msgReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for making " & PROGRAMNAME & " better")
+                
+                'If their answer was anything but "Cancel", store that answer to file
+                If msgReturn = vbYes Then g_UserPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", True
+                If msgReturn = vbNo Then g_UserPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", False
+                
+            End If
+            
+            'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
+            If msgReturn = vbYes Then
+                'Shell a browser window with the GitHub issue report form
+                OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
+            ElseIf msgReturn = vbNo Then
+                'Shell a browser window with the tannerhelland.com PhotoDemon contact form
+                OpenURL "http://www.tannerhelland.com/photodemon-contact/"
+            End If
+            
+        'PhotoDemon's homepage
+        Case 6
+            OpenURL "http://www.tannerhelland.com/photodemon"
+            
+        'Download source code
+        Case 7
+            OpenURL "https://github.com/tannerhelland/PhotoDemon"
+        
+        'Read terms and license agreement
+        Case 8
+            OpenURL "http://www.tannerhelland.com/photodemon/#license"
+            
+        'Display About page
+        Case 10
+            'Before we can display the "About" form, we need to paint the PhotoDemon logo to it.
+            Dim logoWidth As Long, logoHeight As Long
+            Dim logoAspectRatio As Double
+            
+            logoWidth = FormMain.picLogo.ScaleWidth
+            logoHeight = FormMain.picLogo.ScaleHeight
+            logoAspectRatio = CDbl(logoWidth) / CDbl(logoHeight)
+            
+            FormAbout.Visible = False
+            SetStretchBltMode FormAbout.hDC, STRETCHBLT_HALFTONE
+            StretchBlt FormAbout.hDC, 0, 0, FormAbout.ScaleWidth, FormAbout.ScaleWidth / logoAspectRatio, FormMain.picLogo.hDC, 0, 0, logoWidth, logoHeight, vbSrcCopy
+            FormAbout.Picture = FormAbout.Image
+            
+            'With the painting done, we can now display the form.
+            FormAbout.Show vbModal, FormMain
+        
+    End Select
+
 End Sub
 
 Private Sub MnuHistogram_Click()
@@ -2301,16 +2380,8 @@ Private Sub MnuPlayMacroRecording_Click()
     Process MacroPlayRecording
 End Sub
 
-Private Sub MnuPlugins_Click()
-    If Not FormPluginManager.Visible Then FormPluginManager.Show 1, FormMain
-End Sub
-
 Private Sub MnuPosterize_Click()
     Process Posterize, , , , , , , , , , True
-End Sub
-
-Private Sub MnuPreferences_Click()
-    If Not FormPreferences.Visible Then FormPreferences.Show 1, FormMain
 End Sub
 
 Private Sub MnuPreviousImage_Click()
@@ -2337,11 +2408,6 @@ End Sub
 
 Private Sub MnuRadioactive_Click()
     Process Radioactive
-End Sub
-
-Private Sub MnuReadLicense_Click()
-    'Launch the default web browser with PhotoDemon's license page on tannerhelland.com
-    OpenURL "http://www.tannerhelland.com/photodemon/#license"
 End Sub
 
 'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
@@ -2545,6 +2611,23 @@ Private Sub MnuTileVertically_Click()
     
 End Sub
 
+'All tool menu items are launched from here
+Private Sub mnuTool_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Options
+        Case 4
+            If Not FormPreferences.Visible Then FormPreferences.Show 1, FormMain
+        
+        'Plugin manager
+        Case 5
+            If Not FormPluginManager.Visible Then FormPluginManager.Show 1, FormMain
+    
+    End Select
+
+End Sub
+
 Private Sub MnuTwins_Click()
     Process Twins, , , , , , , , , , True
 End Sub
@@ -2559,11 +2642,6 @@ End Sub
 
 Private Sub MnuVibrate_Click()
     Process Vibrate
-End Sub
-
-Private Sub MnuVisitWebsite_Click()
-    'Nothing special here - just launch the default web browser with PhotoDemon's page on tannerhelland.com
-    OpenURL "http://www.tannerhelland.com/photodemon"
 End Sub
 
 Private Sub MnuWhiteBalance_Click()
@@ -2585,7 +2663,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
 
     'Import from Internet
     If ctlAccelerator.Key(nIndex) = "Internet_Import" Then
-        If FormInternetImport.Visible = False Then FormInternetImport.Show 1, FormMain
+        If FormInternetImport.Visible = False Then FormInternetImport.Show vbModal, FormMain
     End If
     
     'Save As...
@@ -2599,12 +2677,12 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Import from FRX
     If ctlAccelerator.Key(nIndex) = "Import_FRX" Then
         On Error Resume Next
-        If FormImportFrx.Visible = False Then FormImportFrx.Show 1, FormMain
+        If FormImportFrx.Visible = False Then FormImportFrx.Show vbModal, FormMain
     End If
 
     'Open program preferences
     If ctlAccelerator.Key(nIndex) = "Preferences" Then
-        If FormPreferences.Visible = False Then FormPreferences.Show 1, FormMain
+        If FormPreferences.Visible = False Then FormPreferences.Show vbModal, FormMain
     End If
     
     'Redo

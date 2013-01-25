@@ -80,6 +80,9 @@ Public Sub LoadTheProgram()
     ' estimate which language to present to the user.)
     g_Language.DetermineLanguage
     
+    'The DetermineLanguage function will load all available languages, so once it has been run, we can load the Languages menu.
+    'g_Language.
+    
     'Apply that language to the program.
     g_Language.ApplyLanguage
     
@@ -632,7 +635,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
         
         targetImage.updateSize
-        targetImage.OriginalFileSize = FileLen(sFile(thisImage))
+        targetImage.OriginalFileSize = fileLen(sFile(thisImage))
         targetImage.CurrentFileFormat = targetImage.OriginalFileFormat
                 
                 
@@ -1029,7 +1032,6 @@ Public Sub LoadMenuShortcuts()
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
 
     'Edit menu
-    FormMain.MnuPreferences.Caption = FormMain.MnuPreferences.Caption & vbTab & "Alt+Enter"
     'This Redo shortcut remains, but it is hidden; the Windows convention of Ctrl+Y is displayed instead.
     'FormMain.MnuRedo.Caption = FormMain.MnuRedo.Caption & vbTab & "Ctrl+Alt+Z"
     FormMain.MnuEmptyClipboard.Caption = FormMain.MnuEmptyClipboard.Caption & vbTab & "Ctrl+Shift+X"
@@ -1055,6 +1057,9 @@ Public Sub LoadMenuShortcuts()
     
     'Color menu
     FormMain.MnuBrightness.Caption = FormMain.MnuBrightness.Caption & vbTab & "Ctrl+Shift+C"
+    
+    'Tools menu
+    FormMain.mnuTool(4).Caption = FormMain.mnuTool(4).Caption & vbTab & "Alt+Enter"     'Options (Preferences)
     
     'Window menu
     FormMain.MnuNextImage.Caption = FormMain.MnuNextImage.Caption & vbTab & "Page Down"

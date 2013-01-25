@@ -314,13 +314,14 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "CUSTFILTER", 5, 13  'Custom Filter
     
     'Tools Menu
-    AddMenuIcon "RECORD", 6, 0       'Macros
+    AddMenuIcon "LANGUAGES", 6, 0    'Languages
+    AddMenuIcon "RECORD", 6, 2       'Macros
         '--> Macro sub-menu
-        AddMenuIcon "OPENMACRO", 6, 0, 0      'Open Macro
-        AddMenuIcon "RECORD", 6, 0, 2         'Start Recording
-        AddMenuIcon "RECORDSTOP", 6, 0, 3     'Stop Recording
-    AddMenuIcon "PREFERENCES", 6, 2           'Options (Preferences)
-    AddMenuIcon "PLUGIN", 6, 3       'Plugin Manager
+        AddMenuIcon "OPENMACRO", 6, 2, 0      'Open Macro
+        AddMenuIcon "RECORD", 6, 2, 2         'Start Recording
+        AddMenuIcon "RECORDSTOP", 6, 2, 3     'Stop Recording
+    AddMenuIcon "PREFERENCES", 6, 4           'Options (Preferences)
+    AddMenuIcon "PLUGIN", 6, 5       'Plugin Manager
     
     'Window Menu
     AddMenuIcon "NEXTIMAGE", 7, 0    'Next image

@@ -126,7 +126,7 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
         'Macro (top-level menu)
         Case tMacro
-            If FormMain.MnuMacro.Enabled <> tState Then FormMain.MnuMacro.Enabled = tState
+            If FormMain.mnuTool(2).Enabled <> tState Then FormMain.mnuTool(2).Enabled = tState
         
         'Edit (top-level menu)
         Case tEdit

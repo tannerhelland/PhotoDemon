@@ -177,10 +177,10 @@ Private Sub checkAvailableLanguages()
     ReDim Preserve availableLanguages(0 To numOfLanguages - 1) As pdLanguageFile
     
     'TESTING: display the info we retrieved
-    Dim i As Long
-    For i = 0 To numOfLanguages - 1
-        MsgBox availableLanguages(i).langID & vbCrLf & availableLanguages(i).langName & vbCrLf & availableLanguages(i).langStatus & vbCrLf & availableLanguages(i).langVersion
-    Next i
+    'Dim i As Long
+    'For i = 0 To numOfLanguages - 1
+    '    MsgBox availableLanguages(i).langID & vbCrLf & availableLanguages(i).langName & vbCrLf & availableLanguages(i).langStatus & vbCrLf & availableLanguages(i).langVersion
+    'Next i
     
 End Sub
 
