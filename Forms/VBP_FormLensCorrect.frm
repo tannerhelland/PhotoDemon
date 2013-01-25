@@ -392,7 +392,7 @@ Private Sub cmdOK_Click()
 End Sub
 
 'Correct lens distortion in an image
-Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Double, ByVal lensRadius As Double, ByVal useBilinear As Boolean, ByVal edgeHandling As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Double, ByVal lensRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Correcting image distortion..."
     
@@ -615,6 +615,6 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    ApplyLensCorrection CDbl(hsStrength / 100), CDbl(hsZoom / 100), hsRadius.Value, OptInterpolate(0), CLng(cmbEdges.ListIndex), True, fxPreview
+    ApplyLensCorrection CDbl(hsStrength / 100), CDbl(hsZoom / 100), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
     
 End Sub
