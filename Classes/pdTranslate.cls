@@ -31,6 +31,7 @@ Option Explicit
 
 'Basic information about a language file is stored in this type of variable
 Private Type pdLanguageFile
+    filename As String
     langID As String
     langName As String
     langVersion As String
@@ -51,6 +52,23 @@ Private Const LOCALE_SISO3166CTRYNAME As Long = &H5A   'ISO 4166 abbreviated cou
 Private numOfLanguages As Long
 Private availableLanguages() As pdLanguageFile
 
+'Array ID of the current language.  If no language is selected (e.g. PhotoDemon is using its default text), this value is -1
+Private curLanguage As Long
+
+'Array ID of the default language (English - US)
+Private defaultLanguage As Long
+
+'If the user needs to be shown a language select screen, this will be set to true at some point in the initialization process
+Private needToShowLanguageDialog As Boolean
+
+'If the select language dialog needs to be shown, this value can be used to determine "why"
+Private Const LANGREASON_USERINITIATED As Long = 0      ' 0) User-initiated dialog
+Private Const LANGREASON_APPROXIMATEMATCH As Long = 1   ' 1) Approximate (but not exact) language match found
+Private Const LANGREASON_NOMATCH As Long = 2            ' 2) No language match found
+Private Const LANGREASON_FILEMISSING As Long = 3        ' 3) Requested language file couldn't be located
+Private reasonForLanguageDialog As Long
+
+
 'Which language file is currently active.  This may not be the same one as the INI file (for example, when the
 ' program is first run, PhotoDemon has to estimate which language file to use).
 
@@ -65,40 +83,115 @@ Public Sub DetermineLanguage()
 
     'FOR TESTING ONLY!!!
     'SET FIRSTRUN TO TRUE TO TEST LOCALE CHECKING
-    g_IsFirstRun = True
+    'g_IsFirstRun = True
 
     'Is this the first time PhotoDemon has been run?  If it is, check the system language.
     If g_IsFirstRun Then
     
         Dim curLangID As String
         curLangID = getDefaultUserLanguage()
+                
+        'Compare the full language ID (language and region) against language files available in the Languages folder.
+        ' If an exact match is found, present that as the default program language.
+        curLanguage = isExactLanguageMatch(curLangID)
         
-        'Next, see what languages are available in the language folder
-        checkAvailableLanguages
-        
-        'TODO: Compare the full language ID (language and region) against language files available in the
-        '       Languages folder.  If an exact match is found, present that as the default program language.
-        
-        'TODO: If an exact match is not found, try comparing just the language part of the code.  If a match
-        '       is found, present that as the default language.
+        'If an exact match is not found, try comparing just the language part of the code.  If a match is found,
+        ' present that as the default language - and note that we also need to show the language selection dialog.
+        If curLanguage = -1 Then
+            curLanguage = isApproximateLanguageMatch(curLangID)
+            reasonForLanguageDialog = LANGREASON_APPROXIMATEMATCH
+            needToShowLanguageDialog = True
+        End If
         
         'TODO: If no match is found, present the language selection screen in English.
+        If curLanguage = -1 Then
+            curLanguage = defaultLanguage
+            reasonForLanguageDialog = LANGREASON_NOMATCH
+            needToShowLanguageDialog = True
+        End If
         
-    End If
-
-    'Before doing anything else, check to see if the user has already specified a language to use.
-    '<Future INI stuff here>
+    'If this is not the first run, retrieve the user's language preference from the INI file
+    Else
     
+        Dim curLanguageFile As String
+        curLanguageFile = g_UserPreferences.GetPreference_String("General Preferences", "CurrentLanguageFile", "")
+        
+        'If no specific file has been named, use the default language
+        If curLanguageFile = "" Then
+            curLanguage = defaultLanguage
+        
+        'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
+        Else
+            If FileExist(curLanguageFile) Then
+                curLanguage = getLangIndexFromFile(curLanguageFile)
+            Else
+                curLanguage = defaultLanguage
+                reasonForLanguageDialog = LANGREASON_FILEMISSING
+                needToShowLanguageDialog = True
+            End If
+        End If
+    
+    End If
 
 End Sub
 
+'Given a language filename, return the index in the availableLanguages() array
+Private Function getLangIndexFromFile(ByVal srcFile As String) As Long
+    
+    Dim i As Long
+    For i = 0 To numOfLanguages - 1
+        If StrComp(availableLanguages(i).filename, g_UserPreferences.getLanguagePath & srcFile, vbTextCompare) = 0 Then
+            getLangIndexFromFile = i
+            Exit Function
+        End If
+    Next i
+    
+End Function
+
+'Given a language ID (as a string), try to find an approximate match (just language, region doesn't matter) in the availableLanguages array
+Private Function isApproximateLanguageMatch(ByRef srcLangID As String)
+
+    Dim i As Long
+    For i = 0 To numOfLanguages - 1
+        If StrComp(Left(srcLangID, 2), Left(availableLanguages(i).langID, 2), vbTextCompare) = 0 Then
+            isApproximateLanguageMatch = i
+            'MsgBox "Approximate language match found: " & availableLanguages(i).langID
+            Exit Function
+        End If
+    Next i
+    
+    'If we made it all the way here, no match was found.  Return -1
+    isApproximateLanguageMatch = -1
+
+End Function
+
+'Given a language ID (as a string), try to find an exact match (language AND region) in the availableLanguages array
+Private Function isExactLanguageMatch(ByRef srcLangID As String)
+
+    Dim i As Long
+    For i = 0 To numOfLanguages - 1
+        If StrComp(srcLangID, availableLanguages(i).langID, vbTextCompare) = 0 Then
+            isExactLanguageMatch = i
+            'MsgBox "Exact language match found: " & availableLanguages(i).langID
+            Exit Function
+        End If
+    Next i
+    
+    'If we made it all the way here, no match was found.  Return -1
+    isExactLanguageMatch = -1
+
+End Function
+
 'ALWAYS CALL DETERMINE LANGUAGE BEFORE THIS STAGE!
-'Once a PhotoDemon language has been determined - by checking a saved value in the INI or by reading the
-' default user language - this function can be called to "apply" that language to the program.
-'If the language is changed, this function must be called again to set the new language program-wide.
+'Once a PhotoDemon language has been determined, this function can be called to "apply" that language to the program.
+' NOTE: if the language is changed, this function must be called again to set the new language program-wide.
 Public Sub ApplyLanguage()
 
-    'DetermineLanguage() is responsible for actually choosing the language to be applied.
+    'Mark the active language menu entry (and unmark all others)
+    Dim i As Long
+    For i = 0 To numOfLanguages - 1
+        If curLanguage = i Then FormMain.mnuLanguages(i).Checked = True Else FormMain.mnuLanguages(i).Checked = False
+    Next i
 
 End Sub
 
@@ -138,7 +231,7 @@ Private Function GetSpecificLocaleInfo(ByVal lInfo As Long) As String
 End Function
 
 'Search the Languages folder, and make a list of all available languages
-Private Sub checkAvailableLanguages()
+Public Sub CheckAvailableLanguages()
     
     numOfLanguages = 0
     ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
@@ -148,9 +241,7 @@ Private Sub checkAvailableLanguages()
     chkFile = Dir(g_UserPreferences.getLanguagePath & "*.xml", vbNormal)
         
     Do While chkFile <> ""
-        
-        'MsgBox "here" & vbCrLf & chkFile
-        
+                
         'Load the first 512 bytes of the file into a string (this is done to keep this routine fast)
         curFileAsText = getPartialFileAsString(g_UserPreferences.getLanguagePath & chkFile)
         
@@ -162,6 +253,7 @@ Private Sub checkAvailableLanguages()
             
                 'If this is a valid language file, get the language information (if available).
                 fillLanguageInfo curFileAsText, availableLanguages(numOfLanguages)
+                availableLanguages(numOfLanguages).filename = chkFile
                 numOfLanguages = numOfLanguages + 1
             
             End If
@@ -173,8 +265,28 @@ Private Sub checkAvailableLanguages()
     
     Loop
     
+    'Add a dummy entry for PhotoDemon's default language (en-US)
+    availableLanguages(numOfLanguages).filename = ""
+    availableLanguages(numOfLanguages).langID = "en-US"
+    availableLanguages(numOfLanguages).langName = "English (US) - Default"
+    availableLanguages(numOfLanguages).langStatus = "Complete"
+    availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
+    numOfLanguages = numOfLanguages + 1
+    
     'Resize the array to contain only the number of languages found
     ReDim Preserve availableLanguages(0 To numOfLanguages - 1) As pdLanguageFile
+    
+    'Sort the array alphabetically by language name (because we are going to fill the languages submenu with the entries)
+    sortLanguageData
+    
+    'Populate the languages menu
+    populateLanguageMenu
+    
+    'Mark the default language location, as other functions may need to know it
+    Dim i As Long
+    For i = 0 To numOfLanguages - 1
+        If StrComp(availableLanguages(i).langName, "English (US) - Default", vbTextCompare) = 0 Then defaultLanguage = i
+    Next i
     
     'TESTING: display the info we retrieved
     'Dim i As Long
@@ -182,6 +294,32 @@ Private Sub checkAvailableLanguages()
     '    MsgBox availableLanguages(i).langID & vbCrLf & availableLanguages(i).langName & vbCrLf & availableLanguages(i).langStatus & vbCrLf & availableLanguages(i).langVersion
     'Next i
     
+End Sub
+
+'Populate the Tools -> Languages menu
+Private Sub populateLanguageMenu()
+
+    'Start by unloading all current language menu entries
+    Dim i As Long
+    If FormMain.mnuLanguages.Count > 1 Then
+        For i = 0 To FormMain.mnuLanguages.Count - 1
+            Unload FormMain.mnuLanguages(i)
+        Next i
+    End If
+    
+    'Load all the menu entries we'll be needing.
+    If numOfLanguages > 1 Then
+        For i = 1 To numOfLanguages - 1
+            Load FormMain.mnuLanguages(i)
+        Next i
+    End If
+    
+    'Assign names to all the menu entries
+    For i = 0 To numOfLanguages - 1
+        FormMain.mnuLanguages(i).Caption = availableLanguages(i).langName
+        FormMain.mnuLanguages(i).Checked = False
+    Next i
+
 End Sub
 
 'Given a language file (or partial language file), extract the key language information and place it in the passed variable.
@@ -193,6 +331,44 @@ Private Sub fillLanguageInfo(ByRef fileString As String, ByRef targetLangHolder 
     targetLangHolder.langVersion = getTextBetweenTags(fileString, "langversion")
     targetLangHolder.langStatus = getTextBetweenTags(fileString, "langstatus")
     
+    'If, for some reason, the language name is not available, copy the language ID into its place
+    If targetLangHolder.langName = "" Then targetLangHolder.langName = UCase(targetLangHolder.langID)
+    
+End Sub
+
+'Sort the availableLanguages array alphabetically, using language names as the sort parameter
+Private Sub sortLanguageData()
+
+    Dim i As Long, j As Long
+    
+    'Loop through all entries in the languages array, sorting them as we go
+    For i = 0 To numOfLanguages - 1
+        For j = 0 To numOfLanguages - 1
+            
+            'Compare two language names, and if one is less (e.g. earlier alphabetically) than the other, swap them
+            If StrComp(availableLanguages(i).langName, availableLanguages(j).langName, vbTextCompare) = -1 Then
+                SwapLanguageData availableLanguages(i), availableLanguages(j)
+            End If
+        Next j
+    Next i
+
+End Sub
+
+'Swap the values of two language file headers
+Private Sub SwapLanguageData(ByRef langOne As pdLanguageFile, ByRef langTwo As pdLanguageFile)
+    Dim langTmp As pdLanguageFile
+    CopyLanguageData langTmp, langOne
+    CopyLanguageData langOne, langTwo
+    CopyLanguageData langTwo, langTmp
+End Sub
+
+'Copy the contents of one language file header over another
+Private Sub CopyLanguageData(ByRef dstLang As pdLanguageFile, ByRef srcLang As pdLanguageFile)
+    dstLang.langID = srcLang.langID
+    dstLang.langName = srcLang.langName
+    dstLang.langStatus = srcLang.langStatus
+    dstLang.langVersion = srcLang.langVersion
+    dstLang.filename = srcLang.filename
 End Sub
 
 'Given a file (as a String) and a tag (without brackets), return the text between that tag.

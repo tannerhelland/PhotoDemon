@@ -74,16 +74,23 @@ Public Sub LoadTheProgram()
     'Initialize a new language engine.
     Set g_Language = New pdTranslate
         
+    LoadMessage "Scanning for language files..."
+    
+    'Before doing anything else, check to see what languages are available in the language folder.
+    ' (Note that this function will also populate the Languages menu, though it won't check a language yet.)
+    g_Language.CheckAvailableLanguages
+        
     LoadMessage "Determining which language to use..."
         
-    'Determine which language to use.  (This function will take into account the system language at first-run, so it can
+    'Next, determine which language to use.  (This function will take into account the system language at first-run, so it can
     ' estimate which language to present to the user.)
     g_Language.DetermineLanguage
     
-    'The DetermineLanguage function will load all available languages, so once it has been run, we can load the Languages menu.
-    'g_Language.
+    LoadMessage "Apply selected language to program..."
     
-    'Apply that language to the program.
+    'Apply that language to the program.  If an approximate match was found (language but not region), the closest match will be
+    ' applied (which is preferable to defaulting to English).  That said, if the match was anything but perfect, a "select language"
+    ' dialog will still be presented to the user so they can pick whichever language they want to use.
     g_Language.ApplyLanguage
     
     
