@@ -27,7 +27,7 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     prepSafeArray srcSA, srcLayer
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
-    'Create one more local array.  This will contain the intermediate copy of the gaussian blur, which must be done in two passes
+    'Create one more local array.  This will contain the intermediate copy of the gaussian blur, as it must be done in two passes.
     Dim gaussLayer As pdLayer
     Set gaussLayer = New pdLayer
     gaussLayer.createFromExistingLayer srcLayer
