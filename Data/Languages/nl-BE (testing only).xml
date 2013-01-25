@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="windows-1252"?>
 <language>
 
-	<langid>en-GB</langid>
-	<langname>English (UK)</langname>
+	<langid>nl-BE</langid>
+	<langname>Vlaams (Nederlands)</langname>
 	<langversion>1.0.0</langversion>
-	<langstatus>Complete</langstatus>
+	<langstatus>Testing</langstatus>
 	
-	<author url="http://www.tannerhelland.com">Tanner Helland</author>
+	<author url="http://www.someurl.com">Frank Donckers</author>
 
 	<phrase>
 		<object></object>
