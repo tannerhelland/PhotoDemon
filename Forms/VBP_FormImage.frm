@@ -4,12 +4,12 @@ Begin VB.Form FormImage
    BackColor       =   &H00FFFFFF&
    Caption         =   "Image Window"
    ClientHeight    =   2580
-   ClientLeft      =   60
+   ClientLeft      =   120
    ClientTop       =   345
    ClientWidth     =   6015
    FillStyle       =   0  'Solid
    BeginProperty Font 
-      Name            =   "Arial"
+      Name            =   "Tahoma"
       Size            =   9.75
       Charset         =   0
       Weight          =   400
@@ -17,7 +17,6 @@ Begin VB.Form FormImage
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   Icon            =   "VBP_FormImage.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
