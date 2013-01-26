@@ -225,9 +225,9 @@ Attribute VB_Exposed = False
 'Copyright ©2000-2013 by Tanner Helland
 ' (Some segments adopted from the original version, which is ©1997-1999 by Brad Martinez, http://www.mvps.org - see Outside_ModFrx.bas for more details)
 'Created: 2/14/03
-'Last updated: 26/September/12
-'Last update: vastly improved preview rendering.  Small images are drawn at actual size.  Large images are resized to fit inside the
-'             demonstration picture box (with aspect ratio preserved).
+'Last updated: 25/January/13
+'Last update: fix rare out-of-bounds error on main listbox that only occurs when compiled (for some reason, ListIndex
+'              occasionally equals -1 after a click... and I'm not sure why)
 '
 'Module for importing images from VB binary files.  Allows the user to browse through all data
 ' within the resource file, and optionally load any images (ico, jpeg, whatever) contained therein.
@@ -349,7 +349,9 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub LstInfo_Click()
-  
+        
+    If LstInfo.ListIndex < 0 Then Exit Sub
+        
     Dim tmpImportLayer As pdLayer
     Set tmpImportLayer = New pdLayer
   
@@ -392,7 +394,7 @@ Private Sub LstInfo_Click()
             picDemo.Picture = Nothing
             LblData.Visible = True
             CmdOK.Enabled = False
-            If .ImageSize And (.ImageSize < 2 ^ 15) Then
+            If .ImageSize And (.ImageSize < 2 ^ 15) And (.ImageSize > 0) Then
                 LblData.Caption = "Binary data: " & StrConv(.Bits, vbUnicode)
             Else
                 LblData.Caption = PROGRAMNAME & " is unable to display this data.  It may be from an incompatible version of Visual Basic, the source file may be corrupted, or the data may exceed 32k in size."
