@@ -211,8 +211,9 @@ Attribute VB_Exposed = False
 'About Form
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 23/November/12
-'Last update: updated list to reflect recent changes to the codebase.
+'Last updated: 25/January/13
+'Last update: converted to names only; names and contributions made the form too crowded.  Note that a full list of
+'              both names and contributions can still be found in the code, the README, and on the website.
 '
 'A simple "about"/credits form.  Contains credits, copyright, and the program logo.
 '
