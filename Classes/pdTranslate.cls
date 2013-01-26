@@ -13,17 +13,30 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Central Language and Translation Handler
-'Copyright ©2011-2012 by Frank Donckers and Tanner Helland
+'Copyright ©2012-2013 by Frank Donckers and Tanner Helland
 'Created: 12/21/12
 'Last updated: 22/January/13
 'Last update: began official implementation
 '
-'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.
+'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
+' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
+' also for taking the time to translate the entire PhotoDemon text collection into multiple languages.
+' (This was a huge project, as PhotoDemon contains a LOT of text.)
 '
-'Most of the crucial translation work happens inside a global object called "g_Language", which is an object
-' of this class (pdTranslate).
+'The latest revision of the translation engine operates on translation files stored as XML.  You can see
+' (and freely edit) these files inside the /Data/Languages/ subfolder of the PhotoDemon directory.
 '
-'Better description forthcoming once I actually have some code in place...
+'Many features are on the roadmap for translation, including things like interactive editing and automatic
+' updating of translation files, but this version of the engine focuses primarily on just getting the damn
+' thing implemented across all the text in the program, including all controls, messages, message boxes,
+' and more.
+'
+'Most of the crucial translation work in the program happens inside a global object called "g_Language",
+' which is an object of this class (pdTranslate).  Most subs and functions should be self-explanatory.  To
+' really get a feel for how the translation engine works, I suggest starting with the Loading module, and
+' looking at the order in which the various subs in this class are called.
+'
+'Additional description forthcoming once I actually have some code in place...
 '
 '***************************************************************************
 
@@ -31,7 +44,7 @@ Option Explicit
 
 'Basic information about a language file is stored in this type of variable
 Private Type pdLanguageFile
-    filename As String
+    FileName As String
     langID As String
     langName As String
     langVersion As String
@@ -68,6 +81,28 @@ Private Const LANGREASON_NOMATCH As Long = 2            ' 2) No language match f
 Private Const LANGREASON_FILEMISSING As Long = 3        ' 3) Requested language file couldn't be located
 Private reasonForLanguageDialog As Long
 
+'The full contents of the translation file will be loaded into this string.
+Private translationFileContents As String
+
+'If the currently active language is different from the default language, this function will return TRUE
+Public Function translationActive() As Boolean
+
+    If curLanguage = defaultLanguage Then
+        translationActive = False
+    Else
+        translationActive = True
+    End If
+
+End Function
+
+'Given an index in the availableLanguages array, mark that as the new language (including saving it to the INI file)
+Public Sub activateNewLanguage(ByVal newLangIndex As Long)
+
+    curLanguage = newLangIndex
+    g_UserPreferences.SetPreference_String "General Preferences", "CurrentLanguageFile", availableLanguages(newLangIndex).FileName
+    ApplyLanguage
+
+End Sub
 
 'Which language file is currently active.  This may not be the same one as the INI file (for example, when the
 ' program is first run, PhotoDemon has to estimate which language file to use).
@@ -122,7 +157,7 @@ Public Sub DetermineLanguage()
         
         'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
         Else
-            If FileExist(curLanguageFile) Then
+            If FileExist(g_UserPreferences.getLanguagePath & curLanguageFile) Then
                 curLanguage = getLangIndexFromFile(curLanguageFile)
             Else
                 curLanguage = defaultLanguage
@@ -140,7 +175,7 @@ Private Function getLangIndexFromFile(ByVal srcFile As String) As Long
     
     Dim i As Long
     For i = 0 To numOfLanguages - 1
-        If StrComp(availableLanguages(i).filename, g_UserPreferences.getLanguagePath & srcFile, vbTextCompare) = 0 Then
+        If StrComp(availableLanguages(i).FileName, srcFile, vbTextCompare) = 0 Then
             getLangIndexFromFile = i
             Exit Function
         End If
@@ -192,6 +227,20 @@ Public Sub ApplyLanguage()
     For i = 0 To numOfLanguages - 1
         If curLanguage = i Then FormMain.mnuLanguages(i).Checked = True Else FormMain.mnuLanguages(i).Checked = False
     Next i
+    
+    'If the language is set to anything other than the default, load the contents of the language file into memory.
+    If translationActive Then
+        translationFileContents = ""
+        translationFileContents = getFileAsString(g_UserPreferences.getLanguagePath & availableLanguages(curLanguage).FileName)
+        'MsgBox availableLanguages(curLanguage).FileName & vbCrLf & translationFileContents
+    End If
+
+    'Redraw all captions on the main form
+    makeFormPretty FormMain
+    If FormMain.Visible Then
+        ApplyAllMenuIcons
+        ResetMenuIcons
+    End If
 
 End Sub
 
@@ -253,7 +302,7 @@ Public Sub CheckAvailableLanguages()
             
                 'If this is a valid language file, get the language information (if available).
                 fillLanguageInfo curFileAsText, availableLanguages(numOfLanguages)
-                availableLanguages(numOfLanguages).filename = chkFile
+                availableLanguages(numOfLanguages).FileName = chkFile
                 numOfLanguages = numOfLanguages + 1
             
             End If
@@ -266,7 +315,7 @@ Public Sub CheckAvailableLanguages()
     Loop
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
-    availableLanguages(numOfLanguages).filename = ""
+    availableLanguages(numOfLanguages).FileName = ""
     availableLanguages(numOfLanguages).langID = "en-US"
     availableLanguages(numOfLanguages).langName = "English (US) - Default"
     availableLanguages(numOfLanguages).langStatus = "Complete"
@@ -368,7 +417,7 @@ Private Sub CopyLanguageData(ByRef dstLang As pdLanguageFile, ByRef srcLang As p
     dstLang.langName = srcLang.langName
     dstLang.langStatus = srcLang.langStatus
     dstLang.langVersion = srcLang.langVersion
-    dstLang.filename = srcLang.filename
+    dstLang.FileName = srcLang.FileName
 End Sub
 
 'Given a file (as a String) and a tag (without brackets), return the text between that tag.
@@ -482,3 +531,160 @@ Private Function getFileAsString(ByVal fName As String) As String
     End If
     
 End Function
+
+'Given the translated caption of a message or control, return the original translation from the active translation file
+Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As String
+
+    'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
+    curCaption = Trim(curCaption)
+    curCaption = "<translation>" & curCaption & "</translation>"
+    
+    Dim phraseLocation As Long
+    phraseLocation = getPhraseTagLocation(curCaption)
+    
+    'Make sure a phrase tag was found
+    If phraseLocation > 0 Then
+        
+        'Retrieve the <translation> tag inside this phrase tag
+        getOriginalTagFromTranslation = getTextBetweenTags(translationFileContents, "original", phraseLocation)
+        
+    Else
+        getOriginalTagFromTranslation = ""
+    End If
+
+End Function
+
+'Given the original caption of a message or control, return the matching translation from the active translation file
+Private Function getTranslationTagFromCaption(ByVal origCaption As String) As String
+
+    'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
+    origCaption = Trim(origCaption)
+    origCaption = "<original>" & origCaption & "</original>"
+    
+    Dim phraseLocation As Long
+    phraseLocation = getPhraseTagLocation(origCaption)
+    
+    'Make sure a phrase tag was found
+    If phraseLocation > 0 Then
+        
+        'Retrieve the <translation> tag inside this phrase tag
+        getTranslationTagFromCaption = getTextBetweenTags(translationFileContents, "translation", phraseLocation)
+        
+    Else
+        getTranslationTagFromCaption = ""
+    End If
+
+End Function
+
+'Given a string, return the location of the <phrase> tag enclosing said string
+Private Function getPhraseTagLocation(ByRef srcString As String) As Long
+
+    Dim sLocation As Long
+    sLocation = InStr(1, translationFileContents, srcString, vbTextCompare)
+    
+    'If the source string was found, work backward to find the phrase tag location
+    If sLocation > 0 Then
+        sLocation = InStrRev(translationFileContents, "<phrase>", sLocation, vbTextCompare)
+        If sLocation > 0 Then
+            getPhraseTagLocation = sLocation
+        Else
+            getPhraseTagLocation = 0
+        End If
+    Else
+        getPhraseTagLocation = 0
+    End If
+
+End Function
+
+'Given an object with a guaranteed .Caption property (command button, label, etc.), replace the caption with a translation from file
+Public Sub translateObjectCaption(ByRef srcObject As Control)
+
+    Dim searchString As String, newString As String
+    searchString = srcObject.Caption
+    newString = getTranslationTagFromCaption(searchString)
+    
+    'If a new string was found, apply it to the object's caption
+    If newString <> "" Then
+        
+        'Check boxes, option buttons, and forms require a space at the front of their captions (it looks better)
+        If (TypeOf srcObject Is CheckBox) Or (TypeOf srcObject Is OptionButton) Or (TypeOf srcObject Is Form) Then
+            srcObject.Caption = " " & newString
+        Else
+            srcObject.Caption = newString
+        End If
+    End If
+
+End Sub
+
+'Given an object with a guaranteed .Caption property (command button, label, etc.), replace a translated caption with the original
+Public Sub restoreObjectCaption(ByRef srcObject As Control)
+
+    Dim searchString As String, newString As String
+    searchString = srcObject.Caption
+    newString = getOriginalTagFromTranslation(searchString)
+    
+    'If a new string was found, apply it to the object's caption
+    If newString <> "" Then
+        
+        'Check boxes, option buttons, and forms require a space at the front of their captions (it looks better)
+        If (TypeOf srcObject Is CheckBox) Or (TypeOf srcObject Is OptionButton) Or (TypeOf srcObject Is Form) Then
+            srcObject.Caption = " " & newString
+        Else
+            srcObject.Caption = newString
+        End If
+    End If
+
+End Sub
+
+'Restore a form caption
+Public Sub restoreFormCaption(ByRef srcForm As Form)
+
+    Dim searchString As String, newString As String
+    searchString = srcForm.Caption
+    newString = getOriginalTagFromTranslation(searchString)
+    
+    'If a new string was found, apply it to the object's caption
+    If newString <> "" Then srcForm.Caption = newString
+    
+End Sub
+
+'Translate a form caption
+Public Sub translateFormCaption(ByRef srcForm As Form)
+
+    Dim searchString As String, newString As String
+    searchString = srcForm.Caption
+    newString = getTranslationTagFromCaption(searchString)
+    
+    'If a new string was found, apply it to the object's caption
+    If newString <> "" Then srcForm.Caption = newString
+    
+End Sub
+
+'Return all translations on a form, and replace them with their original English equivalents
+Public Sub undoTranslations(ByRef srcForm As Form)
+
+    'Start by returning the form's original caption
+    restoreFormCaption srcForm
+    
+    'Iterate through every control on the form, and restore original captions as necessary
+    Dim eControl As Control
+    For Each eControl In srcForm.Controls
+    
+        'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is Menu) Or (TypeOf eControl Is jcbutton) Then
+                                    
+            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then
+                g_Language.restoreObjectCaption eControl
+                DoEvents
+            End If
+               
+        End If
+            
+        'If this is a list box or combo box, replacing the text is a bit more confusing
+        If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
+            
+        End If
+    
+    Next
+
+End Sub
