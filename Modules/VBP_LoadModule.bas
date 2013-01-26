@@ -13,7 +13,10 @@ Attribute VB_Name = "Loading"
 
 Option Explicit
 
-'IT ALL BEGINS HERE (after Sub Main, that is)
+'IT ALL BEGINS HERE (after Sub Main, that is).
+' Note that this function is called AFTER FormMain has been loaded.  FormMain is loaded - but not visible - so it can be operated
+' on by functions called from this routine.  (It is necessary to load the main form first, since a number of these operations -
+' like loading all PNG menu icons from the resource file - operate on the main form.)
 Public Sub LoadTheProgram()
     
     '*************************************************************************************************************************************
@@ -86,11 +89,10 @@ Public Sub LoadTheProgram()
     ' estimate which language to present to the user.)
     g_Language.DetermineLanguage
     
-    LoadMessage "Apply selected language to program..."
+    LoadMessage "Applying selected language..."
     
-    'Apply that language to the program.  If an approximate match was found (language but not region), the closest match will be
-    ' applied (which is preferable to defaulting to English).  That said, if the match was anything but perfect, a "select language"
-    ' dialog will still be presented to the user so they can pick whichever language they want to use.
+    'Apply that language to the program.  This involves loading the translation file into memory, which can take a bit of time,
+    ' but it only needs to be done once.  From that point forward, any text requests will operate on the in-memory copy of the file.
     g_Language.ApplyLanguage
     
     
