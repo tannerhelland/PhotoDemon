@@ -84,6 +84,14 @@ Private reasonForLanguageDialog As Long
 'The full contents of the translation file will be loaded into this string.
 Private translationFileContents As String
 
+'Is the class ready to be used for translations?
+Private isReady As Boolean
+
+'If the class has successfully initialized a translation file, this function will return TRUE
+Public Function readyToTranslate() As Boolean
+    readyToTranslate = isReady
+End Function
+
 'If the currently active language is different from the default language, this function will return TRUE
 Public Function translationActive() As Boolean
 
@@ -167,6 +175,8 @@ Public Sub DetermineLanguage()
         End If
     
     End If
+    
+    isReady = True
 
 End Sub
 
@@ -594,6 +604,19 @@ Private Function getPhraseTagLocation(ByRef srcString As String) As Long
         getPhraseTagLocation = 0
     End If
 
+End Function
+
+'Given a message (basically, a string), return the translation of said string.
+' If a translation cannot be found, return the original string.
+Public Function translateMessage(ByRef srcMessage As String) As String
+    
+    Dim searchString As String, newString As String
+    searchString = srcMessage
+    newString = getTranslationTagFromCaption(searchString)
+    
+    'If a new string was found, apply it to the object's caption
+    If newString <> "" Then translateMessage = newString Else translateMessage = srcMessage
+    
 End Function
 
 'Given an object with a guaranteed .Caption property (command button, label, etc.), replace the caption with a translation from file

@@ -276,11 +276,21 @@ End Sub
 'This popular function is used to display a message in the main form's status bar
 Public Sub Message(ByVal MString As String)
 
-    If MacroStatus = MacroSTART Then MString = MString & " {-Recording-}"
+    Dim newString As String
+    newString = MString
+
+    'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
+    If (Not (g_Language Is Nothing)) Then
+        If g_Language.readyToTranslate Then
+            If g_Language.translationActive Then newString = g_Language.translateMessage(MString)
+        End If
+    End If
+
+    If MacroStatus = MacroSTART Then newString = newString & " {-Recording-}"
     
     If MacroStatus <> MacroBATCH Then
         If FormMain.Visible Then
-            g_ProgBar.Text = MString
+            g_ProgBar.Text = newString
             g_ProgBar.Draw
         End If
     End If
