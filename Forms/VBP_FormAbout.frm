@@ -4,7 +4,7 @@ Begin VB.Form FormAbout
    BackColor       =   &H00FFFFFF&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
-   ClientHeight    =   9630
+   ClientHeight    =   9015
    ClientLeft      =   2340
    ClientTop       =   1875
    ClientWidth     =   9000
@@ -22,7 +22,7 @@ Begin VB.Form FormAbout
    Icon            =   "VBP_FormAbout.frx":0000
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   642
+   ScaleHeight     =   601
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   600
    ShowInTaskbar   =   0   'False
@@ -34,7 +34,7 @@ Begin VB.Form FormAbout
       Height          =   495
       Left            =   7440
       TabIndex        =   0
-      Top             =   9000
+      Top             =   8400
       Width           =   1365
    End
    Begin VB.Label lblzLib 
@@ -56,7 +56,7 @@ Begin VB.Form FormAbout
       MouseIcon       =   "VBP_FormAbout.frx":000C
       MousePointer    =   99  'Custom
       TabIndex        =   8
-      Top             =   8640
+      Top             =   8040
       Width           =   1200
    End
    Begin VB.Label lblEZTW32 
@@ -78,7 +78,7 @@ Begin VB.Form FormAbout
       MouseIcon       =   "VBP_FormAbout.frx":015E
       MousePointer    =   99  'Custom
       TabIndex        =   7
-      Top             =   8640
+      Top             =   8040
       Width           =   1530
    End
    Begin VB.Label lblPngnq 
@@ -100,7 +100,7 @@ Begin VB.Form FormAbout
       MouseIcon       =   "VBP_FormAbout.frx":02B0
       MousePointer    =   99  'Custom
       TabIndex        =   6
-      Top             =   8640
+      Top             =   8040
       Width           =   1470
    End
    Begin VB.Label lblFreeImage 
@@ -122,7 +122,7 @@ Begin VB.Form FormAbout
       MouseIcon       =   "VBP_FormAbout.frx":0402
       MousePointer    =   99  'Custom
       TabIndex        =   5
-      Top             =   8640
+      Top             =   8040
       Width           =   1710
    End
    Begin VB.Label lblLinks 
@@ -134,7 +134,7 @@ Begin VB.Form FormAbout
       Height          =   435
       Left            =   240
       TabIndex        =   4
-      Top             =   8160
+      Top             =   7560
       Width           =   8580
    End
    Begin VB.Line Line3 
@@ -236,34 +236,35 @@ Private Sub Form_Load()
     curCredit = 1
     
     'Shout-outs to other designers, programmers, testers and sponsors who provided various resources
-    GenerateThankyou "Kroc of camendesign.com (UI design and organization)", "http://camendesign.com"
-    GenerateThankyou "Leandro Ascierto (embedding PNGs as menu icons)", "http://leandroascierto.com/blog/clsmenuimage/"
-    GenerateThankyou "LaVolpe (automated VB6 Manifest Creator tool)", "http://www.vbforums.com/showthread.php?t=606736"
-    GenerateThankyou "Jason Bullen (knot-based cubic spline interpolation)", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
-    GenerateThankyou "Waty Thierry (printer interfacing in VB)", "http://www.ppreview.net/"
-    GenerateThankyou "Dosadi (EZTW32 scanner/digital camera library)", "http://eztwain.com/eztwain1.htm"
-    GenerateThankyou "Carles P.V., Avery, Dana Seaman (GDI+ references)", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
-    GenerateThankyou "Brad Martinez (VB binary file extraction)", "http://btmtz.mvps.org/gfxfromfrx/"
-    GenerateThankyou "Paul Turcksin (dynamic MDI child icons)", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1"
-    GenerateThankyou "Manuel Augusto Santos ('Artistic Contour')", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
-    GenerateThankyou "Ron van Tilburg (native-VB Xiaolin Wu antialiasing)", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
-    GenerateThankyou "Floris van de Berg, Hervé Drolon, Carsten Klein (FreeImage library, GPLv2)", "http://freeimage.sourceforge.net/"
-    GenerateThankyou "Jean-Loup Gailly, Mark Adler, Gilles Vollant (zLib library and wrapper)", "http://www.winimage.com/zLibDll/index.html"
-    GenerateThankyou "Adrian Pellas-Rice, Kornel Lesinski, Stuart Coyle, Greg Roelofs, Anthony Dekker (pngnq-s9)", "http://sourceforge.net/projects/pngnqs9/"
-    GenerateThankyou "Juned Chhipa ('jcButton 1.7' customizable command button replacement control)", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
-    GenerateThankyou "Steve McMahon (CommonDialog interface, accelerator key handler, progress bar)", "http://www.vbaccelerator.com/home/VB/index.asp"
-    GenerateThankyou "chrfb of deviantart.com (PhotoDemon's icon, 'Ecqlipse 2', CC-BY-NC-SA-3.0)", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
-    GenerateThankyou "Everaldo and The Crystal Project (Crystal icons, LGPL-licensed, click for details)", "http://www.everaldo.com/crystal/"
-    GenerateThankyou "Jerry Huxtable (Distort filters, Apache 2.0)", "http://www.jhlabs.com/ie/index.html"
-    GenerateThankyou "Yusuke Kamiyamane (Fugue icon set, CC-BY-3.0)", "http://p.yusukekamiyamane.com/"
-    GenerateThankyou "The Tango Icon Library (public-domain)", "http://tango.freedesktop.org/"
-    GenerateThankyou "Mark James (Silk icon set, CC-BY-2.5)", "http://www.famfamfam.com/lab/icons/silk/"
-    GenerateThankyou "Phil Fresle (SHA-256 hash implementation)", "http://www.frez.co.uk/vb6.aspx"
+    GenerateThankyou "Kroc and camendesign.com", "http://camendesign.com"
+    GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
+    GenerateThankyou "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
+    GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
+    GenerateThankyou "Waty Thierry", "http://www.ppreview.net/"
+    GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm"
+    GenerateThankyou "Carles P.V., Avery, Dana Seaman", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
+    GenerateThankyou "Brad Martinez", "http://btmtz.mvps.org/gfxfromfrx/"
+    GenerateThankyou "Paul Turcksin", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1"
+    GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
+    GenerateThankyou "Ron van Tilburg", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
+    GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
+    GenerateThankyou "chrfb of deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
+    GenerateThankyou "The Tango Icon Library", "http://tango.freedesktop.org/"
+    GenerateThankyou "Everaldo and The Crystal Project", "http://www.everaldo.com/crystal/"
+    GenerateThankyou "Adrian Pellas-Rice, Kornel Lesinski, Stuart Coyle, Greg Roelofs, Anthony Dekker", "http://sourceforge.net/projects/pngnqs9/"
+    GenerateThankyou "Steve McMahon and vbaccelerator.com", "http://www.vbaccelerator.com/home/VB/index.asp"
+    GenerateThankyou "Jean-Loup Gailly, Mark Adler, Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
+    GenerateThankyou "Floris van de Berg, Hervé Drolon, Carsten Klein", "http://freeimage.sourceforge.net/"
+    GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
+    GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
+    GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
+    GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
     GenerateThankyou "Dave Jamison", "http://www.modeltrainsoftware.com/"
+    GenerateThankyou "Frank Donckers"
+    GenerateThankyou "Zhu JinYong"
     GenerateThankyou "Herman Liu"
     GenerateThankyou "Robert Rayment"
     GenerateThankyou "Alfred Hellmueller"
-    GenerateThankyou "Zhu JinYong"
     
     lblThanks(0).MousePointer = vbDefault
     
@@ -280,7 +281,7 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
     
     'Because I now have too many people to thank, it's necessary to split the list into two columns
     Dim columnLimit As Long
-    columnLimit = 19
+    columnLimit = 17
     
     If curCredit = 1 Then
         lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12
@@ -290,10 +291,10 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
         lblThanks(curCredit).Left = lblThanks(0).Left + 2
     ElseIf curCredit = columnLimit Then
         lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12 - (lblThanks(columnLimit - 1).Top - lblThanks(0).Top)
-        lblThanks(curCredit).Left = lblThanks(0).Left + 325
+        lblThanks(curCredit).Left = lblThanks(0).Left + 275
     Else
         lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
-        lblThanks(curCredit).Left = lblThanks(0).Left + 325
+        lblThanks(curCredit).Left = lblThanks(0).Left + 275
     End If
     
     lblThanks(curCredit).Caption = thxText
