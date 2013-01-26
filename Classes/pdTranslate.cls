@@ -683,7 +683,7 @@ Public Sub translateFormCaption(ByRef srcForm As Form)
     
 End Sub
 
-'Return all translations on a form, and replace them with their original English equivalents
+'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
 Public Sub undoTranslations(ByRef srcForm As Form)
 
     'Start by returning the form's original caption
@@ -710,4 +710,36 @@ Public Sub undoTranslations(ByRef srcForm As Form)
     
     Next
 
+End Sub
+
+'Enumerate all captions on a form (and its controls), and replace them with the translated equivalents of the current language
+Public Sub applyTranslations(ByRef srcForm As Form)
+
+    'Start by translating the form's caption
+    translateFormCaption srcForm
+
+    'Iterate through every control on the form, and restore original captions as necessary
+    Dim i As Long
+    Dim eControl As Control
+    For Each eControl In srcForm.Controls
+    
+        'The goal is to apply translations to any object with a non-blank, non-numeric caption property
+        
+        'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is Menu) Or (TypeOf eControl Is jcbutton) Then
+            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then g_Language.translateObjectCaption eControl
+        End If
+            
+        'If this is a list box or combo box, replacing the text is a bit more confusing
+        If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
+            
+            'Enumerate through each entry in the control
+            For i = 0 To eControl.ListCount - 1
+                If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = translateMessage(eControl.List(i))
+            Next i
+            
+        End If
+            
+    Next
+    
 End Sub

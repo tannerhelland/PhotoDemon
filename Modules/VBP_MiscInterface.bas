@@ -109,34 +109,14 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         If (TypeOf eControl Is CommandButton) Then
             If (eControl.Caption = "&Cancel") Then eControl.TabIndex = 1
         End If
-        
-        'STEP 5: apply translations to any object with a non-blank, non-numeric caption property
-        If g_Language.translationActive Then
                 
-            'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is Menu) Or (TypeOf eControl Is jcbutton) Then
-                    
-                If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then
-                    g_Language.translateObjectCaption eControl
-                    DoEvents
-                End If
-                
-            End If
-            
-            'If this is a list box or combo box, replacing the text is a bit more confusing
-            If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
-            
-            End If
-            
-        End If
-        
     Next
     
     'FORM STEP 2: subclass this form and force controls to render transparent borders properly.
     If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
     
-    'FORM STEP 3: translate the form caption
-    If g_Language.translationActive Then g_Language.translateFormCaption tForm
+    'FORM STEP 3: translate the form (and all controls on it)
+    If g_Language.translationActive Then g_Language.applyTranslations tForm
     
     'Refresh all non-MDI forms after making the changes above
     If tForm.Name <> "FormMain" Then tForm.Refresh
