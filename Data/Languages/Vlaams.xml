@@ -1,0 +1,4843 @@
+<?xml version="1.0" encoding="windows-1252"?>
+
+<language>
+
+	<langid>??-??</langid>
+	<langname>Vlaams (Nederlands)</langname>
+	<langversion>1.0.0</langversion>
+	<langstatus>Mostly complete</langstatus>
+	
+	<author>Frank Donckers</author>
+
+	<phrase>
+		<original>Initializing software...</original>
+		<translation>Initialisatie software...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Initializing all program directories...</original>
+		<translation>Initialisatie programma mappen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading all user settings...</original>
+		<translation>Laden gebruikersinstellingen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading plugins...</original>
+		<translation>Laden van insteekmodules ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading import/export libraries...</original>
+		<translation>Laden import / export bibliotheken ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Initializing all user settings...</original>
+		<translation>Initialiseren gebruikersinstellingen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Initializing zoom processor...</original>
+		<translation>Initialiseren zoomprocessor ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Initializing selection tool...</original>
+		<translation>Initialiseren selectiegereedschap ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Analyzing current monitor setup...</original>
+		<translation>Analyseren van de huidige monitor setup ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Initializing user interface...</original>
+		<translation>Initialiseren gebruikersinterface ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open one or more images for editing.</original>
+		<translation>Open één of meer te bewerken afbeeldingen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>(Another way to open images is dragging them from your desktop</original>
+		<translation>(Een andere manier om afbeeldingen te openen, is ze vanaf het bureau</translation>
+	</phrase>
+
+	<phrase>
+		<original>or Windows Explorer and dropping them onto PhotoDemon.)</original>
+		<translation>Windows Verkenner naar PhotoDemon te slepen.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close the current image.</original>
+		<translation>Sluit de huidige afbeelding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If the current image has not been saved, you will</original>
+		<translation>Als de huidige afbeelding niet opgeslagen is, dan zal</translation>
+	</phrase>
+
+	<phrase>
+		<original>receive a prompt to save it before it closes.</original>
+		<translation>een dialoogscherm openen, om ze op te slaan voordat ze wordt geslote</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current image.</original>
+		<translation>Bewaar de afbeelding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>WARNING: this will overwrite the current image file.</original>
+		<translation>LET OP: dit zal de huidige afbeelding overschrijven.</translation>
+	</phrase>
+
+	<phrase>
+		<original>To save to a different file, use the 'Save As' button.</original>
+		<translation>Om op te slaan naar een ander bestand, gebruikt u de ' Opslaan als</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current image to a new file.</original>
+		<translation>Bewaar de afbeelding in een nieuw bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close the current image.</original>
+		<translation>Sluit de huidige afbeelding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Because you have turned off save prompts (via Edit -> Preferences)</original>
+		<translation>Omdat je het vragen voor opslaan hebt uitgeschakeld ??(via Bewerken</translation>
+	</phrase>
+
+	<phrase>
+		<original>you WILL NOT receive a prompt to save this image before it closes.</original>
+		<translation>Zal er niet gevraagd worden om de afbeelding op te slaan voordat ze</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fixing icon...</original>
+		<translation>Instellen pictogram ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Generating menu icons...</original>
+		<translation>Genereren van menu iconen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Enabling user interface...</original>
+		<translation>Inschakelen van user interface ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Initializing progress bar...</original>
+		<translation>Initialiseren voortgangsbalk ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please load an image.  (The large 'Open Image' button at the top-left should do the trick)</original>
+		<translation>Gelieve een afbeelding te laden. (Met de grote 'Afbeelding openen' knop bovenaan links moet het lukken!)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Captioning main form...</original>
+		<translation>Opschrift hoofdscherm ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preparing custom child icon handler...</original>
+		<translation>Voorbereiden aangepaste child icon handler ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Checking command line...</original>
+		<translation>Controle van command line ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading image(s)...</original>
+		<translation>Laden van afbeelding(en) ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>All preparations successful. Loading final interface...</original>
+		<translation>Alle preparaties succesvol. Laden laatste interface ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>LossLess (1:1)</original>
+		<translation>Verliesvrij (1:1)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Low compression, good image quality (16:1)</original>
+		<translation>Lage compressie, goede beeldkwaliteit (16:1)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Moderate compression, medium image quality (32:1)</original>
+		<translation>Matige compressie, medium beeldkwaliteit (32:1)</translation>
+	</phrase>
+
+	<phrase>
+		<original>High compression, poor image quality (64:1)</original>
+		<translation>Hoge compressie, slechte beeldkwaliteit (64:1)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Super compression, very poor image quality (256:1)</original>
+		<translation>Super compressie, zeer slechte beeldkwaliteit (256:1)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom ratio (X:1)</original>
+		<translation>Aangepaste Ratio (X:1)</translation>
+	</phrase>
+
+	<phrase>
+		<original>image compression ratio:</original>
+		<translation>Afbeelding compressieverhouding:</translation>
+	</phrase>
+
+	<phrase>
+		<original>high quality, large file</original>
+		<translation>hoge kwaliteit, groot bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>low quality, small file</original>
+		<translation>lage kwaliteit, klein bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>Ok</original>
+		<translation>OK</translation>
+	</phrase>
+
+	<phrase>
+		<original>Cancel</original>
+		<translation>Annuleren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Waiting for user to specify JPEG-2000 export options...</original>
+		<translation>Wacht op specificaties van gebruiker voor JPEG-2000 export opties...</translation>
+	</phrase>
+
+	<phrase>
+		<original>JPEG 2000 Export Options</original>
+		<translation>JPEG 2000 Export Opties</translation>
+	</phrase>
+
+	<phrase>
+		<original><< Hide advanced settings</original>
+		<translation><< Verberg geavanceerde instellingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Show advanced settings >></original>
+		<translation>Toon geavanceerde instellingen >></translation>
+	</phrase>
+
+	<phrase>
+		<original>Perfect</original>
+		<translation>perfect</translation>
+	</phrase>
+
+	<phrase>
+		<original>Excellent</original>
+		<translation>uitstekend</translation>
+	</phrase>
+
+	<phrase>
+		<original>Good</original>
+		<translation>goed</translation>
+	</phrase>
+
+	<phrase>
+		<original>Average</original>
+		<translation>gemiddeld</translation>
+	</phrase>
+
+	<phrase>
+		<original>Low</original>
+		<translation>laag</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom value</original>
+		<translation>aangepaste waarde</translation>
+	</phrase>
+
+	<phrase>
+		<original>Waiting for user to specify JPEG export options...</original>
+		<translation>Wacht op specificaties van gebruiker voor JPEG export opties...</translation>
+	</phrase>
+
+	<phrase>
+		<original>(best quality)</original>
+		<translation>(beste kwaliteit)</translation>
+	</phrase>
+
+	<phrase>
+		<original>(good quality)</original>
+		<translation>(goede kwaliteit)</translation>
+	</phrase>
+
+	<phrase>
+		<original>(moderate quality)</original>
+		<translation>(matige kwaliteit)</translation>
+	</phrase>
+
+	<phrase>
+		<original>(low quality)</original>
+		<translation>(lage kwaliteit)</translation>
+	</phrase>
+
+	<phrase>
+		<original>n/a</original>
+		<translation>n/a</translation>
+	</phrase>
+
+	<phrase>
+		<original>advanced settings require the FreeImage plugin</original>
+		<translation>geavanceerde instellingen vereisen de FreeImage plugin</translation>
+	</phrase>
+
+	<phrase>
+		<original>JPEG Export Options</original>
+		<translation>JPEG exportopties</translation>
+	</phrase>
+
+	<phrase>
+		<original>image quality:</original>
+		<translation>afbeeldingskwaliteit:</translation>
+	</phrase>
+
+	<phrase>
+		<original>advanced JPEG settings:</original>
+		<translation>geavanceerde JPEG-instellingen:</translation>
+	</phrase>
+
+	<phrase>
+		<original>optimize (takes slightly longer, but results in a smaller file)</original>
+		<translation>optimaliseren (duurt iets langer, maar resulteert in een kleiner bestand)</translation>
+	</phrase>
+
+	<phrase>
+		<original>embed thumbnail image</original>
+		<translation>insluiten miniatuurafbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>use progressive encoding</original>
+		<translation>gebruik progressieve codering</translation>
+	</phrase>
+
+	<phrase>
+		<original>use specific subsampling:</original>
+		<translation>gebruik maken van specifieke subsampling:</translation>
+	</phrase>
+
+	<phrase>
+		<original>is an animated GIF file ( ###### frames in total).</original>
+		<translation>is een geanimeerd GIF-bestand ( ###### frames in totaal).</translation>
+	</phrase>
+
+	<phrase>
+		<original>How would you like to proceed?</original>
+		<translation>Hoe wilt u doorgaan?</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load each frame as a separate image</original>
+		<translation>Laad elk frame als een nieuwe afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>This option will load every frame in the animated GIF file as an individual image.</original>
+		<translation>Deze optie zal elke frame in het geanimeerde GIF-bestand laden als een individuele afbeelding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load all frames</original>
+		<translation>Laad alle frames</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load only the first frame</original>
+		<translation>Laad alleen het eerste frame</translation>
+	</phrase>
+
+	<phrase>
+		<original>This option will only load a single frame from the animated GIF file,</original>
+		<translation>Deze optie zal maar 1 frame laden van het geanimeerde GIF-bestand,</translation>
+	</phrase>
+
+	<phrase>
+		<original>effectively treating at as a non-animated GIF file.</original>
+		<translation>en zal het effectief behandelen als een niet-geanimeerde GIF-bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load one frame only</original>
+		<translation>Laad slechts een frame</translation>
+	</phrase>
+
+	<phrase>
+		<original>contains multiple pages ( ###### in total).</original>
+		<translation>bevat meerdere pagina's( ###### in totaal).</translation>
+	</phrase>
+
+	<phrase>
+		<original>How would you like to proceed?</original>
+		<translation>Hoe wilt u doorgaan?</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load each page as a separate image</original>
+		<translation>Laad elke pagina als een nieuwe afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>This option will load every page in the TIFF file as an individual image.</original>
+		<translation>Deze optie zal elke pagina in het TIFF-bestand laden als een individuele afbeelding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load all pages</original>
+		<translation>Laad alle pagina's</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load only the first page</original>
+		<translation>Laad alleen de eerste pagina</translation>
+	</phrase>
+
+	<phrase>
+		<original>This option will only load a single page from the TIFF file.</original>
+		<translation>Deze optie zal maar 1 frame laden van het TIFF-bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load one page only</original>
+		<translation>Laad slechts een pagina</translation>
+	</phrase>
+
+	<phrase>
+		<original>Multiple Images Found</original>
+		<translation>Meerdere beelden Gevonden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Remember my decision for future multi-image files</original>
+		<translation>Onthoud mijn beslissing voor multi-beeldbestanden voor de toekomst</translation>
+	</phrase>
+
+	<phrase>
+		<original>has unsaved changes.  What would you like to do?</original>
+		<translation>heeft niet opgeslagen wijzigingen. Wat zou je graag willen doen?</translation>
+	</phrase>
+
+	<phrase>
+		<original>NOTE: if you click 'Save',</original>
+		<translation>OPMERKING: Als u klikt op 'Opslaan',</translation>
+	</phrase>
+
+	<phrase>
+		<original>PhotoDemon will save this image using its current file name.</original>
+		<translation>bewaart PhotoDemon deze afbeelding met behulp van de huidige bestandsnaam.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If you want to save it with a different file name, please select 'Cancel', then use the</original>
+		<translation>Als u het wilt opslaan onder een andere bestandsnaam, selecteer 'Annuleren', gebruik dan de</translation>
+	</phrase>
+
+	<phrase>
+		<original>File -> Save As menu item.</original>
+		<translation>Bestand -> Opslaan uit het menu.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Because this image has not been saved before, you will be presented with a full Save As dialog.</original>
+		<translation>Omdat dit beeld nog niet eerder hebt opgeslagen, krijgt u een het dialoogvenster 'Opslaan als'.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If you do not save this image, any changes you have made will be permanently lost.</original>
+		<translation>Als u de afbeelding niet opslaat gaan alle wijzigingen die u hebt gemaakt permanent verloren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Canceling will return you to the main PhotoDemon window.</original>
+		<translation>Annuleren, gaat u terug naar de belangrijkste PhotoDemon venster.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Repeat this action for both unsaved images</original>
+		<translation>Herhaal deze handeling voor beide niet-opgeslagen afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Repeat this action for all unsaved images ( ###### in total)</original>
+		<translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen ( ###### in totaal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unsaved Changes</original>
+		<translation>Niet-opgeslagen wijzigingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>This image (filename.jpg) has unsaved changes.</original>
+		<translation>Deze afbeelding (bestandsnaam.jpg) heeft niet opgeslagen wijzigingen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>What would you like to do?</original>
+		<translation>Wat zou je graag willen doen?</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the image before closing it</original>
+		<translation>Sla de afbeelding op voordat u het sluit</translation>
+	</phrase>
+
+	<phrase>
+		<original>Do not save the image (discard all changes)</original>
+		<translation>Niet opslaan van de afbeelding (negeer alle wijzigingen)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Cancel, and return to editin.</original>
+		<translation>Annuleren en terugkeren naar bewerken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save</original>
+		<translation>Opslaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Do not save</original>
+		<translation>Niet opslaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Cancel</original>
+		<translation>Annuleren</translation>
+	</phrase>
+
+	<phrase>
+		<original>PhotoDemon would not be possible without the following individuals. My sincerest thanks goes out to:</original>
+		<translation>PhotoDemon zou niet mogelijk zijn zonder de volgende personen. Mijn oprechte dank gaat uit naar:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Version</original>
+		<translation>Versie</translation>
+	</phrase>
+
+	<phrase>
+		<original>None</original>
+		<translation>geen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Converting image to two colors...</original>
+		<translation>Het omzetten van beeld naar twee kleuren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Black/White Color Conversion</original>
+		<translation>Zwart / Wit Kleur Conversie</translation>
+	</phrase>
+
+	<phrase>
+		<original>before</original>
+		<translation>voor</translation>
+	</phrase>
+
+	<phrase>
+		<original>after</original>
+		<translation>na</translation>
+	</phrase>
+
+	<phrase>
+		<original>threshold:</original>
+		<translation>drempel:</translation>
+	</phrase>
+
+	<phrase>
+		<original>have PhotoDemon estimate the ideal threshold for this image</original>
+		<translation>laat PhotoDemon de ideale drempel schatten voor deze afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>dithering technique:</original>
+		<translation>dithering-techniek:</translation>
+	</phrase>
+
+	<phrase>
+		<original>NOTE: this tool is used to convert an image to JUST black and JUST white (two colors only).  For a traditional "black and white" photography tool, please use the Color -> Grayscale menu option.</original>
+		<translation>LET OP: dit gereedschap wordt gebruikt om een afbeelding te converteren naar alleen zwart en alleen wit (enkel twee kleuren). Voor een traditionele 'zwart-wit' fotografie gereedschap, kunt u gebruik maken van de Kleur -> Grijswaarden menu-optie.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Illuminating image with imaginary blacklight...</original>
+		<translation>Verlichten afbeelding met denkbeeldige blacklight ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Black Light Options</original>
+		<translation>Black Light Opties</translation>
+	</phrase>
+
+	<phrase>
+		<original>intensity:</original>
+		<translation>intensiteit:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Brightness</original>
+		<translation>helderheid</translation>
+	</phrase>
+
+	<phrase>
+		<original>Contrast</original>
+		<translation>contrast</translation>
+	</phrase>
+
+	<phrase>
+		<original>Adjusting image brightness...</original>
+		<translation>Instellen van helderheid van de afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sampling image data to determine true contrast...</original>
+		<translation>Sampling beeldgegevens om het echte contrast te bepalen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>sample image for true contrast (slower but more accurate)</original>
+		<translation>voorbeeld voor het echte contrast (langzamer maar nauwkeuriger)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Adjusting image contrast...</original>
+		<translation>Instellen van contrast van de afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Colorize Options</original>
+		<translation>Inkleuren Opties</translation>
+	</phrase>
+
+	<phrase>
+		<original>Colorizing image...</original>
+		<translation>Inkleuren afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>preserve existing saturation</original>
+		<translation>behouden van bestaande verzadiging</translation>
+	</phrase>
+
+	<phrase>
+		<original>Adjust Color Temperature</original>
+		<translation>Kleur temperatuur aanpassen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Applying new temperature to image...</original>
+		<translation>Toepassen van nieuwe temperatuur aan de afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>new temperature:</original>
+		<translation>nieuwe temperatuur:</translation>
+	</phrase>
+
+	<phrase>
+		<original>warm tones</original>
+		<translation>warme tinten</translation>
+	</phrase>
+
+	<phrase>
+		<original>cool tones</original>
+		<translation>koele tinten</translation>
+	</phrase>
+
+	<phrase>
+		<original>strength</original>
+		<translation>sterkte</translation>
+	</phrase>
+
+	<phrase>
+		<original>Generating filter data...</original>
+		<translation>Genereren filter data ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Filter</original>
+		<translation>Filter</translation>
+	</phrase>
+
+	<phrase>
+		<original>All files</original>
+		<translation>Alle bestanden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open a custom filter</original>
+		<translation>Open een aangepaste filter</translation>
+	</phrase>
+
+	<phrase>
+		<original>An error occurred while attempting to load</original>
+		<translation>Er is een fout opgetreden bij het laden</translation>
+	</phrase>
+
+	<phrase>
+		<original>.  Please verify that the file is a valid custom filter file.</original>
+		<translation>. Controleer of het bestand een geldig aangepaste filter-bestand is.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom Filter Error</original>
+		<translation>Fout aangepaste filter</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save a custom filter</original>
+		<translation>Opslaan aangepaste filter</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unsupported custom filter version.</original>
+		<translation>Niet-ondersteunde aangepaste filter versie.</translation>
+	</phrase>
+
+	<phrase>
+		<original>convolution matrix:</original>
+		<translation>convolutie-matrix:</translation>
+	</phrase>
+
+	<phrase>
+		<original>additional settings:</original>
+		<translation>extra instellingen:</translation>
+	</phrase>
+
+	<phrase>
+		<original>divisor:</original>
+		<translation>deler:</translation>
+	</phrase>
+
+	<phrase>
+		<original>offset:</original>
+		<translation>offset:</translation>
+	</phrase>
+
+	<phrase>
+		<original>load / save filter:</original>
+		<translation>laden/opslaan filter:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open Filter</original>
+		<translation>Open filter</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save Current Filter</original>
+		<translation>Opslaan huidige filter:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom Filter</original>
+		<translation>Aangepaste filter</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open a previously saved convolution filter.</original>
+		<translation>Open een eerder opgeslagen convolutiefilter.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current filter to file.  This allows you to use the filter later, or share the filter with other PhotoDemon users.</original>
+		<translation>Sla de huidige filter naar een bestand op. Hiermee kunt u de filter later gebruiken, of de filter te delen met andere PhotoDemon gebruikers.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Despeckling image...</original>
+		<translation>Ontvlekken afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Removing orphaned pixels...</original>
+		<translation>Verwijderen van verweesde pixels ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced Despeckle</original>
+		<translation>Geavanceerd ontvlekken</translation>
+	</phrase>
+
+	<phrase>
+		<original>despeckle strength:</original>
+		<translation>ontvlekken sterkte:</translation>
+	</phrase>
+
+	<phrase>
+		<original>weak</original>
+		<translation>zwak</translation>
+	</phrase>
+
+	<phrase>
+		<original>strong</original>
+		<translation>sterk</translation>
+	</phrase>
+
+	<phrase>
+		<original>red</original>
+		<translation>rood</translation>
+	</phrase>
+
+	<phrase>
+		<original>green</original>
+		<translation>groen</translation>
+	</phrase>
+
+	<phrase>
+		<original>blue</original>
+		<translation>blauw</translation>
+	</phrase>
+
+	<phrase>
+		<original>cyan</original>
+		<translation>cyaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>magenta</original>
+		<translation>magenta</translation>
+	</phrase>
+
+	<phrase>
+		<original>yellow</original>
+		<translation>geel</translation>
+	</phrase>
+
+	<phrase>
+		<original>blck</original>
+		<translation>zwart</translation>
+	</phrase>
+
+	<phrase>
+		<original>white</original>
+		<translation>wit</translation>
+	</phrase>
+
+	<phrase>
+		<original>Simulating large image explosion...</original>
+		<translation>Simuleren van grote afbeelding explosie ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Simulating small image explosion...</original>
+		<translation>Simuleren van kleine afbeelding explosie ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom Diffuse</original>
+		<translation>Aangepaste spreiding</translation>
+	</phrase>
+
+	<phrase>
+		<original>horizontal strength:</original>
+		<translation>horizontale kracht:</translation>
+	</phrase>
+
+	<phrase>
+		<original>vertical strength:</original>
+		<translation>verticale kracht:</translation>
+	</phrase>
+
+	<phrase>
+		<original>wrap edge values</original>
+		<translation>waarde rand omwikkeling</translation>
+	</phrase>
+
+	<phrase>
+		<original>Embossing image..</original>
+		<translation>Reliëf maken afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Engraving image...</original>
+		<translation>Graveren afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Emboss</original>
+		<translation>Reliëf</translation>
+	</phrase>
+
+	<phrase>
+		<original>Engrave</original>
+		<translation>Gravure</translation>
+	</phrase>
+
+	<phrase>
+		<original>use custom background color (click colored box to change)...</original>
+		<translation>gebruik maken van aangepaste achtergrondkleur (klik gekleurd vak om te veranderen) ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Analyzing image histogram...</original>
+		<translation>Analyseren histogram van afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Equalizing image...</original>
+		<translation>Egaliseren afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Equalize Histogram</original>
+		<translation>Egaliseren histogram</translation>
+	</phrase>
+
+	<phrase>
+		<original>equalize:</original>
+		<translation>Egaliseren:</translation>
+	</phrase>
+
+	<phrase>
+		<original>luminance</original>
+		<translation>luminantie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fading image...</original>
+		<translation>Vervagen afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfading image...</original>
+		<translation>Onvervagen afbeelding...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fade image</original>
+		<translation>Vervagen afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>fade strength (%):</original>
+		<translation>Sterkte vervaging (%)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tracing image edges with virtual paintbrush...</original>
+		<translation>Zoeken afbeeldingsranden met virtuele penseel ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Simple matrix method:</original>
+		<translation>Eenvoudige matrixmethode:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Algorithm designed to present a clean, artistic prediction of image edges.</original>
+		<translation>Algoritme ontworpen om een schone, artistieke voorspelling van beeldranden te presenteren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Simple mathematical routine based on linear relationships between diagonal pixels.</original>
+		<translation>Eenvoudige wiskundige routine op basis van lineaire relaties tussen diagonale pixels.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced mathematical routine based on cubic relationships between diagonal pixels.</original>
+		<translation>Geavanceerde wiskundige routine gebaseerd op kubieke relaties tussen diagonale pixels.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find Edges</original>
+		<translation>Randen zoeken</translation>
+	</phrase>
+
+	<phrase>
+		<original>description:</original>
+		<translation>beschrijving:</translation>
+	</phrase>
+
+	<phrase>
+		<original><No Item Selected></original>
+		<translation><Geen Item geselecteerd></translation>
+	</phrase>
+
+	<phrase>
+		<original>use black background</original>
+		<translation>Gebruik zwarte achtergrond</translation>
+	</phrase>
+
+	<phrase>
+		<original>horizontal</original>
+		<translation>horizontaal</translation>
+	</phrase>
+
+	<phrase>
+		<original>vertical</original>
+		<translation>vertikaal</translation>
+	</phrase>
+
+	<phrase>
+		<original>channel</original>
+		<translation>kanaal</translation>
+	</phrase>
+
+	<phrase>
+		<original>Adjusting gamma values...</original>
+		<translation>Instellen van gammawaarden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Gamma Correction</original>
+		<translation>Gammacorrectie</translation>
+	</phrase>
+
+	<phrase>
+		<original>decompose using these values:</original>
+		<translation>ontleden met gebruik van deze waarden:</translation>
+	</phrase>
+
+	<phrase>
+		<original>use this channel:</original>
+		<translation>gebruik dit kanaal:</translation>
+	</phrase>
+
+	<phrase>
+		<original>use this many shades of gray:</original>
+		<translation>Gebruik deze vele grijstinten:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fastest Calculation (average value)</original>
+		<translation>Snelste berekening (gemiddelde waarde)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Highest Quality (ITU Standard)</original>
+		<translation>Hoogste kwaliteit (ITU standaard)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Desaturate</original>
+		<translation>verzadiging verminderen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Decompose</original>
+		<translation>ontleden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Single color channel</original>
+		<translation>Enkel kleurkanaal</translation>
+	</phrase>
+
+	<phrase>
+		<original>Specific # of shades</original>
+		<translation>Specifiek # van tinten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Specific # of shades (dithered)</original>
+		<translation>Specifiek # van tinten (gerasterd)</translation>
+	</phrase>
+
+	<phrase>
+		<original>This tool removes color data from an image.  The new image contains only shades of gray.</original>
+		<translation>Deze tool verwijdert kleurgegevens van een afbeelding. De nieuwe afbeelding bevat slechts grijstinten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sometimes this tool is called a 'black and white' tool, but that name is misleading because the processed image contains many more shades than just 'black' and 'white'.  A separate 'Black and White' tool (found in the 'Color' menu) exists if you want an </original>
+		<translation>Soms noemt men dit dit instrument een ' zwart-wit ' tool, maar die naam is misleidend, omdat het bewerkte beeld veel meer tinten bevatdan alleen maar ' zwart ' en ' wit '. Een aparte ' Black and White ' tool (te vinden in de ' Kleur ' menu) bestaat als j</translation>
+	</phrase>
+
+	<phrase>
+		<original>While there are many ways to remove color from an image, most users stick with the 'Highest Quality (ITU Standard)' method, which produces the best grayscale image.  Other options are provided for artistic effect.</original>
+		<translation>Hoewel er zijn vele manieren zijn om kleuren te verwijderen uit een afbeelding,blijven de meeste gebruikers de ' Hoogste Kwaliteit (ITU standaard) ' methode gebruiken, die het beste grijswaardenafbeelding produceert. Andere opties zijn bedoeld voor een a</translation>
+	</phrase>
+
+	<phrase>
+		<original>To learn more about the various grayscale conversion options, please visit this link:</original>
+		<translation>Voor meer informatie over de verschillende grijswaarden conversie-opties, kunt u terecht op deze link:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Converting image to ###### shades of gray...</original>
+		<translation>Het omzetten van afbeelding naar ###### grijstinten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Converting to ######  shades of gray, with dithering...</original>
+		<translation>Converteren naar ###### grijstinten, met dithering ..</translation>
+	</phrase>
+
+	<phrase>
+		<original>Converting image to grayscale...</original>
+		<translation>Omzetten afbeelding naar grijswaarden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Generating ITU-R compatible grayscale image...</original>
+		<translation>Genereren van ITU-R compatibel grijswaardenafbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Desaturating image...</original>
+		<translation>Verzadigen beeld ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Decomposing image...</original>
+		<translation>Ontbindend beeld ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Converting image to grayscale using ###### values...</original>
+		<translation>Omzetten afbeelding in grijswaarden met behulp van ###### waarden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>grayscale tool</original>
+		<translation>grijstinten instrument</translation>
+	</phrase>
+
+	<phrase>
+		<original>grayscale method:</original>
+		<translation>grijstinten methode:</translation>
+	</phrase>
+
+	<phrase>
+		<original>additional options for this method:</original>
+		<translation>extra opties voor deze methode:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale Conversion: An In-Depth Look</original>
+		<translation>Grijswaarden Conversie: Een In-Depth Look</translation>
+	</phrase>
+
+	<phrase>
+		<original>Adjusting hue, saturation, and luminance values...</original>
+		<translation>Instellen van tint, verzadiging en helderheid waarden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Adjust Hue/Saturation/Lightness</original>
+		<translation>Aanpassen tint/verzadiging/helderheid</translation>
+	</phrase>
+
+	<phrase>
+		<original>hue:</original>
+		<translation>tint:</translation>
+	</phrase>
+
+	<phrase>
+		<original>saturation:</original>
+		<translation>verzadiging:</translation>
+	</phrase>
+
+	<phrase>
+		<original>lightness:</original>
+		<translation>helderheid:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Histogram for</original>
+		<translation>Histogram voor</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save histogram to file</original>
+		<translation>Opslaan histogram naar bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving histogram to file...</original>
+		<translation>Opslaan histogram naar bestand ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Histogram save complete</original>
+		<translation>Histogram opslaan is voltooid</translation>
+	</phrase>
+
+	<phrase>
+		<original>Total pixels:</original>
+		<translation>Totaal aantal pixels:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Maximum count:</original>
+		<translation>Maximum aantal:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Level</original>
+		<translation>niveau</translation>
+	</phrase>
+
+	<phrase>
+		<original>Luminance</original>
+		<translation>helderheid</translation>
+	</phrase>
+
+	<phrase>
+		<original>(Note: move the mouse over the histogram to calculate these values)</original>
+		<translation>(Opmerking: beweeg de muis over het histogram om deze waarden te berekenen)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Draw these channels:</original>
+		<translation>Teken deze kanalen:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rendering Options:</original>
+		<translation>Rendering Opties:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use smooth lines</original>
+		<translation>Gebruik vloeiende lijnen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use logarithmic values</original>
+		<translation>Gebruik logaritmische waarden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Export Histogram to File...</original>
+		<translation>Exporteren naar Histogrambestand ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close Histogram</original>
+		<translation>Sluit Histogram</translation>
+	</phrase>
+
+	<phrase>
+		<original>Histogram</original>
+		<translation>histogram</translation>
+	</phrase>
+
+	<phrase>
+		<original>Finished.</original>
+		<translation>Klaar.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Analyzing image histogram for maximum and minimum values...</original>
+		<translation>Het analyseren van de afbeeldingshistogram voor maximale en minimale waarden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Updating histogram...</original>
+		<translation>Updaten histogram ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Stretching histogram...</original>
+		<translation>Uitrekken histogram</translation>
+	</phrase>
+
+	<phrase>
+		<original>VB binary file import canceled</original>
+		<translation>Importeren VB binair bestand geannuleerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>Importing binary image data...</original>
+		<translation>Het importeren van binaire afbeeldingsgegevens ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>VB Binary Image</original>
+		<translation>VB binaire afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image imported successfully</original>
+		<translation>Afbeelding succesvol geïmporteerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please select a VB binary file to scan for images...</original>
+		<translation>Selecteer een VB binair bestand om te scannen op afbeeldingen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>All VB Binary Files</original>
+		<translation>Alle VB binaire bestanden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Select a VB Binary File</original>
+		<translation>Selecteer een VB binair bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scanning binary file...</original>
+		<translation>Scannen binair bestand ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scan complete.  Please select an image to import.</original>
+		<translation>Scan voltooid. Selecteer een afbeelding te importeren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfortunately, no images were found in #.  Please select a new file.</original>
+		<translation>Helaas zijn er geen afbeeldingen gevonden in #. Selecteer een nieuw bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>No Images Found</original>
+		<translation>Geen afbeeldingen gevonden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Binary data:</original>
+		<translation>Binaire gegevens:</translation>
+	</phrase>
+
+	<phrase>
+		<original>is unable to display this data.  It may be from an incompatible version of Visual Basic, the source file may be corrupted, or the data may exceed 32k in size.</original>
+		<translation>is niet in staat om deze weer te geven. Het kan door een incompatibele versie van Visual Basic komen, misschien is het bronbestand beschadigd, of zijn de gegevens groter zijn dan 32k in grootte.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Import From VB Binary File</original>
+		<translation>Importeren van VB binair bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>N/A</original>
+		<translation>N / A</translation>
+	</phrase>
+
+	<phrase>
+		<original>data type | offset | size (bytes)</original>
+		<translation>gegevens type | offset | grootte (bytes)</translation>
+	</phrase>
+
+	<phrase>
+		<original>image preview:</original>
+		<translation>Voorbeeld afbeelding:</translation>
+	</phrase>
+
+	<phrase>
+		<original>(imported)</original>
+		<translation>(geïmporteerd)</translation>
+	</phrase>
+
+	<phrase>
+		<original>current file:</original>
+		<translation>huidig bestand:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image download canceled.</original>
+		<translation>Downloaden afbeelding geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Attempting to connect to Internet...</original>
+		<translation>Poging om verbinding te maken met internet ...</translation>
+	</phrase>
+
+	<phrase>
+		<original># could not establish an Internet connection. Please double-check your connection.</original>
+		<translation># Kon geen internetverbinding tot stand brengen. Gelieve uw verbinding te double-checken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in # just like any other image file.</original>
+		<translation>Als het probleem zich blijft voordoen, probeer dan de afbeelding handmatig te downloaden met behulp van een Internet-browser van uw keuze. Eenmaal gedownload, kunt u het bestand openen in # , net als elk ander afbeeldings-bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Internet Connection Error</original>
+		<translation>Internet connectie fout</translation>
+	</phrase>
+
+	<phrase>
+		<original>Verifying image URL (this may take a moment)...</original>
+		<translation>Verifiëren afbeelding URL (dit kan even duren) ...</translation>
+	</phrase>
+
+	<phrase>
+		<original># could not locate a valid image at that URL.  Please double-check the path.</original>
+		<translation># Kan geen geldige afbeelding vinden in de URL.  Gelieve het pad te double-checken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Online Image Not Found</original>
+		<translation>Online afbeelding niet gevonden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Creating temporary file...</original>
+		<translation>Maken van een tijdelijk bestand ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image URL verified.  Downloading image...</original>
+		<translation>Afbeelding URL geverifieerd. Downloaden afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original># lost access to the Internet. Please double-check your Internet connection.</original>
+		<translation># Geen toegang tot het internet. Gelieve double-check uw internetverbinding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image URL verified.  Downloading image #1 of  #2 bytes received)...</original>
+		<translation>Afbeelding URL geverifieerd. Downloaden van afbeelding # 1 van #2 bytes ontvangen ) ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Download complete. Verifying file integrity...</original>
+		<translation>Download voltooid. Controleren van integriteit van bestanden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Download canceled.  (Remote server denied access.)</original>
+		<translation>Download geannuleerd. (Remote server heeft toegang geweigerd.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfortunately, #1 is preventing #2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)</original>
+		<translation>Helaas verbied #1 #2 direct downloaden van deze afbeelding. (Directe downloads worden soms ten onrechte verkeerd als hotlinking beschouwd door de geconfigureerde servers.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>You will need to download this image using your Internet browser of choice, then manually load it into #2.</original>
+		<translation>U moet deze afbeelding met behulp van een internetbrowser naar keuze downloaden, en vervolgens handmatig laden in #2.</translation>
+	</phrase>
+
+	<phrase>
+		<original>I sincerely apologize for this inconvenience, but unfortunately there is nothing #2 can do about stingy server configurations.  :(</original>
+		<translation>Helaas kan #2 er niets doen aan verkeerd geconfigureerde servers. :(</translation>
+	</phrase>
+
+	<phrase>
+		<original>Does Not Allow Direct Downloads</original>
+		<translation>Staat geen Directe Downloads toe</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image download complete.</original>
+		<translation>Afbeelding downloaden voltooid.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Internet import canceled.</original>
+		<translation>Internet import geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>This URL is not valid.  Please make sure the URL begins with 'http://' or 'ftp://'.</original>
+		<translation>Deze URL is niet geldig. Zorg ervoor dat de URL begint met ' http:// ' of ' ftp:// '.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid URL</original>
+		<translation>Ongeldige URL</translation>
+	</phrase>
+
+	<phrase>
+		<original>Waiting for user input...</original>
+		<translation>Wachten op invoer van de gebruiker ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Download Image</original>
+		<translation>Download afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>full download path (must begin with "http://" or "ftp://"):</original>
+		<translation>volledig download pad (moet beginnen met "http://" of "ftp://"):</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside of a specific website. Thanks!</original>
+		<translation>Houd rekening met auteursrechten bij het downloaden van afbeeldingen. Hoewel de afbeelding online beschikbaar is, kan kan zijn dat er een licentie is voor het gebruik buiten een specifieke website. Bedankt!</translation>
+	</phrase>
+
+	<phrase>
+		<original>Verifying that file exists...</original>
+		<translation>Controleren of bestand bestaat ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>File not found.</original>
+		<translation>Bestand niet gevonden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image load canceled</original>
+		<translation>Afbeelding laden geannuleerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfortunately, the image' ## ' could not be found.</original>
+		<translation>Helaas, de afbeelding '##' kon niet worden gevonden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again</original>
+		<translation>Als deze afbeelding oorspronkelijk gevestigd was op een verwisselbaar medium (DVD, USB-stick, etc), voer dan aub opnieuw in of koppel de media terug aan en probeer het opnieuw</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image found. Initializing blank form...</original>
+		<translation>Afbeelding gevonden. Initialiseren blanco formulier ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Determining filetype...</original>
+		<translation>Bepalen van het bestandstype ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfortunately, the FreeImage plugin (FreeImage.dll) was marked as missing or corrupted upon program initialization.</original>
+		<translation>Helaas werd het FreeImage plugin (FreeImage.dll) gemarkeerd als beschadigd of ontbrak deze bij de initialisatie van het programma.</translation>
+	</phrase>
+
+	<phrase>
+		<original>To enable support for this image format, please allow ##  to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:</original>
+		<translation>Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, sta dan ## toe om een nieuw exemplaar van FreeImage te downloaden, door te gaan naar de Bewerken -> Programma menu Voorkeuren en mogelijk maken van de optie genaamd:</translation>
+	</phrase>
+
+	<phrase>
+		<original>If core plugins cannot be located, offer to download them</original>
+		<translation> Als core plugins niet kunnen worden gevonden, aanbieden om ze te downloaden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Once this is enabled, restart ## and it will download this plugin for you.</original>
+		<translation>Zodra dit is ingeschakeld, start u ## en deze zal de plugin downloaden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>FreeImage Interface Error</original>
+		<translation>FreeImage Interface fout</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfortunately, ## was unable to load the following image:</original>
+		<translation>Helaas, ## was niet in staat om de volgende afbeelding te laden:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into ## Thanks!</original>
+		<translation>Gebruik een ander programma om de afbeelding op te slaan in een generiek formaat (zoals JPEG of PNG) voordat u het in ## laad. Bedankt!</translation>
+	</phrase>
+
+	<phrase>
+		<original>## Import Failed</original>
+		<translation>## Import mislukt</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image data loaded successfully.</original>
+		<translation>Beeldgegevens zijn geladen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Verfiying alpha channel...</original>
+		<translation>Verficatie alfakanaal ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Alpha channel deemed unnecessary.  Converting image to 24bpp...</original>
+		<translation>Alfakanaal  niet nodig geacht. Omzetten van beeld naar 24bpp ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Alpha channel verified.  Leaving image in 32bpp mode.</original>
+		<translation>Alfakanaal geverifieerd. Afbeelding wordt in 32bpp modus gelaten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Alpha channel validation ignored at user's request.</original>
+		<translation>Alfakanaal validatie genegeerd op verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color count successful ( ## BPP)</original>
+		<translation>Tellen kleuren succesvol (## BPP)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Resizing image to fit screen...</original>
+		<translation>Aanpassen grootte van de afbeelding om op scherm te passen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image loaded successfully.</original>
+		<translation>Afbeelding geladen met succes.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Undo restored successfully.</original>
+		<translation>Ongedaan maken met succes hersteld.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Duplicating current image...</original>
+		<translation>Dupliceren huidige afbeelding...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image duplication complete.</original>
+		<translation>Duplicatie afbeelding kompleet.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Generating image twin...</original>
+		<translation>Genereren van afbeeldings tweeling</translation>
+	</phrase>
+
+	<phrase>
+		<original>Generate Twins</original>
+		<translation>Genereren tweelingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preparing histogram data...</original>
+		<translation>Voorbereiden histogramgegevens ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Adjusting image white balance...</original>
+		<translation>Instellen witbalans van de afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>White Balance</original>
+		<translation>Witbalans</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rendering tiled image...</original>
+		<translation>Rendering betegelde afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Finished.</original>
+		<translation>Klaar</translation>
+	</phrase>
+
+	<phrase>
+		<original>Current screen size</original>
+		<translation>Huidige schermgrootte</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom image size (in pixels)</original>
+		<translation>Aangepaste afbeeldinggrootte (in pixels)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Specific number of tiles</original>
+		<translation>Bepaald aantal tegels</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tile Image</original>
+		<translation>Tegel afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>render tiled image using:</original>
+		<translation>maken betegelde afbeelding met behulp van:</translation>
+	</phrase>
+
+	<phrase>
+		<original>width</original>
+		<translation>breedte</translation>
+	</phrase>
+
+	<phrase>
+		<original>height</original>
+		<translation>hoogte</translation>
+	</phrase>
+
+	<phrase>
+		<original>pixels</original>
+		<translation>pixels</translation>
+	</phrase>
+
+	<phrase>
+		<original>The tiled image will be #1 #3 wide by #2 #3 tall</original>
+		<translation>De betegelde afbeelding zal #1 #3 breed op #2 #3 hoog zijn</translation>
+	</phrase>
+
+	<phrase>
+		<original>tiles</original>
+		<translation>tegels</translation>
+	</phrase>
+
+	<phrase>
+		<original>Solarizing image...</original>
+		<translation>Solarisatie afbeelding...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Solarize</original>
+		<translation>solarizeren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Solarize threshold:</original>
+		<translation>solarisatie drempel:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotating image (this may take a few seconds)...</original>
+		<translation>Draaien afbeelding (dit kan enkele seconden duren) ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotation complete.</original>
+		<translation>Draaien voltooid.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate Image</original>
+		<translation>Afbeelding draaien</translation>
+	</phrase>
+
+	<phrase>
+		<original>rotation angle:</original>
+		<translation>draaihoek:</translation>
+	</phrase>
+
+	<phrase>
+		<original>rotated image canvas:</original>
+		<translation>canvas gedraaide afbeelding:</translation>
+	</phrase>
+
+	<phrase>
+		<original>adjust canvas to fit rotated image</original>
+		<translation>canvas aanpassen om op geroteerde afbeelding te passen</translation>
+	</phrase>
+
+	<phrase>
+		<original>leave the canvas at its current size</original>
+		<translation>laat het canvas in zijn huidige omvang</translation>
+	</phrase>
+
+	<phrase>
+		<original>Nearest Neighbor</original>
+		<translation>Naaste buur</translation>
+	</phrase>
+
+	<phrase>
+		<original>Halftone</original>
+		<translation>Halftoon</translation>
+	</phrase>
+
+	<phrase>
+		<original>Bilinear</original>
+		<translation>Bilineaire</translation>
+	</phrase>
+
+	<phrase>
+		<original>Resampling image using the FreeImage library...</original>
+		<translation>Resampelen afbeelding met behulp van de FreeImage bibliotheek ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Resizing image...</original>
+		<translation>Herdimensionering afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Resampling image...</original>
+		<translation>Resampelen afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Resize Image</original>
+		<translation>Herdimensioneren afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>maintain current aspect ratio</original>
+		<translation>behouden van de huidige hoogte-breedteverhouding</translation>
+	</phrase>
+
+	<phrase>
+		<original>resample method:</original>
+		<translation>resample methode:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Mapping new image levels...</original>
+		<translation>In kaart brengen nieuwe afbeelding niveaus ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Adjust Image Levels</original>
+		<translation>Aanpassen niveaus afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>input levels:</original>
+		<translation>ingangsniveaus:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Left limit:</original>
+		<translation>Linkse limiet:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Midtones:</original>
+		<translation>middentonen:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Right limit:</original>
+		<translation>Rechtse limiet:</translation>
+	</phrase>
+
+	<phrase>
+		<original>output levels:</original>
+		<translation>uitgangsniveaus:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Reset</original>
+		<translation>Reset</translation>
+	</phrase>
+
+	<phrase>
+		<original>Repainting image in mosaic style...</original>
+		<translation>Hertekenen afbeelding in mozaïek stijl ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Mosaic Options</original>
+		<translation>mozaïek Opties</translation>
+	</phrase>
+
+	<phrase>
+		<original>block width:</original>
+		<translation>Breedte blok</translation>
+	</phrase>
+
+	<phrase>
+		<original>block height:</original>
+		<translation>Hoogte blok</translation>
+	</phrase>
+
+	<phrase>
+		<original>Increasing image noise...</original>
+		<translation>Verhogen ruis van afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Add Noise</original>
+		<translation>Toevoegen ruis</translation>
+	</phrase>
+
+	<phrase>
+		<original>amount:</original>
+		<translation>Aantal:</translation>
+	</phrase>
+
+	<phrase>
+		<original>monochromatic noise only</original>
+		<translation>Enkel monochromatische ruis</translation>
+	</phrase>
+
+	<phrase>
+		<original>Posterizing image...</original>
+		<translation>Schakeren afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Posterize</original>
+		<translation>Schakeren</translation>
+	</phrase>
+
+	<phrase>
+		<original>posterize to this many bits:</original>
+		<translation>schakeringen reduceren tot zoveel bits:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Dilating image via maximum (high-pass) rank filter...</original>
+		<translation>Verwijden van afbeelding via maximum (high-pass) rangschikking filter ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Eroding image via minimum (low-pass) rank filter...</original>
+		<translation>Eroderen afbeelding via minimum (low-pass) rangschikking filter ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Redrawing image via extreme rank filter...</original>
+		<translation>Hertekenen afbeelding via extreme rangschikking filter ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Maximum (Dilate)</original>
+		<translation>Maximum (Verwijden)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Minimum (Erode)</original>
+		<translation>Minimum (Erodering)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Extreme (Furthest value)</original>
+		<translation>Extreme (Verste waarde)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom Rank Filter</original>
+		<translation>Aangepaste rangschikking Filter</translation>
+	</phrase>
+
+	<phrase>
+		<original>rank method:</original>
+		<translation>rangschikking methode:</translation>
+	</phrase>
+
+	<phrase>
+		<original>radius:</original>
+		<translation>straal:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Isolating the</original>
+		<translation>Isoleren van</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rechannel</original>
+		<translation>Herkanaliseren</translation>
+	</phrase>
+
+	<phrase>
+		<original>RGB Channels</original>
+		<translation>RGB kanalen</translation>
+	</phrase>
+
+	<phrase>
+		<original>CMY Channels</original>
+		<translation>CMY kanalens</translation>
+	</phrase>
+
+	<phrase>
+		<original>CMYK Channels</original>
+		<translation>CMYK kanalen</translation>
+	</phrase>
+
+	<phrase>
+		<original>These parameters allow for a maximum of X1 colors in the quantized image.</original>
+		<translation>Deze parameters staan een maximum van X1 kleuren toe in de gekwantiseerde afbeelding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color count could not be calculated due to invalid text box values.</original>
+		<translation>Kleuren konden niet worden berekend worden vanwege ongeldige waarden in tekstvakken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Quantizing image using the FreeImage library...</original>
+		<translation>Quantiseren beeld met behulp van de FreeImage bibliotheek ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image successfully quantized to 256 unique colors.</original>
+		<translation>Afbeelding met succes gekwantiseerd tot 256 unieke kleuren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Applying manual RGB modifications to image...</original>
+		<translation>Aanpassingen afbeelding met gebruik van een handmatige RGB</translation>
+	</phrase>
+
+	<phrase>
+		<original>Applying intelligent coloring...</original>
+		<translation>Toepassen van intelligente kleuren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Reduce Image Colors</original>
+		<translation>Verminderen  kleuren van het beeld</translation>
+	</phrase>
+
+	<phrase>
+		<original>Note: some options on this page have been disabled because the FreeImage plugin could not be found.</original>
+		<translation>Opmerking: sommige opties op deze pagina zijn uitgeschakeld omdat de FreeImage plugin niet kon gevonden worden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>advanced quantization options:</original>
+		<translation>geavanceerde quantisatie opties:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Possible red values (2-64):</original>
+		<translation>Mogelijke rode waarden (2-64):</translation>
+	</phrase>
+
+	<phrase>
+		<original>Possible green values (2-64):</original>
+		<translation>Mogelijke groene waarden (2 tot 64):</translation>
+	</phrase>
+
+	<phrase>
+		<original>Possible blue values (2-64):</original>
+		<translation>Mogelijke blauwe waarden (2 tot 64):</translation>
+	</phrase>
+
+	<phrase>
+		<original>These parameters allow for a maximum of 252 colors in the quantized image.</original>
+		<translation>Deze parameters maken een maximum van 252 kleuren in de gekwantiseerde afbeelding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use error diffusion dithering</original>
+		<translation>Gebruik foutspreiding dithering</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use realistic coloring</original>
+		<translation>Gebruik realistische kleuren</translation>
+	</phrase>
+
+	<phrase>
+		<original>quantization methode</original>
+		<translation>quantisatie methode</translation>
+	</phrase>
+
+	<phrase>
+		<original>Checking for software updates...</original>
+		<translation>Er is een fout opgetreden tijdens het controleren op updates. Probeer het later opnieuw.</translation>
+	</phrase>
+
+	<phrase>
+		<original>An error occurred while checking for updates.  Please try again later.</original>
+		<translation>Dit exemplaar van X1 is de nieuwst beschikbare. (Versie</translation>
+	</phrase>
+
+	<phrase>
+		<original>This copy of X1 is the newest available.  (Version</original>
+		<translation>Software-update gevonden! Lanceren van Update Berichtgeving ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>The next time you launch X1, it will remind you about this software update.</original>
+		<translation>De volgende keer dat u X1 start, zal deze u eraan herinneren over software-update.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Note: you can always manually download the latest version of X1 by visiting the X1 website.</original>
+		<translation>Opmerking: u kunt de laatste versie van X1 altijd handmatig downloaden door een bezoek aan de X1 website te brengen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>X1 will no longer prompt you about software updates.  (If you change your mind in the future,</original>
+		<translation>X1 zal niet meer vragen voor software-updates. (Als u van gedachten verandert in de toekomst,</translation>
+	</phrase>
+
+	<phrase>
+		<original>this setting can be reversed from the 'Edit' -> 'Program Preferences' menu.)</original>
+		<translation>kan deze instelling worden omgekeerd via het 'Bewerken' -> 'Programma Voorkeuren' menu).</translation>
+	</phrase>
+
+	<phrase>
+		<original>Thanks for downloading the latest X1 update.  Hope you enjoy it!</original>
+		<translation>Bedankt voor het downloaden van de nieuwste X1 update. Ik hoop dat je ervan geniet!</translation>
+	</phrase>
+
+	<phrase>
+		<original>What's new in X1</original>
+		<translation>Wat is nieuw in X1</translation>
+	</phrase>
+
+	<phrase>
+		<original>Update Notifier</original>
+		<translation>Update berichtgever</translation>
+	</phrase>
+
+	<phrase>
+		<original>A new version of X1 is available!</original>
+		<translation>Een nieuwe versie van X1 is beschikbaar!</translation>
+	</phrase>
+
+	<phrase>
+		<original>Your version:</original>
+		<translation>Uw versie:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Newest version:</original>
+		<translation>Nieuwste versie:</translation>
+	</phrase>
+
+	<phrase>
+		<original>To learn about the latest version before downloading it, please visit:</original>
+		<translation>Om over de meest recente versie te leren alvorens het te downloaden, kunt u terecht op:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Do you want to download the new version?</original>
+		<translation>Wilt u de nieuwe versie downloaden?</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Yes!  Take me to the download page.</original>
+		<translation>& Ja! Breng me naar de download pagina.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Not right now, but please remind me again in the future.</original>
+		<translation>Niet nu, maar gelieve me opnieuw te herinneren in de toekomst.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Not now, not ever.  Do not prompt me about future updates.</original>
+		<translation>Nu niet, nooit. Vraag me nooit meer voor toekomstige updates.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Automatic update canceled.</original>
+		<translation>Automatische update geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sending image to printer...</original>
+		<translation>Verzenden van de afbeelding naar de printer ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>X1 was unable to print the image.  Please make sure that the specified printer ( X2 ) is powered-on and ready for printing.</original>
+		<translation>X1 was niet in staat om de afbeelding af te drukken. Zorg ervoor dat de gespecificeerde printer (X2) ingeschakeld is en en gereed om af te drukken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Printer Error</original>
+		<translation>Printer fout</translation>
+	</phrase>
+
+	<phrase>
+		<original>Print canceled.</original>
+		<translation>Afdrukken geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
+		<translation>Afbeelding met succes afgedrukt. (Let op: afhankelijk van de printer, verschijnen er eventuele extra bevestiging schermen.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Paper size:</original>
+		<translation>Papierformaat:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Print previewing requires the FreeImage plugin, which could not be located on this computer.</original>
+		<translation>Printvoorbeeld vereist de FreeImage plugin, deze kon niet worden gevonden op deze computer.</translation>
+	</phrase>
+
+	<phrase>
+		<original>To enable previewing, please go to' Edit' -> 'Preferences and select ->''check for missing plugins on program start.'</original>
+		<translation>Om afdrukvoorbeelden te activeren, ga je naar 'Bewerken '-> 'Voorkeuren' ' -> 'Controleren op ontbrekende plug-ins bij het starten van het programma' en selecteer</translation>
+	</phrase>
+
+	<phrase>
+		<original>The next time you load X1, it will offer to download this plugin for you.</original>
+		<translation>De volgende keer dat u X1, zal deze aanbieden om deze plugin te downloaden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Print Image</original>
+		<translation>Afdrukken afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Printer:</original>
+		<translation>printer:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Change Paper Size...</original>
+		<translation>Wijzig Papierformaat ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Quality</original>
+		<translation>kwaliteit</translation>
+	</phrase>
+
+	<phrase>
+		<original># of Copies:</original>
+		<translation># Exemplaren:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Orientation</original>
+		<translation>Oriëntering</translation>
+	</phrase>
+
+	<phrase>
+		<original>Layout Options:</original>
+		<translation>Lay-out Opties:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Center on page</original>
+		<translation>Centreren op pagina</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fit to page</original>
+		<translation>Aanpassen aan pagina</translation>
+	</phrase>
+
+	<phrase>
+		<original>Note: DPI is read-only when 'Fit to Page' is selected.</original>
+		<translation>Opmerking: DPI is alleen-lezen wanneer 'Aanpassen aan pagina' geselecteerd is.</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Print</original>
+		<translation>&Print</translation>
+	</phrase>
+
+	<phrase>
+		<original>Portrait</original>
+		<translation>portret</translation>
+	</phrase>
+
+	<phrase>
+		<original>Landscape</original>
+		<translation>landschap</translation>
+	</phrase>
+
+	<phrase>
+		<original>Draft</original>
+		<translation>concept</translation>
+	</phrase>
+
+	<phrase>
+		<original>Low</original>
+		<translation>laag</translation>
+	</phrase>
+
+	<phrase>
+		<original>Medium</original>
+		<translation>medium</translation>
+	</phrase>
+
+	<phrase>
+		<original>High</original>
+		<translation>hoog</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load a list of images</original>
+		<translation>Laad een lijst met afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>This is not a valid list of images. Please try a different file.</original>
+		<translation>Dit is geen geldige lijst van afbeeldingen. Probeer een ander bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid list file</original>
+		<translation>Ongeldige lijst bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>You have already created a list of images for processing.</original>
+		<translation>U hebt al een lijst met afbeeldingen gemaakt voor verwerking.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Would you like to replace the current list with the entries from this file?</original>
+		<translation>Wilt u de huidige lijst vervangen door de gegevens uit dit bestand?</translation>
+	</phrase>
+
+	<phrase>
+		<original>(Selecting 'no' will only append the entries from the file to the existing list.)</original>
+		<translation>(Als u 'nee' kiest zal enkel de invoer uit het bestand toegevoegd worden aan de bestaande lijst.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Append or replace existing files?</original>
+		<translation>Toevoegen of vervangen bestaande bestanden?</translation>
+	</phrase>
+
+	<phrase>
+		<original>You haven't selected any image files.</original>
+		<translation>U heeft geen beeldbestanden geselecteerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please add one or more image files to the conversion list before attempting to save the list to file.</original>
+		<translation>Voeg een of meer afbeeldingsbestanden toe aan de conversie lijst voordat u probeert om de lijst te bewaren als bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Note: this is done by using the tools under the 'Step 1 - Select Source Images' label.</original>
+		<translation>Let op: dit wordt gedaan met behulp van de tools onder de 'Stap 1 - Selecteer bron afbeeldingen' label.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Empty image list</original>
+		<translation>Lege lijst met afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Batch Image List</original>
+		<translation>Batch afbeelding Lijst</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current list of images</original>
+		<translation>Bewaar de huidige lijst met afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open Macro File</original>
+		<translation>Open Macro File</translation>
+	</phrase>
+
+	<phrase>
+		<original>No macro selected</original>
+		<translation>Geen macro geselecteerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please select a valid macro file (Step 3!).</original>
+		<translation>Selecteer een geldig macro-bestand (stap 3!).</translation>
+	</phrase>
+
+	<phrase>
+		<original>No macro file selected</original>
+		<translation>Geen macro-bestand geselecteerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>(Batch converting file #</original>
+		<translation>(Batch converteren bestand #</translation>
+	</phrase>
+
+	<phrase>
+		<original>.  Estimated time remaining:</original>
+		<translation>. Geschatte resterende tijd:</translation>
+	</phrase>
+
+	<phrase>
+		<original>minute</original>
+		<translation>minuut</translation>
+	</phrase>
+
+	<phrase>
+		<original>minutes</original>
+		<translation>minuten</translation>
+	</phrase>
+
+	<phrase>
+		<original>seconds</original>
+		<translation>seconden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Batch conversion of X1 files was successful!</original>
+		<translation>Batch conversie van X1 bestanden is gelukt!</translation>
+	</phrase>
+
+	<phrase>
+		<original>Batch conversion canceled. X1 image</original>
+		<translation>Batch-conversie geannuleerd. X1 afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>s were</original>
+		<translation>en waren</translation>
+	</phrase>
+
+	<phrase>
+		<original>was</original>
+		<translation>was</translation>
+	</phrase>
+
+	<phrase>
+		<original>processed before cancelation. Last processed image was</original>
+		<translation>verwerkt voor de annulering. Laatst bewerkte afbeelding was</translation>
+	</phrase>
+
+	<phrase>
+		<original>Original filenames</original>
+		<translation>Originele bestandsnamen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Ascending numbers (1, 2, 3, etc.)</original>
+		<translation>Stijgend getallen (1, 2, 3, enz.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Batch Convert Images</original>
+		<translation>Batch convertie afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Step 1 - Select Source Images:</original>
+		<translation>Stap 1 - Selecteer bron abeeldingen:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Drive:</original>
+		<translation>Station:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Folder:</original>
+		<translation>Map:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image Format:</original>
+		<translation>Afbeelding:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image Files (multi-select using Shift or Ctrl):</original>
+		<translation>Afbeeldingsbestanden (multi-select met Shift of Ctrl):</translation>
+	</phrase>
+
+	<phrase>
+		<original>Add selected files to the batch list -></original>
+		<translation>Voeg geselecteerde bestanden toe aan de batch lijst -></translation>
+	</phrase>
+
+	<phrase>
+		<original>Alternatively, you can use a Windows 'Common Dialog' to select images...</original>
+		<translation>U kunt ook gebruik maken van een Windows 'dialoogvenster' om beelden te selecteren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Step 2 - Verify List of Images:</original>
+		<translation>Stap 2 - Controleer lijst van afbeeldingen:</translation>
+	</phrase>
+
+	<phrase>
+		<original>The following image files will be processed:</original>
+		<translation>De volgende afbeeldingsbestanden worden verwerkt:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Remove selected file(s)</original>
+		<translation>Verwijder geselecteerd(e) bestand(en)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Remove all files</original>
+		<translation>Verwijder alle bestanden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Export/import image lists:</original>
+		<translation>Export/import afbeeldingen lijsten:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load an image list...</original>
+		<translation>Laad een afbeeldingen lijst ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current list...</original>
+		<translation>Bewaar de huidige lijst ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Step 3 - Select Macro to Apply:</original>
+		<translation>Stap 3 - Selecteer Macro om te verwerken:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Do not apply a macro.  (Use this if you just want to convert file formats.)</original>
+		<translation>Macro niet verwerken. (Gebruik dit als je gewoon bestandsformaten wilt converteren.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Apply the following macro to each image:</original>
+		<translation>Verwerk de volgende macro voor elke afbeelding:</translation>
+	</phrase>
+
+	<phrase>
+		<original>No macro selected</original>
+		<translation>Geen macro geselecteerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>Step 4 - Select Output Location:</original>
+		<translation>Stap 4 - Selecteer output locatie:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Output images to this folder:</original>
+		<translation>Bewaar afbeeldingen in deze map:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Optional text to append to start of filenames:</original>
+		<translation>Optionele tekst toe te voegen aan het begin van de bestandsnamen:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Output image files should be named using:</original>
+		<translation>Output afbeeldingsbestanden moeten worden genoemd met behulp van:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Step 5 - Select Output Image Format:</original>
+		<translation>Stap 5 - Selecteer Uitvoerformaat afbeelding:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Quality:</original>
+		<translation>Kwaliteit:</translation>
+	</phrase>
+
+	<phrase>
+		<original>When all steps are complete, press OK to begin.</original>
+		<translation>Wanneer alle stappen zijn voltooid, drukt u op 'OK' om te beginnen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Note: depending on the number of images being processed, batch conversion may take a long time.</original>
+		<translation>Opmerking: afhankelijk van het aantal te verwerken afbeeldingen, kan de batch-conversie lange tijd in beslag nemen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>second</original>
+		<translation>deconde</translation>
+	</phrase>
+
+	<phrase>
+		<original>All Compatible Images</original>
+		<translation>Alle Compatibele Afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom changed by user</original>
+		<translation>Zoom gewijzigd door de gebruiker</translation>
+	</phrase>
+
+	<phrase>
+		<original>Update check postponed (a check has been performed in the last 10 days)</original>
+		<translation>Update controleren uitgesteld (een controle is uitgevoerd in de laatste 10 dagen)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)...</original>
+		<translation>Controleren op software-updates (deze functie kan worden uitgeschakeld in het Bewerken -> Voorkeuren menu) ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>An error occurred while checking for updates.  Please make sure you have an active Internet connection.</original>
+		<translation>Er is een fout opgetreden tijdens het controleren op updates. Zorg ervoor dat u een actieve internetverbinding hebt.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Software is up-to-date.</original>
+		<translation>Software is up-to-date.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Some core plugins could not be found. Preparing updater...</original>
+		<translation>Sommige core plugins kunnen niet worden gevonden. Voorbereiden updater ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Ignoring plugin update request per user's INI settings</original>
+		<translation>Negeren plugin update aanvraag per INI instellingen gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Thank you for submitting a bug report.</original>
+		<translation>Hartelijk dank voor het indienen van een foutenrapport.</translation>
+	</phrase>
+
+	<phrase>
+		<original>To make sure your bug is addressed as quickly as possible, X1 needs to know where to send it</original>
+		<translation>Om ervoor te zorgen dat uw bug zo snel mogelijk is verzonden, moet X1 weten waarnaar dit te verzenden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Do you have a GitHub account? (If you have no idea what this means, answer 'No'.)</original>
+		<translation>Heeft u een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord dan 'Nee'.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Thanks for making X1 better</original>
+		<translation>Bedankt voor het beter maken van X1</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preparing to load MRU entry...</original>
+		<translation>Voorbereidingen voor laden van het MRU ingang...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open</original>
+		<translation>Openen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close</original>
+		<translation>Sluiten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close &All</original>
+		<translation>Sluit &Alle</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save</original>
+		<translation>Opslaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save &as</original>
+		<translation>Opslaan &Als</translation>
+	</phrase>
+
+	<phrase>
+		<original>&undo</original>
+		<translation>&Ongedaan maken</translation>
+	</phrase>
+
+	<phrase>
+		<original>&redo</original>
+		<translation>Op&nieuw</translation>
+	</phrase>
+
+	<phrase>
+		<original>Selection style</original>
+		<translation>Selectie stijl</translation>
+	</phrase>
+
+	<phrase>
+		<original>Selection position</original>
+		<translation>Selectie positie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Selection size</original>
+		<translation>Selectie grootte</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro recording in progress...</original>
+		<translation>Macro-opname aan de gang ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open &Recent</original>
+		<translation>Open &Recente</translation>
+	</phrase>
+
+	<phrase>
+		<original>Empty</original>
+		<translation>Leeg</translation>
+	</phrase>
+
+	<phrase>
+		<original>Clear recent image list</original>
+		<translation>Wis recente lijst met afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Import</original>
+		<translation>Importeren</translation>
+	</phrase>
+
+	<phrase>
+		<original>From Clipboard</original>
+		<translation>Van klembord</translation>
+	</phrase>
+
+	<phrase>
+		<original>From Scanner or Camera...</original>
+		<translation>Van scanner of camera ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Select Scanner/Camera Source</original>
+		<translation>Selecteer Scanner / Camera Bron</translation>
+	</phrase>
+
+	<phrase>
+		<original>Online Image...</original>
+		<translation>Online afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Screen Capture...</original>
+		<translation>Schermafdruk ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Batch Convert...</original>
+		<translation>Batch Convert ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Print...</original>
+		<translation>Afdrukken ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>E&xit</original>
+		<translation>A&fsluiten</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Edit</original>
+		<translation>&Bewerken</translation>
+	</phrase>
+
+	<phrase>
+		<original>Repeat &Last Action</original>
+		<translation>Herhaal &laatste actie</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Copy to Clipboard</original>
+		<translation>&Kopiëren naar klembord</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Paste as New Image</original>
+		<translation>&Plakken als nieuwe afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Empty Clipboard</original>
+		<translation>&Ledig klembord</translation>
+	</phrase>
+
+	<phrase>
+		<original>Program Preferences</original>
+		<translation>Programma voorkeuren</translation>
+	</phrase>
+
+	<phrase>
+		<original>&View</original>
+		<translation>&Beeld</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Fit Image on Screen</original>
+		<translation>&Afbeelding aanpassen aan scherm</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fit Viewport Around &Image</original>
+		<translation>Aanpassen viewport rond &afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom &In</original>
+		<translation>Zoom &In</translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom &Out</original>
+		<translation>Zoom &uit</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Image</original>
+		<translation>&Afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Duplicate</original>
+		<translation>&Dupliceren</translation>
+	</phrase>
+
+	<phrase>
+		<original>mode</original>
+		<translation>Mode</translation>
+	</phrase>
+
+	<phrase>
+		<original>no transparency</original>
+		<translation>geen transparantie</translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency</original>
+		<translation>transparantie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Resize...</original>
+		<translation>Wijzigen formaat ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Crop to Selection</original>
+		<translation>Bijsnijden tot selectie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Mirror (Horizontal)</original>
+		<translation>Spiegelen (Horizontaal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Flip (Vertical)</original>
+		<translation>Omkeren (Verticaal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 90° Clockwise</original>
+		<translation>Draai 90° naar rechts</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 90° Counter-clockwise</original>
+		<translation>Draai 90° tegen de klok</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 180°</original>
+		<translation>180° draaien</translation>
+	</phrase>
+
+	<phrase>
+		<original>Arbitrary Rotation...</original>
+		<translation>Willekeurig draaien ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Convert to Isometric View</original>
+		<translation>Converteren naar Isometrisch aanzicht</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tile...</original>
+		<translation>Tegels ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Color</original>
+		<translation>&Kleur</translation>
+	</phrase>
+
+	<phrase>
+		<original>Brightness/Contrast...</original>
+		<translation>Helderheid / Contrast ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Gamma ...</original>
+		<translation>Gamma ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Hue / Saturation...</original>
+		<translation>Kleurtoon / verzadiging ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Levels...</original>
+		<translation>Niveaus ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Temperature...</original>
+		<translation>Temperatuur ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>White Balance...</original>
+		<translation>Witbalans ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Histogram</original>
+		<translation>Histogram</translation>
+	</phrase>
+
+	<phrase>
+		<original>Display Histogram</original>
+		<translation>Weergave Histogram</translation>
+	</phrase>
+
+	<phrase>
+		<original>Equalize...</original>
+		<translation>Egaliseren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Stretch</original>
+		<translation>Rekken</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color Shift</original>
+		<translation>Kleurverschuiving</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shift Right (r -> g -> b -> r)</original>
+		<translation>Verschuiven Rechts (r -> g -> b -> r)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shift Left (r -> b -> g -> r)</original>
+		<translation>Verschuiven Links (r -> b -> g -> r)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rechannel...</original>
+		<translation>Herkanaliseren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Black and White...</original>
+		<translation>Zwart/ Wit ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Colorize...</original>
+		<translation>Verkleuren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Enhance</original>
+		<translation>Verbeteren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Contrast</original>
+		<translation>Contrast</translation>
+	</phrase>
+
+	<phrase>
+		<original>Highlights</original>
+		<translation>Belichting</translation>
+	</phrase>
+
+	<phrase>
+		<original>Midtones</original>
+		<translation>Middentonen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shadows</original>
+		<translation>Schaduwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fade</original>
+		<translation>Vervagen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Low Fade</original>
+		<translation>Lage vervaging</translation>
+	</phrase>
+
+	<phrase>
+		<original>Medium Fade</original>
+		<translation>Medium vervaging</translation>
+	</phrase>
+
+	<phrase>
+		<original>High Fade</original>
+		<translation>Hoge vervaging</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom Fade...</original>
+		<translation>Aangepaste vervaging ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfade</original>
+		<translation>On-vervagen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale...</original>
+		<translation>Grijswaarden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invert</original>
+		<translation>Omkeren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Compound Invert</original>
+		<translation>Compound omkeren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Posterize...</original>
+		<translation>Schakeren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Count unique colors</original>
+		<translation>Tel unieke kleuren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Reduce unique colors...</original>
+		<translation>Verminder unieke kleuren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Effec&ts</original>
+		<translation>Effec&ten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fade last effect</original>
+		<translation>Vervagen laatste effect</translation>
+	</phrase>
+
+	<phrase>
+		<original>Artistic</original>
+		<translation>Artistiek</translation>
+	</phrase>
+
+	<phrase>
+		<original>Antique</original>
+		<translation>Antiek</translation>
+	</phrase>
+
+	<phrase>
+		<original>Comic Book</original>
+		<translation>Comic Book</translation>
+	</phrase>
+
+	<phrase>
+		<original>Mosaic...</original>
+		<translation>Mozaïek ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Pencil Drawing</original>
+		<translation>Potlood tekening</translation>
+	</phrase>
+
+	<phrase>
+		<original>Relief</original>
+		<translation>Verlichting</translation>
+	</phrase>
+
+	<phrase>
+		<original>Blur</original>
+		<translation>Verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Soften</original>
+		<translation>Verzachten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Soften More</original>
+		<translation>Meer Verzachten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Blur More</original>
+		<translation>Meer verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Gaussian Blur</original>
+		<translation>Gaussiaans verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Gaussian Blur More</original>
+		<translation>Meer Gaussiaans verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grid Blur</original>
+		<translation>Raster verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Edge</original>
+		<translation>Rand</translation>
+	</phrase>
+
+	<phrase>
+		<original>Emboss/Engrave...</original>
+		<translation>Reliëf / Gravure ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Enhance Edges</original>
+		<translation>Verbeter Randen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find Edges...</original>
+		<translation>Randen zoeken ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Experimental</original>
+		<translation>Experimenteel</translation>
+	</phrase>
+
+	<phrase>
+		<original>Alien</original>
+		<translation>Buitenaards</translation>
+	</phrase>
+
+	<phrase>
+		<original>Dream</original>
+		<translation>Droom</translation>
+	</phrase>
+
+	<phrase>
+		<original>Radioactive</original>
+		<translation>Radioactief</translation>
+	</phrase>
+
+	<phrase>
+		<original>Synthesize</original>
+		<translation>Synthetiseren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Thermograph (Heat Map)</original>
+		<translation>Thermograaf (Warmte Map)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Vibrate</original>
+		<translation>Trillen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Natural</original>
+		<translation>Natuurlijk</translation>
+	</phrase>
+
+	<phrase>
+		<original>Atmosphere</original>
+		<translation>Sfeer</translation>
+	</phrase>
+
+	<phrase>
+		<original>Burn</original>
+		<translation>Uitbranden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fog</original>
+		<translation>Mist</translation>
+	</phrase>
+
+	<phrase>
+		<original>Freeze</original>
+		<translation>Bevriezen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Lava</original>
+		<translation>Lava</translation>
+	</phrase>
+
+	<phrase>
+		<original>Ocean</original>
+		<translation>Oceaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rainbow</original>
+		<translation>Regenboog</translation>
+	</phrase>
+
+	<phrase>
+		<original>Steel</original>
+		<translation>Staal</translation>
+	</phrase>
+
+	<phrase>
+		<original>Water</original>
+		<translation>Water</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sharpen</original>
+		<translation>Verscherpen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Remove Blur (Unsharp Mask)</original>
+		<translation>Verwijder onscherpte (Onscherp masker)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sharpen More</original>
+		<translation>Meer verscherpen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Stylize</original>
+		<translation>Stileren</translation>
+	</phrase>
+
+	<phrase>
+		<original>diffuse</original>
+		<translation>Spreiden</translation>
+	</phrase>
+
+	<phrase>
+		<original>diffuse more</original>
+		<translation>Meer spreiden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom Diffuse...</original>
+		<translation>Aangepast spreiden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom filter</original>
+		<translation>Aangepast filter</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Macro</original>
+		<translation>&Macro</translation>
+	</phrase>
+
+	<phrase>
+		<original>Play Saved Macro...</original>
+		<translation>Afspelen Opgeslagen Macro ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Start Recording</original>
+		<translation>&Opname starten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sto&p Recording...</original>
+		<translation>Opname Sto&ppen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Window</original>
+		<translation>&Venster</translation>
+	</phrase>
+
+	<phrase>
+		<original>Next Image</original>
+		<translation>Volgende afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Previous Image</original>
+		<translation>Vorige afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Arrange Icons</original>
+		<translation>&Pictogrammen schikken</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Cascade</original>
+		<translation>&Achter elkaar</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tile &Horizontally</original>
+		<translation>&Naast elkaar</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tile &Vertically</original>
+		<translation>&Onder elkaar</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Minimize All Windows</original>
+		<translation>&Minimaliseren van vensters</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Restore All Windows</original>
+		<translation>&Herstellen van alle vensters</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Help</original>
+		<translation>&Help</translation>
+	</phrase>
+
+	<phrase>
+		<original>Support X1with a small donation (thank you!)</original>
+		<translation>Ondersteuning X1 met een kleine donatie (dank u!)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Check for &Updates</original>
+		<translation>Controleren op &updates</translation>
+	</phrase>
+
+	<phrase>
+		<original>Submit Feedback...</original>
+		<translation>Feedback ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Submit Bug Report...</original>
+		<translation>Indienen Bug Report ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>&Visit the X1Website</original>
+		<translation>&Bezoek de X1 Website</translation>
+	</phrase>
+
+	<phrase>
+		<original>Download X1Source Code</original>
+		<translation>Download X1's broncode</translation>
+	</phrase>
+
+	<phrase>
+		<original>Read X1's License and Terms of Use</original>
+		<translation>Lees de licentie en de gebruiksvoorwaarden van X1</translation>
+	</phrase>
+
+	<phrase>
+		<original>&About X1</original>
+		<translation>&Over X1</translation>
+	</phrase>
+
+	<phrase>
+		<original>Size:</original>
+		<translation>Afmeting:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to adjust image zoom</original>
+		<translation>Klik om zoom te wijzigen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to change the way selections are rendered</original>
+		<translation>Klik om de manier waarop keuzes worden weergegeven te wijzigen</translation>
+	</phrase>
+
+	<phrase>
+		<original>File</original>
+		<translation>Bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom rank</original>
+		<translation>Aangepaste rangschikking</translation>
+	</phrase>
+
+	<phrase>
+		<original>Twins</original>
+		<translation>Tweelingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Clipboard Image</original>
+		<translation>Klembord afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Clipboard data imported successfully</original>
+		<translation>Klemborddata succesvol geïmporteerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>URL found on clipboard.  Attempting to download image at that location...</original>
+		<translation>URL gevonden in Klembord . Proberen van te downloaden op die locatie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image download failed.</original>
+		<translation>Afbeelding downloaden mislukt.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please copy a valid image URL to the clipboard and try again.</original>
+		<translation>Gelieve een geldige afbeeldings-URL naar het klembord te kopieren en probeer het dan opnieuw.</translation>
+	</phrase>
+
+	<phrase>
+		<original>The clipboard is empty or it does not contain a valid picture format.</original>
+		<translation>Het klembord is leeg of het bevat geen geldige beeldformaat.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Windows Clipboard Error</original>
+		<translation>Fout Windows Klembord</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preparing to load image...</original>
+		<translation>Voorbereiden laden afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rendering image to screen...</original>
+		<translation>Rendering afbeelding naar het scherm ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>An error occurred:</original>
+		<translation>Er is een fout opgetreden:</translation>
+	</phrase>
+
+	<phrase>
+		<original>No X1 encoder found. Save aborted.</original>
+		<translation>Geen X1 encoder gevonden. Opslaan afgebroken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>The zLib compression library (zlibwapi.dll) was marked as missing or corrupted upon program initialization.</original>
+		<translation>De Zlib compressie bibliotheek (zlibwapi.dll) werd gemarkeerd als beschadigd of ontbrak bij de initialisatie van het programma.</translation>
+	</phrase>
+
+	<phrase>
+		<original>To enable PDI saving,</original>
+		<translation>Om PDI opslaan mogelijk te maken,</translation>
+	</phrase>
+
+	<phrase>
+		<original>please allow X1 to download plugin updates by going to the 'Edit Menu -> Program Preferences',</original>
+		<translation>staat u X1 toe tot plugin updates te downloaden door te gaan naar het menu 'Bewerken -> Programma Voorkeuren',</translation>
+	</phrase>
+
+	<phrase>
+		<original>and selecting the 'offer to download core plugins' check box.</original>
+		<translation>en het aanvinkvak van 'aanbod om core plugins downloaden' aan te klikken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>PDI Interface Error</original>
+		<translation>PDI Interface fout</translation>
+	</phrase>
+
+	<phrase>
+		<original>PDI saving disabled.</original>
+		<translation>PDI opslaan uitgeschakeld.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save complete.</original>
+		<translation>Opslaan voltooid.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save canceled.</original>
+		<translation>Opslaan geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading custom filter information...</original>
+		<translation>Laden van aangepast filter informatie ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Applying X1 filter...</original>
+		<translation>Toepassen X1 filter ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unsupported custom filter version.</original>
+		<translation>Niet-ondersteunde aangepast filter versie.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Generating grids...</original>
+		<translation>Genereren van rasters ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Applying grid blur...</original>
+		<translation>Toepassen raster onscherpte ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preparing conversion tables...</original>
+		<translation>Voorbereiden conversietabellen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Converting image to isometric view...</original>
+		<translation>Omzetten van afbeelding naar isometrisch aanzicht ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Finished.</original>
+		<translation>Afgewerkt.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid custom filter file</original>
+		<translation>Ongeldige aangepaste filter-bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>filter ...</original>
+		<translation>filter ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Inverting the image...</original>
+		<translation>Omkeren van de afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shifting RGB values right...</original>
+		<translation>Verschuiven RGB-waarden rechts ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shifting RGB values left...</original>
+		<translation>Verschuiven RGB-waarden links ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Calculating film negative values...</original>
+		<translation>Berekenen film negatieve waarden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Inverting image hue...</original>
+		<translation>Inverteren tint van afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Performing compound inversion...</original>
+		<translation>Uitvoeren van samengestelde inversie ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Enhancing image contrast...</original>
+		<translation>Verbetering van beeldcontrast ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Enhancing image highlights...</original>
+		<translation>Versterking van beeld hoogtepunten ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Enhancing image midtones...</original>
+		<translation>Versterking van beeld middentonen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Enhancing image shadows...</original>
+		<translation>Versterking van beeld schaduwen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sketching the image with an imaginary pencil...</original>
+		<translation>Schetsen van de afbeelding met een denkbeeldige potlood ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Converting image mode...</original>
+		<translation>Omzetten van beeld-modus ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fading last effect...</original>
+		<translation>Vervagen laatste effect ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Performing thermographic analysis...</original>
+		<translation>Uitvoeren van thermografische analyse ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Animate filter canceled</original>
+		<translation>Animate filteren geannuleerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>Synthesizing new image...</original>
+		<translation>Synthetiseren nieuwe afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Abducting image and probing it for weaknesses...</original>
+		<translation>Ontvoeren beeld en indringen voor zwakke punten ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Accelerating to 88mph in order to antique-ify this image...</original>
+		<translation>Versnellen tot 88 mph om deze afbeelding te antiekeren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Engaging hipsters to perform sepia conversion...</original>
+		<translation>Starten hipsters om sepia conversie uit te voeren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Putting image to sleep, then measuring its REM cycles...</original>
+		<translation>Beeld laten inslapen, dan meten van de REM cycli ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Injecting image with non-ionizing radiation...</original>
+		<translation>Injecteren beeld met niet-ioniserende straling ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Embuing image with the essence of F. Miller...</original>
+		<translation>Doordringen afbeelding met de essentie van F. Miller ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Counting the number of unique colors in this image...</original>
+		<translation>Tellen van het aantal unieke kleuren in deze afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Total number of unique colors:</original>
+		<translation>Totaal aantal unieke kleuren:</translation>
+	</phrase>
+
+	<phrase>
+		<original>This image contains X1 unique colors.</original>
+		<translation>Deze afbeelding bevat X1 unieke kleuren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Count Image Colors</original>
+		<translation>Tellen van aantal kleuren in de afbeelding.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sorry, but this filter is still under heavy development.</original>
+		<translation>Sorry, maar deze filter is nog in ontwikkeling.</translation>
+	</phrase>
+
+	<phrase>
+		<original>It's disabled right now due to some instability in the code.  Stay tuned for updates!</original>
+		<translation>Het is op dit moment als gevolg van een zekere instabiliteit van de code uitgeschakeld. Stay tuned voor updates!</translation>
+	</phrase>
+
+	<phrase>
+		<original>Animate filter disabled... for now</original>
+		<translation>Animate filter uitgeschakeld ... voor nu</translation>
+	</phrase>
+
+	<phrase>
+		<original>This menu item only appears in the Visual Basic IDE.</original>
+		<translation>Dit menu-item verschijnt alleen in de Visual Basic IDE.</translation>
+	</phrase>
+
+	<phrase>
+		<original>You can use the MenuTest() sub in the Filters_Miscellaneous module to test out your own filters.</original>
+		<translation>U kunt gebruik maken van de MenuTest() sub in de Filters_Miscellaneous module voor het testen van uw eigen filters.</translation>
+	</phrase>
+
+	<phrase>
+		<original>I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
+		<translation>Ik doe dit meestal eerst, zodra het filter goed werkt, geef ik het een subroutine voor zichzelf.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sprinkling image with shimmering rainbows...</original>
+		<translation>Afbeelding besprinkelen met glinsterende regenbogen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Generating artificial fog...</original>
+		<translation>Genereren van kunstmatige mist ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Generating artificial water...</original>
+		<translation>Genereren van kunstmatige water ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Creating artificial atmosphere...</original>
+		<translation>Creëren van kunstmatige sfeer ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Dropping image temperature...</original>
+		<translation>Verlagen temperatuur afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Exploding imaginary volcano...</original>
+		<translation>Exploderende denkbeeldige vulkaan ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Lighting image on fire...</original>
+		<translation>Afbeelding in brand steken ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Taking image for a swim...</original>
+		<translation>Afbeelding laten zwemmen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Pouring smoldering steel onto image...</original>
+		<translation>Afbeelding overgieten met smeulend staal ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>No active selection found.  Crop abandoned.</original>
+		<translation>Geen actieve selectie gevonden. Bijsnijden verlaten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Cropping image to selected area...</original>
+		<translation>Bijsnijden afbeelding voor geselecteerde gebied ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Crop complete.  (Note: the selected area was automatically unselected.)</original>
+		<translation>Bijsnijden voltooien. (Let op:. Het geselecteerde gebied is automatisch niet geselecteerd)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Crop complete.  Selection drawing mode changed to make selection visible.</original>
+		<translation>Bijsnijden voltooien. Selectie tekenmodus veranderd selectie zichtbaar te maken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Flipping image...</original>
+		<translation>Omdraaien afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Mirroring image...</original>
+		<translation>Spiegelen afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotating image clockwise...</original>
+		<translation>Draaien afbeelding met de klok mee ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotating image...</original>
+		<translation>Draaien afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotating image counter-clockwise...</original>
+		<translation>Draaien afbeelding tegen de klok in ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Analyzing filetype...</original>
+		<translation>Analyseren van bestandstype ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Filetype not supported by FreeImage.  Import abandoned.</original>
+		<translation>Bestandstype niet ondersteund door FreeImage. Import verlaten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preparing import flags...</original>
+		<translation>Voorbereiden import vlaggen ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Animated GIF file detected.</original>
+		<translation>Geanimeerde GIF-bestand gedetecteerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Multipage TIFF file detected.</original>
+		<translation>Meerbladig TIFF-bestand gedetecteerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>All frames will be loaded, per the user's request.</original>
+		<translation>Alle frames worden geladen, per verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>All pages will be loaded, per the user's request.</original>
+		<translation>Alle pagina's worden geladen, per verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Only the first frame will be loaded, per the user's request.</original>
+		<translation>Alleen het eerste frame wordt geladen, per verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Only the first page will be loaded, per the user's request.</original>
+		<translation>Alleen de eerste pagina wordt geladen, per verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Ignoring extra images in the file, per user's saved preference.</original>
+		<translation>Negeren van extra afbeeldingen in het bestand, per opgeslagen gebruiker voorkeur.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading all images in the file, per user's saved preference.</original>
+		<translation>Laden alle afbeeldingen in het bestand, per opgeslagen gebruiker voorkeur.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Importing image from file...</original>
+		<translation>Importeren afbeelding uit bestand ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Importing frame # #1 from animated GIF file...</original>
+		<translation>Het importeren van frame # # 1 van geanimeerde GIF-bestand ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Importing frame # #1 from multipage TIFF file...</original>
+		<translation>Het importeren van frame # # 1 van meerbladige TIFF-bestand ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Import via FreeImage failed (blank handle).</original>
+		<translation>Import via FreeImage mislukt (blanco handvat).</translation>
+	</phrase>
+
+	<phrase>
+		<original>Analyzing color depth...</original>
+		<translation>Analyseren van de kleurdiepte ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>High bit-depth RGB image identified.  Checking for non-standard alpha encoding...</original>
+		<translation>Hoge bit-diepte RGB-afbeelding geïdentificeerd. Controleren op niet-standaard alpha-codering ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Non-standard alpha data found.  Making temporary copy prior to tone mapping...</original>
+		<translation>Niet-standaard alpha-gegevens gevonden. Het maken van tijdelijke kopie voorafgaand aan tonemapping ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>No alpha data found.  Preparing tone-mapping...</original>
+		<translation>Geen alpha-gegevens gevonden. Voorbereiden tone-mapping ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tone mapping HDR image to preserve tonal range...</original>
+		<translation>Tonemapping HDR afbeelding om toonbereik behouden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tone mapping complete.</original>
+		<translation>Tonemapping voltooien.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Alpha found, but further tone-mapping ignored at user's request.</original>
+		<translation>Alpha gevonden, maar verder tone-mapping genegeerd op verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>No alpha found.  Further tone-mapping ignored at user's request.</original>
+		<translation>Geen alpha gevonden. Verdere tone-mapping genegeerd op verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>High bit-depth RGBA image identified.  Making copy of alpha data...</original>
+		<translation>Hoge bit-diepte RGBA beeld geïdentificeerd. Het maken van kopie van alpha-gegevens ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Alpha copy complete.  Tone mapping HDR image to preserve tonal range...</original>
+		<translation>Alpha kopie af te ronden. Tonemapping HDR afbeelding om toonbereik behouden ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tone mapping complete.</original>
+		<translation>Tonemapping voltooien.</translation>
+	</phrase>
+
+	<phrase>
+		<original>High bit-depth RGBA image identified.  Tone-mapping ignored at user's request.</original>
+		<translation>Hoge bit-diepte RGBA beeld geïdentificeerd. Tone-mapping genegeerd op verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tone-mapping high-bit-depth grayscale image to 24bpp...</original>
+		<translation>Tone-mapping high-bit-diepte afbeelding in grijstinten naar 24bpp ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Requesting memory for image transfer...</original>
+		<translation>Aanvragen geheugen voor beeldoverdracht ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Import via FreeImage failed (couldn't create DIB).</original>
+		<translation>Import via FreeImage mislukt (kon geen DIB).</translation>
+	</phrase>
+
+	<phrase>
+		<original>Memory secured.  Finalizing image load...</original>
+		<translation>Geheugen vastgezet. Finaliseren laden afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image load successful.  FreeImage released.</original>
+		<translation>Afbeelding succesvol geladen. FreeImage vrijgegeven.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Restoring alpha data...</original>
+		<translation>Herstel van alpha-gegevens ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Alpha data restored successfully.</original>
+		<translation>Alpha gegevens hersteld met succes.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Import via FreeImage failed</original>
+		<translation>Import via FreeImage is mislukt</translation>
+	</phrase>
+
+	<phrase>
+		<original>Initializing GDI+...</original>
+		<translation>Initialiseren GDI + ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Creating GDI+ compatible image copy...</original>
+		<translation>Maken van GDI + compatibele afbeelding kopiëren ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preparing GDI+ encoder for this filetype...</original>
+		<translation>Voorbereiden GDI +-encoder voor dit bestandstype ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving the file...</original>
+		<translation>Opslaan van het bestand ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Releasing all temporary image copies...</original>
+		<translation>Loslaten van alle tijdelijke bestands kopieën ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save complete.</original>
+		<translation>Opslaan voltooid.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro recording started.</original>
+		<translation>Macro opname gestart.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro recording stopped.</original>
+		<translation>Macro opname gestopt.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro saved successfully.</original>
+		<translation>Macro succesvol opgeslagen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If you do not save this macro, all actions recorded during this session will be permanently lost. Are you sure you want to cancel?</original>
+		<translation>Als u deze macro niet opslaat gaan alle acties opgenomen tijdens deze sessie permanent verloren. Weet u zeker dat u wilt annuleren?</translation>
+	</phrase>
+
+	<phrase>
+		<original>(Press 'No' to return to the 'Save Macro' screen.</original>
+		<translation>(Druk op 'Nee' om terug te keren naar het 'Opslaan Macro' scherm.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Note that you can always delete this macro later if you decide you don't want it.)</original>
+		<translation>Merk op dat u deze macro altijd later kunt verwijderen als u besluit dat u het niet wilt.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Warning: Last Chance to Save Macro</original>
+		<translation>Waarschuwing: Laatste kans om macro op te slaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro abandoned.</original>
+		<translation>Macro verlaten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro Data</original>
+		<translation>macro gegevens</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open Macro File</original>
+		<translation>Open Macro bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading macro data...</original>
+		<translation>Laden macrogegevens ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro load canceled.</original>
+		<translation>Macro openen geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid macro file.</original>
+		<translation>Ongeldig macro-bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>is not a valid macro file.</original>
+		<translation>is geen geldig macro-bestand.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro Error</original>
+		<translation>Macro fout</translation>
+	</phrase>
+
+	<phrase>
+		<original>Converting outdated macro format...</original>
+		<translation>Omzetten van een verouderde macro-formaat ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro converted successfully!  Continuing...</original>
+		<translation>Macro met succes omgezet! Voortzetting van ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>is no longer a supported macro version (#</original>
+		<translation>niet langer ondersteunde macro versie (#</translation>
+	</phrase>
+
+	<phrase>
+		<original>Processing macro data...</original>
+		<translation>Verwerking macrogegevens ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Macro complete!</original>
+		<translation>Macro compleet!</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load image</original>
+		<translation>Laden afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please select a folder:</original>
+		<translation>Selecteer een map</translation>
+	</phrase>
+
+	<phrase>
+		<original>is not a valid entry.</original>
+		<translation>is geen geldige invoer.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please enter a value between</original>
+		<translation>Gelieve een waarde in te geven tussen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please enter a numeric value.</original>
+		<translation>Geef een numerieke waarde.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid entry</original>
+		<translation>Ongeldige invoer</translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving recent file menu thumbnail...</original>
+		<translation>Opslaan vanminiaturen  recente bestanden menu ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Thumbnail saved successfully.</original>
+		<translation>Thumbnail succesvol opgeslagen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Thumbnail save failed (FreeImage returned blank handle).</original>
+		<translation>Thumbnail opslaan mislukt (FreeImage gaf blanco handle terug).</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please report this error using Help -> Submit Bug Report</original>
+		<translation>Meldt deze fout aub met behulp van Help -> Indienen Bug Report.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to map colors on a 'header-only' bitmap.</original>
+		<translation>Kan kleuren op een 'header-only' bitmap niet in kaart te brengen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to convert a 'header-only' bitmap.</original>
+		<translation>Kan een 'header-only' bitmap niet te zetten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to get histogram of a 'header-only' bitmap.</original>
+		<translation>Kan een histogram van een 'header-only' bitmap niet verkrijgen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to adjust a 'header-only' bitmap.</original>
+		<translation>Kan een 'header-only' bitmap niet aanpassen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to save a 'header-only' bitmap.</original>
+		<translation>Kan een 'header-only' bitmap niet opslaan.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to quantize a 'header-only' bitmap.</original>
+		<translation>Kan een 'header-only' bitmap niet quantiseren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to rescale a 'header-only' bitmap.</original>
+		<translation>Kan een 'header-only' bitmap niet herschalen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to paint a 'header-only' bitmap.</original>
+		<translation>Kan een 'header-only' bitmap niet tekenen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to create a bitmap from a 'header-only' bitmap.</original>
+		<translation>Kan geen bitmap maken van een 'header-only' bitmap.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to create a picture from a 'header-only' bitmap.</original>
+		<translation>Kan geen afbeelding maken van een 'header-only' bitmap.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to create a thumbnail picture from a 'header-only' bitmap.</original>
+		<translation>Kan geen miniatuur afbeelding maken van een 'header-only' bitmap.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to create a PictureData array from a 'header-only' bitmap.</original>
+		<translation>Kan geen PictureData array maken van een 'header-only' bitmap.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to create a mask image from a 'header-only' bitmap.</original>
+		<translation>Kan geen masker afbeelding creëren van een 'header-only' bitmap.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to create an icon from a 'header-only' bitmap.</original>
+		<translation>Kan geen pictogram van een 'header-only' bitmap creëren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>does not support reading.</original>
+		<translation>ondersteunt geen lezen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>The file specified has an unknown image format.</original>
+		<translation>Het opgegeven bestand heeft een onbekend beeldformaat.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to save 'header-only' bitmaps.</original>
+		<translation>Kan geen 'header-only' bitmaps opslaan.</translation>
+	</phrase>
+
+	<phrase>
+		<original>is unable to write images with a color depth of</original>
+		<translation>is niet in staat is om beelden te schrijven met een kleurdiepte van</translation>
+	</phrase>
+
+	<phrase>
+		<original>is unable to write images of the image format requested.</original>
+		<translation>is niet in staat is om beelden van het gevraagde beeldformaat te schrijven.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unknown image format. Neither an explicit image format</original>
+		<translation>Onbekend beeldformaat. noch een expliciete beeldformaat</translation>
+	</phrase>
+
+	<phrase>
+		<original>was specified nor any known image format was determined</original>
+		<translation>werd gespecificeerd, noch een bekend beeld formaat werd bepaald</translation>
+	</phrase>
+
+	<phrase>
+		<original>from the filename specified.</original>
+		<translation>van de opgegeven bestandsnaam.</translation>
+	</phrase>
+
+	<phrase>
+		<original>does not have any support for multi-page bitmaps.</original>
+		<translation>heeft geen ondersteuning voor multi-pagina bitmaps.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to colorize a 'header-only' bitmap.</original>
+		<translation>Kan geen 'header-only' bitmap inkleuren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom drawings can only be included into the DIB when</original>
+		<translation>Aangepaste tekeningen kunnen enkel worden opgenomen in de DIB bij</translation>
+	</phrase>
+
+	<phrase>
+		<original>the container's 'AutoRedraw' property is set to True.</original>
+		<translation>de container 'AutoRedraw' eigenschap is ingesteld op True.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Cannot create DIB from container control. Container control has no 'Picture' property.</original>
+		<translation>Kan geen DIB van de containercontrol creëren. De containercontrol heeft geen 'Picture' eigenschap.</translation>
+	</phrase>
+
+	<phrase>
+		<original>There is not enough memory available to continue this operation.</original>
+		<translation>Er is niet genoeg geheugen beschikbaar om deze bewerking voort te zetten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
+		<translation>Gelieve systeemgeheugen (RAM) vrij te maken door het afsluiten van onnodige programma's - Zeker je web browser, als deze open is - probeer de actie dan opnieuw.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.</original>
+		<translation>Helaas blijkt dit afbeeldingsbestand ongeldig te zijn. Dit kan gebeuren als een bestand geen beeldgegevens bevat, of als het beeldgegevens bevat in een niet-ondersteunde indeling.</translation>
+	</phrase>
+
+	<phrase>
+		<original>- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.</original>
+		<translation>- Als u deze foto hebt gedownload via het internet, kan de download voortijdig beëindigd zijn. Probeer het downloaden van de afbeelding opnieuw.</translation>
+	</phrase>
+
+	<phrase>
+		<original>- If this image file came from a digital camera, scanner, or other image editing program, it's possible that X1 simply doesn't understand this particular file format.</original>
+		<translation>- Als dit afbeeldingsbestand afkomstig is van een digitale camera, scanner of een ander beeldbewerkingsprogramma, is het mogelijk dat X1 dit bepaald bestandsformaat gewoon niet begrijpt .</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid image.  Image load cancelled.</original>
+		<translation>Ongeldige afbeelding. Afbeelding laden geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid image file</original>
+		<translation>Ongeldige afbeeldingsbestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.</original>
+		<translation>Het opgegeven bestand kan niet worden gevonden. Als het op een verwisselbaar medium stond, gebruik dan de juiste diskette, cd of draagbare schijf.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If the file is not located on portable media, make sure that:</original>
+		<translation>Als het bestand zich niet op draagbare media bevind, zorg er dan voor dat:</translation>
+	</phrase>
+
+	<phrase>
+		<original>1) the file hasn't been deleted, and... 2) the file location provided to X1 is correct.</original>
+		<translation>1) het bestand niet is verwijderd, en ... 2) de bestandslocatie gekoppeld aan X1 correct is.</translation>
+	</phrase>
+
+	<phrase>
+		<original>cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!</original>
+		<translation>geen extra informatie gevonden voor deze fout. Dat betekent waarschijnlijk dat deze fout een bug is, en het moet worden opgelost!</translation>
+	</phrase>
+
+	<phrase>
+		<original>Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses X1 .)</original>
+		<translation>Wilt u een bug rapport in dienen? (Het duurt minder dan een minuut, en het helpt iedereen die gebruik maakt van X1.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unknown error.</original>
+		<translation>Onbekende fout.</translation>
+	</phrase>
+
+	<phrase>
+		<original>has experienced an error.  Details on the problem include:</original>
+		<translation>er is een fout opgetreden. Details over het probleem zijn:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Error number:</original>
+		<translation>foutnummer:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Description:</original>
+		<translation>Beschrijving:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Error Handler:</original>
+		<translation>Fout Handler:</translation>
+	</phrase>
+
+	<phrase>
+		<original>has automatically opened a GitHub bug report webpage for you.</original>
+		<translation>heeft automatisch een GitHub bug report webpagina geopend voor u.</translation>
+	</phrase>
+
+	<phrase>
+		<original>In the 'Title box, please enter the following error number with a short description of the problem:</original>
+		<translation>In het 'vak 'Title', vul je het volgende foutnummer in met een korte beschrijving van het probleem:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.</original>
+		<translation>Eventuele aanvullende gegevens opgeven in het grote tekstvak, met inbegrip van de stappen die leidden tot deze fout, kunnen helpen bij het zo snel mogelijk oplossen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>When finished, click the 'Submit new issue' button.  Thank you so much for your help!</original>
+		<translation>Wanneer u klaar bent, klikt u op de 'Submit new issue' te klikken. Heel erg bedankt voor uw hulp!</translation>
+	</phrase>
+
+	<phrase>
+		<original>GitHub bug report instructions</original>
+		<translation>GitHub bug report instructies</translation>
+	</phrase>
+
+	<phrase>
+		<original>In the 'Additional details' box, please describe the steps that led up to this error.</original>
+		<translation>In het'Additional details' vak, beschrijf de stappen die leidden tot deze fout.</translation>
+	</phrase>
+
+	<phrase>
+		<original>In the bottom box of that page, please enter the following error number:</original>
+		<translation>In het onderste vak van die pagina, kan u de volgende fout ingeven:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Bug report instructions</original>
+		<translation>Bug report instructies</translation>
+	</phrase>
+
+	<phrase>
+		<original>Out of memory.  Function cancelled.</original>
+		<translation>Onvoldoende geheugen. Functie geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please save the image in a generic format (such as bitmap or JPEG), then reload it.</original>
+		<translation>Sla de afbeelding op in een generiek formaat (zoals bitmap of JPEG), probeer dan terug.</translation>
+	</phrase>
+
+	<phrase>
+		<original>needs you to answer one more question.</original>
+		<translation>heeft je nodig om een vraag te beantwoorden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving</original>
+		<translation>Bewaren</translation>
+	</phrase>
+
+	<phrase>
+		<original>save complete.</original>
+		<translation>Bewaren kompleet</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preparing X1 image...</original>
+		<translation>Klaarmaken X1 afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
+		<translation>Bewaren mislukt (FreeImage_SaveEx stil fail). Meldt deze fout aub met behulp van Help -> Indienen Bug Report.</translation>
+	</phrase>
+
+	<phrase>
+		<original>save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
+		<translation>Bewaren mislukt (FreeImage geeft blanco handle). Meldt deze fout aub met behulp van Help -> Indienen Bug Report.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save could not be completed without FreeImage library access.</original>
+		<translation>Bewaren kan niet worden voltooid zonder FreeImage bibliotheek toegang.</translation>
+	</phrase>
+
+	<phrase>
+		<original>The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization.</original>
+		<translation>De scanner / digitale camera-interface plug-in (EZTW32.dll) werd gemarkeerd als missend na initialisatie van het programma</translation>
+	</phrase>
+
+	<phrase>
+		<original>To enable scanner support, please copy the EZTW32.dll file</original>
+		<translation>Om de scanner-ondersteuning in te schakelen, kopieer je het bestand EZTW32.dll</translation>
+	</phrase>
+
+	<phrase>
+		<original>(available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload</original>
+		<translation>(beschikbaar voor download vanaf http://eztwain.com/ezt1_download.htm) in de plug-in directory, en herstart.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scanner Interface Error</original>
+		<translation>Scanner Interface fout</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scanning disabled</original>
+		<translation>scannen uitgeschakeld</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scanner successfully enabled</original>
+		<translation>Scanner met succes ingeschakeld</translation>
+	</phrase>
+
+	<phrase>
+		<original>Acquiring image...</original>
+		<translation>Het verwerven van de afbeelding ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scanner/digital camera import disabled</original>
+		<translation>Import van Scanner / digitale camera uitgeschakeld</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scanned Image</original>
+		<translation>gescande afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image acquired successfully</original>
+		<translation>Beeld succesvol verkregen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
+		<translation>Er is een onbekende fout opgetreden. Zorg ervoor dat uw scanner ingeschakeld is en klaar voor gebruik.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scan successful, but temporary file save failed.  Is it possible that your hard drive is full (or almost full)?</original>
+		<translation>Scan succesvol, maar opslaan tijdelijk bestand is mislukt. Is het mogelijk dat uw harde schijf vol is (of bijna vol)?</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.</original>
+		<translation>Kan slot DIB niet verwerven. Zorg ervoor dat er geen andere programma's zijn die de scanner gebruiken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If the problem persists, reboot and try again.</original>
+		<translation>Als het probleem zich blijft voordoen, herstart en probeer het dan opnieuw.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Temporary file access error.  This can be caused when running on a system with limited access rights.</original>
+		<translation>Fout tijdelijke toegang tot bestanden. Dit kan worden veroorzaakt bij het uitvoeren op een systeem met beperkte toegangsrechten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please enable admin rights and try again.</original>
+		<translation>Schakel adminrechten in en probeer het opnieuw.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scan canceled at the user's request.</original>
+		<translation>Scan geannuleerd op verzoek van de gebruiker.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scan canceled.</original>
+		<translation>Scan geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error # X1).</original>
+		<translation>De scanner gaf een fout terug die niet werd aangegeven in de documentatie van EZTW32.dll (Error # X1).</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please visit http://www.eztwain.com for more information.</original>
+		<translation>Kijk voor meer informatie op Http://www.eztwain.com.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Waiting for capture...</original>
+		<translation>Wachten op capture ...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Would you like to minimize X1 before capturing the screen?</original>
+		<translation>Wil je X1 te minimaliseren voor de screen capture?</translation>
+	</phrase>
+
+	<phrase>
+		<original>Screen capture</original>
+		<translation>screen Capture</translation>
+	</phrase>
+
+	<phrase>
+		<original>Screen capture canceled.</original>
+		<translation>Screen capture geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Screen capture complete.</original>
+		<translation>Screen capture voltooid.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving Undo data...</original>
+		<translation>Opslaan 'ongedaan maken' gegevens...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Restoring Undo data...</original>
+		<translation>Herstellen 'ongedaan maken' gegevens...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Restoring Redo data...</original>
+		<translation>Herstel van 'herhalen-gegevens'...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please free up system memory (RAM) and try again.</original>
+		<translation>Gelieve systeemgeheugen (RAM) vrij te maken en opnieuw te proberen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If the problem persists, reduce the zoom value and try again.</original>
+		<translation>Als het probleem aanhoudt, verlaag dan de zoomwaarde en probeer het opnieuw.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Not Enough Memory</original>
+		<translation>Er is onvoldoende geheugen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Operation halted.</original>
+		<translation>Operatie gestopt.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid zoom value.</original>
+		<translation>Ongeldige zoomwaarde.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom paused due to unexpected error (#</original>
+		<translation>Zoom onderbroken als gevolg van onverwachte fout (#</translation>
+	</phrase>
+
+	<phrase>
+		<original>An error (# X1) has occurred.  Compression halted.</original>
+		<translation>Er heeft een fout (# X1) plaatsgevonden. Compressie gestopt.</translation>
+	</phrase>
+
+	<phrase>
+		<original>File compressed from X1 bytes to X2 bytes.  Ratio: X3 %</original>
+		<translation>Bestand gecomprimeerd van X1 bytes naar X2 bytes. Ratio: X3%</translation>
+	</phrase>
+
+	<phrase>
+		<original>An error (# X1) has occurred.  Decompression halted.</original>
+		<translation>Er heeft een fout (# X1) plaatsgevonden. Decompressie gestopt.</translation>
+	</phrase>
+
+	<phrase>
+		<original>File decompressed from X1 bytes to X2 bytes.</original>
+		<translation>Bestand gedecomprimeerd van X1 bytes naar X2 bytes.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unfortunately, the number of images you selected exceeds what Microsoft Windows allows for a single common dialog box.</original>
+		<translation>Helaas is het aantal afbeeldingen dat u gekozen hebt groter dan wat Microsoft Windows toelaat voor een dialoogvenster.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please try again with a smaller set of selected images.</original>
+		<translation>Probeer het opnieuw met een kleiner aantal geselecteerde afbeeldingen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Error: too many images</original>
+		<translation>Fout: te veel afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image load canceled.</original>
+		<translation>Afbeelding laden geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Language settings</original>
+		<translation>Taalinstellingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Language</original>
+		<translation>Taal</translation>
+	</phrase>
+
+	<phrase>
+		<original>Download the newest version of the language-plugin</original>
+		<translation>Download de nieuwste versie van de taal-plugin</translation>
+	</phrase>
+
+	<phrase>
+		<original>Current language-plugin version:</original>
+		<translation>Actuele taal-plugin versie:</translation>
+	</phrase>
+
+	<phrase>
+		<original>Current language:</original>
+		<translation>Actuele taal:</translation>
+	</phrase>
+
+	<phrase>
+		<original>This language is not yet implemented</original>
+		<translation>Deze taal is nog niet geïmplementeerd</translation>
+	</phrase>
+
+	<phrase>
+		<original>Edit homemade linguistic parameters</original>
+		<translation>Bewerk zelf gemaakte  linguïstische-parameters</translation>
+	</phrase>
+
+	<phrase>
+		<original>This will automatically open the X1 webpage where you can download the language plugin.</original>
+		<translation>Dit zal automatisch de X1 webpagina openen waar u de taal-plugin kan van downloaden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Caution! This download will overwrite existing linguistic parameters,</original>
+		<translation>Opgelet! Deze download zal de bestaande linguïstische-parameters overschrijven,</translation>
+	</phrase>
+
+	<phrase>
+		<original>Nevertheless, all homemade translations remain unchanged.</original>
+		<translation>Toch, alle zelf gemaakte vertalingen blijven evenwel onveranderd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Double-click to edit.</original>
+		<translation>Dubbelklik om te wijzigen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please, after making changes and saving them, click the button 'Send linguistic parameters to X1', so everyone can make use of it.</original>
+		<translation>a.u.b. Klik na het wijzigen en bewaren op de knop 'Verzenden linguïstische-parameters naar X1' ,zo kan iedereen er gebruik van maken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>After installation, click the button 'Reload linguistic parameters'.</original>
+		<translation>Na het installeren klikt u op de knop 'Herladen linguïstische-paramaters'</translation>
+	</phrase>
+
+	<phrase>
+		<original>Send linguistic parameters X2 to X1</original>
+		<translation>Zend linguïstische-parameters X2 naar X1</translation>
+	</phrase>
+
+	<phrase>
+		<original>Replace linguistic parameters with my homemade translations</original>
+		<translation>Vervang linguïstische parameters met mijn zelfgemaakte vertalingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Reload linguistic parameters after download of the plugin</original>
+		<translation>Herladen linguïstische-paramaters na het downloaden van de plugin</translation>
+	</phrase>
+
+	<phrase>
+		<original>Homemade translations</original>
+		<translation>Zelf gemaakte vertalingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Editing language settings...</original>
+		<translation>Editeren taalinstellingen...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Please leave the indicators</original>
+		<translation>Laat a.u.b. de indicatoren</translation>
+	</phrase>
+
+	<phrase>
+		<original>unchanged, the program wil need them.</original>
+		<translation>ongewijzigd, het programma heeft deze nodig</translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving linguistic parameters...</original>
+		<translation>Bewaren van linguïstische-paramaters...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Reload linguistic parameters...</original>
+		<translation>Herladen van linguïstische-paramaters...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving Language settings...</original>
+		<translation>Bewaren van taalinstellingen...</translation>
+	</phrase>
+
+	<phrase>
+		<original>Home made translations for</original>
+		<translation>Zelfgemaakte vertalingen voor</translation>
+	</phrase>
+
+	<phrase>
+		<original>sent successfully</original>
+		<translation>succesvol verzonden</translation>
+	</phrase>
+
+	<phrase>
+		<original>ATTENTION! any changes you have made to the translations will be permanently lost.</original>
+		<translation>OPGELET ! alle wijzigingen die u hebt gemaakt aan de vertalingen gaan permanent verloren.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Continue Cancel?</original>
+		<translation>Verdergaan met annuleren ?</translation>
+	</phrase>
+
+	<phrase>
+		<original>No homemade translations found for the linguistic parameters of</original>
+		<translation>Geen zelfgemaakte vertalingen gevonden voor de linguïstische-paramaters van</translation>
+	</phrase>
+
+	<phrase>
+		<original>Would you like to load the parameters from the language PlugIn to edit as homemade linguistic parameters?</original>
+		<translation>Wilt U de parameters van de taal-PlugIn laden om te bewerken als zelfgemaakte parameters?</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find</original>
+		<translation>Zoek</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find what?</original>
+		<translation>Zoek wat?</translation>
+	</phrase>
+
+	<phrase>
+		<original>Nothing found for</original>
+		<translation>Niets gevonden voor</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find next?</original>
+		<translation>Volgende zoeken?</translation>
+	</phrase>
+
+	<phrase>
+		<original>Yes</original>
+		<translation>Ja</translation>
+	</phrase>
+
+	<phrase>
+		<original>No</original>
+		<translation>Nee</translation>
+	</phrase>
+
+
+</language>
