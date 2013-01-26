@@ -248,7 +248,9 @@ Public Sub ApplyLanguage()
     'Redraw all captions on the main form
     makeFormPretty FormMain
     If FormMain.Visible Then
-        ApplyAllMenuIcons
+        DrawMenuShortcuts
+        LoadMenuIcons
+        'ApplyAllMenuIcons
         ResetMenuIcons
     End If
 
@@ -608,14 +610,27 @@ End Function
 
 'Given a message (basically, a string), return the translation of said string.
 ' If a translation cannot be found, return the original string.
-Public Function translateMessage(ByRef srcMessage As String) As String
+Public Function TranslateMessage(ByRef srcMessage As String) As String
     
     Dim searchString As String, newString As String
     searchString = srcMessage
     newString = getTranslationTagFromCaption(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then translateMessage = newString Else translateMessage = srcMessage
+    If newString <> "" Then TranslateMessage = newString Else TranslateMessage = srcMessage
+    
+End Function
+
+'Given a message (basically, a string), return the translation of said string.
+' If a translation cannot be found, return the original string.
+Public Function RestoreMessage(ByRef srcMessage As String) As String
+    
+    Dim searchString As String, newString As String
+    searchString = srcMessage
+    newString = getOriginalTagFromTranslation(searchString)
+    
+    'If a new string was found, apply it to the object's caption
+    If newString <> "" Then RestoreMessage = newString Else RestoreMessage = srcMessage
     
 End Function
 
@@ -689,22 +704,38 @@ Public Sub undoTranslations(ByRef srcForm As Form)
     'Start by returning the form's original caption
     restoreFormCaption srcForm
     
+    Dim i As Long, strPos As Long
+    Dim tmpString As String
+    
     'Iterate through every control on the form, and restore original captions as necessary
     Dim eControl As Control
     For Each eControl In srcForm.Controls
     
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is Menu) Or (TypeOf eControl Is jcbutton) Then
-                                    
-            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then
-                g_Language.restoreObjectCaption eControl
-                DoEvents
-            End If
-               
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
+            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then g_Language.restoreObjectCaption eControl
         End If
+        
+        'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
+        ' We can detect these by checking for a vbTab character in the menu entry.  If this is found, strip it out before searching
+        ' for the original text.
+        If (TypeOf eControl Is Menu) Then
+            tmpString = eControl.Caption
+            strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
             
+            'If this menu caption has a custom accelerator appended, strip it off
+            If strPos > 0 Then tmpString = Left(tmpString, strPos - 1)
+            eControl.Caption = RestoreMessage(tmpString)
+            
+        End If
+        
         'If this is a list box or combo box, replacing the text is a bit more confusing
         If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
+            
+            'Enumerate through each entry in the control
+            For i = 0 To eControl.ListCount - 1
+                If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = RestoreMessage(eControl.List(i))
+            Next i
             
         End If
     
@@ -719,15 +750,30 @@ Public Sub applyTranslations(ByRef srcForm As Form)
     translateFormCaption srcForm
 
     'Iterate through every control on the form, and restore original captions as necessary
-    Dim i As Long
+    Dim i As Long, strPos As Long
+    Dim tmpString As String
     Dim eControl As Control
     For Each eControl In srcForm.Controls
     
         'The goal is to apply translations to any object with a non-blank, non-numeric caption property
         
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is Menu) Or (TypeOf eControl Is jcbutton) Then
-            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then g_Language.translateObjectCaption eControl
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
+            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
+        End If
+        
+        'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
+        ' We can detect these by checking for a vbTab character in the menu entry.  If this is found, strip it out before searching
+        ' for a translation.
+        If (TypeOf eControl Is Menu) Then
+            tmpString = eControl.Caption
+            strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
+            
+            'If this menu caption has a custom accelerator appended, strip it off
+            If strPos > 0 Then tmpString = Left(tmpString, strPos - 1)
+                
+            eControl.Caption = TranslateMessage(tmpString)
+            
         End If
             
         'If this is a list box or combo box, replacing the text is a bit more confusing
@@ -735,7 +781,7 @@ Public Sub applyTranslations(ByRef srcForm As Form)
             
             'Enumerate through each entry in the control
             For i = 0 To eControl.ListCount - 1
-                If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = translateMessage(eControl.List(i))
+                If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = TranslateMessage(eControl.List(i))
             Next i
             
         End If

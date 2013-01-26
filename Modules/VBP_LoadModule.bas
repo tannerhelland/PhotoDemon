@@ -967,7 +967,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
     'Load messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not (g_Language Is Nothing)) Then
         If g_Language.readyToTranslate Then
-            If g_Language.translationActive Then sMsg = g_Language.translateMessage(sMsg)
+            If g_Language.translationActive Then sMsg = g_Language.TranslateMessage(sMsg)
         End If
     End If
     
@@ -1040,6 +1040,17 @@ Public Sub LoadMenuShortcuts()
         .Enabled = True
     End With
 
+    DrawMenuShortcuts
+    
+End Sub
+
+'After all menu shortcuts (accelerators) are loaded above, the custom shortcuts need to be added to the menu entries themselves.
+' If we don't do this, the user won't know how to trigger the shortcuts!
+Public Sub DrawMenuShortcuts()
+
+    'Don't allow custom shortcuts in the IDE, as they require subclassing and might crash
+    If Not g_IsProgramCompiled Then Exit Sub
+
     'File menu
     FormMain.MnuSaveAs.Caption = FormMain.MnuSaveAs.Caption & vbTab & "Ctrl+Shift+S"
     FormMain.MnuImportFromInternet.Caption = FormMain.MnuImportFromInternet.Caption & vbTab & "Ctrl+Shift+I"
@@ -1082,7 +1093,6 @@ Public Sub LoadMenuShortcuts()
     'Window menu
     FormMain.MnuNextImage.Caption = FormMain.MnuNextImage.Caption & vbTab & "Page Down"
     FormMain.MnuPreviousImage.Caption = FormMain.MnuPreviousImage.Caption & vbTab & "Page Up"
-    
     
 End Sub
 

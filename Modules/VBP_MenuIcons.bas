@@ -455,6 +455,19 @@ Public Sub ResetMenuIcons()
         
         Next i
         
+        
+        'If the OS is Vista or later, we can use the checked states of the Image Mode menu entries to redraw those icons as well
+        If FormMain.MnuImageMode24bpp.Checked Then
+            AddMenuIcon "MODE24", 3, 2
+            AddMenuIcon "MODE24CHK", 3, 2, 0
+            AddMenuIcon "MODE32", 3, 2, 1
+        Else
+            'Update the parent menu
+            AddMenuIcon "MODE32", 3, 2
+            AddMenuIcon "MODE24", 3, 2, 0   '24bpp
+            AddMenuIcon "MODE32CHK", 3, 2, 1    '32bpp
+        End If
+        
     End If
         
 End Sub
