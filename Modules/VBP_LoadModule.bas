@@ -209,6 +209,8 @@ Public Sub LoadTheProgram()
     'Before displaying the main window, see if the user wants to restore last-used window location.
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then restoreMainWindowLocation
     
+    'Finish applying visual styles
+    makeFormPretty FormMain
     
     
     '*************************************************************************************************************************************
