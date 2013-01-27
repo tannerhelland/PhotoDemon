@@ -166,6 +166,7 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "ZOOMOUT", 2, 4        'Zoom Out
     AddMenuIcon "ZOOMACTUAL", 2, 10    'Zoom 100%
     AddMenuIcon "LEFTPANSHOW", 2, 16   'Show/Hide the left-hand panel
+    AddMenuIcon "RIGHTPANSHOW", 2, 17  'Show/Hide the right-hand panel
     
     'Image Menu
     AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
@@ -413,11 +414,17 @@ Public Sub ResetMenuIcons()
     numOfMRUFiles = MRU_ReturnCount()
     AddMenuIcon "CLEARRECENT", 0 + posModifier, 1, numOfMRUFiles + 1
     
-    'Change the Show/Hide left icon panel to match
+    'Change the Show/Hide panel icon to match its current state
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
         AddMenuIcon "LEFTPANSHOW", 2 + posModifier, 16    'Show the panel
     Else
-        AddMenuIcon "LEFTPANHIDE", 2 + posModifier, 16     'Hide the panel
+        AddMenuIcon "LEFTPANHIDE", 2 + posModifier, 16    'Hide the panel
+    End If
+    
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False) Then
+        AddMenuIcon "RIGHTPANSHOW", 2 + posModifier, 17   'Show the panel
+    Else
+        AddMenuIcon "RIGHTPANHIDE", 2 + posModifier, 17   'Hide the panel
     End If
         
     'If the OS is Vista or later, render MRU icons to the Open Recent menu

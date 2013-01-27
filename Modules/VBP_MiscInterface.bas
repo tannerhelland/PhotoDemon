@@ -57,6 +57,11 @@ Private hc_Handle_SizeNS As Long
 Private hc_Handle_SizeNWSE As Long
 Private hc_Handle_SizeWE As Long
 
+'These constants are used to toggle visibility of display elements.
+Public Const VISIBILITY_TOGGLE As Long = 0
+Public Const VISIBILITY_FORCEDISPLAY As Long = 1
+Public Const VISIBILITY_FORCEHIDE As Long = 2
+
 'Because VB6 apps tend to look pretty lame on modern version of Windows, we do a bit of beautification to every form when
 ' it's loaded.  This routine is nice because every form calls it at least once, so we can make centralized changes without
 ' having to rewrite code in every individual form.
@@ -153,6 +158,77 @@ Private Function WndProc_Frame(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wPa
     End If
 End Function
 
+'The next two subs can be used to show or hide the left and right toolbar panes.  An input parameter can be specified to force behavior.
+' INPUT VALUES:
+' 0 (or none) - toggle the visibility to the opposite state (const VISIBILITY_TOGGLE)
+' 1 - make the pane visible                                 (const VISIBILITY_FORCEDISPLAY)
+' 2 - hide the pane                                         (const VISIBILITY_FORCEHIDE)
+Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
+
+    Select Case howToToggle
+    
+        Case VISIBILITY_TOGGLE
+        
+            'Write the new value to the INI
+            g_UserPreferences.SetPreference_Boolean "General Preferences", "HideLeftPanel", Not g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False)
+
+            'Toggle the text and picture box accordingly
+            If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+                FormMain.MnuLeftPanel.Caption = "Show left panel (file tools)"
+                FormMain.picLeftPane.Visible = False
+            Else
+                FormMain.MnuLeftPanel.Caption = "Hide left panel (file tools)"
+                FormMain.picLeftPane.Visible = True
+            End If
+    
+            'Ask the menu icon handler to redraw the menu image with the new icon
+            ResetMenuIcons
+        
+        Case VISIBILITY_FORCEDISPLAY
+            FormMain.MnuLeftPanel.Caption = "Hide left panel (file tools)"
+            FormMain.picLeftPane.Visible = True
+            
+        Case VISIBILITY_FORCEHIDE
+            FormMain.MnuLeftPanel.Caption = "Show left panel (file tools)"
+            FormMain.picLeftPane.Visible = False
+            
+    End Select
+
+End Sub
+
+Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
+
+    Select Case howToToggle
+    
+        Case VISIBILITY_TOGGLE
+        
+            'Write the new value to the INI
+            g_UserPreferences.SetPreference_Boolean "General Preferences", "HideRightPanel", Not g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False)
+
+            'Toggle the text and picture box accordingly
+            If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False) Then
+                FormMain.MnuRightPanel.Caption = "Show right panel (image tools)"
+                FormMain.picRightPane.Visible = False
+            Else
+                FormMain.MnuRightPanel.Caption = "Hide right panel (image tools)"
+                FormMain.picRightPane.Visible = True
+            End If
+    
+            'Ask the menu icon handler to redraw the menu image with the new icon
+            ResetMenuIcons
+        
+        Case VISIBILITY_FORCEDISPLAY
+            FormMain.MnuRightPanel.Caption = "Hide right panel (image tools)"
+            FormMain.picRightPane.Visible = True
+            
+        Case VISIBILITY_FORCEHIDE
+            FormMain.MnuRightPanel.Caption = "Show right panel (image tools)"
+            FormMain.picRightPane.Visible = False
+            
+    End Select
+
+End Sub
+
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Form)
@@ -162,9 +238,16 @@ End Sub
 'Perform any drawing routines related to the main form
 Public Sub RedrawMainForm()
 
-    'Draw a subtle gradient on the left-hand pane
-    FormMain.picLeftPane.Refresh
-    DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
+    'Draw a subtle gradient on either pane if visible
+    If FormMain.picLeftPane.Visible Then
+        FormMain.picLeftPane.Refresh
+        DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
+    End If
+    
+    If FormMain.picRightPane.Visible Then
+        FormMain.picRightPane.Refresh
+        DrawGradient FormMain.picRightPane, RGB(201, 211, 226), RGB(240, 240, 240), True
+    End If
     
     'Redraw the progress bar
     FormMain.picProgBar.Refresh
@@ -262,7 +345,7 @@ Public Sub Message(ByVal MString As String)
     'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not (g_Language Is Nothing)) Then
         If g_Language.readyToTranslate Then
-            If g_Language.translationActive Then newString = g_Language.translateMessage(MString)
+            If g_Language.translationActive Then newString = g_Language.TranslateMessage(MString)
         End If
     End If
 

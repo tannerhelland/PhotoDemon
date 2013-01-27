@@ -175,13 +175,17 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Initializing user interface..."
                 
-    'Display or hide the main form's left-hand pane according to the saved setting in the INI file
+    'Display or hide the main form's tool panes according to the saved setting in the INI file
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
-        FormMain.MnuLeftPanel.Caption = "Show left panel"
-        FormMain.picLeftPane.Visible = False
+        ChangeLeftPane VISIBILITY_FORCEHIDE
     Else
-        FormMain.MnuLeftPanel.Caption = "Hide left panel"
-        FormMain.picLeftPane.Visible = True
+        ChangeLeftPane VISIBILITY_FORCEDISPLAY
+    End If
+    
+    If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False) Then
+        ChangeRightPane VISIBILITY_FORCEHIDE
+    Else
+        ChangeRightPane VISIBILITY_FORCEDISPLAY
     End If
                 
     'Manually create multi-line tooltips for some command buttons
