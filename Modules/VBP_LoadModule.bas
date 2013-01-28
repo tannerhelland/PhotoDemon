@@ -216,6 +216,12 @@ Public Sub LoadTheProgram()
     'Finish applying visual styles
     makeFormPretty FormMain
     
+    'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
+    If g_UseFancyFonts Then
+        FormMain.cmdZoomIn.Height = FormMain.cmdZoomIn.Height + 1
+        FormMain.cmdZoomOut.Height = FormMain.cmdZoomOut.Height + 1
+    End If
+    
     
     '*************************************************************************************************************************************
     ' The program's menus support many features that VB can't do natively (like icons and custom shortcuts).  Load such things now.

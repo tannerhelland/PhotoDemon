@@ -429,6 +429,8 @@ Public Sub UpdateMDIStatus()
             FormMain.CmbZoom.Enabled = False
             FormMain.lblZoom.ForeColor = &H606060
             FormMain.CmbZoom.ListIndex = ZoomIndex100   'Reset zoom to 100%
+            FormMain.cmdZoomIn.Enabled = False
+            FormMain.cmdZoomOut.Enabled = False
         End If
         
         FormMain.lblImgSize.ForeColor = &HD1B499
@@ -495,6 +497,8 @@ Public Sub UpdateMDIStatus()
         If FormMain.CmbZoom.Enabled = False Then
             FormMain.CmbZoom.Enabled = True
             FormMain.lblZoom.ForeColor = &H544E43
+            FormMain.cmdZoomIn.Enabled = True
+            FormMain.cmdZoomOut.Enabled = True
         End If
     End If
     

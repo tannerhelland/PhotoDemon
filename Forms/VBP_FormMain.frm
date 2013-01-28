@@ -48,9 +48,9 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          Height          =   360
-         ItemData        =   "VBP_FormMain.frx":058A
+         ItemData        =   "VBP_FormMain.frx":000C
          Left            =   180
-         List            =   "VBP_FormMain.frx":058C
+         List            =   "VBP_FormMain.frx":000E
          Style           =   2  'Dropdown List
          TabIndex        =   26
          TabStop         =   0   'False
@@ -358,7 +358,7 @@ Begin VB.MDIForm FormMain
          ForeColor       =   &H80000008&
          Height          =   2250
          Left            =   360
-         Picture         =   "VBP_FormMain.frx":058E
+         Picture         =   "VBP_FormMain.frx":0010
          ScaleHeight     =   150
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   600
@@ -380,14 +380,14 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          Height          =   360
-         ItemData        =   "VBP_FormMain.frx":A6C6
-         Left            =   900
-         List            =   "VBP_FormMain.frx":A6C8
+         ItemData        =   "VBP_FormMain.frx":A148
+         Left            =   555
+         List            =   "VBP_FormMain.frx":A14A
          Style           =   2  'Dropdown List
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
-         Top             =   3930
-         Width           =   1155
+         Top             =   4320
+         Width           =   1140
       End
       Begin PhotoDemon.jcbutton cmdOpen 
          Height          =   615
@@ -398,15 +398,14 @@ Begin VB.MDIForm FormMain
          _extentx        =   1588
          _extenty        =   1085
          buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":A6CA
+         font            =   "VBP_FormMain.frx":A14C
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":A6F2
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":A174
          disabledpicturemode=   1
          captioneffects  =   0
          tooltiptitle    =   "Open"
-         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -417,15 +416,14 @@ Begin VB.MDIForm FormMain
          _extentx        =   1588
          _extenty        =   1085
          buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":B744
+         font            =   "VBP_FormMain.frx":B1C6
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":B76C
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":B1EE
          disabledpicturemode=   1
          captioneffects  =   0
          tooltiptitle    =   "Save"
-         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -436,15 +434,14 @@ Begin VB.MDIForm FormMain
          _extentx        =   1588
          _extenty        =   1085
          buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":C7BE
+         font            =   "VBP_FormMain.frx":C240
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":C7E6
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":C268
          disabledpicturemode=   1
          captioneffects  =   0
          tooltiptitle    =   "Undo"
-         tooltiptype     =   1
          tooltipbackcolor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
@@ -456,15 +453,14 @@ Begin VB.MDIForm FormMain
          _extentx        =   1588
          _extenty        =   1085
          buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":D838
+         font            =   "VBP_FormMain.frx":D2BA
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":D860
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":D2E2
          disabledpicturemode=   1
          captioneffects  =   0
          tooltiptitle    =   "Redo"
-         tooltiptype     =   1
          tooltipbackcolor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
@@ -476,15 +472,14 @@ Begin VB.MDIForm FormMain
          _extentx        =   1588
          _extenty        =   1085
          buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":E8B2
+         font            =   "VBP_FormMain.frx":E334
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":E8DA
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":E35C
          disabledpicturemode=   1
          captioneffects  =   0
          tooltiptitle    =   "Close"
-         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -495,15 +490,52 @@ Begin VB.MDIForm FormMain
          _extentx        =   1588
          _extenty        =   1085
          buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":F92C
+         font            =   "VBP_FormMain.frx":F3AE
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":F954
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":F3D6
          disabledpicturemode=   1
          captioneffects  =   0
          tooltiptitle    =   "Save As"
-         tooltiptype     =   1
+      End
+      Begin PhotoDemon.jcbutton cmdZoomIn 
+         Height          =   390
+         Left            =   1755
+         TabIndex        =   32
+         Top             =   4305
+         Width           =   390
+         _extentx        =   688
+         _extenty        =   688
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":10428
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":10450
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Zoom In"
+         tooltip         =   "Use this button to increase image zoom."
+      End
+      Begin PhotoDemon.jcbutton cmdZoomOut 
+         Height          =   390
+         Left            =   90
+         TabIndex        =   33
+         Top             =   4305
+         Width           =   390
+         _extentx        =   688
+         _extenty        =   688
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":108A2
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":108CA
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Zoom Out"
+         tooltip         =   "Use this button to decrease image zoom."
       End
       Begin VB.Label lblZoom 
          Appearance      =   0  'Flat
@@ -607,7 +639,7 @@ Begin VB.MDIForm FormMain
          Height          =   660
          Left            =   120
          TabIndex        =   9
-         Top             =   5280
+         Top             =   5880
          Visible         =   0   'False
          Width           =   1935
       End
@@ -628,7 +660,7 @@ Begin VB.MDIForm FormMain
          Height          =   195
          Left            =   120
          TabIndex        =   8
-         Top             =   4800
+         Top             =   5400
          Width           =   1845
       End
       Begin VB.Label lblImgSize 
@@ -648,7 +680,7 @@ Begin VB.MDIForm FormMain
          Height          =   315
          Left            =   120
          TabIndex        =   7
-         Top             =   4440
+         Top             =   5040
          Width           =   1845
       End
       Begin VB.Line Line2 
@@ -1517,6 +1549,16 @@ Private Sub CmbZoom_Click()
     'Track the current zoom value
     If NumOfWindows > 0 Then
         pdImages(FormMain.ActiveForm.Tag).CurrentZoomValue = FormMain.CmbZoom.ListIndex
+        If FormMain.CmbZoom.ListIndex = 0 Then
+            FormMain.cmdZoomIn.Enabled = False
+        Else
+            If Not FormMain.cmdZoomIn.Enabled Then FormMain.cmdZoomIn.Enabled = True
+        End If
+        If FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListCount - 1 Then
+            FormMain.cmdZoomOut.Enabled = False
+        Else
+            If Not FormMain.cmdZoomOut.Enabled Then FormMain.cmdZoomOut.Enabled = True
+        End If
         PrepareViewport FormMain.ActiveForm, "zoom changed by user"
     End If
     
@@ -1544,6 +1586,14 @@ End Sub
 
 Private Sub cmdUndo_Click()
     Process Undo
+End Sub
+
+Private Sub cmdZoomIn_Click()
+    FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+End Sub
+
+Private Sub cmdZoomOut_Click()
+    FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
 End Sub
 
 'THE BEGINNING OF EVERYTHING
