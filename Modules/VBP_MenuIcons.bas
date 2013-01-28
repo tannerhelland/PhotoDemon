@@ -26,6 +26,26 @@ Attribute VB_Name = "Menu_Icon_Handler"
 
 Option Explicit
 
+'SetWindowPos is used to force a repaint of the icon of maximized MDI child forms
+Private Const SWP_FRAMECHANGED = &H20
+Private Const SWP_NOMOVE = &H2
+Private Const SWP_NOSIZE = &H1
+
+Private Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+
+'Previously, RedrawWindow was used to force a window update.  It didn't work very well, but I'm keeping it around "just in case".
+'Private Type RECT
+'    Left As Long
+'    Top As Long
+'    Right As Long
+'    Bottom As Long
+'End Type
+'Private Const RDW_FRAME As Long = 1024 'Updates the nonclient area if included in the redraw area. RDW_INVALIDATE must also be specified.
+'Private Const RDW_INVALIDATE As Long = 1 'Invalidates the redraw area.
+'Private Const RDW_UPDATENOW As Long = 256 'Updates the specified redraw area immediately.
+'Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByRef lprcUpdate As RECT, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
+
+
 'API calls for building an icon at run-time
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
@@ -41,7 +61,7 @@ Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColo
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'Types required by the above API calls
 Private Type Bitmap
@@ -95,7 +115,7 @@ Public Sub LoadMenuIcons()
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
         If (Not g_IsVistaOrLater) And (g_IsProgramCompiled = False) Then Exit Sub
         
-        .Init FormMain.hWnd, 16, 16
+        .Init FormMain.hwnd, 16, 16
         
     End With
     
@@ -113,7 +133,7 @@ Public Sub LoadMenuIcons()
     ' double-subclass the main form, and using a single menu icon class isn't possible at present.)
     If g_IsVistaOrLater Then
         Set cMRUIcons = New clsMenuImage
-        cMRUIcons.Init FormMain.hWnd, 64, 64
+        cMRUIcons.Init FormMain.hwnd, 64, 64
     End If
         
 End Sub
@@ -758,14 +778,14 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     End If
    
     'Use the API to assign this new icon to the specified MDI child form
-    SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
+    SendMessageLong imgForm.hwnd, &H80, 0, generatedIcon
         
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon
 
-    'When an MDI child form is maximized, the icon is not updated properly. This requires further investigation to solve.
-    'If imgForm.WindowState = vbMaximized Then DoEvents
-   
+    'When an MDI child form is maximized, the icon is not updated properly - so we must force a manual refresh of the entire window frame.
+    If imgForm.WindowState = vbMaximized Then SetWindowPos FormMain.hwnd, 0&, 0&, 0&, 0&, 0&, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
+    
 End Sub
 'Needs to be run only once, at the start of the program
 Public Sub initializeIconHandler()

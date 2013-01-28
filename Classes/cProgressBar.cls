@@ -172,10 +172,6 @@ Private m_sTag As String
 Private m_tLastR As RECT
 Private m_hWndLast As Long
 
-'Tanner's updates 18 Jan '13: force a repaint of the window upon updating
-Private Const RDW_UPDATENOW As Long = 256 'Updates the specified redraw area immediately.
-Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByRef lprcUpdate As RECT, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
-
 Public Property Get Tag() As String
    Tag = m_sTag
 End Property
