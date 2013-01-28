@@ -89,7 +89,7 @@ Begin VB.Form FormRank
       Style           =   2  'Dropdown List
       TabIndex        =   2
       Top             =   2160
-      Width           =   3135
+      Width           =   3255
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625

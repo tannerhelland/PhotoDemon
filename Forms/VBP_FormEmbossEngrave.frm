@@ -61,7 +61,7 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   2
       Top             =   1620
       Value           =   -1  'True
-      Width           =   1215
+      Width           =   1815
    End
    Begin VB.OptionButton OptEngrave 
       Appearance      =   0  'Flat
@@ -81,7 +81,7 @@ Begin VB.Form FormEmbossEngrave
       Left            =   9120
       TabIndex        =   3
       Top             =   1620
-      Width           =   1335
+      Width           =   2175
    End
    Begin VB.PictureBox PicColor 
       Appearance      =   0  'Flat
@@ -118,10 +118,10 @@ Begin VB.Form FormEmbossEngrave
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   375
+      Height          =   495
       Left            =   6000
       TabIndex        =   4
-      Top             =   2280
+      Top             =   2160
       Width           =   5655
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 

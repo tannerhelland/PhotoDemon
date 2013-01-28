@@ -134,10 +134,10 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   255
+      Height          =   495
       Left            =   600
       TabIndex        =   4
-      Top             =   1920
+      Top             =   1800
       Value           =   1  'Checked
       Width           =   3015
    End

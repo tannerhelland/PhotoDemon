@@ -131,10 +131,10 @@ Begin VB.Form FormBlackAndWhite
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   360
+      Height          =   600
       Left            =   6120
       TabIndex        =   4
-      Top             =   1440
+      Top             =   1320
       Width           =   5655
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 

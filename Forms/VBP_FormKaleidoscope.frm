@@ -152,7 +152,7 @@ Begin VB.Form FormKaleidoscope
       TabIndex        =   7
       Top             =   4530
       Value           =   -1  'True
-      Width           =   1095
+      Width           =   1695
    End
    Begin VB.OptionButton OptInterpolate 
       Appearance      =   0  'Flat
@@ -170,7 +170,7 @@ Begin VB.Form FormKaleidoscope
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   1
-      Left            =   7560
+      Left            =   7920
       TabIndex        =   6
       Top             =   4530
       Width           =   2535

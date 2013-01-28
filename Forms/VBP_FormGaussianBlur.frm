@@ -111,7 +111,7 @@ Begin VB.Form FormGaussianBlur
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "radius:"
+      Caption         =   "blur radius:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -126,7 +126,7 @@ Begin VB.Form FormGaussianBlur
       Left            =   6000
       TabIndex        =   4
       Top             =   2400
-      Width           =   735
+      Width           =   1230
    End
 End
 Attribute VB_Name = "FormGaussianBlur"

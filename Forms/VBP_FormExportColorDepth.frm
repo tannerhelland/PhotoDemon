@@ -83,7 +83,7 @@ Begin VB.Form dialog_ExportColorDepth
       Left            =   600
       TabIndex        =   6
       Top             =   2280
-      Width           =   3615
+      Width           =   5775
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
@@ -104,7 +104,7 @@ Begin VB.Form dialog_ExportColorDepth
       Left            =   600
       TabIndex        =   5
       Top             =   1800
-      Width           =   5175
+      Width           =   5775
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
@@ -125,7 +125,7 @@ Begin VB.Form dialog_ExportColorDepth
       Left            =   600
       TabIndex        =   4
       Top             =   1320
-      Width           =   3975
+      Width           =   5775
    End
    Begin VB.OptionButton optColorDepth 
       Appearance      =   0  'Flat
@@ -146,7 +146,7 @@ Begin VB.Form dialog_ExportColorDepth
       Left            =   600
       TabIndex        =   3
       Top             =   840
-      Width           =   3135
+      Width           =   5775
    End
    Begin VB.Label lblBackground 
       Height          =   855

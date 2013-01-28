@@ -57,7 +57,7 @@ Begin VB.Form FormFindEdges
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   375
+      Height          =   495
       Left            =   9120
       TabIndex        =   5
       Top             =   3240

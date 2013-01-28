@@ -90,7 +90,7 @@ Begin VB.Form FormNoise
       Left            =   6120
       TabIndex        =   4
       Top             =   3360
-      Width           =   3255
+      Width           =   5655
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625

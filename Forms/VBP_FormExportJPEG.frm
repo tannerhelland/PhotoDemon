@@ -3,7 +3,7 @@ Begin VB.Form dialog_ExportJPEG
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Export Options"
-   ClientHeight    =   5220
+   ClientHeight    =   5715
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   7440
@@ -19,7 +19,7 @@ Begin VB.Form dialog_ExportJPEG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   348
+   ScaleHeight     =   381
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   496
    ShowInTaskbar   =   0   'False
@@ -28,26 +28,26 @@ Begin VB.Form dialog_ExportJPEG
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   4440
+      Left            =   4320
       TabIndex        =   0
-      Top             =   4590
+      Top             =   5070
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   5910
+      Left            =   5790
       TabIndex        =   1
-      Top             =   4590
+      Top             =   5070
       Width           =   1365
    End
    Begin VB.CommandButton cmdShowHide 
       Caption         =   "<<  Hide advanced settings"
       Height          =   495
-      Left            =   360
+      Left            =   240
       TabIndex        =   12
-      Top             =   4590
+      Top             =   5070
       Width           =   2685
    End
    Begin VB.CheckBox chkThumbnail 
@@ -69,7 +69,7 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   11
       ToolTipText     =   $"VBP_FormExportJPEG.frx":0000
       Top             =   2520
-      Width           =   6375
+      Width           =   6735
    End
    Begin VB.ComboBox cmbSubsample 
       BeginProperty Font 
@@ -83,12 +83,12 @@ Begin VB.Form dialog_ExportJPEG
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   3600
+      Left            =   960
       Style           =   2  'Dropdown List
       TabIndex        =   10
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   3495
-      Width           =   3375
+      Top             =   3960
+      Width           =   5655
    End
    Begin VB.CheckBox chkSubsample 
       Appearance      =   0  'Flat
@@ -109,7 +109,7 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   9
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
       Top             =   3480
-      Width           =   2895
+      Width           =   6735
    End
    Begin VB.CheckBox chkProgressive 
       Appearance      =   0  'Flat
@@ -130,7 +130,7 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   8
       ToolTipText     =   $"VBP_FormExportJPEG.frx":008E
       Top             =   3000
-      Width           =   6375
+      Width           =   6735
    End
    Begin VB.CheckBox chkOptimize 
       Appearance      =   0  'Flat
@@ -152,7 +152,7 @@ Begin VB.Form dialog_ExportJPEG
       ToolTipText     =   $"VBP_FormExportJPEG.frx":015E
       Top             =   2040
       Value           =   1  'Checked
-      Width           =   6375
+      Width           =   6735
    End
    Begin VB.HScrollBar hsQuality 
       Height          =   330
@@ -206,17 +206,17 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   0
+      Left            =   -120
       TabIndex        =   13
-      Top             =   4440
+      Top             =   4920
       Width           =   7455
    End
    Begin VB.Line lineSeparator 
       BorderColor     =   &H8000000F&
       X1              =   8
       X2              =   480
-      Y1              =   296
-      Y2              =   296
+      Y1              =   328
+      Y2              =   328
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -484,7 +484,7 @@ Private Sub toggleAdvancedSettings()
         cmbSubsample.Visible = True
         
         'Move all other controls accordingly
-        lineSeparator.y1 = chkSubsample.Top + 48
+        lineSeparator.y1 = cmbSubsample.Top + 48
         lineSeparator.y2 = lineSeparator.y1
         lblBackground.Top = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 10

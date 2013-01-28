@@ -58,10 +58,10 @@ Begin VB.Form FormTwins
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   255
-      Left            =   7920
+      Left            =   6240
       TabIndex        =   3
-      Top             =   2640
-      Width           =   2175
+      Top             =   3120
+      Width           =   3015
    End
    Begin VB.OptionButton OptHorizontal 
       Appearance      =   0  'Flat
@@ -82,7 +82,7 @@ Begin VB.Form FormTwins
       TabIndex        =   2
       Top             =   2640
       Value           =   -1  'True
-      Width           =   1575
+      Width           =   3015
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625

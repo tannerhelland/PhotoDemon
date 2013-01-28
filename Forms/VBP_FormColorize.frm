@@ -61,7 +61,7 @@ Begin VB.Form FormColorize
       TabIndex        =   3
       Top             =   3240
       Value           =   1  'Checked
-      Width           =   4215
+      Width           =   5775
    End
    Begin VB.HScrollBar hsHue 
       Height          =   255

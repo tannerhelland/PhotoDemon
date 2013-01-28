@@ -39,11 +39,11 @@ Begin VB.Form dialog_MultiImage
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   390
+      Height          =   615
       Left            =   300
       TabIndex        =   3
-      Top             =   3360
-      Width           =   5175
+      Top             =   3240
+      Width           =   5055
    End
    Begin PhotoDemon.jcbutton cmdAnswer 
       Height          =   735

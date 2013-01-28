@@ -101,7 +101,7 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   5
       Top             =   3840
       Value           =   1  'Checked
-      Width           =   4935
+      Width           =   5655
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"

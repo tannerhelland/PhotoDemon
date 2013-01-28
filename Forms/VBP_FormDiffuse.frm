@@ -116,7 +116,7 @@ Begin VB.Form FormDiffuse
       Left            =   6120
       TabIndex        =   6
       Top             =   3600
-      Width           =   2175
+      Width           =   5775
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625

@@ -39,12 +39,12 @@ Begin VB.Form dialog_IDEWarning
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   390
+      Height          =   630
       Left            =   2790
       TabIndex        =   2
-      Top             =   5970
+      Top             =   5850
       Value           =   1  'Checked
-      Width           =   3855
+      Width           =   3735
    End
    Begin PhotoDemon.jcbutton cmdOK 
       Default         =   -1  'True

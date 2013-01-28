@@ -105,11 +105,11 @@ Begin VB.Form FormPluginManager
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   270
+         Height          =   495
          Left            =   480
          TabIndex        =   68
          ToolTipText     =   $"VBP_FormPluginManager.frx":0000
-         Top             =   2640
+         Top             =   2520
          Width           =   7095
       End
       Begin VB.HScrollBar hsPngnqSample 
@@ -136,11 +136,11 @@ Begin VB.Form FormPluginManager
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   270
+         Height          =   495
          Left            =   480
          TabIndex        =   63
          ToolTipText     =   $"VBP_FormPluginManager.frx":009C
-         Top             =   3090
+         Top             =   3000
          Value           =   1  'Checked
          Width           =   7095
       End

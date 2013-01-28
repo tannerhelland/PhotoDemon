@@ -6,7 +6,7 @@ Begin VB.Form FormEqualize
    ClientHeight    =   6555
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   12105
+   ClientWidth     =   10155
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,14 +21,14 @@ Begin VB.Form FormEqualize
    MinButton       =   0   'False
    ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   807
+   ScaleWidth      =   677
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   9120
+      Left            =   7200
       TabIndex        =   0
       Top             =   5910
       Width           =   1365
@@ -37,7 +37,7 @@ Begin VB.Form FormEqualize
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   10590
+      Left            =   8670
       TabIndex        =   1
       Top             =   5910
       Width           =   1365
@@ -57,10 +57,10 @@ Begin VB.Form FormEqualize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   10200
+      Left            =   6240
       TabIndex        =   6
-      Top             =   2760
-      Width           =   1695
+      Top             =   3480
+      Width           =   3735
    End
    Begin VB.CheckBox chkBlue 
       Appearance      =   0  'Flat
@@ -77,10 +77,10 @@ Begin VB.Form FormEqualize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   8880
+      Left            =   6240
       TabIndex        =   5
-      Top             =   2760
-      Width           =   1215
+      Top             =   3000
+      Width           =   3735
    End
    Begin VB.CheckBox chkGreen 
       Appearance      =   0  'Flat
@@ -97,10 +97,10 @@ Begin VB.Form FormEqualize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   345
-      Left            =   7440
+      Left            =   6240
       TabIndex        =   4
-      Top             =   2760
-      Width           =   1335
+      Top             =   2520
+      Width           =   3615
    End
    Begin VB.CheckBox chkRed 
       Appearance      =   0  'Flat
@@ -119,8 +119,8 @@ Begin VB.Form FormEqualize
       Height          =   345
       Left            =   6240
       TabIndex        =   3
-      Top             =   2760
-      Width           =   1095
+      Top             =   2040
+      Width           =   3495
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -155,7 +155,7 @@ Begin VB.Form FormEqualize
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   2280
+      Top             =   1560
       Width           =   945
    End
 End

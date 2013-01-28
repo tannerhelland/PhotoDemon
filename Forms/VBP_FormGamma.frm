@@ -225,7 +225,6 @@ Begin VB.Form FormGamma
       Width           =   690
    End
    Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "new gamma curve:"
       BeginProperty Font 
@@ -238,12 +237,13 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   1005
       Index           =   2
       Left            =   6000
       TabIndex        =   8
       Top             =   1170
       Width           =   2040
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 

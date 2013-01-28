@@ -40,7 +40,7 @@ Begin VB.Form FormSmartBlur
       ForeColor       =   &H00404040&
       Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   8640
       TabIndex        =   12
       Top             =   1800
       Width           =   2535
@@ -48,7 +48,7 @@ Begin VB.Form FormSmartBlur
    Begin VB.OptionButton OptEdges 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
-      Caption         =   " non-edges"
+      Caption         =   " smooth areas"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -65,7 +65,7 @@ Begin VB.Form FormSmartBlur
       TabIndex        =   11
       Top             =   1800
       Value           =   -1  'True
-      Width           =   1575
+      Width           =   2415
    End
    Begin VB.TextBox txtThreshold 
       Alignment       =   2  'Center

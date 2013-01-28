@@ -30,10 +30,10 @@ Begin VB.Form dialog_UnsavedChanges
       Appearance      =   0  'Flat
       Caption         =   " Repeat this action for all unsaved images (X in total)"
       ForeColor       =   &H00404040&
-      Height          =   390
+      Height          =   630
       Left            =   3960
       TabIndex        =   5
-      Top             =   4050
+      Top             =   3930
       Width           =   5175
    End
    Begin VB.PictureBox picPreview 

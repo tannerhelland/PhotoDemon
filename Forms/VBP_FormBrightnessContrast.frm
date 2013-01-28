@@ -114,10 +114,10 @@ Begin VB.Form FormBrightnessContrast
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   375
+      Height          =   615
       Left            =   6120
       TabIndex        =   6
-      Top             =   3600
+      Top             =   3480
       Value           =   1  'Checked
       Width           =   5655
    End

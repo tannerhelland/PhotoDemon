@@ -43,7 +43,7 @@ Public Sub Main()
 
     With iccex
        .lngSize = LenB(iccex)
-       .lngICC = ICC_STANDARD_CLASSES Or ICC_BAR_CLASSES Or ICC_WIN95_CLASSES
+       .lngICC = ICC_STANDARD_CLASSES Or ICC_BAR_CLASSES 'Or ICC_WIN95_CLASSES
     End With
     
     'InitCommonControlsEx requires IEv3 or above, which shouldn't be a problem on any modern system.  But just to be

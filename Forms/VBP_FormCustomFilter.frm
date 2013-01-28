@@ -6,7 +6,7 @@ Begin VB.Form FormCustomFilter
    ClientHeight    =   6540
    ClientLeft      =   150
    ClientTop       =   120
-   ClientWidth     =   10395
+   ClientWidth     =   10245
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,14 +21,14 @@ Begin VB.Form FormCustomFilter
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   693
+   ScaleWidth      =   683
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   7380
+      Left            =   7260
       TabIndex        =   0
       Top             =   5910
       Width           =   1365
@@ -37,7 +37,7 @@ Begin VB.Form FormCustomFilter
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   8850
+      Left            =   8730
       TabIndex        =   1
       Top             =   5910
       Width           =   1365
@@ -55,11 +55,11 @@ Begin VB.Form FormCustomFilter
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   8880
+      Left            =   8040
       TabIndex        =   28
       Text            =   "1"
-      Top             =   3720
-      Width           =   735
+      Top             =   3600
+      Width           =   1215
    End
    Begin VB.TextBox TxtWeight 
       Alignment       =   2  'Center
@@ -74,11 +74,11 @@ Begin VB.Form FormCustomFilter
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   6960
+      Left            =   6120
       TabIndex        =   27
       Text            =   "1"
-      Top             =   3720
-      Width           =   735
+      Top             =   3600
+      Width           =   1215
    End
    Begin VB.TextBox TxtF 
       Alignment       =   2  'Center
@@ -584,80 +584,85 @@ Begin VB.Form FormCustomFilter
       Height          =   615
       Left            =   6120
       TabIndex        =   29
-      Top             =   4800
-      Width           =   900
-      _ExtentX        =   1588
-      _ExtentY        =   1085
-      ButtonStyle     =   13
-      ShowFocusRect   =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   15199212
-      Caption         =   ""
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCustomFilter.frx":0000
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      ToolTip         =   "Open a previously saved convolution filter."
-      TooltipType     =   1
-      TooltipTitle    =   "Open Filter"
+      Top             =   4770
+      Width           =   1065
+      _extentx        =   1879
+      _extenty        =   1085
+      buttonstyle     =   13
+      showfocusrect   =   -1  'True
+      font            =   "VBP_FormCustomFilter.frx":0000
+      backcolor       =   15199212
+      caption         =   ""
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormCustomFilter.frx":0028
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Open Filter"
+      tooltip         =   "Open a previously saved convolution filter."
+      tooltiptype     =   1
    End
    Begin PhotoDemon.jcbutton cmdSave 
       Height          =   615
-      Left            =   7200
+      Left            =   7320
       TabIndex        =   30
-      Top             =   4800
-      Width           =   900
-      _ExtentX        =   1588
-      _ExtentY        =   1085
-      ButtonStyle     =   13
-      ShowFocusRect   =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   ""
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCustomFilter.frx":1052
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      ToolTip         =   "Save the current filter to file.  This allows you to use the filter later, or share the filter with other PhotoDemon users."
-      TooltipType     =   1
-      TooltipTitle    =   "Save Current Filter"
+      Top             =   4770
+      Width           =   1065
+      _extentx        =   1879
+      _extenty        =   1085
+      buttonstyle     =   13
+      showfocusrect   =   -1  'True
+      font            =   "VBP_FormCustomFilter.frx":107A
+      caption         =   ""
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormCustomFilter.frx":10A2
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Save Current Filter"
+      tooltip         =   "Save the current filter to file.  This allows you to use the filter later, or share the filter with other PhotoDemon users."
+      tooltiptype     =   1
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   37
+      TabIndex        =   36
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   36
+      TabIndex        =   35
       Top             =   5760
-      Width           =   10455
+      Width           =   11415
    End
-   Begin VB.Label lblAdditional 
+   Begin VB.Label lblOffset 
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "additional settings:"
+      Caption         =   "offset:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   7920
+      TabIndex        =   34
+      Top             =   3240
+      Width           =   675
+   End
+   Begin VB.Label lblDivisor 
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "divisor:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -670,57 +675,15 @@ Begin VB.Form FormCustomFilter
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   35
-      Top             =   3240
-      Width           =   2010
-   End
-   Begin VB.Label lblOffset 
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "offset:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   270
-      Left            =   8040
-      TabIndex        =   34
-      Top             =   3735
-      Width           =   645
-   End
-   Begin VB.Label lblDivisor 
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "divisor:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   270
-      Left            =   6120
       TabIndex        =   32
-      Top             =   3735
-      Width           =   675
+      Top             =   3255
+      Width           =   795
    End
    Begin VB.Label lblLoadSave 
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "load / save filter data:"
+      Caption         =   "load / save filter:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -734,8 +697,8 @@ Begin VB.Form FormCustomFilter
       Height          =   285
       Left            =   6000
       TabIndex        =   33
-      Top             =   4320
-      Width           =   2325
+      Top             =   4275
+      Width           =   1800
    End
    Begin VB.Label lblConvolution 
       AutoSize        =   -1  'True
