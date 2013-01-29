@@ -178,7 +178,7 @@ Begin VB.Form FormKaleidoscope
       Top             =   4560
       Width           =   1005
       _ExtentX        =   1773
-      _ExtentY        =   582
+      _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -199,7 +199,7 @@ Begin VB.Form FormKaleidoscope
       Top             =   4560
       Width           =   975
       _ExtentX        =   1720
-      _ExtentY        =   582
+      _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -393,7 +393,7 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    Process DistortKaleidoscope, CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, OptInterpolate(0)
+    Process DistortKaleidoscope, CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, OptInterpolate(0).Value
         
     Unload Me
     
@@ -643,7 +643,7 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    KaleidoscopeImage CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, OptInterpolate(0), True, fxPreview
+    KaleidoscopeImage CDbl(hsMirrors), CDbl(hsAngle / 10), CDbl(hsAngle2 / 10), hsRadius.Value, OptInterpolate(0).Value, True, fxPreview
     
 End Sub
 

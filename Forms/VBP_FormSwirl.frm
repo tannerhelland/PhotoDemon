@@ -326,7 +326,7 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0)
+    Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
         
     Unload Me
     
@@ -531,6 +531,6 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    SwirlImage CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
+    SwirlImage CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
     
 End Sub

@@ -7,7 +7,7 @@ Begin VB.Form FormRechannel
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   12000
+   ClientWidth     =   9450
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -22,14 +22,35 @@ Begin VB.Form FormRechannel
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   800
+   ScaleWidth      =   630
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   0
+      Left            =   6840
+      TabIndex        =   6
+      Top             =   480
+      Width           =   735
+      _ExtentX        =   1296
+      _ExtentY        =   661
+      Caption         =   "red"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   9000
+      Left            =   6480
       TabIndex        =   0
       Top             =   5910
       Width           =   1365
@@ -38,235 +59,204 @@ Begin VB.Form FormRechannel
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   10470
+      Left            =   7950
       TabIndex        =   1
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "key (black)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   9
-      Left            =   10200
-      TabIndex        =   10
-      Top             =   3600
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "yellow"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   8
-      Left            =   8880
-      TabIndex        =   9
-      Top             =   3600
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "magenta"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   7
-      Left            =   7320
-      TabIndex        =   8
-      Top             =   3600
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "cyan"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   6
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   3600
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "yellow"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   5
-      Left            =   8880
-      TabIndex        =   6
-      Top             =   2640
-      Width           =   1815
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "magenta"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   4
-      Left            =   7320
-      TabIndex        =   5
-      Top             =   2640
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "cyan"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   3
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   2640
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "blue"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   2
-      Left            =   8760
-      TabIndex        =   3
-      Top             =   1680
-      Width           =   1455
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "green"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   1
-      Left            =   7320
-      TabIndex        =   2
-      Top             =   1680
-      Width           =   1455
-   End
-   Begin VB.OptionButton OptChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "red"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   11
-      Top             =   1680
-      Value           =   -1  'True
-      Width           =   1455
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   16
+      TabIndex        =   7
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   1
+      Left            =   6840
+      TabIndex        =   8
+      Top             =   840
+      Width           =   990
+      _ExtentX        =   1746
+      _ExtentY        =   661
+      Caption         =   "green"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   2
+      Left            =   6840
+      TabIndex        =   9
+      Top             =   1200
+      Width           =   840
+      _ExtentX        =   1482
+      _ExtentY        =   661
+      Caption         =   "blue"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   3
+      Left            =   6840
+      TabIndex        =   10
+      Top             =   2160
+      Width           =   870
+      _ExtentX        =   1535
+      _ExtentY        =   661
+      Caption         =   "cyan"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   4
+      Left            =   6840
+      TabIndex        =   11
+      Top             =   2520
+      Width           =   1305
+      _ExtentX        =   2302
+      _ExtentY        =   661
+      Caption         =   "magenta"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   5
+      Left            =   6840
+      TabIndex        =   12
+      Top             =   2880
+      Width           =   1065
+      _ExtentX        =   1879
+      _ExtentY        =   661
+      Caption         =   "yellow"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   6
+      Left            =   6840
+      TabIndex        =   13
+      Top             =   3840
+      Width           =   870
+      _ExtentX        =   1535
+      _ExtentY        =   661
+      Caption         =   "cyan"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   7
+      Left            =   6840
+      TabIndex        =   14
+      Top             =   4200
+      Width           =   1305
+      _ExtentX        =   2302
+      _ExtentY        =   661
+      Caption         =   "magenta"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   8
+      Left            =   6840
+      TabIndex        =   15
+      Top             =   4560
+      Width           =   1065
+      _ExtentX        =   1879
+      _ExtentY        =   661
+      Caption         =   "yellow"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optChannel 
+      Height          =   375
+      Index           =   9
+      Left            =   6840
+      TabIndex        =   16
+      Top             =   4920
+      Width           =   1545
+      _ExtentX        =   2725
+      _ExtentY        =   661
+      Caption         =   "key (black)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   15
+      TabIndex        =   5
       Top             =   5760
       Width           =   12015
    End
@@ -287,9 +277,9 @@ Begin VB.Form FormRechannel
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   6000
-      TabIndex        =   14
-      Top             =   3240
+      Left            =   6720
+      TabIndex        =   4
+      Top             =   3480
       Width           =   1695
    End
    Begin VB.Label lblCMY 
@@ -309,9 +299,9 @@ Begin VB.Form FormRechannel
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   6000
-      TabIndex        =   13
-      Top             =   2280
+      Left            =   6720
+      TabIndex        =   3
+      Top             =   1800
       Width           =   1560
    End
    Begin VB.Label lblRGB 
@@ -331,9 +321,9 @@ Begin VB.Form FormRechannel
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   6000
-      TabIndex        =   12
-      Top             =   1320
+      Left            =   6720
+      TabIndex        =   2
+      Top             =   120
       Width           =   1530
    End
 End
@@ -367,16 +357,16 @@ Private Sub cmdOK_Click()
     
     Dim rechannelMethod As Long
     
-    If OptChannel(0) Then rechannelMethod = 0
-    If OptChannel(1) Then rechannelMethod = 1
-    If OptChannel(2) Then rechannelMethod = 2
-    If OptChannel(3) Then rechannelMethod = 3
-    If OptChannel(4) Then rechannelMethod = 4
-    If OptChannel(5) Then rechannelMethod = 5
-    If OptChannel(6) Then rechannelMethod = 6
-    If OptChannel(7) Then rechannelMethod = 7
-    If OptChannel(8) Then rechannelMethod = 8
-    If OptChannel(9) Then rechannelMethod = 9
+    If optChannel(0).Value Then rechannelMethod = 0
+    If optChannel(1).Value Then rechannelMethod = 1
+    If optChannel(2).Value Then rechannelMethod = 2
+    If optChannel(3).Value Then rechannelMethod = 3
+    If optChannel(4).Value Then rechannelMethod = 4
+    If optChannel(5).Value Then rechannelMethod = 5
+    If optChannel(6).Value Then rechannelMethod = 6
+    If optChannel(7).Value Then rechannelMethod = 7
+    If optChannel(8).Value Then rechannelMethod = 8
+    If optChannel(9).Value Then rechannelMethod = 9
     
     Process Rechannel, rechannelMethod
     

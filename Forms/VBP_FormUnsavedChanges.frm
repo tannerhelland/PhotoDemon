@@ -165,7 +165,7 @@ Begin VB.Form dialog_UnsavedChanges
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblBackground 
-      Height          =   735
+      Height          =   1200
       Left            =   0
       TabIndex        =   6
       Top             =   3840

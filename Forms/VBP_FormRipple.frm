@@ -196,7 +196,7 @@ Begin VB.Form FormRipple
       Top             =   4920
       Width           =   1005
       _ExtentX        =   1773
-      _ExtentY        =   582
+      _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -217,7 +217,7 @@ Begin VB.Form FormRipple
       Top             =   4920
       Width           =   975
       _ExtentX        =   1720
-      _ExtentY        =   582
+      _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -438,7 +438,7 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    Process DistortRipple, CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), CLng(cmbEdges.ListIndex), OptInterpolate(0)
+    Process DistortRipple, CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
     
     Unload Me
     
@@ -678,6 +678,6 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), CLng(cmbEdges.ListIndex), OptInterpolate(0), True, fxPreview
+    RippleImage CDbl(hsWavelength), CDbl(hsAmplitude), CDbl(hsPhase), CDbl(hsRadius), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
     
 End Sub

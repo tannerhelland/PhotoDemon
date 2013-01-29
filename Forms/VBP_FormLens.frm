@@ -121,7 +121,7 @@ Begin VB.Form FormLens
       Top             =   3885
       Width           =   1005
       _ExtentX        =   1773
-      _ExtentY        =   582
+      _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -142,7 +142,7 @@ Begin VB.Form FormLens
       Top             =   3885
       Width           =   975
       _ExtentX        =   1720
-      _ExtentY        =   582
+      _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -279,7 +279,7 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptInterpolate(0) Then
+    If OptInterpolate(0).Value Then
         Process DistortLens, CDbl(hsIndex / 100), hsRadius.Value, True
     Else
         Process DistortLens, CDbl(hsIndex / 100), hsRadius.Value, False
@@ -504,7 +504,7 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    If OptInterpolate(0) Then
+    If OptInterpolate(0).Value Then
         ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, True, True, fxPreview
     Else
         ApplyLensDistortion CDbl(hsIndex / 100), hsRadius.Value, False, True, fxPreview

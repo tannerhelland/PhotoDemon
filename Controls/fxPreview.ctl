@@ -17,6 +17,7 @@ Begin VB.UserControl fxPreviewCtl
    ScaleHeight     =   379
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   384
+   ToolboxBitmap   =   "fxPreview.ctx":0000
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -47,7 +48,7 @@ Begin VB.UserControl fxPreviewCtl
       ForeColor       =   &H00C07031&
       Height          =   240
       Left            =   120
-      MouseIcon       =   "fxPreview.ctx":0000
+      MouseIcon       =   "fxPreview.ctx":0312
       MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   5280
