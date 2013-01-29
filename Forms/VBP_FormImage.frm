@@ -108,11 +108,8 @@ Dim initMouseX As Double, initMouseY As Double
 
 'Used to prevent the obnoxious blinking effect of the main image scroll bars
 Private Declare Function DestroyCaret Lib "user32" () As Long
-    
-'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
-' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
 
-Private Sub Form_Activate()
+Public Sub ActivateWorkaround()
 
     'Update the current form variable
     CurrentImage = Val(Me.Tag)
@@ -168,6 +165,16 @@ Private Sub Form_Activate()
         FormHistogram.DrawHistogram
     End If
     
+End Sub
+
+'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
+' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
+
+'Note also that _Activate has known problems - see http://support.microsoft.com/kb/190634
+' This is why ActivateWorkaround exists.  Some external functions call that if I know _Activate won't fire properly - see
+' the Unload function in this block, for example.
+Private Sub Form_Activate()
+    ActivateWorkaround
 End Sub
 
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
@@ -638,6 +645,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     Message "Closing image..."
+    
     NumOfWindows = NumOfWindows - 1
     
     'Release mouse wheel support
@@ -660,7 +668,23 @@ Private Sub Form_Unload(Cancel As Integer)
     UpdateMDIStatus
     
     ReleaseFormTheming Me
+        
+    'Before exiting, restore focus to some other MDI child.  If we don't, Windows won't do it for us.  This is a known
+    ' problem - see http://support.microsoft.com/kb/190634
+    If NumOfWindows > 0 Then
     
+        Dim i As Long
+        For i = NumOfImagesLoaded To 0 Step -1
+            If (Not pdImages(i) Is Nothing) Then
+                If pdImages(i).IsActive = True Then
+                    pdImages(i).containingForm.ActivateWorkaround
+                    Exit For
+                End If
+            End If
+        Next i
+    
+    End If
+        
 End Sub
 
 Private Sub HScroll_Change()
