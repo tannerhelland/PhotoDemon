@@ -25,6 +25,27 @@ Begin VB.Form FormTwins
    ScaleWidth      =   637
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartOptionButton optTwins 
+      Height          =   375
+      Index           =   0
+      Left            =   6960
+      TabIndex        =   5
+      Top             =   2640
+      Width           =   1440
+      _ExtentX        =   2540
+      _ExtentY        =   661
+      Caption         =   "horizontal"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -43,55 +64,34 @@ Begin VB.Form FormTwins
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.OptionButton OptVertical 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "vertical"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   255
-      Left            =   6240
-      TabIndex        =   3
-      Top             =   3120
-      Width           =   3015
-   End
-   Begin VB.OptionButton OptHorizontal 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "horizontal"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   255
-      Left            =   6240
-      TabIndex        =   2
-      Top             =   2640
-      Value           =   -1  'True
-      Width           =   3015
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin PhotoDemon.smartOptionButton optTwins 
+      Height          =   375
+      Index           =   1
+      Left            =   6960
+      TabIndex        =   6
+      Top             =   3090
+      Width           =   1140
+      _ExtentX        =   2011
+      _ExtentY        =   661
+      Caption         =   "vertical"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblAlgorithm 
       AutoSize        =   -1  'True
@@ -108,8 +108,8 @@ Begin VB.Form FormTwins
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   6000
-      TabIndex        =   6
+      Left            =   6720
+      TabIndex        =   4
       Top             =   2160
       Width           =   1755
    End
@@ -125,7 +125,7 @@ Begin VB.Form FormTwins
       EndProperty
       Height          =   855
       Left            =   0
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   5760
       Width           =   11295
    End
@@ -156,11 +156,7 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
     Me.Visible = False
-    If OptVertical.Value = True Then
-        Process Twins, 0
-    Else
-        Process Twins, 1
-    End If
+    If optTwins(0).Value Then Process Twins, 0 Else Process Twins, 1
     Unload Me
 End Sub
 
@@ -231,13 +227,13 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
         
         'Grab the value of the "second" pixel, whose position will vary depending on the method (vertical or horizontal)
         If tType = 0 Then
-            r2 = srcImageData(QuickVal + 2, finalY - y)
-            g2 = srcImageData(QuickVal + 1, finalY - y)
-            b2 = srcImageData(QuickVal, finalY - y)
-        Else
             r2 = srcImageData(MaxX - QuickVal + 2, y)
             g2 = srcImageData(MaxX - QuickVal + 1, y)
             b2 = srcImageData(MaxX - QuickVal, y)
+        Else
+            r2 = srcImageData(QuickVal + 2, finalY - y)
+            g2 = srcImageData(QuickVal + 1, finalY - y)
+            b2 = srcImageData(QuickVal, finalY - y)
         End If
         
         'Alpha-blend the two pixels using our shortcut look-up table
@@ -269,7 +265,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Render an image preview
-    GenerateTwins 1, True, fxPreview
+    GenerateTwins 0, True, fxPreview
     
 End Sub
 
@@ -277,10 +273,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptHorizontal_Click()
-    GenerateTwins 1, True, fxPreview
-End Sub
-
-Private Sub OptVertical_Click()
-    GenerateTwins 0, True, fxPreview
+Private Sub optTwins_Click(Index As Integer)
+    GenerateTwins Index, True, fxPreview
 End Sub

@@ -320,7 +320,10 @@ Private Sub updateControlSize()
     ' button will still be fully transparent.  This allows the caption to be seen, while also allowing Vista/7's
     ' "hover" animation to still work with the mouse.  In the IDE, an underline is used to display focus.
     If g_IsProgramCompiled Then optButton.Width = UserControl.ScaleWidth - 2
-        
+            
+    lblCaption.Refresh
+    optButton.Refresh
+            
 End Sub
 
 'Because this is an option control (not a checkbox), other option controls need to be turned off when it is clicked

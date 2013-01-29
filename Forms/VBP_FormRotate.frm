@@ -25,6 +25,27 @@ Begin VB.Form FormRotate
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartOptionButton optRotate 
+      Height          =   360
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   8
+      Top             =   3330
+      Width           =   3390
+      _ExtentX        =   5980
+      _ExtentY        =   635
+      Caption         =   "adjust size to fit rotated image"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,49 +63,6 @@ Begin VB.Form FormRotate
       TabIndex        =   1
       Top             =   5910
       Width           =   1365
-   End
-   Begin VB.OptionButton OptRotate 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "adjust canvas to fit rotated image"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   3270
-      Value           =   -1  'True
-      Width           =   5535
-   End
-   Begin VB.OptionButton OptRotate 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "leave the canvas at its current size"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   3660
-      Width           =   5655
    End
    Begin VB.TextBox txtAngle 
       Alignment       =   2  'Center
@@ -119,16 +97,36 @@ Begin VB.Form FormRotate
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.smartOptionButton optRotate 
+      Height          =   360
+      Index           =   1
+      Left            =   6120
+      TabIndex        =   9
+      Top             =   3720
+      Width           =   3315
+      _ExtentX        =   5847
+      _ExtentY        =   635
+      Caption         =   "keep image at its present size"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   5760
       Width           =   12135
    End
@@ -137,7 +135,7 @@ Begin VB.Form FormRotate
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "rotated image canvas:"
+      Caption         =   "rotated image size:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -152,7 +150,7 @@ Begin VB.Form FormRotate
       Left            =   6000
       TabIndex        =   5
       Top             =   2880
-      Width           =   2340
+      Width           =   2025
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -225,7 +223,7 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    If OptRotate(0) Then
+    If optRotate(0) Then
         Process FreeRotate, 0, CSng(hsAngle / 10)
     Else
         Process FreeRotate, 1, CSng(hsAngle / 10)
@@ -429,7 +427,7 @@ End Sub
 'Redraw the on-screen preview of the rotated image
 Private Sub updatePreview()
 
-    If OptRotate(0) Then
+    If optRotate(0).Value Then
         RotateArbitrary 0, CDbl(hsAngle / 10), True
     Else
         RotateArbitrary 1, CDbl(hsAngle / 10), True

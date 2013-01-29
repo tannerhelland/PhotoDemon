@@ -24,6 +24,26 @@ Begin VB.Form FormReduceColors
    ScaleWidth      =   821
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartOptionButton optQuant 
+      Height          =   330
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   17
+      Top             =   600
+      Width           =   2355
+      _ExtentX        =   4154
+      _ExtentY        =   582
+      Caption         =   "Xiaolin Wu (automatic)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -44,54 +64,33 @@ Begin VB.Form FormReduceColors
    End
    Begin VB.HScrollBar hsBlue 
       Height          =   255
-      Left            =   8280
+      Left            =   6240
       Max             =   64
       Min             =   2
-      TabIndex        =   10
-      Top             =   3675
+      TabIndex        =   7
+      Top             =   4155
       Value           =   6
-      Width           =   3015
+      Width           =   5055
    End
    Begin VB.HScrollBar hsGreen 
       Height          =   255
-      Left            =   8280
+      Left            =   6240
       Max             =   64
       Min             =   2
-      TabIndex        =   8
-      Top             =   3285
+      TabIndex        =   5
+      Top             =   3405
       Value           =   7
-      Width           =   3015
+      Width           =   5055
    End
    Begin VB.HScrollBar hsRed 
       Height          =   255
-      Left            =   8280
+      Left            =   6240
       Max             =   64
       Min             =   2
-      TabIndex        =   6
-      Top             =   2895
+      TabIndex        =   3
+      Top             =   2655
       Value           =   6
-      Width           =   3015
-   End
-   Begin VB.OptionButton OptQuant 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "PhotoDemon Advanced (manual)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   255
-      Index           =   2
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   1920
-      Width           =   3495
+      Width           =   5055
    End
    Begin VB.TextBox TxtB 
       Alignment       =   2  'Center
@@ -108,9 +107,9 @@ Begin VB.Form FormReduceColors
       Height          =   360
       Left            =   11400
       MaxLength       =   3
-      TabIndex        =   9
+      TabIndex        =   6
       Text            =   "6"
-      Top             =   3630
+      Top             =   4110
       Width           =   615
    End
    Begin VB.TextBox TxtG 
@@ -128,9 +127,9 @@ Begin VB.Form FormReduceColors
       Height          =   360
       Left            =   11400
       MaxLength       =   3
-      TabIndex        =   7
+      TabIndex        =   4
       Text            =   "7"
-      Top             =   3240
+      Top             =   3360
       Width           =   615
    End
    Begin VB.TextBox TxtR 
@@ -148,112 +147,176 @@ Begin VB.Form FormReduceColors
       Height          =   360
       Left            =   11400
       MaxLength       =   3
-      TabIndex        =   5
+      TabIndex        =   2
       Text            =   "6"
-      Top             =   2850
+      Top             =   2610
       Width           =   615
    End
    Begin VB.CheckBox chkColorDither 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       Caption         =   " Use error diffusion dithering"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
       Height          =   255
-      Left            =   6600
-      TabIndex        =   11
-      Top             =   4590
+      Left            =   6120
+      TabIndex        =   8
+      Top             =   4680
       Value           =   1  'Checked
-      Width           =   2655
+      Width           =   3015
    End
    Begin VB.CheckBox chkSmartColors 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       Caption         =   " Use realistic coloring"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
       Height          =   255
-      Left            =   9360
-      TabIndex        =   12
-      Top             =   4590
+      Left            =   9480
+      TabIndex        =   9
+      Top             =   4680
       Value           =   1  'Checked
       Width           =   2535
-   End
-   Begin VB.OptionButton OptQuant 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "Xiaolin Wu (automatic)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   255
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   2
-      Top             =   1200
-      Value           =   -1  'True
-      Width           =   2775
-   End
-   Begin VB.OptionButton OptQuant 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "NeuQuant by Anthony Dekker (automatic)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   255
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   1560
-      Width           =   4095
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   21
+      TabIndex        =   16
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.smartOptionButton optQuant 
+      Height          =   330
+      Index           =   1
+      Left            =   6120
+      TabIndex        =   18
+      Top             =   960
+      Width           =   3630
+      _ExtentX        =   6403
+      _ExtentY        =   582
+      Caption         =   "NeuQuant neural network (automatic)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optQuant 
+      Height          =   330
+      Index           =   2
+      Left            =   6120
+      TabIndex        =   19
+      Top             =   1320
+      Width           =   3180
+      _ExtentX        =   5609
+      _ExtentY        =   582
+      Caption         =   "PhotoDemon advanced (manual)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblBlueValues 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "possible blue values:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   270
+      Left            =   6120
+      TabIndex        =   21
+      Top             =   3750
+      Width           =   1980
+   End
+   Begin VB.Label lblGreenValues 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "possible green values:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   270
+      Left            =   6120
+      TabIndex        =   20
+      Top             =   3000
+      Width           =   2145
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   20
+      TabIndex        =   15
       Top             =   5760
       Width           =   12375
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   "Note: some options on this page have been disabled because the FreeImage plugin could not be found."
+      Caption         =   "Note: due to missing plugins, some options on this page have been disabled "
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H000000C0&
       Height          =   1095
-      Left            =   10230
-      TabIndex        =   19
-      Top             =   1080
+      Left            =   10200
+      TabIndex        =   14
+      Top             =   600
       Visible         =   0   'False
-      Width           =   1815
+      Width           =   1935
       WordWrap        =   -1  'True
    End
-   Begin VB.Label lblOptions 
+   Begin VB.Label lblQuantizationOptions 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "advanced quantization options:"
+      Caption         =   "manual quantization options:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -266,50 +329,49 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   18
-      Top             =   2520
-      Width           =   3300
+      TabIndex        =   13
+      Top             =   1800
+      Width           =   3090
    End
-   Begin VB.Label lblBlue 
+   Begin VB.Label lblRedValues 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Possible blue values (2-64):"
-      ForeColor       =   &H00400000&
-      Height          =   255
+      Caption         =   "possible red values:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   270
       Left            =   6120
-      TabIndex        =   17
-      Top             =   3705
-      Width           =   2175
-   End
-   Begin VB.Label lblGreen 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Possible green values (2-64):"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   6120
-      TabIndex        =   16
-      Top             =   3315
-      Width           =   2535
-   End
-   Begin VB.Label lblRed 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Possible red values (2-64):"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   6120
-      TabIndex        =   15
-      Top             =   2925
-      Width           =   2175
+      TabIndex        =   12
+      Top             =   2280
+      Width           =   1905
    End
    Begin VB.Label lblMaxColors 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "These parameters allow for a maximum of 252 colors in the quantized image."
-      ForeColor       =   &H00400000&
-      Height          =   195
+      Caption         =   "Maximum # of colors with these parameters: 252"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
       Left            =   6120
-      TabIndex        =   14
-      Top             =   4155
-      Width           =   5505
+      TabIndex        =   11
+      Top             =   5160
+      Width           =   4260
    End
    Begin VB.Label lblQuantMethod 
       Appearance      =   0  'Flat
@@ -329,8 +391,8 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   405
       Left            =   6000
-      TabIndex        =   13
-      Top             =   840
+      TabIndex        =   10
+      Top             =   240
       Width           =   2265
    End
 End
@@ -376,13 +438,13 @@ Private Sub cmdOK_Click()
     'Check to see which method the user has requested
     
     'Xiaolin Wu
-    If OptQuant(0).Value = True Then
+    If optQuant(0).Value = True Then
         FormReduceColors.Visible = False
         Process ReduceColors, REDUCECOLORS_AUTO, FIQ_WUQUANT
         Unload Me
     
     'NeuQuant
-    ElseIf OptQuant(1).Value = True Then
+    ElseIf optQuant(1).Value = True Then
         FormReduceColors.Visible = False
         Process ReduceColors, REDUCECOLORS_AUTO, FIQ_NNQUANT
         Unload Me
@@ -431,13 +493,13 @@ Private Sub Form_Activate()
     
     'Only allow AutoReduction stuff if the FreeImage dll was found.
     If g_ImageFormats.FreeImageEnabled = False Then
-        OptQuant(0).Enabled = False
-        OptQuant(1).Enabled = False
-        OptQuant(2).Value = True
+        optQuant(0).Enabled = False
+        optQuant(1).Enabled = False
+        optQuant(2).Value = True
         DisplayManualOptions True
         lblWarning.Visible = True
     Else
-        OptQuant(0).Value = True
+        optQuant(0).Value = True
         DisplayManualOptions False
     End If
         
@@ -455,7 +517,7 @@ End Sub
 
 'Enable/disable the manual settings depending on which option button has been selected
 Private Sub OptQuant_Click(Index As Integer)
-    If OptQuant(2).Value = True Then DisplayManualOptions True Else DisplayManualOptions False
+    If optQuant(2).Value = True Then DisplayManualOptions True Else DisplayManualOptions False
     updateReductionPreview
 End Sub
 
@@ -520,20 +582,20 @@ End Sub
 'This lets the user know the max number of colors that the current set of quantization parameters will allow for
 Private Sub updateColorLabel()
     If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then
-        lblMaxColors = "These parameters allow for a maximum of " & Val(TxtR) * Val(TxtG) * Val(TxtB) & " colors in the quantized image."
+        lblMaxColors = "Maximum # of colors with these parameters: " & Val(TxtR) * Val(TxtG) * Val(TxtB)
         updateReductionPreview
     Else
-        lblMaxColors = "Color count could not be calculated due to invalid text box values."
+        lblMaxColors = ""
     End If
 End Sub
 
 'Enable/disable the manual options depending on which quantization method has been selected
 Private Sub DisplayManualOptions(ByVal toDisplay As Boolean)
     If toDisplay = False Then
-        lblOptions.ForeColor = RGB(160, 160, 160)
-        lblRed.ForeColor = RGB(160, 160, 160)
-        lblGreen.ForeColor = RGB(160, 160, 160)
-        lblBlue.ForeColor = RGB(160, 160, 160)
+        lblQuantizationOptions.ForeColor = RGB(160, 160, 160)
+        lblRedValues.ForeColor = RGB(160, 160, 160)
+        lblGreenValues.ForeColor = RGB(160, 160, 160)
+        lblBlueValues.ForeColor = RGB(160, 160, 160)
         lblMaxColors.ForeColor = RGB(160, 160, 160)
         TxtR.Enabled = False
         TxtG.Enabled = False
@@ -544,10 +606,10 @@ Private Sub DisplayManualOptions(ByVal toDisplay As Boolean)
         chkColorDither.Enabled = False
         chkSmartColors.Enabled = False
     Else
-        lblOptions.ForeColor = &H400000
-        lblRed.ForeColor = &H400000
-        lblGreen.ForeColor = &H400000
-        lblBlue.ForeColor = &H400000
+        lblQuantizationOptions.ForeColor = &H400000
+        lblRedValues.ForeColor = &H400000
+        lblGreenValues.ForeColor = &H400000
+        lblBlueValues.ForeColor = &H400000
         lblMaxColors.ForeColor = &H400000
         TxtR.Enabled = True
         TxtG.Enabled = True
@@ -1033,9 +1095,9 @@ End Sub
 
 'Use this sub to update the on-screen preview
 Private Sub updateReductionPreview()
-    If OptQuant(0).Value = True Then
+    If optQuant(0).Value = True Then
         ReduceImageColors_Auto FIQ_WUQUANT, True, fxPreview
-    ElseIf OptQuant(1).Value = True Then
+    ElseIf optQuant(1).Value = True Then
         ReduceImageColors_Auto FIQ_NNQUANT, True, fxPreview
     Else
         If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then

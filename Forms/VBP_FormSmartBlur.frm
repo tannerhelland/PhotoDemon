@@ -24,48 +24,26 @@ Begin VB.Form FormSmartBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.OptionButton OptEdges 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " edges"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   1
-      Left            =   8640
-      TabIndex        =   12
-      Top             =   1800
-      Width           =   2535
-   End
-   Begin VB.OptionButton OptEdges 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " smooth areas"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.smartOptionButton optEdges 
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   1800
+      Width           =   1740
+      _ExtentX        =   3069
+      _ExtentY        =   635
+      Caption         =   "smooth areas"
       Value           =   -1  'True
-      Width           =   2415
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.TextBox txtThreshold 
       Alignment       =   2  'Center
@@ -84,7 +62,7 @@ Begin VB.Form FormSmartBlur
       MaxLength       =   3
       TabIndex        =   9
       Text            =   "50"
-      Top             =   3660
+      Top             =   3900
       Width           =   615
    End
    Begin VB.HScrollBar hsThreshold 
@@ -92,7 +70,7 @@ Begin VB.Form FormSmartBlur
       Left            =   6120
       Max             =   255
       TabIndex        =   8
-      Top             =   3720
+      Top             =   3960
       Value           =   50
       Width           =   4935
    End
@@ -120,7 +98,7 @@ Begin VB.Form FormSmartBlur
       Max             =   50
       Min             =   1
       TabIndex        =   2
-      Top             =   2760
+      Top             =   3000
       Value           =   5
       Width           =   4935
    End
@@ -141,7 +119,7 @@ Begin VB.Form FormSmartBlur
       MaxLength       =   3
       TabIndex        =   3
       Text            =   "5"
-      Top             =   2700
+      Top             =   2940
       Width           =   615
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -152,6 +130,26 @@ Begin VB.Form FormSmartBlur
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin PhotoDemon.smartOptionButton optEdges 
+      Height          =   360
+      Index           =   1
+      Left            =   6120
+      TabIndex        =   13
+      Top             =   2160
+      Width           =   975
+      _ExtentX        =   1720
+      _ExtentY        =   635
+      Caption         =   "edges"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -172,7 +170,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   1440
       Width           =   1440
    End
@@ -194,7 +192,7 @@ Begin VB.Form FormSmartBlur
       Index           =   1
       Left            =   6000
       TabIndex        =   10
-      Top             =   3360
+      Top             =   3600
       Width           =   1080
    End
    Begin VB.Label lblIDEWarning 
@@ -242,7 +240,7 @@ Begin VB.Form FormSmartBlur
       Index           =   0
       Left            =   6000
       TabIndex        =   4
-      Top             =   2400
+      Top             =   2640
       Width           =   735
    End
 End
@@ -295,7 +293,7 @@ Private Sub cmdOK_Click()
     End If
     
     Me.Visible = False
-    Process SmartBlur, hsRadius.Value, hsThreshold.Value, OptEdges(1)
+    Process SmartBlur, hsRadius.Value, hsThreshold.Value, optEdges(1)
     Unload Me
     
 End Sub
@@ -514,5 +512,5 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    SmartBlurFilter hsRadius.Value, hsThreshold.Value, OptEdges(1), True, fxPreview
+    SmartBlurFilter hsRadius.Value, hsThreshold.Value, optEdges(1), True, fxPreview
 End Sub
