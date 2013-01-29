@@ -40,7 +40,7 @@ Begin VB.Form FormWaves
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   20
+      TabIndex        =   18
       Top             =   3975
       Width           =   4860
    End
@@ -77,7 +77,7 @@ Begin VB.Form FormWaves
       Height          =   360
       Left            =   11040
       MaxLength       =   3
-      TabIndex        =   14
+      TabIndex        =   12
       Text            =   "1"
       Top             =   2220
       Width           =   735
@@ -87,7 +87,7 @@ Begin VB.Form FormWaves
       Left            =   6120
       Max             =   50
       Min             =   1
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   2280
       Value           =   1
       Width           =   4815
@@ -107,7 +107,7 @@ Begin VB.Form FormWaves
       Height          =   360
       Left            =   11040
       MaxLength       =   3
-      TabIndex        =   12
+      TabIndex        =   10
       Text            =   "0"
       Top             =   3060
       Width           =   735
@@ -116,7 +116,7 @@ Begin VB.Form FormWaves
       Height          =   255
       Left            =   6120
       Max             =   200
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   3120
       Width           =   4815
    End
@@ -124,7 +124,7 @@ Begin VB.Form FormWaves
       Height          =   255
       Left            =   6120
       Max             =   200
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   1440
       Value           =   20
       Width           =   4815
@@ -144,7 +144,7 @@ Begin VB.Form FormWaves
       Height          =   360
       Left            =   11040
       MaxLength       =   3
-      TabIndex        =   8
+      TabIndex        =   6
       Text            =   "20"
       Top             =   1380
       Width           =   735
@@ -154,7 +154,7 @@ Begin VB.Form FormWaves
       Left            =   6120
       Max             =   50
       Min             =   1
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   600
       Value           =   30
       Width           =   4815
@@ -174,62 +174,60 @@ Begin VB.Form FormWaves
       Height          =   360
       Left            =   11040
       MaxLength       =   3
-      TabIndex        =   5
+      TabIndex        =   3
       Text            =   "30"
       Top             =   540
       Width           =   735
    End
-   Begin VB.OptionButton OptInterpolate 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   4860
-      Value           =   -1  'True
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptInterpolate 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " speed"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   1
-      Left            =   7920
-      TabIndex        =   3
-      Top             =   4860
-      Width           =   2535
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   18
+      TabIndex        =   16
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin PhotoDemon.smartOptionButton OptInterpolate 
+      Height          =   330
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   19
+      Top             =   4920
+      Width           =   1005
+      _ExtentX        =   1773
+      _ExtentY        =   582
+      Caption         =   "quality"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton OptInterpolate 
+      Height          =   330
+      Index           =   1
+      Left            =   7920
+      TabIndex        =   20
+      Top             =   4920
+      Width           =   975
+      _ExtentX        =   1720
+      _ExtentY        =   582
+      Caption         =   "speed"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -248,14 +246,14 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   19
+      TabIndex        =   17
       Top             =   3600
       Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   17
+      TabIndex        =   15
       Top             =   5760
       Width           =   12135
    End
@@ -276,7 +274,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   16
+      TabIndex        =   14
       Top             =   1920
       Width           =   2115
    End
@@ -297,7 +295,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   15
+      TabIndex        =   13
       Top             =   2760
       Width           =   3090
    End
@@ -318,7 +316,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   1080
       Width           =   3390
    End
@@ -339,7 +337,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   240
       Width           =   2415
    End

@@ -25,6 +25,27 @@ Begin VB.Form FormFiguredGlass
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartOptionButton OptInterpolate 
+      Height          =   330
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   13
+      Top             =   4200
+      Width           =   1005
+      _ExtentX        =   1773
+      _ExtentY        =   582
+      Caption         =   "quality"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -40,7 +61,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   3255
       Width           =   4860
    End
@@ -67,7 +88,7 @@ Begin VB.Form FormFiguredGlass
       Left            =   6120
       Max             =   100
       Min             =   1
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   1620
       Value           =   50
       Width           =   4815
@@ -87,7 +108,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   360
       Left            =   11040
       MaxLength       =   3
-      TabIndex        =   9
+      TabIndex        =   7
       Text            =   "50"
       Top             =   1560
       Width           =   735
@@ -107,7 +128,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   360
       Left            =   11040
       MaxLength       =   3
-      TabIndex        =   7
+      TabIndex        =   5
       Text            =   "50"
       Top             =   2340
       Width           =   735
@@ -117,62 +138,39 @@ Begin VB.Form FormFiguredGlass
       Left            =   6120
       Max             =   100
       Min             =   1
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   2400
       Value           =   50
       Width           =   4815
    End
-   Begin VB.OptionButton OptInterpolate 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   4170
-      Value           =   -1  'True
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptInterpolate 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " speed"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   1
-      Left            =   7920
-      TabIndex        =   4
-      Top             =   4170
-      Width           =   2535
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   12
+      TabIndex        =   10
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin PhotoDemon.smartOptionButton OptInterpolate 
+      Height          =   330
+      Index           =   1
+      Left            =   7920
+      TabIndex        =   14
+      Top             =   4200
+      Width           =   975
+      _ExtentX        =   1720
+      _ExtentY        =   582
+      Caption         =   "speed"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -191,14 +189,14 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   12
       Top             =   2880
       Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   5760
       Width           =   12135
    End
@@ -219,7 +217,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   2040
       Width           =   1200
    End

@@ -30,7 +30,7 @@ Begin VB.Form FormKaleidoscope
       LargeChange     =   10
       Left            =   6120
       Max             =   3600
-      TabIndex        =   17
+      TabIndex        =   15
       Top             =   2970
       Width           =   4815
    End
@@ -49,7 +49,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   360
       Left            =   11040
       MaxLength       =   6
-      TabIndex        =   16
+      TabIndex        =   14
       Text            =   "0.0"
       Top             =   2910
       Width           =   735
@@ -87,7 +87,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   360
       Left            =   11040
       MaxLength       =   4
-      TabIndex        =   12
+      TabIndex        =   10
       Text            =   "3"
       Top             =   1140
       Width           =   735
@@ -97,7 +97,7 @@ Begin VB.Form FormKaleidoscope
       Left            =   6120
       Max             =   16
       Min             =   1
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   1200
       Value           =   3
       Width           =   4815
@@ -117,7 +117,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   360
       Left            =   11040
       MaxLength       =   3
-      TabIndex        =   9
+      TabIndex        =   7
       Text            =   "100"
       Top             =   3690
       Width           =   735
@@ -127,53 +127,10 @@ Begin VB.Form FormKaleidoscope
       Left            =   6120
       Max             =   100
       Min             =   1
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   3750
       Value           =   100
       Width           =   4815
-   End
-   Begin VB.OptionButton OptInterpolate 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   4530
-      Value           =   -1  'True
-      Width           =   1695
-   End
-   Begin VB.OptionButton OptInterpolate 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " speed"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Index           =   1
-      Left            =   7920
-      TabIndex        =   6
-      Top             =   4530
-      Width           =   2535
    End
    Begin VB.TextBox txtAngle 
       Alignment       =   2  'Center
@@ -207,11 +164,52 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   15
+      TabIndex        =   13
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin PhotoDemon.smartOptionButton OptInterpolate 
+      Height          =   330
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   17
+      Top             =   4560
+      Width           =   1005
+      _ExtentX        =   1773
+      _ExtentY        =   582
+      Caption         =   "quality"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton OptInterpolate 
+      Height          =   330
+      Index           =   1
+      Left            =   7920
+      TabIndex        =   18
+      Top             =   4560
+      Width           =   975
+      _ExtentX        =   1720
+      _ExtentY        =   582
+      Caption         =   "speed"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -232,14 +230,14 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   18
+      TabIndex        =   16
       Top             =   2535
       Width           =   1800
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   14
+      TabIndex        =   12
       Top             =   5760
       Width           =   12135
    End
@@ -260,7 +258,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   840
       Width           =   2055
    End
@@ -281,7 +279,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   3390
       Width           =   2145
    End

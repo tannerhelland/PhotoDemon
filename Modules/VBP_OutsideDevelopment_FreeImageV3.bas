@@ -982,8 +982,8 @@ Private Declare Function SetStretchBltMode Lib "gdi32.dll" ( _
     
 Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
-    ByVal x As Long, _
-    ByVal y As Long, _
+    ByVal X As Long, _
+    ByVal Y As Long, _
     ByVal dx As Long, _
     ByVal dy As Long, _
     ByVal srcX As Long, _
@@ -996,8 +996,8 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     
 Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
-    ByVal x As Long, _
-    ByVal y As Long, _
+    ByVal X As Long, _
+    ByVal Y As Long, _
     ByVal dx As Long, _
     ByVal dy As Long, _
     ByVal srcX As Long, _
@@ -1040,8 +1040,8 @@ Private Declare Function DeleteDC Lib "gdi32.dll" ( _
     
 Private Declare Function BitBlt Lib "gdi32.dll" ( _
     ByVal hDestDC As Long, _
-    ByVal x As Long, _
-    ByVal y As Long, _
+    ByVal X As Long, _
+    ByVal Y As Long, _
     ByVal nWidth As Long, _
     ByVal nHeight As Long, _
     ByVal hSrcDC As Long, _
@@ -2266,19 +2266,19 @@ Private Declare Function FreeImage_HasBackgroundColorInt Lib "FreeImage.dll" Ali
            
 Private Declare Function FreeImage_GetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef backColor As RGBQUAD) As Long
+           ByRef BackColor As RGBQUAD) As Long
 
 Private Declare Function FreeImage_GetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef backColor As Long) As Long
+           ByRef BackColor As Long) As Long
 
 Private Declare Function FreeImage_SetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef backColor As RGBQUAD) As Long
+           ByRef BackColor As RGBQUAD) As Long
            
 Private Declare Function FreeImage_SetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal Bitmap As Long, _
-           ByRef backColor As Long) As Long
+           ByRef BackColor As Long) As Long
 
 Public Declare Function FreeImage_GetThumbnail Lib "FreeImage.dll" Alias "_FreeImage_GetThumbnail@4" ( _
            ByVal Bitmap As Long) As Long
@@ -2316,38 +2316,38 @@ Public Declare Function FreeImage_GetScanline Lib "FreeImage.dll" Alias "_FreeIm
 
 Private Declare Function FreeImage_GetPixelIndexInt Lib "FreeImage.dll" Alias "_FreeImage_GetPixelIndex@16" ( _
            ByVal Bitmap As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
+           ByVal X As Long, _
+           ByVal Y As Long, _
            ByRef Value As Byte) As Long
 
 Private Declare Function FreeImage_GetPixelColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetPixelColor@16" ( _
            ByVal Bitmap As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
+           ByVal X As Long, _
+           ByVal Y As Long, _
            ByRef Value As RGBQUAD) As Long
            
 Private Declare Function FreeImage_GetPixelColorByLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetPixelColor@16" ( _
            ByVal Bitmap As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
+           ByVal X As Long, _
+           ByVal Y As Long, _
            ByRef Value As Long) As Long
 
 Private Declare Function FreeImage_SetPixelIndexInt Lib "FreeImage.dll" Alias "_FreeImage_SetPixelIndex@16" ( _
            ByVal Bitmap As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
+           ByVal X As Long, _
+           ByVal Y As Long, _
            ByRef Value As Byte) As Long
 
 Private Declare Function FreeImage_SetPixelColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetPixelColor@16" ( _
            ByVal Bitmap As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
+           ByVal X As Long, _
+           ByVal Y As Long, _
            ByRef Value As RGBQUAD) As Long
            
 Private Declare Function FreeImage_SetPixelColorByLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetPixelColor@16" ( _
            ByVal Bitmap As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
+           ByVal X As Long, _
+           ByVal Y As Long, _
            ByRef Value As Long) As Long
            
 
@@ -3524,21 +3524,21 @@ Public Function FreeImage_HasBackgroundColor(ByVal Bitmap As Long) As Boolean
 End Function
 
 Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef backColor As RGBQUAD) As Boolean
+                                             ByRef BackColor As RGBQUAD) As Boolean
    
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, backColor) = 1)
+   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, BackColor) = 1)
    
 End Function
 
 Public Function FreeImage_GetBackgroundColorAsLong(ByVal Bitmap As Long, _
-                                                   ByRef backColor As Long) As Boolean
+                                                   ByRef BackColor As Long) As Boolean
    
    ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
    ' provides it's result as a Long value.
 
-   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, backColor) = 1)
+   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
    
 End Function
 
@@ -3564,21 +3564,21 @@ Dim bkcolor As RGBQUAD
 End Function
 
 Public Function FreeImage_SetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef backColor As RGBQUAD) As Boolean
+                                             ByRef BackColor As RGBQUAD) As Boolean
                                              
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(Bitmap, backColor) = 1)
+   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(Bitmap, BackColor) = 1)
                                              
 End Function
 
 Public Function FreeImage_SetBackgroundColorAsLong(ByVal Bitmap As Long, _
-                                                   ByVal backColor As Long) As Boolean
+                                                   ByVal BackColor As Long) As Boolean
                                              
    ' This function sets the background color of an image as FreeImage_SetBackgroundColor() does but
    ' the color value to set must be provided as a Long value.
 
-   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(Bitmap, backColor) = 1)
+   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
                                              
 End Function
 
@@ -3605,42 +3605,42 @@ Dim tColor As RGBQUAD
 End Function
 
 Public Function FreeImage_GetPixelIndex(ByVal Bitmap As Long, _
-                                        ByVal x As Long, _
-                                        ByVal y As Long, _
+                                        ByVal X As Long, _
+                                        ByVal Y As Long, _
                                         ByRef Value As Byte) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_GetPixelIndex = (FreeImage_GetPixelIndexInt(Bitmap, x, y, Value) = 1)
+   FreeImage_GetPixelIndex = (FreeImage_GetPixelIndexInt(Bitmap, X, Y, Value) = 1)
 
 End Function
 
 Public Function FreeImage_GetPixelColor(ByVal Bitmap As Long, _
-                                        ByVal x As Long, _
-                                        ByVal y As Long, _
+                                        ByVal X As Long, _
+                                        ByVal Y As Long, _
                                         ByRef Value As RGBQUAD) As Boolean
                                         
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_GetPixelColor = (FreeImage_GetPixelColorInt(Bitmap, x, y, Value) = 1)
+   FreeImage_GetPixelColor = (FreeImage_GetPixelColorInt(Bitmap, X, Y, Value) = 1)
 
 End Function
            
 Public Function FreeImage_GetPixelColorByLong(ByVal Bitmap As Long, _
-                                              ByVal x As Long, _
-                                              ByVal y As Long, _
+                                              ByVal X As Long, _
+                                              ByVal Y As Long, _
                                               ByRef Value As Long) As Boolean
                                               
    ' This function gets the color at position (x|y) as FreeImage_GetPixelColor() does but
    ' provides it's result as a Long value.
                                               
-   FreeImage_GetPixelColorByLong = (FreeImage_GetPixelColorByLongInt(Bitmap, x, y, Value) = 1)
+   FreeImage_GetPixelColorByLong = (FreeImage_GetPixelColorByLongInt(Bitmap, X, Y, Value) = 1)
 
 End Function
 
 Public Function FreeImage_GetPixelColorEx(ByVal Bitmap As Long, _
-                                          ByVal x As Long, _
-                                          ByVal y As Long, _
+                                          ByVal X As Long, _
+                                          ByVal Y As Long, _
                                           ByRef Alpha As Byte, _
                                           ByRef Red As Byte, _
                                           ByRef Green As Byte, _
@@ -3651,7 +3651,7 @@ Dim Value As RGBQUAD
    ' This function gets the color at position (x|y) as FreeImage_GetPixelColor() does but
    ' provides it's result as four different byte values, one for each color component.
                                               
-   FreeImage_GetPixelColorEx = (FreeImage_GetPixelColorInt(Bitmap, x, y, Value) = 1)
+   FreeImage_GetPixelColorEx = (FreeImage_GetPixelColorInt(Bitmap, X, Y, Value) = 1)
    With Value
       Alpha = .rgbReserved
       Red = .rgbRed
@@ -3662,42 +3662,42 @@ Dim Value As RGBQUAD
 End Function
 
 Public Function FreeImage_SetPixelIndex(ByVal Bitmap As Long, _
-                                        ByVal x As Long, _
-                                        ByVal y As Long, _
+                                        ByVal X As Long, _
+                                        ByVal Y As Long, _
                                         ByRef Value As Byte) As Boolean
                                         
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SetPixelIndex = (FreeImage_SetPixelIndexInt(Bitmap, x, y, Value) = 1)
+   FreeImage_SetPixelIndex = (FreeImage_SetPixelIndexInt(Bitmap, X, Y, Value) = 1)
 
 End Function
 
 Public Function FreeImage_SetPixelColor(ByVal Bitmap As Long, _
-                                        ByVal x As Long, _
-                                        ByVal y As Long, _
+                                        ByVal X As Long, _
+                                        ByVal Y As Long, _
                                         ByRef Value As RGBQUAD) As Boolean
                                         
    ' Thin wrapper function returning a real VB Boolean value
                                         
-   FreeImage_SetPixelColor = (FreeImage_SetPixelColorInt(Bitmap, x, y, Value) = 1)
+   FreeImage_SetPixelColor = (FreeImage_SetPixelColorInt(Bitmap, X, Y, Value) = 1)
 
 End Function
            
 Public Function FreeImage_SetPixelColorByLong(ByVal Bitmap As Long, _
-                                              ByVal x As Long, _
-                                              ByVal y As Long, _
+                                              ByVal X As Long, _
+                                              ByVal Y As Long, _
                                               ByRef Value As Long) As Boolean
                                               
    ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
    ' the color value to set must be provided as a Long value.
    
-   FreeImage_SetPixelColorByLong = (FreeImage_SetPixelColorByLongInt(Bitmap, x, y, Value) = 1)
+   FreeImage_SetPixelColorByLong = (FreeImage_SetPixelColorByLongInt(Bitmap, X, Y, Value) = 1)
 
 End Function
 
 Public Function FreeImage_SetPixelColorEx(ByVal Bitmap As Long, _
-                                          ByVal x As Long, _
-                                          ByVal y As Long, _
+                                          ByVal X As Long, _
+                                          ByVal Y As Long, _
                                           ByVal Alpha As Byte, _
                                           ByVal Red As Byte, _
                                           ByVal Green As Byte, _
@@ -3715,7 +3715,7 @@ Dim Value As RGBQUAD
       .rgbGreen = Green
       .rgbBlue = Blue
    End With
-   FreeImage_SetPixelColorEx = (FreeImage_SetPixelColorInt(Bitmap, x, y, Value) = 1)
+   FreeImage_SetPixelColorEx = (FreeImage_SetPixelColorInt(Bitmap, X, Y, Value) = 1)
 
 End Function
 
@@ -8813,10 +8813,10 @@ Dim atBitsTDst As ScanLinesRGBTRIBLE
 Dim atBitsQDst() As RGBQUAD
 
 Dim bMaskPixel As Boolean
-Dim x As Long
+Dim X As Long
 Dim x2 As Long
 Dim lPixelIndex As Long
-Dim y As Long
+Dim Y As Long
 Dim i As Long
 
    'TODO: comment this function
@@ -9088,10 +9088,10 @@ Dim i As Long
                
                Case 1
                   abBitsBDst = FreeImage_GetBitsEx(hDIBResult)
-                  x = 1
+                  X = 1
                   For i = 7 To 0 Step -1
-                     abBitValues(i) = x
-                     x = x * 2
+                     abBitValues(i) = X
+                     X = X * 2
                   Next i
                
                Case 4
@@ -9116,8 +9116,8 @@ Dim i As Long
             End If
         
             ' walk the hole image
-            For y = 0 To lHeight - 1
-               For x = 0 To lWidth - 1
+            For Y = 0 To lHeight - 1
+               For X = 0 To lWidth - 1
                   
                   ' should transparency information be considered to create
                   ' the mask?
@@ -9126,8 +9126,8 @@ Dim i As Long
                      Select Case lBitDepthSrc
                      
                      Case 4
-                        x2 = x \ 2
-                        lPixelIndex = (abBitsBSrc(x2, y) And abBitMasks(x Mod 2)) \ abBitShifts(x Mod 2)
+                        x2 = X \ 2
+                        lPixelIndex = (abBitsBSrc(x2, Y) And abBitMasks(X Mod 2)) \ abBitShifts(X Mod 2)
                         bMaskPixel = (abTransparencyTableSrc(lPixelIndex) = 0)
                         If (Not bMaskPixel) Then
                            bMaskPixel = ((abTransparencyTableSrc(lPixelIndex) < 255) And _
@@ -9135,9 +9135,9 @@ Dim i As Long
                         End If
                      
                      Case 8
-                        bMaskPixel = (abTransparencyTableSrc(abBitsBSrc(x, y)) = 0)
+                        bMaskPixel = (abTransparencyTableSrc(abBitsBSrc(X, Y)) = 0)
                         If (Not bMaskPixel) Then
-                           bMaskPixel = ((abTransparencyTableSrc(abBitsBSrc(x, y)) < 255) And _
+                           bMaskPixel = ((abTransparencyTableSrc(abBitsBSrc(X, Y)) < 255) And _
                                          (bMaskAlphaTransparency))
                         End If
                         
@@ -9147,9 +9147,9 @@ Dim i As Long
                         bMaskPixel = False
                      
                      Case 32
-                        bMaskPixel = (atBitsQSrc(x, y).rgbReserved = 0)
+                        bMaskPixel = (atBitsQSrc(X, Y).rgbReserved = 0)
                         If (Not bMaskPixel) Then
-                           bMaskPixel = ((atBitsQSrc(x, y).rgbReserved < 255) And _
+                           bMaskPixel = ((atBitsQSrc(X, Y).rgbReserved < 255) And _
                                          (bMaskAlphaTransparency))
                         End If
                         
@@ -9167,8 +9167,8 @@ Dim i As Long
                      Select Case lBitDepthSrc
                      
                      Case 4
-                        x2 = x \ 2
-                        lPixelIndex = (abBitsBSrc(x2, y) And abBitMasks(x Mod 2)) \ abBitShifts(x Mod 2)
+                        x2 = X \ 2
+                        lPixelIndex = (abBitsBSrc(x2, Y) And abBitMasks(X Mod 2)) \ abBitShifts(X Mod 2)
                         If (eMaskColorsFormat And FICFF_COLOR_PALETTE_INDEX) Then
                            For i = 0 To lMaskColorsMaxIndex
                               If (lColorTolerance = 0) Then
@@ -9201,10 +9201,10 @@ Dim i As Long
                         If (eMaskColorsFormat And FICFF_COLOR_PALETTE_INDEX) Then
                            For i = 0 To lMaskColorsMaxIndex
                               If (lColorTolerance = 0) Then
-                                 bMaskPixel = (abBitsBSrc(x, y) = alcMaskColors(i))
+                                 bMaskPixel = (abBitsBSrc(X, Y) = alcMaskColors(i))
                               Else
                                  bMaskPixel = (FreeImage_CompareColorsLongLong( _
-                                                   alPaletteSrc(abBitsBSrc(x, y)), _
+                                                   alPaletteSrc(abBitsBSrc(X, Y)), _
                                                    alPaletteSrc(alcMaskColors(i)), _
                                                    lColorTolerance, _
                                                    FICFF_COLOR_RGB, FICFF_COLOR_RGB) = 0)
@@ -9216,7 +9216,7 @@ Dim i As Long
                         Else
                            For i = 0 To lMaskColorsMaxIndex
                               bMaskPixel = (FreeImage_CompareColorsLongLong( _
-                                                alPaletteSrc(abBitsBSrc(x, y)), _
+                                                alPaletteSrc(abBitsBSrc(X, Y)), _
                                                 alcMaskColors(i), lColorTolerance, _
                                                 FICFF_COLOR_RGB, _
                                                 (eMaskColorsFormat And FICFF_COLOR_FORMAT_ORDER_MASK)) = 0)
@@ -9229,7 +9229,7 @@ Dim i As Long
                      Case 24
                         For i = 0 To lMaskColorsMaxIndex
                            bMaskPixel = (FreeImage_CompareColorsRGBTRIPLELong( _
-                                             atBitsTSrc.Scanline(y).Data(x), _
+                                             atBitsTSrc.Scanline(Y).Data(X), _
                                              alcMaskColors(i), lColorTolerance, _
                                              (eMaskColorsFormat And FICFF_COLOR_FORMAT_ORDER_MASK)) = 0)
                            If (bMaskPixel) Then
@@ -9240,7 +9240,7 @@ Dim i As Long
                      Case 32
                         For i = 0 To lMaskColorsMaxIndex
                            bMaskPixel = (FreeImage_CompareColorsRGBQUADLong( _
-                                             atBitsQSrc(x, y), _
+                                             atBitsQSrc(X, Y), _
                                              alcMaskColors(i), lColorTolerance, _
                                              (eMaskColorsFormat And FICFF_COLOR_FORMAT_ORDER_MASK)) = 0)
                            If (bMaskPixel) Then
@@ -9259,34 +9259,34 @@ Dim i As Long
                      Select Case lBitDepth
                      
                      Case 1
-                        x2 = x \ 8
+                        x2 = X \ 8
                         If ((bMaskPixel) Xor (bInvertMask)) Then
-                           abBitsBDst(x2, y) = abBitsBDst(x2, y) Or abBitValues(x Mod 8)
+                           abBitsBDst(x2, Y) = abBitsBDst(x2, Y) Or abBitValues(X Mod 8)
                         End If
                         
                      Case 4
-                        x2 = x \ 2
+                        x2 = X \ 2
                         If ((bMaskPixel) Xor (bInvertMask)) Then
-                           abBitsBDst(x2, y) = abBitsBDst(x2, y) Or abBitValues(x Mod 2)
+                           abBitsBDst(x2, Y) = abBitsBDst(x2, Y) Or abBitValues(X Mod 2)
                         End If
                         
                      Case 8
                         If ((bMaskPixel) Xor (bInvertMask)) Then
-                           abBitsBDst(x, y) = 1
+                           abBitsBDst(X, Y) = 1
                         End If
                         
                      Case 24
                         If ((bMaskPixel) Xor (bInvertMask)) Then
-                           Call CopyMemory(atBitsTDst.Scanline(y).Data(x), lciMaskColorDst, 3)
+                           Call CopyMemory(atBitsTDst.Scanline(Y).Data(X), lciMaskColorDst, 3)
                         Else
-                           Call CopyMemory(atBitsTDst.Scanline(y).Data(x), lciUnmaskColorDst, 3)
+                           Call CopyMemory(atBitsTDst.Scanline(Y).Data(X), lciUnmaskColorDst, 3)
                         End If
                         
                      Case 32
                         If ((bMaskPixel) Xor (bInvertMask)) Then
-                           Call CopyMemory(atBitsQDst(x, y), lciMaskColorDst, 4)
+                           Call CopyMemory(atBitsQDst(X, Y), lciMaskColorDst, 4)
                         Else
-                           Call CopyMemory(atBitsQDst(x, y), lciUnmaskColorDst, 4)
+                           Call CopyMemory(atBitsQDst(X, Y), lciUnmaskColorDst, 4)
                         End If
                      
                      End Select
@@ -9298,51 +9298,51 @@ Dim i As Long
                      Select Case lBitDepthSrc
                      
                      Case 4
-                        x2 = x \ 2
+                        x2 = X \ 2
                         If ((bMaskPixel) Xor (bInvertMask)) Then
                            If (bHaveMaskColorSrc) Then
-                              abBitsBSrc(x2, y) = _
-                                  (abBitsBSrc(x2, y) And (Not abBitMasks(x Mod 2))) Or _
-                                            (lciMaskColorSrc * abBitShifts(x Mod 2))
+                              abBitsBSrc(x2, Y) = _
+                                  (abBitsBSrc(x2, Y) And (Not abBitMasks(X Mod 2))) Or _
+                                            (lciMaskColorSrc * abBitShifts(X Mod 2))
                             End If
                         ElseIf (bHaveUnmaskColorSrc) Then
-                           abBitsBSrc(x2, y) = _
-                               (abBitsBSrc(x2, y) And (Not abBitMasks(x Mod 2))) Or _
-                                         (lciUnmaskColorSrc * abBitShifts(x Mod 2))
+                           abBitsBSrc(x2, Y) = _
+                               (abBitsBSrc(x2, Y) And (Not abBitMasks(X Mod 2))) Or _
+                                         (lciUnmaskColorSrc * abBitShifts(X Mod 2))
                         End If
                      
                      Case 8
                         If ((bMaskPixel) Xor (bInvertMask)) Then
                            If (bHaveMaskColorSrc) Then
-                              abBitsBSrc(x, y) = lciMaskColorSrc
+                              abBitsBSrc(X, Y) = lciMaskColorSrc
                            End If
                         ElseIf (bHaveUnmaskColorSrc) Then
-                           abBitsBSrc(x, y) = lciUnmaskColorSrc
+                           abBitsBSrc(X, Y) = lciUnmaskColorSrc
                         End If
                         
                      Case 24
                         If ((bMaskPixel) Xor (bInvertMask)) Then
                            If (bHaveMaskColorSrc) Then
-                              Call CopyMemory(atBitsTSrc.Scanline(y).Data(x), lciMaskColorSrc, 3)
+                              Call CopyMemory(atBitsTSrc.Scanline(Y).Data(X), lciMaskColorSrc, 3)
                            End If
                         ElseIf (bHaveUnmaskColorSrc) Then
-                           Call CopyMemory(atBitsTSrc.Scanline(y).Data(x), lciUnmaskColorSrc, 3)
+                           Call CopyMemory(atBitsTSrc.Scanline(Y).Data(X), lciUnmaskColorSrc, 3)
                         End If
                      
                      Case 32
                         If ((bMaskPixel) Xor (bInvertMask)) Then
                            If (bHaveMaskColorSrc) Then
-                              Call CopyMemory(atBitsQSrc(x, y), lciMaskColorSrc, 4)
+                              Call CopyMemory(atBitsQSrc(X, Y), lciMaskColorSrc, 4)
                            End If
                         ElseIf (bHaveUnmaskColorSrc) Then
-                           Call CopyMemory(atBitsQSrc(x, y), lciUnmaskColorSrc, 4)
+                           Call CopyMemory(atBitsQSrc(X, Y), lciUnmaskColorSrc, 4)
                         End If
                         
                      End Select
                   End If
                   
-               Next x
-            Next y
+               Next X
+            Next Y
          End If
       End If
    End If

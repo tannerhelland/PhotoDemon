@@ -100,6 +100,14 @@ Public Sub makeFormPretty(ByRef tForm As Form)
                 eControl.Font.Name = "Tahoma"
             End If
         End If
+        
+        If g_IsVistaOrLater And (TypeOf eControl Is smartOptionButton) Then
+            If g_UseFancyFonts Then
+                eControl.Font.Name = "Segoe UI"
+            Else
+                eControl.Font.Name = "Tahoma"
+            End If
+        End If
                 
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
         ' at design-time.
@@ -232,7 +240,7 @@ End Sub
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Form)
-    If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
+    If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, True
 End Sub
 
 'Perform any drawing routines related to the main form
@@ -286,6 +294,10 @@ Public Sub setHandCursor(ByRef tControl As Control)
     tControl.MouseIcon = LoadPicture("")
     tControl.MousePointer = 0
     SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Hand
+End Sub
+
+Public Sub setHandCursorToHwnd(ByVal dstHwnd As Long)
+    SetClassLong dstHwnd, GCL_HCURSOR, hc_Handle_Hand
 End Sub
 
 'Set a single object to use the arrow cursor

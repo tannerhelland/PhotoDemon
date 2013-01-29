@@ -24,6 +24,26 @@ Begin VB.Form FormEmbossEngrave
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartOptionButton optEmboss 
+      Height          =   345
+      Left            =   6240
+      TabIndex        =   2
+      Top             =   1740
+      Width           =   1200
+      _ExtentX        =   2117
+      _ExtentY        =   609
+      Caption         =   "emboss"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -41,47 +61,6 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   1
       Top             =   5910
       Width           =   1365
-   End
-   Begin VB.OptionButton OptEmboss 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "emboss"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Left            =   7200
-      TabIndex        =   2
-      Top             =   1620
-      Value           =   -1  'True
-      Width           =   1815
-   End
-   Begin VB.OptionButton OptEngrave 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "engrave"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Left            =   9120
-      TabIndex        =   3
-      Top             =   1620
-      Width           =   2175
    End
    Begin VB.PictureBox PicColor 
       Appearance      =   0  'Flat
@@ -101,7 +80,8 @@ Begin VB.Form FormEmbossEngrave
       ScaleHeight     =   465
       ScaleWidth      =   5505
       TabIndex        =   5
-      Top             =   2760
+      TabStop         =   0   'False
+      Top             =   3480
       Width           =   5535
    End
    Begin VB.CheckBox ChkToColor 
@@ -121,7 +101,7 @@ Begin VB.Form FormEmbossEngrave
       Height          =   495
       Left            =   6000
       TabIndex        =   4
-      Top             =   2160
+      Top             =   2880
       Width           =   5655
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -132,6 +112,25 @@ Begin VB.Form FormEmbossEngrave
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin PhotoDemon.smartOptionButton optEngrave 
+      Height          =   345
+      Left            =   6240
+      TabIndex        =   3
+      Top             =   2160
+      Width           =   1230
+      _ExtentX        =   2170
+      _ExtentY        =   609
+      Caption         =   "engrave"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -186,7 +185,7 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Dependent: filter to grey OR to a background color
-    If OptEmboss.Value = True Then
+    If optEmboss.Value = True Then
         If ChkToColor.Value = vbChecked Then Process EmbossToColor, PicColor.backColor Else Process EmbossToColor, RGB(127, 127, 127)
     Else
         If ChkToColor.Value = vbChecked Then Process EngraveToColor, PicColor.backColor Else Process EngraveToColor, RGB(127, 127, 127)
@@ -457,7 +456,7 @@ End Sub
 
 'Render a new preview
 Private Sub UpdateEmbossPreview()
-    If OptEmboss.Value Then
+    If optEmboss.Value Then
         If CBool(ChkToColor.Value) Then FilterEmbossColor PicColor.backColor, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
     Else
         If CBool(ChkToColor.Value) Then FilterEngraveColor PicColor.backColor, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview

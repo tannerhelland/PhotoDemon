@@ -28,7 +28,7 @@ Begin VB.Form FormGrayscale
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   15
+      TabIndex        =   10
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -87,7 +87,7 @@ Begin VB.Form FormGrayscale
       Appearance      =   0  'Flat
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -95,7 +95,7 @@ Begin VB.Form FormGrayscale
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   330
+      Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   2
@@ -107,76 +107,73 @@ Begin VB.Form FormGrayscale
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   375
+      Height          =   855
       Left            =   6120
-      ScaleHeight     =   375
-      ScaleWidth      =   3855
-      TabIndex        =   13
+      ScaleHeight     =   855
+      ScaleWidth      =   4935
+      TabIndex        =   8
       Top             =   3240
-      Width           =   3855
-      Begin VB.OptionButton optChannel 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   "blue"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Index           =   2
-         Left            =   2520
-         TabIndex        =   9
-         Top             =   0
-         Width           =   1095
-      End
-      Begin VB.OptionButton optChannel 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   "red"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
+      Width           =   4935
+      Begin PhotoDemon.smartOptionButton optChannel 
+         Height          =   360
          Index           =   0
-         Left            =   240
-         TabIndex        =   7
+         Left            =   120
+         TabIndex        =   13
          Top             =   0
+         Width           =   705
+         _ExtentX        =   1244
+         _ExtentY        =   635
+         Caption         =   "red"
          Value           =   -1  'True
-         Width           =   855
-      End
-      Begin VB.OptionButton optChannel 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   "green"
-         BeginProperty Font 
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
-            Size            =   9.75
+            Size            =   11.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
+      End
+      Begin PhotoDemon.smartOptionButton optChannel 
+         Height          =   360
          Index           =   1
-         Left            =   1320
-         TabIndex        =   8
+         Left            =   1560
+         TabIndex        =   14
          Top             =   0
-         Width           =   1095
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   635
+         Caption         =   "green"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optChannel 
+         Height          =   360
+         Index           =   2
+         Left            =   3240
+         TabIndex        =   15
+         Top             =   0
+         Width           =   780
+         _ExtentX        =   1376
+         _ExtentY        =   635
+         Caption         =   "blue"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
    End
    Begin VB.PictureBox picDecompose 
@@ -184,55 +181,53 @@ Begin VB.Form FormGrayscale
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   375
+      Height          =   735
       Left            =   6120
-      ScaleHeight     =   375
-      ScaleWidth      =   3975
-      TabIndex        =   12
+      ScaleHeight     =   735
+      ScaleWidth      =   4815
+      TabIndex        =   7
       Top             =   3240
-      Width           =   3975
-      Begin VB.OptionButton optDecompose 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   "maximum"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
-         Index           =   1
-         Left            =   1920
-         TabIndex        =   6
-         Top             =   0
-         Width           =   1455
-      End
-      Begin VB.OptionButton optDecompose 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   "minimum"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   255
+      Width           =   4815
+      Begin PhotoDemon.smartOptionButton optDecompose 
+         Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   11
          Top             =   0
+         Width           =   1275
+         _ExtentX        =   2249
+         _ExtentY        =   635
+         Caption         =   "minimum"
          Value           =   -1  'True
-         Width           =   1455
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optDecompose 
+         Height          =   360
+         Index           =   1
+         Left            =   2160
+         TabIndex        =   12
+         Top             =   0
+         Width           =   1365
+         _ExtentX        =   2408
+         _ExtentY        =   635
+         Caption         =   "maximum"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
    End
    Begin VB.Label lblAdditional 
@@ -251,7 +246,7 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   6
       Top             =   2760
       Width           =   1980
    End
@@ -271,14 +266,14 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   5
       Top             =   1605
       Width           =   1950
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   14
+      TabIndex        =   9
       Top             =   5760
       Width           =   13455
    End

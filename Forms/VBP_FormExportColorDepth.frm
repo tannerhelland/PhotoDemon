@@ -6,7 +6,7 @@ Begin VB.Form dialog_ExportColorDepth
    ClientHeight    =   4500
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   6510
+   ClientWidth     =   6435
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,9 +21,30 @@ Begin VB.Form dialog_ExportColorDepth
    MinButton       =   0   'False
    ScaleHeight     =   300
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   434
+   ScaleWidth      =   429
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartOptionButton optColorDepth 
+      CausesValidation=   0   'False
+      Height          =   345
+      Index           =   0
+      Left            =   600
+      TabIndex        =   4
+      Top             =   960
+      Width           =   2670
+      _ExtentX        =   4710
+      _ExtentY        =   609
+      Caption         =   "1 bpp (monochrome)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,96 +63,18 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   3870
       Width           =   1365
    End
-   Begin VB.OptionButton optColorDepth 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " 32 bpp (16 million colors + full transparency)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Index           =   4
-      Left            =   600
-      TabIndex        =   7
-      Top             =   2760
-      Value           =   -1  'True
-      Width           =   5775
-   End
-   Begin VB.OptionButton optColorDepth 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " 24 bpp (16 million colors)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Index           =   3
-      Left            =   600
-      TabIndex        =   6
-      Top             =   2280
-      Width           =   5775
-   End
-   Begin VB.OptionButton optColorDepth 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " 8 bpp (256 colors or full grayscale)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Index           =   2
-      Left            =   600
-      TabIndex        =   5
-      Top             =   1800
-      Width           =   5775
-   End
-   Begin VB.OptionButton optColorDepth 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " 4 bpp (16 shades of gray)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.smartOptionButton optColorDepth 
+      CausesValidation=   0   'False
       Height          =   345
       Index           =   1
       Left            =   600
-      TabIndex        =   4
-      Top             =   1320
-      Width           =   5775
-   End
-   Begin VB.OptionButton optColorDepth 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " 1 bpp (monochrome)"
-      BeginProperty Font 
+      TabIndex        =   5
+      Top             =   1440
+      Width           =   3150
+      _ExtentX        =   5556
+      _ExtentY        =   609
+      Caption         =   "4 bpp (16 shades of gray)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   12
          Charset         =   0
@@ -140,18 +83,74 @@ Begin VB.Form dialog_ExportColorDepth
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00404040&
+   End
+   Begin PhotoDemon.smartOptionButton optColorDepth 
+      CausesValidation=   0   'False
       Height          =   345
-      Index           =   0
+      Index           =   2
       Left            =   600
-      TabIndex        =   3
-      Top             =   840
-      Width           =   5775
+      TabIndex        =   6
+      Top             =   1920
+      Width           =   4125
+      _ExtentX        =   7276
+      _ExtentY        =   609
+      Caption         =   "8 bpp (256 colors or full grayscale)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optColorDepth 
+      CausesValidation=   0   'False
+      Height          =   345
+      Index           =   3
+      Left            =   600
+      TabIndex        =   7
+      Top             =   2400
+      Width           =   3165
+      _ExtentX        =   5583
+      _ExtentY        =   609
+      Caption         =   "24 bpp (16 million colors)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optColorDepth 
+      CausesValidation=   0   'False
+      Height          =   345
+      Index           =   4
+      Left            =   600
+      TabIndex        =   8
+      Top             =   2880
+      Width           =   5250
+      _ExtentX        =   9260
+      _ExtentY        =   609
+      Caption         =   "32 bpp (16 million colors + full transparency)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -600
-      TabIndex        =   8
+      TabIndex        =   3
       Top             =   3720
       Width           =   7095
    End
