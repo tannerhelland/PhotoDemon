@@ -3,10 +3,10 @@ Begin VB.Form FormPrint
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Print Image"
-   ClientHeight    =   5220
+   ClientHeight    =   6285
    ClientLeft      =   45
    ClientTop       =   270
-   ClientWidth     =   7575
+   ClientWidth     =   8745
    ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -20,27 +20,27 @@ Begin VB.Form FormPrint
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   348
+   ScaleHeight     =   419
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   505
+   ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&Print"
       Default         =   -1  'True
       Height          =   495
-      Left            =   4560
+      Left            =   5760
       TabIndex        =   0
-      Top             =   4590
+      Top             =   5670
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   6030
+      Left            =   7230
       TabIndex        =   1
-      Top             =   4590
+      Top             =   5670
       Width           =   1365
    End
    Begin VB.PictureBox picOut 
@@ -54,25 +54,43 @@ Begin VB.Form FormPrint
       ScaleHeight     =   41
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   57
-      TabIndex        =   23
+      TabIndex        =   22
       Top             =   2760
       Visible         =   0   'False
       Width           =   855
    End
    Begin VB.ComboBox cmbDPI 
-      Height          =   315
-      Left            =   4320
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   360
+      Left            =   4080
       TabIndex        =   9
-      Top             =   3675
-      Width           =   1095
+      Top             =   4680
+      Width           =   1335
    End
    Begin VB.CommandButton cmdPaperSize 
       Caption         =   "Change Paper Size..."
-      Height          =   375
-      Left            =   3960
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   495
+      Left            =   240
       TabIndex        =   3
-      Top             =   960
-      Width           =   3375
+      Top             =   4560
+      Width           =   3300
    End
    Begin VB.PictureBox picThumbFinal 
       Appearance      =   0  'Flat
@@ -80,12 +98,12 @@ Begin VB.Form FormPrint
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
       Height          =   255
-      Left            =   7680
+      Left            =   960
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   18
-      Top             =   960
+      TabIndex        =   17
+      Top             =   4920
       Visible         =   0   'False
       Width           =   255
    End
@@ -95,12 +113,12 @@ Begin VB.Form FormPrint
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
       Height          =   255
-      Left            =   7680
+      Left            =   600
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   17
-      Top             =   600
+      TabIndex        =   16
+      Top             =   4920
       Visible         =   0   'False
       Width           =   255
    End
@@ -110,80 +128,134 @@ Begin VB.Form FormPrint
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
       Height          =   255
-      Left            =   7680
+      Left            =   240
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   16
-      Top             =   240
+      TabIndex        =   15
+      Top             =   4920
       Visible         =   0   'False
       Width           =   255
    End
    Begin VB.CheckBox chkFit 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
-      Caption         =   "Fit to page"
-      ForeColor       =   &H00800000&
-      Height          =   240
-      Left            =   5280
+      Caption         =   " fit to page"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   360
+      Left            =   6360
       TabIndex        =   8
-      Top             =   3120
+      Top             =   3600
       Value           =   1  'Checked
-      Width           =   1170
+      Width           =   2250
    End
    Begin VB.CheckBox chkCenter 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
-      Caption         =   "Center on page"
-      ForeColor       =   &H00800000&
-      Height          =   240
-      Left            =   5280
+      Caption         =   " center on page"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   360
+      Left            =   4080
       TabIndex        =   7
-      Top             =   2760
+      Top             =   3600
       Value           =   1  'Checked
-      Width           =   2055
+      Width           =   2175
    End
    Begin VB.ComboBox cbOrientation 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       ItemData        =   "VBP_FormPrint.frx":0000
-      Left            =   4965
+      Left            =   4080
       List            =   "VBP_FormPrint.frx":000A
       Style           =   2  'Dropdown List
       TabIndex        =   6
-      Top             =   2160
+      Top             =   2550
       Width           =   2370
    End
    Begin VB.ComboBox cbQuality 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
+      Height          =   360
       ItemData        =   "VBP_FormPrint.frx":0023
-      Left            =   4575
+      Left            =   4080
       List            =   "VBP_FormPrint.frx":0033
       Style           =   2  'Dropdown List
       TabIndex        =   4
       Top             =   1575
-      Width           =   960
+      Width           =   2370
    End
    Begin VB.ComboBox cbPrinters 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   315
-      Left            =   3945
+      Height          =   360
+      Left            =   4080
       Style           =   2  'Dropdown List
       TabIndex        =   2
-      Top             =   360
-      Width           =   3375
+      Top             =   600
+      Width           =   3855
    End
    Begin VB.TextBox txtCopies 
       Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   285
+      Height          =   360
       Left            =   6840
       TabIndex        =   5
       TabStop         =   0   'False
       Text            =   "1"
-      Top             =   1590
-      Width           =   510
+      Top             =   1575
+      Width           =   1335
    End
    Begin VB.PictureBox iSrc 
       Appearance      =   0  'Flat
@@ -198,7 +270,7 @@ Begin VB.Form FormPrint
       ScaleWidth      =   218
       TabIndex        =   10
       TabStop         =   0   'False
-      Top             =   240
+      Top             =   360
       Width           =   3300
       Begin VB.Label lblWarning 
          BackStyle       =   0  'Transparent
@@ -206,107 +278,177 @@ Begin VB.Form FormPrint
          ForeColor       =   &H00C00000&
          Height          =   1935
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   720
          Visible         =   0   'False
          Width           =   3015
       End
    End
+   Begin VB.Label lblQuality 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "quality:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   3960
+      TabIndex        =   24
+      Top             =   1200
+      Width           =   795
+   End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   0
-      TabIndex        =   24
-      Top             =   4440
-      Width           =   7575
-   End
-   Begin VB.Line Line1 
-      BorderColor     =   &H80000002&
-      X1              =   248
-      X2              =   248
-      Y1              =   8
-      Y2              =   280
+      Left            =   -120
+      TabIndex        =   23
+      Top             =   5520
+      Width           =   8895
    End
    Begin VB.Label lblDPIWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   "Note: DPI is read-only when ""Fit to Page"" is selected."
+      Caption         =   "note: DPI is read-only when ""fit to page"" is selected."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00800000&
-      Height          =   615
-      Left            =   5520
-      TabIndex        =   22
-      Top             =   3510
-      Width           =   1935
+      Height          =   495
+      Left            =   5640
+      TabIndex        =   21
+      Top             =   4620
+      Width           =   3015
    End
    Begin VB.Label lblDPI 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "DPI:"
-      ForeColor       =   &H00400000&
-      Height          =   255
+      Caption         =   "dpi (print resolution):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   3960
-      TabIndex        =   21
-      Top             =   3720
-      Width           =   375
+      TabIndex        =   20
+      Top             =   4200
+      Width           =   2295
    End
    Begin VB.Label lblPaperSize 
       Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
-      Caption         =   "Paper Size: "
-      ForeColor       =   &H00800000&
-      Height          =   255
+      Caption         =   "paper size: "
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   375
       Left            =   240
-      TabIndex        =   20
-      Top             =   3720
+      TabIndex        =   19
+      Top             =   3840
       Width           =   3300
    End
    Begin VB.Label lblLayoutOptions 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Layout Options:"
-      ForeColor       =   &H00400000&
-      Height          =   195
+      Caption         =   "layout options:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   3960
-      TabIndex        =   15
-      Top             =   2760
-      Width           =   1155
+      TabIndex        =   14
+      Top             =   3120
+      Width           =   1590
    End
    Begin VB.Label lblOrientation 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Orientation"
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   3945
-      TabIndex        =   14
-      Top             =   2205
-      Width           =   915
-   End
-   Begin VB.Label lblQuality 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Quality"
-      ForeColor       =   &H00400000&
+      Caption         =   "orientation:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3945
       TabIndex        =   13
-      Top             =   1620
-      Width           =   705
+      Top             =   2205
+      Width           =   1230
    End
-   Begin VB.Label lblSelect 
+   Begin VB.Label lblPrinter 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Printer:"
-      ForeColor       =   &H00400000&
-      Height          =   210
+      Caption         =   "printer:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   3960
       TabIndex        =   12
-      Top             =   120
-      Width           =   510
+      Top             =   240
+      Width           =   795
    End
    Begin VB.Label lblCopies 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "# of Copies:"
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   5880
+      Caption         =   "# of copies:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6600
       TabIndex        =   11
-      Top             =   1620
-      Width           =   945
+      Top             =   1200
+      Width           =   1290
    End
 End
 Attribute VB_Name = "FormPrint"
@@ -515,6 +657,11 @@ Private Sub Form_Load()
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
+
+    If g_UseFancyFonts Then
+        txtCopies.Height = txtCopies.Height + 1
+        cmdPaperSize.Top = cmdPaperSize.Top + 1
+    End If
 
 End Sub
 
@@ -819,7 +966,7 @@ Private Sub UpdatePaperSize()
     If Right(txtWidth, 1) = "." Then txtWidth = Left$(txtWidth, Len(txtWidth) - 1)
     If Right(txtHeight, 1) = "." Then txtHeight = Left$(txtHeight, Len(txtHeight) - 1)
     
-    lblPaperSize = "Paper size: " & txtWidth & """ x  " & txtHeight & """"
+    lblPaperSize = "paper size: " & txtWidth & """ x  " & txtHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
     Dim aspectRatio As Double
@@ -863,3 +1010,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+Private Sub txtCopies_GotFocus()
+    AutoSelectText txtCopies
+End Sub
