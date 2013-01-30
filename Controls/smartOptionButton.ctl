@@ -164,6 +164,7 @@ End Property
 
 'The control's value is simply a reflection of the embedded option button
 Public Property Get Value() As Boolean
+Attribute Value.VB_UserMemId = 0
     Value = optButton.Value
 End Property
 
@@ -206,11 +207,11 @@ Private Sub chkFirst_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
-Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
@@ -271,7 +272,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
