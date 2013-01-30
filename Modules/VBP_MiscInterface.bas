@@ -93,22 +93,14 @@ Public Sub makeFormPretty(ByRef tForm As Form)
             End If
         End If
         
-        If g_IsVistaOrLater And (TypeOf eControl Is jcbutton) Then
+        If g_IsVistaOrLater And ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox)) Then
             If g_UseFancyFonts Then
                 eControl.Font.Name = "Segoe UI"
             Else
                 eControl.Font.Name = "Tahoma"
             End If
         End If
-        
-        If g_IsVistaOrLater And (TypeOf eControl Is smartOptionButton) Then
-            If g_UseFancyFonts Then
-                eControl.Font.Name = "Segoe UI"
-            Else
-                eControl.Font.Name = "Tahoma"
-            End If
-        End If
-                
+                        
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
         ' at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False

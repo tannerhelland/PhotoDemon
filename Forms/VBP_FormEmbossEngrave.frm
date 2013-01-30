@@ -24,6 +24,25 @@ Begin VB.Form FormEmbossEngrave
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkToColor 
+      Height          =   480
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   2880
+      Width           =   5580
+      _ExtentX        =   9843
+      _ExtentY        =   847
+      Caption         =   "use custom background color (click colored box to change)..."
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartOptionButton optEmboss 
       Height          =   345
       Left            =   6240
@@ -31,7 +50,7 @@ Begin VB.Form FormEmbossEngrave
       Top             =   1740
       Width           =   1200
       _ExtentX        =   2117
-      _ExtentY        =   609
+      _ExtentY        =   661
       Caption         =   "emboss"
       Value           =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -79,35 +98,15 @@ Begin VB.Form FormEmbossEngrave
       Left            =   6000
       ScaleHeight     =   465
       ScaleWidth      =   5505
-      TabIndex        =   5
+      TabIndex        =   4
       TabStop         =   0   'False
       Top             =   3480
       Width           =   5535
    End
-   Begin VB.CheckBox ChkToColor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "use custom background color (click colored box to change)..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   2880
-      Width           =   5655
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -120,7 +119,7 @@ Begin VB.Form FormEmbossEngrave
       Top             =   2160
       Width           =   1230
       _ExtentX        =   2170
-      _ExtentY        =   609
+      _ExtentY        =   661
       Caption         =   "engrave"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -144,7 +143,7 @@ Begin VB.Form FormEmbossEngrave
       EndProperty
       Height          =   855
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   5760
       Width           =   11895
    End
@@ -186,9 +185,9 @@ Private Sub cmdOK_Click()
     
     'Dependent: filter to grey OR to a background color
     If optEmboss.Value = True Then
-        If ChkToColor.Value = vbChecked Then Process EmbossToColor, PicColor.backColor Else Process EmbossToColor, RGB(127, 127, 127)
+        If chkToColor.Value = vbChecked Then Process EmbossToColor, PicColor.backColor Else Process EmbossToColor, RGB(127, 127, 127)
     Else
-        If ChkToColor.Value = vbChecked Then Process EngraveToColor, PicColor.backColor Else Process EngraveToColor, RGB(127, 127, 127)
+        If chkToColor.Value = vbChecked Then Process EngraveToColor, PicColor.backColor Else Process EngraveToColor, RGB(127, 127, 127)
     End If
     
     Unload Me
@@ -232,7 +231,7 @@ Private Sub PicColor_Click()
     
     If CD1.VBChooseColor(retColor, True, True, False, Me.hWnd) Then
         PicColor.backColor = retColor
-        ChkToColor.Value = vbChecked
+        chkToColor.Value = vbChecked
         UpdateEmbossPreview
     End If
     
@@ -263,7 +262,7 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right - 1
@@ -289,15 +288,15 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     tB = ExtractB(cColor)
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+        QuickValRight = (X + 1) * qvDepth
+    For Y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + tR)
-        g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
-        b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
+        r = Abs(CLng(srcImageData(QuickVal + 2, Y)) - CLng(srcImageData(QuickValRight + 2, Y)) + tR)
+        g = Abs(CLng(srcImageData(QuickVal + 1, Y)) - CLng(srcImageData(QuickValRight + 1, Y)) + tG)
+        b = Abs(CLng(srcImageData(QuickVal, Y)) - CLng(srcImageData(QuickValRight, Y)) + tB)
         
         If r > 255 Then
             r = 255
@@ -317,22 +316,22 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(QuickVal + 2, Y) = r
+        dstImageData(QuickVal + 1, Y) = g
+        dstImageData(QuickVal, Y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
-        If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = r
-            dstImageData(QuickValRight + 1, y) = g
-            dstImageData(QuickValRight, y) = b
+        If X = finalX Then
+            dstImageData(QuickValRight + 2, Y) = r
+            dstImageData(QuickValRight + 1, Y) = g
+            dstImageData(QuickValRight, Y) = b
         End If
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (X And progBarCheck) = 0 Then SetProgBarVal X
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -371,7 +370,7 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right - 1
@@ -397,15 +396,15 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     tB = ExtractB(cColor)
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+        QuickValRight = (X + 1) * qvDepth
+    For Y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + tR)
-        g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
-        b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
+        r = Abs(CLng(srcImageData(QuickValRight + 2, Y)) - CLng(srcImageData(QuickVal + 2, Y)) + tR)
+        g = Abs(CLng(srcImageData(QuickValRight + 1, Y)) - CLng(srcImageData(QuickVal + 1, Y)) + tG)
+        b = Abs(CLng(srcImageData(QuickValRight, Y)) - CLng(srcImageData(QuickVal, Y)) + tB)
         
         If r > 255 Then
             r = 255
@@ -425,22 +424,22 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(QuickVal + 2, Y) = r
+        dstImageData(QuickVal + 1, Y) = g
+        dstImageData(QuickVal, Y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
-        If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = r
-            dstImageData(QuickValRight + 1, y) = g
-            dstImageData(QuickValRight, y) = b
+        If X = finalX Then
+            dstImageData(QuickValRight + 2, Y) = r
+            dstImageData(QuickValRight + 1, Y) = g
+            dstImageData(QuickValRight, Y) = b
         End If
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (X And progBarCheck) = 0 Then SetProgBarVal X
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -457,8 +456,8 @@ End Sub
 'Render a new preview
 Private Sub UpdateEmbossPreview()
     If optEmboss.Value Then
-        If CBool(ChkToColor.Value) Then FilterEmbossColor PicColor.backColor, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
+        If CBool(chkToColor.Value) Then FilterEmbossColor PicColor.backColor, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
     Else
-        If CBool(ChkToColor.Value) Then FilterEngraveColor PicColor.backColor, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview
+        If CBool(chkToColor.Value) Then FilterEngraveColor PicColor.backColor, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview
     End If
 End Sub

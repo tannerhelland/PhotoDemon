@@ -84,11 +84,15 @@ Attribute VB_Exposed = False
 'Image Form (Child MDI form)
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 09/September/12
-'Last update: manually unload this image's main layer when the attached form is unloaded (to conserve memory)
+'Last updated: 29/January/13
+'Last update: fixed a long-standing issue where maximized child forms, when closed, don't correctly trigger
+'              the _Activate event of the form that receives focus.  It's a known problem on Microsoft's
+'              end, see http://support.microsoft.com/kb/190634 for details.
 '
 'Every time the user loads an image, one of these forms is spawned.  This form also interfaces with several
-' specialized program components in the MDIWindow module.  Look there for more information.
+' specialized program components in the MDIWindow module.
+'
+'As I start including more and more paint tools, this form is going to become a bit more complex.  Stay tuned.
 '
 '***************************************************************************
 

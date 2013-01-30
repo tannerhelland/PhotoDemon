@@ -5,7 +5,7 @@ Begin VB.Form dialog_IDEWarning
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Visual Basic IDE Detected"
-   ClientHeight    =   6600
+   ClientHeight    =   6150
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9045
@@ -21,15 +21,21 @@ Begin VB.Form dialog_IDEWarning
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   440
+   ScaleHeight     =   410
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CheckBox chkRepeat 
-      Appearance      =   0  'Flat
-      Caption         =   "  Do not display this warning again"
-      BeginProperty Font 
+   Begin PhotoDemon.smartCheckBox chkRepeat 
+      Height          =   480
+      Left            =   3120
+      TabIndex        =   5
+      Top             =   5520
+      Width           =   3210
+      _ExtentX        =   5662
+      _ExtentY        =   847
+      Caption         =   "Do not display this warning again"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -38,13 +44,6 @@ Begin VB.Form dialog_IDEWarning
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   630
-      Left            =   2790
-      TabIndex        =   2
-      Top             =   5850
-      Value           =   1  'Checked
-      Width           =   3735
    End
    Begin PhotoDemon.jcbutton cmdOK 
       Default         =   -1  'True
@@ -90,7 +89,7 @@ Begin VB.Form dialog_IDEWarning
       Height          =   885
       Index           =   3
       Left            =   360
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3240
       Width           =   8175
       WordWrap        =   -1  'True
@@ -111,7 +110,7 @@ Begin VB.Form dialog_IDEWarning
       Height          =   765
       Index           =   2
       Left            =   360
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2400
       Width           =   8385
       WordWrap        =   -1  'True
@@ -132,17 +131,10 @@ Begin VB.Form dialog_IDEWarning
       Height          =   1245
       Index           =   1
       Left            =   360
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   1080
       Width           =   8385
       WordWrap        =   -1  'True
-   End
-   Begin VB.Line lineSeparator 
-      BorderColor     =   &H8000000D&
-      X1              =   0
-      X2              =   600
-      Y1              =   376
-      Y2              =   376
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
@@ -164,13 +156,6 @@ Begin VB.Form dialog_IDEWarning
       Top             =   390
       Width           =   7695
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label Label1 
-      Height          =   975
-      Left            =   0
-      TabIndex        =   6
-      Top             =   5640
-      Width           =   9060
    End
 End
 Attribute VB_Name = "dialog_IDEWarning"

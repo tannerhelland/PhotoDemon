@@ -24,6 +24,26 @@ Begin VB.Form dialog_ExportJPEG
    ScaleWidth      =   496
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkOptimize 
+      Height          =   540
+      Left            =   600
+      TabIndex        =   10
+      ToolTipText     =   $"VBP_FormExportJPEG.frx":0000
+      Top             =   1920
+      Width           =   3105
+      _ExtentX        =   5477
+      _ExtentY        =   953
+      Caption         =   "optimize compression tables"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -46,30 +66,9 @@ Begin VB.Form dialog_ExportJPEG
       Caption         =   "<<  Hide advanced settings"
       Height          =   495
       Left            =   240
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   5070
       Width           =   2685
-   End
-   Begin VB.CheckBox chkThumbnail 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " embed thumbnail image"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   375
-      Left            =   600
-      TabIndex        =   11
-      ToolTipText     =   $"VBP_FormExportJPEG.frx":0000
-      Top             =   2520
-      Width           =   6735
    End
    Begin VB.ComboBox cmbSubsample 
       BeginProperty Font 
@@ -85,74 +84,10 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   360
       Left            =   960
       Style           =   2  'Dropdown List
-      TabIndex        =   10
-      ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   3960
-      Width           =   5655
-   End
-   Begin VB.CheckBox chkSubsample 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " use specific subsampling:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   375
-      Left            =   600
-      TabIndex        =   9
-      ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   3480
-      Width           =   6735
-   End
-   Begin VB.CheckBox chkProgressive 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " use progressive encoding"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   375
-      Left            =   600
-      TabIndex        =   8
-      ToolTipText     =   $"VBP_FormExportJPEG.frx":008E
-      Top             =   3000
-      Width           =   6735
-   End
-   Begin VB.CheckBox chkOptimize 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " optimize (takes slightly longer, but results in a smaller file)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   375
-      Left            =   600
       TabIndex        =   7
-      ToolTipText     =   $"VBP_FormExportJPEG.frx":015E
-      Top             =   2040
-      Value           =   1  'Checked
-      Width           =   6735
+      ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+      Top             =   3930
+      Width           =   5415
    End
    Begin VB.HScrollBar hsQuality 
       Height          =   330
@@ -204,10 +139,70 @@ Begin VB.Form dialog_ExportJPEG
       Top             =   645
       Width           =   735
    End
+   Begin PhotoDemon.smartCheckBox chkThumbnail 
+      Height          =   540
+      Left            =   600
+      TabIndex        =   11
+      ToolTipText     =   $"VBP_FormExportJPEG.frx":00B9
+      Top             =   2400
+      Width           =   2715
+      _ExtentX        =   4789
+      _ExtentY        =   953
+      Caption         =   "embed thumbnail image"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkProgressive 
+      Height          =   540
+      Left            =   600
+      TabIndex        =   12
+      ToolTipText     =   $"VBP_FormExportJPEG.frx":0147
+      Top             =   2880
+      Width           =   2835
+      _ExtentX        =   5001
+      _ExtentY        =   953
+      Caption         =   "use progressive encoding"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkSubsample 
+      Height          =   540
+      Left            =   600
+      TabIndex        =   13
+      ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+      Top             =   3360
+      Width           =   2820
+      _ExtentX        =   4974
+      _ExtentY        =   953
+      Caption         =   "use specific subsampling:"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   4920
       Width           =   7455
    End
