@@ -1040,7 +1040,8 @@ Public Sub LoadMenuShortcuts()
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop_Selection"
         
         'Color Menu
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
+        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color_Balance"
         
         'Window menu
         .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
@@ -1097,7 +1098,8 @@ Public Sub DrawMenuShortcuts()
     FormMain.MnuCropSelection.Caption = FormMain.MnuCropSelection.Caption & vbTab & "Ctrl+Shift+X"
     
     'Color menu
-    FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+C"
+    FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+B"
+    FormMain.MnuColor(1).Caption = FormMain.MnuColor(1).Caption & vbTab & "Ctrl+Shift+C"
     
     'Tools menu
     FormMain.mnuTool(4).Caption = FormMain.mnuTool(4).Caption & vbTab & "Alt+Enter"     'Options (Preferences)

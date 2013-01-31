@@ -213,47 +213,48 @@ Public Sub ApplyAllMenuIcons()
     
     'Color Menu
     AddMenuIcon "BRIGHT", 4, 0         'Brightness/Contrast
-    AddMenuIcon "GAMMA", 4, 1          'Gamma Correction
-    AddMenuIcon "HSL", 4, 2            'HSL adjustment
-    AddMenuIcon "LEVELS", 4, 3         'Levels
-    AddMenuIcon "TEMPERATURE", 4, 4    'Temperature
-    AddMenuIcon "WHITEBAL", 4, 5       'White Balance
-    AddMenuIcon "HISTOGRAM", 4, 7      'Histogram
+    AddMenuIcon "COLORBALANCE", 4, 1   'Color balance
+    AddMenuIcon "GAMMA", 4, 2          'Gamma Correction
+    AddMenuIcon "HSL", 4, 3            'HSL adjustment
+    AddMenuIcon "LEVELS", 4, 4         'Levels
+    AddMenuIcon "TEMPERATURE", 4, 5    'Temperature
+    AddMenuIcon "WHITEBAL", 4, 6       'White Balance
+    AddMenuIcon "HISTOGRAM", 4, 8      'Histogram
         '--> Histogram sub-menu
-        AddMenuIcon "HISTOGRAM", 4, 7, 0  'Display Histogram
-        AddMenuIcon "EQUALIZE", 4, 7, 2   'Equalize
-        AddMenuIcon "STRETCH", 4, 7, 3    'Stretch
-    AddMenuIcon "COLORSHIFTR", 4, 9       'Color Shift
+        AddMenuIcon "HISTOGRAM", 4, 8, 0  'Display Histogram
+        AddMenuIcon "EQUALIZE", 4, 8, 2   'Equalize
+        AddMenuIcon "STRETCH", 4, 8, 3    'Stretch
+    AddMenuIcon "COLORSHIFTR", 4, 10   'Color Shift
         '--> Color-Shift sub-menu
-        AddMenuIcon "COLORSHIFTR", 4, 9, 0  'Shift Right
-        AddMenuIcon "COLORSHIFTL", 4, 9, 1  'Shift Left
-    AddMenuIcon "RECHANNEL", 4, 10     'Rechannel
-    AddMenuIcon "BLACKWHITE", 4, 12     'Black and White
-    AddMenuIcon "COLORIZE", 4, 13       'Colorize
-    AddMenuIcon "ENHANCE", 4, 14        'Enhance
+        AddMenuIcon "COLORSHIFTR", 4, 10, 0  'Shift Right
+        AddMenuIcon "COLORSHIFTL", 4, 10, 1  'Shift Left
+    AddMenuIcon "RECHANNEL", 4, 11     'Rechannel
+    AddMenuIcon "BLACKWHITE", 4, 13    'Black and White
+    AddMenuIcon "COLORIZE", 4, 14      'Colorize
+    AddMenuIcon "ENHANCE", 4, 15       'Enhance
         '--> Enhance sub-menu
-        AddMenuIcon "ENCONTRAST", 4, 14, 0    'Contrast
-        AddMenuIcon "ENHIGHLIGHT", 4, 14, 1   'Highlights
-        AddMenuIcon "ENMIDTONE", 4, 14, 2     'Midtones
-        AddMenuIcon "ENSHADOW", 4, 14, 3      'Shadows
-    AddMenuIcon "FADE", 4, 15           'Fade
+        AddMenuIcon "ENCONTRAST", 4, 15, 0    'Contrast
+        AddMenuIcon "ENHIGHLIGHT", 4, 15, 1   'Highlights
+        AddMenuIcon "ENMIDTONE", 4, 15, 2     'Midtones
+        AddMenuIcon "ENSHADOW", 4, 15, 3      'Shadows
+    AddMenuIcon "FADE", 4, 16           'Fade
         '--> Fade sub-menu
-        AddMenuIcon "FADELOW", 4, 15, 0       'Low Fade
-        AddMenuIcon "FADE", 4, 15, 1          'Medium Fade
-        AddMenuIcon "FADEHIGH", 4, 15, 2      'High Fade
-        AddMenuIcon "CUSTOMFADE", 4, 15, 3    'Custom Fade
-        AddMenuIcon "UNFADE", 4, 15, 5        'Unfade
-    AddMenuIcon "GRAYSCALE", 4, 16            'Grayscale
-    AddMenuIcon "INVERT", 4, 17         'Invert
+        AddMenuIcon "FADELOW", 4, 16, 0       'Low Fade
+        AddMenuIcon "FADE", 4, 16, 1          'Medium Fade
+        AddMenuIcon "FADEHIGH", 4, 16, 2      'High Fade
+        AddMenuIcon "CUSTOMFADE", 4, 16, 3    'Custom Fade
+        AddMenuIcon "UNFADE", 4, 16, 5        'Unfade
+    AddMenuIcon "GRAYSCALE", 4, 17            'Grayscale
+    AddMenuIcon "INVERT", 4, 18         'Invert
         '--> Invert sub-menu
-        AddMenuIcon "INVCMYK", 4, 17, 0       'Invert CMYK
-        AddMenuIcon "INVHUE", 4, 17, 1        'Invert Hue
-        AddMenuIcon "INVRGB", 4, 17, 2        'Invert RGB
-        AddMenuIcon "INVCOMPOUND", 4, 17, 4   'Compound Invert
-    AddMenuIcon "POSTERIZE", 4, 18            'Posterize
-    AddMenuIcon "SEPIA", 4, 19          'Sepia
-    AddMenuIcon "COUNTCOLORS", 4, 21    'Count Colors
-    AddMenuIcon "REDUCECOLORS", 4, 22   'Reduce Colors
+        AddMenuIcon "INVCMYK", 4, 18, 0       'Invert CMYK
+        AddMenuIcon "INVHUE", 4, 18, 1        'Invert Hue
+        AddMenuIcon "INVRGB", 4, 18, 2        'Invert RGB
+        AddMenuIcon "INVCOMPOUND", 4, 18, 4   'Compound Invert
+    AddMenuIcon "POSTERIZE", 4, 19            'Posterize
+    AddMenuIcon "SEPIA", 4, 20          'Sepia
+    AddMenuIcon "COUNTCOLORS", 4, 22    'Count Colors
+    AddMenuIcon "REDUCECOLORS", 4, 23   'Reduce Colors
     
     'Filters Menu
     AddMenuIcon "FADELAST", 5, 0        'Fade Last

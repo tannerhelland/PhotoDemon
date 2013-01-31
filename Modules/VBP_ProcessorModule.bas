@@ -58,16 +58,7 @@ Option Explicit
     'Note: 103 is empty (formerly EqualizeLuminance, which is now handled as part of Equalize)
     
     'Black/White conversion; numbers 200-299
-    Public Const BWImpressionist As Long = 200
-    Public Const BWNearestColor As Long = 201
-    Public Const BWComponent As Long = 202
-    Public Const BWOrderedDither As Long = 203
-    Public Const BWDiffusionDither As Long = 204
-    Public Const Threshold As Long = 205
-    Public Const FilmNoir As Long = 206
-    Public Const BWEnhancedDither As Long = 207
-    Public Const BWFloydSteinberg As Long = 208
-    Public Const BWMaster As Long = 210 'Added 9/2012 - this is a single BW conversion routine to rule them all
+    Public Const BWMaster As Long = 200 'Added 9/2012 - this is a single BW conversion routine to rule them all
     
     'Grayscale conversion; numbers 300-399
     Public Const Desaturate As Long = 300
@@ -203,6 +194,7 @@ Option Explicit
     Public Const ConvertPolar As Long = 720
     
     'Other filters; numbers 800-899
+    Public Const FilmNoir As Long = 801
     '-Compound invert
     '800-802 used to be specific CompoundInvert values; this is superceded by passing the values to CompoundInvert, which has been moved with the other Inverts
     '-Fade
@@ -655,7 +647,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             If LoadForm Then
                 FormColorBalance.Show vbModal, FormMain
             Else
-                
+                FormColorBalance.ApplyColorBalance CLng(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
             End If
     
     'Coordinate filters/transformations
@@ -845,6 +837,8 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Else
                 FormFilmGrain.AddFilmGrain CLng(pOPCODE), CLng(pOPCODE2)
             End If
+        Case FilmNoir
+            MenuFilmNoir
         
     End Select
     
@@ -1143,11 +1137,11 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
         Case ReduceColors
             GetNameOfProcess = "Reduce Colors"
         Case AdjustTemperature
-            GetNameOfProcess = "Adjust Temperature"
+            GetNameOfProcess = "Color Temperature"
         Case AdjustHSL
-            GetNameOfProcess = "Adjust Hue/Saturation/Lightness"
+            GetNameOfProcess = "Hue/Saturation/Lightness"
         Case AdjustColorBalance
-            GetNameOfProcess = "Adjust Color Balance"
+            GetNameOfProcess = "Color Balance"
             
         'Coordinate filters/transformations; numbers 700-799
         Case ImageSize
