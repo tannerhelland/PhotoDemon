@@ -463,7 +463,7 @@ Public Sub UpdateMDIStatus()
             Next i
         
             'Redim the pdImages array
-            Erase pdImages
+            'Erase pdImages
         
             'Reset all window tracking variables
             NumOfImagesLoaded = 0
