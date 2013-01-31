@@ -298,8 +298,8 @@ Private Sub cmdOK_Click()
     
 End Sub
 
-'Convolve an image using a gaussian kernel (separable implementation!)
-'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
+'Convolve an image using a selective gaussian kernel (separable implementation!)
+'Input: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
 Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Analyzing image in preparation for smart blur..."

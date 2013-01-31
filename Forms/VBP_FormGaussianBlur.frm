@@ -78,8 +78,8 @@ Begin VB.Form FormGaussianBlur
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -258,9 +258,7 @@ End Sub
 
 Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then
-        hsRadius.Value = Val(txtRadius)
-    End If
+    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
 End Sub
 
 Private Sub updatePreview()
