@@ -31,7 +31,7 @@ Private Const SWP_FRAMECHANGED = &H20
 Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
 
-Private Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long) As Long
 
 'Previously, RedrawWindow was used to force a window update.  It didn't work very well, but I'm keeping it around "just in case".
 'Private Type RECT
@@ -61,7 +61,7 @@ Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColo
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'Types required by the above API calls
 Private Type Bitmap
@@ -115,7 +115,7 @@ Public Sub LoadMenuIcons()
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
         If (Not g_IsVistaOrLater) And (g_IsProgramCompiled = False) Then Exit Sub
         
-        .Init FormMain.hwnd, 16, 16
+        .Init FormMain.hWnd, 16, 16
         
     End With
     
@@ -133,7 +133,7 @@ Public Sub LoadMenuIcons()
     ' double-subclass the main form, and using a single menu icon class isn't possible at present.)
     If g_IsVistaOrLater Then
         Set cMRUIcons = New clsMenuImage
-        cMRUIcons.Init FormMain.hwnd, 64, 64
+        cMRUIcons.Init FormMain.hWnd, 64, 64
     End If
         
 End Sub
@@ -313,9 +313,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "RAIN", 5, 7, 7           'Water
     AddMenuIcon "NOISE", 5, 8        'Noise
         '--> Noise sub-menu
-        AddMenuIcon "ADDNOISE", 5, 8, 0       'Add Noise
-        AddMenuIcon "DESPECKLE", 5, 8, 2      'Despeckle
-        AddMenuIcon "REMOVEORPHAN", 5, 8, 3   'Remove Orphan
+        AddMenuIcon "FILMGRAIN", 5, 8, 0      'Film grain
+        AddMenuIcon "ADDNOISE", 5, 8, 1       'Add Noise
+        AddMenuIcon "DESPECKLE", 5, 8, 3      'Despeckle
+        AddMenuIcon "REMOVEORPHAN", 5, 8, 4   'Remove Orphan
     AddMenuIcon "RANK", 5, 9         'Rank
         '--> Rank sub-menu
         AddMenuIcon "DILATE", 5, 9, 0         'Dilate
@@ -778,13 +779,13 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     End If
    
     'Use the API to assign this new icon to the specified MDI child form
-    SendMessageLong imgForm.hwnd, &H80, 0, generatedIcon
+    SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
         
     'Store this icon in our running list, so we can destroy it when the program is closed
     addIconToList generatedIcon
 
     'When an MDI child form is maximized, the icon is not updated properly - so we must force a manual refresh of the entire window frame.
-    If imgForm.WindowState = vbMaximized Then SetWindowPos FormMain.hwnd, 0&, 0&, 0&, 0&, 0&, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
+    If imgForm.WindowState = vbMaximized Then SetWindowPos FormMain.hWnd, 0&, 0&, 0&, 0&, 0&, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
     
 End Sub
 'Needs to be run only once, at the start of the program

@@ -237,12 +237,13 @@ Option Explicit
     Public Const CustomDespeckle As Long = 832
     Public Const HeatMap As Long = 833
     Public Const ComicBook As Long = 840
+    Public Const FilmGrain As Long = 841
     
     'Relative processes
     Public Const LastCommand As Long = 900
     Public Const FadeLastEffect As Long = 901
     
-    'Other filters end at 840
+    'Other filters end at 841
 
     'On-Canvas Tools; numbers 1000-2000
     
@@ -884,6 +885,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 MenuHeatMap
             Case ComicBook
                 MenuComicBook
+            Case FilmGrain
+                If LoadForm Then
+                    FormFilmGrain.Show vbModal, FormMain
+                Else
+                    FormFilmGrain.AddFilmGrain CLng(pOPCODE), CLng(pOPCODE2)
+                End If
         
         End Select
     End If
@@ -1306,6 +1313,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Sepia"
         Case HeatMap
             GetNameOfProcess = "Thermograph (Heat Map)"
+        Case FilmGrain
+            GetNameOfProcess = "Film Grain"
         
         Case LastCommand
             GetNameOfProcess = "Repeat Last Action"
