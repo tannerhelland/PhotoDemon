@@ -336,6 +336,7 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "DIFFUSE", 5, 11, 0       'Diffuse
         AddMenuIcon "SOLARIZE", 5, 11, 1      'Solarize
         AddMenuIcon "TWINS", 5, 11, 2         'Twins
+        AddMenuIcon "VIGNETTE", 5, 11, 3      'Vignetting
     AddMenuIcon "CUSTFILTER", 5, 13  'Custom Filter
     
     'Tools Menu

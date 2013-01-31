@@ -232,12 +232,13 @@ Option Explicit
     Public Const HeatMap As Long = 833
     Public Const ComicBook As Long = 840
     Public Const FilmGrain As Long = 841
+    Public Const Vignetting As Long = 842
     
     'Relative processes
     Public Const LastCommand As Long = 900
     Public Const FadeLastEffect As Long = 901
     
-    'Other filters end at 841
+    'Other filters end at 842
 
     'On-Canvas Tools; numbers 1000-2000
     
@@ -839,6 +840,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             End If
         Case FilmNoir
             MenuFilmNoir
+        Case Vignetting
+            If LoadForm Then
+                FormVignette.Show vbModal, FormMain
+            Else
+                FormVignette.ApplyVignette CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3)
+            End If
         
     End Select
     
@@ -1256,6 +1263,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Create New Selection"
         Case SelectionClear
             GetNameOfProcess = "Clear Active Selection"
+        Case Vignetting
+            GetNameOfProcess = "Vignetting"
             
         'This "Else" statement should never trigger, but if it does, return an empty string
         Case Else
