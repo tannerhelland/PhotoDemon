@@ -159,7 +159,9 @@ Option Explicit
     Public Const AdjustTemperature As Long = 618
     'HSL Adjustment
     Public Const AdjustHSL As Long = 619
-    'NOTE: 619 is the max value for this section (AdjustHSL)
+    'Color balance
+    Public Const AdjustColorBalance As Long = 620
+    'NOTE: 620 is the max value for this section (AdjustColorBalance)
     
     'Coordinate filters/transformations; numbers 700-799
     '-Resize
@@ -424,476 +426,427 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     End If
     
     'Histogram functions
-    If pType >= 100 And pType <= 199 Then
-        Select Case pType
-            Case ViewHistogram
-                FormHistogram.Show 0
-            Case StretchHistogram
-                FormHistogram.StretchHistogram
-            Case Equalize
-                If LoadForm Then
-                    FormEqualize.Show vbModal, FormMain
-                Else
-                    FormEqualize.EqualizeHistogram pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4
-                End If
-            Case WhiteBalance
-                If LoadForm Then
-                    FormWhiteBalance.Show vbModal, FormMain
-                Else
-                    FormWhiteBalance.AutoWhiteBalance pOPCODE
-                End If
-        End Select
-    End If
-    
+    Select Case pType
+        Case ViewHistogram
+            FormHistogram.Show 0
+        Case StretchHistogram
+            FormHistogram.StretchHistogram
+        Case Equalize
+            If LoadForm Then
+                FormEqualize.Show vbModal, FormMain
+            Else
+                FormEqualize.EqualizeHistogram pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4
+            End If
+        Case WhiteBalance
+            If LoadForm Then
+                FormWhiteBalance.Show vbModal, FormMain
+            Else
+                FormWhiteBalance.AutoWhiteBalance pOPCODE
+            End If
+        
     'Black/White conversion
     'NOTE: as of PhotoDemon v5.0 all black/white conversions are being rebuilt in a single master function (masterBlackWhiteConversion).
     ' For sake of compatibility with old macros, I need to make sure old processor values are rerouted through the new master function.
-    If pType >= 200 And pType <= 299 Then
-        Select Case pType
-            Case BWImpressionist
-                If LoadForm Then
-                    FormBlackAndWhite.Show vbModal, FormMain
-                Else
-                    'MenuBWImpressionist
-                End If
-            Case BWNearestColor
-                'MenuBWNearestColor
-            Case BWComponent
-                'MenuBWComponent
-            Case BWOrderedDither
-                'MenuBWOrderedDither
-            Case BWDiffusionDither
-                'MenuBWDiffusionDither
-            Case Threshold
-                'MenuThreshold pOPCODE
-            Case FilmNoir
-                MenuFilmNoir
-            Case BWEnhancedDither
-                'MenuBWEnhancedDither
-            Case BWFloydSteinberg
-                'MenuBWFloydSteinberg
-            Case BWMaster
+        Case BWMaster
+            If LoadForm Then
+                FormBlackAndWhite.Show vbModal, FormMain
+            Else
                 FormBlackAndWhite.masterBlackWhiteConversion pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4
-        End Select
-    End If
-    
+            End If
+        
     'Grayscale conversion
-    If pType >= 300 And pType <= 399 Then
-        Select Case pType
-            Case Desaturate
-                FormGrayscale.MenuDesaturate
-            Case GrayScale
-                If LoadForm Then
-                    FormGrayscale.Show vbModal, FormMain
-                Else
-                    FormGrayscale.MenuGrayscale
-                End If
-            Case GrayscaleAverage
-                FormGrayscale.MenuGrayscaleAverage
-            Case GrayscaleCustom
-                FormGrayscale.fGrayscaleCustom pOPCODE
-            Case GrayscaleCustomDither
-                FormGrayscale.fGrayscaleCustomDither pOPCODE
-            Case GrayscaleDecompose
-                FormGrayscale.MenuDecompose pOPCODE
-            Case GrayscaleSingleChannel
-                FormGrayscale.MenuGrayscaleSingleChannel pOPCODE
-        End Select
-    End If
-    
+        Case Desaturate
+            FormGrayscale.MenuDesaturate
+        Case GrayScale
+            If LoadForm Then
+                FormGrayscale.Show vbModal, FormMain
+            Else
+                FormGrayscale.MenuGrayscale
+            End If
+        Case GrayscaleAverage
+            FormGrayscale.MenuGrayscaleAverage
+        Case GrayscaleCustom
+            FormGrayscale.fGrayscaleCustom pOPCODE
+        Case GrayscaleCustomDither
+            FormGrayscale.fGrayscaleCustomDither pOPCODE
+        Case GrayscaleDecompose
+            FormGrayscale.MenuDecompose pOPCODE
+        Case GrayscaleSingleChannel
+            FormGrayscale.MenuGrayscaleSingleChannel pOPCODE
+        
     'Area filters
-    If pType >= 400 And pType <= 499 Then
-        Select Case pType
-            Case Blur
-                FilterBlur
-            Case BlurMore
-                FilterBlurMore
-            Case Soften
-                FilterSoften
-            Case SoftenMore
-                FilterSoftenMore
-            Case Sharpen
-                FilterSharpen
-            Case SharpenMore
-                FilterSharpenMore
-            Case Unsharp
-                If LoadForm Then
-                    FormUnsharpMask.Show vbModal, FormMain
-                Else
-                    FormUnsharpMask.UnsharpMask CLng(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
-                End If
-            Case Diffuse
-                FormDiffuse.DiffuseCustom 5, 5, False
-            Case DiffuseMore
-                FormDiffuse.DiffuseCustom 25, 25, False
-            Case CustomDiffuse
-                If LoadForm Then
-                    FormDiffuse.Show vbModal, FormMain
-                Else
-                    FormDiffuse.DiffuseCustom pOPCODE, pOPCODE2, pOPCODE3
-                End If
-            Case Mosaic
-                If LoadForm Then
-                    FormMosaic.Show vbModal, FormMain
-                Else
-                    FormMosaic.MosaicFilter CInt(pOPCODE), CInt(pOPCODE2)
-                End If
-            Case CustomRank
-                If LoadForm Then
-                    FormRank.Show vbModal, FormMain
-                Else
-                    FormRank.CustomRankFilter CInt(pOPCODE), CByte(pOPCODE2)
-                End If
-            Case GridBlur
-                FilterGridBlur
-            Case GaussianBlur
-                If LoadForm Then
-                    FormGaussianBlur.Show vbModal, FormMain
-                Else
-                    FormGaussianBlur.GaussianBlurFilter CLng(pOPCODE)
-                End If
-            Case SmartBlur
-                If LoadForm Then
-                    FormSmartBlur.Show vbModal, FormMain
-                Else
-                    FormSmartBlur.SmartBlurFilter CLng(pOPCODE), CByte(pOPCODE2), CBool(pOPCODE3)
-                End If
-            Case BoxBlur
-                If LoadForm Then
-                    FormBoxBlur.Show vbModal, FormMain
-                Else
-                    FormBoxBlur.BoxBlurFilter CLng(pOPCODE), CLng(pOPCODE2)
-                End If
-        End Select
-    End If
-    
+        Case Blur
+            FilterBlur
+        Case BlurMore
+            FilterBlurMore
+        Case Soften
+            FilterSoften
+        Case SoftenMore
+            FilterSoftenMore
+        Case Sharpen
+            FilterSharpen
+        Case SharpenMore
+            FilterSharpenMore
+        Case Unsharp
+            If LoadForm Then
+                FormUnsharpMask.Show vbModal, FormMain
+            Else
+                FormUnsharpMask.UnsharpMask CLng(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
+            End If
+        Case Diffuse
+            FormDiffuse.DiffuseCustom 5, 5, False
+        Case DiffuseMore
+            FormDiffuse.DiffuseCustom 25, 25, False
+        Case CustomDiffuse
+            If LoadForm Then
+                FormDiffuse.Show vbModal, FormMain
+            Else
+                FormDiffuse.DiffuseCustom pOPCODE, pOPCODE2, pOPCODE3
+            End If
+        Case Mosaic
+            If LoadForm Then
+                FormMosaic.Show vbModal, FormMain
+            Else
+                FormMosaic.MosaicFilter CInt(pOPCODE), CInt(pOPCODE2)
+            End If
+        Case CustomRank
+            If LoadForm Then
+                FormRank.Show vbModal, FormMain
+            Else
+                FormRank.CustomRankFilter CInt(pOPCODE), CByte(pOPCODE2)
+            End If
+        Case GridBlur
+            FilterGridBlur
+        Case GaussianBlur
+            If LoadForm Then
+                FormGaussianBlur.Show vbModal, FormMain
+            Else
+                FormGaussianBlur.GaussianBlurFilter CLng(pOPCODE)
+            End If
+        Case SmartBlur
+            If LoadForm Then
+                FormSmartBlur.Show vbModal, FormMain
+            Else
+                FormSmartBlur.SmartBlurFilter CLng(pOPCODE), CByte(pOPCODE2), CBool(pOPCODE3)
+            End If
+        Case BoxBlur
+            If LoadForm Then
+                FormBoxBlur.Show vbModal, FormMain
+            Else
+                FormBoxBlur.BoxBlurFilter CLng(pOPCODE), CLng(pOPCODE2)
+            End If
+        
     'Edge filters
-    If pType >= 500 And pType <= 599 Then
-        Select Case pType
-            Case EmbossToColor
-                If LoadForm Then
-                    FormEmbossEngrave.Show vbModal, FormMain
-                Else
-                    FormEmbossEngrave.FilterEmbossColor CLng(pOPCODE)
-                End If
-            Case EngraveToColor
-                FormEmbossEngrave.FilterEngraveColor CLng(pOPCODE)
-            Case Pencil
-                FilterPencil
-            Case Relief
-                FilterRelief
-            Case SmoothContour
-                FormFindEdges.FilterSmoothContour pOPCODE
-            Case PrewittHorizontal
-                FormFindEdges.FilterPrewittHorizontal pOPCODE
-            Case PrewittVertical
-                FormFindEdges.FilterPrewittVertical pOPCODE
-            Case SobelHorizontal
-               FormFindEdges.FilterSobelHorizontal pOPCODE
-            Case SobelVertical
-                FormFindEdges.FilterSobelVertical pOPCODE
-            Case Laplacian
-                If LoadForm Then
-                    FormFindEdges.Show vbModal, FormMain
-                Else
-                    FormFindEdges.FilterLaplacian pOPCODE
-                End If
-            Case HiliteEdge
-                FormFindEdges.FilterHilite pOPCODE
-            Case PhotoDemonEdgeLinear
-                FormFindEdges.PhotoDemonLinearEdgeDetection pOPCODE
-            Case PhotoDemonEdgeCubic
-                FormFindEdges.PhotoDemonCubicEdgeDetection pOPCODE
-            Case EdgeEnhance
-                FilterEdgeEnhance
-        End Select
-    End If
-    
+        Case EmbossToColor
+            If LoadForm Then
+                FormEmbossEngrave.Show vbModal, FormMain
+            Else
+                FormEmbossEngrave.FilterEmbossColor CLng(pOPCODE)
+            End If
+        Case EngraveToColor
+            FormEmbossEngrave.FilterEngraveColor CLng(pOPCODE)
+        Case Pencil
+            FilterPencil
+        Case Relief
+            FilterRelief
+        Case SmoothContour
+            FormFindEdges.FilterSmoothContour pOPCODE
+        Case PrewittHorizontal
+            FormFindEdges.FilterPrewittHorizontal pOPCODE
+        Case PrewittVertical
+            FormFindEdges.FilterPrewittVertical pOPCODE
+        Case SobelHorizontal
+            FormFindEdges.FilterSobelHorizontal pOPCODE
+        Case SobelVertical
+            FormFindEdges.FilterSobelVertical pOPCODE
+        Case Laplacian
+            If LoadForm Then
+                FormFindEdges.Show vbModal, FormMain
+            Else
+                FormFindEdges.FilterLaplacian pOPCODE
+            End If
+        Case HiliteEdge
+            FormFindEdges.FilterHilite pOPCODE
+        Case PhotoDemonEdgeLinear
+            FormFindEdges.PhotoDemonLinearEdgeDetection pOPCODE
+        Case PhotoDemonEdgeCubic
+            FormFindEdges.PhotoDemonCubicEdgeDetection pOPCODE
+        Case EdgeEnhance
+            FilterEdgeEnhance
+        
     'Color operations
-    If pType >= 600 And pType <= 699 Then
-        Select Case pType
-            Case Rechannel
-                If LoadForm Then
-                    FormRechannel.Show vbModal, FormMain
+        Case Rechannel
+            If LoadForm Then
+                FormRechannel.Show vbModal, FormMain
+            Else
+                FormRechannel.RechannelImage CLng(pOPCODE)
+            End If
+        Case ColorShiftLeft
+            MenuCShift pOPCODE
+        Case ColorShiftRight
+            MenuCShift pOPCODE
+        Case BrightnessAndContrast
+            If LoadForm Then
+                FormBrightnessContrast.Show vbModal, FormMain
+            Else
+                FormBrightnessContrast.BrightnessContrast CInt(pOPCODE), CSng(pOPCODE2), CBool(pOPCODE3)
+            End If
+        Case GammaCorrection
+            If LoadForm Then
+                FormGamma.Show vbModal, FormMain
+            Else
+                FormGamma.GammaCorrect CSng(pOPCODE), CSng(pOPCODE2), CSng(pOPCODE3)
+            End If
+        Case Invert
+            MenuInvert
+        Case CompoundInvert
+            MenuCompoundInvert CLng(pOPCODE)
+        Case Negative
+            MenuNegative
+        Case InvertHue
+            MenuInvertHue
+        Case AutoEnhance
+            MenuAutoEnhanceContrast
+        Case AutoHighlights
+            MenuAutoEnhanceHighlights
+        Case AutoMidtones
+            MenuAutoEnhanceMidtones
+        Case AutoShadows
+            MenuAutoEnhanceShadows
+        Case ImageLevels
+            If LoadForm Then
+                FormLevels.Show vbModal, FormMain
+            Else
+                FormLevels.MapImageLevels pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
+            End If
+        Case Colorize
+            If LoadForm Then
+                FormColorize.Show vbModal, FormMain
+            Else
+                FormColorize.ColorizeImage pOPCODE, pOPCODE2
+            End If
+        Case ReduceColors
+            If LoadForm Then
+                FormReduceColors.Show vbModal, FormMain
+            Else
+                If pOPCODE = REDUCECOLORS_AUTO Then
+                    FormReduceColors.ReduceImageColors_Auto pOPCODE2
+                ElseIf pOPCODE = REDUCECOLORS_MANUAL Then
+                    FormReduceColors.ReduceImageColors_BitRGB pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
+                ElseIf pOPCODE = REDUCECOLORS_MANUAL_ERRORDIFFUSION Then
+                    FormReduceColors.ReduceImageColors_BitRGB_ErrorDif pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
                 Else
-                    FormRechannel.RechannelImage CLng(pOPCODE)
+                    MsgBox "Unsupported color reduction method."
                 End If
-            'RechannelGreen and RechannelRed are only included for legacy reasons
-            Case RechannelGreen
-                FormRechannel.RechannelImage pOPCODE
-            Case RechannelRed
-                FormRechannel.RechannelImage pOPCODE
-            '------
-            Case ColorShiftLeft
-                MenuCShift pOPCODE
-            Case ColorShiftRight
-                MenuCShift pOPCODE
-            Case BrightnessAndContrast
-                If LoadForm Then
-                    FormBrightnessContrast.Show vbModal, FormMain
-                Else
-                    FormBrightnessContrast.BrightnessContrast CInt(pOPCODE), CSng(pOPCODE2), CBool(pOPCODE3)
-                End If
-            Case GammaCorrection
-                If LoadForm Then
-                    FormGamma.Show vbModal, FormMain
-                Else
-                    FormGamma.GammaCorrect CSng(pOPCODE), CSng(pOPCODE2), CSng(pOPCODE3)
-                End If
-            Case Invert
-                MenuInvert
-            Case CompoundInvert
-                MenuCompoundInvert CLng(pOPCODE)
-            Case Negative
-                MenuNegative
-            Case InvertHue
-                MenuInvertHue
-            Case AutoEnhance
-                MenuAutoEnhanceContrast
-            Case AutoHighlights
-                MenuAutoEnhanceHighlights
-            Case AutoMidtones
-                MenuAutoEnhanceMidtones
-            Case AutoShadows
-                MenuAutoEnhanceShadows
-            Case ImageLevels
-                If LoadForm Then
-                    FormLevels.Show vbModal, FormMain
-                Else
-                    FormLevels.MapImageLevels pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
-                End If
-            Case Colorize
-                If LoadForm Then
-                    FormColorize.Show vbModal, FormMain
-                Else
-                    FormColorize.ColorizeImage pOPCODE, pOPCODE2
-                End If
-            Case ReduceColors
-                If LoadForm Then
-                    FormReduceColors.Show vbModal, FormMain
-                Else
-                    If pOPCODE = REDUCECOLORS_AUTO Then
-                        FormReduceColors.ReduceImageColors_Auto pOPCODE2
-                    ElseIf pOPCODE = REDUCECOLORS_MANUAL Then
-                        FormReduceColors.ReduceImageColors_BitRGB pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
-                    ElseIf pOPCODE = REDUCECOLORS_MANUAL_ERRORDIFFUSION Then
-                        FormReduceColors.ReduceImageColors_BitRGB_ErrorDif pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
-                    Else
-                        MsgBox "Unsupported color reduction method."
-                    End If
-                End If
-            Case AdjustTemperature
-                If LoadForm Then
-                    FormColorTemp.Show vbModal, FormMain
-                Else
-                    FormColorTemp.ApplyTemperatureToImage pOPCODE, pOPCODE2, pOPCODE3
-                End If
-            Case AdjustHSL
-                If LoadForm Then
-                    FormHSL.Show vbModal, FormMain
-                Else
-                    FormHSL.AdjustImageHSL pOPCODE, pOPCODE2, pOPCODE3
-                End If
-        End Select
-    End If
+            End If
+        Case AdjustTemperature
+            If LoadForm Then
+                FormColorTemp.Show vbModal, FormMain
+            Else
+                FormColorTemp.ApplyTemperatureToImage pOPCODE, pOPCODE2, pOPCODE3
+            End If
+        Case AdjustHSL
+            If LoadForm Then
+                FormHSL.Show vbModal, FormMain
+            Else
+                FormHSL.AdjustImageHSL pOPCODE, pOPCODE2, pOPCODE3
+            End If
+        Case AdjustColorBalance
+            If LoadForm Then
+                FormColorBalance.Show vbModal, FormMain
+            Else
+                
+            End If
     
     'Coordinate filters/transformations
-    If pType >= 700 And pType <= 799 Then
-        Select Case pType
-            Case Flip
-                MenuFlip
-            Case FreeRotate
-                If LoadForm Then
-                    FormRotate.Show vbModal, FormMain
-                Else
-                    FormRotate.RotateArbitrary pOPCODE, pOPCODE2
-                End If
-            Case Mirror
-                MenuMirror
-            Case Rotate90Clockwise
-                MenuRotate90Clockwise
-            Case Rotate180
-                MenuRotate180
-            Case Rotate270Clockwise
-                MenuRotate270Clockwise
-            Case Isometric
-                FilterIsometric
-            Case ImageSize
-                If LoadForm Then
-                    FormResize.Show vbModal, FormMain
-                Else
-                    FormResize.ResizeImage CLng(pOPCODE), CLng(pOPCODE2), CByte(pOPCODE3)
-                End If
-            Case Tile
-                If LoadForm Then
-                    FormTile.Show vbModal, FormMain
-                Else
-                    FormTile.GenerateTile CByte(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
-                End If
-            Case CropToSelection
-                MenuCropToSelection
-            Case ChangeImageMode24
-                ConvertImageColorDepth 24
-            Case ChangeImageMode32
-                ConvertImageColorDepth 32
-            Case DistortSwirl
-                If LoadForm Then
-                    FormSwirl.Show vbModal, FormMain
-                Else
-                    FormSwirl.SwirlImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
-                End If
-            Case DistortLens
-                If LoadForm Then
-                    FormLens.Show vbModal, FormMain
-                Else
-                    FormLens.ApplyLensDistortion CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
-                End If
-            Case DistortLensFix
-                If LoadForm Then
-                    FormLensCorrect.Show vbModal, FormMain
-                Else
-                    FormLensCorrect.ApplyLensCorrection CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CLng(pOPCODE4), CBool(pOPCODE5)
-                End If
-            Case DistortRipple
-                If LoadForm Then
-                    FormRipple.Show vbModal, FormMain
-                Else
-                    FormRipple.RippleImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CLng(pOPCODE5), CBool(pOPCODE6)
-                End If
-            Case DistortPinchAndWhirl
-                If LoadForm Then
-                    FormPinch.Show vbModal, FormMain
-                Else
-                    FormPinch.PinchImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CLng(pOPCODE4), CBool(pOPCODE5)
-                End If
-            Case DistortWaves
-                If LoadForm Then
-                    FormWaves.Show vbModal, FormMain
-                Else
-                    FormWaves.WaveImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CLng(pOPCODE5), CBool(pOPCODE6)
-                End If
-            Case DistortFiguredGlass
-                If LoadForm Then
-                    FormFiguredGlass.Show vbModal, FormMain
-                Else
-                    FormFiguredGlass.FiguredGlassFX CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
-                End If
-            Case DistortKaleidoscope
-                If LoadForm Then
-                    FormKaleidoscope.Show vbModal, FormMain
-                Else
-                    FormKaleidoscope.KaleidoscopeImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
-                End If
-            Case ConvertPolar
-                If LoadForm Then
-                    FormPolar.Show vbModal, FormMain
-                Else
-                    FormPolar.ConvertToPolar CLng(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
-                End If
-                
-        End Select
-    End If
-    
+        Case Flip
+            MenuFlip
+        Case FreeRotate
+            If LoadForm Then
+                FormRotate.Show vbModal, FormMain
+            Else
+                FormRotate.RotateArbitrary pOPCODE, pOPCODE2
+            End If
+        Case Mirror
+            MenuMirror
+        Case Rotate90Clockwise
+            MenuRotate90Clockwise
+        Case Rotate180
+            MenuRotate180
+        Case Rotate270Clockwise
+            MenuRotate270Clockwise
+        Case Isometric
+            FilterIsometric
+        Case ImageSize
+            If LoadForm Then
+                FormResize.Show vbModal, FormMain
+            Else
+                FormResize.ResizeImage CLng(pOPCODE), CLng(pOPCODE2), CByte(pOPCODE3)
+            End If
+        Case Tile
+            If LoadForm Then
+                FormTile.Show vbModal, FormMain
+            Else
+                FormTile.GenerateTile CByte(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3)
+            End If
+        Case CropToSelection
+            MenuCropToSelection
+        Case ChangeImageMode24
+            ConvertImageColorDepth 24
+        Case ChangeImageMode32
+            ConvertImageColorDepth 32
+        Case DistortSwirl
+            If LoadForm Then
+                FormSwirl.Show vbModal, FormMain
+            Else
+                FormSwirl.SwirlImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
+            End If
+        Case DistortLens
+            If LoadForm Then
+                FormLens.Show vbModal, FormMain
+            Else
+                FormLens.ApplyLensDistortion CDbl(pOPCODE), CDbl(pOPCODE2), CBool(pOPCODE3)
+            End If
+        Case DistortLensFix
+            If LoadForm Then
+                FormLensCorrect.Show vbModal, FormMain
+            Else
+                FormLensCorrect.ApplyLensCorrection CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CLng(pOPCODE4), CBool(pOPCODE5)
+            End If
+        Case DistortRipple
+            If LoadForm Then
+                FormRipple.Show vbModal, FormMain
+            Else
+                FormRipple.RippleImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CLng(pOPCODE5), CBool(pOPCODE6)
+            End If
+        Case DistortPinchAndWhirl
+            If LoadForm Then
+                FormPinch.Show vbModal, FormMain
+            Else
+                FormPinch.PinchImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CLng(pOPCODE4), CBool(pOPCODE5)
+            End If
+        Case DistortWaves
+            If LoadForm Then
+                FormWaves.Show vbModal, FormMain
+            Else
+                FormWaves.WaveImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CLng(pOPCODE5), CBool(pOPCODE6)
+            End If
+        Case DistortFiguredGlass
+            If LoadForm Then
+                FormFiguredGlass.Show vbModal, FormMain
+            Else
+                FormFiguredGlass.FiguredGlassFX CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
+            End If
+        Case DistortKaleidoscope
+            If LoadForm Then
+                FormKaleidoscope.Show vbModal, FormMain
+            Else
+                FormKaleidoscope.KaleidoscopeImage CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CDbl(pOPCODE4), CBool(pOPCODE5)
+            End If
+        Case ConvertPolar
+            If LoadForm Then
+                FormPolar.Show vbModal, FormMain
+            Else
+                FormPolar.ConvertToPolar CLng(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
+            End If
+            
     'Other filters
-    If pType >= 800 And pType <= 899 Then
-        Select Case pType
-            Case Antique
-                MenuAntique
-            Case Atmospheric
-                MenuAtmospheric
-            Case BlackLight
-                If LoadForm Then
-                    FormBlackLight.Show vbModal, FormMain
-                Else
-                    FormBlackLight.fxBlackLight pOPCODE
-                End If
-            Case Dream
-                MenuDream
-            Case Posterize
-                If LoadForm Then
-                    FormPosterize.Show vbModal, FormMain
-                Else
-                    FormPosterize.PosterizeImage CByte(pOPCODE)
-                End If
-            Case Radioactive
-                MenuRadioactive
-            Case Solarize
-                If LoadForm Then
-                    FormSolarize.Show vbModal, FormMain
-                Else
-                    FormSolarize.SolarizeImage CByte(pOPCODE)
-                End If
-            Case Twins
-                If LoadForm Then
-                    FormTwins.Show vbModal, FormMain
-                Else
-                    FormTwins.GenerateTwins CByte(pOPCODE)
-                End If
-            Case Fade
-                If LoadForm Then
-                    FormFade.Show vbModal, FormMain
-                Else
-                    FormFade.FadeImage CSng(pOPCODE)
-                End If
-            Case UnFade
-                FormFade.UnfadeImage
-            Case Alien
-                MenuAlien
-            Case Synthesize
-                MenuSynthesize
-            Case Water
-                MenuWater
-            Case Noise
-                If LoadForm Then
-                    FormNoise.Show vbModal, FormMain
-                Else
-                    FormNoise.AddNoise CInt(pOPCODE), CByte(pOPCODE2)
-                End If
-            Case Frozen
-                MenuFrozen
-            Case Lava
-                MenuLava
-            Case CustomFilter
-                If LoadForm Then
-                    FormCustomFilter.Show vbModal, FormMain
-                Else
-                    DoFilter , , pOPCODE
-                End If
-            Case Burn
-                MenuBurn
-            Case Steel
-                MenuSteel
-            Case FogEffect
-                MenuFogEffect
-            Case CountColors
-                MenuCountColors
-            Case Rainbow
-                MenuRainbow
-            Case Vibrate
-                MenuVibrate
-            Case Despeckle
-                FormDespeckle.QuickDespeckle
-            Case CustomDespeckle
-                If LoadForm Then
-                    FormDespeckle.Show vbModal, FormMain
-                Else
-                    FormDespeckle.Despeckle pOPCODE
-                End If
-            Case Sepia
-                MenuSepia
-            Case HeatMap
-                MenuHeatMap
-            Case ComicBook
-                MenuComicBook
-            Case FilmGrain
-                If LoadForm Then
-                    FormFilmGrain.Show vbModal, FormMain
-                Else
-                    FormFilmGrain.AddFilmGrain CLng(pOPCODE), CLng(pOPCODE2)
-                End If
+        Case Antique
+            MenuAntique
+        Case Atmospheric
+            MenuAtmospheric
+        Case BlackLight
+            If LoadForm Then
+                FormBlackLight.Show vbModal, FormMain
+            Else
+                FormBlackLight.fxBlackLight pOPCODE
+            End If
+        Case Dream
+            MenuDream
+        Case Posterize
+            If LoadForm Then
+                FormPosterize.Show vbModal, FormMain
+            Else
+                FormPosterize.PosterizeImage CByte(pOPCODE)
+            End If
+        Case Radioactive
+            MenuRadioactive
+        Case Solarize
+            If LoadForm Then
+                FormSolarize.Show vbModal, FormMain
+            Else
+                FormSolarize.SolarizeImage CByte(pOPCODE)
+            End If
+        Case Twins
+            If LoadForm Then
+                FormTwins.Show vbModal, FormMain
+            Else
+                FormTwins.GenerateTwins CByte(pOPCODE)
+            End If
+        Case Fade
+            If LoadForm Then
+                FormFade.Show vbModal, FormMain
+            Else
+                FormFade.FadeImage CSng(pOPCODE)
+            End If
+        Case UnFade
+            FormFade.UnfadeImage
+        Case Alien
+            MenuAlien
+        Case Synthesize
+            MenuSynthesize
+        Case Water
+            MenuWater
+        Case Noise
+            If LoadForm Then
+                FormNoise.Show vbModal, FormMain
+            Else
+                FormNoise.AddNoise CInt(pOPCODE), CByte(pOPCODE2)
+            End If
+        Case Frozen
+            MenuFrozen
+        Case Lava
+            MenuLava
+        Case CustomFilter
+            If LoadForm Then
+                FormCustomFilter.Show vbModal, FormMain
+            Else
+                DoFilter , , pOPCODE
+            End If
+        Case Burn
+            MenuBurn
+        Case Steel
+            MenuSteel
+        Case FogEffect
+            MenuFogEffect
+        Case CountColors
+            MenuCountColors
+        Case Rainbow
+            MenuRainbow
+        Case Vibrate
+            MenuVibrate
+        Case Despeckle
+            FormDespeckle.QuickDespeckle
+        Case CustomDespeckle
+            If LoadForm Then
+                FormDespeckle.Show vbModal, FormMain
+            Else
+                FormDespeckle.Despeckle pOPCODE
+            End If
+        Case Sepia
+            MenuSepia
+        Case HeatMap
+            MenuHeatMap
+        Case ComicBook
+            MenuComicBook
+        Case FilmGrain
+            If LoadForm Then
+                FormFilmGrain.Show vbModal, FormMain
+            Else
+                FormFilmGrain.AddFilmGrain CLng(pOPCODE), CLng(pOPCODE2)
+            End If
         
-        End Select
-    End If
+    End Select
     
     'Finally, check to see if the user wants us to Fade the last effect applied to the image...
     If pType = FadeLastEffect Then MenuFadeLastEffect
@@ -1067,24 +1020,6 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "White Balance"
             
         'Black/White conversion; numbers 200-299
-        Case BWImpressionist
-            GetNameOfProcess = "Black and White (Impressionist)"
-        Case BWNearestColor
-            GetNameOfProcess = "Black and White (Nearest Color)"
-        Case BWComponent
-            GetNameOfProcess = "Black and White (Component Color)"
-        Case BWOrderedDither
-            GetNameOfProcess = "Black and White (Ordered Dither)"
-        Case BWDiffusionDither
-            GetNameOfProcess = "Black and White (Diffusion Dither)"
-        Case Threshold
-            GetNameOfProcess = "Black and White (Threshold)"
-        Case FilmNoir
-            GetNameOfProcess = "Film Noir"
-        Case BWEnhancedDither
-            GetNameOfProcess = "Black and White (Santos Enhanced)"
-        Case BWFloydSteinberg
-            GetNameOfProcess = "Black and White (Floyd-Steinberg)"
         Case BWMaster
             GetNameOfProcess = "Black and White conversion"
             
@@ -1211,6 +1146,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Adjust Temperature"
         Case AdjustHSL
             GetNameOfProcess = "Adjust Hue/Saturation/Lightness"
+        Case AdjustColorBalance
+            GetNameOfProcess = "Adjust Color Balance"
             
         'Coordinate filters/transformations; numbers 700-799
         Case ImageSize

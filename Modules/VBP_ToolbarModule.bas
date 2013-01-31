@@ -86,7 +86,7 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             If FormMain.MnuImage.Enabled <> tState Then
                 FormMain.MnuImage.Enabled = tState
                 'Use this same command to disable other menus
-                FormMain.MnuColor.Enabled = tState
+                FormMain.MnuColorTop.Enabled = tState
                 FormMain.MnuPrint.Enabled = tState
                 FormMain.MnuWindow.Enabled = tState
                 FormMain.MnuFitOnScreen.Enabled = tState

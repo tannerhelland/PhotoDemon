@@ -1097,7 +1097,7 @@ Public Sub DrawMenuShortcuts()
     FormMain.MnuCropSelection.Caption = FormMain.MnuCropSelection.Caption & vbTab & "Ctrl+Shift+X"
     
     'Color menu
-    FormMain.MnuBrightness.Caption = FormMain.MnuBrightness.Caption & vbTab & "Ctrl+Shift+C"
+    FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+C"
     
     'Tools menu
     FormMain.mnuTool(4).Caption = FormMain.mnuTool(4).Caption & vbTab & "Alt+Enter"     'Options (Preferences)
