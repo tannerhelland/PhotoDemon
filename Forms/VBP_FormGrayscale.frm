@@ -317,9 +317,9 @@ Private Sub drawGrayscalePreview()
                     MenuDecompose 1, True, fxPreview
                 End If
             Case 4
-                If OptChannel(0).Value = True Then
+                If optChannel(0).Value = True Then
                     MenuGrayscaleSingleChannel 0, True, fxPreview
-                ElseIf OptChannel(1).Value = True Then
+                ElseIf optChannel(1).Value = True Then
                     MenuGrayscaleSingleChannel 1, True, fxPreview
                 Else
                     MenuGrayscaleSingleChannel 2, True, fxPreview
@@ -413,9 +413,9 @@ Private Sub cmdOK_Click()
                     Process GrayscaleDecompose, 1
                 End If
             Case 4
-                If OptChannel(0).Value = True Then
+                If optChannel(0).Value = True Then
                     Process GrayscaleSingleChannel, 0
-                ElseIf OptChannel(1).Value = True Then
+                ElseIf optChannel(1).Value = True Then
                     Process GrayscaleSingleChannel, 1
                 Else
                     Process GrayscaleSingleChannel, 2
@@ -456,7 +456,9 @@ Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
-        
+    setArrowCursorToObject picChannel
+    setArrowCursorToObject picDecompose
+    
     'Draw the initial preview
     drawGrayscalePreview
     
