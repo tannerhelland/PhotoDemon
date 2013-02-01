@@ -1330,7 +1330,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Import From VB Binary File</original>
+		<original>Visual basic binary file</original>
 		<translation>Importieren VB Bin‰rdatei</translation>
 	</phrase>
 
@@ -2630,7 +2630,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Close</original>
+		<original>&Close</original>
 		<translation>Schlieﬂen</translation>
 	</phrase>
 
@@ -2710,23 +2710,23 @@
 	</phrase>
 
 	<phrase>
-		<original>Select Scanner/Camera Source</original>
+		<original>Select which scanner or camera to use</original>
 		<translation>W‰hlen Sie Scanner / Kamera Quelle</translation>
 	</phrase>
 
 	<phrase>
-		<original>Online Image</original>
+		<original>Online image</original>
 		<translation>Online Image</translation>
 	</phrase>
 
 	<phrase>
-		<original>Screen Capture</original>
+		<original>Screen capture</original>
 		<translation>Screen Capture</translation>
 	</phrase>
 
 	<phrase>
-		<original>Batch Convert</original>
-		<translation>Batch Convert</translation>
+		<original>Batch process</original>
+		<translation>Batch process</translation>
 	</phrase>
 
 	<phrase>
@@ -2875,7 +2875,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Brightness/Contrast</original>
+		<original>Brightness and contrast</original>
 		<translation>Helligkeit / Kontrast</translation>
 	</phrase>
 
@@ -2885,7 +2885,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Hue / Saturation</original>
+		<original>Hue and Saturation</original>
 		<translation>Farbton / S‰ttigung</translation>
 	</phrase>
 
@@ -2930,13 +2930,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Shift Right (r -> g -> b -> r)</original>
-		<translation>Verschiebung nach rechts (r -> b -> b -> r)</translation>
+		<original>Shift colors right</original>
+		<translation>Verschiebung nach rechts</translation>
 	</phrase>
 
 	<phrase>
-		<original>Shift Left (r -> b -> g -> r)</original>
-		<translation>Verschiebung nach links (r -> b -> b -> r)</translation>
+		<original>Shift colors left</original>
+		<translation>Verschiebung nach links</translation>
 	</phrase>
 
 	<phrase>
@@ -3035,7 +3035,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Reduce unique colors</original>
+		<original>Reduce color count</original>
 		<translation>Reduzieren einzigartigen Farben</translation>
 	</phrase>
 

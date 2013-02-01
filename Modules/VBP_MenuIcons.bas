@@ -91,7 +91,7 @@ Public Const ALLOW_DYNAMIC_ICONS As Boolean = True
 
 'These arrays will track the resource identifiers and consequent numeric identifiers of all loaded icons.  The size of the array
 ' is arbitrary; just make sure it's larger than the max number of loaded icons.
-Private iconNames(0 To 255) As String
+Private iconNames(0 To 511) As String
 
 'We also need to track how many icons have been loaded; this counter will also be used to reference icons in the database
 Dim curIcon As Long
@@ -104,6 +104,16 @@ Dim cMRUIcons As clsMenuImage
 
 'Load all the menu icons from PhotoDemon's embedded resource file
 Public Sub LoadMenuIcons()
+
+    'If we are re-loading all icons instead of just loading them for the first time, clear out the old list
+    If Not (cMenuImage Is Nothing) Then
+        cMenuImage.Clear
+        Set cMenuImage = Nothing
+    End If
+    
+    'Reset the icon tracking array
+    curIcon = 0
+    Erase iconNames
 
     Set cMenuImage = New clsMenuImage
     
@@ -118,9 +128,7 @@ Public Sub LoadMenuIcons()
         .Init FormMain.hWnd, 16, 16
         
     End With
-    
-    curIcon = 0
-        
+            
     'Now that all menu icons are loaded, apply them to the proper menu entires
     ApplyAllMenuIcons
     

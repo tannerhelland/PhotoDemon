@@ -241,14 +241,13 @@ Public Sub ApplyLanguage()
         If curLanguage = i Then FormMain.mnuLanguages(i).Checked = True Else FormMain.mnuLanguages(i).Checked = False
     Next i
     
-    'If the language is set to anything other than the default, load the contents of the language file into memory.
+    'If the language is set to anything other than the default, load the contents of the language XML file into memory.
     If translationActive Then
         translationFileContents = ""
         translationFileContents = getFileAsString(g_UserPreferences.getLanguagePath & availableLanguages(curLanguage).FileName)
-        'MsgBox availableLanguages(curLanguage).FileName & vbCrLf & translationFileContents
     End If
 
-    'Redraw all captions on the main form
+    'Redraw all text on the main form using the new language
     If FormMain.Visible Then
         makeFormPretty FormMain
         DrawMenuShortcuts
