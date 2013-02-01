@@ -87,6 +87,9 @@ Private translationFileContents As String
 'Is the class ready to be used for translations?
 Private isReady As Boolean
 
+'The following boolean values are marked by preProcessString, then read by postProcessString
+Private hasDotDotDot As Boolean
+
 'If the class has successfully initialized a translation file, this function will return TRUE
 Public Function readyToTranslate() As Boolean
     readyToTranslate = isReady
@@ -544,11 +547,42 @@ Private Function getFileAsString(ByVal fName As String) As String
     
 End Function
 
+'All text to be translated should be passed here first.  This sub will perform a few automatic checks of the string, and it will record what
+' it finds.  For example, if the text has "..." at the end, this sub will remove that.  Its counterpart - postProcessText() - will re-apply
+' any necessary changes to the translation.
+Private Sub preProcessText(ByRef srcString As String)
+
+    '1) Trim the string
+    srcString = Trim$(srcString)
+    
+    '1) Check for a trailing "..."
+    If Right$(srcString, 3) = "..." Then
+        hasDotDotDot = True
+        srcString = Left$(srcString, Len(srcString) - 3)
+    Else
+        hasDotDotDot = False
+    End If
+
+End Sub
+
+Private Sub postProcessText(ByRef srcString As String)
+
+    '1) Trim the string
+    srcString = Trim$(srcString)
+    
+    '1) If the original had a trailing "...", restore it now
+    If hasDotDotDot Then
+        srcString = srcString & "..."
+        hasDotDotDot = False
+    End If
+
+End Sub
+
 'Given the translated caption of a message or control, return the original translation from the active translation file
 Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As String
 
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
-    curCaption = Trim(curCaption)
+    preProcessText curCaption
     curCaption = "<translation>" & curCaption & "</translation>"
     
     Dim phraseLocation As Long
@@ -558,7 +592,9 @@ Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As St
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        getOriginalTagFromTranslation = getTextBetweenTags(translationFileContents, "original", phraseLocation)
+        curCaption = getTextBetweenTags(translationFileContents, "original", phraseLocation)
+        postProcessText curCaption
+        getOriginalTagFromTranslation = curCaption
         
     Else
         getOriginalTagFromTranslation = ""
@@ -570,7 +606,7 @@ End Function
 Private Function getTranslationTagFromCaption(ByVal origCaption As String) As String
 
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
-    origCaption = Trim(origCaption)
+    preProcessText origCaption
     origCaption = "<original>" & origCaption & "</original>"
     
     Dim phraseLocation As Long
@@ -580,7 +616,9 @@ Private Function getTranslationTagFromCaption(ByVal origCaption As String) As St
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        getTranslationTagFromCaption = getTextBetweenTags(translationFileContents, "translation", phraseLocation)
+        origCaption = getTextBetweenTags(translationFileContents, "translation", phraseLocation)
+        postProcessText origCaption
+        getTranslationTagFromCaption = origCaption
         
     Else
         getTranslationTagFromCaption = ""

@@ -10,53 +10,53 @@
 	<author>Frank Donckers</author>
 
 	<phrase>
-		<original>Initializing software...</original>
-		<translation>Initialisatie software...</translation>
+		<original>Initializing software</original>
+		<translation>Initialisatie software</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing all program directories...</original>
-		<translation>Initialisatie programma mappen ...</translation>
+		<original>Initializing all program directories</original>
+		<translation>Initialisatie programma mappen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading all user settings...</original>
-		<translation>Laden gebruikersinstellingen ...</translation>
+		<original>Loading all user settings</original>
+		<translation>Laden gebruikersinstellingen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading plugins...</original>
-		<translation>Laden van insteekmodules ...</translation>
+		<original>Loading plugins</original>
+		<translation>Laden van insteekmodules</translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading import/export libraries...</original>
-		<translation>Laden import / export bibliotheken ...</translation>
+		<original>Loading import/export libraries</original>
+		<translation>Laden import / export bibliotheken</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing all user settings...</original>
-		<translation>Initialiseren gebruikersinstellingen ...</translation>
+		<original>Initializing all user settings</original>
+		<translation>Initialiseren gebruikersinstellingen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing zoom processor...</original>
-		<translation>Initialiseren zoomprocessor ...</translation>
+		<original>Initializing zoom processor</original>
+		<translation>Initialiseren zoomprocessor</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing selection tool...</original>
-		<translation>Initialiseren selectiegereedschap ...</translation>
+		<original>Initializing selection tool</original>
+		<translation>Initialiseren selectiegereedschap</translation>
 	</phrase>
 
 	<phrase>
-		<original>Analyzing current monitor setup...</original>
-		<translation>Analyseren van de huidige monitor setup ...</translation>
+		<original>Analyzing current monitor setup</original>
+		<translation>Analyseren van de huidige monitor setup</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing user interface...</original>
-		<translation>Initialiseren gebruikersinterface ...</translation>
+		<original>Initializing user interface</original>
+		<translation>Initialiseren gebruikersinterface</translation>
 	</phrase>
 
 	<phrase>
@@ -125,23 +125,23 @@
 	</phrase>
 
 	<phrase>
-		<original>Fixing icon...</original>
-		<translation>Instellen pictogram ...</translation>
+		<original>Fixing icon</original>
+		<translation>Instellen pictogram</translation>
 	</phrase>
 
 	<phrase>
-		<original>Generating menu icons...</original>
-		<translation>Genereren van menu iconen ...</translation>
+		<original>Generating menu icons</original>
+		<translation>Genereren van menu iconen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enabling user interface...</original>
-		<translation>Inschakelen van user interface ...</translation>
+		<original>Enabling user interface</original>
+		<translation>Inschakelen van user interface</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing progress bar...</original>
-		<translation>Initialiseren voortgangsbalk ...</translation>
+		<original>Initializing progress bar</original>
+		<translation>Initialiseren voortgangsbalk</translation>
 	</phrase>
 
 	<phrase>
@@ -150,28 +150,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Captioning main form...</original>
-		<translation>Opschrift hoofdscherm ...</translation>
+		<original>Captioning main form</original>
+		<translation>Opschrift hoofdscherm</translation>
 	</phrase>
 
 	<phrase>
-		<original>Preparing custom child icon handler...</original>
-		<translation>Voorbereiden aangepaste child icon handler ...</translation>
+		<original>Preparing custom child icon handler</original>
+		<translation>Voorbereiden aangepaste child icon handler</translation>
 	</phrase>
 
 	<phrase>
-		<original>Checking command line...</original>
-		<translation>Controle van command line ...</translation>
+		<original>Checking command line</original>
+		<translation>Controle van command line</translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading image(s)...</original>
-		<translation>Laden van afbeelding(en) ...</translation>
+		<original>Loading image(s)</original>
+		<translation>Laden van afbeelding(en)</translation>
 	</phrase>
 
 	<phrase>
-		<original>All preparations successful. Loading final interface...</original>
-		<translation>Alle preparaties succesvol. Laden laatste interface ...</translation>
+		<original>All preparations successful. Loading final interface</original>
+		<translation>Alle preparaties succesvol. Laden laatste interface</translation>
 	</phrase>
 
 	<phrase>
@@ -230,8 +230,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Waiting for user to specify JPEG-2000 export options...</original>
-		<translation>Wacht op specificaties van gebruiker voor JPEG-2000 export opties...</translation>
+		<original>Waiting for user to specify JPEG-2000 export options</original>
+		<translation>Wacht op specificaties van gebruiker voor JPEG-2000 export opties</translation>
 	</phrase>
 
 	<phrase>
@@ -280,8 +280,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Waiting for user to specify JPEG export options...</original>
-		<translation>Wacht op specificaties van gebruiker voor JPEG export opties...</translation>
+		<original>Waiting for user to specify JPEG export options</original>
+		<translation>Wacht op specificaties van gebruiker voor JPEG export opties</translation>
 	</phrase>
 
 	<phrase>
@@ -555,8 +555,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting image to two colors...</original>
-		<translation>Het omzetten van beeld naar twee kleuren ...</translation>
+		<original>Converting image to two colors</original>
+		<translation>Het omzetten van beeld naar twee kleuren</translation>
 	</phrase>
 
 	<phrase>
@@ -595,8 +595,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Illuminating image with imaginary blacklight...</original>
-		<translation>Verlichten afbeelding met denkbeeldige blacklight ...</translation>
+		<original>Illuminating image with imaginary blacklight</original>
+		<translation>Verlichten afbeelding met denkbeeldige blacklight</translation>
 	</phrase>
 
 	<phrase>
@@ -620,13 +620,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Adjusting image brightness...</original>
-		<translation>Instellen van helderheid van de afbeelding ...</translation>
+		<original>Adjusting image brightness</original>
+		<translation>Instellen van helderheid van de afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Sampling image data to determine true contrast...</original>
-		<translation>Sampling beeldgegevens om het echte contrast te bepalen ...</translation>
+		<original>Sampling image data to determine true contrast</original>
+		<translation>Sampling beeldgegevens om het echte contrast te bepalen</translation>
 	</phrase>
 
 	<phrase>
@@ -635,8 +635,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Adjusting image contrast...</original>
-		<translation>Instellen van contrast van de afbeelding ...</translation>
+		<original>Adjusting image contrast</original>
+		<translation>Instellen van contrast van de afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -645,8 +645,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Colorizing image...</original>
-		<translation>Inkleuren afbeelding ...</translation>
+		<original>Colorizing image</original>
+		<translation>Inkleuren afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -660,8 +660,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Applying new temperature to image...</original>
-		<translation>Toepassen van nieuwe temperatuur aan de afbeelding ...</translation>
+		<original>Applying new temperature to image</original>
+		<translation>Toepassen van nieuwe temperatuur aan de afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -685,8 +685,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Generating filter data...</original>
-		<translation>Genereren filter data ...</translation>
+		<original>Generating filter data</original>
+		<translation>Genereren filter data</translation>
 	</phrase>
 
 	<phrase>
@@ -780,13 +780,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Despeckling image...</original>
-		<translation>Ontvlekken afbeelding ...</translation>
+		<original>Despeckling image</original>
+		<translation>Ontvlekken afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Removing orphaned pixels...</original>
-		<translation>Verwijderen van verweesde pixels ...</translation>
+		<original>Removing orphaned pixels</original>
+		<translation>Verwijderen van verweesde pixels</translation>
 	</phrase>
 
 	<phrase>
@@ -850,13 +850,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Simulating large image explosion...</original>
-		<translation>Simuleren van grote afbeelding explosie ...</translation>
+		<original>Simulating large image explosion</original>
+		<translation>Simuleren van grote afbeelding explosie</translation>
 	</phrase>
 
 	<phrase>
-		<original>Simulating small image explosion...</original>
-		<translation>Simuleren van kleine afbeelding explosie ...</translation>
+		<original>Simulating small image explosion</original>
+		<translation>Simuleren van kleine afbeelding explosie</translation>
 	</phrase>
 
 	<phrase>
@@ -881,12 +881,12 @@
 
 	<phrase>
 		<original>Embossing image..</original>
-		<translation>Reliëf maken afbeelding ...</translation>
+		<translation>Reliëf maken afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Engraving image...</original>
-		<translation>Graveren afbeelding ...</translation>
+		<original>Engraving image</original>
+		<translation>Graveren afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -900,18 +900,18 @@
 	</phrase>
 
 	<phrase>
-		<original>use custom background color (click colored box to change)...</original>
-		<translation>gebruik maken van aangepaste achtergrondkleur (klik gekleurd vak om te veranderen) ...</translation>
+		<original>use custom background color (click colored box to change)</original>
+		<translation>gebruik maken van aangepaste achtergrondkleur (klik gekleurd vak om te veranderen)</translation>
 	</phrase>
 
 	<phrase>
-		<original>Analyzing image histogram...</original>
-		<translation>Analyseren histogram van afbeelding ...</translation>
+		<original>Analyzing image histogram</original>
+		<translation>Analyseren histogram van afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Equalizing image...</original>
-		<translation>Egaliseren afbeelding ...</translation>
+		<original>Equalizing image</original>
+		<translation>Egaliseren afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -930,13 +930,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Fading image...</original>
-		<translation>Vervagen afbeelding ...</translation>
+		<original>Fading image</original>
+		<translation>Vervagen afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Unfading image...</original>
-		<translation>Onvervagen afbeelding...</translation>
+		<original>Unfading image</original>
+		<translation>Onvervagen afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -950,8 +950,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Tracing image edges with virtual paintbrush...</original>
-		<translation>Zoeken afbeeldingsranden met virtuele penseel ...</translation>
+		<original>Tracing image edges with virtual paintbrush</original>
+		<translation>Zoeken afbeeldingsranden met virtuele penseel</translation>
 	</phrase>
 
 	<phrase>
@@ -1010,8 +1010,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Adjusting gamma values...</original>
-		<translation>Instellen van gammawaarden ...</translation>
+		<original>Adjusting gamma values</original>
+		<translation>Instellen van gammawaarden</translation>
 	</phrase>
 
 	<phrase>
@@ -1090,38 +1090,38 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting image to ###### shades of gray...</original>
+		<original>Converting image to ###### shades of gray</original>
 		<translation>Het omzetten van afbeelding naar ###### grijstinten</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting to ######  shades of gray, with dithering...</original>
+		<original>Converting to ######  shades of gray, with dithering</original>
 		<translation>Converteren naar ###### grijstinten, met dithering ..</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image to grayscale...</original>
-		<translation>Omzetten afbeelding naar grijswaarden ...</translation>
+		<original>Converting image to grayscale</original>
+		<translation>Omzetten afbeelding naar grijswaarden</translation>
 	</phrase>
 
 	<phrase>
-		<original>Generating ITU-R compatible grayscale image...</original>
-		<translation>Genereren van ITU-R compatibel grijswaardenafbeelding ...</translation>
+		<original>Generating ITU-R compatible grayscale image</original>
+		<translation>Genereren van ITU-R compatibel grijswaardenafbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Desaturating image...</original>
-		<translation>Verzadigen beeld ...</translation>
+		<original>Desaturating image</original>
+		<translation>Verzadigen beeld</translation>
 	</phrase>
 
 	<phrase>
-		<original>Decomposing image...</original>
-		<translation>Ontbindend beeld ...</translation>
+		<original>Decomposing image</original>
+		<translation>Ontbindend beeld</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image to grayscale using ###### values...</original>
-		<translation>Omzetten afbeelding in grijswaarden met behulp van ###### waarden ...</translation>
+		<original>Converting image to grayscale using ###### values</original>
+		<translation>Omzetten afbeelding in grijswaarden met behulp van ###### waarden</translation>
 	</phrase>
 
 	<phrase>
@@ -1145,8 +1145,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Adjusting hue, saturation, and luminance values...</original>
-		<translation>Instellen van tint, verzadiging en helderheid waarden ...</translation>
+		<original>Adjusting hue, saturation, and luminance values</original>
+		<translation>Instellen van tint, verzadiging en helderheid waarden</translation>
 	</phrase>
 
 	<phrase>
@@ -1180,8 +1180,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Saving histogram to file...</original>
-		<translation>Opslaan histogram naar bestand ...</translation>
+		<original>Saving histogram to file</original>
+		<translation>Opslaan histogram naar bestand</translation>
 	</phrase>
 
 	<phrase>
@@ -1235,8 +1235,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Export Histogram to File...</original>
-		<translation>Exporteren naar Histogrambestand ...</translation>
+		<original>Export Histogram to File</original>
+		<translation>Exporteren naar Histogrambestand</translation>
 	</phrase>
 
 	<phrase>
@@ -1255,17 +1255,17 @@
 	</phrase>
 
 	<phrase>
-		<original>Analyzing image histogram for maximum and minimum values...</original>
-		<translation>Het analyseren van de afbeeldingshistogram voor maximale en minimale waarden ...</translation>
+		<original>Analyzing image histogram for maximum and minimum values</original>
+		<translation>Het analyseren van de afbeeldingshistogram voor maximale en minimale waarden</translation>
 	</phrase>
 
 	<phrase>
-		<original>Updating histogram...</original>
-		<translation>Updaten histogram ...</translation>
+		<original>Updating histogram</original>
+		<translation>Updaten histogram</translation>
 	</phrase>
 
 	<phrase>
-		<original>Stretching histogram...</original>
+		<original>Stretching histogram</original>
 		<translation>Uitrekken histogram</translation>
 	</phrase>
 
@@ -1275,8 +1275,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Importing binary image data...</original>
-		<translation>Het importeren van binaire afbeeldingsgegevens ...</translation>
+		<original>Importing binary image data</original>
+		<translation>Het importeren van binaire afbeeldingsgegevens</translation>
 	</phrase>
 
 	<phrase>
@@ -1290,8 +1290,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Please select a VB binary file to scan for images...</original>
-		<translation>Selecteer een VB binair bestand om te scannen op afbeeldingen ...</translation>
+		<original>Please select a VB binary file to scan for images</original>
+		<translation>Selecteer een VB binair bestand om te scannen op afbeeldingen</translation>
 	</phrase>
 
 	<phrase>
@@ -1305,8 +1305,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Scanning binary file...</original>
-		<translation>Scannen binair bestand ...</translation>
+		<original>Scanning binary file</original>
+		<translation>Scannen binair bestand</translation>
 	</phrase>
 
 	<phrase>
@@ -1370,8 +1370,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Attempting to connect to Internet...</original>
-		<translation>Poging om verbinding te maken met internet ...</translation>
+		<original>Attempting to connect to Internet</original>
+		<translation>Poging om verbinding te maken met internet</translation>
 	</phrase>
 
 	<phrase>
@@ -1390,8 +1390,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Verifying image URL (this may take a moment)...</original>
-		<translation>Verifiëren afbeelding URL (dit kan even duren) ...</translation>
+		<original>Verifying image URL (this may take a moment)</original>
+		<translation>Verifiëren afbeelding URL (dit kan even duren)</translation>
 	</phrase>
 
 	<phrase>
@@ -1405,13 +1405,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Creating temporary file...</original>
-		<translation>Maken van een tijdelijk bestand ...</translation>
+		<original>Creating temporary file</original>
+		<translation>Maken van een tijdelijk bestand</translation>
 	</phrase>
 
 	<phrase>
-		<original>Image URL verified.  Downloading image...</original>
-		<translation>Afbeelding URL geverifieerd. Downloaden afbeelding ...</translation>
+		<original>Image URL verified.  Downloading image</original>
+		<translation>Afbeelding URL geverifieerd. Downloaden afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1420,13 +1420,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Image URL verified.  Downloading image #1 of  #2 bytes received)...</original>
-		<translation>Afbeelding URL geverifieerd. Downloaden van afbeelding # 1 van #2 bytes ontvangen ) ...</translation>
+		<original>Image URL verified.  Downloading image #1 of  #2 bytes received)</original>
+		<translation>Afbeelding URL geverifieerd. Downloaden van afbeelding # 1 van #2 bytes ontvangen )</translation>
 	</phrase>
 
 	<phrase>
-		<original>Download complete. Verifying file integrity...</original>
-		<translation>Download voltooid. Controleren van integriteit van bestanden ...</translation>
+		<original>Download complete. Verifying file integrity</original>
+		<translation>Download voltooid. Controleren van integriteit van bestanden</translation>
 	</phrase>
 
 	<phrase>
@@ -1475,8 +1475,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Waiting for user input...</original>
-		<translation>Wachten op invoer van de gebruiker ...</translation>
+		<original>Waiting for user input</original>
+		<translation>Wachten op invoer van de gebruiker</translation>
 	</phrase>
 
 	<phrase>
@@ -1495,8 +1495,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Verifying that file exists...</original>
-		<translation>Controleren of bestand bestaat ...</translation>
+		<original>Verifying that file exists</original>
+		<translation>Controleren of bestand bestaat</translation>
 	</phrase>
 
 	<phrase>
@@ -1520,13 +1520,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Image found. Initializing blank form...</original>
-		<translation>Afbeelding gevonden. Initialiseren blanco formulier ...</translation>
+		<original>Image found. Initializing blank form</original>
+		<translation>Afbeelding gevonden. Initialiseren blanco formulier</translation>
 	</phrase>
 
 	<phrase>
-		<original>Determining filetype...</original>
-		<translation>Bepalen van het bestandstype ...</translation>
+		<original>Determining filetype</original>
+		<translation>Bepalen van het bestandstype</translation>
 	</phrase>
 
 	<phrase>
@@ -1575,13 +1575,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Verfiying alpha channel...</original>
-		<translation>Verficatie alfakanaal ...</translation>
+		<original>Verfiying alpha channel</original>
+		<translation>Verficatie alfakanaal</translation>
 	</phrase>
 
 	<phrase>
-		<original>Alpha channel deemed unnecessary.  Converting image to 24bpp...</original>
-		<translation>Alfakanaal  niet nodig geacht. Omzetten van beeld naar 24bpp ...</translation>
+		<original>Alpha channel deemed unnecessary.  Converting image to 24bpp</original>
+		<translation>Alfakanaal  niet nodig geacht. Omzetten van beeld naar 24bpp</translation>
 	</phrase>
 
 	<phrase>
@@ -1600,8 +1600,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Resizing image to fit screen...</original>
-		<translation>Aanpassen grootte van de afbeelding om op scherm te passen ...</translation>
+		<original>Resizing image to fit screen</original>
+		<translation>Aanpassen grootte van de afbeelding om op scherm te passen</translation>
 	</phrase>
 
 	<phrase>
@@ -1615,8 +1615,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Duplicating current image...</original>
-		<translation>Dupliceren huidige afbeelding...</translation>
+		<original>Duplicating current image</original>
+		<translation>Dupliceren huidige afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1625,7 +1625,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Generating image twin...</original>
+		<original>Generating image twin</original>
 		<translation>Genereren van afbeeldings tweeling</translation>
 	</phrase>
 
@@ -1635,13 +1635,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing histogram data...</original>
-		<translation>Voorbereiden histogramgegevens ...</translation>
+		<original>Preparing histogram data</original>
+		<translation>Voorbereiden histogramgegevens</translation>
 	</phrase>
 
 	<phrase>
-		<original>Adjusting image white balance...</original>
-		<translation>Instellen witbalans van de afbeelding ...</translation>
+		<original>Adjusting image white balance</original>
+		<translation>Instellen witbalans van de afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1650,8 +1650,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Rendering tiled image...</original>
-		<translation>Rendering betegelde afbeelding ...</translation>
+		<original>Rendering tiled image</original>
+		<translation>Rendering betegelde afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1710,8 +1710,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Solarizing image...</original>
-		<translation>Solarisatie afbeelding...</translation>
+		<original>Solarizing image</original>
+		<translation>Solarisatie afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1725,8 +1725,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Rotating image (this may take a few seconds)...</original>
-		<translation>Draaien afbeelding (dit kan enkele seconden duren) ...</translation>
+		<original>Rotating image (this may take a few seconds)</original>
+		<translation>Draaien afbeelding (dit kan enkele seconden duren)</translation>
 	</phrase>
 
 	<phrase>
@@ -1775,18 +1775,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Resampling image using the FreeImage library...</original>
-		<translation>Resampelen afbeelding met behulp van de FreeImage bibliotheek ...</translation>
+		<original>Resampling image using the FreeImage library</original>
+		<translation>Resampelen afbeelding met behulp van de FreeImage bibliotheek</translation>
 	</phrase>
 
 	<phrase>
-		<original>Resizing image...</original>
-		<translation>Herdimensionering afbeelding ...</translation>
+		<original>Resizing image</original>
+		<translation>Herdimensionering afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Resampling image...</original>
-		<translation>Resampelen afbeelding ...</translation>
+		<original>Resampling image</original>
+		<translation>Resampelen afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1805,8 +1805,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Mapping new image levels...</original>
-		<translation>In kaart brengen nieuwe afbeelding niveaus ...</translation>
+		<original>Mapping new image levels</original>
+		<translation>In kaart brengen nieuwe afbeelding niveaus</translation>
 	</phrase>
 
 	<phrase>
@@ -1845,8 +1845,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Repainting image in mosaic style...</original>
-		<translation>Hertekenen afbeelding in mozaïek stijl ...</translation>
+		<original>Repainting image in mosaic style</original>
+		<translation>Hertekenen afbeelding in mozaïek stijl</translation>
 	</phrase>
 
 	<phrase>
@@ -1865,8 +1865,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Increasing image noise...</original>
-		<translation>Verhogen ruis van afbeelding ...</translation>
+		<original>Increasing image noise</original>
+		<translation>Verhogen ruis van afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1885,8 +1885,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Posterizing image...</original>
-		<translation>Schakeren afbeelding ...</translation>
+		<original>Posterizing image</original>
+		<translation>Schakeren afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1900,18 +1900,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Dilating image via maximum (high-pass) rank filter...</original>
-		<translation>Verwijden van afbeelding via maximum (high-pass) rangschikking filter ...</translation>
+		<original>Dilating image via maximum (high-pass) rank filter</original>
+		<translation>Verwijden van afbeelding via maximum (high-pass) rangschikking filter</translation>
 	</phrase>
 
 	<phrase>
-		<original>Eroding image via minimum (low-pass) rank filter...</original>
-		<translation>Eroderen afbeelding via minimum (low-pass) rangschikking filter ...</translation>
+		<original>Eroding image via minimum (low-pass) rank filter</original>
+		<translation>Eroderen afbeelding via minimum (low-pass) rangschikking filter</translation>
 	</phrase>
 
 	<phrase>
-		<original>Redrawing image via extreme rank filter...</original>
-		<translation>Hertekenen afbeelding via extreme rangschikking filter ...</translation>
+		<original>Redrawing image via extreme rank filter</original>
+		<translation>Hertekenen afbeelding via extreme rangschikking filter</translation>
 	</phrase>
 
 	<phrase>
@@ -1980,8 +1980,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Quantizing image using the FreeImage library...</original>
-		<translation>Quantiseren beeld met behulp van de FreeImage bibliotheek ...</translation>
+		<original>Quantizing image using the FreeImage library</original>
+		<translation>Quantiseren beeld met behulp van de FreeImage bibliotheek</translation>
 	</phrase>
 
 	<phrase>
@@ -1990,13 +1990,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Applying manual RGB modifications to image...</original>
+		<original>Applying manual RGB modifications to image</original>
 		<translation>Aanpassingen afbeelding met gebruik van een handmatige RGB</translation>
 	</phrase>
 
 	<phrase>
-		<original>Applying intelligent coloring...</original>
-		<translation>Toepassen van intelligente kleuren ...</translation>
+		<original>Applying intelligent coloring</original>
+		<translation>Toepassen van intelligente kleuren</translation>
 	</phrase>
 
 	<phrase>
@@ -2050,7 +2050,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Checking for software updates...</original>
+		<original>Checking for software updates</original>
 		<translation>Er is een fout opgetreden tijdens het controleren op updates. Probeer het later opnieuw.</translation>
 	</phrase>
 
@@ -2061,7 +2061,7 @@
 
 	<phrase>
 		<original>This copy of X1 is the newest available.  (Version</original>
-		<translation>Software-update gevonden! Lanceren van Update Berichtgeving ...</translation>
+		<translation>Software-update gevonden! Lanceren van Update Berichtgeving</translation>
 	</phrase>
 
 	<phrase>
@@ -2145,8 +2145,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Sending image to printer...</original>
-		<translation>Verzenden van de afbeelding naar de printer ...</translation>
+		<original>Sending image to printer</original>
+		<translation>Verzenden van de afbeelding naar de printer</translation>
 	</phrase>
 
 	<phrase>
@@ -2200,8 +2200,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Change Paper Size...</original>
-		<translation>Wijzig Papierformaat ...</translation>
+		<original>Change Paper Size</original>
+		<translation>Wijzig Papierformaat</translation>
 	</phrase>
 
 	<phrase>
@@ -2455,8 +2455,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Alternatively, you can use a Windows 'Common Dialog' to select images...</original>
-		<translation>U kunt ook gebruik maken van een Windows 'dialoogvenster' om beelden te selecteren ...</translation>
+		<original>Alternatively, you can use a Windows 'Common Dialog' to select images</original>
+		<translation>U kunt ook gebruik maken van een Windows 'dialoogvenster' om beelden te selecteren</translation>
 	</phrase>
 
 	<phrase>
@@ -2485,13 +2485,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Load an image list...</original>
-		<translation>Laad een afbeeldingen lijst ...</translation>
+		<original>Load an image list</original>
+		<translation>Laad een afbeeldingen lijst</translation>
 	</phrase>
 
 	<phrase>
-		<original>Save the current list...</original>
-		<translation>Bewaar de huidige lijst ...</translation>
+		<original>Save the current list</original>
+		<translation>Bewaar de huidige lijst</translation>
 	</phrase>
 
 	<phrase>
@@ -2575,8 +2575,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)...</original>
-		<translation>Controleren op software-updates (deze functie kan worden uitgeschakeld in het Bewerken -> Voorkeuren menu) ...</translation>
+		<original>Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)</original>
+		<translation>Controleren op software-updates (deze functie kan worden uitgeschakeld in het Bewerken -> Voorkeuren menu)</translation>
 	</phrase>
 
 	<phrase>
@@ -2590,8 +2590,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Some core plugins could not be found. Preparing updater...</original>
-		<translation>Sommige core plugins kunnen niet worden gevonden. Voorbereiden updater ...</translation>
+		<original>Some core plugins could not be found. Preparing updater</original>
+		<translation>Sommige core plugins kunnen niet worden gevonden. Voorbereiden updater</translation>
 	</phrase>
 
 	<phrase>
@@ -2620,8 +2620,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing to load MRU entry...</original>
-		<translation>Voorbereidingen voor laden van het MRU ingang...</translation>
+		<original>Preparing to load MRU entry</original>
+		<translation>Voorbereidingen voor laden van het MRU ingang</translation>
 	</phrase>
 
 	<phrase>
@@ -2675,8 +2675,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Macro recording in progress...</original>
-		<translation>Macro-opname aan de gang ...</translation>
+		<original>Macro recording in progress</original>
+		<translation>Macro-opname aan de gang</translation>
 	</phrase>
 
 	<phrase>
@@ -2705,8 +2705,8 @@
 	</phrase>
 
 	<phrase>
-		<original>From Scanner or Camera...</original>
-		<translation>Van scanner of camera ...</translation>
+		<original>From Scanner or Camera</original>
+		<translation>Van scanner of camera</translation>
 	</phrase>
 
 	<phrase>
@@ -2715,23 +2715,23 @@
 	</phrase>
 
 	<phrase>
-		<original>Online Image...</original>
-		<translation>Online afbeelding ...</translation>
+		<original>Online Image</original>
+		<translation>Online afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Screen Capture...</original>
-		<translation>Schermafdruk ...</translation>
+		<original>Screen Capture</original>
+		<translation>Schermafdruk</translation>
 	</phrase>
 
 	<phrase>
-		<original>Batch Convert...</original>
-		<translation>Batch Convert ...</translation>
+		<original>Batch Convert</original>
+		<translation>Batch Convert</translation>
 	</phrase>
 
 	<phrase>
-		<original>Print...</original>
-		<translation>Afdrukken ...</translation>
+		<original>Print</original>
+		<translation>Afdrukken</translation>
 	</phrase>
 
 	<phrase>
@@ -2820,8 +2820,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Resize...</original>
-		<translation>Wijzigen formaat ...</translation>
+		<original>Resize</original>
+		<translation>Wijzigen formaat</translation>
 	</phrase>
 
 	<phrase>
@@ -2855,8 +2855,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Arbitrary Rotation...</original>
-		<translation>Willekeurig draaien ...</translation>
+		<original>Arbitrary Rotation</original>
+		<translation>Willekeurig draaien</translation>
 	</phrase>
 
 	<phrase>
@@ -2865,8 +2865,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Tile...</original>
-		<translation>Tegels ...</translation>
+		<original>Tile</original>
+		<translation>Tegels</translation>
 	</phrase>
 
 	<phrase>
@@ -2875,33 +2875,33 @@
 	</phrase>
 
 	<phrase>
-		<original>Brightness/Contrast...</original>
-		<translation>Helderheid / Contrast ...</translation>
+		<original>Brightness/Contrast</original>
+		<translation>Helderheid / Contrast</translation>
 	</phrase>
 
 	<phrase>
-		<original>Gamma ...</original>
-		<translation>Gamma ...</translation>
+		<original>Gamma</original>
+		<translation>Gamma</translation>
 	</phrase>
 
 	<phrase>
-		<original>Hue / Saturation...</original>
-		<translation>Kleurtoon / verzadiging ...</translation>
+		<original>Hue / Saturation</original>
+		<translation>Kleurtoon / verzadiging</translation>
 	</phrase>
 
 	<phrase>
-		<original>Levels...</original>
-		<translation>Niveaus ...</translation>
+		<original>Levels</original>
+		<translation>Niveaus</translation>
 	</phrase>
 
 	<phrase>
-		<original>Temperature...</original>
-		<translation>Temperatuur ...</translation>
+		<original>Temperature</original>
+		<translation>Temperatuur</translation>
 	</phrase>
 
 	<phrase>
-		<original>White Balance...</original>
-		<translation>Witbalans ...</translation>
+		<original>White Balance</original>
+		<translation>Witbalans</translation>
 	</phrase>
 
 	<phrase>
@@ -2915,8 +2915,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Equalize...</original>
-		<translation>Egaliseren ...</translation>
+		<original>Equalize</original>
+		<translation>Egaliseren</translation>
 	</phrase>
 
 	<phrase>
@@ -2940,18 +2940,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Rechannel...</original>
-		<translation>Herkanaliseren ...</translation>
+		<original>Rechannel</original>
+		<translation>Herkanaliseren</translation>
 	</phrase>
 
 	<phrase>
-		<original>Black and White...</original>
-		<translation>Zwart/ Wit ...</translation>
+		<original>Black and White</original>
+		<translation>Zwart/ Wit</translation>
 	</phrase>
 
 	<phrase>
-		<original>Colorize...</original>
-		<translation>Verkleuren ...</translation>
+		<original>Colorize</original>
+		<translation>Verkleuren</translation>
 	</phrase>
 
 	<phrase>
@@ -3000,8 +3000,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Custom Fade...</original>
-		<translation>Aangepaste vervaging ...</translation>
+		<original>Custom Fade</original>
+		<translation>Aangepaste vervaging</translation>
 	</phrase>
 
 	<phrase>
@@ -3010,8 +3010,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Grayscale...</original>
-		<translation>Grijswaarden ...</translation>
+		<original>Grayscale</original>
+		<translation>Grijswaarden</translation>
 	</phrase>
 
 	<phrase>
@@ -3025,8 +3025,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Posterize...</original>
-		<translation>Schakeren ...</translation>
+		<original>Posterize</original>
+		<translation>Schakeren</translation>
 	</phrase>
 
 	<phrase>
@@ -3035,8 +3035,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Reduce unique colors...</original>
-		<translation>Verminder unieke kleuren ...</translation>
+		<original>Reduce unique colors</original>
+		<translation>Verminder unieke kleuren</translation>
 	</phrase>
 
 	<phrase>
@@ -3065,8 +3065,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Mosaic...</original>
-		<translation>Mozaïek ...</translation>
+		<original>Mosaic</original>
+		<translation>Mozaïek</translation>
 	</phrase>
 
 	<phrase>
@@ -3120,8 +3120,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Emboss/Engrave...</original>
-		<translation>Reliëf / Gravure ...</translation>
+		<original>Emboss/Engrave</original>
+		<translation>Reliëf / Gravure</translation>
 	</phrase>
 
 	<phrase>
@@ -3130,8 +3130,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Find Edges...</original>
-		<translation>Randen zoeken ...</translation>
+		<original>Find Edges</original>
+		<translation>Randen zoeken</translation>
 	</phrase>
 
 	<phrase>
@@ -3250,7 +3250,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Custom Diffuse...</original>
+		<original>Custom Diffuse</original>
 		<translation>Aangepast spreiden</translation>
 	</phrase>
 
@@ -3265,8 +3265,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Play Saved Macro...</original>
-		<translation>Afspelen Opgeslagen Macro ...</translation>
+		<original>Play Saved Macro</original>
+		<translation>Afspelen Opgeslagen Macro</translation>
 	</phrase>
 
 	<phrase>
@@ -3275,8 +3275,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Sto&p Recording...</original>
-		<translation>Opname Sto&ppen ...</translation>
+		<original>Sto&p Recording</original>
+		<translation>Opname Sto&ppen</translation>
 	</phrase>
 
 	<phrase>
@@ -3340,13 +3340,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Submit Feedback...</original>
-		<translation>Feedback ...</translation>
+		<original>Submit Feedback</original>
+		<translation>Feedback</translation>
 	</phrase>
 
 	<phrase>
-		<original>Submit Bug Report...</original>
-		<translation>Indienen Bug Report ...</translation>
+		<original>Submit Bug Report</original>
+		<translation>Indienen Bug Report</translation>
 	</phrase>
 
 	<phrase>
@@ -3410,7 +3410,7 @@
 	</phrase>
 
 	<phrase>
-		<original>URL found on clipboard.  Attempting to download image at that location...</original>
+		<original>URL found on clipboard.  Attempting to download image at that location</original>
 		<translation>URL gevonden in Klembord . Proberen van te downloaden op die locatie</translation>
 	</phrase>
 
@@ -3435,13 +3435,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing to load image...</original>
+		<original>Preparing to load image</original>
 		<translation>Voorbereiden laden afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rendering image to screen...</original>
-		<translation>Rendering afbeelding naar het scherm ...</translation>
+		<original>Rendering image to screen</original>
+		<translation>Rendering afbeelding naar het scherm</translation>
 	</phrase>
 
 	<phrase>
@@ -3495,13 +3495,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Loading custom filter information...</original>
-		<translation>Laden van aangepast filter informatie ...</translation>
+		<original>Loading custom filter information</original>
+		<translation>Laden van aangepast filter informatie</translation>
 	</phrase>
 
 	<phrase>
-		<original>Applying X1 filter...</original>
-		<translation>Toepassen X1 filter ...</translation>
+		<original>Applying X1 filter</original>
+		<translation>Toepassen X1 filter</translation>
 	</phrase>
 
 	<phrase>
@@ -3510,23 +3510,23 @@
 	</phrase>
 
 	<phrase>
-		<original>Generating grids...</original>
-		<translation>Genereren van rasters ...</translation>
+		<original>Generating grids</original>
+		<translation>Genereren van rasters</translation>
 	</phrase>
 
 	<phrase>
-		<original>Applying grid blur...</original>
-		<translation>Toepassen raster onscherpte ...</translation>
+		<original>Applying grid blur</original>
+		<translation>Toepassen raster onscherpte</translation>
 	</phrase>
 
 	<phrase>
-		<original>Preparing conversion tables...</original>
-		<translation>Voorbereiden conversietabellen ...</translation>
+		<original>Preparing conversion tables</original>
+		<translation>Voorbereiden conversietabellen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image to isometric view...</original>
-		<translation>Omzetten van afbeelding naar isometrisch aanzicht ...</translation>
+		<original>Converting image to isometric view</original>
+		<translation>Omzetten van afbeelding naar isometrisch aanzicht</translation>
 	</phrase>
 
 	<phrase>
@@ -3540,78 +3540,78 @@
 	</phrase>
 
 	<phrase>
-		<original>filter ...</original>
-		<translation>filter ...</translation>
+		<original>filter</original>
+		<translation>filter</translation>
 	</phrase>
 
 	<phrase>
-		<original>Inverting the image...</original>
-		<translation>Omkeren van de afbeelding ...</translation>
+		<original>Inverting the image</original>
+		<translation>Omkeren van de afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Shifting RGB values right...</original>
-		<translation>Verschuiven RGB-waarden rechts ...</translation>
+		<original>Shifting RGB values right</original>
+		<translation>Verschuiven RGB-waarden rechts</translation>
 	</phrase>
 
 	<phrase>
-		<original>Shifting RGB values left...</original>
-		<translation>Verschuiven RGB-waarden links ...</translation>
+		<original>Shifting RGB values left</original>
+		<translation>Verschuiven RGB-waarden links</translation>
 	</phrase>
 
 	<phrase>
-		<original>Calculating film negative values...</original>
-		<translation>Berekenen film negatieve waarden ...</translation>
+		<original>Calculating film negative values</original>
+		<translation>Berekenen film negatieve waarden</translation>
 	</phrase>
 
 	<phrase>
-		<original>Inverting image hue...</original>
-		<translation>Inverteren tint van afbeelding ...</translation>
+		<original>Inverting image hue</original>
+		<translation>Inverteren tint van afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Performing compound inversion...</original>
-		<translation>Uitvoeren van samengestelde inversie ...</translation>
+		<original>Performing compound inversion</original>
+		<translation>Uitvoeren van samengestelde inversie</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enhancing image contrast...</original>
-		<translation>Verbetering van beeldcontrast ...</translation>
+		<original>Enhancing image contrast</original>
+		<translation>Verbetering van beeldcontrast</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enhancing image highlights...</original>
-		<translation>Versterking van beeld hoogtepunten ...</translation>
+		<original>Enhancing image highlights</original>
+		<translation>Versterking van beeld hoogtepunten</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enhancing image midtones...</original>
-		<translation>Versterking van beeld middentonen ...</translation>
+		<original>Enhancing image midtones</original>
+		<translation>Versterking van beeld middentonen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enhancing image shadows...</original>
-		<translation>Versterking van beeld schaduwen ...</translation>
+		<original>Enhancing image shadows</original>
+		<translation>Versterking van beeld schaduwen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Sketching the image with an imaginary pencil...</original>
-		<translation>Schetsen van de afbeelding met een denkbeeldige potlood ...</translation>
+		<original>Sketching the image with an imaginary pencil</original>
+		<translation>Schetsen van de afbeelding met een denkbeeldige potlood</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image mode...</original>
-		<translation>Omzetten van beeld-modus ...</translation>
+		<original>Converting image mode</original>
+		<translation>Omzetten van beeld-modus</translation>
 	</phrase>
 
 	<phrase>
-		<original>Fading last effect...</original>
-		<translation>Vervagen laatste effect ...</translation>
+		<original>Fading last effect</original>
+		<translation>Vervagen laatste effect</translation>
 	</phrase>
 
 	<phrase>
-		<original>Performing thermographic analysis...</original>
-		<translation>Uitvoeren van thermografische analyse ...</translation>
+		<original>Performing thermographic analysis</original>
+		<translation>Uitvoeren van thermografische analyse</translation>
 	</phrase>
 
 	<phrase>
@@ -3620,43 +3620,43 @@
 	</phrase>
 
 	<phrase>
-		<original>Synthesizing new image...</original>
-		<translation>Synthetiseren nieuwe afbeelding ...</translation>
+		<original>Synthesizing new image</original>
+		<translation>Synthetiseren nieuwe afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Abducting image and probing it for weaknesses...</original>
-		<translation>Ontvoeren beeld en indringen voor zwakke punten ...</translation>
+		<original>Abducting image and probing it for weaknesses</original>
+		<translation>Ontvoeren beeld en indringen voor zwakke punten</translation>
 	</phrase>
 
 	<phrase>
-		<original>Accelerating to 88mph in order to antique-ify this image...</original>
-		<translation>Versnellen tot 88 mph om deze afbeelding te antiekeren ...</translation>
+		<original>Accelerating to 88mph in order to antique-ify this image</original>
+		<translation>Versnellen tot 88 mph om deze afbeelding te antiekeren</translation>
 	</phrase>
 
 	<phrase>
-		<original>Engaging hipsters to perform sepia conversion...</original>
-		<translation>Starten hipsters om sepia conversie uit te voeren ...</translation>
+		<original>Engaging hipsters to perform sepia conversion</original>
+		<translation>Starten hipsters om sepia conversie uit te voeren</translation>
 	</phrase>
 
 	<phrase>
-		<original>Putting image to sleep, then measuring its REM cycles...</original>
-		<translation>Beeld laten inslapen, dan meten van de REM cycli ...</translation>
+		<original>Putting image to sleep, then measuring its REM cycles</original>
+		<translation>Beeld laten inslapen, dan meten van de REM cycli</translation>
 	</phrase>
 
 	<phrase>
-		<original>Injecting image with non-ionizing radiation...</original>
-		<translation>Injecteren beeld met niet-ioniserende straling ...</translation>
+		<original>Injecting image with non-ionizing radiation</original>
+		<translation>Injecteren beeld met niet-ioniserende straling</translation>
 	</phrase>
 
 	<phrase>
-		<original>Embuing image with the essence of F. Miller...</original>
-		<translation>Doordringen afbeelding met de essentie van F. Miller ...</translation>
+		<original>Embuing image with the essence of F. Miller</original>
+		<translation>Doordringen afbeelding met de essentie van F. Miller</translation>
 	</phrase>
 
 	<phrase>
-		<original>Counting the number of unique colors in this image...</original>
-		<translation>Tellen van het aantal unieke kleuren in deze afbeelding ...</translation>
+		<original>Counting the number of unique colors in this image</original>
+		<translation>Tellen van het aantal unieke kleuren in deze afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -3685,8 +3685,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Animate filter disabled... for now</original>
-		<translation>Animate filter uitgeschakeld ... voor nu</translation>
+		<original>Animate filter disabled for now</original>
+		<translation>Animate filter uitgeschakeld voor nu</translation>
 	</phrase>
 
 	<phrase>
@@ -3705,48 +3705,48 @@
 	</phrase>
 
 	<phrase>
-		<original>Sprinkling image with shimmering rainbows...</original>
-		<translation>Afbeelding besprinkelen met glinsterende regenbogen ...</translation>
+		<original>Sprinkling image with shimmering rainbows</original>
+		<translation>Afbeelding besprinkelen met glinsterende regenbogen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Generating artificial fog...</original>
-		<translation>Genereren van kunstmatige mist ...</translation>
+		<original>Generating artificial fog</original>
+		<translation>Genereren van kunstmatige mist</translation>
 	</phrase>
 
 	<phrase>
-		<original>Generating artificial water...</original>
-		<translation>Genereren van kunstmatige water ...</translation>
+		<original>Generating artificial water</original>
+		<translation>Genereren van kunstmatige water</translation>
 	</phrase>
 
 	<phrase>
-		<original>Creating artificial atmosphere...</original>
-		<translation>Creëren van kunstmatige sfeer ...</translation>
+		<original>Creating artificial atmosphere</original>
+		<translation>Creëren van kunstmatige sfeer</translation>
 	</phrase>
 
 	<phrase>
-		<original>Dropping image temperature...</original>
-		<translation>Verlagen temperatuur afbeelding ...</translation>
+		<original>Dropping image temperature</original>
+		<translation>Verlagen temperatuur afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Exploding imaginary volcano...</original>
-		<translation>Exploderende denkbeeldige vulkaan ...</translation>
+		<original>Exploding imaginary volcano</original>
+		<translation>Exploderende denkbeeldige vulkaan</translation>
 	</phrase>
 
 	<phrase>
-		<original>Lighting image on fire...</original>
-		<translation>Afbeelding in brand steken ...</translation>
+		<original>Lighting image on fire</original>
+		<translation>Afbeelding in brand steken</translation>
 	</phrase>
 
 	<phrase>
-		<original>Taking image for a swim...</original>
-		<translation>Afbeelding laten zwemmen ...</translation>
+		<original>Taking image for a swim</original>
+		<translation>Afbeelding laten zwemmen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Pouring smoldering steel onto image...</original>
-		<translation>Afbeelding overgieten met smeulend staal ...</translation>
+		<original>Pouring smoldering steel onto image</original>
+		<translation>Afbeelding overgieten met smeulend staal</translation>
 	</phrase>
 
 	<phrase>
@@ -3755,8 +3755,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Cropping image to selected area...</original>
-		<translation>Bijsnijden afbeelding voor geselecteerde gebied ...</translation>
+		<original>Cropping image to selected area</original>
+		<translation>Bijsnijden afbeelding voor geselecteerde gebied</translation>
 	</phrase>
 
 	<phrase>
@@ -3770,33 +3770,33 @@
 	</phrase>
 
 	<phrase>
-		<original>Flipping image...</original>
-		<translation>Omdraaien afbeelding ...</translation>
+		<original>Flipping image</original>
+		<translation>Omdraaien afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Mirroring image...</original>
-		<translation>Spiegelen afbeelding ...</translation>
+		<original>Mirroring image</original>
+		<translation>Spiegelen afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rotating image clockwise...</original>
-		<translation>Draaien afbeelding met de klok mee ...</translation>
+		<original>Rotating image clockwise</original>
+		<translation>Draaien afbeelding met de klok mee</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rotating image...</original>
-		<translation>Draaien afbeelding ...</translation>
+		<original>Rotating image</original>
+		<translation>Draaien afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rotating image counter-clockwise...</original>
-		<translation>Draaien afbeelding tegen de klok in ...</translation>
+		<original>Rotating image counter-clockwise</original>
+		<translation>Draaien afbeelding tegen de klok in</translation>
 	</phrase>
 
 	<phrase>
-		<original>Analyzing filetype...</original>
-		<translation>Analyseren van bestandstype ...</translation>
+		<original>Analyzing filetype</original>
+		<translation>Analyseren van bestandstype</translation>
 	</phrase>
 
 	<phrase>
@@ -3805,8 +3805,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing import flags...</original>
-		<translation>Voorbereiden import vlaggen ...</translation>
+		<original>Preparing import flags</original>
+		<translation>Voorbereiden import vlaggen</translation>
 	</phrase>
 
 	<phrase>
@@ -3850,18 +3850,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Importing image from file...</original>
-		<translation>Importeren afbeelding uit bestand ...</translation>
+		<original>Importing image from file</original>
+		<translation>Importeren afbeelding uit bestand</translation>
 	</phrase>
 
 	<phrase>
-		<original>Importing frame # #1 from animated GIF file...</original>
-		<translation>Het importeren van frame # # 1 van geanimeerde GIF-bestand ...</translation>
+		<original>Importing frame # #1 from animated GIF file</original>
+		<translation>Het importeren van frame # # 1 van geanimeerde GIF-bestand</translation>
 	</phrase>
 
 	<phrase>
-		<original>Importing frame # #1 from multipage TIFF file...</original>
-		<translation>Het importeren van frame # # 1 van meerbladige TIFF-bestand ...</translation>
+		<original>Importing frame # #1 from multipage TIFF file</original>
+		<translation>Het importeren van frame # # 1 van meerbladige TIFF-bestand</translation>
 	</phrase>
 
 	<phrase>
@@ -3870,28 +3870,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Analyzing color depth...</original>
-		<translation>Analyseren van de kleurdiepte ...</translation>
+		<original>Analyzing color depth</original>
+		<translation>Analyseren van de kleurdiepte</translation>
 	</phrase>
 
 	<phrase>
-		<original>High bit-depth RGB image identified.  Checking for non-standard alpha encoding...</original>
-		<translation>Hoge bit-diepte RGB-afbeelding geïdentificeerd. Controleren op niet-standaard alpha-codering ...</translation>
+		<original>High bit-depth RGB image identified.  Checking for non-standard alpha encoding</original>
+		<translation>Hoge bit-diepte RGB-afbeelding geïdentificeerd. Controleren op niet-standaard alpha-codering</translation>
 	</phrase>
 
 	<phrase>
-		<original>Non-standard alpha data found.  Making temporary copy prior to tone mapping...</original>
-		<translation>Niet-standaard alpha-gegevens gevonden. Het maken van tijdelijke kopie voorafgaand aan tonemapping ...</translation>
+		<original>Non-standard alpha data found.  Making temporary copy prior to tone mapping</original>
+		<translation>Niet-standaard alpha-gegevens gevonden. Het maken van tijdelijke kopie voorafgaand aan tonemapping</translation>
 	</phrase>
 
 	<phrase>
-		<original>No alpha data found.  Preparing tone-mapping...</original>
-		<translation>Geen alpha-gegevens gevonden. Voorbereiden tone-mapping ...</translation>
+		<original>No alpha data found.  Preparing tone-mapping</original>
+		<translation>Geen alpha-gegevens gevonden. Voorbereiden tone-mapping</translation>
 	</phrase>
 
 	<phrase>
-		<original>Tone mapping HDR image to preserve tonal range...</original>
-		<translation>Tonemapping HDR afbeelding om toonbereik behouden ...</translation>
+		<original>Tone mapping HDR image to preserve tonal range</original>
+		<translation>Tonemapping HDR afbeelding om toonbereik behouden</translation>
 	</phrase>
 
 	<phrase>
@@ -3910,13 +3910,13 @@
 	</phrase>
 
 	<phrase>
-		<original>High bit-depth RGBA image identified.  Making copy of alpha data...</original>
-		<translation>Hoge bit-diepte RGBA beeld geïdentificeerd. Het maken van kopie van alpha-gegevens ...</translation>
+		<original>High bit-depth RGBA image identified.  Making copy of alpha data</original>
+		<translation>Hoge bit-diepte RGBA beeld geïdentificeerd. Het maken van kopie van alpha-gegevens</translation>
 	</phrase>
 
 	<phrase>
-		<original>Alpha copy complete.  Tone mapping HDR image to preserve tonal range...</original>
-		<translation>Alpha kopie af te ronden. Tonemapping HDR afbeelding om toonbereik behouden ...</translation>
+		<original>Alpha copy complete.  Tone mapping HDR image to preserve tonal range</original>
+		<translation>Alpha kopie af te ronden. Tonemapping HDR afbeelding om toonbereik behouden</translation>
 	</phrase>
 
 	<phrase>
@@ -3930,13 +3930,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Tone-mapping high-bit-depth grayscale image to 24bpp...</original>
-		<translation>Tone-mapping high-bit-diepte afbeelding in grijstinten naar 24bpp ...</translation>
+		<original>Tone-mapping high-bit-depth grayscale image to 24bpp</original>
+		<translation>Tone-mapping high-bit-diepte afbeelding in grijstinten naar 24bpp</translation>
 	</phrase>
 
 	<phrase>
-		<original>Requesting memory for image transfer...</original>
-		<translation>Aanvragen geheugen voor beeldoverdracht ...</translation>
+		<original>Requesting memory for image transfer</original>
+		<translation>Aanvragen geheugen voor beeldoverdracht</translation>
 	</phrase>
 
 	<phrase>
@@ -3945,8 +3945,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Memory secured.  Finalizing image load...</original>
-		<translation>Geheugen vastgezet. Finaliseren laden afbeelding ...</translation>
+		<original>Memory secured.  Finalizing image load</original>
+		<translation>Geheugen vastgezet. Finaliseren laden afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -3955,8 +3955,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Restoring alpha data...</original>
-		<translation>Herstel van alpha-gegevens ...</translation>
+		<original>Restoring alpha data</original>
+		<translation>Herstel van alpha-gegevens</translation>
 	</phrase>
 
 	<phrase>
@@ -3970,28 +3970,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Initializing GDI+...</original>
-		<translation>Initialiseren GDI + ...</translation>
+		<original>Initializing GDI+</original>
+		<translation>Initialiseren GDI +</translation>
 	</phrase>
 
 	<phrase>
-		<original>Creating GDI+ compatible image copy...</original>
-		<translation>Maken van GDI + compatibele afbeelding kopiëren ...</translation>
+		<original>Creating GDI+ compatible image copy</original>
+		<translation>Maken van GDI + compatibele afbeelding kopiëren</translation>
 	</phrase>
 
 	<phrase>
-		<original>Preparing GDI+ encoder for this filetype...</original>
-		<translation>Voorbereiden GDI +-encoder voor dit bestandstype ...</translation>
+		<original>Preparing GDI+ encoder for this filetype</original>
+		<translation>Voorbereiden GDI +-encoder voor dit bestandstype</translation>
 	</phrase>
 
 	<phrase>
-		<original>Saving the file...</original>
-		<translation>Opslaan van het bestand ...</translation>
+		<original>Saving the file</original>
+		<translation>Opslaan van het bestand</translation>
 	</phrase>
 
 	<phrase>
-		<original>Releasing all temporary image copies...</original>
-		<translation>Loslaten van alle tijdelijke bestands kopieën ...</translation>
+		<original>Releasing all temporary image copies</original>
+		<translation>Loslaten van alle tijdelijke bestands kopieën</translation>
 	</phrase>
 
 	<phrase>
@@ -4050,8 +4050,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Loading macro data...</original>
-		<translation>Laden macrogegevens ...</translation>
+		<original>Loading macro data</original>
+		<translation>Laden macrogegevens</translation>
 	</phrase>
 
 	<phrase>
@@ -4075,13 +4075,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting outdated macro format...</original>
-		<translation>Omzetten van een verouderde macro-formaat ...</translation>
+		<original>Converting outdated macro format</original>
+		<translation>Omzetten van een verouderde macro-formaat</translation>
 	</phrase>
 
 	<phrase>
-		<original>Macro converted successfully!  Continuing...</original>
-		<translation>Macro met succes omgezet! Voortzetting van ...</translation>
+		<original>Macro converted successfully!  Continuing</original>
+		<translation>Macro met succes omgezet! Voortzetting van</translation>
 	</phrase>
 
 	<phrase>
@@ -4090,8 +4090,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Processing macro data...</original>
-		<translation>Verwerking macrogegevens ...</translation>
+		<original>Processing macro data</original>
+		<translation>Verwerking macrogegevens</translation>
 	</phrase>
 
 	<phrase>
@@ -4130,8 +4130,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Saving recent file menu thumbnail...</original>
-		<translation>Opslaan vanminiaturen  recente bestanden menu ...</translation>
+		<original>Saving recent file menu thumbnail</original>
+		<translation>Opslaan vanminiaturen  recente bestanden menu</translation>
 	</phrase>
 
 	<phrase>
@@ -4330,8 +4330,8 @@
 	</phrase>
 
 	<phrase>
-		<original>1) the file hasn't been deleted, and... 2) the file location provided to X1 is correct.</original>
-		<translation>1) het bestand niet is verwijderd, en ... 2) de bestandslocatie gekoppeld aan X1 correct is.</translation>
+		<original>1) the file hasn't been deleted, and 2) the file location provided to X1 is correct.</original>
+		<translation>1) het bestand niet is verwijderd, en 2) de bestandslocatie gekoppeld aan X1 correct is.</translation>
 	</phrase>
 
 	<phrase>
@@ -4435,7 +4435,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing X1 image...</original>
+		<original>Preparing X1 image</original>
 		<translation>Klaarmaken X1 afbeelding</translation>
 	</phrase>
 
@@ -4485,8 +4485,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Acquiring image...</original>
-		<translation>Het verwerven van de afbeelding ...</translation>
+		<original>Acquiring image</original>
+		<translation>Het verwerven van de afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -4555,8 +4555,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Waiting for capture...</original>
-		<translation>Wachten op capture ...</translation>
+		<original>Waiting for capture</original>
+		<translation>Wachten op capture</translation>
 	</phrase>
 
 	<phrase>
@@ -4580,18 +4580,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Saving Undo data...</original>
-		<translation>Opslaan 'ongedaan maken' gegevens...</translation>
+		<original>Saving Undo data</original>
+		<translation>Opslaan 'ongedaan maken' gegevens</translation>
 	</phrase>
 
 	<phrase>
-		<original>Restoring Undo data...</original>
-		<translation>Herstellen 'ongedaan maken' gegevens...</translation>
+		<original>Restoring Undo data</original>
+		<translation>Herstellen 'ongedaan maken' gegevens</translation>
 	</phrase>
 
 	<phrase>
-		<original>Restoring Redo data...</original>
-		<translation>Herstel van 'herhalen-gegevens'...</translation>
+		<original>Restoring Redo data</original>
+		<translation>Herstel van 'herhalen-gegevens'</translation>
 	</phrase>
 
 	<phrase>
@@ -4750,8 +4750,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Editing language settings...</original>
-		<translation>Editeren taalinstellingen...</translation>
+		<original>Editing language settings</original>
+		<translation>Editeren taalinstellingen</translation>
 	</phrase>
 
 	<phrase>
@@ -4765,18 +4765,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Saving linguistic parameters...</original>
-		<translation>Bewaren van linguïstische-paramaters...</translation>
+		<original>Saving linguistic parameters</original>
+		<translation>Bewaren van linguïstische-paramaters</translation>
 	</phrase>
 
 	<phrase>
-		<original>Reload linguistic parameters...</original>
-		<translation>Herladen van linguïstische-paramaters...</translation>
+		<original>Reload linguistic parameters</original>
+		<translation>Herladen van linguïstische-paramaters</translation>
 	</phrase>
 
 	<phrase>
-		<original>Saving Language settings...</original>
-		<translation>Bewaren van taalinstellingen...</translation>
+		<original>Saving Language settings</original>
+		<translation>Bewaren van taalinstellingen</translation>
 	</phrase>
 
 	<phrase>
@@ -4870,8 +4870,8 @@
     </phrase>
 
     <phrase>
-        <original>Waiting for user to specify alpha threshold...</original>
-        <translation>Wachten op specificatie van de gebruiker voor alfa drempel ...</translation>
+        <original>Waiting for user to specify alpha threshold</original>
+        <translation>Wachten op specificatie van de gebruiker voor alfa drempel</translation>
     </phrase>
 
     <phrase>
@@ -4900,8 +4900,8 @@
     </phrase>
 
     <phrase>
-        <original>Waiting for user to specify color depth...</original>
-        <translation>Wachten op specificatie van de gebruiker voor kleurdiepte ...</translation>
+        <original>Waiting for user to specify color depth</original>
+        <translation>Wachten op specificatie van de gebruiker voor kleurdiepte</translation>
     </phrase>
 
     <phrase>
@@ -4985,8 +4985,8 @@
     </phrase>
 
     <phrase>
-        <original>Applying box blur to image...</original>
-        <translation>Het toepassen van vierkant vervagen op de afbeelding ...</translation>
+        <original>Applying box blur to image</original>
+        <translation>Het toepassen van vierkant vervagen op de afbeelding</translation>
     </phrase>
 
     <phrase>
@@ -5015,8 +5015,8 @@
     </phrase>
 
     <phrase>
-        <original>Projecting image through simulated glass...</original>
-        <translation>Projecteren van afbeelding door gesimuleerde glas ...</translation>
+        <original>Projecting image through simulated glass</original>
+        <translation>Projecteren van afbeelding door gesimuleerde glas</translation>
     </phrase>
 
     <phrase>
@@ -5035,8 +5035,8 @@
     </phrase>
 
     <phrase>
-        <original>if pixels lie outside the image...</original>
-        <translation>indien pixels buiten de afbeelding liggen ...</translation>
+        <original>if pixels lie outside the image</original>
+        <translation>indien pixels buiten de afbeelding liggen</translation>
     </phrase>
 
     <phrase>
@@ -5065,8 +5065,8 @@
     </phrase>
 
     <phrase>
-        <original>Peering at image through imaginary kaleidoscope...</original>
-        <translation>Turen naar afbeelding door denkbeeldige caleidoscoop ...</translation>
+        <original>Peering at image through imaginary kaleidoscope</original>
+        <translation>Turen naar afbeelding door denkbeeldige caleidoscoop</translation>
     </phrase>
 
     <phrase>
@@ -5100,8 +5100,8 @@
     </phrase>
 
     <phrase>
-        <original>Projecting image through simulated lens...</original>
-        <translation>Projecteren van afbeelding door gesimuleerde lens ...</translation>
+        <original>Projecting image through simulated lens</original>
+        <translation>Projecteren van afbeelding door gesimuleerde lens</translation>
     </phrase>
 
     <phrase>
@@ -5110,8 +5110,8 @@
     </phrase>
 
     <phrase>
-        <original>Correcting image distortion...</original>
-        <translation>Corrigeren van beeldvervorming ...</translation>
+        <original>Correcting image distortion</original>
+        <translation>Corrigeren van beeldvervorming</translation>
     </phrase>
 
     <phrase>
@@ -5130,8 +5130,8 @@
     </phrase>
 
     <phrase>
-        <original>Pinching and whirling image...</original>
-        <translation>Knijpen en wervelen van afbeelding ...</translation>
+        <original>Pinching and whirling image</original>
+        <translation>Knijpen en wervelen van afbeelding</translation>
     </phrase>
 
     <phrase>
@@ -5150,8 +5150,8 @@
     </phrase>
 
     <phrase>
-        <original>Saving plugin options...</original>
-        <translation>Bezig met opslaan plugin opties ...</translation>
+        <original>Saving plugin options</original>
+        <translation>Bezig met opslaan plugin opties</translation>
     </phrase>
 
     <phrase>
@@ -5310,8 +5310,8 @@
     </phrase>
 
     <phrase>
-        <original>Performing polar coordinate conversion...</original>
-        <translation>Uitvoeren van poolcoördinaten conversie ...</translation>
+        <original>Performing polar coordinate conversion</original>
+        <translation>Uitvoeren van poolcoördinaten conversie</translation>
     </phrase>
 
     <phrase>
@@ -5340,8 +5340,8 @@
     </phrase>
 
     <phrase>
-        <original>Simulating ripples across image surface...</original>
-        <translation>Simuleren van rimpelingen over het afbeeldingsvlak ...</translation>
+        <original>Simulating ripples across image surface</original>
+        <translation>Simuleren van rimpelingen over het afbeeldingsvlak</translation>
     </phrase>
 
     <phrase>
@@ -5365,13 +5365,13 @@
     </phrase>
 
     <phrase>
-        <original>Analyzing image in preparation for smart blur...</original>
-        <translation>Analyseren van afbeelding ter voorbereiding van slimme vervaging ...</translation>
+        <original>Analyzing image in preparation for smart blur</original>
+        <translation>Analyseren van afbeelding ter voorbereiding van slimme vervaging</translation>
     </phrase>
 
     <phrase>
-        <original>Applying smart blur...</original>
-        <translation>Toepassen van slimme vervaging ...</translation>
+        <original>Applying smart blur</original>
+        <translation>Toepassen van slimme vervaging</translation>
     </phrase>
 
     <phrase>
@@ -5400,8 +5400,8 @@
     </phrase>
 
     <phrase>
-        <original>Swirling image round and round...</original>
-        <translation>Afbeelding rond en rond wervelen ...</translation>
+        <original>Swirling image round and round</original>
+        <translation>Afbeelding rond en rond wervelen</translation>
     </phrase>
 
     <phrase>
@@ -5415,8 +5415,8 @@
     </phrase>
 
     <phrase>
-        <original>Applying unsharp mask (step X1 of 2)...</original>
-        <translation>Toepassen van onscherp masker (stap% 1 van 2) ...</translation>
+        <original>Applying unsharp mask (step X1 of 2)</original>
+        <translation>Toepassen van onscherp masker (stap% 1 van 2)</translation>
     </phrase>
 
     <phrase>
@@ -5430,8 +5430,8 @@
     </phrase>
 
     <phrase>
-        <original>Dipping image in virtual wave pool...</original>
-        <translation>Afbeelding in virtueel golfslagbad dompelen  ...</translation>
+        <original>Dipping image in virtual wave pool</original>
+        <translation>Afbeelding in virtueel golfslagbad dompelen </translation>
     </phrase>
 
     <phrase>

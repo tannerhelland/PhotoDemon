@@ -10,53 +10,53 @@
 	<author>Frank Donckers</author>
 
 	<phrase>
-		<original>Initializing software...</original>
-		<translation>Initialisierung software...</translation>
+		<original>Initializing software</original>
+		<translation>Initialisierung software</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing all program directories...</original>
-		<translation>Initialisierung programm Ordner ...</translation>
+		<original>Initializing all program directories</original>
+		<translation>Initialisierung programm Ordner</translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading all user settings...</original>
-		<translation>Lädt user settings ...</translation>
+		<original>Loading all user settings</original>
+		<translation>Lädt user settings</translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading plugins...</original>
-		<translation>Laden von Plug-Ins ...</translation>
+		<original>Loading plugins</original>
+		<translation>Laden von Plug-Ins</translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading import/export libraries...</original>
-		<translation>Lädt Import / Export Bibliotheken ...</translation>
+		<original>Loading import/export libraries</original>
+		<translation>Lädt Import / Export Bibliotheken</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing all user settings...</original>
-		<translation>Initialisieren Benutzereinstellungen ...</translation>
+		<original>Initializing all user settings</original>
+		<translation>Initialisieren Benutzereinstellungen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing zoom processor...</original>
-		<translation>Initialisieren zoom Prozessor ...</translation>
+		<original>Initializing zoom processor</original>
+		<translation>Initialisieren zoom Prozessor</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing selection tool...</original>
-		<translation>Initialisieren Auswahl-Werkzeug ...</translation>
+		<original>Initializing selection tool</original>
+		<translation>Initialisieren Auswahl-Werkzeug</translation>
 	</phrase>
 
 	<phrase>
-		<original>Analyzing current monitor setup...</original>
-		<translation>Analysieren der aktuellen Monitor-Setup ...</translation>
+		<original>Analyzing current monitor setup</original>
+		<translation>Analysieren der aktuellen Monitor-Setup</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing user interface...</original>
-		<translation>Initialisieren UI ...</translation>
+		<original>Initializing user interface</original>
+		<translation>Initialisieren UI</translation>
 	</phrase>
 
 	<phrase>
@@ -125,23 +125,23 @@
 	</phrase>
 
 	<phrase>
-		<original>Fixing icon...</original>
-		<translation>Icon-Set ...</translation>
+		<original>Fixing icon</original>
+		<translation>Icon-Set</translation>
 	</phrase>
 
 	<phrase>
-		<original>Generating menu icons...</original>
-		<translation>Generieren Menü-Icons ...</translation>
+		<original>Generating menu icons</original>
+		<translation>Generieren Menü-Icons</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enabling user interface...</original>
-		<translation>Aktivieren Benutzeroberfläche ...</translation>
+		<original>Enabling user interface</original>
+		<translation>Aktivieren Benutzeroberfläche</translation>
 	</phrase>
 
 	<phrase>
-		<original>Initializing progress bar...</original>
-		<translation>Initialisieren Fortschrittsbalken ...</translation>
+		<original>Initializing progress bar</original>
+		<translation>Initialisieren Fortschrittsbalken</translation>
 	</phrase>
 
 	<phrase>
@@ -150,28 +150,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Captioning main form...</original>
-		<translation>Inscription main fenster ...</translation>
+		<original>Captioning main form</original>
+		<translation>Inscription main fenster</translation>
 	</phrase>
 
 	<phrase>
-		<original>Preparing custom child icon handler...</original>
-		<translation>Vorbereiten von benutzerdefinierten child icon handler ...</translation>
+		<original>Preparing custom child icon handler</original>
+		<translation>Vorbereiten von benutzerdefinierten child icon handler</translation>
 	</phrase>
 
 	<phrase>
-		<original>Checking command line...</original>
-		<translation>Überprüfen Befehlszeile ...</translation>
+		<original>Checking command line</original>
+		<translation>Überprüfen Befehlszeile</translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading image(s)...</original>
-		<translation>Lade Bild (s) ...</translation>
+		<original>Loading image(s)</original>
+		<translation>Lade Bild (s)</translation>
 	</phrase>
 
 	<phrase>
-		<original>All preparations successful. Loading final interface...</original>
-		<translation>Alle Vorbereitungen erfolgreich. Lädt neuesten Schnittstelle ...</translation>
+		<original>All preparations successful. Loading final interface</original>
+		<translation>Alle Vorbereitungen erfolgreich. Lädt neuesten Schnittstelle</translation>
 	</phrase>
 
 	<phrase>
@@ -230,7 +230,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Waiting for user to specify JPEG-2000 export options...</original>
+		<original>Waiting for user to specify JPEG-2000 export options</original>
 		<translation>Warten auf Benutzereingabe Spezifikationen für JPEG-2000 Export-Optionen</translation>
 	</phrase>
 
@@ -280,8 +280,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Waiting for user to specify JPEG export options...</original>
-		<translation>Warten auf Benutzereingabe Spezifikationen für JPEG-Export Optionen ...</translation>
+		<original>Waiting for user to specify JPEG export options</original>
+		<translation>Warten auf Benutzereingabe Spezifikationen für JPEG-Export Optionen</translation>
 	</phrase>
 
 	<phrase>
@@ -550,8 +550,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting image to two colors...</original>
-		<translation>Konvertieren Bild auf zwei Farben ...</translation>
+		<original>Converting image to two colors</original>
+		<translation>Konvertieren Bild auf zwei Farben</translation>
 	</phrase>
 
 	<phrase>
@@ -590,8 +590,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Illuminating image with imaginary blacklight...</original>
-		<translation>Entlasten Bild mit imaginären blacklight ...</translation>
+		<original>Illuminating image with imaginary blacklight</original>
+		<translation>Entlasten Bild mit imaginären blacklight</translation>
 	</phrase>
 
 	<phrase>
@@ -615,13 +615,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Adjusting image brightness...</original>
-		<translation>Einstellen der Helligkeit des Bildes ...</translation>
+		<original>Adjusting image brightness</original>
+		<translation>Einstellen der Helligkeit des Bildes</translation>
 	</phrase>
 
 	<phrase>
-		<original>Sampling image data to determine true contrast...</original>
-		<translation>Abtasten von Bilddaten, die wirkliche Unterschied bestimmen ...</translation>
+		<original>Sampling image data to determine true contrast</original>
+		<translation>Abtasten von Bilddaten, die wirkliche Unterschied bestimmen</translation>
 	</phrase>
 
 	<phrase>
@@ -630,8 +630,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Adjusting image contrast...</original>
-		<translation>Einstellen der Gegensatz des Bildes ...</translation>
+		<original>Adjusting image contrast</original>
+		<translation>Einstellen der Gegensatz des Bildes</translation>
 	</phrase>
 
 	<phrase>
@@ -640,8 +640,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Colorizing image...</original>
-		<translation>Kolorieren Bild ...</translation>
+		<original>Colorizing image</original>
+		<translation>Kolorieren Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -655,8 +655,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Applying new temperature to image...</original>
-		<translation>Anwendung neuer Temperatur auf das Bild ...</translation>
+		<original>Applying new temperature to image</original>
+		<translation>Anwendung neuer Temperatur auf das Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -680,8 +680,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Generating filter data...</original>
-		<translation>Generieren Daten filtern ...</translation>
+		<original>Generating filter data</original>
+		<translation>Generieren Daten filtern</translation>
 	</phrase>
 
 	<phrase>
@@ -775,13 +775,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Despeckling image...</original>
-		<translation>Schmutz entfernen Bild ...</translation>
+		<original>Despeckling image</original>
+		<translation>Schmutz entfernen Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Removing orphaned pixels...</original>
-		<translation>Entfernen von verwaisten Pixel ...</translation>
+		<original>Removing orphaned pixels</original>
+		<translation>Entfernen von verwaisten Pixel</translation>
 	</phrase>
 
 	<phrase>
@@ -845,13 +845,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Simulating large image explosion...</original>
-		<translation>Simulieren große Bild Explosion ...</translation>
+		<original>Simulating large image explosion</original>
+		<translation>Simulieren große Bild Explosion</translation>
 	</phrase>
 
 	<phrase>
-		<original>Simulating small image explosion...</original>
-		<translation>Simulieren kleines Bild Explosion ...</translation>
+		<original>Simulating small image explosion</original>
+		<translation>Simulieren kleines Bild Explosion</translation>
 	</phrase>
 
 	<phrase>
@@ -876,12 +876,12 @@
 
 	<phrase>
 		<original>Embossing image..</original>
-		<translation>Relief Bild ...</translation>
+		<translation>Relief Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Engraving image...</original>
-		<translation>Gravur Bild ...</translation>
+		<original>Engraving image</original>
+		<translation>Gravur Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -895,18 +895,18 @@
 	</phrase>
 
 	<phrase>
-		<original>use custom background color (click colored box to change)...</original>
-		<translation>benutzerdefinierte Hintergrundfarbe (klicken Sie auf farbigen Feld zu ändern) ...</translation>
+		<original>use custom background color (click colored box to change)</original>
+		<translation>benutzerdefinierte Hintergrundfarbe (klicken Sie auf farbigen Feld zu ändern)</translation>
 	</phrase>
 
 	<phrase>
-		<original>Analyzing image histogram...</original>
-		<translation>Analyse Histogramm Bild ...</translation>
+		<original>Analyzing image histogram</original>
+		<translation>Analyse Histogramm Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Equalizing image...</original>
-		<translation>Auszugleichen Bild ...</translation>
+		<original>Equalizing image</original>
+		<translation>Auszugleichen Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -925,18 +925,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Fading image...</original>
-		<translation>Blur Bild ...</translation>
+		<original>Fading image</original>
+		<translation>Blur Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Unfading image...</original>
-		<translation>Unblur Bild ...</translation>
+		<original>Unfading image</original>
+		<translation>Unblur Bild</translation>
 	</phrase>
 
 	<phrase>
 		<original>Fade image</original>
-		<translation>Blur Bild ...</translation>
+		<translation>Blur Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -945,8 +945,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Tracing image edges with virtual paintbrush...</original>
-		<translation>Suchen Bildränder mit virtuellen Pinsel ...</translation>
+		<original>Tracing image edges with virtual paintbrush</original>
+		<translation>Suchen Bildränder mit virtuellen Pinsel</translation>
 	</phrase>
 
 	<phrase>
@@ -1005,8 +1005,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Adjusting gamma values...</original>
-		<translation>Einstellen Gamma-Werte ...</translation>
+		<original>Adjusting gamma values</original>
+		<translation>Einstellen Gamma-Werte</translation>
 	</phrase>
 
 	<phrase>
@@ -1070,7 +1070,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Sometimes this tool is called a 'black and white' tool, but that name is misleading because the processed image contains many more shades than just 'black' and 'white'.  A separate 'Black and White' tool (found in the 'Color' menu) exists if you want an </original>
+		<original>Sometimes this tool is called a 'black and white' tool, but that name is misleading because the processed image contains many more shades than just 'black' and 'white'.  A separate 'Black and White' tool (found in the 'Color' menu) exists if you want an</original>
 		<translation>Manchmal wird dies als dieses Instrument ein ' black and white "," Werkzeug, aber dieser Name ist irreführend, denn das verarbeitete Bild Mehr Schattierungen bevatdan nur ' schwarz ' und ' weiß '. Eine separate ' Black and White ' Werkzeug (in der ' Farb</translation>
 	</phrase>
 
@@ -1085,38 +1085,38 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting image to ###### shades of gray...</original>
-		<translation>Konvertieren Bild ###### Grau ...</translation>
+		<original>Converting image to ###### shades of gray</original>
+		<translation>Konvertieren Bild ###### Grau</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting to ######  shades of gray, with dithering...</original>
-		<translation>Convert to ###### Grau, mit Dithering ...</translation>
+		<original>Converting to ######  shades of gray, with dithering</original>
+		<translation>Convert to ###### Grau, mit Dithering</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image to grayscale...</original>
-		<translation>Wandelt Bilder in Graustufen ...</translation>
+		<original>Converting image to grayscale</original>
+		<translation>Wandelt Bilder in Graustufen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Generating ITU-R compatible grayscale image...</original>
-		<translation>Generation von ITU-R kompatibel Graustufenbild ...</translation>
+		<original>Generating ITU-R compatible grayscale image</original>
+		<translation>Generation von ITU-R kompatibel Graustufenbild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Desaturating image...</original>
-		<translation>Tränken Bild ...</translation>
+		<original>Desaturating image</original>
+		<translation>Tränken Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Decomposing image...</original>
-		<translation>Zerlegen Bild ...</translation>
+		<original>Decomposing image</original>
+		<translation>Zerlegen Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image to grayscale using ###### values...</original>
-		<translation>Konvertieren Graustufenbild mit ###### Werte ...</translation>
+		<original>Converting image to grayscale using ###### values</original>
+		<translation>Konvertieren Graustufenbild mit ###### Werte</translation>
 	</phrase>
 
 	<phrase>
@@ -1140,8 +1140,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Adjusting hue, saturation, and luminance values...</original>
-		<translation>Einstellen der Farbton, Sättigung und Helligkeit Werte ...</translation>
+		<original>Adjusting hue, saturation, and luminance values</original>
+		<translation>Einstellen der Farbton, Sättigung und Helligkeit Werte</translation>
 	</phrase>
 
 	<phrase>
@@ -1175,8 +1175,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Saving histogram to file...</original>
-		<translation>Speichern Histogramm Datei ...</translation>
+		<original>Saving histogram to file</original>
+		<translation>Speichern Histogramm Datei</translation>
 	</phrase>
 
 	<phrase>
@@ -1230,8 +1230,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Export Histogram to File...</original>
-		<translation>Histogramm Datei exportieren ...</translation>
+		<original>Export Histogram to File</original>
+		<translation>Histogramm Datei exportieren</translation>
 	</phrase>
 
 	<phrase>
@@ -1250,17 +1250,17 @@
 	</phrase>
 
 	<phrase>
-		<original>Analyzing image histogram for maximum and minimum values...</original>
-		<translation>Die Analyse des Bildes Histogramm für maximale und minimale Werte ...</translation>
+		<original>Analyzing image histogram for maximum and minimum values</original>
+		<translation>Die Analyse des Bildes Histogramm für maximale und minimale Werte</translation>
 	</phrase>
 
 	<phrase>
-		<original>Updating histogram...</original>
-		<translation>Aktualisieren Histogramm ...</translation>
+		<original>Updating histogram</original>
+		<translation>Aktualisieren Histogramm</translation>
 	</phrase>
 
 	<phrase>
-		<original>Stretching histogram...</original>
+		<original>Stretching histogram</original>
 		<translation>Stretch Histogramm</translation>
 	</phrase>
 
@@ -1270,8 +1270,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Importing binary image data...</original>
-		<translation>Importieren Binärbilddaten ...</translation>
+		<original>Importing binary image data</original>
+		<translation>Importieren Binärbilddaten</translation>
 	</phrase>
 
 	<phrase>
@@ -1285,8 +1285,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Please select a VB binary file to scan for images...</original>
-		<translation>Wählen Sie ein VB Binärdatei für Bilder scannen ...</translation>
+		<original>Please select a VB binary file to scan for images</original>
+		<translation>Wählen Sie ein VB Binärdatei für Bilder scannen</translation>
 	</phrase>
 
 	<phrase>
@@ -1300,8 +1300,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Scanning binary file...</original>
-		<translation>Scannen binäre Datei ...</translation>
+		<original>Scanning binary file</original>
+		<translation>Scannen binäre Datei</translation>
 	</phrase>
 
 	<phrase>
@@ -1365,8 +1365,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Attempting to connect to Internet...</original>
-		<translation>Versuchen Sie, die Verbindung zum Internet ...</translation>
+		<original>Attempting to connect to Internet</original>
+		<translation>Versuchen Sie, die Verbindung zum Internet</translation>
 	</phrase>
 
 	<phrase>
@@ -1385,8 +1385,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Verifying image URL (this may take a moment)...</original>
-		<translation>Überprüfen der Image-URL (dies kann eine Weile dauern) ...</translation>
+		<original>Verifying image URL (this may take a moment)</original>
+		<translation>Überprüfen der Image-URL (dies kann eine Weile dauern)</translation>
 	</phrase>
 
 	<phrase>
@@ -1400,13 +1400,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Creating temporary file...</original>
-		<translation>Erstellen eine temporäre Datei ...</translation>
+		<original>Creating temporary file</original>
+		<translation>Erstellen eine temporäre Datei</translation>
 	</phrase>
 
 	<phrase>
-		<original>Image URL verified.  Downloading image...</original>
-		<translation>Bild-URL überprüft. Bild herunterladen ...</translation>
+		<original>Image URL verified.  Downloading image</original>
+		<translation>Bild-URL überprüft. Bild herunterladen</translation>
 	</phrase>
 
 	<phrase>
@@ -1415,13 +1415,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Image URL verified.  Downloading image #1 of  #2 bytes received)...</original>
-		<translation>Bild-URL überprüft. Bild herunterladen #1 von #2 bytes) ...</translation>
+		<original>Image URL verified.  Downloading image #1 of  #2 bytes received)</original>
+		<translation>Bild-URL überprüft. Bild herunterladen #1 von #2 bytes)</translation>
 	</phrase>
 
 	<phrase>
-		<original>Download complete. Verifying file integrity...</original>
-		<translation>Laden abgeschlossen. Überprüfung der Integrität von Dateien ...</translation>
+		<original>Download complete. Verifying file integrity</original>
+		<translation>Laden abgeschlossen. Überprüfung der Integrität von Dateien</translation>
 	</phrase>
 
 	<phrase>
@@ -1470,8 +1470,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Waiting for user input...</original>
-		<translation>Warten auf Benutzereingaben ...</translation>
+		<original>Waiting for user input</original>
+		<translation>Warten auf Benutzereingaben</translation>
 	</phrase>
 
 	<phrase>
@@ -1490,8 +1490,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Verifying that file exists...</original>
-		<translation>Stellen Sie sicher, dass Datei existiert ...</translation>
+		<original>Verifying that file exists</original>
+		<translation>Stellen Sie sicher, dass Datei existiert</translation>
 	</phrase>
 
 	<phrase>
@@ -1515,13 +1515,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Image found. Initializing blank form...</original>
-		<translation>Bild gefunden. Initialisieren leeres Formular ...</translation>
+		<original>Image found. Initializing blank form</original>
+		<translation>Bild gefunden. Initialisieren leeres Formular</translation>
 	</phrase>
 
 	<phrase>
-		<original>Determining filetype...</original>
-		<translation>Bestimmen des Dateityps ...</translation>
+		<original>Determining filetype</original>
+		<translation>Bestimmen des Dateityps</translation>
 	</phrase>
 
 	<phrase>
@@ -1570,13 +1570,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Verfiying alpha channel...</original>
-		<translation>Validierung alpha channel ...</translation>
+		<original>Verfiying alpha channel</original>
+		<translation>Validierung alpha channel</translation>
 	</phrase>
 
 	<phrase>
-		<original>Alpha channel deemed unnecessary.  Converting image to 24bpp...</original>
-		<translation>Alpha-Kanal wird nicht für notwendig erachtet. Wandelt Bilder ins 24bpp ...</translation>
+		<original>Alpha channel deemed unnecessary.  Converting image to 24bpp</original>
+		<translation>Alpha-Kanal wird nicht für notwendig erachtet. Wandelt Bilder ins 24bpp</translation>
 	</phrase>
 
 	<phrase>
@@ -1595,8 +1595,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Resizing image to fit screen...</original>
-		<translation>Stellen Sie die Bildgröße auf dem Bildschirm passen ...</translation>
+		<original>Resizing image to fit screen</original>
+		<translation>Stellen Sie die Bildgröße auf dem Bildschirm passen</translation>
 	</phrase>
 
 	<phrase>
@@ -1610,8 +1610,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Duplicating current image...</original>
-		<translation>Duplizieren aktuellen Bild ...</translation>
+		<original>Duplicating current image</original>
+		<translation>Duplizieren aktuellen Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -1620,7 +1620,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Generating image twin...</original>
+		<original>Generating image twin</original>
 		<translation>Generation von Bild -Zwillinge</translation>
 	</phrase>
 
@@ -1630,13 +1630,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing histogram data...</original>
-		<translation>Vorbereiten Histogramm-Daten ...</translation>
+		<original>Preparing histogram data</original>
+		<translation>Vorbereiten Histogramm-Daten</translation>
 	</phrase>
 
 	<phrase>
-		<original>Adjusting image white balance...</original>
-		<translation>Einstellen des Weißabgleichs des Bildes ...</translation>
+		<original>Adjusting image white balance</original>
+		<translation>Einstellen des Weißabgleichs des Bildes</translation>
 	</phrase>
 
 	<phrase>
@@ -1645,8 +1645,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Rendering tiled image...</original>
-		<translation>Rendering gefliesten Bild ...</translation>
+		<original>Rendering tiled image</original>
+		<translation>Rendering gefliesten Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -1705,8 +1705,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Solarizing image...</original>
-		<translation>Solarisation Bild ...</translation>
+		<original>Solarizing image</original>
+		<translation>Solarisation Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -1720,7 +1720,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Rotating image (this may take a few seconds)...</original>
+		<original>Rotating image (this may take a few seconds)</original>
 		<translation>laisser la toile dans sa taille actuelle</translation>
 	</phrase>
 
@@ -1770,18 +1770,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Resampling image using the FreeImage library...</original>
-		<translation>Resampling Bild mit dem FreeImage Bibliothek ...</translation>
+		<original>Resampling image using the FreeImage library</original>
+		<translation>Resampling Bild mit dem FreeImage Bibliothek</translation>
 	</phrase>
 
 	<phrase>
-		<original>Resizing image...</original>
-		<translation>Bildgrößenanpassung ...</translation>
+		<original>Resizing image</original>
+		<translation>Bildgrößenanpassung</translation>
 	</phrase>
 
 	<phrase>
-		<original>Resampling image...</original>
-		<translation>Resampling Bild ...</translation>
+		<original>Resampling image</original>
+		<translation>Resampling Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -1800,8 +1800,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Mapping new image levels...</original>
-		<translation>Charting neues Bild Ebenen ...</translation>
+		<original>Mapping new image levels</original>
+		<translation>Charting neues Bild Ebenen</translation>
 	</phrase>
 
 	<phrase>
@@ -1840,8 +1840,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Repainting image in mosaic style...</original>
-		<translation>Redraw Bild im Mosaik-Stil ...</translation>
+		<original>Repainting image in mosaic style</original>
+		<translation>Redraw Bild im Mosaik-Stil</translation>
 	</phrase>
 
 	<phrase>
@@ -1860,8 +1860,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Increasing image noise...</original>
-		<translation>Zunehmende Rausch der Bild ...</translation>
+		<original>Increasing image noise</original>
+		<translation>Zunehmende Rausch der Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -1880,8 +1880,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Posterizing image...</original>
-		<translation>Posterisieren Bild ...</translation>
+		<original>Posterizing image</original>
+		<translation>Posterisieren Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -1895,18 +1895,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Dilating image via maximum (high-pass) rank filter...</original>
-		<translation>Erweitern Bild durch maximale (High-Pass-Filter) Anordnung ...</translation>
+		<original>Dilating image via maximum (high-pass) rank filter</original>
+		<translation>Erweitern Bild durch maximale (High-Pass-Filter) Anordnung</translation>
 	</phrase>
 
 	<phrase>
-		<original>Eroding image via minimum (low-pass) rank filter...</original>
-		<translation>Erodieren Bild durch Minimum (Tiefpass-Filter) Anordnung ...</translation>
+		<original>Eroding image via minimum (low-pass) rank filter</original>
+		<translation>Erodieren Bild durch Minimum (Tiefpass-Filter) Anordnung</translation>
 	</phrase>
 
 	<phrase>
-		<original>Redrawing image via extreme rank filter...</original>
-		<translation>Neuzeichnen Bild durch extreme Anordnung Filter ...</translation>
+		<original>Redrawing image via extreme rank filter</original>
+		<translation>Neuzeichnen Bild durch extreme Anordnung Filter</translation>
 	</phrase>
 
 	<phrase>
@@ -1975,8 +1975,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Quantizing image using the FreeImage library...</original>
-		<translation>Quantisierung des Bildes mit Hilfe der FreeImage Bibliothek ...</translation>
+		<original>Quantizing image using the FreeImage library</original>
+		<translation>Quantisierung des Bildes mit Hilfe der FreeImage Bibliothek</translation>
 	</phrase>
 
 	<phrase>
@@ -1985,13 +1985,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Applying manual RGB modifications to image...</original>
+		<original>Applying manual RGB modifications to image</original>
 		<translation>Anpassungen Bildes mit Verwendung eines manuellen RGB</translation>
 	</phrase>
 
 	<phrase>
-		<original>Applying intelligent coloring...</original>
-		<translation>Anwendung intelligenter Farben ...</translation>
+		<original>Applying intelligent coloring</original>
+		<translation>Anwendung intelligenter Farben</translation>
 	</phrase>
 
 	<phrase>
@@ -2045,8 +2045,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Checking for software updates...</original>
-		<translation>Nach Software-Updates suchen ...</translation>
+		<original>Checking for software updates</original>
+		<translation>Nach Software-Updates suchen</translation>
 	</phrase>
 
 	<phrase>
@@ -2060,8 +2060,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Software update found!  Launching update notifier...</original>
-		<translation>Software Update gefunden! Starten Update Benachrichtigung ...</translation>
+		<original>Software update found!  Launching update notifier</original>
+		<translation>Software Update gefunden! Starten Update Benachrichtigung</translation>
 	</phrase>
 
 	<phrase>
@@ -2145,8 +2145,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Sending image to printer...</original>
-		<translation>Senden Sie das Bild an den Drucker ...</translation>
+		<original>Sending image to printer</original>
+		<translation>Senden Sie das Bild an den Drucker</translation>
 	</phrase>
 
 	<phrase>
@@ -2200,8 +2200,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Change Paper Size...</original>
-		<translation>Ändern Papierformat ...</translation>
+		<original>Change Paper Size</original>
+		<translation>Ändern Papierformat</translation>
 	</phrase>
 
 	<phrase>
@@ -2455,8 +2455,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Alternatively, you can use a Windows 'Common Dialog' to select images...</original>
-		<translation>Sie können auch eine' Windows-Dialog' benutzen zur Auswahl von Bildern ...</translation>
+		<original>Alternatively, you can use a Windows 'Common Dialog' to select images</original>
+		<translation>Sie können auch eine' Windows-Dialog' benutzen zur Auswahl von Bildern</translation>
 	</phrase>
 
 	<phrase>
@@ -2485,13 +2485,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Load an image list...</original>
-		<translation>Öffnen ein Bild Liste ...</translation>
+		<original>Load an image list</original>
+		<translation>Öffnen ein Bild Liste</translation>
 	</phrase>
 
 	<phrase>
-		<original>Save the current list...</original>
-		<translation>Speichern Sie die aktuelle Liste ...</translation>
+		<original>Save the current list</original>
+		<translation>Speichern Sie die aktuelle Liste</translation>
 	</phrase>
 
 	<phrase>
@@ -2575,8 +2575,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)...</original>
-		<translation>Prüfen Sie, ob Software-Updates (diese Funktion kann deaktiviert werden im  Edit -> Preferences-Menü) ...</translation>
+		<original>Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)</original>
+		<translation>Prüfen Sie, ob Software-Updates (diese Funktion kann deaktiviert werden im  Edit -> Preferences-Menü)</translation>
 	</phrase>
 
 	<phrase>
@@ -2590,8 +2590,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Some core plugins could not be found. Preparing updater...</original>
-		<translation>Einige Core-Plugins können nicht gefunden werden. Vorbereiten updater ...</translation>
+		<original>Some core plugins could not be found. Preparing updater</original>
+		<translation>Einige Core-Plugins können nicht gefunden werden. Vorbereiten updater</translation>
 	</phrase>
 
 	<phrase>
@@ -2620,13 +2620,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing to load MRU entry...</original>
-		<translation>Vorbereiten laden der MRU Eintrag ...</translation>
+		<original>Preparing to load MRU entry</original>
+		<translation>Vorbereiten laden der MRU Eintrag</translation>
 	</phrase>
 
 	<phrase>
-		<original>Open</original>
-		<translation>Offnen</translation>
+		<original>&Open</original>
+		<translation>&Offnen</translation>
 	</phrase>
 
 	<phrase>
@@ -2675,8 +2675,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Macro recording in progress...</original>
-		<translation>Makro-Aufnahme in progress ...</translation>
+		<original>Macro recording in progress</original>
+		<translation>Makro-Aufnahme in progress</translation>
 	</phrase>
 
 	<phrase>
@@ -2705,8 +2705,8 @@
 	</phrase>
 
 	<phrase>
-		<original>From Scanner or Camera...</original>
-		<translation>Von Scanner oder Kamera ...</translation>
+		<original>From Scanner or Camera</original>
+		<translation>Von Scanner oder Kamera</translation>
 	</phrase>
 
 	<phrase>
@@ -2715,23 +2715,23 @@
 	</phrase>
 
 	<phrase>
-		<original>Online Image...</original>
-		<translation>Online Image ...</translation>
+		<original>Online Image</original>
+		<translation>Online Image</translation>
 	</phrase>
 
 	<phrase>
-		<original>Screen Capture...</original>
-		<translation>Screen Capture ...</translation>
+		<original>Screen Capture</original>
+		<translation>Screen Capture</translation>
 	</phrase>
 
 	<phrase>
-		<original>Batch Convert...</original>
-		<translation>Batch Convert ...</translation>
+		<original>Batch Convert</original>
+		<translation>Batch Convert</translation>
 	</phrase>
 
 	<phrase>
-		<original>Print...</original>
-		<translation>Drucken ...</translation>
+		<original>Print</original>
+		<translation>Drucken</translation>
 	</phrase>
 
 	<phrase>
@@ -2771,7 +2771,7 @@
 
 	<phrase>
 		<original>&View</original>
-		<translation>&Bild</translation>
+		<translation>&Ansicht</translation>
 	</phrase>
 
 	<phrase>
@@ -2785,12 +2785,12 @@
 	</phrase>
 
 	<phrase>
-		<original>Zoom &In</original>
-		<translation>Zoom &In</translation>
+		<original>Zoom &in</original>
+		<translation>Zoom &in</translation>
 	</phrase>
 
 	<phrase>
-		<original>Zoom &Out</original>
+		<original>Zoom &out</original>
 		<translation>Zoom &out</translation>
 	</phrase>
 
@@ -2820,8 +2820,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Resize...</original>
-		<translation>Ändern der Größe ...</translation>
+		<original>Resize</original>
+		<translation>Ändern der Größe</translation>
 	</phrase>
 
 	<phrase>
@@ -2855,8 +2855,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Arbitrary Rotation...</original>
-		<translation>Zufällige Rotation ...</translation>
+		<original>Arbitrary Rotation</original>
+		<translation>Zufällige Rotation</translation>
 	</phrase>
 
 	<phrase>
@@ -2865,8 +2865,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Tile...</original>
-		<translation>Fliesen ...</translation>
+		<original>Tile</original>
+		<translation>Fliesen</translation>
 	</phrase>
 
 	<phrase>
@@ -2875,33 +2875,33 @@
 	</phrase>
 
 	<phrase>
-		<original>Brightness/Contrast...</original>
-		<translation>Helligkeit / Kontrast...</translation>
+		<original>Brightness/Contrast</original>
+		<translation>Helligkeit / Kontrast</translation>
 	</phrase>
 
 	<phrase>
-		<original>Gamma...</original>
-		<translation>Gamma...</translation>
+		<original>Gamma</original>
+		<translation>Gamma</translation>
 	</phrase>
 
 	<phrase>
-		<original>Hue / Saturation...</original>
-		<translation>Farbton / Sättigung...</translation>
+		<original>Hue / Saturation</original>
+		<translation>Farbton / Sättigung</translation>
 	</phrase>
 
 	<phrase>
-		<original>Levels...</original>
-		<translation>Ebenen ...</translation>
+		<original>Levels</original>
+		<translation>Ebenen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Temperature...</original>
-		<translation>Temperatur ...</translation>
+		<original>Temperature</original>
+		<translation>Temperatur</translation>
 	</phrase>
 
 	<phrase>
-		<original>White Balance...</original>
-		<translation>Weißabgleich ...</translation>
+		<original>White Balance</original>
+		<translation>Weißabgleich</translation>
 	</phrase>
 
 	<phrase>
@@ -2915,8 +2915,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Equalize...</original>
-		<translation>Auszugleichen ...</translation>
+		<original>Equalize</original>
+		<translation>Auszugleichen</translation>
 	</phrase>
 
 	<phrase>
@@ -2940,18 +2940,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Rechannel...</original>
+		<original>Rechannel</original>
 		<translation>Herkanalisieren</translation>
 	</phrase>
 
 	<phrase>
-		<original>Black and White...</original>
-		<translation>Schwarz / weiß ...</translation>
+		<original>Black and White</original>
+		<translation>Schwarz / weiß</translation>
 	</phrase>
 
 	<phrase>
-		<original>Colorize...</original>
-		<translation>Discolor ...</translation>
+		<original>Colorize</original>
+		<translation>Discolor</translation>
 	</phrase>
 
 	<phrase>
@@ -3000,8 +3000,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Custom Fade...</original>
-		<translation>Benutzerdefinierte Unschärfe ...</translation>
+		<original>Custom Fade</original>
+		<translation>Benutzerdefinierte Unschärfe</translation>
 	</phrase>
 
 	<phrase>
@@ -3010,8 +3010,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Grayscale...</original>
-		<translation>Graustufen ...</translation>
+		<original>Grayscale</original>
+		<translation>Graustufen</translation>
 	</phrase>
 
 	<phrase>
@@ -3025,8 +3025,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Posterize...</original>
-		<translation>Posterize ...</translation>
+		<original>Posterize</original>
+		<translation>Posterize</translation>
 	</phrase>
 
 	<phrase>
@@ -3035,8 +3035,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Reduce unique colors...</original>
-		<translation>Reduzieren einzigartigen Farben ...</translation>
+		<original>Reduce unique colors</original>
+		<translation>Reduzieren einzigartigen Farben</translation>
 	</phrase>
 
 	<phrase>
@@ -3065,8 +3065,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Mosaic...</original>
-		<translation>Mosaic ...</translation>
+		<original>Mosaic</original>
+		<translation>Mosaic</translation>
 	</phrase>
 
 	<phrase>
@@ -3120,8 +3120,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Emboss/Engrave...</original>
-		<translation>Relief / Gravur ...</translation>
+		<original>Emboss/Engrave</original>
+		<translation>Relief / Gravur</translation>
 	</phrase>
 
 	<phrase>
@@ -3130,8 +3130,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Find Edges...</original>
-		<translation>Konturen finden ...</translation>
+		<original>Find Edges</original>
+		<translation>Konturen finden</translation>
 	</phrase>
 
 	<phrase>
@@ -3250,7 +3250,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Custom Diffuse...</original>
+		<original>Custom Diffuse</original>
 		<translation>Bereinigt Verbreitung</translation>
 	</phrase>
 
@@ -3265,8 +3265,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Play Saved Macro...</original>
-		<translation>Spielen Gespeichert Macro ...</translation>
+		<original>Play Saved Macro</original>
+		<translation>Spielen Gespeichert Macro</translation>
 	</phrase>
 
 	<phrase>
@@ -3275,8 +3275,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Sto&p Recording...</original>
-		<translation>Aufnahme beenden ....</translation>
+		<original>Sto&p Recording</original>
+		<translation>Aufnahme beenden .</translation>
 	</phrase>
 
 	<phrase>
@@ -3340,13 +3340,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Submit Feedback...</original>
-		<translation>Feedback ...</translation>
+		<original>Submit Feedback</original>
+		<translation>Feedback</translation>
 	</phrase>
 
 	<phrase>
-		<original>Submit Bug Report...</original>
-		<translation>Senden Bug Report ...</translation>
+		<original>Submit Bug Report</original>
+		<translation>Senden Bug Report</translation>
 	</phrase>
 
 	<phrase>
@@ -3385,8 +3385,8 @@
 	</phrase>
 
 	<phrase>
-		<original>File</original>
-		<translation>Datei</translation>
+		<original>&File</original>
+		<translation>&Datei</translation>
 	</phrase>
 
 	<phrase>
@@ -3450,7 +3450,7 @@
 	</phrase>
 
 	<phrase>
-		<original>URL found on clipboard.  Attempting to download image at that location...</original>
+		<original>URL found on clipboard.  Attempting to download image at that location</original>
 		<translation>URL gefunden in Zwischenablage. Der Versuch, an dieser Stelle herunterladen</translation>
 	</phrase>
 
@@ -3475,13 +3475,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing to load image...</original>
+		<original>Preparing to load image</original>
 		<translation>Vorbereiten loading image</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rendering image to screen...</original>
-		<translation>Rendering Bild auf dem Bildschirm ...</translation>
+		<original>Rendering image to screen</original>
+		<translation>Rendering Bild auf dem Bildschirm</translation>
 	</phrase>
 
 	<phrase>
@@ -3535,13 +3535,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Loading custom filter information...</original>
-		<translation>Lädt benutzerdefinierte Filter Informationen ...</translation>
+		<original>Loading custom filter information</original>
+		<translation>Lädt benutzerdefinierte Filter Informationen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Applying X1 filter...</original>
-		<translation>Filter X1 anwenden ...</translation>
+		<original>Applying X1 filter</original>
+		<translation>Filter X1 anwenden</translation>
 	</phrase>
 
 	<phrase>
@@ -3550,23 +3550,23 @@
 	</phrase>
 
 	<phrase>
-		<original>Generating grids...</original>
-		<translation>Generieren Gittern ...</translation>
+		<original>Generating grids</original>
+		<translation>Generieren Gittern</translation>
 	</phrase>
 
 	<phrase>
-		<original>Applying grid blur...</original>
-		<translation>Bewerben Raster blur ...</translation>
+		<original>Applying grid blur</original>
+		<translation>Bewerben Raster blur</translation>
 	</phrase>
 
 	<phrase>
-		<original>Preparing conversion tables...</original>
-		<translation>Vorbereiten Umrechnungstabellen ...</translation>
+		<original>Preparing conversion tables</original>
+		<translation>Vorbereiten Umrechnungstabellen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image to isometric view...</original>
-		<translation>Konvertieren Bild in isometrischer ...</translation>
+		<original>Converting image to isometric view</original>
+		<translation>Konvertieren Bild in isometrischer</translation>
 	</phrase>
 
 	<phrase>
@@ -3580,78 +3580,78 @@
 	</phrase>
 
 	<phrase>
-		<original>filter ...</original>
-		<translation>filter ...</translation>
+		<original>filter</original>
+		<translation>filter</translation>
 	</phrase>
 
 	<phrase>
-		<original>Inverting the image...</original>
-		<translation>Umkehrung der Bild ...</translation>
+		<original>Inverting the image</original>
+		<translation>Umkehrung der Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Shifting RGB values right...</original>
-		<translation>Shifting RGB-Werte rechts ...</translation>
+		<original>Shifting RGB values right</original>
+		<translation>Shifting RGB-Werte rechts</translation>
 	</phrase>
 
 	<phrase>
-		<original>Shifting RGB values left...</original>
-		<translation>Shifting RGB-Werte links ...</translation>
+		<original>Shifting RGB values left</original>
+		<translation>Shifting RGB-Werte links</translation>
 	</phrase>
 
 	<phrase>
-		<original>Calculating film negative values...</original>
-		<translation>Berechnen film negative Werte ...</translation>
+		<original>Calculating film negative values</original>
+		<translation>Berechnen film negative Werte</translation>
 	</phrase>
 
 	<phrase>
-		<original>Inverting image hue...</original>
-		<translation>Invert Farbton des Bildes ...</translation>
+		<original>Inverting image hue</original>
+		<translation>Invert Farbton des Bildes</translation>
 	</phrase>
 
 	<phrase>
-		<original>Performing compound inversion...</original>
-		<translation>Durchführen Composite Inversion ...</translation>
+		<original>Performing compound inversion</original>
+		<translation>Durchführen Composite Inversion</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enhancing image contrast...</original>
-		<translation>Verbesserung Bildkontrast ...</translation>
+		<original>Enhancing image contrast</original>
+		<translation>Verbesserung Bildkontrast</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enhancing image highlights...</original>
-		<translation>Stärkung image Highlights ...</translation>
+		<original>Enhancing image highlights</original>
+		<translation>Stärkung image Highlights</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enhancing image midtones...</original>
-		<translation>Stärkung image Mitteltöne ...</translation>
+		<original>Enhancing image midtones</original>
+		<translation>Stärkung image Mitteltöne</translation>
 	</phrase>
 
 	<phrase>
-		<original>Enhancing image shadows...</original>
-		<translation>Stärkung Schatten ...</translation>
+		<original>Enhancing image shadows</original>
+		<translation>Stärkung Schatten</translation>
 	</phrase>
 
 	<phrase>
-		<original>Sketching the image with an imaginary pencil...</original>
-		<translation>Skizzen des Bildes mit einer imaginären Bleistift ...</translation>
+		<original>Sketching the image with an imaginary pencil</original>
+		<translation>Skizzen des Bildes mit einer imaginären Bleistift</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image mode...</original>
-		<translation>Konvertieren Bildmodus ...</translation>
+		<original>Converting image mode</original>
+		<translation>Konvertieren Bildmodus</translation>
 	</phrase>
 
 	<phrase>
-		<original>Fading last effect...</original>
-		<translation>Blur-Effekt last ...</translation>
+		<original>Fading last effect</original>
+		<translation>Blur-Effekt last</translation>
 	</phrase>
 
 	<phrase>
-		<original>Performing thermographic analysis...</original>
-		<translation>Durchführen thermografische Analyse ...</translation>
+		<original>Performing thermographic analysis</original>
+		<translation>Durchführen thermografische Analyse</translation>
 	</phrase>
 
 	<phrase>
@@ -3660,43 +3660,43 @@
 	</phrase>
 
 	<phrase>
-		<original>Synthesizing new image...</original>
-		<translation>Synthetisieren neues Bild ...</translation>
+		<original>Synthesizing new image</original>
+		<translation>Synthetisieren neues Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Abducting image and probing it for weaknesses...</original>
-		<translation>Entführen Bild für das Eindringen und Schwächen ...</translation>
+		<original>Abducting image and probing it for weaknesses</original>
+		<translation>Entführen Bild für das Eindringen und Schwächen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Accelerating to 88mph in order to antique-ify this image...</original>
-		<translation>Beschleunigung bis 88 mph auf diesem Bild Rücklaufsperre ...</translation>
+		<original>Accelerating to 88mph in order to antique-ify this image</original>
+		<translation>Beschleunigung bis 88 mph auf diesem Bild Rücklaufsperre</translation>
 	</phrase>
 
 	<phrase>
-		<original>Engaging hipsters to perform sepia conversion...</original>
-		<translation>Starten Hüfthose bis sepia Umwandlung durchzuführen ...</translation>
+		<original>Engaging hipsters to perform sepia conversion</original>
+		<translation>Starten Hüfthose bis sepia Umwandlung durchzuführen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Putting image to sleep, then measuring its REM cycles...</original>
-		<translation>Bild schlafen, dann messen die REM-Zyklen ...</translation>
+		<original>Putting image to sleep, then measuring its REM cycles</original>
+		<translation>Bild schlafen, dann messen die REM-Zyklen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Injecting image with non-ionizing radiation...</original>
-		<translation>Einspritzen Bild mit nicht-ionisierender Strahlung ...</translation>
+		<original>Injecting image with non-ionizing radiation</original>
+		<translation>Einspritzen Bild mit nicht-ionisierender Strahlung</translation>
 	</phrase>
 
 	<phrase>
-		<original>Embuing image with the essence of F. Miller...</original>
-		<translation>Penetrieren Bild mit dem Wesen der F. Miller ...</translation>
+		<original>Embuing image with the essence of F. Miller</original>
+		<translation>Penetrieren Bild mit dem Wesen der F. Miller</translation>
 	</phrase>
 
 	<phrase>
-		<original>Counting the number of unique colors in this image...</original>
-		<translation>Zählen die Anzahl der eindeutigen Farben in diesem Bild ...</translation>
+		<original>Counting the number of unique colors in this image</original>
+		<translation>Zählen die Anzahl der eindeutigen Farben in diesem Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -3725,8 +3725,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Animate filter disabled... for now</original>
-		<translation>Animieren filtern off ... für jetzt</translation>
+		<original>Animate filter disabled for now</original>
+		<translation>Animieren filtern off  für jetzt</translation>
 	</phrase>
 
 	<phrase>
@@ -3745,48 +3745,48 @@
 	</phrase>
 
 	<phrase>
-		<original>Sprinkling image with shimmering rainbows...</original>
-		<translation>Beregnung Bild mit schimmernden Regenbogen ...</translation>
+		<original>Sprinkling image with shimmering rainbows</original>
+		<translation>Beregnung Bild mit schimmernden Regenbogen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Generating artificial fog...</original>
-		<translation>Erzeugung künstlicher Nebel ...</translation>
+		<original>Generating artificial fog</original>
+		<translation>Erzeugung künstlicher Nebel</translation>
 	</phrase>
 
 	<phrase>
-		<original>Generating artificial water...</original>
-		<translation>Erzeugung künstlicher Wasser ...</translation>
+		<original>Generating artificial water</original>
+		<translation>Erzeugung künstlicher Wasser</translation>
 	</phrase>
 
 	<phrase>
-		<original>Creating artificial atmosphere...</original>
-		<translation>Schaffung künstlicher Atmosphäre ...</translation>
+		<original>Creating artificial atmosphere</original>
+		<translation>Schaffung künstlicher Atmosphäre</translation>
 	</phrase>
 
 	<phrase>
-		<original>Dropping image temperature...</original>
-		<translation>Dropping image Temperatur ...</translation>
+		<original>Dropping image temperature</original>
+		<translation>Dropping image Temperatur</translation>
 	</phrase>
 
 	<phrase>
-		<original>Exploding imaginary volcano...</original>
-		<translation>Explodierende imaginären Vulkan ...</translation>
+		<original>Exploding imaginary volcano</original>
+		<translation>Explodierende imaginären Vulkan</translation>
 	</phrase>
 
 	<phrase>
-		<original>Lighting image on fire...</original>
-		<translation>Beleuchtung Bild auf Feuer ...</translation>
+		<original>Lighting image on fire</original>
+		<translation>Beleuchtung Bild auf Feuer</translation>
 	</phrase>
 
 	<phrase>
-		<original>Taking image for a swim...</original>
-		<translation>Unter Bild für eine swim ...</translation>
+		<original>Taking image for a swim</original>
+		<translation>Unter Bild für eine swim</translation>
 	</phrase>
 
 	<phrase>
-		<original>Pouring smoldering steel onto image...</original>
-		<translation>Gießen schwelenden Stahl auf Bild ...</translation>
+		<original>Pouring smoldering steel onto image</original>
+		<translation>Gießen schwelenden Stahl auf Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -3795,8 +3795,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Cropping image to selected area...</original>
-		<translation>Bild zuschneiden ausgewählten Bereich ...</translation>
+		<original>Cropping image to selected area</original>
+		<translation>Bild zuschneiden ausgewählten Bereich</translation>
 	</phrase>
 
 	<phrase>
@@ -3810,33 +3810,33 @@
 	</phrase>
 
 	<phrase>
-		<original>Flipping image...</original>
-		<translation>Flip Bild ...</translation>
+		<original>Flipping image</original>
+		<translation>Flip Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Mirroring image...</original>
-		<translation>Spiegelbild ...</translation>
+		<original>Mirroring image</original>
+		<translation>Spiegelbild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rotating image clockwise...</original>
-		<translation>Bild im Uhrzeigersinn drehen ...</translation>
+		<original>Rotating image clockwise</original>
+		<translation>Bild im Uhrzeigersinn drehen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rotating image...</original>
-		<translation>Bild drehen ...</translation>
+		<original>Rotating image</original>
+		<translation>Bild drehen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rotating image counter-clockwise...</original>
-		<translation>Bild gegen Uhrzeigersinn drehen ...</translation>
+		<original>Rotating image counter-clockwise</original>
+		<translation>Bild gegen Uhrzeigersinn drehen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Analyzing filetype...</original>
-		<translation>Analyse Dateityp ...</translation>
+		<original>Analyzing filetype</original>
+		<translation>Analyse Dateityp</translation>
 	</phrase>
 
 	<phrase>
@@ -3845,8 +3845,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing import flags...</original>
-		<translation>Vorbereiten Import Fahnen ...</translation>
+		<original>Preparing import flags</original>
+		<translation>Vorbereiten Import Fahnen</translation>
 	</phrase>
 
 	<phrase>
@@ -3890,18 +3890,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Importing image from file...</original>
-		<translation>Bild importieren aus Datei ...</translation>
+		<original>Importing image from file</original>
+		<translation>Bild importieren aus Datei</translation>
 	</phrase>
 
 	<phrase>
-		<original>Importing frame # #1 from animated GIF file...</original>
-		<translation>Importieren frame # #1 animierte GIF-Datei ...</translation>
+		<original>Importing frame # #1 from animated GIF file</original>
+		<translation>Importieren frame # #1 animierte GIF-Datei</translation>
 	</phrase>
 
 	<phrase>
-		<original>Importing frame # #1 from multipage TIFF file...</original>
-		<translation>Importieren frame # #1 von mehrseitigen TIFF-Datei ...</translation>
+		<original>Importing frame # #1 from multipage TIFF file</original>
+		<translation>Importieren frame # #1 von mehrseitigen TIFF-Datei</translation>
 	</phrase>
 
 	<phrase>
@@ -3910,28 +3910,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Analyzing color depth...</original>
-		<translation>Analysieren Sie die Farbtiefe ...</translation>
+		<original>Analyzing color depth</original>
+		<translation>Analysieren Sie die Farbtiefe</translation>
 	</phrase>
 
 	<phrase>
-		<original>High bit-depth RGB image identified.  Checking for non-standard alpha encoding...</original>
-		<translation>Hoher Bit-Tiefe RGB Bild identifiziert. Prüfung auf Nicht-Standard-alpha-Codierung ...</translation>
+		<original>High bit-depth RGB image identified.  Checking for non-standard alpha encoding</original>
+		<translation>Hoher Bit-Tiefe RGB Bild identifiziert. Prüfung auf Nicht-Standard-alpha-Codierung</translation>
 	</phrase>
 
 	<phrase>
-		<original>Non-standard alpha data found.  Making temporary copy prior to tone mapping...</original>
-		<translation>Nicht-Standard-alpha Daten gefunden. Erstellen temporäre Kopie vor Tone Mapping ...</translation>
+		<original>Non-standard alpha data found.  Making temporary copy prior to tone mapping</original>
+		<translation>Nicht-Standard-alpha Daten gefunden. Erstellen temporäre Kopie vor Tone Mapping</translation>
 	</phrase>
 
 	<phrase>
-		<original>No alpha data found.  Preparing tone-mapping...</original>
-		<translation>Keine alpha Daten gefunden. Vorbereiten Tone Mapping ...</translation>
+		<original>No alpha data found.  Preparing tone-mapping</original>
+		<translation>Keine alpha Daten gefunden. Vorbereiten Tone Mapping</translation>
 	</phrase>
 
 	<phrase>
-		<original>Tone mapping HDR image to preserve tonal range...</original>
-		<translation>Tone Mapping HDR-Bild Tonumfang erhalten ...</translation>
+		<original>Tone mapping HDR image to preserve tonal range</original>
+		<translation>Tone Mapping HDR-Bild Tonumfang erhalten</translation>
 	</phrase>
 
 	<phrase>
@@ -3950,13 +3950,13 @@
 	</phrase>
 
 	<phrase>
-		<original>High bit-depth RGBA image identified.  Making copy of alpha data...</original>
-		<translation>Hoher Bit-Tiefe RGBA Bild identifiziert. Kopien von alpha data ...</translation>
+		<original>High bit-depth RGBA image identified.  Making copy of alpha data</original>
+		<translation>Hoher Bit-Tiefe RGBA Bild identifiziert. Kopien von alpha data</translation>
 	</phrase>
 
 	<phrase>
-		<original>Alpha copy complete.  Tone mapping HDR image to preserve tonal range...</original>
-		<translation>Alpha Kopie abzuschließen. Tone Mapping HDR-Bild Tonumfang erhalten ...</translation>
+		<original>Alpha copy complete.  Tone mapping HDR image to preserve tonal range</original>
+		<translation>Alpha Kopie abzuschließen. Tone Mapping HDR-Bild Tonumfang erhalten</translation>
 	</phrase>
 
 	<phrase>
@@ -3970,13 +3970,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Tone-mapping high-bit-depth grayscale image to 24bpp...</original>
-		<translation>Tone-Mapping-High-Bit-Tiefe Graustufenbild um 24bpp ...</translation>
+		<original>Tone-mapping high-bit-depth grayscale image to 24bpp</original>
+		<translation>Tone-Mapping-High-Bit-Tiefe Graustufenbild um 24bpp</translation>
 	</phrase>
 
 	<phrase>
-		<original>Requesting memory for image transfer...</original>
-		<translation>Zugriffe Speicher für die Bildübertragung ...</translation>
+		<original>Requesting memory for image transfer</original>
+		<translation>Zugriffe Speicher für die Bildübertragung</translation>
 	</phrase>
 
 	<phrase>
@@ -3985,8 +3985,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Memory secured.  Finalizing image load...</original>
-		<translation>Speicher abgelegt. Abschließen Lade Bild ...</translation>
+		<original>Memory secured.  Finalizing image load</original>
+		<translation>Speicher abgelegt. Abschließen Lade Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -3995,8 +3995,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Restoring alpha data...</original>
-		<translation>Restaurierung von alpha data ...</translation>
+		<original>Restoring alpha data</original>
+		<translation>Restaurierung von alpha data</translation>
 	</phrase>
 
 	<phrase>
@@ -4010,28 +4010,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Initializing GDI+...</original>
-		<translation>Initialisieren GDI + ...</translation>
+		<original>Initializing GDI+</original>
+		<translation>Initialisieren GDI +</translation>
 	</phrase>
 
 	<phrase>
-		<original>Creating GDI+ compatible image copy...</original>
-		<translation>Erstellen GDI + kompatiblen Bild copy ...</translation>
+		<original>Creating GDI+ compatible image copy</original>
+		<translation>Erstellen GDI + kompatiblen Bild copy</translation>
 	</phrase>
 
 	<phrase>
-		<original>Preparing GDI+ encoder for this filetype...</original>
-		<translation>Vorbereiten GDI +-Encoder für diesen Dateityp ...</translation>
+		<original>Preparing GDI+ encoder for this filetype</original>
+		<translation>Vorbereiten GDI +-Encoder für diesen Dateityp</translation>
 	</phrase>
 
 	<phrase>
-		<original>Saving the file...</original>
-		<translation>Speichern Sie die Datei ...</translation>
+		<original>Saving the file</original>
+		<translation>Speichern Sie die Datei</translation>
 	</phrase>
 
 	<phrase>
-		<original>Releasing all temporary image copies...</original>
-		<translation>Loslassen aller temporären Dateien Kopien ...</translation>
+		<original>Releasing all temporary image copies</original>
+		<translation>Loslassen aller temporären Dateien Kopien</translation>
 	</phrase>
 
 	<phrase>
@@ -4090,8 +4090,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Loading macro data...</original>
-		<translation>Lädt Makrodaten ...</translation>
+		<original>Loading macro data</original>
+		<translation>Lädt Makrodaten</translation>
 	</phrase>
 
 	<phrase>
@@ -4115,13 +4115,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting outdated macro format...</original>
-		<translation>Konvertieren eine veraltete Makro-Format ...</translation>
+		<original>Converting outdated macro format</original>
+		<translation>Konvertieren eine veraltete Makro-Format</translation>
 	</phrase>
 
 	<phrase>
-		<original>Macro converted successfully!  Continuing...</original>
-		<translation>Macro erfolgreich umgesetzt! Fortsetzung ...</translation>
+		<original>Macro converted successfully!  Continuing</original>
+		<translation>Macro erfolgreich umgesetzt! Fortsetzung</translation>
 	</phrase>
 
 	<phrase>
@@ -4130,8 +4130,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Processing macro data...</original>
-		<translation>Verarbeitung Makrodaten ...</translation>
+		<original>Processing macro data</original>
+		<translation>Verarbeitung Makrodaten</translation>
 	</phrase>
 
 	<phrase>
@@ -4170,8 +4170,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Saving recent file menu thumbnail...</original>
-		<translation>Speichern Thumbnails zuletzt geöffneten Dateien im Menü ......</translation>
+		<original>Saving recent file menu thumbnail</original>
+		<translation>Speichern Thumbnails zuletzt geöffneten Dateien im Menü</translation>
 	</phrase>
 
 	<phrase>
@@ -4370,8 +4370,8 @@
 	</phrase>
 
 	<phrase>
-		<original>1) the file hasn't been deleted, and... 2) the file location provided to X1 is correct.</original>
-		<translation>1) die Datei wird nicht gelöscht, und ... 2) der Speicherort der Datei mit X1 verbunden ist richtig.</translation>
+		<original>1) the file hasn't been deleted, and 2) the file location provided to X1 is correct.</original>
+		<translation>1) die Datei wird nicht gelöscht, und  2) der Speicherort der Datei mit X1 verbunden ist richtig.</translation>
 	</phrase>
 
 	<phrase>
@@ -4475,7 +4475,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing X1 image...</original>
+		<original>Preparing X1 image</original>
 		<translation>Vorbereiten X1 Bild</translation>
 	</phrase>
 
@@ -4525,8 +4525,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Acquiring image...</original>
-		<translation>Der Erwerb der Bild ...</translation>
+		<original>Acquiring image</original>
+		<translation>Der Erwerb der Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -4595,8 +4595,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Waiting for capture...</original>
-		<translation>Erwarten capture ...</translation>
+		<original>Waiting for capture</original>
+		<translation>Erwarten capture</translation>
 	</phrase>
 
 	<phrase>
@@ -4620,18 +4620,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Saving Undo data...</original>
-		<translation>Speichern 'rückgängig' Informationen...</translation>
+		<original>Saving Undo data</original>
+		<translation>Speichern 'rückgängig' Informationen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Restoring Undo data...</original>
-		<translation>Wiederherstellen 'rückgängig' Informationen...</translation>
+		<original>Restoring Undo data</original>
+		<translation>Wiederherstellen 'rückgängig' Informationen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Restoring Redo data...</original>
-		<translation>Restaurierung der 'sich wiederholende Daten'...</translation>
+		<original>Restoring Redo data</original>
+		<translation>Restaurierung der 'sich wiederholende Daten'</translation>
 	</phrase>
 
 	<phrase>
@@ -4790,8 +4790,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Editing language settings...</original>
-		<translation>Bearbeiten von Spracheinstellungen...</translation>
+		<original>Editing language settings</original>
+		<translation>Bearbeiten von Spracheinstellungen</translation>
 	</phrase>
 
 	<phrase>
@@ -4805,17 +4805,17 @@
 	</phrase>
 
 	<phrase>
-		<original>Saving linguistic parameters...</original>
+		<original>Saving linguistic parameters</original>
 		<translation>Speichern sprachliche Parameter</translation>
 	</phrase>
 
 	<phrase>
-		<original>Reload linguistic parameters...</original>
+		<original>Reload linguistic parameters</original>
 		<translation>Neu laden sprachliche Parameter</translation>
 	</phrase>
 
 	<phrase>
-		<original>Saving Language settings...</original>
+		<original>Saving Language settings</original>
 		<translation>Speichern Spracheinstellungen</translation>
 	</phrase>
 
@@ -4879,624 +4879,624 @@
 		<translation>Nein</translation>
 	</phrase>
 
-    <phrase>
-        <original>show original image</original>
-        <translation>Original-Bild-Anzeige</translation>
-    </phrase>
-
-    <phrase>
-        <original>show effect preview</original>
-        <translation>Anzeigebeispiel des Aufpralls</translation>
-    </phrase>
-
-    <phrase>
-        <original>clamp them to the nearest available pixel</original>
-        <translation>klemmen Sie sie auf den nächsten verfügbaren Pixel</translation>
-    </phrase>
-
-    <phrase>
-        <original>wrap them around the image</original>
-        <translation>sie um das Bild wickeln</translation>
-    </phrase>
-
-    <phrase>
-        <original>erase them</original>
-        <translation>löschen Sie sie aus</translation>
-    </phrase>
-
-    <phrase>
-        <original>defaultEdgeMethod</original>
-        <translation>Standard-Rand-Methode</translation>
-    </phrase>
-
-    <phrase>
-        <original>Waiting for user to specify alpha threshold...</original>
-        <translation>Erwarten Angabe des Benutzers für alpha Schwelle ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Please Choose A Transparency Threshold</original>
-        <translation>bitte. Wählen Sie die Transparenz der Schwelle</translation>
-    </phrase>
-
-    <phrase>
-        <original>This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified.</original>
-        <translation>Dieses Bild hat einen Alpha-Kanal-Komplex. Bevor es als Palette led Bild (8bpp) gespeichert werden kann, wird der Alpha-Kanal vereinfacht werden.</translation>
-    </phrase>
-
-    <phrase>
-        <original>transparency cut-off:</original>
-        <translation>Transparenz Ernte:</translation>
-    </phrase>
-
-    <phrase>
-        <original>no transparency</original>
-        <translation>keine Transparenz</translation>
-    </phrase>
-
-    <phrase>
-        <original>maximum transparency</original>
-        <translation>maximale Transparenz</translation>
-    </phrase>
-
-    <phrase>
-        <original>Waiting for user to specify color depth...</original>
-        <translation>Erwarten Angabe des Benutzers für die Farbtiefe ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Please Choose Exported Color Depth</original>
-        <translation>bitte. Wählen Sie die exportierte Farbtiefe</translation>
-    </phrase>
-
-    <phrase>
-        <original>please choose an output color depth:</original>
-        <translation>bitte. Wählen Sie eine Ausgabe Farbtiefe:</translation>
-    </phrase>
-
-    <phrase>
-        <original>1 bpp (monochrome)</original>
-        <translation>1 bpp (monochrom)</translation>
-    </phrase>
-
-    <phrase>
-        <original>4 bpp (16 shades of gray)</original>
-        <translation>4 bpp (16 Graustufen)</translation>
-    </phrase>
-
-    <phrase>
-        <original>8 bpp (256 colors or full grayscale)</original>
-        <translation>8 bpp (256 Farben oder Graustufen)</translation>
-    </phrase>
-
-    <phrase>
-        <original>24 bpp (16 million colors)</original>
-        <translation>24 bpp (16 Millionen Farben)</translation>
-    </phrase>
-
-    <phrase>
-        <original>32 bpp (16 million colors + full transparency)</original>
-        <translation>32 bpp (16 Millionen Farben + volle Transparenz)</translation>
-    </phrase>
-
-    <phrase>
-        <original>Visual Basic IDE Detected</original>
-        <translation>Visual Basic IDE erkannt</translation>
-    </phrase>
-
-    <phrase>
-        <original>You are running X1 inside the Visual Basic IDE.  This is not recommended.</original>
-        <translation>Sie verwenden X1 in der IDE von Visual Basic. Dies wird nicht empfohlen.</translation>
-    </phrase>
-
-    <phrase>
-        <original>Please compile X1 before using it.</original>
-        <translation>Bitte X1 kompilieren, bevor es zu benutzen.</translation>
-    </phrase>
-
-    <phrase>
-        <original>Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.</original>
-        <translation>Viele Funktionen, die abhängig sind von subclassificering in der IDE deaktiviert, aber einige - etwa-Buttons - können nicht ernsthaft deaktiviert werden ohne das die Funktionalität des Programms beeinträchtigt .</translation>
-    </phrase>
-
-    <phrase>
-        <original>As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's "Stop" button.</original>
-        <translation>Als solche können Sie aus IDE Instabilität und Abstürzen zu leiden, vor allem, wenn das Programm mit der IDE 'Stop' Taste schließt.</translation>
-    </phrase>
-
-    <phrase>
-        <original>Additionally, like all other photo editors, X1 relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-        <translation>Darüber hinaus lehnt X1 genauso wie alle anderen Foto-Editoren stark auf mehrdimensionale Arrays. Array-Leistung ist erheblich beeinträchtigt in der IDE, so einige Funktionen sind sehr langsam.</translation>
-    </phrase>
-
-    <phrase>
-        <original>If you insist on running X1 in the IDE, please do not submit bugs regarding IDE crashes or freezes.  X1's developers can only address issues and bugs that affect the compiled .exe.</original>
-        <translation>Wenn Sie zum Ausführen von %  in der IDE zu bestehen, senden Sie Bugs im Zusammenhang mit IDE stürzt ab oder stürzt ab. Das X1-Entwickler können sich nur auf Probleme und Fehler, dass die kompilierte. Exe Einfluss.</translation>
-    </phrase>
-
-    <phrase>
-        <original>I understand the risks of running X1 in the IDE</original>
-        <translation>Ich verstehe die Risiken der laufenden X1 in der IDE</translation>
-    </phrase>
-
-    <phrase>
-        <original>Do not display this warning again</original>
-        <translation>Diese Warnmeldung wird nicht angezeigt</translation>
-    </phrase>
-
-    <phrase>
-        <original>Applying box blur to image...</original>
-        <translation>Anwenden von quadratischen Unschärfe auf das Bild ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.</original>
-        <translation>WARNUNG! Dieses Tool ist hoch optimiert, aber bei hohen Radius-Werte, ist es immer noch ziemlich langsam in der IDE. Und werden gebeten, für die Vorschau der Anwendung oder eines Radius größer als 20 kompilieren.</translation>
-    </phrase>
-
-    <phrase>
-        <original>Box Blur</original>
-        <translation>Platz Blur</translation>
-    </phrase>
-
-    <phrase>
-        <original>box width:</original>
-        <translation>Breite des Platzes:</translation>
-    </phrase>
-
-    <phrase>
-        <original>box height:</original>
-        <translation>Höhe des Platzes:</translation>
-    </phrase>
-
-    <phrase>
-        <original>keep both dimensions in sync</original>
-        <translation>beide Dimensionen synchron halten</translation>
-    </phrase>
-
-    <phrase>
-        <original>Projecting image through simulated glass...</original>
-        <translation>Projizierte Bild durch simulierte Glas ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Figured Glass</original>
-        <translation>Glass Figure</translation>
-    </phrase>
-
-    <phrase>
-        <original>scale:</original>
-        <translation>Skala:</translation>
-    </phrase>
-
-    <phrase>
-        <original>turbulence:</original>
-        <translation>Turbulenzen:</translation>
-    </phrase>
-
-    <phrase>
-        <original>if pixels lie outside the image...</original>
-        <translation>wenn Pixel außerhalb des Bildes sind ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>render emphasis:</original>
-        <translation>Rendering Schwerpunkte:</translation>
-    </phrase>
-
-    <phrase>
-        <original>quality</original>
-        <translation>Qualität</translation>
-    </phrase>
-
-    <phrase>
-        <original>speed</original>
-        <translation>Geschwindigkeit</translation>
-    </phrase>
-
-    <phrase>
-        <original>Gaussian Blur</original>
-        <translation>Gaußschen Weichzeichner</translation>
-    </phrase>
-
-    <phrase>
-        <original>radius:</original>
-        <translation>Radius:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Peering at image through imaginary kaleidoscope...</original>
-        <translation>Peering durch imaginäre Bild Kaleidoskop ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Kaleidoscope</original>
-        <translation>Kaleidoskop</translation>
-    </phrase>
-
-    <phrase>
-        <original>number of mirrors:</original>
-        <translation>Anzahl der Ebenen:</translation>
-    </phrase>
-
-    <phrase>
-        <original>primary angle:</original>
-        <translation>Primär Eckpunkte:</translation>
-    </phrase>
-
-    <phrase>
-        <original>secondary angle:</original>
-        <translation>sekundären Eckpunkte:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Radius (percentage):</original>
-        <translation>Radius (in Prozent):</translation>
-    </phrase>
-
-    <phrase>
-        <original>Apply Lens Distortion</original>
-        <translation>Bewerben Lens Distortion</translation>
-    </phrase>
-
-    <phrase>
-        <original>Projecting image through simulated lens...</original>
-        <translation>Projizierte Bild durch simulierte Linse ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>lens strength (refractive index):</original>
-        <translation>Linsenstärke (Brechungsindex):</translation>
-    </phrase>
-
-    <phrase>
-        <original>Correcting image distortion...</original>
-        <translation>Korrektur Bildverzerrungen ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Correct or Fix Lens Distortion</original>
-        <translation>Korrigieren oder reparieren Lens Distortion</translation>
-    </phrase>
-
-    <phrase>
-        <original>correction strength:</original>
-        <translation>Korrektur Stärke:</translation>
-    </phrase>
-
-    <phrase>
-        <original>correction zoom:</original>
-        <translation>Korrektur Zoom:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Pinching and whirling image...</original>
-        <translation>Kneifen und wirbelnden Bild ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Pinch and Whirl</original>
-        <translation>Kneif und Wirbelsäule</translation>
-    </phrase>
-
-    <phrase>
-        <original>pinch amount:</original>
-        <translation>Anzahl Kneifen:</translation>
-    </phrase>
-
-    <phrase>
-        <original>whirl angle:</original>
-        <translation>Drallwinkel:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Saving plugin options...</original>
-        <translation>Saving Plugin Optionen ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Plugin options saved.</original>
-        <translation>Plugin-Optionen gespeichert.</translation>
-    </phrase>
-
-    <phrase>
-        <original>Overview</original>
-        <translation>Zusammenfassung</translation>
-    </phrase>
-
-    <phrase>
-        <original>GOOD</original>
-        <translation>GUT</translation>
-    </phrase>
-
-    <phrase>
-        <original>problems detected</original>
-        <translation>Probleme erkannt</translation>
-    </phrase>
-
-    <phrase>
-        <original>none</original>
-        <translation>nicht</translation>
-    </phrase>
-
-    <phrase>
-        <original>installed</original>
-        <translation>installiert</translation>
-    </phrase>
-
-    <phrase>
-        <original>disable</original>
-        <translation>deaktivieren</translation>
-    </phrase>
-
-    <phrase>
-        <original>and up to date</original>
-        <translation>und aktuelle</translation>
-    </phrase>
-
-    <phrase>
-        <original>, but incorrect version ( X1 found X2 expected)</original>
-        <translation>Aber falsche Version ( X1 gefunden X2 erwartet)</translation>
-    </phrase>
-
-    <phrase>
-        <original>installed, but disabled by user</original>
-        <translation>installiert, aber deaktiviert durch Benutzer</translation>
-    </phrase>
-
-    <phrase>
-        <original>enable</original>
-        <translation>nutzbar</translation>
-    </phrase>
-
-    <phrase>
-        <original>missing</original>
-        <translation>nicht vorhanden</translation>
-    </phrase>
-
-    <phrase>
-        <original>X1 Plugin Manager</original>
-        <translation>X1 Plugin Manager</translation>
-    </phrase>
-
-    <phrase>
-        <original>X1 plugin information</original>
-        <translation>X1 plugin Informationen</translation>
-    </phrase>
-
-    <phrase>
-        <original>expected version:</original>
-        <translation>erwartete Version:</translation>
-    </phrase>
-
-    <phrase>
-        <original>version found:</original>
-        <translation>version gefunden:</translation>
-    </phrase>
-
-    <phrase>
-        <original>X1 license:</original>
-        <translation>X1 Lizenz:</translation>
-    </phrase>
-
-    <phrase>
-        <original>X1 settings</original>
-        <translation>X1 Einstellungen</translation>
-    </phrase>
-
-    <phrase>
-        <original>when reducing alpha channels, attempt to preserve values of 0 and 255</original>
-        <translation>bei der Senkung von alpha Kanälen, versuchen die Werte von 0 und 255 zu erhalten</translation>
-    </phrase>
-
-    <phrase>
-        <original>Certain applications may require full or no transparency for images.  Pngnq-s9 will attempt to preserve these alpha values when this option is selected.</original>
-        <translation>Einige Anwendungen verfügen über volle oder keine Transparenz für Bilder benötigt. Pngnq-s9 wird versuchen, diese Alpha-Werte zu erhalten, wenn diese Option aktiviert ist.</translation>
-    </phrase>
-
-    <phrase>
-        <original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
-        <translation>Analyse Farben mit YUV anstelle von RGB (langsamer, aber bessere Qualität)</translation>
-    </phrase>
-
-    <phrase>
-        <original>Unlike RGB, the YUV color space takes into account human perception of colors.  This results in color reductions with much smoother output.</original>
-        <translation>Im Gegensatz zu RGB, YUV findet Berücksichtigung der Raum der menschlichen Farbwahrnehmung. Dies führt zu einer Reduktion in der Farbe mit viel glatter Ausgang</translation>
-    </phrase>
-
-    <phrase>
-        <original>color sample size:</original>
-        <translation>Farbmuster Größe:</translation>
-    </phrase>
-
-    <phrase>
-        <original>small (fast, low quality)</original>
-        <translation>kleinen (schnell, niedrige Qualität)</translation>
-    </phrase>
-
-    <phrase>
-        <original>large (slow, high quality)	</original>
-        <translation>groß (langsam, hohe Qualität)</translation>
-    </phrase>
-
-    <phrase>
-        <original>color dithering:</original>
-        <translation>Farbrasterung:</translation>
-    </phrase>
-
-    <phrase>
-        <original>full persistence</original>
-        <translation>vollständige Persistenz</translation>
-    </phrase>
-
-    <phrase>
-        <original>&Reset all plugin options</original>
-        <translation>& Alle plugin Optionen zurückzusetzen</translation>
-    </phrase>
-
-    <phrase>
-        <original>Use this to reset all plugin-related options to their default state.  This action cannot be undone.</original>
-        <translation>Verwenden Sie diese Option, um alle Plugin-bezogene Optionen auf die Standardwerte zurück zu setzen. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
-    </phrase>
-
-    <phrase>
-        <original>current plugin status:</original>
-        <translation>aktuelle Plugin-Status:</translation>
-    </phrase>
-
-    <phrase>
-        <original>status:</original>
-        <translation>status:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Performing polar coordinate conversion...</original>
-        <translation>Durchführen Polarkoordinaten Konvertierung ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Rectangular to polar</original>
-        <translation>Kartesischen</translation>
-    </phrase>
-
-    <phrase>
-        <original>Polar to rectangular</original>
-        <translation>Polar rechteckige</translation>
-    </phrase>
-
-    <phrase>
-        <original>Polar inversion</original>
-        <translation>Polar Inversion</translation>
-    </phrase>
-
-    <phrase>
-        <original>Polar Coordinate Conversion</original>
-        <translation>Polar Koordinatenumwandlung</translation>
-    </phrase>
-
-    <phrase>
-        <original>conversion technique:</original>
-        <translation>Umwandlung Technik:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Simulating ripples across image surface...</original>
-        <translation>Simulation von Wellen auf der Bildebene ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Ripple</original>
-        <translation>Plätschern</translation>
-    </phrase>
-
-    <phrase>
-        <original>length of ripples (wavelength):</original>
-        <translation>Länge von Falten (Wellenlänge):</translation>
-    </phrase>
-
-    <phrase>
-        <original>height of ripples (amplitude):</original>
-        <translation>Höhe der Falten (Amplitude):</translation>
-    </phrase>
-
-    <phrase>
-        <original>time (phase):</original>
-        <translation>Zeit (Phase):</translation>
-    </phrase>
-
-    <phrase>
-        <original>Analyzing image in preparation for smart blur...</original>
-        <translation>Bild wird analysiert in Vorbereitung für smart blur ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Applying smart blur...</original>
-        <translation>Anwenden von Smart Blur ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Smart Blur</original>
-        <translation>Smart Blur</translation>
-    </phrase>
-
-    <phrase>
-        <original>apply blur to:</original>
-        <translation>Blur gelten für:</translation>
-    </phrase>
-
-    <phrase>
-        <original>non-edges</original>
-        <translation>keine Kanten</translation>
-    </phrase>
-
-    <phrase>
-        <original>edges</original>
-        <translation>Kanten</translation>
-    </phrase>
-
-    <phrase>
-        <original>threshold:</original>
-        <translation>Schwelle:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Swirling image round and round...</original>
-        <translation>Abbildung wirbelnden rund und rund ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Swirl</original>
-        <translation>Wirbel</translation>
-    </phrase>
-
-    <phrase>
-        <original>swirl angle:</original>
-        <translation>Drallwinkel:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Applying unsharp mask (step X1 of 2)...</original>
-        <translation>Anwendung Unscharf maskieren (Schritt X1 von 2) ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Unsharp Masking</original>
-        <translation>Unscharf Maskieren</translation>
-    </phrase>
-
-    <phrase>
-        <original>amount:</original>
-        <translation>Nummer:</translation>
-    </phrase>
-
-    <phrase>
-        <original>Dipping image in virtual wave pool...</original>
-        <translation>Bild in virtuelle Welle Tauchen ...</translation>
-    </phrase>
-
-    <phrase>
-        <original>Waves</original>
-        <translation>Wellen</translation>
-    </phrase>
-
-    <phrase>
-        <original>horizontal wavelength:</original>
-        <translation>horizontale Wellenlänge:</translation>
-    </phrase>
-
-    <phrase>
-        <original>horizontal strength (amplitude):</original>
-        <translation>horizontale Stärke (Amplitude):</translation>
-    </phrase>
-
-    <phrase>
-        <original>vertical wavelength:</original>
-        <translation>vertikale Wellenlänge:</translation>
-    </phrase>
-
-    <phrase>
-        <original>vertical strength (amplitude):</original>
-        <translation>vertikale Stärke (Amplitude):</translation>
-    </phrase>
+   <phrase>
+       <original>show original image</original>
+       <translation>Original-Bild-Anzeige</translation>
+   </phrase>
+
+   <phrase>
+       <original>show effect preview</original>
+       <translation>Anzeigebeispiel des Aufpralls</translation>
+   </phrase>
+
+   <phrase>
+       <original>clamp them to the nearest available pixel</original>
+       <translation>klemmen Sie sie auf den nächsten verfügbaren Pixel</translation>
+   </phrase>
+
+   <phrase>
+       <original>wrap them around the image</original>
+       <translation>sie um das Bild wickeln</translation>
+   </phrase>
+
+   <phrase>
+       <original>erase them</original>
+       <translation>löschen Sie sie aus</translation>
+   </phrase>
+
+   <phrase>
+       <original>defaultEdgeMethod</original>
+       <translation>Standard-Rand-Methode</translation>
+   </phrase>
+
+   <phrase>
+       <original>Waiting for user to specify alpha threshold</original>
+       <translation>Erwarten Angabe des Benutzers für alpha Schwelle</translation>
+   </phrase>
+
+   <phrase>
+       <original>Please Choose A Transparency Threshold</original>
+       <translation>bitte. Wählen Sie die Transparenz der Schwelle</translation>
+   </phrase>
+
+   <phrase>
+       <original>This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified.</original>
+       <translation>Dieses Bild hat einen Alpha-Kanal-Komplex. Bevor es als Palette led Bild (8bpp) gespeichert werden kann, wird der Alpha-Kanal vereinfacht werden.</translation>
+   </phrase>
+
+   <phrase>
+       <original>transparency cut-off:</original>
+       <translation>Transparenz Ernte:</translation>
+   </phrase>
+
+   <phrase>
+       <original>no transparency</original>
+       <translation>keine Transparenz</translation>
+   </phrase>
+
+   <phrase>
+       <original>maximum transparency</original>
+       <translation>maximale Transparenz</translation>
+   </phrase>
+
+   <phrase>
+       <original>Waiting for user to specify color depth</original>
+       <translation>Erwarten Angabe des Benutzers für die Farbtiefe</translation>
+   </phrase>
+
+   <phrase>
+       <original>Please Choose Exported Color Depth</original>
+       <translation>bitte. Wählen Sie die exportierte Farbtiefe</translation>
+   </phrase>
+
+   <phrase>
+       <original>please choose an output color depth:</original>
+       <translation>bitte. Wählen Sie eine Ausgabe Farbtiefe:</translation>
+   </phrase>
+
+   <phrase>
+       <original>1 bpp (monochrome)</original>
+       <translation>1 bpp (monochrom)</translation>
+   </phrase>
+
+   <phrase>
+       <original>4 bpp (16 shades of gray)</original>
+       <translation>4 bpp (16 Graustufen)</translation>
+   </phrase>
+
+   <phrase>
+       <original>8 bpp (256 colors or full grayscale)</original>
+       <translation>8 bpp (256 Farben oder Graustufen)</translation>
+   </phrase>
+
+   <phrase>
+       <original>24 bpp (16 million colors)</original>
+       <translation>24 bpp (16 Millionen Farben)</translation>
+   </phrase>
+
+   <phrase>
+       <original>32 bpp (16 million colors + full transparency)</original>
+       <translation>32 bpp (16 Millionen Farben + volle Transparenz)</translation>
+   </phrase>
+
+   <phrase>
+       <original>Visual Basic IDE Detected</original>
+       <translation>Visual Basic IDE erkannt</translation>
+   </phrase>
+
+   <phrase>
+       <original>You are running X1 inside the Visual Basic IDE.  This is not recommended.</original>
+       <translation>Sie verwenden X1 in der IDE von Visual Basic. Dies wird nicht empfohlen.</translation>
+   </phrase>
+
+   <phrase>
+       <original>Please compile X1 before using it.</original>
+       <translation>Bitte X1 kompilieren, bevor es zu benutzen.</translation>
+   </phrase>
+
+   <phrase>
+       <original>Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.</original>
+       <translation>Viele Funktionen, die abhängig sind von subclassificering in der IDE deaktiviert, aber einige - etwa-Buttons - können nicht ernsthaft deaktiviert werden ohne das die Funktionalität des Programms beeinträchtigt .</translation>
+   </phrase>
+
+   <phrase>
+       <original>As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's "Stop" button.</original>
+       <translation>Als solche können Sie aus IDE Instabilität und Abstürzen zu leiden, vor allem, wenn das Programm mit der IDE 'Stop' Taste schließt.</translation>
+   </phrase>
+
+   <phrase>
+       <original>Additionally, like all other photo editors, X1 relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
+       <translation>Darüber hinaus lehnt X1 genauso wie alle anderen Foto-Editoren stark auf mehrdimensionale Arrays. Array-Leistung ist erheblich beeinträchtigt in der IDE, so einige Funktionen sind sehr langsam.</translation>
+   </phrase>
+
+   <phrase>
+       <original>If you insist on running X1 in the IDE, please do not submit bugs regarding IDE crashes or freezes.  X1's developers can only address issues and bugs that affect the compiled .exe.</original>
+       <translation>Wenn Sie zum Ausführen von %  in der IDE zu bestehen, senden Sie Bugs im Zusammenhang mit IDE stürzt ab oder stürzt ab. Das X1-Entwickler können sich nur auf Probleme und Fehler, dass die kompilierte. Exe Einfluss.</translation>
+   </phrase>
+
+   <phrase>
+       <original>I understand the risks of running X1 in the IDE</original>
+       <translation>Ich verstehe die Risiken der laufenden X1 in der IDE</translation>
+   </phrase>
+
+   <phrase>
+       <original>Do not display this warning again</original>
+       <translation>Diese Warnmeldung wird nicht angezeigt</translation>
+   </phrase>
+
+   <phrase>
+       <original>Applying box blur to image</original>
+       <translation>Anwenden von quadratischen Unschärfe auf das Bild</translation>
+   </phrase>
+
+   <phrase>
+       <original>WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.</original>
+       <translation>WARNUNG! Dieses Tool ist hoch optimiert, aber bei hohen Radius-Werte, ist es immer noch ziemlich langsam in der IDE. Und werden gebeten, für die Vorschau der Anwendung oder eines Radius größer als 20 kompilieren.</translation>
+   </phrase>
+
+   <phrase>
+       <original>Box Blur</original>
+       <translation>Platz Blur</translation>
+   </phrase>
+
+   <phrase>
+       <original>box width:</original>
+       <translation>Breite des Platzes:</translation>
+   </phrase>
+
+   <phrase>
+       <original>box height:</original>
+       <translation>Höhe des Platzes:</translation>
+   </phrase>
+
+   <phrase>
+       <original>keep both dimensions in sync</original>
+       <translation>beide Dimensionen synchron halten</translation>
+   </phrase>
+
+   <phrase>
+       <original>Projecting image through simulated glass</original>
+       <translation>Projizierte Bild durch simulierte Glas</translation>
+   </phrase>
+
+   <phrase>
+       <original>Figured Glass</original>
+       <translation>Glass Figure</translation>
+   </phrase>
+
+   <phrase>
+       <original>scale:</original>
+       <translation>Skala:</translation>
+   </phrase>
+
+   <phrase>
+       <original>turbulence:</original>
+       <translation>Turbulenzen:</translation>
+   </phrase>
+
+   <phrase>
+       <original>if pixels lie outside the image</original>
+       <translation>wenn Pixel außerhalb des Bildes sind</translation>
+   </phrase>
+
+   <phrase>
+       <original>render emphasis:</original>
+       <translation>Rendering Schwerpunkte:</translation>
+   </phrase>
+
+   <phrase>
+       <original>quality</original>
+       <translation>Qualität</translation>
+   </phrase>
+
+   <phrase>
+       <original>speed</original>
+       <translation>Geschwindigkeit</translation>
+   </phrase>
+
+   <phrase>
+       <original>Gaussian Blur</original>
+       <translation>Gaußschen Weichzeichner</translation>
+   </phrase>
+
+   <phrase>
+       <original>radius:</original>
+       <translation>Radius:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Peering at image through imaginary kaleidoscope</original>
+       <translation>Peering durch imaginäre Bild Kaleidoskop</translation>
+   </phrase>
+
+   <phrase>
+       <original>Kaleidoscope</original>
+       <translation>Kaleidoskop</translation>
+   </phrase>
+
+   <phrase>
+       <original>number of mirrors:</original>
+       <translation>Anzahl der Ebenen:</translation>
+   </phrase>
+
+   <phrase>
+       <original>primary angle:</original>
+       <translation>Primär Eckpunkte:</translation>
+   </phrase>
+
+   <phrase>
+       <original>secondary angle:</original>
+       <translation>sekundären Eckpunkte:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Radius (percentage):</original>
+       <translation>Radius (in Prozent):</translation>
+   </phrase>
+
+   <phrase>
+       <original>Apply Lens Distortion</original>
+       <translation>Bewerben Lens Distortion</translation>
+   </phrase>
+
+   <phrase>
+       <original>Projecting image through simulated lens</original>
+       <translation>Projizierte Bild durch simulierte Linse</translation>
+   </phrase>
+
+   <phrase>
+       <original>lens strength (refractive index):</original>
+       <translation>Linsenstärke (Brechungsindex):</translation>
+   </phrase>
+
+   <phrase>
+       <original>Correcting image distortion</original>
+       <translation>Korrektur Bildverzerrungen</translation>
+   </phrase>
+
+   <phrase>
+       <original>Correct or Fix Lens Distortion</original>
+       <translation>Korrigieren oder reparieren Lens Distortion</translation>
+   </phrase>
+
+   <phrase>
+       <original>correction strength:</original>
+       <translation>Korrektur Stärke:</translation>
+   </phrase>
+
+   <phrase>
+       <original>correction zoom:</original>
+       <translation>Korrektur Zoom:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Pinching and whirling image</original>
+       <translation>Kneifen und wirbelnden Bild</translation>
+   </phrase>
+
+   <phrase>
+       <original>Pinch and Whirl</original>
+       <translation>Kneif und Wirbelsäule</translation>
+   </phrase>
+
+   <phrase>
+       <original>pinch amount:</original>
+       <translation>Anzahl Kneifen:</translation>
+   </phrase>
+
+   <phrase>
+       <original>whirl angle:</original>
+       <translation>Drallwinkel:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Saving plugin options</original>
+       <translation>Saving Plugin Optionen</translation>
+   </phrase>
+
+   <phrase>
+       <original>Plugin options saved.</original>
+       <translation>Plugin-Optionen gespeichert.</translation>
+   </phrase>
+
+   <phrase>
+       <original>Overview</original>
+       <translation>Zusammenfassung</translation>
+   </phrase>
+
+   <phrase>
+       <original>GOOD</original>
+       <translation>GUT</translation>
+   </phrase>
+
+   <phrase>
+       <original>problems detected</original>
+       <translation>Probleme erkannt</translation>
+   </phrase>
+
+   <phrase>
+       <original>none</original>
+       <translation>nicht</translation>
+   </phrase>
+
+   <phrase>
+       <original>installed</original>
+       <translation>installiert</translation>
+   </phrase>
+
+   <phrase>
+       <original>disable</original>
+       <translation>deaktivieren</translation>
+   </phrase>
+
+   <phrase>
+       <original>and up to date</original>
+       <translation>und aktuelle</translation>
+   </phrase>
+
+   <phrase>
+       <original>, but incorrect version ( X1 found X2 expected)</original>
+       <translation>Aber falsche Version ( X1 gefunden X2 erwartet)</translation>
+   </phrase>
+
+   <phrase>
+       <original>installed, but disabled by user</original>
+       <translation>installiert, aber deaktiviert durch Benutzer</translation>
+   </phrase>
+
+   <phrase>
+       <original>enable</original>
+       <translation>nutzbar</translation>
+   </phrase>
+
+   <phrase>
+       <original>missing</original>
+       <translation>nicht vorhanden</translation>
+   </phrase>
+
+   <phrase>
+       <original>X1 Plugin Manager</original>
+       <translation>X1 Plugin Manager</translation>
+   </phrase>
+
+   <phrase>
+       <original>X1 plugin information</original>
+       <translation>X1 plugin Informationen</translation>
+   </phrase>
+
+   <phrase>
+       <original>expected version:</original>
+       <translation>erwartete Version:</translation>
+   </phrase>
+
+   <phrase>
+       <original>version found:</original>
+       <translation>version gefunden:</translation>
+   </phrase>
+
+   <phrase>
+       <original>X1 license:</original>
+       <translation>X1 Lizenz:</translation>
+   </phrase>
+
+   <phrase>
+       <original>X1 settings</original>
+       <translation>X1 Einstellungen</translation>
+   </phrase>
+
+   <phrase>
+       <original>when reducing alpha channels, attempt to preserve values of 0 and 255</original>
+       <translation>bei der Senkung von alpha Kanälen, versuchen die Werte von 0 und 255 zu erhalten</translation>
+   </phrase>
+
+   <phrase>
+       <original>Certain applications may require full or no transparency for images.  Pngnq-s9 will attempt to preserve these alpha values when this option is selected.</original>
+       <translation>Einige Anwendungen verfügen über volle oder keine Transparenz für Bilder benötigt. Pngnq-s9 wird versuchen, diese Alpha-Werte zu erhalten, wenn diese Option aktiviert ist.</translation>
+   </phrase>
+
+   <phrase>
+       <original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
+       <translation>Analyse Farben mit YUV anstelle von RGB (langsamer, aber bessere Qualität)</translation>
+   </phrase>
+
+   <phrase>
+       <original>Unlike RGB, the YUV color space takes into account human perception of colors.  This results in color reductions with much smoother output.</original>
+       <translation>Im Gegensatz zu RGB, YUV findet Berücksichtigung der Raum der menschlichen Farbwahrnehmung. Dies führt zu einer Reduktion in der Farbe mit viel glatter Ausgang</translation>
+   </phrase>
+
+   <phrase>
+       <original>color sample size:</original>
+       <translation>Farbmuster Größe:</translation>
+   </phrase>
+
+   <phrase>
+       <original>small (fast, low quality)</original>
+       <translation>kleinen (schnell, niedrige Qualität)</translation>
+   </phrase>
+
+   <phrase>
+       <original>large (slow, high quality)	</original>
+       <translation>groß (langsam, hohe Qualität)</translation>
+   </phrase>
+
+   <phrase>
+       <original>color dithering:</original>
+       <translation>Farbrasterung:</translation>
+   </phrase>
+
+   <phrase>
+       <original>full persistence</original>
+       <translation>vollständige Persistenz</translation>
+   </phrase>
+
+   <phrase>
+       <original>&Reset all plugin options</original>
+       <translation>& Alle plugin Optionen zurückzusetzen</translation>
+   </phrase>
+
+   <phrase>
+       <original>Use this to reset all plugin-related options to their default state.  This action cannot be undone.</original>
+       <translation>Verwenden Sie diese Option, um alle Plugin-bezogene Optionen auf die Standardwerte zurück zu setzen. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
+   </phrase>
+
+   <phrase>
+       <original>current plugin status:</original>
+       <translation>aktuelle Plugin-Status:</translation>
+   </phrase>
+
+   <phrase>
+       <original>status:</original>
+       <translation>status:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Performing polar coordinate conversion</original>
+       <translation>Durchführen Polarkoordinaten Konvertierung</translation>
+   </phrase>
+
+   <phrase>
+       <original>Rectangular to polar</original>
+       <translation>Kartesischen</translation>
+   </phrase>
+
+   <phrase>
+       <original>Polar to rectangular</original>
+       <translation>Polar rechteckige</translation>
+   </phrase>
+
+   <phrase>
+       <original>Polar inversion</original>
+       <translation>Polar Inversion</translation>
+   </phrase>
+
+   <phrase>
+       <original>Polar Coordinate Conversion</original>
+       <translation>Polar Koordinatenumwandlung</translation>
+   </phrase>
+
+   <phrase>
+       <original>conversion technique:</original>
+       <translation>Umwandlung Technik:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Simulating ripples across image surface</original>
+       <translation>Simulation von Wellen auf der Bildebene</translation>
+   </phrase>
+
+   <phrase>
+       <original>Ripple</original>
+       <translation>Plätschern</translation>
+   </phrase>
+
+   <phrase>
+       <original>length of ripples (wavelength):</original>
+       <translation>Länge von Falten (Wellenlänge):</translation>
+   </phrase>
+
+   <phrase>
+       <original>height of ripples (amplitude):</original>
+       <translation>Höhe der Falten (Amplitude):</translation>
+   </phrase>
+
+   <phrase>
+       <original>time (phase):</original>
+       <translation>Zeit (Phase):</translation>
+   </phrase>
+
+   <phrase>
+       <original>Analyzing image in preparation for smart blur</original>
+       <translation>Bild wird analysiert in Vorbereitung für smart blur</translation>
+   </phrase>
+
+   <phrase>
+       <original>Applying smart blur</original>
+       <translation>Anwenden von Smart Blur</translation>
+   </phrase>
+
+   <phrase>
+       <original>Smart Blur</original>
+       <translation>Smart Blur</translation>
+   </phrase>
+
+   <phrase>
+       <original>apply blur to:</original>
+       <translation>Blur gelten für:</translation>
+   </phrase>
+
+   <phrase>
+       <original>non-edges</original>
+       <translation>keine Kanten</translation>
+   </phrase>
+
+   <phrase>
+       <original>edges</original>
+       <translation>Kanten</translation>
+   </phrase>
+
+   <phrase>
+       <original>threshold:</original>
+       <translation>Schwelle:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Swirling image round and round</original>
+       <translation>Abbildung wirbelnden rund und rund</translation>
+   </phrase>
+
+   <phrase>
+       <original>Swirl</original>
+       <translation>Wirbel</translation>
+   </phrase>
+
+   <phrase>
+       <original>swirl angle:</original>
+       <translation>Drallwinkel:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Applying unsharp mask (step X1 of 2)</original>
+       <translation>Anwendung Unscharf maskieren (Schritt X1 von 2)</translation>
+   </phrase>
+
+   <phrase>
+       <original>Unsharp Masking</original>
+       <translation>Unscharf Maskieren</translation>
+   </phrase>
+
+   <phrase>
+       <original>amount:</original>
+       <translation>Nummer:</translation>
+   </phrase>
+
+   <phrase>
+       <original>Dipping image in virtual wave pool</original>
+       <translation>Bild in virtuelle Welle Tauchen</translation>
+   </phrase>
+
+   <phrase>
+       <original>Waves</original>
+       <translation>Wellen</translation>
+   </phrase>
+
+   <phrase>
+       <original>horizontal wavelength:</original>
+       <translation>horizontale Wellenlänge:</translation>
+   </phrase>
+
+   <phrase>
+       <original>horizontal strength (amplitude):</original>
+       <translation>horizontale Stärke (Amplitude):</translation>
+   </phrase>
+
+   <phrase>
+       <original>vertical wavelength:</original>
+       <translation>vertikale Wellenlänge:</translation>
+   </phrase>
+
+   <phrase>
+       <original>vertical strength (amplitude):</original>
+       <translation>vertikale Stärke (Amplitude):</translation>
+   </phrase>
 
 </language>
