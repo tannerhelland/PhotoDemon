@@ -25,11 +25,16 @@ Begin VB.Form FormMosaic
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
-   Begin VB.CheckBox chkUnison 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " keep both dimensions in sync"
-      BeginProperty Font 
+   Begin PhotoDemon.smartCheckBox chkUnison 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   10
+      Top             =   3600
+      Width           =   2880
+      _ExtentX        =   5080
+      _ExtentY        =   847
+      Caption         =   "keep both dimensions in sync"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -38,12 +43,6 @@ Begin VB.Form FormMosaic
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   375
-      Left            =   6120
-      TabIndex        =   10
-      Top             =   3600
-      Width           =   4935
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -217,16 +216,16 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
-    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max) Then
-        If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max) Then
+    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max) Then
+        If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max) Then
             Me.Visible = False
             Process Mosaic, hsWidth.Value, hsHeight.Value
             Unload Me
         Else
-            AutoSelectText TxtHeight
+            AutoSelectText txtHeight
         End If
     Else
-        AutoSelectText TxtWidth
+        AutoSelectText txtWidth
     End If
 End Sub
 
@@ -407,7 +406,7 @@ End Sub
 
 Private Sub hsHeight_Change()
     userChange = False
-    copyToTextBoxI TxtHeight, hsHeight.Value
+    copyToTextBoxI txtHeight, hsHeight.Value
     If CBool(chkUnison) Then syncScrollBars False
     userChange = True
     updatePreview
@@ -415,7 +414,7 @@ End Sub
 
 Private Sub hsWidth_Change()
     userChange = False
-    copyToTextBoxI TxtWidth, hsWidth.Value
+    copyToTextBoxI txtWidth, hsWidth.Value
     If CBool(chkUnison) Then syncScrollBars True
     userChange = True
     updatePreview
@@ -423,7 +422,7 @@ End Sub
 
 Private Sub hsHeight_Scroll()
     userChange = False
-    copyToTextBoxI TxtHeight, hsHeight.Value
+    copyToTextBoxI txtHeight, hsHeight.Value
     If CBool(chkUnison) Then syncScrollBars False
     userChange = True
     updatePreview
@@ -431,7 +430,7 @@ End Sub
 
 Private Sub hsWidth_Scroll()
     userChange = False
-    copyToTextBoxI TxtWidth, hsWidth.Value
+    copyToTextBoxI txtWidth, hsWidth.Value
     If CBool(chkUnison) Then syncScrollBars True
     userChange = True
     updatePreview
@@ -439,26 +438,26 @@ End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
     userChange = False
-    textValidate TxtHeight
-    If EntryValid(TxtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(TxtHeight)
+    textValidate txtHeight
+    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(txtHeight)
     userChange = True
     updatePreview
 End Sub
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText TxtHeight
+    AutoSelectText txtHeight
 End Sub
 
 Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
     userChange = False
-    textValidate TxtWidth
-    If EntryValid(TxtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(TxtWidth)
+    textValidate txtWidth
+    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(txtWidth)
     userChange = True
     updatePreview
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText TxtWidth
+    AutoSelectText txtWidth
 End Sub
 
 'Keep the two scroll bars in sync.  Some extra work has to be done to makes sure scrollbar max values aren't exceeded.

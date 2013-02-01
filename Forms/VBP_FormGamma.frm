@@ -24,6 +24,25 @@ Begin VB.Form FormGamma
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkUnison 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   15
+      Top             =   5145
+      Width           =   2250
+      _ExtentX        =   3969
+      _ExtentY        =   847
+      Caption         =   "keep all colors in sync"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.TextBox txtGamma 
       Alignment       =   2  'Center
       BeginProperty Font 
@@ -40,7 +59,7 @@ Begin VB.Form FormGamma
       Index           =   2
       Left            =   11160
       MaxLength       =   4
-      TabIndex        =   14
+      TabIndex        =   13
       Text            =   "1.00"
       Top             =   4620
       Width           =   615
@@ -51,7 +70,7 @@ Begin VB.Form FormGamma
       Left            =   6120
       Max             =   300
       Min             =   1
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   4680
       Value           =   100
       Width           =   4935
@@ -72,7 +91,7 @@ Begin VB.Form FormGamma
       Index           =   1
       Left            =   11160
       MaxLength       =   4
-      TabIndex        =   11
+      TabIndex        =   10
       Text            =   "1.00"
       Top             =   3780
       Width           =   615
@@ -83,30 +102,9 @@ Begin VB.Form FormGamma
       Left            =   6120
       Max             =   300
       Min             =   1
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   3840
       Value           =   100
-      Width           =   4935
-   End
-   Begin VB.CheckBox chkUnison 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " keep all colors in sync"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   375
-      Left            =   6120
-      TabIndex        =   9
-      Top             =   5160
-      Value           =   1  'Checked
       Width           =   4935
    End
    Begin VB.PictureBox picChart 
@@ -199,7 +197,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   4320
       Width           =   540
    End
@@ -220,7 +218,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   3480
       Width           =   690
    End

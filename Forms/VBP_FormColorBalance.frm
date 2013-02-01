@@ -28,13 +28,21 @@ Begin VB.Form FormColorBalance
       Height          =   540
       Left            =   7560
       TabIndex        =   13
-      Top             =   4680
+      Top             =   4560
       Width           =   2265
-      _extentx        =   3995
-      _extenty        =   953
-      caption         =   "preserve luminance"
-      font            =   "VBP_FormColorBalance.frx":0000
-      value           =   1
+      _ExtentX        =   3995
+      _ExtentY        =   953
+      Caption         =   "preserve luminance"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -147,8 +155,8 @@ Begin VB.Form FormColorBalance
       TabIndex        =   12
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -355,7 +363,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     Else
         rModifier = rModifier + rVal
     End If
-    
+   
     If gVal < 0 Then
         rModifier = rModifier + -gVal
         bModifier = bModifier + -gVal

@@ -24,6 +24,25 @@ Begin VB.Form FormDiffuse
    ScaleWidth      =   814
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkWrap 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   10
+      Top             =   3600
+      Width           =   1890
+      _ExtentX        =   3334
+      _ExtentY        =   847
+      Caption         =   "wrap edge values"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -98,30 +117,10 @@ Begin VB.Form FormDiffuse
       Top             =   2970
       Width           =   615
    End
-   Begin VB.CheckBox ChkWrap 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " wrap edge values"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   375
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   3600
-      Width           =   5775
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -130,7 +129,7 @@ Begin VB.Form FormDiffuse
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   5760
       Width           =   12255
    End
@@ -150,7 +149,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   2640
       Width           =   1785
    End
@@ -170,7 +169,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   1800
       Width           =   2085
    End
@@ -199,7 +198,7 @@ Option Explicit
 Dim iWidth As Long, iHeight As Long
 
 Private Sub ChkWrap_Click()
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
+    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 'CANCEL button
@@ -216,7 +215,7 @@ Private Sub cmdOK_Click()
             
             FormDiffuse.Visible = False
             
-            If ChkWrap.Value = vbChecked Then
+            If chkWrap.Value = vbChecked Then
                 Process CustomDiffuse, hsX.Value, hsY.Value, True
             Else
                 Process CustomDiffuse, hsX.Value, hsY.Value, False
@@ -249,7 +248,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Render a preview of the effect
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
+    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
     
 End Sub
 
@@ -260,22 +259,22 @@ End Sub
 'Everything below this line relates to mirroring the input of the textboxes across the scrollbars (and vice versa)
 Private Sub hsX_Change()
     copyToTextBoxI txtX, hsX.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
+    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsX_Scroll()
     copyToTextBoxI txtX, hsX.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
+    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsY_Change()
     copyToTextBoxI txtY, hsY.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
+    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 Private Sub hsY_Scroll()
     copyToTextBoxI txtY, hsY.Value
-    If ChkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
+    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
 End Sub
 
 Private Sub txtX_GotFocus()

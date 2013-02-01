@@ -6,7 +6,7 @@ Begin VB.Form FormResize
    ClientHeight    =   4500
    ClientLeft      =   45
    ClientTop       =   225
-   ClientWidth     =   4005
+   ClientWidth     =   7020
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,14 +21,14 @@ Begin VB.Form FormResize
    MinButton       =   0   'False
    ScaleHeight     =   300
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   267
+   ScaleWidth      =   468
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdResize 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   1050
+      Left            =   4050
       TabIndex        =   0
       Top             =   3870
       Width           =   1365
@@ -37,7 +37,7 @@ Begin VB.Form FormResize
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   2520
+      Left            =   5520
       TabIndex        =   1
       Top             =   3870
       Width           =   1365
@@ -47,7 +47,7 @@ Begin VB.Form FormResize
       Left            =   2430
       Max             =   32766
       Min             =   1
-      TabIndex        =   12
+      TabIndex        =   11
       TabStop         =   0   'False
       Top             =   1200
       Value           =   15000
@@ -58,7 +58,7 @@ Begin VB.Form FormResize
       Left            =   2430
       Max             =   32766
       Min             =   1
-      TabIndex        =   11
+      TabIndex        =   10
       TabStop         =   0   'False
       Top             =   570
       Value           =   15000
@@ -114,17 +114,23 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   360
+      Left            =   840
       Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   2880
-      Width           =   3375
+      TabIndex        =   4
+      Top             =   2520
+      Width           =   5535
    End
-   Begin VB.CheckBox ChkRatio 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "maintain current aspect ratio"
-      BeginProperty Font 
+   Begin PhotoDemon.smartCheckBox chkRatio 
+      Height          =   480
+      Left            =   4110
+      TabIndex        =   13
+      Top             =   840
+      Width           =   2355
+      _ExtentX        =   4154
+      _ExtentY        =   847
+      Caption         =   "lock image aspect ratio"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -133,20 +139,41 @@ Begin VB.Form FormResize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   495
-      Left            =   600
-      TabIndex        =   4
-      Top             =   1800
-      Value           =   1  'Checked
-      Width           =   3015
+   End
+   Begin VB.Line Line4 
+      BorderColor     =   &H00808080&
+      X1              =   280
+      X2              =   280
+      Y1              =   49
+      Y2              =   61
+   End
+   Begin VB.Line Line1 
+      BorderColor     =   &H00808080&
+      X1              =   280
+      X2              =   280
+      Y1              =   84
+      Y2              =   97
+   End
+   Begin VB.Line Line3 
+      BorderColor     =   &H00808080&
+      X1              =   280
+      X2              =   240
+      Y1              =   48
+      Y2              =   48
+   End
+   Begin VB.Line Line2 
+      BorderColor     =   &H00808080&
+      X1              =   240
+      X2              =   280
+      Y1              =   96
+      Y2              =   96
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -3000
-      TabIndex        =   13
+      Left            =   -2280
+      TabIndex        =   12
       Top             =   3720
-      Width           =   7095
+      Width           =   9975
    End
    Begin VB.Label lblHeightUnit 
       Appearance      =   0  'Flat
@@ -165,7 +192,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00808080&
       Height          =   375
       Left            =   2850
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   1245
       Width           =   855
    End
@@ -186,7 +213,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00808080&
       Height          =   480
       Left            =   2850
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   615
       Width           =   855
    End
@@ -208,7 +235,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   720
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   1245
       Width           =   750
    End
@@ -230,7 +257,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   720
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   615
       Width           =   675
    End
@@ -250,9 +277,9 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   375
-      Left            =   240
-      TabIndex        =   6
-      Top             =   2520
+      Left            =   720
+      TabIndex        =   5
+      Top             =   2160
       Width           =   2895
    End
 End
@@ -283,7 +310,7 @@ Private wRatio As Double, hRatio As Double
 
 'If the ratio button is checked, then update the height box to match
 Private Sub ChkRatio_Click()
-    If ChkRatio.Value = vbChecked Then UpdateHeightBox
+    If chkRatio.Value = vbChecked Then UpdateHeightBox
 End Sub
 
 'Perform a resize operation
@@ -487,7 +514,7 @@ Private Sub ChangeToWidth()
         updateWidthBar = False
         VSWidth.Value = Abs(32767 - CInt(txtWidth))
         updateWidthBar = True
-        If ChkRatio.Value = vbChecked Then
+        If chkRatio.Value = vbChecked Then
             UpdateHeightBox
         End If
     End If
@@ -498,7 +525,7 @@ Private Sub ChangeToHeight()
         updateHeightBar = False
         VSHeight.Value = Abs(32767 - CInt(txtHeight))
         updateHeightBar = True
-        If ChkRatio.Value = vbChecked Then
+        If chkRatio.Value = vbChecked Then
             UpdateWidthBox
         End If
     End If

@@ -24,6 +24,25 @@ Begin VB.Form FormEqualize
    ScaleWidth      =   677
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkRed 
+      Height          =   570
+      Left            =   6240
+      TabIndex        =   5
+      Top             =   2040
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1005
+      Caption         =   "red"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,99 +61,76 @@ Begin VB.Form FormEqualize
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.CheckBox chkLuminance 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "luminance"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Left            =   6240
-      TabIndex        =   6
-      Top             =   3480
-      Width           =   3735
-   End
-   Begin VB.CheckBox chkBlue 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "blue"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Left            =   6240
-      TabIndex        =   5
-      Top             =   3000
-      Width           =   3735
-   End
-   Begin VB.CheckBox chkGreen 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "green"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Left            =   6240
-      TabIndex        =   4
-      Top             =   2520
-      Width           =   3615
-   End
-   Begin VB.CheckBox chkRed 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "red"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   345
-      Left            =   6240
-      TabIndex        =   3
-      Top             =   2040
-      Width           =   3495
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.smartCheckBox chkGreen 
+      Height          =   570
+      Left            =   6240
+      TabIndex        =   6
+      Top             =   2520
+      Width           =   975
+      _ExtentX        =   1720
+      _ExtentY        =   1005
+      Caption         =   "green"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkBlue 
+      Height          =   570
+      Left            =   6240
+      TabIndex        =   7
+      Top             =   3000
+      Width           =   825
+      _ExtentX        =   1455
+      _ExtentY        =   1005
+      Caption         =   "blue"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkLuminance 
+      Height          =   570
+      Left            =   6240
+      TabIndex        =   8
+      Top             =   3480
+      Width           =   1455
+      _ExtentX        =   2566
+      _ExtentY        =   1005
+      Caption         =   "luminance"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   15
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   5760
       Width           =   12135
    End
@@ -155,7 +151,7 @@ Begin VB.Form FormEqualize
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   1560
+      Top             =   1620
       Width           =   945
    End
 End

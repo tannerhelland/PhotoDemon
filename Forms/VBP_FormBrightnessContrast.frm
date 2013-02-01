@@ -24,6 +24,25 @@ Begin VB.Form FormBrightnessContrast
    ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkSample 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   10
+      Top             =   3480
+      Width           =   5445
+      _ExtentX        =   9604
+      _ExtentY        =   847
+      Caption         =   "sample image for true contrast (slower but more accurate)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -100,31 +119,10 @@ Begin VB.Form FormBrightnessContrast
       Top             =   2100
       Width           =   615
    End
-   Begin VB.CheckBox chkSample 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "sample image for true contrast (slower but more accurate)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   3480
-      Value           =   1  'Checked
-      Width           =   5655
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -133,7 +131,7 @@ Begin VB.Form FormBrightnessContrast
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   5760
       Width           =   12135
    End
@@ -153,7 +151,7 @@ Begin VB.Form FormBrightnessContrast
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   2655
       Width           =   930
    End
@@ -173,7 +171,7 @@ Begin VB.Form FormBrightnessContrast
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   1800
       Width           =   1185
    End

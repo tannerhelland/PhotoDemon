@@ -26,15 +26,24 @@ Begin VB.Form dialog_UnsavedChanges
    ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CheckBox chkRepeat 
-      Appearance      =   0  'Flat
-      Caption         =   " Repeat this action for all unsaved images (X in total)"
-      ForeColor       =   &H00404040&
-      Height          =   630
-      Left            =   3960
+   Begin PhotoDemon.smartCheckBox chkRepeat 
+      Height          =   480
+      Left            =   4080
       TabIndex        =   5
-      Top             =   3930
-      Width           =   5175
+      Top             =   4005
+      Width           =   4875
+      _ExtentX        =   8599
+      _ExtentY        =   847
+      Caption         =   "Repeat this action for all unsaved images (X in total)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -164,13 +173,6 @@ Begin VB.Form dialog_UnsavedChanges
       Width           =   4215
       WordWrap        =   -1  'True
    End
-   Begin VB.Label lblBackground 
-      Height          =   1200
-      Left            =   0
-      TabIndex        =   6
-      Top             =   3840
-      Width           =   9375
-   End
 End
 Attribute VB_Name = "dialog_UnsavedChanges"
 Attribute VB_GlobalNameSpace = False
@@ -282,6 +284,8 @@ Public Sub ShowDialog()
     End If
 
     Me.ScaleMode = vbPixels
+    
+    chkRepeat.Left = Me.ScaleWidth - chkRepeat.Width - 26
 
     'Apply any custom styles to the form
     makeFormPretty Me

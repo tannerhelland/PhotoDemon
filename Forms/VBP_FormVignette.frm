@@ -145,7 +145,7 @@ Begin VB.Form FormVignette
    Begin VB.Label lblFeathering 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "feathering:"
+      Caption         =   "softness:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -160,7 +160,7 @@ Begin VB.Form FormVignette
       Left            =   6000
       TabIndex        =   12
       Top             =   2640
-      Width           =   1155
+      Width           =   945
    End
    Begin VB.Label lblTransparency 
       AutoSize        =   -1  'True

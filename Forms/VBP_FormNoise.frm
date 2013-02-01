@@ -24,6 +24,25 @@ Begin VB.Form FormNoise
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkM 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   7
+      Top             =   3360
+      Width           =   2610
+      _ExtentX        =   4604
+      _ExtentY        =   847
+      Caption         =   "monochromatic noise only"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -72,30 +91,10 @@ Begin VB.Form FormNoise
       Top             =   2700
       Width           =   615
    End
-   Begin VB.CheckBox ChkM 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " monochromatic noise only"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   465
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   3360
-      Width           =   5655
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -104,7 +103,7 @@ Begin VB.Form FormNoise
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   5760
       Width           =   12375
    End
@@ -124,7 +123,7 @@ Begin VB.Form FormNoise
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2400
       Width           =   1530
    End

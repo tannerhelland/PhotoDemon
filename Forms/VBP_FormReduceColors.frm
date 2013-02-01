@@ -24,11 +24,31 @@ Begin VB.Form FormReduceColors
    ScaleWidth      =   821
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkDither 
+      Height          =   480
+      Left            =   6480
+      TabIndex        =   20
+      Top             =   4560
+      Width           =   1485
+      _ExtentX        =   2619
+      _ExtentY        =   847
+      Caption         =   "use dithering"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartOptionButton optQuant 
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   17
+      TabIndex        =   15
       Top             =   600
       Width           =   2355
       _ExtentX        =   4154
@@ -152,52 +172,10 @@ Begin VB.Form FormReduceColors
       Top             =   2610
       Width           =   615
    End
-   Begin VB.CheckBox chkColorDither 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " Use error diffusion dithering"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   255
-      Left            =   6120
-      TabIndex        =   8
-      Top             =   4680
-      Value           =   1  'Checked
-      Width           =   3015
-   End
-   Begin VB.CheckBox chkSmartColors 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " Use realistic coloring"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   255
-      Left            =   9480
-      TabIndex        =   9
-      Top             =   4680
-      Value           =   1  'Checked
-      Width           =   2535
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   16
+      TabIndex        =   14
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -207,7 +185,7 @@ Begin VB.Form FormReduceColors
       Height          =   330
       Index           =   1
       Left            =   6120
-      TabIndex        =   18
+      TabIndex        =   16
       Top             =   960
       Width           =   3630
       _ExtentX        =   6403
@@ -227,12 +205,32 @@ Begin VB.Form FormReduceColors
       Height          =   330
       Index           =   2
       Left            =   6120
-      TabIndex        =   19
+      TabIndex        =   17
       Top             =   1320
       Width           =   3180
       _ExtentX        =   5609
       _ExtentY        =   582
       Caption         =   "PhotoDemon advanced (manual)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkSmartColors 
+      Height          =   480
+      Left            =   9000
+      TabIndex        =   21
+      Top             =   4560
+      Width           =   2130
+      _ExtentX        =   3757
+      _ExtentY        =   847
+      Caption         =   "use realistic coloring"
+      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -259,7 +257,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   270
       Left            =   6120
-      TabIndex        =   21
+      TabIndex        =   19
       Top             =   3750
       Width           =   1980
    End
@@ -279,14 +277,14 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   270
       Left            =   6120
-      TabIndex        =   20
+      TabIndex        =   18
       Top             =   3000
       Width           =   2145
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   15
+      TabIndex        =   13
       Top             =   5760
       Width           =   12375
    End
@@ -305,7 +303,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H000000C0&
       Height          =   1095
       Left            =   10200
-      TabIndex        =   14
+      TabIndex        =   12
       Top             =   600
       Visible         =   0   'False
       Width           =   1935
@@ -329,7 +327,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   1800
       Width           =   3090
    End
@@ -349,7 +347,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   270
       Left            =   6120
-      TabIndex        =   12
+      TabIndex        =   10
       Top             =   2280
       Width           =   1905
    End
@@ -369,7 +367,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   240
       Left            =   6120
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   5160
       Width           =   4260
    End
@@ -391,7 +389,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   405
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   240
       Width           =   2265
    End
@@ -419,7 +417,7 @@ Option Explicit
 'SetDIBitsToDevice is used to interact with the FreeImage DLL
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 
-Private Sub ChkColorDither_Click()
+Private Sub chkDither_Click()
     updateReductionPreview
 End Sub
 
@@ -469,7 +467,7 @@ Private Sub cmdOK_Click()
         Me.Visible = False
         
         'Do the appropriate method of color reduction
-        If chkColorDither.Value = vbUnchecked Then
+        If chkDither.Value = vbUnchecked Then
             If chkSmartColors.Value = vbUnchecked Then
                 Process ReduceColors, REDUCECOLORS_MANUAL, TxtR, TxtG, TxtB, False
             Else
@@ -603,7 +601,7 @@ Private Sub DisplayManualOptions(ByVal toDisplay As Boolean)
         hsRed.Enabled = False
         hsGreen.Enabled = False
         hsBlue.Enabled = False
-        chkColorDither.Enabled = False
+        chkDither.Enabled = False
         chkSmartColors.Enabled = False
     Else
         lblQuantizationOptions.ForeColor = &H400000
@@ -617,7 +615,7 @@ Private Sub DisplayManualOptions(ByVal toDisplay As Boolean)
         hsRed.Enabled = True
         hsGreen.Enabled = True
         hsBlue.Enabled = True
-        chkColorDither.Enabled = True
+        chkDither.Enabled = True
         chkSmartColors.Enabled = True
     End If
 End Sub
@@ -1101,7 +1099,7 @@ Private Sub updateReductionPreview()
         ReduceImageColors_Auto FIQ_NNQUANT, True, fxPreview
     Else
         If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then
-            If chkColorDither.Value = vbUnchecked Then
+            If chkDither.Value = vbUnchecked Then
                 If chkSmartColors.Value = vbUnchecked Then
                     ReduceImageColors_BitRGB TxtR, TxtG, TxtB, False, True, fxPreview
                 Else

@@ -5,10 +5,10 @@ Begin VB.Form dialog_MultiImage
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Multiple Images Found"
-   ClientHeight    =   3930
+   ClientHeight    =   3765
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   5550
+   ClientWidth     =   5595
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,15 +21,21 @@ Begin VB.Form dialog_MultiImage
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   262
+   ScaleHeight     =   251
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   370
+   ScaleWidth      =   373
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CheckBox chkRepeat 
-      Appearance      =   0  'Flat
-      Caption         =   " Remember my decision for future multi-image files"
-      BeginProperty Font 
+   Begin PhotoDemon.smartCheckBox chkRepeat 
+      Height          =   480
+      Left            =   720
+      TabIndex        =   3
+      Top             =   3120
+      Width           =   4110
+      _ExtentX        =   7250
+      _ExtentY        =   847
+      Caption         =   "always apply this action to multi-image files"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -38,12 +44,6 @@ Begin VB.Form dialog_MultiImage
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   615
-      Left            =   300
-      TabIndex        =   3
-      Top             =   3240
-      Width           =   5055
    End
    Begin PhotoDemon.jcbutton cmdAnswer 
       Height          =   735
@@ -101,20 +101,6 @@ Begin VB.Form dialog_MultiImage
       CaptionEffects  =   0
       TooltipType     =   1
       TooltipTitle    =   "Load One Image Only"
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   3120
-      Width           =   5700
-   End
-   Begin VB.Line lineSeparator 
-      BorderColor     =   &H8000000D&
-      X1              =   8
-      X2              =   360
-      Y1              =   208
-      Y2              =   208
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent

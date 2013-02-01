@@ -25,6 +25,26 @@ Begin VB.Form FormPrint
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkCenter 
+      Height          =   480
+      Left            =   4080
+      TabIndex        =   23
+      Top             =   3480
+      Width           =   1665
+      _ExtentX        =   2937
+      _ExtentY        =   847
+      Caption         =   "center on page"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&Print"
       Default         =   -1  'True
@@ -54,7 +74,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   41
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   57
-      TabIndex        =   22
+      TabIndex        =   20
       Top             =   2760
       Visible         =   0   'False
       Width           =   855
@@ -71,7 +91,7 @@ Begin VB.Form FormPrint
       EndProperty
       Height          =   360
       Left            =   4080
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   4680
       Width           =   1335
    End
@@ -102,7 +122,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   17
+      TabIndex        =   15
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -117,7 +137,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   16
+      TabIndex        =   14
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -132,52 +152,10 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   15
+      TabIndex        =   13
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
-   End
-   Begin VB.CheckBox chkFit 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " fit to page"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Left            =   6360
-      TabIndex        =   8
-      Top             =   3600
-      Value           =   1  'Checked
-      Width           =   2250
-   End
-   Begin VB.CheckBox chkCenter 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " center on page"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   360
-      Left            =   4080
-      TabIndex        =   7
-      Top             =   3600
-      Value           =   1  'Checked
-      Width           =   2175
    End
    Begin VB.ComboBox cbOrientation 
       BeginProperty Font 
@@ -268,7 +246,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   218
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   218
-      TabIndex        =   10
+      TabIndex        =   8
       TabStop         =   0   'False
       Top             =   360
       Width           =   3300
@@ -278,11 +256,31 @@ Begin VB.Form FormPrint
          ForeColor       =   &H00C00000&
          Height          =   1935
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   16
          Top             =   720
          Visible         =   0   'False
          Width           =   3015
       End
+   End
+   Begin PhotoDemon.smartCheckBox chkFit 
+      Height          =   480
+      Left            =   6360
+      TabIndex        =   24
+      Top             =   3480
+      Width           =   1290
+      _ExtentX        =   2275
+      _ExtentY        =   847
+      Caption         =   "fit on page"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblQuality 
       AutoSize        =   -1  'True
@@ -300,14 +298,14 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   24
+      TabIndex        =   22
       Top             =   1200
       Width           =   795
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   23
+      TabIndex        =   21
       Top             =   5520
       Width           =   8895
    End
@@ -326,7 +324,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00800000&
       Height          =   495
       Left            =   5640
-      TabIndex        =   21
+      TabIndex        =   19
       Top             =   4620
       Width           =   3015
    End
@@ -346,7 +344,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   20
+      TabIndex        =   18
       Top             =   4200
       Width           =   2295
    End
@@ -366,7 +364,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   375
       Left            =   240
-      TabIndex        =   19
+      TabIndex        =   17
       Top             =   3840
       Width           =   3300
    End
@@ -386,7 +384,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   14
+      TabIndex        =   12
       Top             =   3120
       Width           =   1590
    End
@@ -406,7 +404,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3945
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   2205
       Width           =   1230
    End
@@ -426,7 +424,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   12
+      TabIndex        =   10
       Top             =   240
       Width           =   795
    End
@@ -446,7 +444,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6600
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   1200
       Width           =   1290
    End

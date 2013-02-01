@@ -25,6 +25,25 @@ Begin VB.Form FormFindEdges
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin PhotoDemon.smartCheckBox chkInvert 
+      Height          =   480
+      Left            =   9120
+      TabIndex        =   7
+      Top             =   3360
+      Width           =   2220
+      _ExtentX        =   3916
+      _ExtentY        =   847
+      Caption         =   "use black background"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,26 +61,6 @@ Begin VB.Form FormFindEdges
       TabIndex        =   1
       Top             =   5910
       Width           =   1365
-   End
-   Begin VB.CheckBox chkInvert 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " use black background"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   5
-      Top             =   3240
-      Width           =   2895
    End
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 
@@ -83,11 +82,11 @@ Begin VB.Form FormFindEdges
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -101,7 +100,7 @@ Begin VB.Form FormFindEdges
       EndProperty
       Height          =   855
       Left            =   15
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   5760
       Width           =   12255
    End

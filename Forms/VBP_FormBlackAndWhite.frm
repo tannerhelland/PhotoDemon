@@ -24,6 +24,25 @@ Begin VB.Form FormBlackAndWhite
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkAutoThreshold 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   13
+      Top             =   1380
+      Width           =   5610
+      _ExtentX        =   9895
+      _ExtentY        =   847
+      Caption         =   "have PhotoDemon estimate the ideal threshold for this image"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -51,7 +70,7 @@ Begin VB.Form FormBlackAndWhite
       Left            =   9000
       ScaleHeight     =   465
       ScaleWidth      =   2745
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   3360
       Width           =   2775
    End
@@ -64,7 +83,7 @@ Begin VB.Form FormBlackAndWhite
       Left            =   6120
       ScaleHeight     =   465
       ScaleWidth      =   2745
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   3360
       Width           =   2775
    End
@@ -83,7 +102,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   330
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2400
       Width           =   4935
    End
@@ -117,30 +136,10 @@ Begin VB.Form FormBlackAndWhite
       Top             =   930
       Width           =   660
    End
-   Begin VB.CheckBox chkAutoThreshold 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   " have PhotoDemon estimate the ideal threshold for this image"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   600
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   1320
-      Width           =   5655
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -149,7 +148,7 @@ Begin VB.Form FormBlackAndWhite
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   5760
       Width           =   12255
    End
@@ -169,7 +168,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   3000
       Width           =   3945
    End
@@ -189,7 +188,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   2040
       Width           =   2130
    End
@@ -199,7 +198,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   735
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   4200
       Width           =   5775
    End
@@ -219,7 +218,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   600
       Width           =   1080
    End

@@ -24,6 +24,26 @@ Begin VB.Form FormColorize
    ScaleWidth      =   823
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkSaturation 
+      Height          =   480
+      Left            =   6240
+      TabIndex        =   7
+      Top             =   3240
+      Width           =   2745
+      _ExtentX        =   4842
+      _ExtentY        =   847
+      Caption         =   "preserve existing saturation"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -41,27 +61,6 @@ Begin VB.Form FormColorize
       TabIndex        =   1
       Top             =   5925
       Width           =   1365
-   End
-   Begin VB.CheckBox chkSaturation 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "preserve existing saturation"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   435
-      Left            =   6240
-      TabIndex        =   3
-      Top             =   3240
-      Value           =   1  'Checked
-      Width           =   5775
    End
    Begin VB.HScrollBar hsHue 
       Height          =   255
@@ -92,14 +91,14 @@ Begin VB.Form FormColorize
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   352
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2520
       Width           =   5310
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -121,14 +120,14 @@ Begin VB.Form FormColorize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   1680
       Width           =   1545
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   5760
       Width           =   12375
    End
