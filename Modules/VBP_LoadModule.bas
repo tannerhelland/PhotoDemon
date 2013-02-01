@@ -135,7 +135,7 @@ Public Sub LoadTheProgram()
     ' Set up all default tool values
     '*************************************************************************************************************************************
         
-    LoadMessage "Initializing selection tool..."
+    LoadMessage "Initializing image tools..."
     
     'Initialize all Selection Tool controls
     FormMain.cmbSelRender.AddItem "Lightbox", 0
@@ -144,7 +144,7 @@ Public Sub LoadTheProgram()
     FormMain.cmbSelRender.ListIndex = 0
     g_selectionRenderPreference = 0
     
-    
+    g_UserPreferences.loadToolSettings
     
     '*************************************************************************************************************************************
     ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.

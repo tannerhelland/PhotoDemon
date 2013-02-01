@@ -324,6 +324,22 @@ Public Sub loadUserSettings()
     
 End Sub
 
+'Save and load tool settings - note that this must be done after the various tool controls have been initialized
+' on the main form.
+Public Sub loadToolSettings()
+
+    'Selection type
+    FormMain.cmbSelRender.ListIndex = GetPreference_Long("Tool Preferences", "LastSelectionType", 0)
+    
+End Sub
+
+Public Sub saveToolSettings()
+    
+    'Selection type
+    SetPreference_Long "Tool Preferences", "LastSelectionType", FormMain.cmbSelRender.ListIndex
+    
+End Sub
+
 'Reset the INI file to its default state.  (Basically, delete any existing file then call createNewINIFile.)
 Public Sub resetPreferences()
 
@@ -446,6 +462,7 @@ Private Sub createNewINIFile()
         'Write out tool preferences
         Print #fileNum, "[Tool Preferences]"
         Print #fileNum, "ClearSelectionAfterCrop=1"
+        Print #fileNum, "LastSelectionType=0"
         Print #fileNum, ""
                 
         'Finally, write out MRU placeholders
