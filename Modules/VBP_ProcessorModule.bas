@@ -844,7 +844,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             If LoadForm Then
                 FormVignette.Show vbModal, FormMain
             Else
-                FormVignette.ApplyVignette CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3)
+                FormVignette.ApplyVignette CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CLng(pOPCODE4)
             End If
         
     End Select
