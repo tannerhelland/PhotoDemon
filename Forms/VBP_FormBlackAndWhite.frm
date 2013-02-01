@@ -288,6 +288,7 @@ End Sub
 Private Sub Form_Activate()
   
     'Populate the dither combobox
+    cboDither.Clear
     cboDither.AddItem "None", 0
     cboDither.AddItem "Ordered (Bayer 4x4)", 1
     cboDither.AddItem "Ordered (Bayer 8x8)", 2
