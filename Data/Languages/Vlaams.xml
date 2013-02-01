@@ -4839,5 +4839,624 @@
 		<translation>Nee</translation>
 	</phrase>
 
+    <phrase>
+        <original>show original image</original>
+        <translation>Oorspronkelijke afbeelding weergeven</translation>
+    </phrase>
+
+    <phrase>
+        <original>show effect preview</original>
+        <translation>weergeven voorbeeld van effect</translation>
+    </phrase>
+
+    <phrase>
+        <original>clamp them to the nearest available pixel</original>
+        <translation>klem ze vast aan de dichtstbijzijnde beschikbare pixel</translation>
+    </phrase>
+
+    <phrase>
+        <original>wrap them around the image</original>
+        <translation>wikkel ze rond de afbeelding</translation>
+    </phrase>
+
+    <phrase>
+        <original>erase them</original>
+        <translation>wis ze uit</translation>
+    </phrase>
+
+    <phrase>
+        <original>defaultEdgeMethod</original>
+        <translation>standaardrand methode</translation>
+    </phrase>
+
+    <phrase>
+        <original>Waiting for user to specify alpha threshold...</original>
+        <translation>Wachten op specificatie van de gebruiker voor alfa drempel ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Please Choose A Transparency Threshold</original>
+        <translation>aub. Kies de doorzichtigheid van de drempel</translation>
+    </phrase>
+
+    <phrase>
+        <original>This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified.</original>
+        <translation>Deze afbeelding heeft een complex alfakanaal. Voordat het kan worden opgeslagen als een paletteeerde afbeelding (8bpp), moet het alpha-kanaal worden vereenvoudigd.</translation>
+    </phrase>
+
+    <phrase>
+        <original>transparency cut-off:</original>
+        <translation>transparantie bijsnijden:</translation>
+    </phrase>
+
+    <phrase>
+        <original>no transparency</original>
+        <translation>geen transparantie</translation>
+    </phrase>
+
+    <phrase>
+        <original>maximum transparency</original>
+        <translation>maximale transparantie</translation>
+    </phrase>
+
+    <phrase>
+        <original>Waiting for user to specify color depth...</original>
+        <translation>Wachten op specificatie van de gebruiker voor kleurdiepte ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Please Choose Exported Color Depth</original>
+        <translation>aub. Kies de geëxporteerde kleurdiepte</translation>
+    </phrase>
+
+    <phrase>
+        <original>please choose an output color depth:</original>
+        <translation>aub. Kies een uitgangs kleurdiepte:</translation>
+    </phrase>
+
+    <phrase>
+        <original>1 bpp (monochrome)</original>
+        <translation>1 bpp (monochroom)</translation>
+    </phrase>
+
+    <phrase>
+        <original>4 bpp (16 shades of gray)</original>
+        <translation>4 bpp (16 grijstinten)</translation>
+    </phrase>
+
+    <phrase>
+        <original>8 bpp (256 colors or full grayscale)</original>
+        <translation>8 bpp (256 kleuren of alle grijstinten)</translation>
+    </phrase>
+
+    <phrase>
+        <original>24 bpp (16 million colors)</original>
+        <translation>24 bpp (16 miljoen kleuren)</translation>
+    </phrase>
+
+    <phrase>
+        <original>32 bpp (16 million colors + full transparency)</original>
+        <translation>32 bpp (16 miljoen kleuren + volledige transparantie)</translation>
+    </phrase>
+
+    <phrase>
+        <original>Visual Basic IDE Detected</original>
+        <translation>Visual Basic IDE gedetecteerd</translation>
+    </phrase>
+
+    <phrase>
+        <original>You are running X1 inside the Visual Basic IDE.  This is not recommended.</original>
+        <translation>U gebruikt X1 binnen in de Visual Basic IDE. Dit wordt niet aanbevolen.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Please compile X1 before using it.</original>
+        <translation>Gelieve X1 te  compileren voordat u het gebruikt.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.</original>
+        <translation>Veel functies die afhankelijk zijn van subclassificering zijn uitgeschakeld in de IDE, maar sommige - zoals aangepaste knoppen - kunnen niet worden uitgeschakeld zonder ernstig invloed van de functionaliteit van het programma.</translation>
+    </phrase>
+
+    <phrase>
+        <original>As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's "Stop" button.</original>
+        <translation>Als zodanig, kunt u last krijgen van IDE instabiliteit en crashes, vooral als u het programma met behulp van de IDE's 'Stop' knop sluit.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Additionally, like all other photo editors, X1 relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
+        <translation>Bovendien, leunt X1 net als alle andere foto-editors zwaar op multidimensionale arrays. Array prestaties nemen sterk af in de IDE, dus sommige functies kunnen heel langzaam worden.</translation>
+    </phrase>
+
+    <phrase>
+        <original>If you insist on running X1 in the IDE, please do not submit bugs regarding IDE crashes or freezes.  X1's developers can only address issues and bugs that affect the compiled .exe.</original>
+        <translation>Als u aandringt op het runnen van % 1 in de IDE, stuur dan geen bugs met betrekking tot IDE, crashes of vastlopen . De X1's ontwikkelaars  kunnen alleen adresseren problemen en bugs die de gecompileerde. Exe beïnvloeden.</translation>
+    </phrase>
+
+    <phrase>
+        <original>I understand the risks of running X1 in the IDE</original>
+        <translation>Ik begrijp de risico's van het runnen van X1 in de IDE</translation>
+    </phrase>
+
+    <phrase>
+        <original>Do not display this warning again</original>
+        <translation>Dit waarschuwingsbericht niet meer weergeven</translation>
+    </phrase>
+
+    <phrase>
+        <original>Applying box blur to image...</original>
+        <translation>Het toepassen van vierkant vervagen op de afbeelding ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.</original>
+        <translation>WAARSCHUWING! Deze tool is sterk geoptimaliseerd, maar bij hoge straal-waarden blijft het nog steeds vrij traag in de IDE. Gelieve te compileren voor het toepassen of previewen van elke straal groter dan 20.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Box Blur</original>
+        <translation>Vierkant Vervagen</translation>
+    </phrase>
+
+    <phrase>
+        <original>box width:</original>
+        <translation>Breedte van het vierkant:</translation>
+    </phrase>
+
+    <phrase>
+        <original>box height:</original>
+        <translation>Hoogte van het vierkant:</translation>
+    </phrase>
+
+    <phrase>
+        <original>keep both dimensions in sync</original>
+        <translation>beide dimensies in sync houden</translation>
+    </phrase>
+
+    <phrase>
+        <original>Projecting image through simulated glass...</original>
+        <translation>Projecteren van afbeelding door gesimuleerde glas ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Figured Glass</original>
+        <translation>Glasfiguur</translation>
+    </phrase>
+
+    <phrase>
+        <original>scale:</original>
+        <translation>schaal:</translation>
+    </phrase>
+
+    <phrase>
+        <original>turbulence:</original>
+        <translation>turbulentie:</translation>
+    </phrase>
+
+    <phrase>
+        <original>if pixels lie outside the image...</original>
+        <translation>indien pixels buiten de afbeelding liggen ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>render emphasis:</original>
+        <translation>renderen nadruk:</translation>
+    </phrase>
+
+    <phrase>
+        <original>quality</original>
+        <translation>kwaliteit</translation>
+    </phrase>
+
+    <phrase>
+        <original>speed</original>
+        <translation>snelheid</translation>
+    </phrase>
+
+    <phrase>
+        <original>Gaussian Blur</original>
+        <translation>Gaussiaans vervagen</translation>
+    </phrase>
+
+    <phrase>
+        <original>radius:</original>
+        <translation>straal:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Peering at image through imaginary kaleidoscope...</original>
+        <translation>Turen naar afbeelding door denkbeeldige caleidoscoop ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Kaleidoscope</original>
+        <translation>Caleidoscoop</translation>
+    </phrase>
+
+    <phrase>
+        <original>number of mirrors:</original>
+        <translation>aantal spiegels:</translation>
+    </phrase>
+
+    <phrase>
+        <original>primary angle:</original>
+        <translation>primaire hoek:</translation>
+    </phrase>
+
+    <phrase>
+        <original>secondary angle:</original>
+        <translation>secundaire hoek:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Radius (percentage):</original>
+        <translation>Radius (percentage):</translation>
+    </phrase>
+
+    <phrase>
+        <original>Apply Lens Distortion</original>
+        <translation>Toepassen Lensvervorming</translation>
+    </phrase>
+
+    <phrase>
+        <original>Projecting image through simulated lens...</original>
+        <translation>Projecteren van afbeelding door gesimuleerde lens ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>lens strength (refractive index):</original>
+        <translation>lenssterkte (brekingsindex):</translation>
+    </phrase>
+
+    <phrase>
+        <original>Correcting image distortion...</original>
+        <translation>Corrigeren van beeldvervorming ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Correct or Fix Lens Distortion</original>
+        <translation>Corrigeer of herstel Lensvervorming</translation>
+    </phrase>
+
+    <phrase>
+        <original>correction strength:</original>
+        <translation>correctie sterkte:</translation>
+    </phrase>
+
+    <phrase>
+        <original>correction zoom:</original>
+        <translation>correctie zoom:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Pinching and whirling image...</original>
+        <translation>Knijpen en wervelen van afbeelding ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Pinch and Whirl</original>
+        <translation>Knijp en wervel</translation>
+    </phrase>
+
+    <phrase>
+        <original>pinch amount:</original>
+        <translation>Aantal knijpen:</translation>
+    </phrase>
+
+    <phrase>
+        <original>whirl angle:</original>
+        <translation>Hoek wervelen:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Saving plugin options...</original>
+        <translation>Bezig met opslaan plugin opties ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Plugin options saved.</original>
+        <translation>Plugin opties opgeslagen.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Overview</original>
+        <translation>Overzicht</translation>
+    </phrase>
+
+    <phrase>
+        <original>GOOD</original>
+        <translation>GOED</translation>
+    </phrase>
+
+    <phrase>
+        <original>problems detected</original>
+        <translation>problemen gedetecteerd</translation>
+    </phrase>
+
+    <phrase>
+        <original>none</original>
+        <translation>geen</translation>
+    </phrase>
+
+    <phrase>
+        <original>installed</original>
+        <translation>geïnstalleerd</translation>
+    </phrase>
+
+    <phrase>
+        <original>disable</original>
+        <translation>onbruikbaar maken</translation>
+    </phrase>
+
+    <phrase>
+        <original>and up to date</original>
+        <translation>en actueel</translation>
+    </phrase>
+
+    <phrase>
+        <original>, but incorrect version ( X1 found X2 expected)</original>
+        <translation>, Maar onjuiste versie ( X1 gevonden X2 verwacht)</translation>
+    </phrase>
+
+    <phrase>
+        <original>installed, but disabled by user</original>
+        <translation>geïnstalleerd, maar uitgeschakeld door gebruiker</translation>
+    </phrase>
+
+    <phrase>
+        <original>enable</original>
+        <translation>bruikbaar maken</translation>
+    </phrase>
+
+    <phrase>
+        <original>missing</original>
+        <translation>niet aanwezig</translation>
+    </phrase>
+
+    <phrase>
+        <original>X1 Plugin Manager</original>
+        <translation>X1 Plugin Manager</translation>
+    </phrase>
+
+    <phrase>
+        <original>X1 plugin information</original>
+        <translation>X1 plugin informatie</translation>
+    </phrase>
+
+    <phrase>
+        <original>expected version:</original>
+        <translation>verwacht versie:</translation>
+    </phrase>
+
+    <phrase>
+        <original>version found:</original>
+        <translation>versie gevonden:</translation>
+    </phrase>
+
+    <phrase>
+        <original>X1 license:</original>
+        <translation>X1 licentie:</translation>
+    </phrase>
+
+    <phrase>
+        <original>X1 settings</original>
+        <translation>X1 instellingen</translation>
+    </phrase>
+
+    <phrase>
+        <original>when reducing alpha channels, attempt to preserve values of 0 and 255</original>
+        <translation>bij het verlagen van alfakanalen, proberen de waarden van 0 en 255 te behouden</translation>
+    </phrase>
+
+    <phrase>
+        <original>Certain applications may require full or no transparency for images.  Pngnq-s9 will attempt to preserve these alpha values when this option is selected.</original>
+        <translation>Bepaalde toepassingen hebben volledige of geen transparantie nodig voor afbeeldingen. Pngnq-s9 zal proberen om deze alpha-waarden te behouden wanneer deze optie is geselecteerd.</translation>
+    </phrase>
+
+    <phrase>
+        <original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
+        <translation>analyseren kleuren met YUV in plaats van RGB (langzamer, maar betere kwaliteit)</translation>
+    </phrase>
+
+    <phrase>
+        <original>Unlike RGB, the YUV color space takes into account human perception of colors.  This results in color reductions with much smoother output.</original>
+        <translation>In tegenstelling tot RGB, houdt YUV rekening met de kleurruimte van menselijke waarneming van kleuren. Dit resulteert in kleurreducties met veel soepelere uitgang</translation>
+    </phrase>
+
+    <phrase>
+        <original>color sample size:</original>
+        <translation>kleur steekproefomvang:</translation>
+    </phrase>
+
+    <phrase>
+        <original>small (fast, low quality)</original>
+        <translation>klein (snel, lage kwaliteit)</translation>
+    </phrase>
+
+    <phrase>
+        <original>large (slow, high quality)	</original>
+        <translation>groot (langzaam, hoge kwaliteit)</translation>
+    </phrase>
+
+    <phrase>
+        <original>color dithering:</original>
+        <translation>kleur dithering:</translation>
+    </phrase>
+
+    <phrase>
+        <original>full persistence</original>
+        <translation>volledige persistentie</translation>
+    </phrase>
+
+    <phrase>
+        <original>&Reset all plugin options</original>
+        <translation>&Alle plugin opties resetten</translation>
+    </phrase>
+
+    <phrase>
+        <original>Use this to reset all plugin-related options to their default state.  This action cannot be undone.</original>
+        <translation>Gebruik deze optie om alle plugin-gerelateerde opties terug te zetten naar hun standaard waarde. Deze actie kan niet ongedaan gemaakt worden.</translation>
+    </phrase>
+
+    <phrase>
+        <original>current plugin status:</original>
+        <translation>Huidige plugin status:</translation>
+    </phrase>
+
+    <phrase>
+        <original>status:</original>
+        <translation>status:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Performing polar coordinate conversion...</original>
+        <translation>Uitvoeren van poolcoördinaten conversie ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Rectangular to polar</original>
+        <translation>Rechthoekig naar polair</translation>
+    </phrase>
+
+    <phrase>
+        <original>Polar to rectangular</original>
+        <translation>Polair naar rechthoekig</translation>
+    </phrase>
+
+    <phrase>
+        <original>Polar inversion</original>
+        <translation>Polaire inversie</translation>
+    </phrase>
+
+    <phrase>
+        <original>Polar Coordinate Conversion</original>
+        <translation>Poolcoördinaten Conversie</translation>
+    </phrase>
+
+    <phrase>
+        <original>conversion technique:</original>
+        <translation>conversie techniek:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Simulating ripples across image surface...</original>
+        <translation>Simuleren van rimpelingen over het afbeeldingsvlak ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Ripple</original>
+        <translation>Rimpeling</translation>
+    </phrase>
+
+    <phrase>
+        <original>length of ripples (wavelength):</original>
+        <translation>lengte van rimpels (golflengte):</translation>
+    </phrase>
+
+    <phrase>
+        <original>height of ripples (amplitude):</original>
+        <translation>hoogte van rimpels (amplitude):</translation>
+    </phrase>
+
+    <phrase>
+        <original>time (phase):</original>
+        <translation>tijd (fase):</translation>
+    </phrase>
+
+    <phrase>
+        <original>Analyzing image in preparation for smart blur...</original>
+        <translation>Analyseren van afbeelding ter voorbereiding van slimme vervaging ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Applying smart blur...</original>
+        <translation>Toepassen van slimme vervaging ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Smart Blur</original>
+        <translation>Slim vervagen</translation>
+    </phrase>
+
+    <phrase>
+        <original>apply blur to:</original>
+        <translation>vervagen toepassen aan:</translation>
+    </phrase>
+
+    <phrase>
+        <original>non-edges</original>
+        <translation>geen-randen</translation>
+    </phrase>
+
+    <phrase>
+        <original>edges</original>
+        <translation>randen</translation>
+    </phrase>
+
+    <phrase>
+        <original>threshold:</original>
+        <translation>drempel:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Swirling image round and round...</original>
+        <translation>Afbeelding rond en rond wervelen ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Swirl</original>
+        <translation>Wervelen</translation>
+    </phrase>
+
+    <phrase>
+        <original>swirl angle:</original>
+        <translation>hoek werveling:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Applying unsharp mask (step X1 of 2)...</original>
+        <translation>Toepassen van onscherp masker (stap% 1 van 2) ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Unsharp Masking</original>
+        <translation>Onscherp Maskeren</translation>
+    </phrase>
+
+    <phrase>
+        <original>amount:</original>
+        <translation>aantal:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Dipping image in virtual wave pool...</original>
+        <translation>Afbeelding in virtueel golfslagbad dompelen  ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Waves</original>
+        <translation>Golven</translation>
+    </phrase>
+
+    <phrase>
+        <original>horizontal wavelength:</original>
+        <translation>horizontale golflengte:</translation>
+    </phrase>
+
+    <phrase>
+        <original>horizontal strength (amplitude):</original>
+        <translation>horizontale sterkte (amplitude):</translation>
+    </phrase>
+
+    <phrase>
+        <original>vertical wavelength:</original>
+        <translation>verticale golflengte:</translation>
+    </phrase>
+
+    <phrase>
+        <original>vertical strength (amplitude):</original>
+        <translation>verticale sterkte (amplitude):</translation>
+    </phrase>
 
 </language>

@@ -4884,5 +4884,624 @@
 		<translation>Non</translation>
 	</phrase>
 
+    <phrase>
+        <original>show original image</original>
+        <translation>Affichage de l'image d'origine</translation>
+    </phrase>
+
+    <phrase>
+        <original>show effect preview</original>
+        <translation>Affichage Exemple de l'impact</translation>
+    </phrase>
+
+    <phrase>
+        <original>clamp them to the nearest available pixel</original>
+        <translation>les serrer à pixel le plus proche disponible</translation>
+    </phrase>
+
+    <phrase>
+        <original>wrap them around the image</original>
+        <translation>ils enveloppent autour de l'image</translation>
+    </phrase>
+
+    <phrase>
+        <original>erase them</original>
+        <translation>supprimer les</translation>
+    </phrase>
+
+    <phrase>
+        <original>defaultEdgeMethod</original>
+        <translation>defaultEdgeMethod</translation>
+    </phrase>
+
+    <phrase>
+        <original>Waiting for user to specify alpha threshold...</original>
+        <translation>En attendant la spécification de l'utilisateur pour le seuil alpha ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Please Choose A Transparency Threshold</original>
+        <translation>s'il vous plaît. Sélectionner la transparence du seuil</translation>
+    </phrase>
+
+    <phrase>
+        <original>This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified.</original>
+        <translation>Cette image a un complexe canal alpha. Avant de pouvoir être enregistrée en tant qu'image palette led (8bpp), le canal alpha sera simplifiée.</translation>
+    </phrase>
+
+    <phrase>
+        <original>transparency cut-off:</original>
+        <translation>culture de la transparence:</translation>
+    </phrase>
+
+    <phrase>
+        <original>no transparency</original>
+        <translation>pas de transparence</translation>
+    </phrase>
+
+    <phrase>
+        <original>maximum transparency</original>
+        <translation>maximum de transparence</translation>
+    </phrase>
+
+    <phrase>
+        <original>Waiting for user to specify color depth...</original>
+        <translation>En attendant la spécification de l'utilisateur pour une profondeur de couleur ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Please Choose Exported Color Depth</original>
+        <translation>s'il vous plaît. Sélectionnez le nombre de couleurs exportés</translation>
+    </phrase>
+
+    <phrase>
+        <original>please choose an output color depth:</original>
+        <translation>s'il vous plaît. Choisissez une profondeur de couleur de sortie:</translation>
+    </phrase>
+
+    <phrase>
+        <original>1 bpp (monochrome)</original>
+        <translation>1 bpp (monochrome)</translation>
+    </phrase>
+
+    <phrase>
+        <original>4 bpp (16 shades of gray)</original>
+        <translation>4 bpp (16 niveaux de gris)</translation>
+    </phrase>
+
+    <phrase>
+        <original>8 bpp (256 colors or full grayscale)</original>
+        <translation>8 bpp (256 couleurs ou niveaux de gris)</translation>
+    </phrase>
+
+    <phrase>
+        <original>24 bpp (16 million colors)</original>
+        <translation>24 bpp (16 millions de couleurs)</translation>
+    </phrase>
+
+    <phrase>
+        <original>32 bpp (16 million colors + full transparency)</original>
+        <translation>32 bpp (16 millions de couleurs + transparence totale)</translation>
+    </phrase>
+
+    <phrase>
+        <original>Visual Basic IDE Detected</original>
+        <translation>Visual Basic IDE détectés</translation>
+    </phrase>
+
+    <phrase>
+        <original>You are running X1 inside the Visual Basic IDE.  This is not recommended.</original>
+        <translation>Vous utilisez X1 à l'intérieur de l'IDE de Visual Basic. Ce n'est pas recommandé.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Please compile X1 before using it.</original>
+        <translation>S'il vous plaît compilation X1 avant de l'utiliser.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.</original>
+        <translation>De nombreuses fonctions qui en dépendent subclassificering sont désactivées dans l'IDE, mais certains - tels que des boutons personnalisés - ne peut pas être désactivé sans affecter sérieusement le fonctionnement du programme.</translation>
+    </phrase>
+
+    <phrase>
+        <original>As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's "Stop" button.</original>
+        <translation>En tant que tel, vous pouvez souffrir de l'instabilité IDE et les accidents, surtout si le programme en utilisant le bouton de l'EDI 'Stop' se ferme.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Additionally, like all other photo editors, X1 relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
+        <translation>En outre,  X1 se penche comme tout les autres éditeurs de photos lourdement sur les tableaux multidimensionnels. Performances de la baie est très dégradé dans l'IDE, de sorte que certaines fonctionnalités peuvent être très lent.</translation>
+    </phrase>
+
+    <phrase>
+        <original>If you insist on running X1 in the IDE, please do not submit bugs regarding IDE crashes or freezes.  X1's developers can only address issues and bugs that affect the compiled .exe.</original>
+        <translation>Si vous insistez sur l'exécution de X1 dans l'IDE, envoyez-les bugs liés aux chutes d'IDE ou des accidents. Les développeurs du 1% ne peut que régler les problèmes et les bogues que le compilés. Influence Exe.</translation>
+    </phrase>
+
+    <phrase>
+        <original>I understand the risks of running X1 in the IDE</original>
+        <translation>Je comprends les risques de fonctionnement de 1% dans l'IDE</translation>
+    </phrase>
+
+    <phrase>
+        <original>Do not display this warning again</original>
+        <translation>Ce message d'avertissement ne sera pas affiché</translation>
+    </phrase>
+
+    <phrase>
+        <original>Applying box blur to image...</original>
+        <translation>On applique un flou carré sur l'image ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.</original>
+        <translation>ATTENTION! Cet outil est hautement optimisé, mais à des valeurs de rayon élevées, il est encore assez lent dans l'IDE. Et sont invités à compiler pour la prévisualisation de la demande ou de n'importe quel rayon supérieur à 20.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Box Blur</original>
+        <translation>Place de Blur</translation>
+    </phrase>
+
+    <phrase>
+        <original>box width:</original>
+        <translation>Largeur de la place:</translation>
+    </phrase>
+
+    <phrase>
+        <original>box height:</original>
+        <translation>Hauteur de la place:</translation>
+    </phrase>
+
+    <phrase>
+        <original>keep both dimensions in sync</original>
+        <translation>deux dimensions en synchro garder</translation>
+    </phrase>
+
+    <phrase>
+        <original>Projecting image through simulated glass...</original>
+        <translation>Projection d'images en verre simulé ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Figured Glass</original>
+        <translation>Verre Figure</translation>
+    </phrase>
+
+    <phrase>
+        <original>scale:</original>
+        <translation>échelle:</translation>
+    </phrase>
+
+    <phrase>
+        <original>turbulence:</original>
+        <translation>turbulence:</translation>
+    </phrase>
+
+    <phrase>
+        <original>if pixels lie outside the image...</original>
+        <translation>si les pixels sont en dehors de l'image ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>render emphasis:</original>
+        <translation>rendant l'accent:</translation>
+    </phrase>
+
+    <phrase>
+        <original>quality</original>
+        <translation>qualité</translation>
+    </phrase>
+
+    <phrase>
+        <original>speed</original>
+        <translation>vitesse</translation>
+    </phrase>
+
+    <phrase>
+        <original>Gaussian Blur</original>
+        <translation>Flou gaussien</translation>
+    </phrase>
+
+    <phrase>
+        <original>radius:</original>
+        <translation>rayon:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Peering at image through imaginary kaleidoscope...</original>
+        <translation>En regardant l'image à travers kaléidoscope imaginaire ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Kaleidoscope</original>
+        <translation>Kaléidoscope</translation>
+    </phrase>
+
+    <phrase>
+        <original>number of mirrors:</original>
+        <translation>nombre de niveaux:</translation>
+    </phrase>
+
+    <phrase>
+        <original>primary angle:</original>
+        <translation>sommets principaux:</translation>
+    </phrase>
+
+    <phrase>
+        <original>secondary angle:</original>
+        <translation>vertex secondaires:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Radius (percentage):</original>
+        <translation>rayon (pourcentage):</translation>
+    </phrase>
+
+    <phrase>
+        <original>Apply Lens Distortion</original>
+        <translation>Appliquer déformation de la lentille</translation>
+    </phrase>
+
+    <phrase>
+        <original>Projecting image through simulated lens...</original>
+        <translation>Projection de l'image par la lentille simulée ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>lens strength (refractive index):</original>
+        <translation>puissance de la lentille (indice de réfraction):</translation>
+    </phrase>
+
+    <phrase>
+        <original>Correcting image distortion...</original>
+        <translation>Correction de la distorsion d'image ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Correct or Fix Lens Distortion</original>
+        <translation>Corriger ou réparer déformation de la lentille</translation>
+    </phrase>
+
+    <phrase>
+        <original>correction strength:</original>
+        <translation>force de correction:</translation>
+    </phrase>
+
+    <phrase>
+        <original>correction zoom:</original>
+        <translation>Zoom de correction:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Pinching and whirling image...</original>
+        <translation>Pincer et tourbillonnant image ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Pinch and Whirl</original>
+        <translation>Pincer et vertébrale</translation>
+    </phrase>
+
+    <phrase>
+        <original>pinch amount:</original>
+        <translation>Nombre serrant:</translation>
+    </phrase>
+
+    <phrase>
+        <original>whirl angle:</original>
+        <translation>Angle de tourbillon:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Saving plugin options...</original>
+        <translation>Sauvegarde options du plugin ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Plugin options saved.</original>
+        <translation>Options du plugin stockées.</translation>
+    </phrase>
+
+    <phrase>
+        <original>Overview</original>
+        <translation>Résumé</translation>
+    </phrase>
+
+    <phrase>
+        <original>GOOD</original>
+        <translation>BON</translation>
+    </phrase>
+
+    <phrase>
+        <original>problems detected</original>
+        <translation>problèmes détectés</translation>
+    </phrase>
+
+    <phrase>
+        <original>none</original>
+        <translation>aucun</translation>
+    </phrase>
+
+    <phrase>
+        <original>installed</original>
+        <translation>installé</translation>
+    </phrase>
+
+    <phrase>
+        <original>disable</original>
+        <translation>désactiver</translation>
+    </phrase>
+
+    <phrase>
+        <original>and up to date</original>
+        <translation>et d'actualité</translation>
+    </phrase>
+
+    <phrase>
+        <original>, but incorrect version ( X1 found X2 expected)</original>
+        <translation>Mais la version incorrecte (X1trouvé  % 2 attendu)</translation>
+    </phrase>
+
+    <phrase>
+        <original>installed, but disabled by user</original>
+        <translation>installé, mais désactivé par l'utilisateur</translation>
+    </phrase>
+
+    <phrase>
+        <original>enable</original>
+        <translation>utilisable</translation>
+    </phrase>
+
+    <phrase>
+        <original>missing</original>
+        <translation>non présent</translation>
+    </phrase>
+
+    <phrase>
+        <original>X1 Plugin Manager</original>
+        <translation>Plugin Manager de 1%</translation>
+    </phrase>
+
+    <phrase>
+        <original>X1 plugin information</original>
+        <translation>information X1 plugin</translation>
+    </phrase>
+
+    <phrase>
+        <original>expected version:</original>
+        <translation>version attendue:</translation>
+    </phrase>
+
+    <phrase>
+        <original>version found:</original>
+        <translation>version qui se trouve:</translation>
+    </phrase>
+
+    <phrase>
+        <original>X1 license:</original>
+        <translation>licence X1 :</translation>
+    </phrase>
+
+    <phrase>
+        <original>X1 settings</original>
+        <translation>paramètres X1</translation>
+    </phrase>
+
+    <phrase>
+        <original>when reducing alpha channels, attempt to preserve values of 0 and 255</original>
+        <translation>en abaissant les canaux alpha, essayez les valeurs 0 et 255 pour maintenir</translation>
+    </phrase>
+
+    <phrase>
+        <original>Certain applications may require full or no transparency for images.  Pngnq-s9 will attempt to preserve these alpha values when this option is selected.</original>
+        <translation>Certaines applications ont plein ou pas de transparence nécessaire pour les images. Pngnq-s9 va essayer de maintenir ces valeurs alpha lorsque cette option est sélectionnée.</translation>
+    </phrase>
+
+    <phrase>
+        <original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
+        <translation>analyser les couleurs avec YUV au lieu de RGB (plus lent, mais de meilleure qualité)</translation>
+    </phrase>
+
+    <phrase>
+        <original>Unlike RGB, the YUV color space takes into account human perception of colors.  This results in color reductions with much smoother output.</original>
+        <translation>Contrairement RGB, YUV prend en compte l'espace de perception humaine des couleurs. Il en résulte une réduction de la couleur avec une sortie beaucoup plus lisse</translation>
+    </phrase>
+
+    <phrase>
+        <original>color sample size:</original>
+        <translation>taille de l'échantillon de couleur:</translation>
+    </phrase>
+
+    <phrase>
+        <original>small (fast, low quality)</original>
+        <translation>petite (rapide, mauvaise qualité)</translation>
+    </phrase>
+
+    <phrase>
+        <original>large (slow, high quality)	</original>
+        <translation>grande (lent, de haute qualité)</translation>
+    </phrase>
+
+    <phrase>
+        <original>color dithering:</original>
+        <translation>couleur de tramage:</translation>
+    </phrase>
+
+    <phrase>
+        <original>full persistence</original>
+        <translation>persistance complète</translation>
+    </phrase>
+
+    <phrase>
+        <original>&Reset all plugin options</original>
+        <translation>&Réinitialiser Toutes les options du plugin</translation>
+    </phrase>
+
+    <phrase>
+        <original>Use this to reset all plugin-related options to their default state.  This action cannot be undone.</original>
+        <translation>Utilisez cette option pour toutes les options plug-in liés à leurs valeurs par défaut. Cette action ne peut pas être annulée.</translation>
+    </phrase>
+
+    <phrase>
+        <original>current plugin status:</original>
+        <translation>statut de l'extension courante:</translation>
+    </phrase>
+
+    <phrase>
+        <original>status:</original>
+        <translation>statut:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Performing polar coordinate conversion...</original>
+        <translation>Réaliser une conversion de coordonnées polaires ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Rectangular to polar</original>
+        <translation>Rectangulaire à polaire</translation>
+    </phrase>
+
+    <phrase>
+        <original>Polar to rectangular</original>
+        <translation>Polar à rectangulaire</translation>
+    </phrase>
+
+    <phrase>
+        <original>Polar inversion</original>
+        <translation>Inversion de polarité</translation>
+    </phrase>
+
+    <phrase>
+        <original>Polar Coordinate Conversion</original>
+        <translation>Conversion de coordonnées polaires</translation>
+    </phrase>
+
+    <phrase>
+        <original>conversion technique:</original>
+        <translation>technique de conversion:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Simulating ripples across image surface...</original>
+        <translation>Simulation de rides sur le plan de l'image ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Ripple</original>
+        <translation>Ondulation</translation>
+    </phrase>
+
+    <phrase>
+        <original>length of ripples (wavelength):</original>
+        <translation>longueur des rides (longueur d'onde):</translation>
+    </phrase>
+
+    <phrase>
+        <original>height of ripples (amplitude):</original>
+        <translation>hauteur des rides (amplitude):</translation>
+    </phrase>
+
+    <phrase>
+        <original>time (phase):</original>
+        <translation>temps (phase):</translation>
+    </phrase>
+
+    <phrase>
+        <original>Analyzing image in preparation for smart blur...</original>
+        <translation>L'analyse de l'image en cours de préparation pour le flou intelligent ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Applying smart blur...</original>
+        <translation>On applique un flou intelligent ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Smart Blur</original>
+        <translation>Flou optimisé</translation>
+    </phrase>
+
+    <phrase>
+        <original>apply blur to:</original>
+        <translation>s'estomper s'applique pas:</translation>
+    </phrase>
+
+    <phrase>
+        <original>non-edges</original>
+        <translation>ni bords</translation>
+    </phrase>
+
+    <phrase>
+        <original>edges</original>
+        <translation>bords</translation>
+    </phrase>
+
+    <phrase>
+        <original>threshold:</original>
+        <translation>seuil:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Swirling image round and round...</original>
+        <translation>Figure tourbillonnant en rond ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Swirl</original>
+        <translation>Tourbillon</translation>
+    </phrase>
+
+    <phrase>
+        <original>swirl angle:</original>
+        <translation>angle de tourbillon:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Applying unsharp mask (step X1 of 2)...</original>
+        <translation>Appliquer masque flou (étape X1 de 2) ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Unsharp Masking</original>
+        <translation>Masquage flou</translation>
+    </phrase>
+
+    <phrase>
+        <original>amount:</original>
+        <translation>numéro:</translation>
+    </phrase>
+
+    <phrase>
+        <original>Dipping image in virtual wave pool...</original>
+        <translation>Trempage de l'image dans la vague virtuelle ...</translation>
+    </phrase>
+
+    <phrase>
+        <original>Waves</original>
+        <translation>Flots</translation>
+    </phrase>
+
+    <phrase>
+        <original>horizontal wavelength:</original>
+        <translation>longueur d'onde horizontale:</translation>
+    </phrase>
+
+    <phrase>
+        <original>horizontal strength (amplitude):</original>
+        <translation>force horizontale (amplitude):</translation>
+    </phrase>
+
+    <phrase>
+        <original>vertical wavelength:</original>
+        <translation>longueur d'onde verticale:</translation>
+    </phrase>
+
+    <phrase>
+        <original>vertical strength (amplitude):</original>
+        <translation>la force verticale (amplitude):</translation>
+    </phrase>
 
 </language>
