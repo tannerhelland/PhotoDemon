@@ -85,8 +85,8 @@ Begin VB.Form FormFindEdges
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -127,7 +127,7 @@ Begin VB.Form FormFindEdges
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "<No Item Selected>"
+      Caption         =   "(no item selected)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
