@@ -34,6 +34,7 @@ Begin VB.UserControl fxPreviewCtl
       Width           =   5760
    End
    Begin VB.Label lblBeforeToggle 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "show original image"
       BeginProperty Font 
@@ -46,13 +47,13 @@ Begin VB.UserControl fxPreviewCtl
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00C07031&
-      Height          =   240
+      Height          =   210
       Left            =   120
       MouseIcon       =   "fxPreview.ctx":0312
       MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   5280
-      Width           =   3045
+      Width           =   1590
    End
 End
 Attribute VB_Name = "fxPreviewCtl"
@@ -89,6 +90,9 @@ Dim m_HasOriginal As Boolean, m_HasFX As Boolean
 
 Dim originalImage As pdLayer, fxImage As pdLayer
 
+'The control's current state: whether it is showing the original image or the fx preview
+Dim curImageState As Boolean
+
 'Use this to supply the preview with a copy of the original image's data.  The preview object can use this to display
 ' the original image when the user clicks the "show original image" link.
 Public Sub setOriginalImage(ByRef srcLayer As pdLayer)
@@ -118,7 +122,10 @@ Public Sub setFXImage(ByRef srcLayer As pdLayer)
     fxImage.createFromExistingLayer srcLayer
     
     'If the user was previously examining the original image, reset the label caption to match the new preview
-    If lblBeforeToggle.Caption <> "show original image" Then lblBeforeToggle.Caption = "show original image"
+    If Not curImageState Then
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " "
+        curImageState = True
+    End If
 
 End Sub
 
@@ -145,11 +152,17 @@ End Function
 Private Sub lblBeforeToggle_Click()
     
     'Before doing anything else, change the label caption
-    If lblBeforeToggle.Caption = "show original image" Then lblBeforeToggle.Caption = "show effect preview" Else lblBeforeToggle.Caption = "show original image"
+    If curImageState Then
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show effect preview") & " "
+    Else
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " "
+    End If
     lblBeforeToggle.Refresh
     
+    curImageState = Not curImageState
+    
     'Update the image to match the new caption
-    If lblBeforeToggle.Caption <> "show original image" Then
+    If Not curImageState Then
         If m_HasOriginal Then originalImage.renderToPictureBox picPreview
     Else
         
@@ -180,6 +193,11 @@ Private Sub UserControl_Initialize()
         lblBeforeToggle.FontName = "Tahoma"
     End If
     
+    curImageState = True
+    
+    setArrowCursorToHwnd UserControl.hWnd
+    setArrowCursorToHwnd picPreview.hWnd
+            
 End Sub
 
 'Initialize our effect preview control
@@ -196,6 +214,11 @@ End Sub
 'Redraw the user control after it has been resized
 Private Sub UserControl_Resize()
     redrawControl
+End Sub
+
+Private Sub UserControl_Show()
+    'Translate the user control text
+    lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " "
 End Sub
 
 Private Sub UserControl_Terminate()
