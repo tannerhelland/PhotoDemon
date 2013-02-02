@@ -985,8 +985,8 @@
 	</phrase>
 
 	<phrase>
-		<original><No Item Selected></original>
-		<translation><Aucun article sélectionné></translation>
+		<original>No Item Selected</original>
+		<translation>Aucun article sélectionné</translation>
 	</phrase>
 
 	<phrase>
@@ -2630,8 +2630,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Open</original>
-		<translation>Ouvrir</translation>
+		<original>&Open</original>
+		<translation>&Ouvrir</translation>
 	</phrase>
 
 	<phrase>

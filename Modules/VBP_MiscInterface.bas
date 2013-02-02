@@ -299,6 +299,10 @@ Public Sub setArrowCursorToObject(ByRef tControl As Control)
     SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
 End Sub
 
+Public Sub setArrowCursorToHwnd(ByVal dstHwnd As Long)
+    SetClassLong dstHwnd, GCL_HCURSOR, hc_Handle_Arrow
+End Sub
+
 'Set a single form to use the arrow cursor
 Public Sub setArrowCursor(ByRef tControl As Form)
     SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow

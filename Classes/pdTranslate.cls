@@ -251,8 +251,8 @@ Public Sub ApplyLanguage()
     If FormMain.Visible Then
         makeFormPretty FormMain
         DrawMenuShortcuts
-        LoadMenuIcons
-        'ApplyAllMenuIcons
+        'LoadMenuIcons
+        ApplyAllMenuIcons
         ResetMenuIcons
     End If
 
@@ -796,7 +796,7 @@ Public Sub applyTranslations(ByRef srcForm As Form)
         'The goal is to apply translations to any object with a non-blank, non-numeric caption property
         
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
             If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
             
