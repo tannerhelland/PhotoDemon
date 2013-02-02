@@ -123,7 +123,7 @@ Private Sub chkBox_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -216,7 +216,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -268,7 +268,7 @@ Private Sub updateControlSize()
     'When compiled, set the option button to be the full size of the user control.  Thanks to subclassing, the option
     ' button will still be fully transparent.  This allows the caption to be seen, while also allowing Vista/7's
     ' "hover" animation to still work with the mouse.  In the IDE, an underline is used to display focus.
-    If g_IsProgramCompiled Then chkBox.Width = UserControl.ScaleWidth - 2
+    If g_IsProgramCompiled And g_IsVistaOrLater Then chkBox.Width = UserControl.ScaleWidth - 2
             
     lblCaption.Refresh
     chkBox.Refresh
