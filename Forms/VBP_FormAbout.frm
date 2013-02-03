@@ -4,7 +4,7 @@ Begin VB.Form FormAbout
    BackColor       =   &H00FFFFFF&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
-   ClientHeight    =   9015
+   ClientHeight    =   8055
    ClientLeft      =   2340
    ClientTop       =   1875
    ClientWidth     =   9000
@@ -22,7 +22,7 @@ Begin VB.Form FormAbout
    Icon            =   "VBP_FormAbout.frx":0000
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   601
+   ScaleHeight     =   537
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   600
    ShowInTaskbar   =   0   'False
@@ -34,7 +34,7 @@ Begin VB.Form FormAbout
       Height          =   495
       Left            =   7440
       TabIndex        =   0
-      Top             =   8400
+      Top             =   7440
       Width           =   1365
    End
    Begin VB.Label lblzLib 
@@ -56,7 +56,7 @@ Begin VB.Form FormAbout
       MouseIcon       =   "VBP_FormAbout.frx":000C
       MousePointer    =   99  'Custom
       TabIndex        =   8
-      Top             =   8040
+      Top             =   6960
       Width           =   1200
    End
    Begin VB.Label lblEZTW32 
@@ -78,7 +78,7 @@ Begin VB.Form FormAbout
       MouseIcon       =   "VBP_FormAbout.frx":015E
       MousePointer    =   99  'Custom
       TabIndex        =   7
-      Top             =   8040
+      Top             =   6960
       Width           =   1530
    End
    Begin VB.Label lblPngnq 
@@ -100,7 +100,7 @@ Begin VB.Form FormAbout
       MouseIcon       =   "VBP_FormAbout.frx":02B0
       MousePointer    =   99  'Custom
       TabIndex        =   6
-      Top             =   8040
+      Top             =   6960
       Width           =   1470
    End
    Begin VB.Label lblFreeImage 
@@ -122,7 +122,7 @@ Begin VB.Form FormAbout
       MouseIcon       =   "VBP_FormAbout.frx":0402
       MousePointer    =   99  'Custom
       TabIndex        =   5
-      Top             =   8040
+      Top             =   6960
       Width           =   1710
    End
    Begin VB.Label lblLinks 
@@ -134,7 +134,7 @@ Begin VB.Form FormAbout
       Height          =   435
       Left            =   240
       TabIndex        =   4
-      Top             =   7560
+      Top             =   6480
       Width           =   8580
    End
    Begin VB.Line Line3 
@@ -237,36 +237,37 @@ Private Sub Form_Load()
     curCredit = 1
     
     'Shout-outs to other designers, programmers, testers and sponsors who provided various resources
-    GenerateThankyou "Kroc and camendesign.com", "http://camendesign.com"
-    GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
-    GenerateThankyou "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
-    GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
-    GenerateThankyou "Waty Thierry", "http://www.ppreview.net/"
-    GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm"
-    GenerateThankyou "Carles P.V., Avery, Dana Seaman", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
-    GenerateThankyou "Brad Martinez", "http://btmtz.mvps.org/gfxfromfrx/"
-    GenerateThankyou "Paul Turcksin", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1"
-    GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
-    GenerateThankyou "Ron van Tilburg", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
-    GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
-    GenerateThankyou "chrfb of deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
-    GenerateThankyou "The Tango Icon Library", "http://tango.freedesktop.org/"
-    GenerateThankyou "Everaldo and The Crystal Project", "http://www.everaldo.com/crystal/"
-    GenerateThankyou "Adrian Pellas-Rice, Kornel Lesinski, Stuart Coyle, Greg Roelofs, Anthony Dekker", "http://sourceforge.net/projects/pngnqs9/"
-    GenerateThankyou "Steve McMahon and vbaccelerator.com", "http://www.vbaccelerator.com/home/VB/index.asp"
-    GenerateThankyou "Jean-Loup Gailly, Mark Adler, Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
-    GenerateThankyou "Floris van de Berg, Hervé Drolon, Carsten Klein", "http://freeimage.sourceforge.net/"
-    GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
-    GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
-    GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
-    GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
-    GenerateThankyou "Dave Jamison", "http://www.modeltrainsoftware.com/"
-    GenerateThankyou "Frank Donckers"
-    GenerateThankyou "Andrew Yeoman"
-    GenerateThankyou "Zhu JinYong"
-    GenerateThankyou "Herman Liu"
-    GenerateThankyou "Robert Rayment"
+    GenerateThankyou "Adrian Pellas-Rice", "http://sourceforge.net/projects/pngnqs9/"
     GenerateThankyou "Alfred Hellmueller"
+    GenerateThankyou "Andrew Yeoman"
+    GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1"
+    GenerateThankyou "Brad Martinez", "http://btmtz.mvps.org/gfxfromfrx/"
+    GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
+    GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
+    GenerateThankyou "Dave Jamison", "http://www.modeltrainsoftware.com/"
+    GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm"
+    GenerateThankyou "Everaldo Coelho", "http://www.everaldo.com/"
+    GenerateThankyou "Frank Donckers"
+    GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/"
+    GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
+    GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
+    GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
+    GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
+    GenerateThankyou "Herman Liu"
+    GenerateThankyou "Kroc Camen", "http://camendesign.com"
+    GenerateThankyou "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
+    GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
+    GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
+    GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
+    GenerateThankyou "Paul Turcksin", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1"
+    GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
+    GenerateThankyou "Robert Rayment"
+    GenerateThankyou "Ron van Tilburg", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
+    GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
+    GenerateThankyou "Tango Icon Library", "http://tango.freedesktop.org/"
+    GenerateThankyou "Waty Thierry", "http://www.ppreview.net/"
+    GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
+    GenerateThankyou "Zhu JinYong"
     
     lblThanks(0).MousePointer = vbDefault
     
@@ -281,22 +282,31 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
     'Generate a new label
     Load lblThanks(curCredit)
     
-    'Because I now have too many people to thank, it's necessary to split the list into two columns
+    'Because I now have too many people to thank, it's necessary to split the list into multiple columns
     Dim columnLimit As Long
-    columnLimit = 17
+    columnLimit = 12
+    
+    Dim thxOffset As Long
+    thxOffset = 50
     
     If curCredit = 1 Then
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12
-        lblThanks(curCredit).Left = lblThanks(0).Left + 2
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 20
+        lblThanks(curCredit).Left = lblThanks(0).Left + 2 + thxOffset
     ElseIf curCredit < columnLimit Then
         lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
-        lblThanks(curCredit).Left = lblThanks(0).Left + 2
+        lblThanks(curCredit).Left = lblThanks(0).Left + 2 + thxOffset
     ElseIf curCredit = columnLimit Then
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 12 - (lblThanks(columnLimit - 1).Top - lblThanks(0).Top)
-        lblThanks(curCredit).Left = lblThanks(0).Left + 275
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 20 - (lblThanks(columnLimit - 1).Top - lblThanks(0).Top)
+        lblThanks(curCredit).Left = lblThanks(0).Left + 180 + thxOffset
+    ElseIf curCredit < columnLimit * 2 - 1 Then
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
+        lblThanks(curCredit).Left = lblThanks(0).Left + 180 + thxOffset
+    ElseIf curCredit = columnLimit * 2 - 1 Then
+        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 20 - (lblThanks(columnLimit * 2 - 2).Top - lblThanks(0).Top)
+        lblThanks(curCredit).Left = lblThanks(0).Left + 360 + thxOffset
     Else
         lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
-        lblThanks(curCredit).Left = lblThanks(0).Left + 275
+        lblThanks(curCredit).Left = lblThanks(0).Left + 360 + thxOffset
     End If
     
     lblThanks(curCredit).Caption = thxText
