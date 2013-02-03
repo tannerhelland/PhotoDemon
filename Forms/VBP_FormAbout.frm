@@ -262,6 +262,7 @@ Private Sub Form_Load()
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
     GenerateThankyou "Dave Jamison", "http://www.modeltrainsoftware.com/"
     GenerateThankyou "Frank Donckers"
+    GenerateThankyou "Andrew Yeoman"
     GenerateThankyou "Zhu JinYong"
     GenerateThankyou "Herman Liu"
     GenerateThankyou "Robert Rayment"

@@ -172,6 +172,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.jhlabs.com/ip/filters/index.html)
 * Frank Donckers for extensive help with the translation engine and core translation files
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
+  * Andrew Yeoman
   * Zhu JinYong
   * Robert Rayment
   * Herman Liu
