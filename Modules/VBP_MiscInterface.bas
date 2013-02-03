@@ -344,17 +344,29 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     DoEvents
 End Sub
 
-'This popular function is used to display a message in the main form's status bar
-Public Sub Message(ByVal MString As String)
+'This popular function is used to display a message in the main form's status bar.
+' INPUTS:
+' 1) the message to be displayed (mString), with any run-time dependent
+Public Sub Message(ByVal mString As String, ParamArray extraText() As Variant)
 
     Dim newString As String
-    newString = MString
+    newString = mString
 
     'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not (g_Language Is Nothing)) Then
         If g_Language.readyToTranslate Then
-            If g_Language.translationActive Then newString = g_Language.TranslateMessage(MString)
+            If g_Language.translationActive Then newString = g_Language.TranslateMessage(mString)
         End If
+    End If
+    
+    'Once the message is translated, we can add back in any optional parameters
+    If Not IsMissing(extraText) Then
+    
+        Dim i As Long
+        For i = LBound(extraText) To UBound(extraText)
+            newString = Replace$(newString, "%" & i + 1, extraText(i))
+        Next i
+    
     End If
 
     If MacroStatus = MacroSTART Then newString = newString & " {-Recording-}"
@@ -366,15 +378,15 @@ Public Sub Message(ByVal MString As String)
         End If
     End If
     
-    If g_IsProgramCompiled = False Then Debug.Print MString
+    If g_IsProgramCompiled = False Then Debug.Print mString
     
     'If we're logging program messages, open up a log file and dump the message there
     If g_LogProgramMessages = True Then
         Dim fileNum As Integer
         fileNum = FreeFile
         Open g_UserPreferences.getDataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
-            Print #fileNum, MString
-            If MString = "Finished." Then Print #fileNum, vbCrLf
+            Print #fileNum, mString
+            If mString = "Finished." Then Print #fileNum, vbCrLf
         Close #fileNum
     End If
     

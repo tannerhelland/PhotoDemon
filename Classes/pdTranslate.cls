@@ -647,14 +647,30 @@ End Function
 
 'Given a message (basically, a string), return the translation of said string.
 ' If a translation cannot be found, return the original string.
-Public Function TranslateMessage(ByRef srcMessage As String) As String
+Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraText() As Variant) As String
     
     Dim searchString As String, newString As String
     searchString = srcMessage
     newString = getTranslationTagFromCaption(searchString)
     
-    'If a new string was found, apply it to the object's caption
-    If newString <> "" Then TranslateMessage = newString Else TranslateMessage = srcMessage
+    'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
+    ' even if translation text is missing.
+    If newString = "" Then newString = srcMessage
+    
+    'newString now contains the translated message (or the original text, if no translation was found).
+    
+    'The last step is to replace any optional parameters in the text
+    If Not IsMissing(ExtraText) Then
+    
+        Dim i As Long
+        For i = LBound(ExtraText) To UBound(ExtraText)
+            newString = Replace$(newString, "%" & i + 1, ExtraText(i))
+        Next i
+    
+    End If
+    
+    'Return the fully translated string
+    TranslateMessage = newString
     
 End Function
 
