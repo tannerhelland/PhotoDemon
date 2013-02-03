@@ -192,6 +192,8 @@ Option Explicit
     Public Const DistortKaleidoscope As Long = 719
     '-Distort: Polar conversion
     Public Const ConvertPolar As Long = 720
+    'Autocrop
+    Public Const Autocrop As Long = 721
     
     'Other filters; numbers 800-899
     Public Const FilmNoir As Long = 801
@@ -742,6 +744,9 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Else
                 FormPolar.ConvertToPolar CLng(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
             End If
+        Case Autocrop
+            AutocropImage
+            
             
     'Other filters
         Case Antique

@@ -19,8 +19,8 @@ Attribute VB_Name = "Menu_Icon_Handler"
 '
 'Also in this module is a heavily modified version of Paul Turcksin's "Icon Handlemaker" project, which I've modified
 ' to convert bitmaps to icons on the fly (the "CreateCustomFormIcon" sub).  PhotoDemon uses this to dynamically change
-' the icon of its MDI child forms.  To see Paul's original project, please visit this PSC link:
-' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1
+' the icon of its MDI child forms if FreeImage cannot be found.  To see Paul's original project, please visit this PSC
+' link: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1
 '
 '***************************************************************************
 
@@ -204,19 +204,20 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "MODE32", 3, 2, 1  '32bpp
     AddMenuIcon "RESIZE", 3, 4         'Resize
     AddMenuIcon "CROPSEL", 3, 5        'Crop to Selection
-    AddMenuIcon "MIRROR", 3, 7         'Mirror
-    AddMenuIcon "FLIP", 3, 8           'Flip
-    AddMenuIcon "ROTATECW", 3, 10      'Rotate Clockwise
-    AddMenuIcon "ROTATECCW", 3, 11     'Rotate Counter-clockwise
-    AddMenuIcon "ROTATE180", 3, 12     'Rotate 180
+    AddMenuIcon "AUTOCROP", 3, 6       'Autocrop
+    AddMenuIcon "MIRROR", 3, 8         'Mirror
+    AddMenuIcon "FLIP", 3, 9           'Flip
+    AddMenuIcon "ROTATECW", 3, 11      'Rotate Clockwise
+    AddMenuIcon "ROTATECCW", 3, 12     'Rotate Counter-clockwise
+    AddMenuIcon "ROTATE180", 3, 13     'Rotate 180
     'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
     If g_ImageFormats.FreeImageEnabled Then
-        AddMenuIcon "ROTATEANY", 3, 13 'Rotate Arbitrary
+        AddMenuIcon "ROTATEANY", 3, 14 'Rotate Arbitrary
+        AddMenuIcon "ISOMETRIC", 3, 16 'Isometric
+        AddMenuIcon "TILE", 3, 17      'Tile
+    Else
         AddMenuIcon "ISOMETRIC", 3, 15 'Isometric
         AddMenuIcon "TILE", 3, 16      'Tile
-    Else
-        AddMenuIcon "ISOMETRIC", 3, 14 'Isometric
-        AddMenuIcon "TILE", 3, 15      'Tile
     End If
     
     'Color Menu

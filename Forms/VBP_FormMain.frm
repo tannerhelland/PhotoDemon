@@ -401,7 +401,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":A14C
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":A174
          disabledpicturemode=   1
          captioneffects  =   0
@@ -419,7 +419,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":B1C6
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":B1EE
          disabledpicturemode=   1
          captioneffects  =   0
@@ -437,7 +437,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":C240
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":C268
          disabledpicturemode=   1
          captioneffects  =   0
@@ -456,7 +456,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":D2BA
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":D2E2
          disabledpicturemode=   1
          captioneffects  =   0
@@ -475,7 +475,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":E334
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":E35C
          disabledpicturemode=   1
          captioneffects  =   0
@@ -493,7 +493,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":F3AE
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":F3D6
          disabledpicturemode=   1
          captioneffects  =   0
@@ -511,12 +511,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":10428
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":10450
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltip         =   "Use this button to increase image zoom."
          tooltiptitle    =   "Zoom In"
+         tooltip         =   "Use this button to increase image zoom."
       End
       Begin PhotoDemon.jcbutton cmdZoomOut 
          Height          =   390
@@ -530,12 +530,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":108A2
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":108CA
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltip         =   "Use this button to decrease image zoom."
          tooltiptitle    =   "Zoom Out"
+         tooltip         =   "Use this button to decrease image zoom."
       End
       Begin VB.Label lblZoom 
          Appearance      =   0  'Flat
@@ -918,6 +918,9 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuCropSelection 
          Caption         =   "Crop to selection"
+      End
+      Begin VB.Menu MnuAutocrop 
+         Caption         =   "Autocrop Image"
       End
       Begin VB.Menu MnuImageSepBar2 
          Caption         =   "-"
@@ -1912,6 +1915,10 @@ Private Sub MnuArtistic_Click(Index As Integer)
     
     End Select
 
+End Sub
+
+Private Sub MnuAutocrop_Click()
+    Process Autocrop
 End Sub
 
 Private Sub MnuAutoEnhanceHighlights_Click()
