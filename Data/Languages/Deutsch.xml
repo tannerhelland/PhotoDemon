@@ -3700,13 +3700,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Total number of unique colors:</original>
-		<translation>Gesamtzahl der einzigartigen Farben:</translation>
+		<original>Total number of unique colors: %1</original>
+		<translation>Gesamtzahl der einzigartigen Farben: %1</translation>
 	</phrase>
 
 	<phrase>
-		<original>This image contains X1 unique colors.</original>
-		<translation>Dieses Bild enthält X1 einzigartigen Farben.</translation>
+		<original>This image contains %1 unique colors.</original>
+		<translation>Dieses Bild enthält %1 einzigartigen Farben.</translation>
 	</phrase>
 
 	<phrase>
