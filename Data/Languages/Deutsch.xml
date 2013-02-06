@@ -205,8 +205,8 @@
 	</phrase>
 
 	<phrase>
-		<original>image compression ratio:</original>
-		<translation>Bild Verdichtungsverhältnis:</translation>
+		<original>image compression ratio</original>
+		<translation>Bild Verdichtungsverhältnis</translation>
 	</phrase>
 
 	<phrase>
@@ -320,13 +320,13 @@
 	</phrase>
 
 	<phrase>
-		<original>image quality:</original>
-		<translation>Bildqualität:</translation>
+		<original>image quality</original>
+		<translation>Bildqualität</translation>
 	</phrase>
 
 	<phrase>
-		<original>advanced JPEG settings:</original>
-		<translation>Advanced JPEG-Einstellungen:</translation>
+		<original>advanced JPEG settings</original>
+		<translation>Advanced JPEG-Einstellungen</translation>
 	</phrase>
 
 	<phrase>
@@ -345,8 +345,8 @@
 	</phrase>
 
 	<phrase>
-		<original>use specific subsampling:</original>
-		<translation>verwenden spezifische Subsampling:</translation>
+		<original>use specific subsampling</original>
+		<translation>verwenden spezifische Subsampling</translation>
 	</phrase>
 
 	<phrase>
@@ -523,8 +523,8 @@
 	</phrase>
 
 	<phrase>
-		<original>PhotoDemon would not be possible without the following individuals. My sincerest thanks goes out to:</original>
-		<translation>PhotoDemon wäre ohne den folgenden Personen möglich. Mein aufrichtiger Dank geht an:</translation>
+		<original>PhotoDemon would not be possible without the following individuals. My sincerest thanks goes out to</original>
+		<translation>PhotoDemon wäre ohne den folgenden Personen möglich. Mein aufrichtiger Dank geht an</translation>
 	</phrase>
 
 	<phrase>
@@ -558,8 +558,8 @@
 	</phrase>
 
 	<phrase>
-		<original>threshold:</original>
-		<translation>Schwelle:</translation>
+		<original>threshold</original>
+		<translation>Schwelle</translation>
 	</phrase>
 
 	<phrase>
@@ -568,8 +568,8 @@
 	</phrase>
 
 	<phrase>
-		<original>dithering technique:</original>
-		<translation>Dithering-Technik:</translation>
+		<original>dithering technique</original>
+		<translation>Dithering-Technik</translation>
 	</phrase>
 
 	<phrase>
@@ -588,8 +588,8 @@
 	</phrase>
 
 	<phrase>
-		<original>intensity:</original>
-		<translation>Intensität:</translation>
+		<original>intensity</original>
+		<translation>Intensität</translation>
 	</phrase>
 
 	<phrase>
@@ -648,8 +648,8 @@
 	</phrase>
 
 	<phrase>
-		<original>new temperature:</original>
-		<translation>neue Temperatur:</translation>
+		<original>new temperature</original>
+		<translation>neue Temperatur</translation>
 	</phrase>
 
 	<phrase>
@@ -713,28 +713,28 @@
 	</phrase>
 
 	<phrase>
-		<original>convolution matrix:</original>
-		<translation>Faltungsmatrix:</translation>
+		<original>convolution matrix</original>
+		<translation>Faltungsmatrix</translation>
 	</phrase>
 
 	<phrase>
-		<original>additional settings:</original>
-		<translation>weitere Einstellungen:</translation>
+		<original>additional settings</original>
+		<translation>weitere Einstellungen</translation>
 	</phrase>
 
 	<phrase>
-		<original>divisor:</original>
-		<translation>Nenner:</translation>
+		<original>divisor</original>
+		<translation>Nenner</translation>
 	</phrase>
 
 	<phrase>
-		<original>offset:</original>
-		<translation>Offset:</translation>
+		<original>offset</original>
+		<translation>Offset</translation>
 	</phrase>
 
 	<phrase>
-		<original>load / save filter:</original>
-		<translation>Laden/Speichern-Filter:</translation>
+		<original>load / save filter</original>
+		<translation>Laden/Speichern-Filter</translation>
 	</phrase>
 
 	<phrase>
@@ -744,7 +744,7 @@
 
 	<phrase>
 		<original>Save Current Filter</original>
-		<translation>Speichern der aktuellen Filter:</translation>
+		<translation>Speichern der aktuellen Filter</translation>
 	</phrase>
 
 	<phrase>
@@ -778,8 +778,8 @@
 	</phrase>
 
 	<phrase>
-		<original>despeckle strength:</original>
-		<translation>Fleckfilter Stärke:</translation>
+		<original>despeckle strength</original>
+		<translation>Fleckfilter Stärke</translation>
 	</phrase>
 
 	<phrase>
@@ -848,13 +848,13 @@
 	</phrase>
 
 	<phrase>
-		<original>horizontal strength:</original>
-		<translation>horizontale Kraft:</translation>
+		<original>horizontal strength</original>
+		<translation>horizontale Kraft</translation>
 	</phrase>
 
 	<phrase>
-		<original>vertical strength:</original>
-		<translation>vertikale Kraft:</translation>
+		<original>vertical strength</original>
+		<translation>vertikale Kraft</translation>
 	</phrase>
 
 	<phrase>
@@ -903,8 +903,8 @@
 	</phrase>
 
 	<phrase>
-		<original>equalize:</original>
-		<translation>Auszugleichen:</translation>
+		<original>equalize</original>
+		<translation>Auszugleichen</translation>
 	</phrase>
 
 	<phrase>
@@ -928,7 +928,7 @@
 	</phrase>
 
 	<phrase>
-		<original>fade strength (%):</original>
+		<original>fade strength (%)</original>
 		<translation>Blur Stärke (%)</translation>
 	</phrase>
 
@@ -938,8 +938,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Simple matrix method:</original>
-		<translation>Einfache Matrix-Methode:</translation>
+		<original>Simple matrix method</original>
+		<translation>Einfache Matrix-Methode</translation>
 	</phrase>
 
 	<phrase>
@@ -963,8 +963,8 @@
 	</phrase>
 
 	<phrase>
-		<original>description:</original>
-		<translation>Beschreibung:</translation>
+		<original>description</original>
+		<translation>Beschreibung</translation>
 	</phrase>
 
 	<phrase>
@@ -1003,18 +1003,18 @@
 	</phrase>
 
 	<phrase>
-		<original>decompose using these values:</original>
-		<translation>zersetzen mit der Verwendung dieser Werte:</translation>
+		<original>decompose using these values</original>
+		<translation>zersetzen mit der Verwendung dieser Werte</translation>
 	</phrase>
 
 	<phrase>
-		<original>use this channel:</original>
-		<translation>über diesen Kanal:</translation>
+		<original>use this channel</original>
+		<translation>über diesen Kanal</translation>
 	</phrase>
 
 	<phrase>
-		<original>use this many shades of gray:</original>
-		<translation>Verwenden Sie viele Schattierungen von Grau:</translation>
+		<original>use this many shades of gray</original>
+		<translation>Verwenden Sie viele Schattierungen von Grau</translation>
 	</phrase>
 
 	<phrase>
@@ -1068,8 +1068,8 @@
 	</phrase>
 
 	<phrase>
-		<original>To learn more about the various grayscale conversion options, please visit this link:</original>
-		<translation>Für weitere Informationen zu den verschiedenen Graustufenkonvertierung Optionen, besuchen Sie bitte diesen Link:</translation>
+		<original>To learn more about the various grayscale conversion options, please visit this link</original>
+		<translation>Für weitere Informationen zu den verschiedenen Graustufenkonvertierung Optionen, besuchen Sie bitte diesen Link</translation>
 	</phrase>
 
 	<phrase>
@@ -1113,13 +1113,13 @@
 	</phrase>
 
 	<phrase>
-		<original>grayscale method:</original>
-		<translation>Graustufen-Methode:</translation>
+		<original>grayscale method</original>
+		<translation>Graustufen-Methode</translation>
 	</phrase>
 
 	<phrase>
-		<original>additional options for this method:</original>
-		<translation>zusätzliche Optionen für diese Methode:</translation>
+		<original>additional options for this method</original>
+		<translation>zusätzliche Optionen für diese Methode</translation>
 	</phrase>
 
 	<phrase>
@@ -1138,18 +1138,18 @@
 	</phrase>
 
 	<phrase>
-		<original>hue:</original>
-		<translation>Tint:</translation>
+		<original>hue</original>
+		<translation>Tint</translation>
 	</phrase>
 
 	<phrase>
-		<original>saturation:</original>
-		<translation>Sättigung:</translation>
+		<original>saturation</original>
+		<translation>Sättigung</translation>
 	</phrase>
 
 	<phrase>
-		<original>lightness:</original>
-		<translation>Helligkeit:</translation>
+		<original>lightness</original>
+		<translation>Helligkeit</translation>
 	</phrase>
 
 	<phrase>
@@ -1173,13 +1173,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Total pixels:</original>
-		<translation>Gesamtanzahl der Pixel:</translation>
+		<original>Total pixels</original>
+		<translation>Gesamtanzahl der Pixel</translation>
 	</phrase>
 
 	<phrase>
-		<original>Maximum count:</original>
-		<translation>Maximale Anzahl:</translation>
+		<original>Maximum count</original>
+		<translation>Maximale Anzahl</translation>
 	</phrase>
 
 	<phrase>
@@ -1198,13 +1198,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Draw these channels:</original>
-		<translation>Zeichnen Sie diese Kanäle:</translation>
+		<original>Draw these channels</original>
+		<translation>Zeichnen Sie diese Kanäle</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rendering Options:</original>
-		<translation>Rendering-Optionen:</translation>
+		<original>Rendering Options</original>
+		<translation>Rendering-Optionen</translation>
 	</phrase>
 
 	<phrase>
@@ -1308,8 +1308,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Binary data:</original>
-		<translation>Binary Daten:</translation>
+		<original>Binary data</original>
+		<translation>Binary Daten</translation>
 	</phrase>
 
 	<phrase>
@@ -1333,8 +1333,8 @@
 	</phrase>
 
 	<phrase>
-		<original>image preview:</original>
-		<translation>Sample Images:</translation>
+		<original>image preview</original>
+		<translation>Sample Images</translation>
 	</phrase>
 
 	<phrase>
@@ -1343,8 +1343,8 @@
 	</phrase>
 
 	<phrase>
-		<original>current file:</original>
-		<translation>aktuelle Datei:</translation>
+		<original>current file</original>
+		<translation>aktuelle Datei</translation>
 	</phrase>
 
 	<phrase>
@@ -1468,8 +1468,8 @@
 	</phrase>
 
 	<phrase>
-		<original>full download path (must begin with "http://" or "ftp://"):</original>
-		<translation>volle herunterladen-Pfad (muss mit "http://" oder "ftp://" beginnen):</translation>
+		<original>full download path (must begin with "http://" or "ftp://")</original>
+		<translation>volle herunterladen-Pfad (muss mit "http://" oder "ftp://" beginnen)</translation>
 	</phrase>
 
 	<phrase>
@@ -1517,8 +1517,8 @@
 	</phrase>
 
 	<phrase>
-		<original>To enable support for this image format, please allow ##  to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:</original>
-		<translation>Zur Unterstützung dieses Bild Format möglich zu machen, stehen ## zu, um eine neue Kopie von Free Image herunterladen erstellen, indem Sie auf das Bearbeiten -> Program Menü Einstellungen und aktivieren Sie die Option namens:</translation>
+		<original>To enable support for this image format, please allow ##  to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called</original>
+		<translation>Zur Unterstützung dieses Bild Format möglich zu machen, stehen ## zu, um eine neue Kopie von Free Image herunterladen erstellen, indem Sie auf das Bearbeiten -> Program Menü Einstellungen und aktivieren Sie die Option namens</translation>
 	</phrase>
 
 	<phrase>
@@ -1537,8 +1537,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, ## was unable to load the following image:</original>
-		<translation>Leider war ## nicht um das nächste Bild zu laden:</translation>
+		<original>Unfortunately, ## was unable to load the following image</original>
+		<translation>Leider war ## nicht um das nächste Bild zu laden</translation>
 	</phrase>
 
 	<phrase>
@@ -1662,8 +1662,8 @@
 	</phrase>
 
 	<phrase>
-		<original>render tiled image using:</original>
-		<translation>Erstellen gefliesten Bild mit:</translation>
+		<original>render tiled image using</original>
+		<translation>Erstellen gefliesten Bild mit</translation>
 	</phrase>
 
 	<phrase>
@@ -1702,8 +1702,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Solarize threshold:</original>
-		<translation>Solarisation Schwelle:</translation>
+		<original>Solarize threshold</original>
+		<translation>Solarisation Schwelle</translation>
 	</phrase>
 
 	<phrase>
@@ -1722,13 +1722,13 @@
 	</phrase>
 
 	<phrase>
-		<original>rotation angle:</original>
-		<translation>Drehwinkel:</translation>
+		<original>rotation angle</original>
+		<translation>Drehwinkel</translation>
 	</phrase>
 
 	<phrase>
-		<original>rotated image canvas:</original>
-		<translation>Leinwand gedreht Bild:</translation>
+		<original>rotated image canvas</original>
+		<translation>Leinwand gedreht Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -1782,8 +1782,8 @@
 	</phrase>
 
 	<phrase>
-		<original>resample method:</original>
-		<translation>Resampling-Methode:</translation>
+		<original>resample method</original>
+		<translation>Resampling-Methode</translation>
 	</phrase>
 
 	<phrase>
@@ -1797,28 +1797,28 @@
 	</phrase>
 
 	<phrase>
-		<original>input levels:</original>
-		<translation>Eingangspegeln:</translation>
+		<original>input levels</original>
+		<translation>Eingangspegeln</translation>
 	</phrase>
 
 	<phrase>
-		<original>Left limit:</original>
-		<translation>Linke Grenze:</translation>
+		<original>Left limit</original>
+		<translation>Linke Grenze</translation>
 	</phrase>
 
 	<phrase>
-		<original>Midtones:</original>
-		<translation>Mitten:</translation>
+		<original>Midtones</original>
+		<translation>Mitten</translation>
 	</phrase>
 
 	<phrase>
-		<original>Right limit:</original>
-		<translation>Rechte Grenze:</translation>
+		<original>Right limit</original>
+		<translation>Rechte Grenze</translation>
 	</phrase>
 
 	<phrase>
-		<original>output levels:</original>
-		<translation>Ausgangspegel:</translation>
+		<original>output levels</original>
+		<translation>Ausgangspegel</translation>
 	</phrase>
 
 	<phrase>
@@ -1837,12 +1837,12 @@
 	</phrase>
 
 	<phrase>
-		<original>block width:</original>
+		<original>block width</original>
 		<translation>Breite des Block</translation>
 	</phrase>
 
 	<phrase>
-		<original>block height:</original>
+		<original>block height</original>
 		<translation>Höhe des Blocks</translation>
 	</phrase>
 
@@ -1857,8 +1857,8 @@
 	</phrase>
 
 	<phrase>
-		<original>amount:</original>
-		<translation>Menge:</translation>
+		<original>amount</original>
+		<translation>Menge</translation>
 	</phrase>
 
 	<phrase>
@@ -1877,8 +1877,8 @@
 	</phrase>
 
 	<phrase>
-		<original>posterize to this many bits:</original>
-		<translation>Posterisieren zu viele Bits:</translation>
+		<original>posterize to this many bits</original>
+		<translation>Posterisieren zu viele Bits</translation>
 	</phrase>
 
 	<phrase>
@@ -1917,13 +1917,13 @@
 	</phrase>
 
 	<phrase>
-		<original>rank method:</original>
-		<translation>Anordnung-Methode:</translation>
+		<original>rank method</original>
+		<translation>Anordnung-Methode</translation>
 	</phrase>
 
 	<phrase>
-		<original>radius:</original>
-		<translation>Radius:</translation>
+		<original>radius</original>
+		<translation>Radius</translation>
 	</phrase>
 
 	<phrase>
@@ -1992,23 +1992,23 @@
 	</phrase>
 
 	<phrase>
-		<original>advanced quantization options:</original>
-		<translation>erweiterte Quantisierung Optionen:</translation>
+		<original>advanced quantization options</original>
+		<translation>erweiterte Quantisierung Optionen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Possible red values (2-64):</original>
-		<translation>Mögliche rot-Werte (2-64):</translation>
+		<original>Possible red values (2-64)</original>
+		<translation>Mögliche rot-Werte (2-64)</translation>
 	</phrase>
 
 	<phrase>
-		<original>Possible green values (2-64):</original>
-		<translation>Mögliche grüne Werte (2-64):</translation>
+		<original>Possible green values (2-64)</original>
+		<translation>Mögliche grüne Werte (2-64)</translation>
 	</phrase>
 
 	<phrase>
-		<original>Possible blue values (2-64):</original>
-		<translation>Mögliche Blau-Werte (2-64):</translation>
+		<original>Possible blue values (2-64)</original>
+		<translation>Mögliche Blau-Werte (2-64)</translation>
 	</phrase>
 
 	<phrase>
@@ -2092,18 +2092,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Your version:</original>
-		<translation>Ihre Version:</translation>
+		<original>Your version</original>
+		<translation>Ihre Version</translation>
 	</phrase>
 
 	<phrase>
-		<original>Newest version:</original>
-		<translation>Neueste Version:</translation>
+		<original>Newest version</original>
+		<translation>Neueste Version</translation>
 	</phrase>
 
 	<phrase>
-		<original>To learn about the latest version before downloading it, please visit:</original>
-		<translation>Um die neueste Version vor dem herunterladen zu lernen, besuchen Sie bitte:</translation>
+		<original>To learn about the latest version before downloading it, please visit</original>
+		<translation>Um die neueste Version vor dem herunterladen zu lernen, besuchen Sie bitte</translation>
 	</phrase>
 
 	<phrase>
@@ -2157,8 +2157,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Paper size:</original>
-		<translation>Papier:</translation>
+		<original>Paper size</original>
+		<translation>Papier</translation>
 	</phrase>
 
 	<phrase>
@@ -2182,8 +2182,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Printer:</original>
-		<translation>Drucker:</translation>
+		<original>Printer</original>
+		<translation>Drucker</translation>
 	</phrase>
 
 	<phrase>
@@ -2197,8 +2197,8 @@
 	</phrase>
 
 	<phrase>
-		<original># of Copies:</original>
-		<translation># Kopien:</translation>
+		<original># of Copies</original>
+		<translation># Kopien</translation>
 	</phrase>
 
 	<phrase>
@@ -2207,8 +2207,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Layout Options:</original>
-		<translation>Layout-Optionen:</translation>
+		<original>Layout Options</original>
+		<translation>Layout-Optionen</translation>
 	</phrase>
 
 	<phrase>
@@ -2352,8 +2352,8 @@
 	</phrase>
 
 	<phrase>
-		<original>.  Estimated time remaining:</original>
-		<translation>. Geschätzte verbleibende Zeit:</translation>
+		<original>.  Estimated time remaining</original>
+		<translation>. Geschätzte verbleibende Zeit</translation>
 	</phrase>
 
 	<phrase>
@@ -2412,28 +2412,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Step 1 - Select Source Images:</original>
-		<translation>Schritt 1 - Wählen Sie die Bilden:</translation>
+		<original>Step 1 - Select Source Images</original>
+		<translation>Schritt 1 - Wählen Sie die Bilden</translation>
 	</phrase>
 
 	<phrase>
-		<original>Drive:</original>
-		<translation>Station:</translation>
+		<original>Drive</original>
+		<translation>Station</translation>
 	</phrase>
 
 	<phrase>
-		<original>Folder:</original>
-		<translation>Folder:</translation>
+		<original>Folder</original>
+		<translation>Folder</translation>
 	</phrase>
 
 	<phrase>
-		<original>Image Format:</original>
-		<translation>Bild:</translation>
+		<original>Image Format</original>
+		<translation>Bild</translation>
 	</phrase>
 
 	<phrase>
-		<original>Image Files (multi-select using Shift or Ctrl):</original>
-		<translation>Bild-Dateien (multi-select mit Shift oder Ctrl):</translation>
+		<original>Image Files (multi-select using Shift or Ctrl)</original>
+		<translation>Bild-Dateien (multi-select mit Shift oder Ctrl)</translation>
 	</phrase>
 
 	<phrase>
@@ -2447,13 +2447,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Step 2 - Verify List of Images:</original>
-		<translation>Schritt 2 - Überprüfen der Bilder:</translation>
+		<original>Step 2 - Verify List of Images</original>
+		<translation>Schritt 2 - Überprüfen der Bilder</translation>
 	</phrase>
 
 	<phrase>
-		<original>The following image files will be processed:</original>
-		<translation>Die folgenden Bilddateien verarbeitet werden:</translation>
+		<original>The following image files will be processed</original>
+		<translation>Die folgenden Bilddateien verarbeitet werden</translation>
 	</phrase>
 
 	<phrase>
@@ -2467,8 +2467,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Export/import image lists:</original>
-		<translation>Export/Import Bilder Listen:</translation>
+		<original>Export/import image lists</original>
+		<translation>Export/Import Bilder Listen</translation>
 	</phrase>
 
 	<phrase>
@@ -2482,8 +2482,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Step 3 - Select Macro to Apply:</original>
-		<translation>Schritt 3 - Wählen Sie Makro-Prozess:</translation>
+		<original>Step 3 - Select Macro to Apply</original>
+		<translation>Schritt 3 - Wählen Sie Makro-Prozess</translation>
 	</phrase>
 
 	<phrase>
@@ -2492,8 +2492,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Apply the following macro to each image:</original>
-		<translation>Integrieren Sie das folgende Makro für jedes Bild:</translation>
+		<original>Apply the following macro to each image</original>
+		<translation>Integrieren Sie das folgende Makro für jedes Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -2502,33 +2502,33 @@
 	</phrase>
 
 	<phrase>
-		<original>Step 4 - Select Output Location:</original>
-		<translation>Schritt 4 - Auswahl Ausgang Standort:</translation>
+		<original>Step 4 - Select Output Location</original>
+		<translation>Schritt 4 - Auswahl Ausgang Standort</translation>
 	</phrase>
 
 	<phrase>
-		<original>Output images to this folder:</original>
-		<translation>Speichern von Bildern in diesen Ordner:</translation>
+		<original>Output images to this folder</original>
+		<translation>Speichern von Bildern in diesen Ordner</translation>
 	</phrase>
 
 	<phrase>
-		<original>Optional text to append to start of filenames:</original>
-		<translation>Optional fügen Sie Text an den Anfang der Datei-Namen:</translation>
+		<original>Optional text to append to start of filenames</original>
+		<translation>Optional fügen Sie Text an den Anfang der Datei-Namen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Output image files should be named using:</original>
-		<translation>Output Bilddateien sollten benannt werden mit:</translation>
+		<original>Output image files should be named using</original>
+		<translation>Output Bilddateien sollten benannt werden mit</translation>
 	</phrase>
 
 	<phrase>
-		<original>Step 5 - Select Output Image Format:</original>
-		<translation>Schritt 5 - Wählen Sie Output Format des Bildes:</translation>
+		<original>Step 5 - Select Output Image Format</original>
+		<translation>Schritt 5 - Wählen Sie Output Format des Bildes</translation>
 	</phrase>
 
 	<phrase>
-		<original>Quality:</original>
-		<translation>Qualität:</translation>
+		<original>Quality</original>
+		<translation>Qualität</translation>
 	</phrase>
 
 	<phrase>
@@ -3357,8 +3357,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Size:</original>
-		<translation>Größe:</translation>
+		<original>Size</original>
+		<translation>Größe</translation>
 	</phrase>
 
 	<phrase>
@@ -3472,8 +3472,8 @@
 	</phrase>
 
 	<phrase>
-		<original>An error occurred:</original>
-		<translation>Ein Fehler ist aufgetreten:</translation>
+		<original>An error occurred</original>
+		<translation>Ein Fehler ist aufgetreten</translation>
 	</phrase>
 
 	<phrase>
@@ -4132,8 +4132,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Please select a folder:</original>
-		<translation>Wählen Sie einen Ordner:</translation>
+		<original>Please select a folder</original>
+		<translation>Wählen Sie einen Ordner</translation>
 	</phrase>
 
 	<phrase>
@@ -4352,8 +4352,8 @@
 	</phrase>
 
 	<phrase>
-		<original>If the file is not located on portable media, make sure that:</original>
-		<translation>Wenn die Datei nicht stehen wird auf tragbaren Medien, stellen Sie sicher, dass:</translation>
+		<original>If the file is not located on portable media, make sure that</original>
+		<translation>Wenn die Datei nicht stehen wird auf tragbaren Medien, stellen Sie sicher, dass</translation>
 	</phrase>
 
 	<phrase>
@@ -4377,23 +4377,23 @@
 	</phrase>
 
 	<phrase>
-		<original>has experienced an error.  Details on the problem include:</original>
-		<translation>ein Fehler. Details zu dem Problem:</translation>
+		<original>has experienced an error.  Details on the problem include</original>
+		<translation>ein Fehler. Details zu dem Problem</translation>
 	</phrase>
 
 	<phrase>
-		<original>Error number:</original>
-		<translation>Fehler-Nummer:</translation>
+		<original>Error number</original>
+		<translation>Fehler-Nummer</translation>
 	</phrase>
 
 	<phrase>
-		<original>Description:</original>
-		<translation>Beschreibung:</translation>
+		<original>Description</original>
+		<translation>Beschreibung</translation>
 	</phrase>
 
 	<phrase>
-		<original>Error Handler:</original>
-		<translation>Error Handler:</translation>
+		<original>Error Handler</original>
+		<translation>Error Handler</translation>
 	</phrase>
 
 	<phrase>
@@ -4402,8 +4402,8 @@
 	</phrase>
 
 	<phrase>
-		<original>In the 'Title box, please enter the following error number with a short description of the problem:</original>
-		<translation>In der 'Titel', geben Sie den folgenden Fehler-Nummer mit einer kurzen Beschreibung des Problems:</translation>
+		<original>In the 'Title box, please enter the following error number with a short description of the problem</original>
+		<translation>In der 'Titel', geben Sie den folgenden Fehler-Nummer mit einer kurzen Beschreibung des Problems</translation>
 	</phrase>
 
 	<phrase>
@@ -4427,8 +4427,8 @@
 	</phrase>
 
 	<phrase>
-		<original>In the bottom box of that page, please enter the following error number:</original>
-		<translation>Im unteren Bereich dieser Seite können Sie die folgende Fehlermeldung:</translation>
+		<original>In the bottom box of that page, please enter the following error number</original>
+		<translation>Im unteren Bereich dieser Seite können Sie die folgende Fehlermeldung</translation>
 	</phrase>
 
 	<phrase>
@@ -4707,13 +4707,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Current language-plugin version:</original>
-		<translation>Aktuelle Sprache Plugin-Version:</translation>
+		<original>Current language-plugin version</original>
+		<translation>Aktuelle Sprache Plugin-Version</translation>
 	</phrase>
 
 	<phrase>
-		<original>Current language:</original>
-		<translation>Aktuelle Sprache:</translation>
+		<original>Current language</original>
+		<translation>Aktuelle Sprache</translation>
 	</phrase>
 
 	<phrase>
@@ -4912,8 +4912,8 @@
    </phrase>
 
    <phrase>
-       <original>transparency cut-off:</original>
-       <translation>Transparenz Ernte:</translation>
+       <original>transparency cut-off</original>
+       <translation>Transparenz Ernte</translation>
    </phrase>
 
    <phrase>
@@ -4937,8 +4937,8 @@
    </phrase>
 
    <phrase>
-       <original>please choose an output color depth:</original>
-       <translation>bitte. Wählen Sie eine Ausgabe Farbtiefe:</translation>
+       <original>please choose an output color depth</original>
+       <translation>bitte. Wählen Sie eine Ausgabe Farbtiefe</translation>
    </phrase>
 
    <phrase>
@@ -5027,13 +5027,13 @@
    </phrase>
 
    <phrase>
-       <original>box width:</original>
-       <translation>Breite des Platzes:</translation>
+       <original>box width</original>
+       <translation>Breite des Platzes</translation>
    </phrase>
 
    <phrase>
-       <original>box height:</original>
-       <translation>Höhe des Platzes:</translation>
+       <original>box height</original>
+       <translation>Höhe des Platzes</translation>
    </phrase>
 
    <phrase>
@@ -5052,13 +5052,13 @@
    </phrase>
 
    <phrase>
-       <original>scale:</original>
-       <translation>Skala:</translation>
+       <original>scale</original>
+       <translation>Skala</translation>
    </phrase>
 
    <phrase>
-       <original>turbulence:</original>
-       <translation>Turbulenzen:</translation>
+       <original>turbulence</original>
+       <translation>Turbulenzen</translation>
    </phrase>
 
    <phrase>
@@ -5067,8 +5067,8 @@
    </phrase>
 
    <phrase>
-       <original>render emphasis:</original>
-       <translation>Rendering Schwerpunkte:</translation>
+       <original>render emphasis</original>
+       <translation>Rendering Schwerpunkte</translation>
    </phrase>
 
    <phrase>
@@ -5087,8 +5087,8 @@
    </phrase>
 
    <phrase>
-       <original>radius:</original>
-       <translation>Radius:</translation>
+       <original>radius</original>
+       <translation>Radius</translation>
    </phrase>
 
    <phrase>
@@ -5102,23 +5102,23 @@
    </phrase>
 
    <phrase>
-       <original>number of mirrors:</original>
-       <translation>Anzahl der Ebenen:</translation>
+       <original>number of mirrors</original>
+       <translation>Anzahl der Ebenen</translation>
    </phrase>
 
    <phrase>
-       <original>primary angle:</original>
-       <translation>Primär Eckpunkte:</translation>
+       <original>primary angle</original>
+       <translation>Primär Eckpunkte</translation>
    </phrase>
 
    <phrase>
-       <original>secondary angle:</original>
-       <translation>sekundären Eckpunkte:</translation>
+       <original>secondary angle</original>
+       <translation>sekundären Eckpunkte</translation>
    </phrase>
 
    <phrase>
-       <original>Radius (percentage):</original>
-       <translation>Radius (in Prozent):</translation>
+       <original>Radius (percentage)</original>
+       <translation>Radius (in Prozent)</translation>
    </phrase>
 
    <phrase>
@@ -5132,8 +5132,8 @@
    </phrase>
 
    <phrase>
-       <original>lens strength (refractive index):</original>
-       <translation>Linsenstärke (Brechungsindex):</translation>
+       <original>lens strength (refractive index)</original>
+       <translation>Linsenstärke (Brechungsindex)</translation>
    </phrase>
 
    <phrase>
@@ -5147,13 +5147,13 @@
    </phrase>
 
    <phrase>
-       <original>correction strength:</original>
-       <translation>Korrektur Stärke:</translation>
+       <original>correction strength</original>
+       <translation>Korrektur Stärke</translation>
    </phrase>
 
    <phrase>
-       <original>correction zoom:</original>
-       <translation>Korrektur Zoom:</translation>
+       <original>correction zoom</original>
+       <translation>Korrektur Zoom</translation>
    </phrase>
 
    <phrase>
@@ -5167,13 +5167,13 @@
    </phrase>
 
    <phrase>
-       <original>pinch amount:</original>
-       <translation>Anzahl Kneifen:</translation>
+       <original>pinch amount</original>
+       <translation>Anzahl Kneifen</translation>
    </phrase>
 
    <phrase>
-       <original>whirl angle:</original>
-       <translation>Drallwinkel:</translation>
+       <original>whirl angle</original>
+       <translation>Drallwinkel</translation>
    </phrase>
 
    <phrase>
@@ -5252,18 +5252,18 @@
    </phrase>
 
    <phrase>
-       <original>expected version:</original>
-       <translation>erwartete Version:</translation>
+       <original>expected version</original>
+       <translation>erwartete Version</translation>
    </phrase>
 
    <phrase>
-       <original>version found:</original>
-       <translation>version gefunden:</translation>
+       <original>version found</original>
+       <translation>version gefunden</translation>
    </phrase>
 
    <phrase>
-       <original>X1 license:</original>
-       <translation>X1 Lizenz:</translation>
+       <original>X1 license</original>
+       <translation>X1 Lizenz</translation>
    </phrase>
 
    <phrase>
@@ -5292,8 +5292,8 @@
    </phrase>
 
    <phrase>
-       <original>color sample size:</original>
-       <translation>Farbmuster Größe:</translation>
+       <original>color sample size</original>
+       <translation>Farbmuster Größe</translation>
    </phrase>
 
    <phrase>
@@ -5307,8 +5307,8 @@
    </phrase>
 
    <phrase>
-       <original>color dithering:</original>
-       <translation>Farbrasterung:</translation>
+       <original>color dithering</original>
+       <translation>Farbrasterung</translation>
    </phrase>
 
    <phrase>
@@ -5327,13 +5327,13 @@
    </phrase>
 
    <phrase>
-       <original>current plugin status:</original>
-       <translation>aktuelle Plugin-Status:</translation>
+       <original>current plugin status</original>
+       <translation>aktuelle Plugin-Status</translation>
    </phrase>
 
    <phrase>
-       <original>status:</original>
-       <translation>status:</translation>
+       <original>status</original>
+       <translation>status</translation>
    </phrase>
 
    <phrase>
@@ -5362,8 +5362,8 @@
    </phrase>
 
    <phrase>
-       <original>conversion technique:</original>
-       <translation>Umwandlung Technik:</translation>
+       <original>conversion technique</original>
+       <translation>Umwandlung Technik</translation>
    </phrase>
 
    <phrase>
@@ -5377,18 +5377,18 @@
    </phrase>
 
    <phrase>
-       <original>length of ripples (wavelength):</original>
-       <translation>Länge von Falten (Wellenlänge):</translation>
+       <original>length of ripples (wavelength)</original>
+       <translation>Länge von Falten (Wellenlänge)</translation>
    </phrase>
 
    <phrase>
-       <original>height of ripples (amplitude):</original>
-       <translation>Höhe der Falten (Amplitude):</translation>
+       <original>height of ripples (amplitude)</original>
+       <translation>Höhe der Falten (Amplitude)</translation>
    </phrase>
 
    <phrase>
-       <original>time (phase):</original>
-       <translation>Zeit (Phase):</translation>
+       <original>time (phase)</original>
+       <translation>Zeit (Phase)</translation>
    </phrase>
 
    <phrase>
@@ -5407,8 +5407,8 @@
    </phrase>
 
    <phrase>
-       <original>apply blur to:</original>
-       <translation>Blur gelten für:</translation>
+       <original>apply blur to</original>
+       <translation>Blur gelten für</translation>
    </phrase>
 
    <phrase>
@@ -5422,8 +5422,8 @@
    </phrase>
 
    <phrase>
-       <original>threshold:</original>
-       <translation>Schwelle:</translation>
+       <original>threshold</original>
+       <translation>Schwelle</translation>
    </phrase>
 
    <phrase>
@@ -5437,8 +5437,8 @@
    </phrase>
 
    <phrase>
-       <original>swirl angle:</original>
-       <translation>Drallwinkel:</translation>
+       <original>swirl angle</original>
+       <translation>Drallwinkel</translation>
    </phrase>
 
    <phrase>
@@ -5452,8 +5452,8 @@
    </phrase>
 
    <phrase>
-       <original>amount:</original>
-       <translation>Nummer:</translation>
+       <original>amount</original>
+       <translation>Nummer</translation>
    </phrase>
 
    <phrase>
@@ -5467,23 +5467,23 @@
    </phrase>
 
    <phrase>
-       <original>horizontal wavelength:</original>
-       <translation>horizontale Wellenlänge:</translation>
+       <original>horizontal wavelength</original>
+       <translation>horizontale Wellenlänge</translation>
    </phrase>
 
    <phrase>
-       <original>horizontal strength (amplitude):</original>
-       <translation>horizontale Stärke (Amplitude):</translation>
+       <original>horizontal strength (amplitude)</original>
+       <translation>horizontale Stärke (Amplitude)</translation>
    </phrase>
 
    <phrase>
-       <original>vertical wavelength:</original>
-       <translation>vertikale Wellenlänge:</translation>
+       <original>vertical wavelength</original>
+       <translation>vertikale Wellenlänge</translation>
    </phrase>
 
    <phrase>
-       <original>vertical strength (amplitude):</original>
-       <translation>vertikale Stärke (Amplitude):</translation>
+       <original>vertical strength (amplitude)</original>
+       <translation>vertikale Stärke (Amplitude)</translation>
    </phrase>
 
 </language>

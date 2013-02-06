@@ -89,6 +89,7 @@ Private isReady As Boolean
 
 'The following boolean values are marked by preProcessString, then read by postProcessString
 Private hasDotDotDot As Boolean
+Private hasTrailingColon As Boolean
 
 'If the class has successfully initialized a translation file, this function will return TRUE
 Public Function readyToTranslate() As Boolean
@@ -557,17 +558,22 @@ Private Sub preProcessText(ByRef srcString As String)
     '1) Trim the string
     srcString = Trim$(srcString)
     
-    '2) Remove any tabs from the caption (which may have been introduced by an XML editor)
-    'If InStr(1, srcString, "Unfortunately") > 0 Then MsgBox InStr(1, srcString, vbTab) & srcString
-    
-    '3) Check for a trailing "..."
+    '2) Check for a trailing "..."
     If Right$(srcString, 3) = "..." Then
         hasDotDotDot = True
         srcString = Left$(srcString, Len(srcString) - 3)
     Else
         hasDotDotDot = False
     End If
-
+    
+    '3) Check for a trailing colon ":"
+    If Right$(srcString, 1) = ":" Then
+        hasTrailingColon = True
+        srcString = Left$(srcString, Len(srcString) - 1)
+    Else
+        hasTrailingColon = False
+    End If
+    
 End Sub
 
 Private Sub postProcessText(ByRef srcString As String)
@@ -579,6 +585,12 @@ Private Sub postProcessText(ByRef srcString As String)
     If hasDotDotDot Then
         srcString = srcString & "..."
         hasDotDotDot = False
+    End If
+    
+    '3) If the original had a trailing colon, restore it now
+    If hasTrailingColon Then
+        srcString = srcString & ":"
+        hasTrailingColon = False
     End If
 
 End Sub

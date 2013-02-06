@@ -205,8 +205,8 @@
 	</phrase>
 
 	<phrase>
-		<original>image compression ratio:</original>
-		<translation>Afbeelding compressieverhouding:</translation>
+		<original>image compression ratio</original>
+		<translation>Afbeelding compressieverhouding</translation>
 	</phrase>
 
 	<phrase>
@@ -320,13 +320,13 @@
 	</phrase>
 
 	<phrase>
-		<original>image quality:</original>
-		<translation>afbeeldingskwaliteit:</translation>
+		<original>image quality</original>
+		<translation>afbeeldingskwaliteit</translation>
 	</phrase>
 
 	<phrase>
-		<original>advanced JPEG settings:</original>
-		<translation>geavanceerde JPEG-instellingen:</translation>
+		<original>advanced JPEG settings</original>
+		<translation>geavanceerde JPEG-instellingen</translation>
 	</phrase>
 
 	<phrase>
@@ -345,8 +345,8 @@
 	</phrase>
 
 	<phrase>
-		<original>use specific subsampling:</original>
-		<translation>gebruik maken van specifieke subsampling:</translation>
+		<original>use specific subsampling</original>
+		<translation>gebruik maken van specifieke subsampling</translation>
 	</phrase>
 
 	<phrase>
@@ -540,8 +540,8 @@
 	</phrase>
 
 	<phrase>
-		<original>PhotoDemon would not be possible without the following individuals. My sincerest thanks goes out to:</original>
-		<translation>PhotoDemon zou niet mogelijk zijn zonder de volgende personen. Mijn oprechte dank gaat uit naar:</translation>
+		<original>PhotoDemon would not be possible without the following individuals. My sincerest thanks goes out to</original>
+		<translation>PhotoDemon zou niet mogelijk zijn zonder de volgende personen. Mijn oprechte dank gaat uit naar</translation>
 	</phrase>
 
 	<phrase>
@@ -575,8 +575,8 @@
 	</phrase>
 
 	<phrase>
-		<original>threshold:</original>
-		<translation>drempel:</translation>
+		<original>threshold</original>
+		<translation>drempel</translation>
 	</phrase>
 
 	<phrase>
@@ -585,8 +585,8 @@
 	</phrase>
 
 	<phrase>
-		<original>dithering technique:</original>
-		<translation>dithering-techniek:</translation>
+		<original>dithering technique</original>
+		<translation>dithering-techniek</translation>
 	</phrase>
 
 	<phrase>
@@ -605,8 +605,8 @@
 	</phrase>
 
 	<phrase>
-		<original>intensity:</original>
-		<translation>intensiteit:</translation>
+		<original>intensity</original>
+		<translation>intensiteit</translation>
 	</phrase>
 
 	<phrase>
@@ -665,8 +665,8 @@
 	</phrase>
 
 	<phrase>
-		<original>new temperature:</original>
-		<translation>nieuwe temperatuur:</translation>
+		<original>new temperature</original>
+		<translation>nieuwe temperatuur</translation>
 	</phrase>
 
 	<phrase>
@@ -730,28 +730,28 @@
 	</phrase>
 
 	<phrase>
-		<original>convolution matrix:</original>
-		<translation>convolutie-matrix:</translation>
+		<original>convolution matrix</original>
+		<translation>convolutie-matrix</translation>
 	</phrase>
 
 	<phrase>
-		<original>additional settings:</original>
-		<translation>extra instellingen:</translation>
+		<original>additional settings</original>
+		<translation>extra instellingen</translation>
 	</phrase>
 
 	<phrase>
-		<original>divisor:</original>
-		<translation>deler:</translation>
+		<original>divisor</original>
+		<translation>deler</translation>
 	</phrase>
 
 	<phrase>
-		<original>offset:</original>
-		<translation>offset:</translation>
+		<original>offset</original>
+		<translation>offset</translation>
 	</phrase>
 
 	<phrase>
-		<original>load / save filter:</original>
-		<translation>laden/opslaan filter:</translation>
+		<original>load / save filter</original>
+		<translation>laden/opslaan filter</translation>
 	</phrase>
 
 	<phrase>
@@ -761,7 +761,7 @@
 
 	<phrase>
 		<original>Save Current Filter</original>
-		<translation>Opslaan huidige filter:</translation>
+		<translation>Opslaan huidige filter</translation>
 	</phrase>
 
 	<phrase>
@@ -795,8 +795,8 @@
 	</phrase>
 
 	<phrase>
-		<original>despeckle strength:</original>
-		<translation>ontvlekken sterkte:</translation>
+		<original>despeckle strength</original>
+		<translation>ontvlekken sterkte</translation>
 	</phrase>
 
 	<phrase>
@@ -865,13 +865,13 @@
 	</phrase>
 
 	<phrase>
-		<original>horizontal strength:</original>
-		<translation>horizontale kracht:</translation>
+		<original>horizontal strength</original>
+		<translation>horizontale kracht</translation>
 	</phrase>
 
 	<phrase>
-		<original>vertical strength:</original>
-		<translation>verticale kracht:</translation>
+		<original>vertical strength</original>
+		<translation>verticale kracht</translation>
 	</phrase>
 
 	<phrase>
@@ -920,8 +920,8 @@
 	</phrase>
 
 	<phrase>
-		<original>equalize:</original>
-		<translation>Egaliseren:</translation>
+		<original>equalize</original>
+		<translation>Egaliseren</translation>
 	</phrase>
 
 	<phrase>
@@ -945,7 +945,7 @@
 	</phrase>
 
 	<phrase>
-		<original>fade strength (%):</original>
+		<original>fade strength (%)</original>
 		<translation>Sterkte vervaging (%)</translation>
 	</phrase>
 
@@ -955,8 +955,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Simple matrix method:</original>
-		<translation>Eenvoudige matrixmethode:</translation>
+		<original>Simple matrix method</original>
+		<translation>Eenvoudige matrixmethode</translation>
 	</phrase>
 
 	<phrase>
@@ -980,8 +980,8 @@
 	</phrase>
 
 	<phrase>
-		<original>description:</original>
-		<translation>beschrijving:</translation>
+		<original>description</original>
+		<translation>beschrijving</translation>
 	</phrase>
 
 	<phrase>
@@ -1020,18 +1020,18 @@
 	</phrase>
 
 	<phrase>
-		<original>decompose using these values:</original>
-		<translation>ontleden met gebruik van deze waarden:</translation>
+		<original>decompose using these values</original>
+		<translation>ontleden met gebruik van deze waarden</translation>
 	</phrase>
 
 	<phrase>
-		<original>use this channel:</original>
-		<translation>gebruik dit kanaal:</translation>
+		<original>use this channel</original>
+		<translation>gebruik dit kanaal</translation>
 	</phrase>
 
 	<phrase>
-		<original>use this many shades of gray:</original>
-		<translation>Gebruik deze vele grijstinten:</translation>
+		<original>use this many shades of gray</original>
+		<translation>Gebruik deze vele grijstinten</translation>
 	</phrase>
 
 	<phrase>
@@ -1085,8 +1085,8 @@
 	</phrase>
 
 	<phrase>
-		<original>To learn more about the various grayscale conversion options, please visit this link:</original>
-		<translation>Voor meer informatie over de verschillende grijswaarden conversie-opties, kunt u terecht op deze link:</translation>
+		<original>To learn more about the various grayscale conversion options, please visit this link</original>
+		<translation>Voor meer informatie over de verschillende grijswaarden conversie-opties, kunt u terecht op deze link</translation>
 	</phrase>
 
 	<phrase>
@@ -1130,13 +1130,13 @@
 	</phrase>
 
 	<phrase>
-		<original>grayscale method:</original>
-		<translation>grijstinten methode:</translation>
+		<original>grayscale method</original>
+		<translation>grijstinten methode</translation>
 	</phrase>
 
 	<phrase>
-		<original>additional options for this method:</original>
-		<translation>extra opties voor deze methode:</translation>
+		<original>additional options for this method</original>
+		<translation>extra opties voor deze methode</translation>
 	</phrase>
 
 	<phrase>
@@ -1155,18 +1155,18 @@
 	</phrase>
 
 	<phrase>
-		<original>hue:</original>
-		<translation>tint:</translation>
+		<original>hue</original>
+		<translation>tint</translation>
 	</phrase>
 
 	<phrase>
-		<original>saturation:</original>
-		<translation>verzadiging:</translation>
+		<original>saturation</original>
+		<translation>verzadiging</translation>
 	</phrase>
 
 	<phrase>
-		<original>lightness:</original>
-		<translation>helderheid:</translation>
+		<original>lightness</original>
+		<translation>helderheid</translation>
 	</phrase>
 
 	<phrase>
@@ -1190,13 +1190,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Total pixels:</original>
-		<translation>Totaal aantal pixels:</translation>
+		<original>Total pixels</original>
+		<translation>Totaal aantal pixels</translation>
 	</phrase>
 
 	<phrase>
-		<original>Maximum count:</original>
-		<translation>Maximum aantal:</translation>
+		<original>Maximum count</original>
+		<translation>Maximum aantal</translation>
 	</phrase>
 
 	<phrase>
@@ -1215,13 +1215,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Draw these channels:</original>
-		<translation>Teken deze kanalen:</translation>
+		<original>Draw these channels</original>
+		<translation>Teken deze kanalen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rendering Options:</original>
-		<translation>Rendering Opties:</translation>
+		<original>Rendering Options</original>
+		<translation>Rendering Opties</translation>
 	</phrase>
 
 	<phrase>
@@ -1325,8 +1325,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Binary data:</original>
-		<translation>Binaire gegevens:</translation>
+		<original>Binary data</original>
+		<translation>Binaire gegevens</translation>
 	</phrase>
 
 	<phrase>
@@ -1350,8 +1350,8 @@
 	</phrase>
 
 	<phrase>
-		<original>image preview:</original>
-		<translation>Voorbeeld afbeelding:</translation>
+		<original>image preview</original>
+		<translation>Voorbeeld afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1360,8 +1360,8 @@
 	</phrase>
 
 	<phrase>
-		<original>current file:</original>
-		<translation>huidig bestand:</translation>
+		<original>current file</original>
+		<translation>huidig bestand</translation>
 	</phrase>
 
 	<phrase>
@@ -1485,8 +1485,8 @@
 	</phrase>
 
 	<phrase>
-		<original>full download path (must begin with "http://" or "ftp://"):</original>
-		<translation>volledig download pad (moet beginnen met "http://" of "ftp://"):</translation>
+		<original>full download path (must begin with "http://" or "ftp://")</original>
+		<translation>volledig download pad (moet beginnen met "http://" of "ftp://")</translation>
 	</phrase>
 
 	<phrase>
@@ -1535,8 +1535,8 @@
 	</phrase>
 
 	<phrase>
-		<original>To enable support for this image format, please allow ##  to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called:</original>
-		<translation>Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, sta dan ## toe om een nieuw exemplaar van FreeImage te downloaden, door te gaan naar de Bewerken -> Programma menu Voorkeuren en mogelijk maken van de optie genaamd:</translation>
+		<original>To enable support for this image format, please allow ##  to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called</original>
+		<translation>Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, sta dan ## toe om een nieuw exemplaar van FreeImage te downloaden, door te gaan naar de Bewerken -> Programma menu Voorkeuren en mogelijk maken van de optie genaamd</translation>
 	</phrase>
 
 	<phrase>
@@ -1555,8 +1555,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, ## was unable to load the following image:</original>
-		<translation>Helaas, ## was niet in staat om de volgende afbeelding te laden:</translation>
+		<original>Unfortunately, ## was unable to load the following image</original>
+		<translation>Helaas, ## was niet in staat om de volgende afbeelding te laden</translation>
 	</phrase>
 
 	<phrase>
@@ -1680,8 +1680,8 @@
 	</phrase>
 
 	<phrase>
-		<original>render tiled image using:</original>
-		<translation>maken betegelde afbeelding met behulp van:</translation>
+		<original>render tiled image using</original>
+		<translation>maken betegelde afbeelding met behulp van</translation>
 	</phrase>
 
 	<phrase>
@@ -1720,8 +1720,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Solarize threshold:</original>
-		<translation>solarisatie drempel:</translation>
+		<original>Solarize threshold</original>
+		<translation>solarisatie drempel</translation>
 	</phrase>
 
 	<phrase>
@@ -1740,13 +1740,13 @@
 	</phrase>
 
 	<phrase>
-		<original>rotation angle:</original>
-		<translation>draaihoek:</translation>
+		<original>rotation angle</original>
+		<translation>draaihoek</translation>
 	</phrase>
 
 	<phrase>
-		<original>rotated image canvas:</original>
-		<translation>canvas gedraaide afbeelding:</translation>
+		<original>rotated image canvas</original>
+		<translation>canvas gedraaide afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -1800,8 +1800,8 @@
 	</phrase>
 
 	<phrase>
-		<original>resample method:</original>
-		<translation>resample methode:</translation>
+		<original>resample method</original>
+		<translation>resample methode</translation>
 	</phrase>
 
 	<phrase>
@@ -1815,28 +1815,28 @@
 	</phrase>
 
 	<phrase>
-		<original>input levels:</original>
-		<translation>ingangsniveaus:</translation>
+		<original>input levels</original>
+		<translation>ingangsniveaus</translation>
 	</phrase>
 
 	<phrase>
-		<original>Left limit:</original>
-		<translation>Linkse limiet:</translation>
+		<original>Left limit</original>
+		<translation>Linkse limiet</translation>
 	</phrase>
 
 	<phrase>
-		<original>Midtones:</original>
-		<translation>middentonen:</translation>
+		<original>Midtones</original>
+		<translation>middentonen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Right limit:</original>
-		<translation>Rechtse limiet:</translation>
+		<original>Right limit</original>
+		<translation>Rechtse limiet</translation>
 	</phrase>
 
 	<phrase>
-		<original>output levels:</original>
-		<translation>uitgangsniveaus:</translation>
+		<original>output levels</original>
+		<translation>uitgangsniveaus</translation>
 	</phrase>
 
 	<phrase>
@@ -1855,12 +1855,12 @@
 	</phrase>
 
 	<phrase>
-		<original>block width:</original>
+		<original>block width</original>
 		<translation>Breedte blok</translation>
 	</phrase>
 
 	<phrase>
-		<original>block height:</original>
+		<original>block height</original>
 		<translation>Hoogte blok</translation>
 	</phrase>
 
@@ -1875,8 +1875,8 @@
 	</phrase>
 
 	<phrase>
-		<original>amount:</original>
-		<translation>Aantal:</translation>
+		<original>amount</original>
+		<translation>Aantal</translation>
 	</phrase>
 
 	<phrase>
@@ -1895,8 +1895,8 @@
 	</phrase>
 
 	<phrase>
-		<original>posterize to this many bits:</original>
-		<translation>schakeringen reduceren tot zoveel bits:</translation>
+		<original>posterize to this many bits</original>
+		<translation>schakeringen reduceren tot zoveel bits</translation>
 	</phrase>
 
 	<phrase>
@@ -1935,13 +1935,13 @@
 	</phrase>
 
 	<phrase>
-		<original>rank method:</original>
-		<translation>rangschikking methode:</translation>
+		<original>rank method</original>
+		<translation>rangschikking methode</translation>
 	</phrase>
 
 	<phrase>
-		<original>radius:</original>
-		<translation>straal:</translation>
+		<original>radius</original>
+		<translation>straal</translation>
 	</phrase>
 
 	<phrase>
@@ -2010,23 +2010,23 @@
 	</phrase>
 
 	<phrase>
-		<original>advanced quantization options:</original>
-		<translation>geavanceerde quantisatie opties:</translation>
+		<original>advanced quantization options</original>
+		<translation>geavanceerde quantisatie opties</translation>
 	</phrase>
 
 	<phrase>
-		<original>Possible red values (2-64):</original>
-		<translation>Mogelijke rode waarden (2-64):</translation>
+		<original>Possible red values (2-64)</original>
+		<translation>Mogelijke rode waarden (2-64)</translation>
 	</phrase>
 
 	<phrase>
-		<original>Possible green values (2-64):</original>
-		<translation>Mogelijke groene waarden (2 tot 64):</translation>
+		<original>Possible green values (2-64)</original>
+		<translation>Mogelijke groene waarden (2 tot 64)</translation>
 	</phrase>
 
 	<phrase>
-		<original>Possible blue values (2-64):</original>
-		<translation>Mogelijke blauwe waarden (2 tot 64):</translation>
+		<original>Possible blue values (2-64)</original>
+		<translation>Mogelijke blauwe waarden (2 tot 64)</translation>
 	</phrase>
 
 	<phrase>
@@ -2105,18 +2105,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Your version:</original>
-		<translation>Uw versie:</translation>
+		<original>Your version</original>
+		<translation>Uw versie</translation>
 	</phrase>
 
 	<phrase>
-		<original>Newest version:</original>
-		<translation>Nieuwste versie:</translation>
+		<original>Newest version</original>
+		<translation>Nieuwste versie</translation>
 	</phrase>
 
 	<phrase>
-		<original>To learn about the latest version before downloading it, please visit:</original>
-		<translation>Om over de meest recente versie te leren alvorens het te downloaden, kunt u terecht op:</translation>
+		<original>To learn about the latest version before downloading it, please visit</original>
+		<translation>Om over de meest recente versie te leren alvorens het te downloaden, kunt u terecht op</translation>
 	</phrase>
 
 	<phrase>
@@ -2170,8 +2170,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Paper size:</original>
-		<translation>Papierformaat:</translation>
+		<original>Paper size</original>
+		<translation>Papierformaat</translation>
 	</phrase>
 
 	<phrase>
@@ -2195,8 +2195,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Printer:</original>
-		<translation>printer:</translation>
+		<original>Printer</original>
+		<translation>printer</translation>
 	</phrase>
 
 	<phrase>
@@ -2210,8 +2210,8 @@
 	</phrase>
 
 	<phrase>
-		<original># of Copies:</original>
-		<translation># Exemplaren:</translation>
+		<original># of Copies</original>
+		<translation># Exemplaren</translation>
 	</phrase>
 
 	<phrase>
@@ -2220,8 +2220,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Layout Options:</original>
-		<translation>Lay-out Opties:</translation>
+		<original>Layout Options</original>
+		<translation>Lay-out Opties</translation>
 	</phrase>
 
 	<phrase>
@@ -2365,8 +2365,8 @@
 	</phrase>
 
 	<phrase>
-		<original>.  Estimated time remaining:</original>
-		<translation>. Geschatte resterende tijd:</translation>
+		<original>.  Estimated time remaining</original>
+		<translation>. Geschatte resterende tijd</translation>
 	</phrase>
 
 	<phrase>
@@ -2425,28 +2425,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Step 1 - Select Source Images:</original>
-		<translation>Stap 1 - Selecteer bron abeeldingen:</translation>
+		<original>Step 1 - Select Source Images</original>
+		<translation>Stap 1 - Selecteer bron abeeldingen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Drive:</original>
-		<translation>Station:</translation>
+		<original>Drive</original>
+		<translation>Station</translation>
 	</phrase>
 
 	<phrase>
-		<original>Folder:</original>
-		<translation>Map:</translation>
+		<original>Folder</original>
+		<translation>Map</translation>
 	</phrase>
 
 	<phrase>
-		<original>Image Format:</original>
-		<translation>Afbeelding:</translation>
+		<original>Image Format</original>
+		<translation>Afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Image Files (multi-select using Shift or Ctrl):</original>
-		<translation>Afbeeldingsbestanden (multi-select met Shift of Ctrl):</translation>
+		<original>Image Files (multi-select using Shift or Ctrl)</original>
+		<translation>Afbeeldingsbestanden (multi-select met Shift of Ctrl)</translation>
 	</phrase>
 
 	<phrase>
@@ -2460,13 +2460,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Step 2 - Verify List of Images:</original>
-		<translation>Stap 2 - Controleer lijst van afbeeldingen:</translation>
+		<original>Step 2 - Verify List of Images</original>
+		<translation>Stap 2 - Controleer lijst van afbeeldingen</translation>
 	</phrase>
 
 	<phrase>
-		<original>The following image files will be processed:</original>
-		<translation>De volgende afbeeldingsbestanden worden verwerkt:</translation>
+		<original>The following image files will be processed</original>
+		<translation>De volgende afbeeldingsbestanden worden verwerkt</translation>
 	</phrase>
 
 	<phrase>
@@ -2480,8 +2480,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Export/import image lists:</original>
-		<translation>Export/import afbeeldingen lijsten:</translation>
+		<original>Export/import image lists</original>
+		<translation>Export/import afbeeldingen lijsten</translation>
 	</phrase>
 
 	<phrase>
@@ -2495,8 +2495,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Step 3 - Select Macro to Apply:</original>
-		<translation>Stap 3 - Selecteer Macro om te verwerken:</translation>
+		<original>Step 3 - Select Macro to Apply</original>
+		<translation>Stap 3 - Selecteer Macro om te verwerken</translation>
 	</phrase>
 
 	<phrase>
@@ -2505,8 +2505,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Apply the following macro to each image:</original>
-		<translation>Verwerk de volgende macro voor elke afbeelding:</translation>
+		<original>Apply the following macro to each image</original>
+		<translation>Verwerk de volgende macro voor elke afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -2515,33 +2515,33 @@
 	</phrase>
 
 	<phrase>
-		<original>Step 4 - Select Output Location:</original>
-		<translation>Stap 4 - Selecteer output locatie:</translation>
+		<original>Step 4 - Select Output Location</original>
+		<translation>Stap 4 - Selecteer output locatie</translation>
 	</phrase>
 
 	<phrase>
-		<original>Output images to this folder:</original>
-		<translation>Bewaar afbeeldingen in deze map:</translation>
+		<original>Output images to this folder</original>
+		<translation>Bewaar afbeeldingen in deze map</translation>
 	</phrase>
 
 	<phrase>
-		<original>Optional text to append to start of filenames:</original>
-		<translation>Optionele tekst toe te voegen aan het begin van de bestandsnamen:</translation>
+		<original>Optional text to append to start of filenames</original>
+		<translation>Optionele tekst toe te voegen aan het begin van de bestandsnamen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Output image files should be named using:</original>
-		<translation>Output afbeeldingsbestanden moeten worden genoemd met behulp van:</translation>
+		<original>Output image files should be named using</original>
+		<translation>Output afbeeldingsbestanden moeten worden genoemd met behulp van</translation>
 	</phrase>
 
 	<phrase>
-		<original>Step 5 - Select Output Image Format:</original>
-		<translation>Stap 5 - Selecteer Uitvoerformaat afbeelding:</translation>
+		<original>Step 5 - Select Output Image Format</original>
+		<translation>Stap 5 - Selecteer Uitvoerformaat afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>Quality:</original>
-		<translation>Kwaliteit:</translation>
+		<original>Quality</original>
+		<translation>Kwaliteit</translation>
 	</phrase>
 
 	<phrase>
@@ -3370,8 +3370,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Size:</original>
-		<translation>Afmeting:</translation>
+		<original>Size</original>
+		<translation>Afmeting</translation>
 	</phrase>
 
 	<phrase>
@@ -3445,8 +3445,8 @@
 	</phrase>
 
 	<phrase>
-		<original>An error occurred:</original>
-		<translation>Er is een fout opgetreden:</translation>
+		<original>An error occurred</original>
+		<translation>Er is een fout opgetreden</translation>
 	</phrase>
 
 	<phrase>
@@ -3660,8 +3660,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Total number of unique colors:</original>
-		<translation>Totaal aantal unieke kleuren:</translation>
+		<original>Total number of unique colors</original>
+		<translation>Totaal aantal unieke kleuren</translation>
 	</phrase>
 
 	<phrase>
@@ -4105,7 +4105,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Please select a folder:</original>
+		<original>Please select a folder</original>
 		<translation>Selecteer een map</translation>
 	</phrase>
 
@@ -4325,8 +4325,8 @@
 	</phrase>
 
 	<phrase>
-		<original>If the file is not located on portable media, make sure that:</original>
-		<translation>Als het bestand zich niet op draagbare media bevind, zorg er dan voor dat:</translation>
+		<original>If the file is not located on portable media, make sure that</original>
+		<translation>Als het bestand zich niet op draagbare media bevind, zorg er dan voor dat</translation>
 	</phrase>
 
 	<phrase>
@@ -4350,23 +4350,23 @@
 	</phrase>
 
 	<phrase>
-		<original>has experienced an error.  Details on the problem include:</original>
-		<translation>er is een fout opgetreden. Details over het probleem zijn:</translation>
+		<original>has experienced an error.  Details on the problem include</original>
+		<translation>er is een fout opgetreden. Details over het probleem zijn</translation>
 	</phrase>
 
 	<phrase>
-		<original>Error number:</original>
-		<translation>foutnummer:</translation>
+		<original>Error number</original>
+		<translation>foutnummer</translation>
 	</phrase>
 
 	<phrase>
-		<original>Description:</original>
-		<translation>Beschrijving:</translation>
+		<original>Description</original>
+		<translation>Beschrijving</translation>
 	</phrase>
 
 	<phrase>
-		<original>Error Handler:</original>
-		<translation>Fout Handler:</translation>
+		<original>Error Handler</original>
+		<translation>Fout Handler</translation>
 	</phrase>
 
 	<phrase>
@@ -4375,8 +4375,8 @@
 	</phrase>
 
 	<phrase>
-		<original>In the 'Title box, please enter the following error number with a short description of the problem:</original>
-		<translation>In het 'vak 'Title', vul je het volgende foutnummer in met een korte beschrijving van het probleem:</translation>
+		<original>In the 'Title box, please enter the following error number with a short description of the problem</original>
+		<translation>In het 'vak 'Title', vul je het volgende foutnummer in met een korte beschrijving van het probleem</translation>
 	</phrase>
 
 	<phrase>
@@ -4400,8 +4400,8 @@
 	</phrase>
 
 	<phrase>
-		<original>In the bottom box of that page, please enter the following error number:</original>
-		<translation>In het onderste vak van die pagina, kan u de volgende fout ingeven:</translation>
+		<original>In the bottom box of that page, please enter the following error number</original>
+		<translation>In het onderste vak van die pagina, kan u de volgende fout ingeven</translation>
 	</phrase>
 
 	<phrase>
@@ -4680,13 +4680,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Current language-plugin version:</original>
-		<translation>Actuele taal-plugin versie:</translation>
+		<original>Current language-plugin version</original>
+		<translation>Actuele taal-plugin versie</translation>
 	</phrase>
 
 	<phrase>
-		<original>Current language:</original>
-		<translation>Actuele taal:</translation>
+		<original>Current language</original>
+		<translation>Actuele taal</translation>
 	</phrase>
 
 	<phrase>
@@ -4885,8 +4885,8 @@
     </phrase>
 
     <phrase>
-        <original>transparency cut-off:</original>
-        <translation>transparantie bijsnijden:</translation>
+        <original>transparency cut-off</original>
+        <translation>transparantie bijsnijden</translation>
     </phrase>
 
     <phrase>
@@ -4910,8 +4910,8 @@
     </phrase>
 
     <phrase>
-        <original>please choose an output color depth:</original>
-        <translation>aub. Kies een uitgangs kleurdiepte:</translation>
+        <original>please choose an output color depth</original>
+        <translation>aub. Kies een uitgangs kleurdiepte</translation>
     </phrase>
 
     <phrase>
@@ -5000,13 +5000,13 @@
     </phrase>
 
     <phrase>
-        <original>box width:</original>
-        <translation>Breedte van het vierkant:</translation>
+        <original>box width</original>
+        <translation>Breedte van het vierkant</translation>
     </phrase>
 
     <phrase>
-        <original>box height:</original>
-        <translation>Hoogte van het vierkant:</translation>
+        <original>box height</original>
+        <translation>Hoogte van het vierkant</translation>
     </phrase>
 
     <phrase>
@@ -5025,13 +5025,13 @@
     </phrase>
 
     <phrase>
-        <original>scale:</original>
-        <translation>schaal:</translation>
+        <original>scale</original>
+        <translation>schaal</translation>
     </phrase>
 
     <phrase>
-        <original>turbulence:</original>
-        <translation>turbulentie:</translation>
+        <original>turbulence</original>
+        <translation>turbulentie</translation>
     </phrase>
 
     <phrase>
@@ -5040,8 +5040,8 @@
     </phrase>
 
     <phrase>
-        <original>render emphasis:</original>
-        <translation>renderen nadruk:</translation>
+        <original>render emphasis</original>
+        <translation>renderen nadruk</translation>
     </phrase>
 
     <phrase>
@@ -5060,8 +5060,8 @@
     </phrase>
 
     <phrase>
-        <original>radius:</original>
-        <translation>straal:</translation>
+        <original>radius</original>
+        <translation>straal</translation>
     </phrase>
 
     <phrase>
@@ -5075,23 +5075,23 @@
     </phrase>
 
     <phrase>
-        <original>number of mirrors:</original>
-        <translation>aantal spiegels:</translation>
+        <original>number of mirrors</original>
+        <translation>aantal spiegels</translation>
     </phrase>
 
     <phrase>
-        <original>primary angle:</original>
-        <translation>primaire hoek:</translation>
+        <original>primary angle</original>
+        <translation>primaire hoek</translation>
     </phrase>
 
     <phrase>
-        <original>secondary angle:</original>
-        <translation>secundaire hoek:</translation>
+        <original>secondary angle</original>
+        <translation>secundaire hoek</translation>
     </phrase>
 
     <phrase>
-        <original>Radius (percentage):</original>
-        <translation>Radius (percentage):</translation>
+        <original>Radius (percentage)</original>
+        <translation>Radius (percentage)</translation>
     </phrase>
 
     <phrase>
@@ -5105,8 +5105,8 @@
     </phrase>
 
     <phrase>
-        <original>lens strength (refractive index):</original>
-        <translation>lenssterkte (brekingsindex):</translation>
+        <original>lens strength (refractive index)</original>
+        <translation>lenssterkte (brekingsindex)</translation>
     </phrase>
 
     <phrase>
@@ -5120,13 +5120,13 @@
     </phrase>
 
     <phrase>
-        <original>correction strength:</original>
-        <translation>correctie sterkte:</translation>
+        <original>correction strength</original>
+        <translation>correctie sterkte</translation>
     </phrase>
 
     <phrase>
-        <original>correction zoom:</original>
-        <translation>correctie zoom:</translation>
+        <original>correction zoom</original>
+        <translation>correctie zoom</translation>
     </phrase>
 
     <phrase>
@@ -5140,13 +5140,13 @@
     </phrase>
 
     <phrase>
-        <original>pinch amount:</original>
-        <translation>Aantal knijpen:</translation>
+        <original>pinch amount</original>
+        <translation>Aantal knijpen</translation>
     </phrase>
 
     <phrase>
-        <original>whirl angle:</original>
-        <translation>Hoek wervelen:</translation>
+        <original>whirl angle</original>
+        <translation>Hoek wervelen</translation>
     </phrase>
 
     <phrase>
@@ -5225,18 +5225,18 @@
     </phrase>
 
     <phrase>
-        <original>expected version:</original>
-        <translation>verwacht versie:</translation>
+        <original>expected version</original>
+        <translation>verwacht versie</translation>
     </phrase>
 
     <phrase>
-        <original>version found:</original>
-        <translation>versie gevonden:</translation>
+        <original>version found</original>
+        <translation>versie gevonden</translation>
     </phrase>
 
     <phrase>
-        <original>X1 license:</original>
-        <translation>X1 licentie:</translation>
+        <original>X1 license</original>
+        <translation>X1 licentie</translation>
     </phrase>
 
     <phrase>
@@ -5265,8 +5265,8 @@
     </phrase>
 
     <phrase>
-        <original>color sample size:</original>
-        <translation>kleur steekproefomvang:</translation>
+        <original>color sample size</original>
+        <translation>kleur steekproefomvang</translation>
     </phrase>
 
     <phrase>
@@ -5280,8 +5280,8 @@
     </phrase>
 
     <phrase>
-        <original>color dithering:</original>
-        <translation>kleur dithering:</translation>
+        <original>color dithering</original>
+        <translation>kleur dithering</translation>
     </phrase>
 
     <phrase>
@@ -5300,13 +5300,13 @@
     </phrase>
 
     <phrase>
-        <original>current plugin status:</original>
-        <translation>Huidige plugin status:</translation>
+        <original>current plugin status</original>
+        <translation>Huidige plugin status</translation>
     </phrase>
 
     <phrase>
-        <original>status:</original>
-        <translation>status:</translation>
+        <original>status</original>
+        <translation>status</translation>
     </phrase>
 
     <phrase>
@@ -5335,8 +5335,8 @@
     </phrase>
 
     <phrase>
-        <original>conversion technique:</original>
-        <translation>conversie techniek:</translation>
+        <original>conversion technique</original>
+        <translation>conversie techniek</translation>
     </phrase>
 
     <phrase>
@@ -5350,18 +5350,18 @@
     </phrase>
 
     <phrase>
-        <original>length of ripples (wavelength):</original>
-        <translation>lengte van rimpels (golflengte):</translation>
+        <original>length of ripples (wavelength)</original>
+        <translation>lengte van rimpels (golflengte)</translation>
     </phrase>
 
     <phrase>
-        <original>height of ripples (amplitude):</original>
-        <translation>hoogte van rimpels (amplitude):</translation>
+        <original>height of ripples (amplitude)</original>
+        <translation>hoogte van rimpels (amplitude)</translation>
     </phrase>
 
     <phrase>
-        <original>time (phase):</original>
-        <translation>tijd (fase):</translation>
+        <original>time (phase)</original>
+        <translation>tijd (fase)</translation>
     </phrase>
 
     <phrase>
@@ -5380,8 +5380,8 @@
     </phrase>
 
     <phrase>
-        <original>apply blur to:</original>
-        <translation>vervagen toepassen aan:</translation>
+        <original>apply blur to</original>
+        <translation>vervagen toepassen aan</translation>
     </phrase>
 
     <phrase>
@@ -5395,8 +5395,8 @@
     </phrase>
 
     <phrase>
-        <original>threshold:</original>
-        <translation>drempel:</translation>
+        <original>threshold</original>
+        <translation>drempel</translation>
     </phrase>
 
     <phrase>
@@ -5410,8 +5410,8 @@
     </phrase>
 
     <phrase>
-        <original>swirl angle:</original>
-        <translation>hoek werveling:</translation>
+        <original>swirl angle</original>
+        <translation>hoek werveling</translation>
     </phrase>
 
     <phrase>
@@ -5425,8 +5425,8 @@
     </phrase>
 
     <phrase>
-        <original>amount:</original>
-        <translation>aantal:</translation>
+        <original>amount</original>
+        <translation>aantal</translation>
     </phrase>
 
     <phrase>
@@ -5440,23 +5440,23 @@
     </phrase>
 
     <phrase>
-        <original>horizontal wavelength:</original>
-        <translation>horizontale golflengte:</translation>
+        <original>horizontal wavelength</original>
+        <translation>horizontale golflengte</translation>
     </phrase>
 
     <phrase>
-        <original>horizontal strength (amplitude):</original>
-        <translation>horizontale sterkte (amplitude):</translation>
+        <original>horizontal strength (amplitude)</original>
+        <translation>horizontale sterkte (amplitude)</translation>
     </phrase>
 
     <phrase>
-        <original>vertical wavelength:</original>
-        <translation>verticale golflengte:</translation>
+        <original>vertical wavelength</original>
+        <translation>verticale golflengte</translation>
     </phrase>
 
     <phrase>
-        <original>vertical strength (amplitude):</original>
-        <translation>verticale sterkte (amplitude):</translation>
+        <original>vertical strength (amplitude)</original>
+        <translation>verticale sterkte (amplitude)</translation>
     </phrase>
 
 </language>
