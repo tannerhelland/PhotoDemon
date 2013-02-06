@@ -350,8 +350,8 @@
 	</phrase>
 
 	<phrase>
-		<original>is an animated GIF file ( ###### frames in total).</original>
-		<translation>est un fichier d'animation GIF( ###### trames au total).</translation>
+		<original>is an animated GIF file ( %1%1%1 frames in total).</original>
+		<translation>est un fichier d'animation GIF( %1%1%1 trames au total).</translation>
 	</phrase>
 
 	<phrase>
@@ -395,8 +395,8 @@
 	</phrase>
 
 	<phrase>
-		<original>contains multiple pages ( ###### in total).</original>
-		<translation>contient plusieurs pages ( ###### au total).</translation>
+		<original>contains multiple pages ( %1%1%1 in total).</original>
+		<translation>contient plusieurs pages ( %1%1%1 au total).</translation>
 	</phrase>
 
 	<phrase>
@@ -490,8 +490,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Repeat this action for all unsaved images ( ###### in total)</original>
-		<translation>Répétez cette opération pour toutes les images non enregistrées (###### total)</translation>
+		<original>Repeat this action for all unsaved images ( %1%1%1 in total)</original>
+		<translation>Répétez cette opération pour toutes les images non enregistrées (%1%1%1 total)</translation>
 	</phrase>
 
 	<phrase>
@@ -1090,13 +1090,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting image to ###### shades of gray</original>
-		<translation>Conversion image pour gris ######</translation>
+		<original>Converting image to %1%1%1 shades of gray</original>
+		<translation>Conversion image pour gris %1%1%1</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting to ######  shades of gray, with dithering</original>
-		<translation>Frais de port à ###### gris, avec tramage</translation>
+		<original>Converting to %1%1%1  shades of gray, with dithering</original>
+		<translation>Frais de port à %1%1%1 gris, avec tramage</translation>
 	</phrase>
 
 	<phrase>
@@ -1120,8 +1120,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting image to grayscale using ###### values</original>
-		<translation>Autre image monochrome en utilisant les valeurs ######</translation>
+		<original>Converting image to grayscale using %1%1%1 values</original>
+		<translation>Autre image monochrome en utilisant les valeurs %1%1%1</translation>
 	</phrase>
 
 	<phrase>
@@ -1315,8 +1315,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, no images were found in #.  Please select a new file.</original>
-		<translation>Malheureusement, il n'ya pas d'images trouvées dans #. Sélectionnez un nouveau fichier.</translation>
+		<original>Unfortunately, no images were found in %1.  Please select a new file.</original>
+		<translation>Malheureusement, il n'ya pas d'images trouvées dans %1. Sélectionnez un nouveau fichier.</translation>
 	</phrase>
 
 	<phrase>
@@ -1330,8 +1330,8 @@
 	</phrase>
 
 	<phrase>
-		<original>is unable to display this data.  It may be from an incompatible version of Visual Basic, the source file may be corrupted, or the data may exceed 32k in size.</original>
-		<translation>IIdentifiant pas en mesure de l'afficher. Il peut, par une version incompatible de Visual Basic, peut-être le fichier source qu'il est corrompu ou les données est plus grand que la taille 32k.</translation>
+		<original>%1 is unable to display this data.  It may be from an incompatible version of Visual Basic, the source file may be corrupted, or the data may exceed 32k in size.</original>
+		<translation>%1 identifiant pas en mesure de l'afficher. Il peut, par une version incompatible de Visual Basic, peut-être le fichier source qu'il est corrompu ou les données est plus grand que la taille 32k.</translation>
 	</phrase>
 
 	<phrase>
@@ -1375,13 +1375,13 @@
 	</phrase>
 
 	<phrase>
-		<original># could not establish an Internet connection. Please double-check your connection.</original>
-		<translation># est Impossible d'établir Internet. S'il vous plaît vérifier votre connexion.</translation>
+		<original>%1 could not establish an Internet connection. Please double-check your connection.</original>
+		<translation>%1 est Impossible d'établir Internet. S'il vous plaît vérifier votre connexion.</translation>
 	</phrase>
 
 	<phrase>
-		<original>If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in # just like any other image file.</original>
-		<translation>Si le problème persiste, essayez de télécharger l'image manuellement à l'aide d'un navigateur Internet de votre choix. Une fois téléchargé, vous pouvez ouvrir le fichier dans #, comme n'importe quel autre fichier image.</translation>
+		<original>If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
+		<translation>Si le problème persiste, essayez de télécharger l'image manuellement à l'aide d'un navigateur Internet de votre choix. Une fois téléchargé, vous pouvez ouvrir le fichier dans %1, comme n'importe quel autre fichier image.</translation>
 	</phrase>
 
 	<phrase>
@@ -1395,8 +1395,8 @@
 	</phrase>
 
 	<phrase>
-		<original># could not locate a valid image at that URL.  Please double-check the path.</original>
-		<translation># Impossible de trouver URL de l'image valide. S'il vous plaît vérifier à nouveau le chemin.</translation>
+		<original>%1 could not locate a valid image at that URL.  Please double-check the path.</original>
+		<translation>%1 Impossible de trouver URL de l'image valide. S'il vous plaît vérifier à nouveau le chemin.</translation>
 	</phrase>
 
 	<phrase>
@@ -1415,13 +1415,13 @@
 	</phrase>
 
 	<phrase>
-		<original># lost access to the Internet. Please double-check your Internet connection.</original>
-		<translation># A accès à l'Internet est perdue. S'il vous plaît vérifier votre connexion Internet.</translation>
+		<original>%1 lost access to the Internet. Please double-check your Internet connection.</original>
+		<translation>%1 A accès à l'Internet est perdue. S'il vous plaît vérifier votre connexion Internet.</translation>
 	</phrase>
 
 	<phrase>
-		<original>Image URL verified.  Downloading image #1 of  #2 bytes received)</original>
-		<translation>URL de l'image vérifiée. Télécharger la photo #1 sur #2 bytes)</translation>
+		<original>Image URL verified.  Downloading image %1 of  %2 bytes received)</original>
+		<translation>URL de l'image vérifiée. Télécharger la photo %1 sur %2 bytes)</translation>
 	</phrase>
 
 	<phrase>
@@ -1435,18 +1435,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, #1 is preventing #2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)</original>
-		<translation>Malheureusement,# 1 interdit #2 instantanément téléchargé cette image. (Téléchargements directs sont parfois à tort confondu avec hotlinking considéré par les serveurs configurés.)</translation>
-	</phrase>
-
-	<phrase>
-		<original>You will need to download this image using your Internet browser of choice, then manually load it into #2.</original>
-		<translation>Vous avez besoin de cette image à l'aide d'un navigateur Web de votre choix pour télécharger, puis charger manuellement dans le #2.</translation>
-	</phrase>
-
-	<phrase>
-		<original>I sincerely apologize for this inconvenience, but unfortunately there is nothing #2 can do about stingy server configurations.  :(</original>
-		<translation>Malheureusement, #2 rien à voir serveurs mal configurés. : (</translation>
+		<original>Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)  You will need to download this image using your Internet browser of choice, then manually load it into %2.  I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
+		<translation>Malheureusement, %1 interdit %2 instantanément téléchargé cette image. (Téléchargements directs sont parfois à tort confondu avec hotlinking considéré par les serveurs configurés.)  Vous avez besoin de cette image à l'aide d'un navigateur Web de votre choix pour télécharger, puis charger manuellement dans le %2.  Malheureusement, %2 rien à voir serveurs mal configurés. : (</translation>
 	</phrase>
 
 	<phrase>
@@ -1510,8 +1500,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, the image' ## ' could not be found.</original>
-		<translation>Malheureusement, l'image "##" n'a pu être trouvée.</translation>
+		<original>Unfortunately, the image '%1' could not be found.</original>
+		<translation>Malheureusement, l'image '%1' n'a pu être trouvée.</translation>
 	</phrase>
 
 	<phrase>
@@ -1535,8 +1525,8 @@
 	</phrase>
 
 	<phrase>
-		<original>To enable support for this image format, please allow ##  to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called</original>
-		<translation>Pour soutenir ce format d'image possible, stand ## pour créer une nouvelle copie de téléchargement FreeImage, en allant à l'Edition - Programme> Préférences du menu et activez l'option appelée</translation>
+		<original>To enable support for this image format, please allow %1  to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called</original>
+		<translation>Pour soutenir ce format d'image possible, stand %1 pour créer une nouvelle copie de téléchargement FreeImage, en allant à l'Edition - Programme> Préférences du menu et activez l'option appelée</translation>
 	</phrase>
 
 	<phrase>
@@ -1545,8 +1535,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Once this is enabled, restart ## and it will download this plugin for you.</original>
-		<translation>Une fois que cette option est activée, redémarrez ## et il va télécharger le plugin.</translation>
+		<original>Once this is enabled, restart %1 and it will download this plugin for you.</original>
+		<translation>Une fois que cette option est activée, redémarrez %1 et il va télécharger le plugin.</translation>
 	</phrase>
 
 	<phrase>
@@ -1555,18 +1545,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, ## was unable to load the following image</original>
-		<translation>Malheureusement, ## n'a pas pu charger l'image suivante</translation>
+		<original>Unfortunately, %1 was unable to load the following image</original>
+		<translation>Malheureusement, %1 n'a pas pu charger l'image suivante</translation>
 	</phrase>
 
 	<phrase>
-		<original>Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into ## Thanks!</original>
-		<translation>Utilisez un autre programme à l'image d'être stockées dans un format générique (tel que JPEG ou PNG) avant le chargement ##. Je vous remercie!</translation>
+		<original>Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into %1 Thanks!</original>
+		<translation>Utilisez un autre programme à l'image d'être stockées dans un format générique (tel que JPEG ou PNG) avant le chargement %1. Je vous remercie!</translation>
 	</phrase>
 
 	<phrase>
-		<original>## Import Failed</original>
-		<translation>## Échec de l'importation</translation>
+		<original>%1 Import Failed</original>
+		<translation>%1 Échec de l'importation</translation>
 	</phrase>
 
 	<phrase>
@@ -1595,8 +1585,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Color count successful ( ## BPP)</original>
-		<translation>Compter les couleurs avec succès (## BPP)</translation>
+		<original>Color count successful ( %1 BPP)</original>
+		<translation>Compter les couleurs avec succès (%1 BPP)</translation>
 	</phrase>
 
 	<phrase>
@@ -1700,8 +1690,8 @@
 	</phrase>
 
 	<phrase>
-		<original>The tiled image will be #1 #3 wide by #2 #3 tall</original>
-		<translation>L'image sera #1 #3 larges de #2 #3 haute</translation>
+		<original>The tiled image will be %1 %3 wide by %2 %3 tall</original>
+		<translation>L'image sera %1 %3 larges de %2 %3 haute</translation>
 	</phrase>
 
 	<phrase>
@@ -1970,8 +1960,8 @@
 	</phrase>
 
 	<phrase>
-		<original>These parameters allow for a maximum of X1 colors in the quantized image.</original>
-		<translation>Ces paramètres permettent à un maximum de X1 couleurs dans l'image quantifiée.</translation>
+		<original>These parameters allow for a maximum of %1 colors in the quantized image.</original>
+		<translation>Ces paramètres permettent à un maximum de %1 couleurs dans l'image quantifiée.</translation>
 	</phrase>
 
 	<phrase>
@@ -2060,8 +2050,8 @@
 	</phrase>
 
 	<phrase>
-		<original>This copy of X1 is the newest available.  (Version</original>
-		<translation>Cette copie de X1 est la dernière disponible. (Version</translation>
+		<original>This copy of %1 is the newest available.  (Version</original>
+		<translation>Cette copie de %1 est la dernière disponible. (Version</translation>
 	</phrase>
 
 	<phrase>
@@ -2070,18 +2060,18 @@
 	</phrase>
 
 	<phrase>
-		<original>The next time you launch X1, it will remind you about this software update.</original>
-		<translation>La prochaine fois que vous commencez X1, vous rappellera mise à jour logicielle.</translation>
+		<original>The next time you launch %1, it will remind you about this software update.</original>
+		<translation>La prochaine fois que vous commencez %1, vous rappellera mise à jour logicielle.</translation>
 	</phrase>
 
 	<phrase>
-		<original>Note: you can always manually download the latest version of X1 by visiting the X1 website.</original>
-		<translation>Remarque: Vous pouvez télécharger la dernière version de X1 toujours télécharger manuellement en visitant le site Web d'apporter X1.</translation>
+		<original>Note: you can always manually download the latest version of %1 by visiting the %1 website.</original>
+		<translation>Remarque: Vous pouvez télécharger la dernière version de %1 toujours télécharger manuellement en visitant le site Web d'apporter %1.</translation>
 	</phrase>
 
 	<phrase>
-		<original>X1 will no longer prompt you about software updates.  (If you change your mind in the future,</original>
-		<translation>X1 ne demandera pas de mises à jour logicielles. (Si vous changez d'avis dans le futur,</translation>
+		<original>%1 will no longer prompt you about software updates.  (If you change your mind in the future,</original>
+		<translation>%1 ne demandera pas de mises à jour logicielles. (Si vous changez d'avis dans le futur,</translation>
 	</phrase>
 
 	<phrase>
@@ -2090,13 +2080,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Thanks for downloading the latest X1 update.  Hope you enjoy it!</original>
-		<translation>Merci de télécharger la nouvelle mise à jour X1. J'espère que ça vous plaira!</translation>
+		<original>Thanks for downloading the latest %1 update.  Hope you enjoy it!</original>
+		<translation>Merci de télécharger la nouvelle mise à jour %1. J'espère que ça vous plaira!</translation>
 	</phrase>
 
 	<phrase>
-		<original>What's new in X1</original>
-		<translation>Quoi de neuf dans X1</translation>
+		<original>What's new in %1</original>
+		<translation>Quoi de neuf dans %1</translation>
 	</phrase>
 
 	<phrase>
@@ -2105,8 +2095,8 @@
 	</phrase>
 
 	<phrase>
-		<original>A new version of X1 is available!</original>
-		<translation>Une nouvelle version du X1 est disponible!</translation>
+		<original>A new version of %1 is available!</original>
+		<translation>Une nouvelle version du %1 est disponible!</translation>
 	</phrase>
 
 	<phrase>
@@ -2155,8 +2145,8 @@
 	</phrase>
 
 	<phrase>
-		<original>X1 was unable to print the image.  Please make sure that the specified printer ( X2 ) is powered-on and ready for printing.</original>
-		<translation>X1 n'était pas en mesure d'imprimer l'image. Assurez-vous que l'imprimante spécifiée (X2) sous tension et prête à imprimer.</translation>
+		<original>%1 was unable to print the image.  Please make sure that the specified printer ( %2 ) is powered-on and ready for printing.</original>
+		<translation>%1 n'était pas en mesure d'imprimer l'image. Assurez-vous que l'imprimante spécifiée (%2) sous tension et prête à imprimer.</translation>
 	</phrase>
 
 	<phrase>
@@ -2190,8 +2180,8 @@
 	</phrase>
 
 	<phrase>
-		<original>The next time you load X1, it will offer to download this plugin for you.</original>
-		<translation>La prochaine fois que vous démarre X1, il vous proposera de télécharger ce plugin.</translation>
+		<original>The next time you load %1, it will offer to download this plugin for you.</original>
+		<translation>La prochaine fois que vous démarre %1, il vous proposera de télécharger ce plugin.</translation>
 	</phrase>
 
 	<phrase>
@@ -2390,13 +2380,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Batch conversion of X1 files was successful!</original>
-		<translation>La conversion par lots de fichiers X1 réussi!</translation>
+		<original>Batch conversion of %1 files was successful!</original>
+		<translation>La conversion par lots de fichiers %1 réussi!</translation>
 	</phrase>
 
 	<phrase>
-		<original>Batch conversion canceled. X1 image</original>
-		<translation>Conversion par lots est annulée. X1 l'image</translation>
+		<original>Batch conversion canceled. %1 image</original>
+		<translation>Conversion par lots est annulée. %1 l'image</translation>
 	</phrase>
 
 	<phrase>
@@ -2610,8 +2600,8 @@
 	</phrase>
 
 	<phrase>
-		<original>To make sure your bug is addressed as quickly as possible, X1 needs to know where to send it</original>
-		<translation>Pour vous assurer que votre bug dès que possible est envoyé, X1 savoir où l'envoyer.</translation>
+		<original>To make sure your bug is addressed as quickly as possible, %1 needs to know where to send it</original>
+		<translation>Pour vous assurer que votre bug dès que possible est envoyé, %1 savoir où l'envoyer.</translation>
 	</phrase>
 
 	<phrase>
@@ -2620,8 +2610,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Thanks for making X1 better</original>
-		<translation>Merci pour l'amélioration X1</translation>
+		<original>Thanks for making %1 better</original>
+		<translation>Merci pour l'amélioration %1</translation>
 	</phrase>
 
 	<phrase>
@@ -3335,8 +3325,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Support X1with a small donation (thank you!)</original>
-		<translation>support X1 avec un petit donation (merci!)</translation>
+		<original>Support %1with a small donation (thank you!)</original>
+		<translation>support %1 avec un petit donation (merci!)</translation>
 	</phrase>
 
 	<phrase>
@@ -3355,23 +3345,23 @@
 	</phrase>
 
 	<phrase>
-		<original>&Visit the X1Website</original>
-		<translation>&Visitez le site web X1</translation>
+		<original>&Visit the %1Website</original>
+		<translation>&Visitez le site web %1</translation>
 	</phrase>
 
 	<phrase>
-		<original>Download X1Source Code</original>
-		<translation>Télécharger la source X1</translation>
+		<original>Download %1Source Code</original>
+		<translation>Télécharger la source %1</translation>
 	</phrase>
 
 	<phrase>
-		<original>Read X1's License and Terms of Use</original>
-		<translation>Lire la licence et conditions d'utilisation X1</translation>
+		<original>Read %1's License and Terms of Use</original>
+		<translation>Lire la licence et conditions d'utilisation %1</translation>
 	</phrase>
 
 	<phrase>
-		<original>&About X1</original>
-		<translation>À p&ropos de X1</translation>
+		<original>&About %1</original>
+		<translation>À p&ropos de %1</translation>
 	</phrase>
 
 	<phrase>
@@ -3495,8 +3485,8 @@
 	</phrase>
 
 	<phrase>
-		<original>No X1 encoder found. Save aborted.</original>
-		<translation>Aucune X1 encodeur trouvé. Enregistrer abandonnée.</translation>
+		<original>No %1 encoder found. Save aborted.</original>
+		<translation>Aucune %1 encodeur trouvé. Enregistrer abandonnée.</translation>
 	</phrase>
 
 	<phrase>
@@ -3510,8 +3500,8 @@
 	</phrase>
 
 	<phrase>
-		<original>please allow X1 to download plugin updates by going to the 'Edit Menu -> Program Preferences',</original>
-		<translation>vous permet de brancher X1 pour télécharger les mises à jour en allant sur le menu 'Edition -> Préférences du programme',</translation>
+		<original>please allow %1 to download plugin updates by going to the 'Edit Menu -> Program Preferences',</original>
+		<translation>vous permet de brancher %1 pour télécharger les mises à jour en allant sur le menu 'Edition -> Préférences du programme',</translation>
 	</phrase>
 
 	<phrase>
@@ -3545,8 +3535,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Applying X1 filter</original>
-		<translation>Appliquer filtre X1</translation>
+		<original>Applying %1 filter</original>
+		<translation>Appliquer filtre %1</translation>
 	</phrase>
 
 	<phrase>
@@ -3710,8 +3700,8 @@
 	</phrase>
 
 	<phrase>
-		<original>This image contains X1 unique colors.</original>
-		<translation>Cette image contient X1 des couleurs uniques.</translation>
+		<original>This image contains %1 unique colors.</original>
+		<translation>Cette image contient %1 des couleurs uniques.</translation>
 	</phrase>
 
 	<phrase>
@@ -3900,13 +3890,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Importing frame # #1 from animated GIF file</original>
-		<translation>Importation châssis # #1 fichier GIF animée</translation>
+		<original>Importing frame # %1 from animated GIF file</original>
+		<translation>Importation châssis # %1 fichier GIF animée</translation>
 	</phrase>
 
 	<phrase>
-		<original>Importing frame # #1 from multipage TIFF file</original>
-		<translation>Importation d'image # #1 sur fichier TIFF multipage</translation>
+		<original>Importing frame # %1 from multipage TIFF file</original>
+		<translation>Importation d'image # %1 sur fichier TIFF multipage</translation>
 	</phrase>
 
 	<phrase>
@@ -4350,8 +4340,8 @@
 	</phrase>
 
 	<phrase>
-		<original>- If this image file came from a digital camera, scanner, or other image editing program, it's possible that X1 simply doesn't understand this particular file format.</original>
-		<translation>- Si le fichier image est tirée d'un appareil photo numérique, un scanner ou tout autre programme de retouche d'image, il est possible que cette X1 fichier particulier ne comprends pas.</translation>
+		<original>- If this image file came from a digital camera, scanner, or other image editing program, it's possible that %1 simply doesn't understand this particular file format.</original>
+		<translation>- Si le fichier image est tirée d'un appareil photo numérique, un scanner ou tout autre programme de retouche d'image, il est possible que cette %1 fichier particulier ne comprends pas.</translation>
 	</phrase>
 
 	<phrase>
@@ -4375,8 +4365,8 @@
 	</phrase>
 
 	<phrase>
-		<original>1) the file hasn't been deleted, and 2) the file location provided to X1 is correct.</original>
-		<translation>1) le fichier n'est pas supprimé, et 2) l'emplacement du fichier associé à X1 est correcte.</translation>
+		<original>1) the file hasn't been deleted, and 2) the file location provided to %1 is correct.</original>
+		<translation>1) le fichier n'est pas supprimé, et 2) l'emplacement du fichier associé à %1 est correcte.</translation>
 	</phrase>
 
 	<phrase>
@@ -4385,8 +4375,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses X1 .)</original>
-		<translation>Voulez-vous présenter un rapport de bug? (Il prend moins d'une minute, et il aide tous ceux qui utilisent X1.)</translation>
+		<original>Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses %1 .)</original>
+		<translation>Voulez-vous présenter un rapport de bug? (Il prend moins d'une minute, et il aide tous ceux qui utilisent %1.)</translation>
 	</phrase>
 
 	<phrase>
@@ -4480,8 +4470,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing X1 image</original>
-		<translation>Préparation de l'image X1</translation>
+		<original>Preparing %1 image</original>
+		<translation>Préparation de l'image %1</translation>
 	</phrase>
 
 	<phrase>
@@ -4590,8 +4580,8 @@
 	</phrase>
 
 	<phrase>
-		<original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error # X1).</original>
-		<translation>Le scanner a redonné une erreur qui n'a pas été spécifié dans la documentation de EZTW32.dll (Error # X1).</translation>
+		<original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error # %1).</original>
+		<translation>Le scanner a redonné une erreur qui n'a pas été spécifié dans la documentation de EZTW32.dll (Error # %1).</translation>
 	</phrase>
 
 	<phrase>
@@ -4605,8 +4595,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Would you like to minimize X1 before capturing the screen?</original>
-		<translation>Voulez minimiser X1 pour la capture d'écran?</translation>
+		<original>Would you like to minimize %1 before capturing the screen?</original>
+		<translation>Voulez minimiser %1 pour la capture d'écran?</translation>
 	</phrase>
 
 	<phrase>
@@ -4665,28 +4655,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Zoom paused due to unexpected error (#</original>
-		<translation>Zoom suspendue en raison d'une erreur inattendue (#</translation>
+		<original>Zoom paused due to unexpected error (# %1)</original>
+		<translation>Zoom suspendue en raison d'une erreur inattendue (# %1)</translation>
 	</phrase>
 
 	<phrase>
-		<original>An error (# X1) has occurred.  Compression halted.</original>
-		<translation>Une erreur (# X1) a eu lieu. Compression arrêté.</translation>
+		<original>An error (# %1) has occurred.  Compression halted.</original>
+		<translation>Une erreur (# %1) a eu lieu. Compression arrêté.</translation>
 	</phrase>
 
 	<phrase>
-		<original>File compressed from X1 bytes to X2 bytes.  Ratio: X3 %</original>
-		<translation>Fichier compressé à partir X1 octets à X2 octets. Ratio:% X3</translation>
+		<original>File compressed from %1 bytes to %2 bytes.  Ratio: %1%</original>
+		<translation>Fichier compressé à partir %1 octets à %2 octets. Ratio: %1%</translation>
 	</phrase>
 
 	<phrase>
-		<original>An error (# X1) has occurred.  Decompression halted.</original>
-		<translation>Une erreur (# X1) a eu lieu. Decompression arrêté.</translation>
+		<original>An error (# %1) has occurred.  Decompression halted.</original>
+		<translation>Une erreur (# %1) a eu lieu. Decompression arrêté.</translation>
 	</phrase>
 
 	<phrase>
-		<original>File decompressed from X1 bytes to X2 bytes.</original>
-		<translation>Fichier decompressé à partir X1 octets à X2 octets.</translation>
+		<original>File decompressed from %1 bytes to %2 bytes.</original>
+		<translation>Fichier decompressé à partir %1 octets à %2 octets.</translation>
 	</phrase>
 
 	<phrase>
@@ -4745,8 +4735,8 @@
 	</phrase>
 
 	<phrase>
-		<original>This will automatically open the X1 webpage where you can download the language plugin.</original>
-		<translation>Ceci ouvrira automatiquement la page Web X1 où vous pouvez télécharger le plugin langue.</translation>
+		<original>This will automatically open the %1 webpage where you can download the language plugin.</original>
+		<translation>Ceci ouvrira automatiquement la page Web %1 où vous pouvez télécharger le plugin langue.</translation>
 	</phrase>
 
 	<phrase>
@@ -4765,8 +4755,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Please, after making changes and saving them, click the button 'Send linguistic parameters to X1', so everyone can make use of it.</original>
-		<translation>S'il vous plaît après ajustement et enregistrer, cliquez sur le bouton 'Envoyer X1 les paramètres linguistique ',  donc n'importe qui peut l'utiliser.</translation>
+		<original>Please, after making changes and saving them, click the button 'Send linguistic parameters to %1', so everyone can make use of it.</original>
+		<translation>S'il vous plaît après ajustement et enregistrer, cliquez sur le bouton 'Envoyer %1 les paramètres linguistique ',  donc n'importe qui peut l'utiliser.</translation>
 	</phrase>
 
 	<phrase>
@@ -4775,8 +4765,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Send linguistic parameters X2 to X1</original>
-		<translation>Envoyer X1 les paramètres linguistique X2</translation>
+		<original>Send linguistic parameters %2 to %1</original>
+		<translation>Envoyer %1 les paramètres linguistique %2</translation>
 	</phrase>
 
 	<phrase>
@@ -4990,13 +4980,13 @@
     </phrase>
 
     <phrase>
-        <original>You are running X1 inside the Visual Basic IDE.  This is not recommended.</original>
-        <translation>Vous utilisez X1 à l'intérieur de l'IDE de Visual Basic. Ce n'est pas recommandé.</translation>
+        <original>You are running %1 inside the Visual Basic IDE.  This is not recommended.</original>
+        <translation>Vous utilisez %1 à l'intérieur de l'IDE de Visual Basic. Ce n'est pas recommandé.</translation>
     </phrase>
 
     <phrase>
-        <original>Please compile X1 before using it.</original>
-        <translation>S'il vous plaît compilation X1 avant de l'utiliser.</translation>
+        <original>Please compile %1 before using it.</original>
+        <translation>S'il vous plaît compilation %1 avant de l'utiliser.</translation>
     </phrase>
 
     <phrase>
@@ -5010,17 +5000,17 @@
     </phrase>
 
     <phrase>
-        <original>Additionally, like all other photo editors, X1 relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-        <translation>En outre,  X1 se penche comme tout les autres éditeurs de photos lourdement sur les tableaux multidimensionnels. Performances de la baie est très dégradé dans l'IDE, de sorte que certaines fonctionnalités peuvent être très lent.</translation>
+        <original>Additionally, like all other photo editors, %1 relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
+        <translation>En outre,  %1 se penche comme tout les autres éditeurs de photos lourdement sur les tableaux multidimensionnels. Performances de la baie est très dégradé dans l'IDE, de sorte que certaines fonctionnalités peuvent être très lent.</translation>
     </phrase>
 
     <phrase>
-        <original>If you insist on running X1 in the IDE, please do not submit bugs regarding IDE crashes or freezes.  X1's developers can only address issues and bugs that affect the compiled .exe.</original>
-        <translation>Si vous insistez sur l'exécution de X1 dans l'IDE, envoyez-les bugs liés aux chutes d'IDE ou des accidents. Les développeurs du 1% ne peut que régler les problèmes et les bogues que le compilés. Influence Exe.</translation>
+        <original>If you insist on running %1 in the IDE, please do not submit bugs regarding IDE crashes or freezes.  %1's developers can only address issues and bugs that affect the compiled .exe.</original>
+        <translation>Si vous insistez sur l'exécution de %1 dans l'IDE, envoyez-les bugs liés aux chutes d'IDE ou des accidents. Les développeurs du 1% ne peut que régler les problèmes et les bogues que le compilés. Influence Exe.</translation>
     </phrase>
 
     <phrase>
-        <original>I understand the risks of running X1 in the IDE</original>
+        <original>I understand the risks of running %1 in the IDE</original>
         <translation>Je comprends les risques de fonctionnement de 1% dans l'IDE</translation>
     </phrase>
 
@@ -5240,8 +5230,8 @@
     </phrase>
 
     <phrase>
-        <original>, but incorrect version ( X1 found X2 expected)</original>
-        <translation>Mais la version incorrecte (X1trouvé  % 2 attendu)</translation>
+        <original>, but incorrect version ( %1 found %2 expected)</original>
+        <translation>Mais la version incorrecte (%1trouvé  % 2 attendu)</translation>
     </phrase>
 
     <phrase>
@@ -5260,13 +5250,13 @@
     </phrase>
 
     <phrase>
-        <original>X1 Plugin Manager</original>
+        <original>%1 Plugin Manager</original>
         <translation>Plugin Manager de 1%</translation>
     </phrase>
 
     <phrase>
-        <original>X1 plugin information</original>
-        <translation>information X1 plugin</translation>
+        <original>%1 plugin information</original>
+        <translation>information %1 plugin</translation>
     </phrase>
 
     <phrase>
@@ -5280,13 +5270,13 @@
     </phrase>
 
     <phrase>
-        <original>X1 license</original>
-        <translation>licence X1 </translation>
+        <original>%1 license</original>
+        <translation>licence %1 </translation>
     </phrase>
 
     <phrase>
-        <original>X1 settings</original>
-        <translation>paramètres X1</translation>
+        <original>%1 settings</original>
+        <translation>paramètres %1</translation>
     </phrase>
 
     <phrase>
@@ -5460,8 +5450,8 @@
     </phrase>
 
     <phrase>
-        <original>Applying unsharp mask (step X1 of 2)</original>
-        <translation>Appliquer masque flou (étape X1 de 2)</translation>
+        <original>Applying unsharp mask (step %1 of 2)</original>
+        <translation>Appliquer masque flou (étape %1 de 2)</translation>
     </phrase>
 
     <phrase>

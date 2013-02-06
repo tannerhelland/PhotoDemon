@@ -350,8 +350,8 @@
 	</phrase>
 
 	<phrase>
-		<original>is an animated GIF file ( ###### frames in total).</original>
-		<translation>is een geanimeerd GIF-bestand ( ###### frames in totaal).</translation>
+		<original>is an animated GIF file (%1 frames in total).</original>
+		<translation>is een geanimeerd GIF-bestand (%1 frames in totaal).</translation>
 	</phrase>
 
 	<phrase>
@@ -395,8 +395,8 @@
 	</phrase>
 
 	<phrase>
-		<original>contains multiple pages ( ###### in total).</original>
-		<translation>bevat meerdere pagina's( ###### in totaal).</translation>
+		<original>contains multiple pages (%1 in total).</original>
+		<translation>bevat meerdere pagina's(%1 in totaal).</translation>
 	</phrase>
 
 	<phrase>
@@ -490,8 +490,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Repeat this action for all unsaved images ( ###### in total)</original>
-		<translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen ( ###### in totaal)</translation>
+		<original>Repeat this action for all unsaved images (%1 in total)</original>
+		<translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen (%1 in totaal)</translation>
 	</phrase>
 
 	<phrase>
@@ -1090,13 +1090,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting image to ###### shades of gray</original>
-		<translation>Het omzetten van afbeelding naar ###### grijstinten</translation>
+		<original>Converting image to %1 shades of gray</original>
+		<translation>Het omzetten van afbeelding naar %1 grijstinten</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting to ######  shades of gray, with dithering</original>
-		<translation>Converteren naar ###### grijstinten, met dithering ..</translation>
+		<original>Converting to %1 shades of gray, with dithering</original>
+		<translation>Converteren naar %1 grijstinten, met dithering ..</translation>
 	</phrase>
 
 	<phrase>
@@ -1120,8 +1120,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Converting image to grayscale using ###### values</original>
-		<translation>Omzetten afbeelding in grijswaarden met behulp van ###### waarden</translation>
+		<original>Converting image to grayscale using %1 values</original>
+		<translation>Omzetten afbeelding in grijswaarden met behulp van %1 waarden</translation>
 	</phrase>
 
 	<phrase>
@@ -1315,8 +1315,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, no images were found in #.  Please select a new file.</original>
-		<translation>Helaas zijn er geen afbeeldingen gevonden in #. Selecteer een nieuw bestand.</translation>
+		<original>Unfortunately, no images were found in %1.  Please select a new file.</original>
+		<translation>Helaas zijn er geen afbeeldingen gevonden in %1. Selecteer een nieuw bestand.</translation>
 	</phrase>
 
 	<phrase>
@@ -1330,8 +1330,8 @@
 	</phrase>
 
 	<phrase>
-		<original>is unable to display this data.  It may be from an incompatible version of Visual Basic, the source file may be corrupted, or the data may exceed 32k in size.</original>
-		<translation>is niet in staat om deze weer te geven. Het kan door een incompatibele versie van Visual Basic komen, misschien is het bronbestand beschadigd, of zijn de gegevens groter zijn dan 32k in grootte.</translation>
+		<original>%1 is unable to display this data.  It may be from an incompatible version of Visual Basic, the source file may be corrupted, or the data may exceed 32k in size.</original>
+		<translation>%1 is niet in staat om deze weer te geven. Het kan door een incompatibele versie van Visual Basic komen, misschien is het bronbestand beschadigd, of zijn de gegevens groter zijn dan 32k in grootte.</translation>
 	</phrase>
 
 	<phrase>
@@ -1375,13 +1375,8 @@
 	</phrase>
 
 	<phrase>
-		<original># could not establish an Internet connection. Please double-check your connection.</original>
-		<translation># Kon geen internetverbinding tot stand brengen. Gelieve uw verbinding te double-checken.</translation>
-	</phrase>
-
-	<phrase>
-		<original>If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in # just like any other image file.</original>
-		<translation>Als het probleem zich blijft voordoen, probeer dan de afbeelding handmatig te downloaden met behulp van een Internet-browser van uw keuze. Eenmaal gedownload, kunt u het bestand openen in # , net als elk ander afbeeldings-bestand.</translation>
+		<original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
+		<translation>%1 Kon geen internetverbinding tot stand brengen. Gelieve uw verbinding te double-checken.  Als het probleem zich blijft voordoen, probeer dan de afbeelding handmatig te downloaden met behulp van een Internet-browser van uw keuze. Eenmaal gedownload, kunt u het bestand openen in %1, net als elk ander afbeeldings-bestand.</translation>
 	</phrase>
 
 	<phrase>
@@ -1395,8 +1390,8 @@
 	</phrase>
 
 	<phrase>
-		<original># could not locate a valid image at that URL.  Please double-check the path.</original>
-		<translation># Kan geen geldige afbeelding vinden in de URL.  Gelieve het pad te double-checken.</translation>
+		<original>%1 could not locate a valid image at that URL.  Please double-check the path.</original>
+		<translation>%1 Kan geen geldige afbeelding vinden in de URL.  Gelieve het pad te double-checken.</translation>
 	</phrase>
 
 	<phrase>
@@ -1415,13 +1410,13 @@
 	</phrase>
 
 	<phrase>
-		<original># lost access to the Internet. Please double-check your Internet connection.</original>
-		<translation># Geen toegang tot het internet. Gelieve double-check uw internetverbinding.</translation>
+		<original>%1 lost access to the Internet. Please double-check your Internet connection.</original>
+		<translation>%1 Geen toegang tot het internet. Gelieve double-check uw internetverbinding.</translation>
 	</phrase>
 
 	<phrase>
-		<original>Image URL verified.  Downloading image #1 of  #2 bytes received)</original>
-		<translation>Afbeelding URL geverifieerd. Downloaden van afbeelding # 1 van #2 bytes ontvangen )</translation>
+		<original>Image URL verified.  Downloading image (%1 of %2 bytes received)</original>
+		<translation>Afbeelding URL geverifieerd. Downloaden van afbeelding (%1 van %2 bytes ontvangen)</translation>
 	</phrase>
 
 	<phrase>
@@ -1435,18 +1430,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, #1 is preventing #2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)</original>
-		<translation>Helaas verbied #1 #2 direct downloaden van deze afbeelding. (Directe downloads worden soms ten onrechte verkeerd als hotlinking beschouwd door de geconfigureerde servers.)</translation>
+		<original>Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)</original>
+		<translation>Helaas verbied %1 %2 direct downloaden van deze afbeelding. (Directe downloads worden soms ten onrechte verkeerd als hotlinking beschouwd door de geconfigureerde servers.)</translation>
 	</phrase>
 
 	<phrase>
-		<original>You will need to download this image using your Internet browser of choice, then manually load it into #2.</original>
-		<translation>U moet deze afbeelding met behulp van een internetbrowser naar keuze downloaden, en vervolgens handmatig laden in #2.</translation>
+		<original>You will need to download this image using your Internet browser of choice, then manually load it into %2.</original>
+		<translation>U moet deze afbeelding met behulp van een internetbrowser naar keuze downloaden, en vervolgens handmatig laden in %2.</translation>
 	</phrase>
 
 	<phrase>
-		<original>I sincerely apologize for this inconvenience, but unfortunately there is nothing #2 can do about stingy server configurations.  :(</original>
-		<translation>Helaas kan #2 er niets doen aan verkeerd geconfigureerde servers. :(</translation>
+		<original>I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
+		<translation>Helaas kan %2 er niets doen aan verkeerd geconfigureerde servers. :(</translation>
 	</phrase>
 
 	<phrase>
@@ -1510,8 +1505,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, the image' ## ' could not be found.</original>
-		<translation>Helaas, de afbeelding '##' kon niet worden gevonden.</translation>
+		<original>Unfortunately, the image '%1' could not be found.</original>
+		<translation>Helaas, de afbeelding '%1' kon niet worden gevonden.</translation>
 	</phrase>
 
 	<phrase>
@@ -1535,8 +1530,8 @@
 	</phrase>
 
 	<phrase>
-		<original>To enable support for this image format, please allow ##  to download a fresh copy of FreeImage by going to the Edit -> Program Preferences menu and enabling the option called</original>
-		<translation>Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, sta dan ## toe om een nieuw exemplaar van FreeImage te downloaden, door te gaan naar de Bewerken -> Programma menu Voorkeuren en mogelijk maken van de optie genaamd</translation>
+		<original>To enable support for this image format, please allow %1 to download a fresh copy of FreeImage by going to the Tools -> Options menu and enabling the option called</original>
+		<translation>Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, sta dan %1 toe om een nieuw exemplaar van FreeImage te downloaden, door te gaan naar de Bewerken -> Programma menu Voorkeuren en mogelijk maken van de optie genaamd</translation>
 	</phrase>
 
 	<phrase>
@@ -1545,8 +1540,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Once this is enabled, restart ## and it will download this plugin for you.</original>
-		<translation>Zodra dit is ingeschakeld, start u ## en deze zal de plugin downloaden.</translation>
+		<original>Once this is enabled, restart %1 and it will download this plugin for you.</original>
+		<translation>Zodra dit is ingeschakeld, start u %1 en deze zal de plugin downloaden.</translation>
 	</phrase>
 
 	<phrase>
@@ -1555,18 +1550,18 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, ## was unable to load the following image</original>
-		<translation>Helaas, ## was niet in staat om de volgende afbeelding te laden</translation>
+		<original>Unfortunately, %1 was unable to load the following image</original>
+		<translation>Helaas, %1 was niet in staat om de volgende afbeelding te laden</translation>
 	</phrase>
 
 	<phrase>
-		<original>Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into ## Thanks!</original>
-		<translation>Gebruik een ander programma om de afbeelding op te slaan in een generiek formaat (zoals JPEG of PNG) voordat u het in ## laad. Bedankt!</translation>
+		<original>Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into %1. Thanks!</original>
+		<translation>Gebruik een ander programma om de afbeelding op te slaan in een generiek formaat (zoals JPEG of PNG) voordat u het in %1 laad. Bedankt!</translation>
 	</phrase>
 
 	<phrase>
-		<original>## Import Failed</original>
-		<translation>## Import mislukt</translation>
+		<original>%1 Import Failed</original>
+		<translation>%1 Import mislukt</translation>
 	</phrase>
 
 	<phrase>
@@ -1595,8 +1590,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Color count successful ( ## BPP)</original>
-		<translation>Tellen kleuren succesvol (## BPP)</translation>
+		<original>Color count successful ( %1 BPP)</original>
+		<translation>Tellen kleuren succesvol (%1 BPP)</translation>
 	</phrase>
 
 	<phrase>
@@ -1700,8 +1695,8 @@
 	</phrase>
 
 	<phrase>
-		<original>The tiled image will be #1 #3 wide by #2 #3 tall</original>
-		<translation>De betegelde afbeelding zal #1 #3 breed op #2 #3 hoog zijn</translation>
+		<original>The tiled image will be %1 %3 wide by %2 %3 tall</original>
+		<translation>De betegelde afbeelding zal %1 %3 breed op %2 %3 hoog zijn</translation>
 	</phrase>
 
 	<phrase>
@@ -1970,8 +1965,8 @@
 	</phrase>
 
 	<phrase>
-		<original>These parameters allow for a maximum of X1 colors in the quantized image.</original>
-		<translation>Deze parameters staan een maximum van X1 kleuren toe in de gekwantiseerde afbeelding.</translation>
+		<original>These parameters allow for a maximum of %1 colors in the quantized image.</original>
+		<translation>Deze parameters staan een maximum van %1 kleuren toe in de gekwantiseerde afbeelding.</translation>
 	</phrase>
 
 	<phrase>
@@ -2056,27 +2051,27 @@
 
 	<phrase>
 		<original>An error occurred while checking for updates.  Please try again later.</original>
-		<translation>Dit exemplaar van X1 is de nieuwst beschikbare. (Versie</translation>
+		<translation>Dit exemplaar van %1 is de nieuwst beschikbare. (Versie</translation>
 	</phrase>
 
 	<phrase>
-		<original>This copy of X1 is the newest available.  (Version</original>
+		<original>This copy of %1 is the newest available.  (Version</original>
 		<translation>Software-update gevonden! Lanceren van Update Berichtgeving</translation>
 	</phrase>
 
 	<phrase>
-		<original>The next time you launch X1, it will remind you about this software update.</original>
-		<translation>De volgende keer dat u X1 start, zal deze u eraan herinneren over software-update.</translation>
+		<original>The next time you launch %1, it will remind you about this software update.</original>
+		<translation>De volgende keer dat u %1 start, zal deze u eraan herinneren over software-update.</translation>
 	</phrase>
 
 	<phrase>
-		<original>Note: you can always manually download the latest version of X1 by visiting the X1 website.</original>
-		<translation>Opmerking: u kunt de laatste versie van X1 altijd handmatig downloaden door een bezoek aan de X1 website te brengen.</translation>
+		<original>Note: you can always manually download the latest version of %1 by visiting the %1 website.</original>
+		<translation>Opmerking: u kunt de laatste versie van %1 altijd handmatig downloaden door een bezoek aan de %1 website te brengen.</translation>
 	</phrase>
 
 	<phrase>
-		<original>X1 will no longer prompt you about software updates.  (If you change your mind in the future,</original>
-		<translation>X1 zal niet meer vragen voor software-updates. (Als u van gedachten verandert in de toekomst,</translation>
+		<original>%1 will no longer prompt you about software updates.  (If you change your mind in the future,</original>
+		<translation>%1 zal niet meer vragen voor software-updates. (Als u van gedachten verandert in de toekomst,</translation>
 	</phrase>
 
 	<phrase>
@@ -2085,13 +2080,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Thanks for downloading the latest X1 update.  Hope you enjoy it!</original>
-		<translation>Bedankt voor het downloaden van de nieuwste X1 update. Ik hoop dat je ervan geniet!</translation>
+		<original>Thanks for downloading the latest %1 update.  Hope you enjoy it!</original>
+		<translation>Bedankt voor het downloaden van de nieuwste %1 update. Ik hoop dat je ervan geniet!</translation>
 	</phrase>
 
 	<phrase>
-		<original>What's new in X1</original>
-		<translation>Wat is nieuw in X1</translation>
+		<original>What's new in %1</original>
+		<translation>Wat is nieuw in %1</translation>
 	</phrase>
 
 	<phrase>
@@ -2100,8 +2095,8 @@
 	</phrase>
 
 	<phrase>
-		<original>A new version of X1 is available!</original>
-		<translation>Een nieuwe versie van X1 is beschikbaar!</translation>
+		<original>A new version of %1 is available!</original>
+		<translation>Een nieuwe versie van %1 is beschikbaar!</translation>
 	</phrase>
 
 	<phrase>
@@ -2150,8 +2145,8 @@
 	</phrase>
 
 	<phrase>
-		<original>X1 was unable to print the image.  Please make sure that the specified printer ( X2 ) is powered-on and ready for printing.</original>
-		<translation>X1 was niet in staat om de afbeelding af te drukken. Zorg ervoor dat de gespecificeerde printer (X2) ingeschakeld is en en gereed om af te drukken.</translation>
+		<original>%1 was unable to print the image.  Please make sure that the specified printer ( %2 ) is powered-on and ready for printing.</original>
+		<translation>%1 was niet in staat om de afbeelding af te drukken. Zorg ervoor dat de gespecificeerde printer (%2) ingeschakeld is en en gereed om af te drukken.</translation>
 	</phrase>
 
 	<phrase>
@@ -2185,8 +2180,8 @@
 	</phrase>
 
 	<phrase>
-		<original>The next time you load X1, it will offer to download this plugin for you.</original>
-		<translation>De volgende keer dat u X1, zal deze aanbieden om deze plugin te downloaden.</translation>
+		<original>The next time you load %1, it will offer to download this plugin for you.</original>
+		<translation>De volgende keer dat u %1, zal deze aanbieden om deze plugin te downloaden.</translation>
 	</phrase>
 
 	<phrase>
@@ -2385,13 +2380,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Batch conversion of X1 files was successful!</original>
-		<translation>Batch conversie van X1 bestanden is gelukt!</translation>
+		<original>Batch conversion of %1 files was successful!</original>
+		<translation>Batch conversie van %1 bestanden is gelukt!</translation>
 	</phrase>
 
 	<phrase>
-		<original>Batch conversion canceled. X1 image</original>
-		<translation>Batch-conversie geannuleerd. X1 afbeelding</translation>
+		<original>Batch conversion canceled. %1 image</original>
+		<translation>Batch-conversie geannuleerd. %1 afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -2605,8 +2600,8 @@
 	</phrase>
 
 	<phrase>
-		<original>To make sure your bug is addressed as quickly as possible, X1 needs to know where to send it</original>
-		<translation>Om ervoor te zorgen dat uw bug zo snel mogelijk is verzonden, moet X1 weten waarnaar dit te verzenden.</translation>
+		<original>To make sure your bug is addressed as quickly as possible, %1 needs to know where to send it</original>
+		<translation>Om ervoor te zorgen dat uw bug zo snel mogelijk is verzonden, moet %1 weten waarnaar dit te verzenden.</translation>
 	</phrase>
 
 	<phrase>
@@ -2615,8 +2610,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Thanks for making X1 better</original>
-		<translation>Bedankt voor het beter maken van X1</translation>
+		<original>Thanks for making %1 better</original>
+		<translation>Bedankt voor het beter maken van %1</translation>
 	</phrase>
 
 	<phrase>
@@ -3330,8 +3325,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Support X1with a small donation (thank you!)</original>
-		<translation>Ondersteuning X1 met een kleine donatie (dank u!)</translation>
+		<original>Support %1with a small donation (thank you!)</original>
+		<translation>Ondersteuning %1 met een kleine donatie (dank u!)</translation>
 	</phrase>
 
 	<phrase>
@@ -3350,23 +3345,23 @@
 	</phrase>
 
 	<phrase>
-		<original>&Visit the X1Website</original>
-		<translation>&Bezoek de X1 Website</translation>
+		<original>&Visit the %1Website</original>
+		<translation>&Bezoek de %1 Website</translation>
 	</phrase>
 
 	<phrase>
-		<original>Download X1Source Code</original>
-		<translation>Download X1's broncode</translation>
+		<original>Download %1Source Code</original>
+		<translation>Download %1's broncode</translation>
 	</phrase>
 
 	<phrase>
-		<original>Read X1's License and Terms of Use</original>
-		<translation>Lees de licentie en de gebruiksvoorwaarden van X1</translation>
+		<original>Read %1's License and Terms of Use</original>
+		<translation>Lees de licentie en de gebruiksvoorwaarden van %1</translation>
 	</phrase>
 
 	<phrase>
-		<original>&About X1</original>
-		<translation>&Over X1</translation>
+		<original>&About %1</original>
+		<translation>&Over %1</translation>
 	</phrase>
 
 	<phrase>
@@ -3450,8 +3445,8 @@
 	</phrase>
 
 	<phrase>
-		<original>No X1 encoder found. Save aborted.</original>
-		<translation>Geen X1 encoder gevonden. Opslaan afgebroken.</translation>
+		<original>No %1 encoder found. Save aborted.</original>
+		<translation>Geen %1 encoder gevonden. Opslaan afgebroken.</translation>
 	</phrase>
 
 	<phrase>
@@ -3465,8 +3460,8 @@
 	</phrase>
 
 	<phrase>
-		<original>please allow X1 to download plugin updates by going to the 'Edit Menu -> Program Preferences',</original>
-		<translation>staat u X1 toe tot plugin updates te downloaden door te gaan naar het menu 'Bewerken -> Programma Voorkeuren',</translation>
+		<original>please allow %1 to download plugin updates by going to the 'Edit Menu -> Program Preferences',</original>
+		<translation>staat u %1 toe tot plugin updates te downloaden door te gaan naar het menu 'Bewerken -> Programma Voorkeuren',</translation>
 	</phrase>
 
 	<phrase>
@@ -3500,8 +3495,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Applying X1 filter</original>
-		<translation>Toepassen X1 filter</translation>
+		<original>Applying %1 filter</original>
+		<translation>Toepassen %1 filter</translation>
 	</phrase>
 
 	<phrase>
@@ -3665,8 +3660,8 @@
 	</phrase>
 
 	<phrase>
-		<original>This image contains X1 unique colors.</original>
-		<translation>Deze afbeelding bevat X1 unieke kleuren.</translation>
+		<original>This image contains %1 unique colors.</original>
+		<translation>Deze afbeelding bevat %1 unieke kleuren.</translation>
 	</phrase>
 
 	<phrase>
@@ -3855,13 +3850,13 @@
 	</phrase>
 
 	<phrase>
-		<original>Importing frame # #1 from animated GIF file</original>
-		<translation>Het importeren van frame # # 1 van geanimeerde GIF-bestand</translation>
+		<original>Importing frame # %1 from animated GIF file</original>
+		<translation>Het importeren van frame # %1 van geanimeerde GIF-bestand</translation>
 	</phrase>
 
 	<phrase>
-		<original>Importing frame # #1 from multipage TIFF file</original>
-		<translation>Het importeren van frame # # 1 van meerbladige TIFF-bestand</translation>
+		<original>Importing frame # %1 from multipage TIFF file</original>
+		<translation>Het importeren van frame # %1 van meerbladige TIFF-bestand</translation>
 	</phrase>
 
 	<phrase>
@@ -4305,8 +4300,8 @@
 	</phrase>
 
 	<phrase>
-		<original>- If this image file came from a digital camera, scanner, or other image editing program, it's possible that X1 simply doesn't understand this particular file format.</original>
-		<translation>- Als dit afbeeldingsbestand afkomstig is van een digitale camera, scanner of een ander beeldbewerkingsprogramma, is het mogelijk dat X1 dit bepaald bestandsformaat gewoon niet begrijpt .</translation>
+		<original>- If this image file came from a digital camera, scanner, or other image editing program, it's possible that %1 simply doesn't understand this particular file format.</original>
+		<translation>- Als dit afbeeldingsbestand afkomstig is van een digitale camera, scanner of een ander beeldbewerkingsprogramma, is het mogelijk dat %1 dit bepaald bestandsformaat gewoon niet begrijpt .</translation>
 	</phrase>
 
 	<phrase>
@@ -4330,8 +4325,8 @@
 	</phrase>
 
 	<phrase>
-		<original>1) the file hasn't been deleted, and 2) the file location provided to X1 is correct.</original>
-		<translation>1) het bestand niet is verwijderd, en 2) de bestandslocatie gekoppeld aan X1 correct is.</translation>
+		<original>1) the file hasn't been deleted, and 2) the file location provided to %1 is correct.</original>
+		<translation>1) het bestand niet is verwijderd, en 2) de bestandslocatie gekoppeld aan %1 correct is.</translation>
 	</phrase>
 
 	<phrase>
@@ -4340,8 +4335,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses X1 .)</original>
-		<translation>Wilt u een bug rapport in dienen? (Het duurt minder dan een minuut, en het helpt iedereen die gebruik maakt van X1.)</translation>
+		<original>Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses %1 .)</original>
+		<translation>Wilt u een bug rapport in dienen? (Het duurt minder dan een minuut, en het helpt iedereen die gebruik maakt van %1.)</translation>
 	</phrase>
 
 	<phrase>
@@ -4435,8 +4430,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Preparing X1 image</original>
-		<translation>Klaarmaken X1 afbeelding</translation>
+		<original>Preparing %1 image</original>
+		<translation>Klaarmaken %1 afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -4545,8 +4540,8 @@
 	</phrase>
 
 	<phrase>
-		<original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error # X1).</original>
-		<translation>De scanner gaf een fout terug die niet werd aangegeven in de documentatie van EZTW32.dll (Error # X1).</translation>
+		<original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error # %1).</original>
+		<translation>De scanner gaf een fout terug die niet werd aangegeven in de documentatie van EZTW32.dll (Error # %1).</translation>
 	</phrase>
 
 	<phrase>
@@ -4560,8 +4555,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Would you like to minimize X1 before capturing the screen?</original>
-		<translation>Wil je X1 te minimaliseren voor de screen capture?</translation>
+		<original>Would you like to minimize %1 before capturing the screen?</original>
+		<translation>Wil je %1 te minimaliseren voor de screen capture?</translation>
 	</phrase>
 
 	<phrase>
@@ -4620,28 +4615,28 @@
 	</phrase>
 
 	<phrase>
-		<original>Zoom paused due to unexpected error (#</original>
-		<translation>Zoom onderbroken als gevolg van onverwachte fout (#</translation>
+		<original>Zoom paused due to unexpected error (# %1) </original>
+		<translation>Zoom onderbroken als gevolg van onverwachte fout (# %1)</translation>
 	</phrase>
 
 	<phrase>
-		<original>An error (# X1) has occurred.  Compression halted.</original>
-		<translation>Er heeft een fout (# X1) plaatsgevonden. Compressie gestopt.</translation>
+		<original>An error (# %1) has occurred.  Compression halted.</original>
+		<translation>Er heeft een fout (# %1) plaatsgevonden. Compressie gestopt.</translation>
 	</phrase>
 
 	<phrase>
-		<original>File compressed from X1 bytes to X2 bytes.  Ratio: X3 %</original>
-		<translation>Bestand gecomprimeerd van X1 bytes naar X2 bytes. Ratio: X3%</translation>
+		<original>File compressed from %1 bytes to %2 bytes.  Ratio: X3 %</original>
+		<translation>Bestand gecomprimeerd van %1 bytes naar %2 bytes. Ratio: X3%</translation>
 	</phrase>
 
 	<phrase>
-		<original>An error (# X1) has occurred.  Decompression halted.</original>
-		<translation>Er heeft een fout (# X1) plaatsgevonden. Decompressie gestopt.</translation>
+		<original>An error (# %1) has occurred.  Decompression halted.</original>
+		<translation>Er heeft een fout (# %1) plaatsgevonden. Decompressie gestopt.</translation>
 	</phrase>
 
 	<phrase>
-		<original>File decompressed from X1 bytes to X2 bytes.</original>
-		<translation>Bestand gedecomprimeerd van X1 bytes naar X2 bytes.</translation>
+		<original>File decompressed from %1 bytes to %2 bytes.</original>
+		<translation>Bestand gedecomprimeerd van %1 bytes naar %2 bytes.</translation>
 	</phrase>
 
 	<phrase>
@@ -4700,8 +4695,8 @@
 	</phrase>
 
 	<phrase>
-		<original>This will automatically open the X1 webpage where you can download the language plugin.</original>
-		<translation>Dit zal automatisch de X1 webpagina openen waar u de taal-plugin kan van downloaden.</translation>
+		<original>This will automatically open the %1 webpage where you can download the language plugin.</original>
+		<translation>Dit zal automatisch de %1 webpagina openen waar u de taal-plugin kan van downloaden.</translation>
 	</phrase>
 
 	<phrase>
@@ -4720,8 +4715,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Please, after making changes and saving them, click the button 'Send linguistic parameters to X1', so everyone can make use of it.</original>
-		<translation>a.u.b. Klik na het wijzigen en bewaren op de knop 'Verzenden linguïstische-parameters naar X1' ,zo kan iedereen er gebruik van maken.</translation>
+		<original>Please, after making changes and saving them, click the button 'Send linguistic parameters to %1', so everyone can make use of it.</original>
+		<translation>a.u.b. Klik na het wijzigen en bewaren op de knop 'Verzenden linguïstische-parameters naar %1' ,zo kan iedereen er gebruik van maken.</translation>
 	</phrase>
 
 	<phrase>
@@ -4730,8 +4725,8 @@
 	</phrase>
 
 	<phrase>
-		<original>Send linguistic parameters X2 to X1</original>
-		<translation>Zend linguïstische-parameters X2 naar X1</translation>
+		<original>Send linguistic parameters %2 to %1</original>
+		<translation>Zend linguïstische-parameters %2 naar %1</translation>
 	</phrase>
 
 	<phrase>
@@ -4945,13 +4940,13 @@
     </phrase>
 
     <phrase>
-        <original>You are running X1 inside the Visual Basic IDE.  This is not recommended.</original>
-        <translation>U gebruikt X1 binnen in de Visual Basic IDE. Dit wordt niet aanbevolen.</translation>
+        <original>You are running %1 inside the Visual Basic IDE.  This is not recommended.</original>
+        <translation>U gebruikt %1 binnen in de Visual Basic IDE. Dit wordt niet aanbevolen.</translation>
     </phrase>
 
     <phrase>
-        <original>Please compile X1 before using it.</original>
-        <translation>Gelieve X1 te  compileren voordat u het gebruikt.</translation>
+        <original>Please compile %1 before using it.</original>
+        <translation>Gelieve %1 te  compileren voordat u het gebruikt.</translation>
     </phrase>
 
     <phrase>
@@ -4965,18 +4960,18 @@
     </phrase>
 
     <phrase>
-        <original>Additionally, like all other photo editors, X1 relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-        <translation>Bovendien, leunt X1 net als alle andere foto-editors zwaar op multidimensionale arrays. Array prestaties nemen sterk af in de IDE, dus sommige functies kunnen heel langzaam worden.</translation>
+        <original>Additionally, like all other photo editors, %1 relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
+        <translation>Bovendien, leunt %1 net als alle andere foto-editors zwaar op multidimensionale arrays. Array prestaties nemen sterk af in de IDE, dus sommige functies kunnen heel langzaam worden.</translation>
     </phrase>
 
     <phrase>
-        <original>If you insist on running X1 in the IDE, please do not submit bugs regarding IDE crashes or freezes.  X1's developers can only address issues and bugs that affect the compiled .exe.</original>
-        <translation>Als u aandringt op het runnen van % 1 in de IDE, stuur dan geen bugs met betrekking tot IDE, crashes of vastlopen . De X1's ontwikkelaars  kunnen alleen adresseren problemen en bugs die de gecompileerde. Exe beïnvloeden.</translation>
+        <original>If you insist on running %1 in the IDE, please do not submit bugs regarding IDE crashes or freezes.  %1's developers can only address issues and bugs that affect the compiled .exe.</original>
+        <translation>Als u aandringt op het runnen van % 1 in de IDE, stuur dan geen bugs met betrekking tot IDE, crashes of vastlopen . De %1's ontwikkelaars  kunnen alleen adresseren problemen en bugs die de gecompileerde. Exe beïnvloeden.</translation>
     </phrase>
 
     <phrase>
-        <original>I understand the risks of running X1 in the IDE</original>
-        <translation>Ik begrijp de risico's van het runnen van X1 in de IDE</translation>
+        <original>I understand the risks of running %1 in the IDE</original>
+        <translation>Ik begrijp de risico's van het runnen van %1 in de IDE</translation>
     </phrase>
 
     <phrase>
@@ -5195,8 +5190,8 @@
     </phrase>
 
     <phrase>
-        <original>, but incorrect version ( X1 found X2 expected)</original>
-        <translation>, Maar onjuiste versie ( X1 gevonden X2 verwacht)</translation>
+        <original>, but incorrect version ( %1 found %2 expected)</original>
+        <translation>, Maar onjuiste versie ( %1 gevonden %2 verwacht)</translation>
     </phrase>
 
     <phrase>
@@ -5215,13 +5210,13 @@
     </phrase>
 
     <phrase>
-        <original>X1 Plugin Manager</original>
-        <translation>X1 Plugin Manager</translation>
+        <original>%1 Plugin Manager</original>
+        <translation>%1 Plugin Manager</translation>
     </phrase>
 
     <phrase>
-        <original>X1 plugin information</original>
-        <translation>X1 plugin informatie</translation>
+        <original>%1 plugin information</original>
+        <translation>%1 plugin informatie</translation>
     </phrase>
 
     <phrase>
@@ -5235,13 +5230,13 @@
     </phrase>
 
     <phrase>
-        <original>X1 license</original>
-        <translation>X1 licentie</translation>
+        <original>%1 license</original>
+        <translation>%1 licentie</translation>
     </phrase>
 
     <phrase>
-        <original>X1 settings</original>
-        <translation>X1 instellingen</translation>
+        <original>%1 settings</original>
+        <translation>%1 instellingen</translation>
     </phrase>
 
     <phrase>
@@ -5415,7 +5410,7 @@
     </phrase>
 
     <phrase>
-        <original>Applying unsharp mask (step X1 of 2)</original>
+        <original>Applying unsharp mask (step %1 of 2)</original>
         <translation>Toepassen van onscherp masker (stap% 1 van 2)</translation>
     </phrase>
 
