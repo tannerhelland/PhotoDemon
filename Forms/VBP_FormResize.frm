@@ -635,6 +635,11 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 Dim qvDepth As Long
                 qvDepth = tmpLayer.getLayerColorDepth \ 8
                 
+                'Create a filter support class, which will aid with edge handling and interpolation
+                Dim fSupport As pdFilterSupport
+                Set fSupport = New pdFilterSupport
+                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.MaxX, curLayerValues.MaxY
+    
                 'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
                 ' based on the size of the area to be processed.
                 Dim progBarCheck As Long
@@ -647,77 +652,25 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 Dim xScale As Double, yScale As Double
                 xScale = (pdImages(CurrentImage).Width - 1) / iWidth
                 yScale = (pdImages(CurrentImage).Height - 1) / iHeight
-    
-                'Interpolated X and Y values
-                Dim IntrplX As Long, IntrplY As Long
-                
-                'Calculation variables
-                Dim CalcX As Double, CalcY As Double, invCalcX As Double, invCalcY As Double
-                
-                'Values we'll use to interpolate the new pixel
-                Dim r1 As Double, r2 As Double, r3 As Double, r4 As Double
-                Dim r As Long
-                
-                'Interpolated results (horizontal and vertical)
-                Dim ir1 As Long, ir2 As Long
-                
-                'Shortcut variables for x positions
-                Dim QuickX As Long, QuickXInt As Long, QuickXIntRight As Long
                             
                 'Coordinate variables for source and destination
-                Dim x As Long, y As Long, i As Long
-                Dim dstX As Double, dstY As Double
+                Dim x As Long, y As Long
+                Dim srcX As Double, srcY As Double
                             
                 For x = 0 To iWidth - 1
                     
                     'Generate the x calculation variables
-                    dstX = x * xScale
-                    IntrplX = Int(dstX)
-                    CalcX = dstX - IntrplX
-                    invCalcX = 1 - CalcX
+                    srcX = x * xScale
                     
-                    QuickX = x * qvDepth
-                    QuickXInt = IntrplX * qvDepth
-                    QuickXIntRight = (IntrplX + 1) * qvDepth
-        
                     'Draw each pixel in the new image
                     For y = 0 To iHeight - 1
                         
                         'Generate the y calculation variables
-                        dstY = y * yScale
-                        IntrplY = Int(dstY)
-                        CalcY = dstY - IntrplY
-                        invCalcY = 1 - CalcY
+                        srcY = y * yScale
                         
-                        'Using a loop at this point allows us to handle 24bpp images (qvDepth = 3) and 32bpp images (qvDepth = 4)
-                        ' without modifying our interpolation.  Thus, alpha will be interpolated just like the color channels.
-                        For i = 0 To qvDepth - 1
-                        
-                            'Get the 4 pixels around the interpolated one
-                            r1 = srcImageData(QuickXInt + i, IntrplY)
-                            
-                            r2 = srcImageData(QuickXIntRight + i, IntrplY)
-                            
-                            r3 = srcImageData(QuickXInt + i, IntrplY + 1)
-                
-                            r4 = srcImageData(QuickXIntRight + i, IntrplY + 1)
-                
-                            'Interpolate the value in the Y direction
-                            ir1 = r1 * invCalcY + r3 * CalcY
-                            ir2 = r2 * invCalcY + r4 * CalcY
-                            
-                            'Interpolate the value in the X direction
-                            r = ir1 * invCalcX + ir2 * CalcX
-                            
-                            'Make sure that the value is in acceptable byte range
-                            If r > 255 Then r = 255
-                            If r < 0 Then r = 0
-                            
-                            'Set this pixel onto the destination image
-                            dstImageData(QuickX + i, y) = r
-                            
-                        Next i
-                    
+                        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+                        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+                                            
                     Next y
                 
                     If (x And progBarCheck) = 0 Then SetProgBarVal x
