@@ -833,7 +833,7 @@ Private Sub cmdOpen_Click()
         
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , g_UserPreferences.getFilterPath, "Open a custom filter", , FormCustomFilter.hWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " " & g_Language.TranslateMessage("Filter") & " (." & FILTER_EXT & ")|*." & FILTER_EXT & "|" & g_Language.TranslateMessage("All files") & "|*.*", , g_UserPreferences.getFilterPath, g_Language.TranslateMessage("Open a custom filter"), , FormCustomFilter.hWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
             
             'Save the new directory as the default path for future usage
@@ -843,7 +843,7 @@ Private Sub cmdOpen_Click()
             updatePreview
             
         Else
-            pdMsgBox "An error occurred while attempting to load " & sFile & ".  Please verify that the file is a valid custom filter file.", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Custom Filter Error"
+            pdMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid custom filter file.", vbOKOnly + vbExclamation + vbApplicationModal, "Custom Filter Error", sFile
         End If
     End If
     
@@ -857,7 +857,7 @@ Private Sub cmdSave_Click()
         
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Filter (." & FILTER_EXT & ")|*." & FILTER_EXT & "|All files|*.*", , g_UserPreferences.getFilterPath, "Save a custom filter", "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " " & g_Language.TranslateMessage("Filter") & " (." & FILTER_EXT & ")|*." & FILTER_EXT & "|" & g_Language.TranslateMessage("All files") & "|*.*", , g_UserPreferences.getFilterPath, g_Language.TranslateMessage("Save a custom filter"), "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         g_UserPreferences.setFilterPath sFile

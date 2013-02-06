@@ -351,28 +351,28 @@ Private Sub UpdateVisibleControls()
         Case 3
             txtShades.Visible = False
             hsShades.Visible = False
-            lblAdditional.Caption = "decompose using these values:"
+            lblAdditional.Caption = g_Language.TranslateMessage("decompose using these values:")
             lblAdditional.Visible = True
             picDecompose.Visible = True
             picChannel.Visible = False
         Case 4
             txtShades.Visible = False
             hsShades.Visible = False
-            lblAdditional.Caption = "use this channel:"
+            lblAdditional.Caption = g_Language.TranslateMessage("use this channel:")
             lblAdditional.Visible = True
             picDecompose.Visible = False
             picChannel.Visible = True
         Case 5
             txtShades.Visible = True
             hsShades.Visible = True
-            lblAdditional.Caption = "use this many shades of gray:"
+            lblAdditional.Caption = g_Language.TranslateMessage("use this many shades of gray:")
             lblAdditional.Visible = True
             picDecompose.Visible = False
             picChannel.Visible = False
         Case 6
             txtShades.Visible = True
             hsShades.Visible = True
-            lblAdditional.Caption = "use this many shades of gray:"
+            lblAdditional.Caption = g_Language.TranslateMessage("use this many shades of gray:")
             lblAdditional.Visible = True
             picDecompose.Visible = False
             picChannel.Visible = False
@@ -467,7 +467,7 @@ End Sub
 'Reduce to X # gray shades
 Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Converting image to " & numOfShades & " shades of gray..."
+    If toPreview = False Then Message "Converting image to %1 shades of gray...", numOfShades
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -550,7 +550,7 @@ End Sub
 'Reduce to X # gray shades (dithered)
 Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Converting to " & numOfShades & " shades of gray, with dithering..."
+    If toPreview = False Then Message "Converting to %1 shades of gray, with dithering...", numOfShades
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -929,14 +929,14 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
      
     Select Case cChannel
         Case 0
-            cString = "red"
+            cString = g_Language.TranslateMessage("red")
         Case 1
-            cString = "green"
+            cString = g_Language.TranslateMessage("green")
         Case 2
-            cString = "blue"
+            cString = g_Language.TranslateMessage("blue")
     End Select
 
-    If toPreview = False Then Message "Converting image to grayscale using " & cString & " values..."
+    If toPreview = False Then Message "Converting image to grayscale using %1 values...", cString
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte

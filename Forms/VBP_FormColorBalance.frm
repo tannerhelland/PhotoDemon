@@ -25,18 +25,18 @@ Begin VB.Form FormColorBalance
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   540
-      Left            =   7560
+      Height          =   480
+      Left            =   6120
       TabIndex        =   13
       Top             =   4560
-      Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   953
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   847
       Caption         =   "preserve luminance"
       Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False

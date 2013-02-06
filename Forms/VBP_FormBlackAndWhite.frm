@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBlackAndWhite 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Black/White Color Conversion"
+   Caption         =   " Monochrome Conversion"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -27,8 +27,8 @@ Begin VB.Form FormBlackAndWhite
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   13
-      Top             =   1380
+      TabIndex        =   12
+      Top             =   1860
       Width           =   5610
       _ExtentX        =   9895
       _ExtentY        =   847
@@ -70,8 +70,8 @@ Begin VB.Form FormBlackAndWhite
       Left            =   9000
       ScaleHeight     =   465
       ScaleWidth      =   2745
-      TabIndex        =   10
-      Top             =   3360
+      TabIndex        =   9
+      Top             =   3840
       Width           =   2775
    End
    Begin VB.PictureBox picBWColor 
@@ -83,8 +83,8 @@ Begin VB.Form FormBlackAndWhite
       Left            =   6120
       ScaleHeight     =   465
       ScaleWidth      =   2745
-      TabIndex        =   9
-      Top             =   3360
+      TabIndex        =   8
+      Top             =   3840
       Width           =   2775
    End
    Begin VB.ComboBox cboDither 
@@ -103,7 +103,7 @@ Begin VB.Form FormBlackAndWhite
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   4
-      Top             =   2400
+      Top             =   2880
       Width           =   4935
    End
    Begin VB.HScrollBar hsThreshold 
@@ -112,7 +112,7 @@ Begin VB.Form FormBlackAndWhite
       Max             =   254
       Min             =   1
       TabIndex        =   2
-      Top             =   960
+      Top             =   1440
       Value           =   127
       Width           =   4935
    End
@@ -133,13 +133,13 @@ Begin VB.Form FormBlackAndWhite
       MaxLength       =   3
       TabIndex        =   3
       Text            =   "127"
-      Top             =   930
+      Top             =   1410
       Width           =   660
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -148,7 +148,7 @@ Begin VB.Form FormBlackAndWhite
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   5760
       Width           =   12255
    End
@@ -168,8 +168,8 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   8
-      Top             =   3000
+      TabIndex        =   7
+      Top             =   3480
       Width           =   3945
    End
    Begin VB.Label lblDither 
@@ -188,19 +188,9 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
-      Top             =   2040
-      Width           =   2130
-   End
-   Begin VB.Label lblBWDisclaimer 
-      BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormBlackAndWhite.frx":0000
-      ForeColor       =   &H00404040&
-      Height          =   735
-      Left            =   6000
       TabIndex        =   6
-      Top             =   4200
-      Width           =   5775
+      Top             =   2520
+      Width           =   2130
    End
    Begin VB.Label lblHeader 
       AutoSize        =   -1  'True
@@ -219,7 +209,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   285
       Left            =   6000
       TabIndex        =   5
-      Top             =   600
+      Top             =   1080
       Width           =   1080
    End
 End

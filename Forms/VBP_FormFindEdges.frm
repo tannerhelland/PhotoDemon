@@ -457,31 +457,31 @@ Private Sub UpdateDescriptions()
     Dim l As String
     l = LstEdgeOptions.List(LstEdgeOptions.ListIndex)
     If l = "Prewitt Horizontal" Then
-        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
+        LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
         FilterPrewittHorizontal CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Prewitt Vertical" Then
-        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
+        LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
         FilterPrewittVertical CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Sobel Horizontal" Then
-        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
+        LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
         FilterSobelHorizontal CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Sobel Vertical" Then
-        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
+        LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
         FilterSobelVertical CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Laplacian" Then
-        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
+        LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
         FilterLaplacian CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Artistic Contour" Then
-        LblDesc = "Algorithm designed to present a clean, artistic prediction of image edges."
+        LblDesc = g_Language.TranslateMessage("Algorithm designed to present a clean, artistic prediction of image edges.")
         FilterSmoothContour CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "Hilite" Then
-        LblDesc = "Simple matrix method:" & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
+        LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
         FilterHilite CBool(chkInvert.Value), True, fxPreview
     ElseIf l = "PhotoDemon Linear" Then
-        LblDesc = "Simple mathematical routine based on linear relationships between diagonal pixels."
+        LblDesc = g_Language.TranslateMessage("Simple mathematical routine based on linear relationships between diagonal pixels.")
         PhotoDemonLinearEdgeDetection CBool(chkInvert.Value), True, fxPreview
     Else
-        LblDesc = "Advanced mathematical routine based on cubic relationships between diagonal pixels."
+        LblDesc = g_Language.TranslateMessage("Advanced mathematical routine based on cubic relationships between diagonal pixels.")
         PhotoDemonCubicEdgeDetection CBool(chkInvert.Value), True, fxPreview
     End If
 End Sub

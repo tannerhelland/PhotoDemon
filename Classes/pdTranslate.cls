@@ -712,12 +712,14 @@ End Function
 'Given an object with a guaranteed .Caption property (command button, label, etc.), replace the caption with a translation from file
 Public Sub translateObjectCaption(ByRef srcObject As Control)
 
-    'Do an initial check to see if we need to translate this string at all
-    If Not translationActive Then Exit Sub
-
     Dim searchString As String, newString As String
-    searchString = srcObject.Caption
-    newString = getTranslationTagFromCaption(searchString)
+    
+    If translationActive Then
+        searchString = srcObject.Caption
+        newString = getTranslationTagFromCaption(searchString)
+    Else
+        newString = srcObject.Caption
+    End If
     
     'If a new string was found, apply it to the object's caption
     If newString <> "" Then
@@ -760,21 +762,24 @@ Public Sub restoreFormCaption(ByRef srcForm As Form)
     newString = getOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then srcForm.Caption = newString
+    If newString <> "" Then srcForm.Caption = " " & newString
     
 End Sub
 
 'Translate a form caption
 Public Sub translateFormCaption(ByRef srcForm As Form)
 
-    If Not translationActive Then Exit Sub
-
     Dim searchString As String, newString As String
-    searchString = srcForm.Caption
-    newString = getTranslationTagFromCaption(searchString)
+    
+    If translationActive Then
+        searchString = srcForm.Caption
+        newString = getTranslationTagFromCaption(searchString)
+    Else
+        newString = srcForm.Caption
+    End If
     
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then srcForm.Caption = newString
+    If newString <> "" Then srcForm.Caption = " " & newString
     
 End Sub
 
@@ -877,7 +882,7 @@ Public Sub applyTranslations(ByRef srcForm As Form)
             Next i
             
         End If
-            
+        
     Next
     
 End Sub
