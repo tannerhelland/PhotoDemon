@@ -1909,10 +1909,10 @@ Private Sub UpdatePluginLabels()
     
     If pluginStatus Then
         lblPluginStatus.ForeColor = GOODCOLOR
-        lblPluginStatus.Caption = "GOOD"
+        lblPluginStatus.Caption = UCase(g_Language.TranslateMessage("GOOD"))
     Else
         lblPluginStatus.ForeColor = BADCOLOR
-        lblPluginStatus.Caption = "problems detected"
+        lblPluginStatus.Caption = g_Language.TranslateMessage("problems detected")
     End If
         
 End Sub
@@ -1962,37 +1962,37 @@ Private Function popPluginLabel(ByVal curPlugin As Long, ByRef pluginName As Str
         
         'If present, has it been forcibly disabled?
         If isEnabled Then
-            lblStatus(curPlugin).Caption = "installed"
-            lblDisable(curPlugin).Caption = "disable " & pluginName
+            lblStatus(curPlugin).Caption = g_Language.TranslateMessage("installed")
+            lblDisable(curPlugin).Caption = g_Language.TranslateMessage("disable") & " " & pluginName
             
             'If this plugin is present and enabled, does its version match what we expect?
             If StrComp(vString(curPlugin), expectedVersion, vbTextCompare) = 0 Then
-                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & " and up to date"
+                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & " " & g_Language.TranslateMessage("and up to date")
                 lblStatus(curPlugin).ForeColor = GOODCOLOR
                 popPluginLabel = True
                 
             'Version mismatch
             Else
-                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & ", but incorrect version (" & vString(0) & " found, " & expectedVersion & " expected)"
+                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & ", " & g_Language.TranslateMessage("but incorrect version") & " (" & vString(0) & " " & g_Language.TranslateMessage("found") & ", " & expectedVersion & " " & g_Language.TranslateMessage("expected") & ")"
                 lblStatus(curPlugin).ForeColor = BADCOLOR
                 popPluginLabel = False
             End If
             
         'Plugin is disabled
         Else
-            lblStatus(curPlugin).Caption = "installed, but disabled by user"
+            lblStatus(curPlugin).Caption = g_Language.TranslateMessage("installed, but disabled by user")
             lblStatus(curPlugin).ForeColor = BADCOLOR
-            lblDisable(curPlugin).Caption = "enable " & pluginName
+            lblDisable(curPlugin).Caption = g_Language.TranslateMessage("enable") & " " & pluginName
             popPluginLabel = False
         End If
         
     'Plugin is not present on the machine
     Else
-        lblStatus(curPlugin).Caption = "missing"
+        lblStatus(curPlugin).Caption = g_Language.TranslateMessage("missing")
         lblStatus(curPlugin).ForeColor = BADCOLOR
         lblDisable(curPlugin).Visible = False
         popPluginLabel = False
-        lblPluginVersion(curPlugin).Caption = "missing"
+        lblPluginVersion(curPlugin).Caption = g_Language.TranslateMessage("missing")
         lblPluginVersion(curPlugin).ForeColor = BADCOLOR
     End If
     

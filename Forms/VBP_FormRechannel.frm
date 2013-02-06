@@ -412,7 +412,9 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
             cName = "black"
     End Select
     
-    If toPreview = False Then Message "Isolating the " & cName & " channel..."
+    cName = g_Language.TranslateMessage(cName)
+    
+    If toPreview = False Then Message "Isolating the %1 channel...", cName
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte

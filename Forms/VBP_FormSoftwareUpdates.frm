@@ -339,7 +339,7 @@ Private Sub cmdNoDownload_Click()
     picNo.Left = 0
     picNo.Top = 0
     DoEvents
-    txtNoExplanation.Text = "The next time you launch " & PROGRAMNAME & ", it will remind you about this software update." & vbCrLf & vbCrLf & "Note: you can always manually download the latest version of " & PROGRAMNAME & " by visiting the " & PROGRAMNAME & " website."
+    txtNoExplanation.Text = g_Language.TranslateMessage("The next time you launch the program, it will remind you about this software update." & vbCrLf & vbCrLf & "Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon.")
     picNo.Visible = True
     cmdOKNo.Visible = True
     cmdOKNo.SetFocus
@@ -359,7 +359,7 @@ Private Sub cmdNoDownloadNoReminder_Click()
     picNo.Left = 0
     picNo.Top = 0
     DoEvents
-    txtNoExplanation.Text = PROGRAMNAME & " will no longer prompt you about software updates.  (If you change your mind in the future, this setting can be reversed from the 'Edit' -> 'Program Preferences' menu.)" & vbCrLf & vbCrLf & "Note: you can always manually download the latest version of " & PROGRAMNAME & " by visiting the " & PROGRAMNAME & " website."
+    txtNoExplanation.Text = "You will no longer be prompted about software updates.  (If you change your mind in the future, this setting can be reversed from the 'Tools' -> 'Options' menu.)" & vbCrLf & vbCrLf & "Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon."
     picNo.Visible = True
     cmdOKNo.Visible = True
     cmdOKNo.SetFocus
@@ -387,7 +387,7 @@ Private Sub Form_Load()
     
     'If available, display a link to the update notice of this software version
     If updateAnnouncement <> "" Then
-        lblUpdateAnnouncement = "What's new in PhotoDemon " & updateMajor & "." & updateMinor & "?"
+        lblUpdateAnnouncement = g_Language.TranslateMessage("What's new in PhotoDemon") & " " & updateMajor & "." & updateMinor & "?"
     Else
         lblAnnouncementExplanation.Visible = False
         lblUpdateAnnouncement.Visible = False

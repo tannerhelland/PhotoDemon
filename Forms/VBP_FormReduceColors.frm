@@ -580,7 +580,7 @@ End Sub
 'This lets the user know the max number of colors that the current set of quantization parameters will allow for
 Private Sub updateColorLabel()
     If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then
-        lblMaxColors = "Maximum # of colors with these parameters: " & Val(TxtR) * Val(TxtG) * Val(TxtB)
+        lblMaxColors = g_Language.TranslateMessage("Maximum # of colors with these parameters:") & " " & Val(TxtR) * Val(TxtG) * Val(TxtB)
         updateReductionPreview
     Else
         lblMaxColors = ""
@@ -686,7 +686,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
         End If
         
     Else
-        pdMsgBox "The FreeImage interface plug-ins (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " FreeImage Interface Error"
+        pdMsgBox "The FreeImage interface plug-ins (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, " FreeImage Interface Error"
         Exit Sub
     End If
     

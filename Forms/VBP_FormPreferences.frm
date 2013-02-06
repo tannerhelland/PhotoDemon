@@ -2544,9 +2544,9 @@ Private Sub cmdOK_Click()
     g_UserPreferences.SetPreference_Boolean "General Preferences", "ConfirmClosingUnsaved", g_ConfirmClosingUnsaved
     
     If g_ConfirmClosingUnsaved Then
-        FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes."
+        FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes.")
     Else
-        FormMain.cmdClose.ToolTip = "Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences)," & vbCrLf & " you WILL NOT receive a prompt to save this image before it closes."
+        FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Tools -> Options)," & vbCrLf & " you WILL NOT receive a prompt to save this image before it closes.")
     End If
     
     'Store the user's preferred behavior for outgoing color depth
@@ -2668,7 +2668,7 @@ Private Sub cmdReset_Click()
 
     'Before resetting, warn the user
     Dim confirmReset As VbMsgBoxResult
-    confirmReset = pdMsgBox("This action will reset all preferences to their default values.  It cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset all " & PROGRAMNAME & " preferences")
+    confirmReset = pdMsgBox("This action will reset all preferences to their default values.  It cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset all preferences")
 
     'If the user gives final permission, rewrite the INI file from scratch and repopulate this form
     If confirmReset = vbYes Then
@@ -2765,7 +2765,7 @@ Private Sub LoadAllPreferences()
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then chkTaskbarIcon.Value = vbChecked Else chkTaskbarIcon.Value = vbUnchecked
     If Not g_ImageFormats.FreeImageEnabled Then
         chkTaskbarIcon.Enabled = False
-        chkTaskbarIcon.Caption = " dynamically update taskbar icon to match current image (FreeImage plugin required)"
+        chkTaskbarIcon.Caption = g_Language.TranslateMessage(" dynamically update taskbar icon to match current image (FreeImage plugin required)")
     End If
     
     'Populate the combo box for exported color depth
@@ -2871,10 +2871,10 @@ Private Sub LoadAllPreferences()
     'Hide the modern typefaces box if the user in on XP.  If the user is on Vista or later, set the box according
     ' to the preference stated in their INI file.
     If Not g_IsVistaOrLater Then
-        chkFancyFonts.Caption = " render PhotoDemon text with modern typefaces (only available on Vista or newer)"
+        chkFancyFonts.Caption = g_Language.TranslateMessage(" render PhotoDemon text with modern typefaces (only available on Vista or newer)")
         chkFancyFonts.Enabled = False
     Else
-        chkFancyFonts.Caption = " render PhotoDemon text with modern typefaces"
+        chkFancyFonts.Caption = g_Language.TranslateMessage(" render PhotoDemon text with modern typefaces")
         chkFancyFonts.Enabled = True
         If g_UseFancyFonts Then chkFancyFonts.Value = vbChecked Else chkFancyFonts.Value = vbUnchecked
         originalg_useFancyFonts = g_UseFancyFonts
@@ -2882,10 +2882,10 @@ Private Sub LoadAllPreferences()
         
     'Populate and en/disable the run-time only settings in the "Advanced" panel
     If g_ImageFormats.GDIPlusEnabled Then
-        chkGDIPlusTest.Caption = " enable GDI+ support"
+        chkGDIPlusTest.Caption = g_Language.TranslateMessage(" enable GDI+ support")
         chkGDIPlusTest.Value = vbChecked
     Else
-        chkGDIPlusTest.Caption = " enable GDI+ support (do not enable this if gdiplus.dll is not available)"
+        chkGDIPlusTest.Caption = g_Language.TranslateMessage(" enable GDI+ support (do not enable this if gdiplus.dll is not available)")
         chkGDIPlusTest.Value = vbUnchecked
     End If
     
@@ -2897,7 +2897,7 @@ Private Sub LoadAllPreferences()
     'If any preferences rely on FreeImage to operate, en/disable them as necessary
     If g_ImageFormats.FreeImageEnabled = False Then
         'chkToneMapping.Value = vbUnchecked
-        chkToneMapping.Caption = " feature disabled due to missing plungin"
+        chkToneMapping.Caption = g_Language.TranslateMessage(" feature disabled due to missing plugin")
         chkToneMapping.Enabled = False
         cmbMultiImage.Clear
         cmbMultiImage.AddItem " feature disabled due to missing plugin", 0
@@ -2913,11 +2913,11 @@ Private Sub LoadAllPreferences()
     End If
 
     'Finally, display some memory usage information
-    lblMemoryUsageCurrent.Caption = "current PhotoDemon memory usage: " & Format(CStr(GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
-    lblMemoryUsageMax.Caption = "max PhotoDemon memory usage this session: " & Format(CStr(GetPhotoDemonMemoryUsage(True)), "###,###,###,###") & " K"
+    lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(CStr(GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
+    lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(CStr(GetPhotoDemonMemoryUsage(True)), "###,###,###,###") & " K"
     If Not g_IsProgramCompiled Then
-        lblMemoryUsageCurrent = lblMemoryUsageCurrent.Caption & " (reading not accurate inside IDE)"
-        lblMemoryUsageMax = lblMemoryUsageMax.Caption & " (reading not accurate inside IDE)"
+        lblMemoryUsageCurrent = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
+        lblMemoryUsageMax = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
     End If
 
 End Sub

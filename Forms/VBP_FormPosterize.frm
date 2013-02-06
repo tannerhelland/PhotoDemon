@@ -48,7 +48,7 @@ Begin VB.Form FormPosterize
       Max             =   7
       Min             =   1
       TabIndex        =   3
-      Top             =   2520
+      Top             =   2640
       Value           =   2
       Width           =   4815
    End
@@ -69,7 +69,7 @@ Begin VB.Form FormPosterize
       MaxLength       =   1
       TabIndex        =   2
       Text            =   "2"
-      Top             =   2460
+      Top             =   2580
       Width           =   615
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -107,7 +107,7 @@ Begin VB.Form FormPosterize
       Height          =   405
       Left            =   6000
       TabIndex        =   4
-      Top             =   2160
+      Top             =   2280
       Width           =   2880
    End
 End

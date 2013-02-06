@@ -145,7 +145,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
     
     If hInternetSession = 0 Then
-        pdMsgBox PROGRAMNAME & " could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error"
+        pdMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, g_Language.TranslateMessage("Internet Connection Error"), PROGRAMNAME
         ImportImageFromInternet = False
         Screen.MousePointer = 0
         Exit Function
@@ -158,7 +158,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If hUrl = 0 Then
-        pdMsgBox PROGRAMNAME & " could not locate a valid image at that URL.  Please double-check the path.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Online Image Not Found"
+        pdMsgBox "%1 could not locate a valid image at that URL.  Please double-check the path.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, g_Language.TranslateMessage("Online Image Not Found"), PROGRAMNAME
         If hInternetSession Then InternetCloseHandle hInternetSession
         ImportImageFromInternet = False
         Screen.MousePointer = 0
@@ -211,7 +211,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
    
             'If something went wrong, terminate
             If chunkOK = False Then
-                pdMsgBox PROGRAMNAME & " lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in " & PROGRAMNAME & " just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error"
+                pdMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, g_Language.TranslateMessage("Internet Connection Error"), PROGRAMNAME
                 If FileExist(tmpFile) Then
                     Close #fileNum
                     Kill tmpFile
@@ -236,7 +236,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
             
             If downloadSize <> 0 Then
                 SetProgBarVal totalBytesRead
-                Message "Image URL verified.  Downloading image (" & totalBytesRead & " of " & downloadSize & " bytes received)..."
+                Message "Image URL verified.  Downloading image (%1 of %2 bytes received)...", totalBytesRead, downloadSize
             End If
             
             DoEvents
@@ -260,7 +260,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
         Message "Download canceled.  (Remote server denied access.)"
         Dim domainName As String
         domainName = GetDomainName(URL)
-        pdMsgBox "Unfortunately, " & domainName & " is preventing " & PROGRAMNAME & " from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this image using your Internet browser of choice, then manually load it into " & PROGRAMNAME & "." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing " & PROGRAMNAME & " can do about stingy server configurations.  :(", vbCritical + vbApplicationModal + vbOKOnly, domainName & " Does Not Allow Direct Downloads"
+        pdMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this image using your Internet browser of choice, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbCritical + vbApplicationModal + vbOKOnly, domainName & " " & g_Language.TranslateMessage("Does Not Allow Direct Downloads"), domainName, PROGRAMNAME
         If FileExist(tmpFile) Then Kill tmpFile
         If hUrl Then InternetCloseHandle hUrl
         If hInternetSession Then InternetCloseHandle hInternetSession

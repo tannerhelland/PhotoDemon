@@ -453,7 +453,7 @@ Private Sub Form_Activate()
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = "WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20."
+        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
         lblIDEWarning.Visible = True
     End If
     

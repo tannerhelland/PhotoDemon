@@ -44,28 +44,20 @@ Begin VB.Form FormPluginDownloader
          TabIndex        =   0
          Top             =   5520
          Width           =   5130
-         _ExtentX        =   9049
-         _ExtentY        =   2778
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "Yes. Download these files to the plugins folder."
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormPluginDownloader.frx":0000
-         PictureAlign    =   0
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         ToolTip         =   $"VBP_FormPluginDownloader.frx":1052
-         TooltipType     =   1
-         TooltipTitle    =   "Download All Plugins"
+         _extentx        =   9049
+         _extenty        =   2778
+         buttonstyle     =   13
+         showfocusrect   =   -1
+         font            =   "VBP_FormPluginDownloader.frx":0000
+         caption         =   "Yes. Download these files to the plugins folder."
+         handpointer     =   -1
+         picturenormal   =   "VBP_FormPluginDownloader.frx":0028
+         disabledpicturemode=   1
+         captioneffects  =   0
+         picturealign    =   0
+         tooltiptitle    =   "Download All Plugins"
+         tooltip         =   $"VBP_FormPluginDownloader.frx":107A
+         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdChoice 
          Cancel          =   -1  'True
@@ -75,28 +67,20 @@ Begin VB.Form FormPluginDownloader
          TabIndex        =   1
          Top             =   5520
          Width           =   5130
-         _ExtentX        =   8837
-         _ExtentY        =   1349
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "Not right now, but please remind me later."
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormPluginDownloader.frx":1108
-         PictureAlign    =   0
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         ToolTip         =   $"VBP_FormPluginDownloader.frx":215A
-         TooltipType     =   1
-         TooltipTitle    =   "Postpone Plugin Download"
+         _extentx        =   8837
+         _extenty        =   1349
+         buttonstyle     =   13
+         showfocusrect   =   -1
+         font            =   "VBP_FormPluginDownloader.frx":1130
+         caption         =   "Not right now, but please remind me later."
+         handpointer     =   -1
+         picturenormal   =   "VBP_FormPluginDownloader.frx":1158
+         disabledpicturemode=   1
+         captioneffects  =   0
+         picturealign    =   0
+         tooltiptitle    =   "Postpone Plugin Download"
+         tooltip         =   $"VBP_FormPluginDownloader.frx":21AA
+         tooltiptype     =   1
       End
       Begin PhotoDemon.jcbutton cmdChoice 
          Height          =   765
@@ -105,28 +89,20 @@ Begin VB.Form FormPluginDownloader
          TabIndex        =   2
          Top             =   6360
          Width           =   5130
-         _ExtentX        =   8837
-         _ExtentY        =   1349
-         ButtonStyle     =   13
-         ShowFocusRect   =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   " Not now, not ever. Do not prompt me again."
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormPluginDownloader.frx":2205
-         PictureAlign    =   0
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         ToolTip         =   $"VBP_FormPluginDownloader.frx":3257
-         TooltipType     =   1
-         TooltipTitle    =   "Never Download Plugins"
+         _extentx        =   8837
+         _extenty        =   1349
+         buttonstyle     =   13
+         showfocusrect   =   -1
+         font            =   "VBP_FormPluginDownloader.frx":2255
+         caption         =   " Not now, not ever. Do not prompt me again."
+         handpointer     =   -1
+         picturenormal   =   "VBP_FormPluginDownloader.frx":227D
+         disabledpicturemode=   1
+         captioneffects  =   0
+         picturealign    =   0
+         tooltiptitle    =   "Never Download Plugins"
+         tooltip         =   $"VBP_FormPluginDownloader.frx":32CF
+         tooltiptype     =   1
       End
       Begin VB.Label lblExplanation 
          BackStyle       =   0  'Transparent
@@ -252,7 +228,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   3
          Left            =   5640
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":32E0
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":3358
          MousePointer    =   99  'Custom
          TabIndex        =   14
          Top             =   3240
@@ -274,7 +250,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   1
          Left            =   5640
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":3432
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":34AA
          MousePointer    =   99  'Custom
          TabIndex        =   13
          Top             =   2160
@@ -296,7 +272,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   2
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":3584
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":35FC
          MousePointer    =   99  'Custom
          TabIndex        =   12
          Top             =   3240
@@ -318,7 +294,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":36D6
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":374E
          MousePointer    =   99  'Custom
          TabIndex        =   11
          Top             =   2160
@@ -572,17 +548,17 @@ Private Sub Form_Load()
     If hInternetSession = 0 Then
         isInternetConnected = False
         'txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please connect to the Internet and restart this program. Then, when prompted, please allow it to download the following free, open-source plugin(s):"
-        lblExplanation.Caption = "Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please connect to the Internet, then allow the program to automatically download the following free, open-source plugin(s):"
+        lblExplanation.Caption = g_Language.TranslateMessage("Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please connect to the Internet, then allow the program to automatically download the following free, open-source plugin(s):")
     Else
         isInternetConnected = True
         'txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):"
-        lblExplanation.Caption = "Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):"
+        lblExplanation.Caption = g_Language.TranslateMessage("Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):")
     End If
     
     'This string will be used to hold the locations of the files to be downloaded
     Dim URL As String
     
-    Message "Missing plugins detected.  Generating download information (this feature can be disabled from the Edit -> Preferences menu)..."
+    Message "Missing plugins detected.  Generating download information (this feature can be disabled from the Tools -> Options menu)..."
     
     totalDownloadSize = 0
     numOfFiles = 0
@@ -703,7 +679,7 @@ Private Function downloadAllPlugins() As Boolean
         
         If hInternetSession = 0 Then
             Message "No Internet connection found."
-            pdMsgBox "Unfortunately, " & PROGRAMNAME & " could not connect to the Internet.  Please connect to the Internet and try again.", vbApplicationModal + vbOKOnly + vbExclamation, "No Internet Connection"
+            pdMsgBox "Unfortunately, %1 could not connect to the Internet.  Please connect to the Internet and try again.", vbApplicationModal + vbOKOnly + vbExclamation, "No Internet Connection", PROGRAMNAME
             downloadAllPlugins = False
             Exit Function
         End If
@@ -749,7 +725,7 @@ Private Function downloadAllPlugins() As Boolean
     'Time to get the files.  Start with zLib.
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc", curNumOfFiles, numOfFiles, zLibSize, False)
     If downloadSuccessful = False Then
-        pdMsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
         Exit Function
     Else
@@ -761,7 +737,7 @@ Private Function downloadAllPlugins() As Boolean
     'Next comes EZTW32
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/eztw32.pdc", curNumOfFiles, numOfFiles, ezTW32Size, True)
     If downloadSuccessful = False Then
-        pdMsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
         Exit Function
     Else
@@ -773,7 +749,7 @@ Private Function downloadAllPlugins() As Boolean
     'Next is FreeImage
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
     If downloadSuccessful = False Then
-        pdMsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
         Exit Function
     Else
@@ -785,7 +761,7 @@ Private Function downloadAllPlugins() As Boolean
     'Last is pngnq
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/pngnq-s9.pdc", curNumOfFiles, numOfFiles, pngnqSize, True)
     If downloadSuccessful = False Then
-        pdMsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
         Exit Function
     Else
@@ -796,7 +772,7 @@ Private Function downloadAllPlugins() As Boolean
     
     If hInternetSession Then InternetCloseHandle hInternetSession
     
-    lblDownloadInfo.Caption = "All downloads successful.  This screen will automatically close in three seconds."
+    lblDownloadInfo.Caption = g_Language.TranslateMessage("All downloads successful.  This screen will automatically close in three seconds.")
     
     Dim OT As Double
     OT = Timer
@@ -819,7 +795,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
     hUrl = InternetOpenUrl(hInternetSession, pluginURL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If hUrl = 0 Then
-        pdMsgBox PROGRAMNAME & " could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.", vbExclamation + vbApplicationModal + vbOKOnly, "Plugin Server Not Responding"
+        pdMsgBox "%1 could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.", vbExclamation + vbApplicationModal + vbOKOnly, "Plugin Server Not Responding", PROGRAMNAME
         If hInternetSession Then InternetCloseHandle hInternetSession
         downloadPlugin = False
         Message "Plugin download postponed."
@@ -841,7 +817,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
     End If
     
     'Open the temporary file and begin downloading the image to it
-    lblDownloadInfo.Caption = "Downloading file " & curNumFile & " of " & maxNumFile & "..."
+    lblDownloadInfo.Caption = g_Language.TranslateMessage("Downloading file %1 of %2...", curNumFile, maxNumFile)
     Dim fileNum As Integer
     fileNum = FreeFile
     
@@ -870,7 +846,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
    
             'If something went wrong, terminate
             If chunkOK = False Then
-                pdMsgBox PROGRAMNAME & " lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error"
+                pdMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error", PROGRAMNAME
                 If FileExist(tmpFile) Then
                     Close #fileNum
                     Kill tmpFile
@@ -895,7 +871,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
             
             If downloadSize <> 0 Then
                 If curDownloadSize < dProgBar.Max Then dProgBar.Value = curDownloadSize
-                lblDownloadInfo.Caption = "Downloading file " & curNumFile & " of " & maxNumFile & " (" & totalBytesRead & " of " & downloadSize & " bytes received)..."
+                lblDownloadInfo.Caption = g_Language.TranslateMessage("Downloading file %1 of %2 (%3 of %4 bytes received)...", curNumFile, maxNumFile, totalBytesRead, downloadSize)
             End If
             
             DoEvents
@@ -946,6 +922,6 @@ Private Sub updateDownloadSize()
     totalDownloadSize = totalDownloadSize + freeImageSize
     numOfFiles = numOfFiles + 1
     
-    lblDownloadSize.Caption = "total download size: " & Format(CStr(totalDownloadSize / 1000000), "0.00") & " MB"
+    lblDownloadSize.Caption = g_Language.TranslateMessage("total download size:") & " " & Format(CStr(totalDownloadSize / 1000000), "0.00") & " MB"
 
 End Sub

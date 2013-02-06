@@ -598,7 +598,9 @@ Private Sub updateDescription()
 
     Dim xVal As Double, yVal As Double
     Dim xText As String, yText As String
-
+    
+    Dim metricText As String
+    
     'Generate a descriptive string based on which tiling method will be used
     Select Case cboTarget.ListIndex
         
@@ -608,23 +610,26 @@ Private Sub updateDescription()
             yVal = txtHeight / iHeight
             xText = Format(xVal, "#####.0")
             yText = Format(yVal, "#####.0")
-            lblDescription = "The final image will be " & xText & " tiles wide by " & yText & " tiles tall."
-        
+            metricText = g_Language.TranslateMessage("tiles")
+            
         'Custom size (in pixels)
         Case 1
             xVal = txtWidth / iWidth
             yVal = txtHeight / iHeight
             xText = Format(xVal, "#####.0")
             yText = Format(yVal, "#####.0")
-            lblDescription = "The final image will be " & xText & " tiles wide by " & yText & " tiles tall."
-        
+            metricText = g_Language.TranslateMessage("tiles")
+            
         'Custom size (in tiles)
         Case 2
             xVal = txtWidth * iWidth
             yVal = txtHeight * iHeight
             xText = Format(xVal, "#####")
             yText = Format(yVal, "#####")
-            lblDescription = "The final image will be " & xText & " pixels wide by " & yText & " pixels tall."
+            metricText = g_Language.TranslateMessage("pixels")
+            
     End Select
+    
+    lblDescription = g_Language.TranslateMessage("The final image will be %1 %3 wide by %2 %3 tall.", xText, yText, metricText)
 
 End Sub

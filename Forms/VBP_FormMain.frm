@@ -1780,7 +1780,7 @@ Private Sub MDIForm_Load()
     'If we're STILL allowed to update, do so now (unless this is the first time the user has run the program; in that case, suspend updates)
     If allowedToUpdate And (Not g_IsFirstRun) Then
     
-        Message "Checking for software updates (this feature can be disabled from the Edit -> Preferences menu)..."
+        Message "Checking for software updates (this feature can be disabled from the Tools -> Options menu)..."
     
         Dim updateNeeded As Long
         updateNeeded = CheckForSoftwareUpdate
@@ -2330,7 +2330,7 @@ Private Sub MnuHelp_Click(Index As Integer)
                     Message "An error occurred while checking for updates.  Please try again later."
                     
                 Case 1
-                    Message "This copy of PhotoDemon is the newest available.  (Version " & App.Major & "." & App.Minor & "." & App.Revision & ")"
+                    Message g_Language.TranslateMessage("This copy of PhotoDemon is the newest available.  (Version") & " " & App.Major & "." & App.Minor & "." & App.Revision & ")"
                         
                     'Because the software is up-to-date, we can mark this as a successful check in the INI file
                     g_UserPreferences.SetPreference_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
@@ -2361,7 +2361,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             'If this is the first time they are submitting feedback, ask them if they have a GitHub account
             Else
             
-                msgReturn = pdMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for making " & PROGRAMNAME & " better")
+                msgReturn = pdMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for fixing PhotoDemon")
                 
                 'If their answer was anything but "Cancel", store that answer to file
                 If msgReturn = vbYes Then g_UserPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", True

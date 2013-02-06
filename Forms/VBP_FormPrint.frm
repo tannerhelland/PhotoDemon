@@ -690,7 +690,7 @@ Private Sub cmdOK_Click()
           
             'Print the image
             If (PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1, CBool(chkCenter), CBool(chkFit)) = 0) Then
-                pdMsgBox PROGRAMNAME & " was unable to print the image.  Please make sure that the specified printer (" & Printer.DeviceName & ") is powered-on and ready for printing.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Printer Error"
+                pdMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation + vbOKOnly + vbApplicationModal, "Printer Error", PROGRAMNAME, Printer.DeviceName
                 Message "Print canceled."
             End If
               
@@ -964,7 +964,7 @@ Private Sub UpdatePaperSize()
     If Right(txtWidth, 1) = "." Then txtWidth = Left$(txtWidth, Len(txtWidth) - 1)
     If Right(txtHeight, 1) = "." Then txtHeight = Left$(txtHeight, Len(txtHeight) - 1)
     
-    lblPaperSize = "paper size: " & txtWidth & """ x  " & txtHeight & """"
+    lblPaperSize = g_Language.TranslateMessage("paper size:") & " " & txtWidth & """ x  " & txtHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
     Dim aspectRatio As Double
