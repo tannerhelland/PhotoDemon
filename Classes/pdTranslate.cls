@@ -529,7 +529,7 @@ End Function
 'Retrieve an entire file and return it as a string.
 Private Function getFileAsString(ByVal fName As String) As String
         
-    ' ensure that the file exists
+    'Ensure that the file exists before attempting to load it
     If FileExist(fName) Then
         
         Dim fileNum As Integer
@@ -539,6 +539,9 @@ Private Function getFileAsString(ByVal fName As String) As String
             getFileAsString = Space$(LOF(fileNum))
             Get #fileNum, , getFileAsString
         Close #fileNum
+    
+        'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
+        If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
     
     Else
         getFileAsString = ""
@@ -555,7 +558,7 @@ Private Sub preProcessText(ByRef srcString As String)
     srcString = Trim$(srcString)
     
     '2) Remove any tabs from the caption (which may have been introduced by an XML editor)
-    If InStr(1, srcString, vbTab) <> 0 Then srcString = Replace(srcString, vbTab, "")
+    'If InStr(1, srcString, "Unfortunately") > 0 Then MsgBox InStr(1, srcString, vbTab) & srcString
     
     '3) Check for a trailing "..."
     If Right$(srcString, 3) = "..." Then
@@ -653,8 +656,12 @@ End Function
 Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraText() As Variant) As String
     
     Dim searchString As String, newString As String
-    searchString = srcMessage
-    newString = getTranslationTagFromCaption(searchString)
+    If translationActive Then
+        searchString = srcMessage
+        newString = getTranslationTagFromCaption(searchString)
+    Else
+        newString = srcMessage
+    End If
     
     'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
     ' even if translation text is missing.
@@ -692,6 +699,9 @@ End Function
 
 'Given an object with a guaranteed .Caption property (command button, label, etc.), replace the caption with a translation from file
 Public Sub translateObjectCaption(ByRef srcObject As Control)
+
+    'Do an initial check to see if we need to translate this string at all
+    If Not translationActive Then Exit Sub
 
     Dim searchString As String, newString As String
     searchString = srcObject.Caption
@@ -744,6 +754,8 @@ End Sub
 
 'Translate a form caption
 Public Sub translateFormCaption(ByRef srcForm As Form)
+
+    If Not translationActive Then Exit Sub
 
     Dim searchString As String, newString As String
     searchString = srcForm.Caption
@@ -801,6 +813,8 @@ End Sub
 
 'Enumerate all captions on a form (and its controls), and replace them with the translated equivalents of the current language
 Public Sub applyTranslations(ByRef srcForm As Form)
+
+    If Not translationActive Then Exit Sub
 
     'Start by translating the form's caption
     translateFormCaption srcForm

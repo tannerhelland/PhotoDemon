@@ -28,7 +28,7 @@ Begin VB.Form dialog_MultiImage
    StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkRepeat 
       Height          =   480
-      Left            =   720
+      Left            =   240
       TabIndex        =   3
       Top             =   3120
       Width           =   4110
@@ -179,29 +179,29 @@ Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     Dim fileExtension As String
     fileExtension = GetExtension(srcFilename)
     If UCase(fileExtension) = "GIF" Then
-        lblWarning.Caption = getFilename(srcFilename) & " is an animated GIF file (" & numOfImages & " frames total).  How would you like to proceed?"
-        cmdAnswer(0).Caption = "Load each frame as a separate image"
-        cmdAnswer(0).ToolTip = "This option will load every frame in the animated GIF file as an individual image."
-        cmdAnswer(0).TooltipTitle = "Load all frames"
-        cmdAnswer(1).Caption = "Load only the first frame"
-        cmdAnswer(1).ToolTip = "This option will only load a single frame from the animated GIF file," & vbCrLf & "effectively treating at as a non-animated GIF file."
-        cmdAnswer(1).TooltipTitle = "Load one frame only"
+        lblWarning.Caption = g_Language.TranslateMessage("%1 is an animated GIF file (%2 frames total).  How would you like to proceed?", getFilename(srcFilename), numOfImages)
+        cmdAnswer(0).Caption = g_Language.TranslateMessage("Load each frame as a separate image")
+        cmdAnswer(0).ToolTip = g_Language.TranslateMessage("This option will load every frame in the animated GIF file as an individual image.")
+        cmdAnswer(0).TooltipTitle = g_Language.TranslateMessage("Load all frames")
+        cmdAnswer(1).Caption = g_Language.TranslateMessage("Load only the first frame")
+        cmdAnswer(1).ToolTip = g_Language.TranslateMessage("This option will only load a single frame from the animated GIF file," & vbCrLf & "effectively treating at as a non-animated GIF file.")
+        cmdAnswer(1).TooltipTitle = g_Language.TranslateMessage("Load one frame only")
     ElseIf UCase(fileExtension) = "ICO" Then
-        lblWarning.Caption = getFilename(srcFilename) & " contains multiple icons (" & numOfImages & " in total).  How would you like to proceed?"
-        cmdAnswer(0).Caption = "Load each icon as a separate image"
-        cmdAnswer(0).ToolTip = "This option will load every icon in the ICO file as an individual image."
-        cmdAnswer(0).TooltipTitle = "Load all icons"
-        cmdAnswer(1).Caption = "Load only the first icon"
-        cmdAnswer(1).ToolTip = "This option will only load a single icon from the ICO file."
-        cmdAnswer(1).TooltipTitle = "Load one icon only"
+        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple icons (%2 in total).  How would you like to proceed?", getFilename(srcFilename), numOfImages)
+        cmdAnswer(0).Caption = g_Language.TranslateMessage("Load each icon as a separate image")
+        cmdAnswer(0).ToolTip = g_Language.TranslateMessage("This option will load every icon in the ICO file as an individual image.")
+        cmdAnswer(0).TooltipTitle = g_Language.TranslateMessage("Load all icons")
+        cmdAnswer(1).Caption = g_Language.TranslateMessage("Load only the first icon")
+        cmdAnswer(1).ToolTip = g_Language.TranslateMessage("This option will only load a single icon from the ICO file.")
+        cmdAnswer(1).TooltipTitle = g_Language.TranslateMessage("Load one icon only")
     Else
-        lblWarning.Caption = getFilename(srcFilename) & " contains multiple pages (" & numOfImages & " in total).  How would you like to proceed?"
-        cmdAnswer(0).Caption = "Load each page as a separate image"
-        cmdAnswer(0).ToolTip = "This option will load every page in the TIFF file as an individual image."
-        cmdAnswer(0).TooltipTitle = "Load all pages"
-        cmdAnswer(1).Caption = "Load only the first page"
-        cmdAnswer(1).ToolTip = "This option will only load a single page from the TIFF file."
-        cmdAnswer(1).TooltipTitle = "Load one page only"
+        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple pages (%2 in total).  How would you like to proceed?", getFilename(srcFilename), numOfImages)
+        cmdAnswer(0).Caption = g_Language.TranslateMessage("Load each page as a separate image")
+        cmdAnswer(0).ToolTip = g_Language.TranslateMessage("This option will load every page in the TIFF file as an individual image.")
+        cmdAnswer(0).TooltipTitle = g_Language.TranslateMessage("Load all pages")
+        cmdAnswer(1).Caption = g_Language.TranslateMessage("Load only the first page")
+        cmdAnswer(1).ToolTip = g_Language.TranslateMessage("This option will only load a single page from the TIFF file.")
+        cmdAnswer(1).TooltipTitle = g_Language.TranslateMessage("Load one page only")
     End If
 
     'Apply any custom styles to the form

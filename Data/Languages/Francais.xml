@@ -240,13 +240,13 @@
 	</phrase>
 
 	<phrase>
-		<original><< Hide advanced settings</original>
-		<translation><< Masquer les paramètres avancés</translation>
+		<original>Hide advanced settings</original>
+		<translation>Masquer les paramètres avancés</translation>
 	</phrase>
 
 	<phrase>
-		<original>Show advanced settings >></original>
-		<translation>Afficher les paramètres avancés >></translation>
+		<original>Show advanced settings</original>
+		<translation>Afficher les paramètres avancés</translation>
 	</phrase>
 
 	<phrase>
@@ -985,7 +985,7 @@
 	</phrase>
 
 	<phrase>
-		<original>No Item Selected</original>
+		<original>(no item selected)</original>
 		<translation>Aucun article sélectionné</translation>
 	</phrase>
 

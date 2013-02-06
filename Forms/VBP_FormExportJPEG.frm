@@ -34,6 +34,7 @@ Begin VB.Form dialog_ExportJPEG
       _ExtentX        =   5477
       _ExtentY        =   953
       Caption         =   "optimize compression tables"
+      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -48,7 +49,7 @@ Begin VB.Form dialog_ExportJPEG
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   4320
+      Left            =   4440
       TabIndex        =   0
       Top             =   5070
       Width           =   1365
@@ -57,7 +58,7 @@ Begin VB.Form dialog_ExportJPEG
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   5790
+      Left            =   5910
       TabIndex        =   1
       Top             =   5070
       Width           =   1365
@@ -204,7 +205,7 @@ Begin VB.Form dialog_ExportJPEG
       Left            =   -120
       TabIndex        =   9
       Top             =   4920
-      Width           =   7455
+      Width           =   7575
    End
    Begin VB.Line lineSeparator 
       BorderColor     =   &H8000000F&
@@ -283,6 +284,9 @@ Private userAnswer As VbMsgBoxResult
 
 'The pdImage object being exported
 Private imageBeingExported As pdImage
+
+'Whether to show or hide the advanced settings
+Private showAdvanced As Boolean
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -444,10 +448,12 @@ End Sub
 'Show or hide the advanced settings per the user's command
 Private Sub toggleAdvancedSettings()
 
-    If cmdShowHide.Caption = "<<  Hide advanced settings" Then
+    showAdvanced = Not showAdvanced
+
+    If showAdvanced Then
     
         'Re-caption the button
-        cmdShowHide.Caption = "Show advanced settings  >>"
+        cmdShowHide.Caption = g_Language.TranslateMessage("Show advanced settings") & "  >>"
     
         'Hide all advanced options
         lblTitle(1).Visible = False
@@ -468,7 +474,7 @@ Private Sub toggleAdvancedSettings()
     Else
     
         'Re-caption the button
-        cmdShowHide.Caption = "<<  Hide advanced settings"
+        cmdShowHide.Caption = "<<  " & g_Language.TranslateMessage("Hide advanced settings")
     
         'Show all advanced options
         lblTitle(1).Visible = True
@@ -487,7 +493,7 @@ Private Sub toggleAdvancedSettings()
         CmdCancel.Top = CmdOK.Top
     
     End If
-
+    
     'Change the form size to match
     Dim formSizeDiff As Long
     Me.ScaleMode = vbTwips
@@ -501,6 +507,8 @@ End Sub
 
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
+
+    showAdvanced = False
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -536,11 +544,12 @@ Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
         cmbSubsample.AddItem "n/a", 4
         cmbSubsample.ListIndex = 4
         cmbSubsample.Enabled = False
-        lblTitle(1).Caption = "advanced settings require the FreeImage plugin"
+        lblTitle(1).Caption = g_Language.TranslateMessage("advanced settings require the FreeImage plugin")
     End If
         
     'Hide the advanced settings unless the user has specifically requested otherwise
-    If Not showAdvanced Then toggleAdvancedSettings
+    'If Not showAdvanced Then toggleAdvancedSettings
+    toggleAdvancedSettings
                 
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me

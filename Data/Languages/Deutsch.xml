@@ -240,13 +240,13 @@
 	</phrase>
 
 	<phrase>
-		<original><< Hide advanced settings</original>
-		<translation><< Ausblenden erweiterte Einstellungen</translation>
+		<original>Hide advanced settings</original>
+		<translation>Ausblenden erweiterte Einstellungen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Show advanced settings >></original>
-		<translation>Erweiterte Einstellungen anzeigen >></translation>
+		<original>Show advanced settings</original>
+		<translation>Erweiterte Einstellungen anzeigen</translation>
 	</phrase>
 
 	<phrase>
@@ -350,13 +350,9 @@
 	</phrase>
 
 	<phrase>
-		<original>is an animated GIF file ( ###### frames in total).</original>
-		<translation>ist eine animierte GIF-Datei ( ######  Frames insgesamt).</translation>
-	</phrase>
-
-	<phrase>
-		<original>How would you like to proceed?</original>
-		<translation>Wie würden Sie vorgehen?</translation>
+		<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
+		<translation>%1 ist eine animierte GIF-Datei (%2 Frames insgesamt).
+		Wie würden Sie vorgehen?</translation>
 	</phrase>
 
 	<phrase>
@@ -380,13 +376,10 @@
 	</phrase>
 
 	<phrase>
-		<original>This option will only load a single frame from the animated GIF file,</original>
-		<translation>Diese Option wird nur geladen 1 Frame der animierten GIF-Datei,</translation>
-	</phrase>
-
-	<phrase>
-		<original>effectively treating at as a non-animated GIF file.</original>
-		<translation>und effektiv zu behandeln es als eine nicht-animierte GIF-Datei.</translation>
+		<original>This option will only load a single frame from the animated GIF file,
+		effectively treating at as a non-animated GIF file.</original>
+		<translation>Diese Option wird nur geladen 1 Frame der animierten GIF-Datei,
+		und effektiv zu behandeln es als eine nicht-animierte GIF-Datei.</translation>
 	</phrase>
 
 	<phrase>
@@ -395,13 +388,8 @@
 	</phrase>
 
 	<phrase>
-		<original>contains multiple pages ( ###### in total).</original>
-		<translation>enthält mehrere Seiten ( ###### insgesamt). .</translation>
-	</phrase>
-
-	<phrase>
-		<original>How would you like to proceed?</original>
-		<translation>insgesamt). Wie würden Sie vorgehen?</translation>
+		<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
+		<translation>%1 enthält mehrere Seiten (%2 insgesamt).  Wie würden Sie vorgehen?</translation>
 	</phrase>
 
 	<phrase>
@@ -410,7 +398,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Load all pages</original>
+		<original>Load each page as a separate image</original>
 		<translation>Alle Seiten laden</translation>
 	</phrase>
 
@@ -435,7 +423,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Remember my decision for future multi-image files</original>
+		<original>always apply this action to multi-image files</original>
 		<translation>Meine Auswahl für Multi-Image-Dateien für die Zukunft</translation>
 	</phrase>
 
@@ -980,8 +968,8 @@
 	</phrase>
 
 	<phrase>
-		<original><No Item Selected></original>
-		<translation><kein Artikel ausgewählt></translation>
+		<original>(no Item Selected)</original>
+		<translation>(kein Artikel ausgewählt)</translation>
 	</phrase>
 
 	<phrase>
@@ -1505,13 +1493,12 @@
 	</phrase>
 
 	<phrase>
-		<original>Unfortunately, the image' ## ' could not be found.</original>
-		<translation>Leider konnte das Bild '##' nicht gefunden werden.</translation>
-	</phrase>
-
-	<phrase>
-		<original>If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again</original>
-		<translation>Wenn dieses Bild wurde ursprünglich auf Wechselmedien (DVD, USB-Stick etc.) befindet, geben Sie bitte wieder ein oder trennen Sie die Medien zurück und versuchen Sie es erneut</translation>
+		<original>Unfortunately, the image '%1' could not be found.
+		
+		If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
+		<translation>Leider konnte das Bild '%1' nicht gefunden werden.
+		
+		Wenn dieses Bild wurde ursprünglich auf Wechselmedien (DVD, USB-Stick etc.) befindet, geben Sie bitte wieder ein oder trennen Sie die Medien zurück und versuchen Sie es erneut.</translation>
 	</phrase>
 
 	<phrase>

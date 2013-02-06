@@ -240,13 +240,13 @@
 	</phrase>
 
 	<phrase>
-		<original><< Hide advanced settings</original>
-		<translation><< Verberg geavanceerde instellingen</translation>
+		<original>Hide advanced settings</original>
+		<translation>Verberg geavanceerde instellingen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Show advanced settings >></original>
-		<translation>Toon geavanceerde instellingen >></translation>
+		<original>Show advanced settings</original>
+		<translation>Toon geavanceerde instellingen</translation>
 	</phrase>
 
 	<phrase>
@@ -985,8 +985,8 @@
 	</phrase>
 
 	<phrase>
-		<original><No Item Selected></original>
-		<translation><Geen Item geselecteerd></translation>
+		<original>(no item selected)</original>
+		<translation>(Geen Item geselecteerd)</translation>
 	</phrase>
 
 	<phrase>
