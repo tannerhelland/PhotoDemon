@@ -39,23 +39,23 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     Set pdImages(NumOfImagesLoaded) = New pdImage
 
     'This is the actual, physical form object on which an image will reside
-    Dim frm As New FormImage
+    Dim newImageForm As New FormImage
     
     'IMPORTANT: the form tag is the only way we can keep track of separate forms
     'DO NOT CHANGE THIS TAG VALUE!
-    frm.Tag = NumOfImagesLoaded
+    newImageForm.Tag = NumOfImagesLoaded
     
     'Remember this ID in the associated image class
     pdImages(NumOfImagesLoaded).IsActive = True
     pdImages(NumOfImagesLoaded).imageID = NumOfImagesLoaded
         
-    'Default size (stupid twip measurements, unfortunately)
-    frm.Width = 4500
+    'Set a default window size (in twips)
+    newImageForm.Width = 4500
     
-    frm.Height = 1
+    newImageForm.Height = 1
     
     'Default image values
-    Set pdImages(NumOfImagesLoaded).containingForm = frm
+    Set pdImages(NumOfImagesLoaded).containingForm = newImageForm
     pdImages(NumOfImagesLoaded).UndoNum = 0
     pdImages(NumOfImagesLoaded).UndoMax = 0
     pdImages(NumOfImagesLoaded).UndoState = False
@@ -68,14 +68,14 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     randPercent = Int(Rnd * 100)
     
     'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
-    pdImages(NumOfImagesLoaded).WindowLeft = frm.Left
-    pdImages(NumOfImagesLoaded).WindowTop = frm.Top
-    frm.Left = FormMain.ScaleWidth
-    frm.Top = FormMain.ScaleHeight
+    pdImages(NumOfImagesLoaded).WindowLeft = newImageForm.Left
+    pdImages(NumOfImagesLoaded).WindowTop = newImageForm.Top
+    newImageForm.Left = FormMain.ScaleWidth
+    newImageForm.Top = FormMain.ScaleHeight
     
-    frm.Show
-    frm.Caption = "Loading image (" & randPercent & "%)..."
-    If FormMain.Enabled Then frm.SetFocus
+    newImageForm.Show
+    newImageForm.Caption = "Loading image (" & randPercent & "%)..."
+    If FormMain.Enabled Then newImageForm.SetFocus
     
     'Set this image as the current one
     CurrentImage = NumOfImagesLoaded

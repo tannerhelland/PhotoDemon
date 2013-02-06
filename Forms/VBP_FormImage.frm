@@ -449,7 +449,7 @@ End Sub
 Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If FormMain.Enabled = False Then Exit Sub
+    If Not g_AllowDragAndDrop Then Exit Sub
 
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) Then
@@ -486,7 +486,7 @@ End Sub
 Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If FormMain.Enabled = False Then Exit Sub
+    If Not g_AllowDragAndDrop Then Exit Sub
 
     'Check to make sure the type of OLE object is files
     If Data.GetFormat(vbCFFiles) Then

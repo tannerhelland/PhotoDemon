@@ -180,3 +180,8 @@ Public g_LastImageScanned As Long
 'If this is the first time the user has run PhotoDemon (as determined by the lack of an .INI file), this variable will
 ' be set to TRUE early in the load process.  Other routines can then modify their behavior accordingly.
 Public g_IsFirstRun As Boolean
+
+'Drag and drop operations are allowed at certain times, but not others.  Any time a modal form is displayed, drag-and-drop
+' must be disallowed - with the exception of common dialog boxes.  To make sure this behavior is carefully maintained,
+' we track drag-and-drop enabling ourselves
+Public g_AllowDragAndDrop As Boolean

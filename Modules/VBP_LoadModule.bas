@@ -222,6 +222,9 @@ Public Sub LoadTheProgram()
         FormMain.cmdZoomOut.Height = FormMain.cmdZoomOut.Height + 1
     End If
     
+    'Allow drag-and-drop operations
+    g_AllowDragAndDrop = True
+    
     
     '*************************************************************************************************************************************
     ' The program's menus support many features that VB can't do natively (like icons and custom shortcuts).  Load such things now.

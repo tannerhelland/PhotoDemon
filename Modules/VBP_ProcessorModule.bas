@@ -396,6 +396,10 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     'First, make sure that the current command is a filter or image-changing event
     If pType >= 101 Then
         
+        'Temporarily disable drag-and-drop operations for the main form
+        g_AllowDragAndDrop = False
+        FormMain.OLEDropMode = 0
+        
         'Only save an "undo" image if we are NOT loading a form for user input, and if
         'we ARE allowed to record this action, and if it's not counting colors (useless),
         ' and if we're not performing a batch conversion (saves a lot of time to not generate undo files!)
@@ -882,6 +886,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     'If a filter or tool was just used, return focus to the active form
     If (pType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) Then
         If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
+    End If
+        
+    'Also, re-enable drag and drop operations
+    If pType >= 101 Then
+        g_AllowDragAndDrop = True
+        FormMain.OLEDropMode = 1
     End If
     
     Processing = False
