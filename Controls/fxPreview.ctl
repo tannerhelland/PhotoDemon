@@ -218,7 +218,11 @@ End Sub
 
 Private Sub UserControl_Show()
     'Translate the user control text
-    lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " "
+    If Ambient.UserMode Then
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " "
+    Else
+        lblBeforeToggle.Caption = "show original image "
+    End If
 End Sub
 
 Private Sub UserControl_Terminate()
