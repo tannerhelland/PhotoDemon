@@ -28,7 +28,7 @@ Begin VB.Form dialog_UnsavedChanges
    StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkRepeat 
       Height          =   480
-      Left            =   4080
+      Left            =   3960
       TabIndex        =   5
       Top             =   4005
       Width           =   4875
@@ -245,18 +245,18 @@ Public Sub ShowDialog()
     End If
     
     'Adjust the save message to match this image's name
-    lblWarning.Caption = pdImages(imageBeingClosed).OriginalFileNameAndExtension & " has unsaved changes.  What would you like to do?"
+    lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", pdImages(imageBeingClosed).OriginalFileNameAndExtension)
 
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
     If pdImages(imageBeingClosed).LocationOnDisk <> "" Then
-        cmdAnswer(0).ToolTip = vbCrLf & "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the" & vbCrLf & " File -> Save As menu item."
+        cmdAnswer(0).ToolTip = vbCrLf & g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the" & vbCrLf & " File -> Save As menu item.")
     Else
-        cmdAnswer(0).ToolTip = vbCrLf & "Because this image has not been saved before, you will be presented with a full Save As dialog."
+        cmdAnswer(0).ToolTip = vbCrLf & g_Language.TranslateMessage("Because this image has not been saved before, you will be presented with a full Save As dialog.")
     End If
     
     'Update the other tooltip buttons as well
-    cmdAnswer(1).ToolTip = vbCrLf & "If you do not save this image, any changes you have made will be permanently lost."
-    cmdAnswer(2).ToolTip = vbCrLf & "Canceling will return you to the main PhotoDemon window."
+    cmdAnswer(1).ToolTip = vbCrLf & g_Language.TranslateMessage("If you do not save this image, any changes you have made will be permanently lost.")
+    cmdAnswer(2).ToolTip = vbCrLf & g_Language.TranslateMessage("Canceling will return you to the main PhotoDemon window.")
 
     'Make some measurements of the form size.  We need these if we choose to display the check box at the bottom of the form
     Dim vDifference As Long
@@ -275,9 +275,9 @@ Public Sub ShowDialog()
         
         'Change the text of the "repeat for all unsaved images" check box depending on how many unsaved images are present.
         If g_NumOfUnsavedImages = 2 Then
-            chkRepeat.Caption = " Repeat this action for both unsaved images"
+            chkRepeat.Caption = g_Language.TranslateMessage(" Repeat this action for both unsaved images")
         Else
-            chkRepeat.Caption = " Repeat this action for all unsaved images (" & g_NumOfUnsavedImages & " in total)"
+            chkRepeat.Caption = g_Language.TranslateMessage(" Repeat this action for all unsaved images (%1 in total)", g_NumOfUnsavedImages)
         End If
         
         Me.Height = vDifference + (chkRepeat.Top + chkRepeat.Height) + picPreview.Top

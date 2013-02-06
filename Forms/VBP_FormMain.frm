@@ -2075,6 +2075,10 @@ Private Sub MnuCloseAll_Click()
         If (Not pdImages(i) Is Nothing) Then
             If pdImages(i).IsActive Then Unload pdImages(i).containingForm
         End If
+        
+        'If the user pressed "cancel", obey their request immediately and stop processing images
+        If Not g_ClosingAllImages Then Exit For
+        
     Next i
 
     'Reset the "closing all images" flag
