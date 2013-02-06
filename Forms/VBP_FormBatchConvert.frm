@@ -593,7 +593,7 @@ Private Sub cmdLoadList_Click()
             Dim tmpLine As String
             Input #fileNum, tmpLine
             If tmpLine <> ("<" & PROGRAMNAME & " BATCH CONVERSION LIST>") Then
-                MsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
+                pdMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
                 Exit Sub
             End If
             
@@ -601,7 +601,7 @@ Private Sub cmdLoadList_Click()
             ' or if they want to load just the list data
             If lstFiles.ListCount > 0 Then
                 Dim ret As VbMsgBoxResult
-                ret = MsgBox("You have already created a list of images for processing. Would you like to replace the current list with the entries from this file? (Selecting 'no' will only append the entries from the file to the existing list.)", vbYesNo + vbApplicationModal + vbExclamation, "Append or replace existing files?")
+                ret = pdMsgBox("You have already created a list of images for processing. Would you like to replace the current list with the entries from this file? (Selecting 'no' will only append the entries from the file to the existing list.)", vbYesNo + vbApplicationModal + vbExclamation, "Append or replace existing files?")
                 If ret = vbYes Then lstFiles.Clear
             End If
             
@@ -645,7 +645,7 @@ Private Sub cmdSaveList_Click()
     
     'First, make sure some images have been placed in the list
     If lstFiles.ListCount < 1 Then
-        MsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before attempting to save the list to file." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbExclamation + vbOKOnly + vbApplicationModal, "Empty image list"
+        pdMsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before attempting to save the list to file." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbExclamation + vbOKOnly + vbApplicationModal, "Empty image list"
         Exit Sub
     End If
     
@@ -714,13 +714,13 @@ Private Sub cmdOK_Click()
     
     'Make sure the user has selected some files to operate on
     If lstFiles.ListCount < 1 Then
-        MsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before continuing." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbExclamation + vbOKOnly + vbApplicationModal, "No image files selected"
+        pdMsgBox "You haven't selected any image files.  Please add one or more image files to the conversion list before continuing." & vbCrLf & vbCrLf & "Note: this is done by using the tools under the ""Step 1 - Select Source Images"" label.", vbExclamation + vbOKOnly + vbApplicationModal, "No image files selected"
         Exit Sub
     End If
     
     'Ensure that the macro text box has a macro file loaded
     If optActions(1).Value = True And ((txtMacro.Text = "No macro selected") Or (txtMacro.Text = "")) Then
-        MsgBox "Please select a valid macro file (Step 3!).", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
+        pdMsgBox "Please select a valid macro file (Step 3!).", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
         AutoSelectText txtMacro
         Exit Sub
     End If

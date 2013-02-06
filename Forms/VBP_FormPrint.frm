@@ -690,7 +690,7 @@ Private Sub cmdOK_Click()
           
             'Print the image
             If (PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1, CBool(chkCenter), CBool(chkFit)) = 0) Then
-                MsgBox PROGRAMNAME & " was unable to print the image.  Please make sure that the specified printer (" & Printer.DeviceName & ") is powered-on and ready for printing.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Printer Error"
+                pdMsgBox PROGRAMNAME & " was unable to print the image.  Please make sure that the specified printer (" & Printer.DeviceName & ") is powered-on and ready for printing.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Printer Error"
                 Message "Print canceled."
             End If
               

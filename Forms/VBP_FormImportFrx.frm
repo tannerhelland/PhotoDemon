@@ -330,7 +330,7 @@ TryBinaryImportAgain:
             Message "Scan complete.  Please select an image to import."
       
         Else
-            MsgBox "Unfortunately, no images were found in " & sFile & ".  Please select a new file.", vbExclamation + vbApplicationModal + vbOKOnly, "No Images Found"
+            pdMsgBox "Unfortunately, no images were found in " & sFile & ".  Please select a new file.", vbExclamation + vbApplicationModal + vbOKOnly, "No Images Found"
             GoTo TryBinaryImportAgain
         End If
         

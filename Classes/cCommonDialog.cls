@@ -610,7 +610,7 @@ With opfile
         
         'This only happens when the user selects too many files (as far as I can tell)
         If (MultiSelect = True) And (lstrlen(.lpstrFile) <> 0) Then
-            MsgBox "Unfortunately, the number of images you selected exceeds what Microsoft Windows allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation + vbApplicationModal + vbOKOnly, "Error: too many images"
+            pdMsgBox "Unfortunately, the number of images you selected exceeds what Microsoft Windows allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation + vbApplicationModal + vbOKOnly, "Error: too many images"
         End If
             
         ' Cancelled

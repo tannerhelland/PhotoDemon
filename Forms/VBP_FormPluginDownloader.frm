@@ -703,7 +703,7 @@ Private Function downloadAllPlugins() As Boolean
         
         If hInternetSession = 0 Then
             Message "No Internet connection found."
-            MsgBox "Unfortunately, " & PROGRAMNAME & " could not connect to the Internet.  Please connect to the Internet and try again.", vbApplicationModal + vbOKOnly + vbExclamation, "No Internet Connection"
+            pdMsgBox "Unfortunately, " & PROGRAMNAME & " could not connect to the Internet.  Please connect to the Internet and try again.", vbApplicationModal + vbOKOnly + vbExclamation, "No Internet Connection"
             downloadAllPlugins = False
             Exit Function
         End If
@@ -749,7 +749,7 @@ Private Function downloadAllPlugins() As Boolean
     'Time to get the files.  Start with zLib.
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc", curNumOfFiles, numOfFiles, zLibSize, False)
     If downloadSuccessful = False Then
-        MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        pdMsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
         downloadAllPlugins = False
         Exit Function
     Else
@@ -761,7 +761,7 @@ Private Function downloadAllPlugins() As Boolean
     'Next comes EZTW32
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/eztw32.pdc", curNumOfFiles, numOfFiles, ezTW32Size, True)
     If downloadSuccessful = False Then
-        MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        pdMsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
         downloadAllPlugins = False
         Exit Function
     Else
@@ -773,7 +773,7 @@ Private Function downloadAllPlugins() As Boolean
     'Next is FreeImage
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
     If downloadSuccessful = False Then
-        MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        pdMsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
         downloadAllPlugins = False
         Exit Function
     Else
@@ -785,7 +785,7 @@ Private Function downloadAllPlugins() As Boolean
     'Last is pngnq
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/pngnq-s9.pdc", curNumOfFiles, numOfFiles, pngnqSize, True)
     If downloadSuccessful = False Then
-        MsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
+        pdMsgBox "Due to an unforeseen error, " & PROGRAMNAME & " is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error"
         downloadAllPlugins = False
         Exit Function
     Else
@@ -819,7 +819,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
     hUrl = InternetOpenUrl(hInternetSession, pluginURL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If hUrl = 0 Then
-        MsgBox PROGRAMNAME & " could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.", vbExclamation + vbApplicationModal + vbOKOnly, "Plugin Server Not Responding"
+        pdMsgBox PROGRAMNAME & " could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.", vbExclamation + vbApplicationModal + vbOKOnly, "Plugin Server Not Responding"
         If hInternetSession Then InternetCloseHandle hInternetSession
         downloadPlugin = False
         Message "Plugin download postponed."
@@ -870,7 +870,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
    
             'If something went wrong, terminate
             If chunkOK = False Then
-                MsgBox PROGRAMNAME & " lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error"
+                pdMsgBox PROGRAMNAME & " lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error"
                 If FileExist(tmpFile) Then
                     Close #fileNum
                     Kill tmpFile

@@ -88,7 +88,7 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 'Use this same command to disable other menus
                 FormMain.MnuColorTop.Enabled = tState
                 FormMain.MnuPrint.Enabled = tState
-                FormMain.MnuWindow.Enabled = tState
+                FormMain.MnuWindowTop.Enabled = tState
                 FormMain.MnuFitOnScreen.Enabled = tState
                 FormMain.MnuFitWindowToImage.Enabled = tState
                 FormMain.MnuZoomIn.Enabled = tState

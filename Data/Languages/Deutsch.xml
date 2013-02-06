@@ -3400,7 +3400,7 @@
 	</phrase>
 
 	<phrase>
-		<original>Despecle</original>
+		<original>Despeckle</original>
 		<translation>Schmutz entfernen</translation>
 	</phrase>
 
@@ -3465,7 +3465,7 @@
 	</phrase>
 
 	<phrase>
-		<original>The clipboard is empty or it does not contain a valid picture format.</original>
+		<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
 		<translation>Die Zwischenablage ist leer oder enthält keine gültigen Format.</translation>
 	</phrase>
 

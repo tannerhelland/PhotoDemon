@@ -104,7 +104,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     'If the user cancels the commondialog box, simply exit out
     Else
         
-        If CC.ExtendedError <> 0 Then MsgBox "An error occurred: " & CC.ExtendedError
+        If CC.ExtendedError <> 0 Then pdMsgBox "An error occurred: " & CC.ExtendedError, vbCritical + vbOKOnly + vbApplicationModal, "Common dialog error"
     
         PhotoDemon_OpenImageDialog = False
     End If
@@ -440,7 +440,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 updateMRU = SavePhotoDemonImage(imageID, dstPath)
             Else
             'If zLib doesn't exist...
-                MsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
+                pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
                 Message "PDI saving disabled."
             End If
         

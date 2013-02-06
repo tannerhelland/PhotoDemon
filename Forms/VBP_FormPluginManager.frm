@@ -1673,7 +1673,7 @@ Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As L
    '*** Get size ****
    lBufferLen = GetFileVersionInfoSize(FullFileName, lDummy)
    If lBufferLen < 1 Then
-      'MsgBox "No Version Info available!"
+      'pdMsgBox "No Version Info available!"
       Exit Sub
    End If
 

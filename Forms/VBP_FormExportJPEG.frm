@@ -267,7 +267,7 @@ Attribute VB_Exposed = False
 'Created: 5/8/00
 'Last updated: 03/December/12
 'Last update: converted this into a true "dialog", in that it can be called from anywhere, and it will return
-'              "OK" or "Cancel" (as type VBMsgBoxResult) if the user hit OK or Cancel.  If OK was pressed, three
+'              "OK" or "Cancel" (as type vbmsgboxresult) if the user hit OK or Cancel.  If OK was pressed, three
 '              global variables - g_JPEGQuality, g_JPEGFlags, and g_JPEGThumbnail - will be set with the user's
 '              answers.  These can then be queried by the calling function as needed.
 '

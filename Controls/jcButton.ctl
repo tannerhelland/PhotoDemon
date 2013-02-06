@@ -3327,12 +3327,12 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
                     If UserControl.Parent.MDIChild Then
                         If .ssc_Subclass(m_lParenthWnd, ByVal exParentForm, 1, Me) Then
                             .ssc_AddMsg m_lParenthWnd, MSG_AFTER, WM_NCACTIVATE
-                            'MsgBox "m_lParenthWnd_WM_NCACTIVATE"
+                            'pdMsgBox "m_lParenthWnd_WM_NCACTIVATE"
                         End If
                     Else
                         If .ssc_Subclass(m_lParenthWnd, ByVal exParentForm, 1, Me) Then
                             .ssc_AddMsg m_lParenthWnd, MSG_AFTER, WM_ACTIVATE
-                            'MsgBox "m_lParenthWnd_WM_ACTIVATE"
+                            'pdMsgBox "m_lParenthWnd_WM_ACTIVATE"
                         End If
                     End If
                 End If
@@ -3550,7 +3550,7 @@ Public Sub About()
 Attribute About.VB_Description = "Displays information about the control and its author."
 Attribute About.VB_UserMemId = -552
 
-    MsgBox "JCButton v 1.02" & vbNewLine & _
+    pdMsgBox "JCButton v 1.02" & vbNewLine & _
            "Author: Juned S. Chhipa" & vbNewLine & _
            "Contact: juned.chhipa@yahoo.com" & vbNewLine & vbNewLine & _
            "Copyright ©2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"

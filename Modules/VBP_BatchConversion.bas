@@ -107,7 +107,7 @@ SaveMacroAgain:
         
     Else
         
-        mReturn = MsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: Last Chance to Save Macro")
+        mReturn = pdMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: Last Chance to Save Macro")
         If mReturn = vbNo Then GoTo SaveMacroAgain
         
         Message "Macro abandoned."
@@ -154,7 +154,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
         If (Macro_ID <> MACRO_IDENTIFIER) Then
             Close #fileNum
             Message "Invalid macro file."
-            MsgBox macroToPlay & " is not a valid macro file.", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Macro Error"
+            pdMsgBox macroToPlay & " is not a valid macro file.", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Macro Error"
             Exit Sub
         End If
         'Now check to make sure that the version number is supported
@@ -213,7 +213,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
             Else
                 Close #fileNum
                 Message "Invalid macro version."
-                MsgBox macroToPlay & " is no longer a supported macro version (#" & Macro_Version & ").", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Macro Error"
+                pdMsgBox macroToPlay & " is no longer a supported macro version (#" & Macro_Version & ").", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Macro Error"
                 Exit Sub
             End If
         End If

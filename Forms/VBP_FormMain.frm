@@ -1529,38 +1529,48 @@ Begin VB.MDIForm FormMain
          Shortcut        =   ^M
       End
    End
-   Begin VB.Menu MnuWindow 
+   Begin VB.Menu MnuWindowTop 
       Caption         =   "&Window"
       WindowList      =   -1  'True
-      Begin VB.Menu MnuNextImage 
+      Begin VB.Menu MnuWindow 
          Caption         =   "Next image"
+         Index           =   0
       End
-      Begin VB.Menu MnuPreviousImage 
+      Begin VB.Menu MnuWindow 
          Caption         =   "Previous image"
+         Index           =   1
       End
-      Begin VB.Menu MnuWindowSepBar0 
+      Begin VB.Menu MnuWindow 
          Caption         =   "-"
+         Index           =   2
       End
-      Begin VB.Menu MnuArrangeIcons 
+      Begin VB.Menu MnuWindow 
          Caption         =   "&Arrange icons"
+         Index           =   3
       End
-      Begin VB.Menu MnuCascadeWindows 
+      Begin VB.Menu MnuWindow 
          Caption         =   "&Cascade"
+         Index           =   4
       End
-      Begin VB.Menu MnuTileHorizontally 
+      Begin VB.Menu MnuWindow 
          Caption         =   "Tile &horizontally"
+         Index           =   5
       End
-      Begin VB.Menu MnuTileVertically 
+      Begin VB.Menu MnuWindow 
          Caption         =   "Tile &vertically"
+         Index           =   6
       End
-      Begin VB.Menu MnuWindowSepBar1 
+      Begin VB.Menu MnuWindow 
          Caption         =   "-"
+         Index           =   7
       End
-      Begin VB.Menu MnuMinimizeAllWindows 
+      Begin VB.Menu MnuWindow 
          Caption         =   "&Minimize all windows"
+         Index           =   8
       End
-      Begin VB.Menu MnuRestoreAllWindows 
+      Begin VB.Menu MnuWindow 
          Caption         =   "&Restore all windows"
+         Index           =   9
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -1944,10 +1954,6 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     
 End Sub
 
-Private Sub MnuArrangeIcons_Click()
-    Me.Arrange vbArrangeIcons
-End Sub
-
 'All artistic filters are launched here
 Private Sub MnuArtistic_Click(Index As Integer)
 
@@ -2044,21 +2050,6 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
     
     End Select
 
-End Sub
-
-Private Sub MnuCascadeWindows_Click()
-    
-    Me.Arrange vbCascade
-    
-    'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
-    ' may not get triggered - it's a particular VB quirk)
-    Dim i As Long
-    For i = 0 To NumOfImagesLoaded
-        If (Not pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
-        End If
-    Next i
-    
 End Sub
 
 Private Sub MnuClearMRU_Click()
@@ -2366,7 +2357,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             'If this is the first time they are submitting feedback, ask them if they have a GitHub account
             Else
             
-                msgReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for making " & PROGRAMNAME & " better")
+                msgReturn = pdMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for making " & PROGRAMNAME & " better")
                 
                 'If their answer was anything but "Cancel", store that answer to file
                 If msgReturn = vbYes Then g_UserPreferences.SetPreference_Boolean "General Preferences", "HasGitHubAccount", True
@@ -2502,14 +2493,6 @@ Private Sub MnuMaximum_Click()
     Process CustomRank, 1, 0
 End Sub
 
-Private Sub MnuMinimizeAllWindows_Click()
-    'Run a loop through every child form and minimize it
-    Dim tForm As Form
-    For Each tForm In VB.Forms
-        If tForm.Name = "FormImage" Then tForm.WindowState = vbMinimized
-    Next
-End Sub
-
 Private Sub MnuMinimum_Click()
     Process CustomRank, 1, 1
 End Sub
@@ -2556,20 +2539,6 @@ End Sub
 
 Private Sub MnuNegative_Click()
     Process Negative
-End Sub
-
-Private Sub MnuNextImage_Click()
-    
-    'If one (or zero) images are loaded, ignore this option
-    If NumOfWindows <= 1 Then Exit Sub
-    
-    'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
-    Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.hWnd, 5)
-        
-    'Use the API to instruct the MDI window to move one window forward or back
-    SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
-    
 End Sub
 
 Private Sub MnuCopy_Click()
@@ -2634,20 +2603,6 @@ End Sub
 
 Private Sub MnuPlayMacroRecording_Click()
     Process MacroPlayRecording
-End Sub
-
-Private Sub MnuPreviousImage_Click()
-    
-    'If one (or zero) images are loaded, ignore this command
-    If NumOfWindows <= 1 Then Exit Sub
-    
-    'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
-    Dim MDIClient As Long
-    MDIClient = GetWindow(FormMain.hWnd, 5)
-        
-    'Use the API to instruct the MDI window to move one window forward or back
-    SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
-    
 End Sub
 
 Private Sub MnuPrint_Click()
@@ -2717,19 +2672,6 @@ End Sub
 
 Private Sub MnuAutoEnhance_Click()
     Process AutoEnhance
-End Sub
-
-Private Sub MnuRestoreAllWindows_Click()
-    'Run a loop through every child form and un-minimize it
-    Dim tForm As Form
-    For Each tForm In VB.Forms
-        If tForm.Name = "FormImage" Then
-            tForm.WindowState = vbNormal
-            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
-            ' may not get triggered - VB is quirky about triggering that event reliably)
-            If pdImages(tForm.Tag).IsActive Then PrepareViewport tForm, "Restore all windows"
-        End If
-    Next
 End Sub
 
 Private Sub MnuRightPanel_Click()
@@ -2867,34 +2809,6 @@ End Sub
 
 Private Sub MnuTile_Click()
     Process Tile, , , , , , , , , , True
-End Sub
-
-Private Sub MnuTileHorizontally_Click()
-    Me.Arrange vbTileHorizontal
-    
-    'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
-    ' may not get triggered - it's a particular VB quirk)
-    Dim i As Long
-    For i = 0 To NumOfImagesLoaded
-        If (Not pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
-        End If
-    Next i
-    
-End Sub
-
-Private Sub MnuTileVertically_Click()
-    Me.Arrange vbTileVertical
-    
-    'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
-    ' may not get triggered - it's a particular VB quirk)
-    Dim i As Long
-    For i = 0 To NumOfImagesLoaded
-        If (Not pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
-        End If
-    Next i
-    
 End Sub
 
 'All tool menu items are launched from here
@@ -3079,6 +2993,105 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     lastAccelerator = Timer
     
+End Sub
+
+'All "Window" menu items are handled here
+Private Sub MnuWindow_Click(Index As Integer)
+
+    Dim i As Long
+    Dim MDIClient As Long
+
+    Select Case Index
+    
+        'Next image
+        Case 0
+            'If one (or zero) images are loaded, ignore this option
+            If NumOfWindows <= 1 Then Exit Sub
+            
+            'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
+            MDIClient = GetWindow(FormMain.hWnd, 5)
+                
+            'Use the API to instruct the MDI window to move one window forward or back
+            SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
+    
+        'Previous image
+        Case 1
+            'If one (or zero) images are loaded, ignore this command
+            If NumOfWindows <= 1 Then Exit Sub
+            
+            'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
+            MDIClient = GetWindow(FormMain.hWnd, 5)
+                
+            'Use the API to instruct the MDI window to move one window forward or back
+            SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
+    
+        '<separator>
+        Case 2
+        
+        'Arrange icons
+        Case 3
+            Me.Arrange vbArrangeIcons
+        
+        'Cascade
+        Case 4
+            Me.Arrange vbCascade
+    
+            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
+            ' may not get triggered - it's a particular VB quirk)
+            For i = 0 To NumOfImagesLoaded
+                If (Not pdImages(i) Is Nothing) Then
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
+                End If
+            Next i
+        
+        'Tile horizontally
+        Case 5
+            Me.Arrange vbTileHorizontal
+    
+            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
+            ' may not get triggered - it's a particular VB quirk)
+            For i = 0 To NumOfImagesLoaded
+                If (Not pdImages(i) Is Nothing) Then
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
+                End If
+            Next i
+    
+        'Tile vertically
+        Case 6
+            Me.Arrange vbTileVertical
+    
+            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
+            ' may not get triggered - it's a particular VB quirk)
+            For i = 0 To NumOfImagesLoaded
+                If (Not pdImages(i) Is Nothing) Then
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
+                End If
+            Next i
+    
+        '<separator>
+        Case 7
+        
+        'Minimize all windows
+        Case 8
+            'Run a loop through every child form and minimize it
+            Dim tForm As Form
+            For Each tForm In VB.Forms
+                If tForm.Name = "FormImage" Then tForm.WindowState = vbMinimized
+            Next
+        
+        'Restore all windows
+        Case 9
+            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
+            ' may not get triggered - it's a particular VB quirk)
+            For i = 0 To NumOfImagesLoaded
+                If (Not pdImages(i) Is Nothing) Then
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Restore all windows"
+                End If
+            Next i
+    
+    End Select
+    
+
 End Sub
 
 Private Sub MnuZoomIn_Click()

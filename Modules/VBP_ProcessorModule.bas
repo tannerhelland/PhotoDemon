@@ -635,7 +635,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 ElseIf pOPCODE = REDUCECOLORS_MANUAL_ERRORDIFFUSION Then
                     FormReduceColors.ReduceImageColors_BitRGB_ErrorDif pOPCODE2, pOPCODE3, pOPCODE4, pOPCODE5
                 Else
-                    MsgBox "Unsupported color reduction method."
+                    pdMsgBox "Unsupported color reduction method.", vbCritical + vbOKOnly + vbApplicationModal, "Color reduction error"
                 End If
             End If
         Case AdjustTemperature
@@ -935,7 +935,7 @@ MainErrHandler:
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
         'Since we know about this error, there's no need to display the extended box.  Display a smaller one, then exit.
-        MsgBox AddInfo, mType, "Invalid image file"
+        pdMsgBox AddInfo, mType, "Invalid image file"
         
         'On an invalid picture load, there will be a blank form that needs to be dealt with.
         pdImages(CurrentImage).deactivateImage
@@ -956,7 +956,7 @@ MainErrHandler:
     End If
     
     'Create the message box to return the error information
-    msgReturn = MsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
+    msgReturn = pdMsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
     "Error number " & Err.Number & vbCrLf & _
     "Description: " & Err.Description & vbCrLf & vbCrLf & _
     AddInfo, mType, PROGRAMNAME & " Error Handler: #" & Err.Number)
@@ -967,7 +967,7 @@ MainErrHandler:
         'GitHub requires a login for submitting Issues; check for that first
         Dim secondaryReturn As VbMsgBoxResult
     
-        secondaryReturn = MsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making " & PROGRAMNAME & " better")
+        secondaryReturn = pdMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making " & PROGRAMNAME & " better")
     
         'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
         If secondaryReturn = vbYes Then
@@ -975,14 +975,14 @@ MainErrHandler:
             OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
             
             'Display one final message box with additional instructions
-            MsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the ""Title"" box, please enter the following error number with a short description of the problem: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the ""Submit new issue"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions"
+            pdMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the ""Title"" box, please enter the following error number with a short description of the problem: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the ""Submit new issue"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions"
             
         Else
             'Shell a browser window with the tannerhelland.com PhotoDemon contact form
             OpenURL "http://www.tannerhelland.com/photodemon-contact/"
             
             'Display one final message box with additional instructions
-            MsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the ""Additional details"" box, please describe the steps that led up to this error." & vbCrLf & vbCrLf & "In the bottom box of that page, please enter the following error number: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "When finished, click the ""Submit"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions"
+            pdMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the ""Additional details"" box, please describe the steps that led up to this error." & vbCrLf & vbCrLf & "In the bottom box of that page, please enter the following error number: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "When finished, click the ""Submit"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions"
             
         End If
     

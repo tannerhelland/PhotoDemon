@@ -344,10 +344,42 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     DoEvents
 End Sub
 
+'This wrapper is used in place of the standard pdMsgBox function.  At present it's just a wrapper around pdMsgBox, but
+' in the future I may replace the dialog function with something custom.
+Public Function pdMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxStyle, ByVal pTitle As String, ParamArray ExtraText() As Variant) As VbMsgBoxResult
+
+    Dim newMessage As String, newTitle As String
+    newMessage = pMessage
+    newTitle = pTitle
+
+    'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
+    If (Not (g_Language Is Nothing)) Then
+        If g_Language.readyToTranslate Then
+            If g_Language.translationActive Then
+                newMessage = g_Language.TranslateMessage(pMessage)
+                newTitle = g_Language.TranslateMessage(pTitle)
+            End If
+        End If
+    End If
+    
+    'Once the message is translated, we can add back in any optional parameters
+    If Not IsMissing(ExtraText) Then
+    
+        Dim i As Long
+        For i = LBound(ExtraText) To UBound(ExtraText)
+            newMessage = Replace$(newMessage, "%" & i + 1, CStr(ExtraText(i)))
+        Next i
+    
+    End If
+
+    pdMsgBox = MsgBox(newMessage, pButtons, newTitle)
+
+End Function
+
 'This popular function is used to display a message in the main form's status bar.
 ' INPUTS:
 ' 1) the message to be displayed (mString), with any run-time dependent
-Public Sub Message(ByVal mString As String, ParamArray extraText() As Variant)
+Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
 
     Dim newString As String
     newString = mString
@@ -360,11 +392,11 @@ Public Sub Message(ByVal mString As String, ParamArray extraText() As Variant)
     End If
     
     'Once the message is translated, we can add back in any optional parameters
-    If Not IsMissing(extraText) Then
+    If Not IsMissing(ExtraText) Then
     
         Dim i As Long
-        For i = LBound(extraText) To UBound(extraText)
-            newString = Replace$(newString, "%" & i + 1, extraText(i))
+        For i = LBound(ExtraText) To UBound(ExtraText)
+            newString = Replace$(newString, "%" & i + 1, CStr(ExtraText(i)))
         Next i
     
     End If

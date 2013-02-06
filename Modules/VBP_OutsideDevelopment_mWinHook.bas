@@ -30,7 +30,7 @@ Public Type POINTAPI
    x As Long
    y As Long
 End Type
-Public Type msg '{     /* msg */
+Public Type Msg '{     /* msg */
    hWnd As Long     '\\ The window whose Winproc will receive the message
    Message As Long  '\\ The message number
    wParam As Long
@@ -94,7 +94,7 @@ Private m_eValidItem As eHookType
 
 Public Sub debugmsg(ByVal sMsg As String)
    #If debugmsg = 1 Then
-      MsgBox sMsg, vbInformation
+      pdMsgBox sMsg, vbInformation
    #Else
       Debug.Print sMsg
    #End If

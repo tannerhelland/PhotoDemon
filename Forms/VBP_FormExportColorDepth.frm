@@ -33,7 +33,7 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   960
       Width           =   2670
       _ExtentX        =   4710
-      _ExtentY        =   609
+      _ExtentY        =   661
       Caption         =   "1 bpp (monochrome)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -72,7 +72,7 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   1440
       Width           =   3150
       _ExtentX        =   5556
-      _ExtentY        =   609
+      _ExtentY        =   661
       Caption         =   "4 bpp (16 shades of gray)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -93,7 +93,7 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   1920
       Width           =   4125
       _ExtentX        =   7276
-      _ExtentY        =   609
+      _ExtentY        =   661
       Caption         =   "8 bpp (256 colors or full grayscale)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -114,7 +114,7 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   2400
       Width           =   3165
       _ExtentX        =   5583
-      _ExtentY        =   609
+      _ExtentY        =   661
       Caption         =   "24 bpp (16 million colors)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -135,7 +135,7 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   2880
       Width           =   5250
       _ExtentX        =   9260
-      _ExtentY        =   609
+      _ExtentY        =   661
       Caption         =   "32 bpp (16 million colors + full transparency)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

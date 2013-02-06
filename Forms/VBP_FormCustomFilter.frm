@@ -586,20 +586,28 @@ Begin VB.Form FormCustomFilter
       TabIndex        =   29
       Top             =   4770
       Width           =   1065
-      _extentx        =   1879
-      _extenty        =   1085
-      buttonstyle     =   13
-      showfocusrect   =   -1  'True
-      font            =   "VBP_FormCustomFilter.frx":0000
-      backcolor       =   15199212
-      caption         =   ""
-      handpointer     =   -1  'True
-      picturenormal   =   "VBP_FormCustomFilter.frx":0028
-      disabledpicturemode=   1
-      captioneffects  =   0
-      tooltiptitle    =   "Open Filter"
-      tooltip         =   "Open a previously saved convolution filter."
-      tooltiptype     =   1
+      _ExtentX        =   1879
+      _ExtentY        =   1085
+      ButtonStyle     =   13
+      ShowFocusRect   =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   15199212
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormCustomFilter.frx":0000
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      ToolTip         =   "Open a previously saved convolution filter."
+      TooltipType     =   1
+      TooltipTitle    =   "Open Filter"
    End
    Begin PhotoDemon.jcbutton cmdSave 
       Height          =   615
@@ -607,19 +615,27 @@ Begin VB.Form FormCustomFilter
       TabIndex        =   30
       Top             =   4770
       Width           =   1065
-      _extentx        =   1879
-      _extenty        =   1085
-      buttonstyle     =   13
-      showfocusrect   =   -1  'True
-      font            =   "VBP_FormCustomFilter.frx":107A
-      caption         =   ""
-      handpointer     =   -1  'True
-      picturenormal   =   "VBP_FormCustomFilter.frx":10A2
-      disabledpicturemode=   1
-      captioneffects  =   0
-      tooltiptitle    =   "Save Current Filter"
-      tooltip         =   "Save the current filter to file.  This allows you to use the filter later, or share the filter with other PhotoDemon users."
-      tooltiptype     =   1
+      _ExtentX        =   1879
+      _ExtentY        =   1085
+      ButtonStyle     =   13
+      ShowFocusRect   =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormCustomFilter.frx":1052
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      ToolTip         =   "Save the current filter to file.  This allows you to use the filter later, or share the filter with other PhotoDemon users."
+      TooltipType     =   1
+      TooltipTitle    =   "Save Current Filter"
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -627,8 +643,8 @@ Begin VB.Form FormCustomFilter
       TabIndex        =   36
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -827,7 +843,7 @@ Private Sub cmdOpen_Click()
             updatePreview
             
         Else
-            MsgBox "An error occurred while attempting to load " & sFile & ".  Please verify that the file is a valid custom filter file.", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Custom Filter Error"
+            pdMsgBox "An error occurred while attempting to load " & sFile & ".  Please verify that the file is a valid custom filter file.", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Custom Filter Error"
         End If
     End If
     

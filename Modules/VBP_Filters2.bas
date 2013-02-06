@@ -1372,14 +1372,14 @@ Public Sub MenuCountColors()
     
     'Show the user our final tally
     Message "Total number of unique colors: %1", totalCount
-    MsgBox g_Language.TranslateMessage("This image contains %1 unique colors.", totalCount), vbOKOnly + vbApplicationModal + vbInformation, g_Language.TranslateMessage("Count Image Colors")
+    pdMsgBox g_Language.TranslateMessage("This image contains %1 unique colors.", totalCount), vbOKOnly + vbApplicationModal + vbInformation, g_Language.TranslateMessage("Count Image Colors")
     
 End Sub
 
 'You can use this section of code to test out your own filters.  I've left some sample code below.
 Public Sub MenuTest()
     
-    MsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test out your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Pro Tip"
+    pdMsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test out your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Pro Tip"
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte

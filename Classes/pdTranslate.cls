@@ -203,7 +203,7 @@ Private Function isApproximateLanguageMatch(ByRef srcLangID As String)
     For i = 0 To numOfLanguages - 1
         If StrComp(Left(srcLangID, 2), Left(availableLanguages(i).langID, 2), vbTextCompare) = 0 Then
             isApproximateLanguageMatch = i
-            'MsgBox "Approximate language match found: " & availableLanguages(i).langID
+            'pdMsgBox "Approximate language match found: " & availableLanguages(i).langID
             Exit Function
         End If
     Next i
@@ -220,7 +220,7 @@ Private Function isExactLanguageMatch(ByRef srcLangID As String)
     For i = 0 To numOfLanguages - 1
         If StrComp(srcLangID, availableLanguages(i).langID, vbTextCompare) = 0 Then
             isExactLanguageMatch = i
-            'MsgBox "Exact language match found: " & availableLanguages(i).langID
+            'pdMsgBox "Exact language match found: " & availableLanguages(i).langID
             Exit Function
         End If
     Next i
@@ -354,7 +354,7 @@ Public Sub CheckAvailableLanguages()
     'TESTING: display the info we retrieved
     'Dim i As Long
     'For i = 0 To numOfLanguages - 1
-    '    MsgBox availableLanguages(i).langID & vbCrLf & availableLanguages(i).langName & vbCrLf & availableLanguages(i).langStatus & vbCrLf & availableLanguages(i).langVersion
+    '    pdMsgBox availableLanguages(i).langID & vbCrLf & availableLanguages(i).langName & vbCrLf & availableLanguages(i).langStatus & vbCrLf & availableLanguages(i).langVersion
     'Next i
     
 End Sub
@@ -554,7 +554,10 @@ Private Sub preProcessText(ByRef srcString As String)
     '1) Trim the string
     srcString = Trim$(srcString)
     
-    '1) Check for a trailing "..."
+    '2) Remove any tabs from the caption (which may have been introduced by an XML editor)
+    If InStr(1, srcString, vbTab) <> 0 Then srcString = Replace(srcString, vbTab, "")
+    
+    '3) Check for a trailing "..."
     If Right$(srcString, 3) = "..." Then
         hasDotDotDot = True
         srcString = Left$(srcString, Len(srcString) - 3)
@@ -569,7 +572,7 @@ Private Sub postProcessText(ByRef srcString As String)
     '1) Trim the string
     srcString = Trim$(srcString)
     
-    '1) If the original had a trailing "...", restore it now
+    '2) If the original had a trailing "...", restore it now
     If hasDotDotDot Then
         srcString = srcString & "..."
         hasDotDotDot = False

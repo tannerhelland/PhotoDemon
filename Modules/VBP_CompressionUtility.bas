@@ -76,7 +76,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
 
     'Allocate an array to receive the data from a file
     Dim DataBytes() As Byte
-    ReDim DataBytes(FileLen(srcFilename) - 1)
+    ReDim DataBytes(fileLen(srcFilename) - 1)
 
     'Copy the data from the source into a numerical array
     Dim fileNum As Integer
@@ -111,7 +111,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     If result = 0 Then
         CompressedSize = UBound(DataBytes) + 1
     Else
-        MsgBox "An error (#" & Err.Number & ") has occurred.  Compression halted."
+        pdMsgBox "An error (#" & Err.Number & ") has occurred.  Compression halted.", vbCritical + vbOKOnly + vbApplicationModal, "zLib error"
         Exit Function
     End If
 
@@ -140,7 +140,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     'If SrcFilename <> DstFilename Then Kill SrcFilename
 
     'Report the compression ratio
-    If DispResults = True Then MsgBox "File compressed from " & OriginalSize & " bytes to " & CompressedSize & " bytes.  Ratio: " & CStr(100 - (100 * (CDbl(CompressedSize) / CDbl(OriginalSize)))) & "%"
+    If DispResults Then pdMsgBox "File compressed from " & OriginalSize & " bytes to " & CompressedSize & " bytes.  Ratio: " & CStr(100 - (100 * (CDbl(CompressedSize) / CDbl(OriginalSize)))) & "%", vbInformation + vbOKOnly, "Compression results"
 
     'Return
     CompressFile = True
@@ -158,7 +158,7 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
 
     'Allocate a temporary array for receiving the compressed data
     Dim DataBytes() As Byte
-    ReDim DataBytes(FileLen(srcFilename) - Len(FileHeader) - 1)
+    ReDim DataBytes(fileLen(srcFilename) - Len(FileHeader) - 1)
     
     'Copy out the header and then the compressed data
     Dim fileNum As Integer
@@ -198,7 +198,7 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     If result = 0 Then
         CompressedSize = UBound(DataBytes) + 1
     Else
-        MsgBox "An error (#" & Err.Number & ") has occurred.  Decompression halted."
+        pdMsgBox "An error (#" & Err.Number & ") has occurred.  Compression halted.", vbCritical + vbOKOnly + vbApplicationModal, "zLib error"
         Exit Function
     End If
     
@@ -227,7 +227,7 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     If srcFilename <> dstFilename Then Kill srcFilename
     
     'Display decompression results
-    If DispResults = True Then MsgBox "File decompressed from " & OriginalSize & " bytes to " & CompressedSize & " bytes."
+    If DispResults Then pdMsgBox "File decompressed from " & OriginalSize & " bytes to " & CompressedSize & " bytes.", vbInformation + vbOKOnly, "Compression results"
     
     'Return
     DecompressFile = True
