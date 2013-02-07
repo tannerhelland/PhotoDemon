@@ -111,7 +111,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     If result = 0 Then
         CompressedSize = UBound(DataBytes) + 1
     Else
-        pdMsgBox "An error (#" & Err.Number & ") has occurred.  Compression halted.", vbCritical + vbOKOnly + vbApplicationModal, "zLib error"
+        pdMsgBox "An error (#%1) has occurred.  Compression halted.", vbCritical + vbOKOnly + vbApplicationModal, "zLib error", Err.Number
         Exit Function
     End If
 
@@ -140,7 +140,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     'If SrcFilename <> DstFilename Then Kill SrcFilename
 
     'Report the compression ratio
-    If DispResults Then pdMsgBox "File compressed from " & OriginalSize & " bytes to " & CompressedSize & " bytes.  Ratio: " & CStr(100 - (100 * (CDbl(CompressedSize) / CDbl(OriginalSize)))) & "%", vbInformation + vbOKOnly, "Compression results"
+    If DispResults Then pdMsgBox "File compressed from %1 bytes to %2 bytes.  Ratio: %3 %", vbInformation + vbOKOnly, "Compression results", OriginalSize, CompressedSize, CStr(100 - (100 * (CDbl(CompressedSize) / CDbl(OriginalSize))))
 
     'Return
     CompressFile = True
@@ -198,7 +198,7 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     If result = 0 Then
         CompressedSize = UBound(DataBytes) + 1
     Else
-        pdMsgBox "An error (#" & Err.Number & ") has occurred.  Compression halted.", vbCritical + vbOKOnly + vbApplicationModal, "zLib error"
+        pdMsgBox "An error (#%1) has occurred.  Compression halted.", vbCritical + vbOKOnly + vbApplicationModal, "zLib error", Err.Number
         Exit Function
     End If
     
@@ -227,7 +227,7 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     If srcFilename <> dstFilename Then Kill srcFilename
     
     'Display decompression results
-    If DispResults Then pdMsgBox "File decompressed from " & OriginalSize & " bytes to " & CompressedSize & " bytes.", vbInformation + vbOKOnly, "Compression results"
+    If DispResults Then pdMsgBox "File decompressed from %1 bytes to %2 bytes.", vbInformation + vbOKOnly, "Compression results", OriginalSize, CompressedSize
     
     'Return
     DecompressFile = True

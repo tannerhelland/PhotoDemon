@@ -304,7 +304,7 @@ MRUEntryFound:
     MRUlist(0) = newFile
     
     'Redraw the MRU menu based on the current list
-    If (FormMain.mnuRecDocs(0).Caption = "Empty") Then
+    If (FormMain.mnuRecDocs(0).Caption = g_Language.TranslateMessage("Empty")) Then
         FormMain.mnuRecDocs(0).Enabled = True
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
@@ -425,7 +425,7 @@ Public Sub MRU_ClearList()
     For i = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
         Unload FormMain.mnuRecDocs(i)
     Next i
-    FormMain.mnuRecDocs(0).Caption = "Empty"
+    FormMain.mnuRecDocs(0).Caption = g_Language.TranslateMessage("Empty")
     FormMain.mnuRecDocs(0).Enabled = False
     FormMain.MnuRecentSepBar1.Visible = False
     FormMain.MnuClearMRU.Visible = False

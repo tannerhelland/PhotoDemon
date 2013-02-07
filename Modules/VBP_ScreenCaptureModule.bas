@@ -30,7 +30,7 @@ Public Sub CaptureScreen()
     
     'See if we should minimize the form before the capture
     Dim CaptureMethod As Long
-    CaptureMethod = pdMsgBox("Would you like to minimize " & PROGRAMNAME & " before capturing the screen?", vbQuestion + vbDefaultButton1 + vbYesNoCancel, "Screen Capture")
+    CaptureMethod = pdMsgBox("Would you like to minimize PhotoDemon before capturing the screen?", vbQuestion + vbDefaultButton1 + vbYesNoCancel, "Screen Capture")
     
     'Check for cancel
     If CaptureMethod = vbCancel Then
@@ -102,7 +102,7 @@ Public Sub CaptureScreen()
     Dim sFile(0) As String
     sFile(0) = tmpFilename
         
-    PreLoadImage sFile, False, "Screen Capture", "Screen capture (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+    PreLoadImage sFile, False, g_Language.TranslateMessage("Screen Capture"), g_Language.TranslateMessage("Screen capture") & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     
     'Erase the temp file
     If FileExist(tmpFilename) Then Kill tmpFilename

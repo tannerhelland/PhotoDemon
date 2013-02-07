@@ -211,13 +211,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         fi_hDIB = FreeImage_Load(fileFIF, srcFilename, fi_ImportFlags)
     Else
         If fileFIF = FIF_GIF Then
-            Message "Importing frame #" & pageToLoad + 1 & " from animated GIF file..."
+            Message "Importing frame # %1 from animated GIF file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
         ElseIf fileFIF = FIF_ICO Then
-            Message "Importing icon #" & pageToLoad + 1 & " from ICO file..."
+            Message "Importing icon # %1 from ICO file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , 0)
         Else
-            Message "Importing page #" & pageToLoad + 1 & " from multipage TIFF file..."
+            Message "Importing page # %1 from multipage TIFF file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename, , , , 0)
         End If
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)

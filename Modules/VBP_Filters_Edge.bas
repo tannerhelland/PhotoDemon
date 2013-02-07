@@ -33,7 +33,7 @@ Public Sub FilterPencil()
     g_FilterWeight = 1
     g_FilterBias = 0
     
-    DoFilter "pencil sketch", True
+    DoFilter g_Language.TranslateMessage("pencil sketch"), True
 
 End Sub
 
@@ -50,7 +50,7 @@ Public Sub FilterRelief()
     g_FM(1, 1) = -2
     g_FilterWeight = 3
     g_FilterBias = 75
-    DoFilter "Relief"
+    DoFilter g_Language.TranslateMessage("Relief")
 End Sub
 
 'A lighter version of a traditional sharpen filter; it's designed to bring out edge detail without the blowout typical of sharpening
@@ -64,5 +64,5 @@ Public Sub FilterEdgeEnhance()
     g_FM(0, 0) = 8
     g_FilterWeight = 4
     g_FilterBias = 0
-    DoFilter "Edge Enhance"
+    DoFilter g_Language.TranslateMessage("Edge Enhance")
 End Sub

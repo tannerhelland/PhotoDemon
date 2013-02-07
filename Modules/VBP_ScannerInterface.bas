@@ -82,7 +82,7 @@ Public Sub Twain32SelectScanner()
         Else
         
             'If the scanner isn't responding...
-            pdMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
+            pdMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
             Message "Unresponsive scanner - scanning suspended "
             
         End If
@@ -90,7 +90,7 @@ Public Sub Twain32SelectScanner()
     Else
     
         'If the EZTW32.dll file doesn't exist...
-        pdMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
+        pdMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
         Message "Scanning disabled "
         
     End If
@@ -104,14 +104,14 @@ Public Sub Twain32Scan()
     
     'Make sure the EZTW32.dll file exists
     If g_ScanEnabled = False Then
-        pdMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload " & PROGRAMNAME & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
+        pdMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
         Message "Scanner/digital camera import disabled "
         Exit Sub
     End If
         
     'Make sure the scanner is on and responsive
     If Not EnableScanner Then
-        pdMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Scanner Interface Error"
+        pdMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
         Message "Unresponsive scanner - scanning suspended "
         Exit Sub
     End If
@@ -141,7 +141,7 @@ Public Sub Twain32Scan()
         Dim sFile(0) As String
         sFile(0) = ScannerCaptureFile
         
-        PreLoadImage sFile, False, "Scanned Image", "Scanned Image (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+        PreLoadImage sFile, False, g_Language.TranslateMessage("Scanned Image"), g_Language.TranslateMessage("Scanned Image") & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
         
         'Be polite and remove the temporary file acquired from the scanner
         Kill ScannerCaptureFile
@@ -179,9 +179,9 @@ ScanError:
             Message "Scan canceled."
             Exit Sub
         Case Else
-            scanErrMessage = "The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error # " & ScanCheck & ").  Please visit http://www.eztwain.com for more information."
+            scanErrMessage = g_Language.TranslateMessage("The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #") & " )" & ScanCheck & ").  " & g_Language.TranslateMessage("Please visit http://www.eztwain.com for more information.")
     End Select
-    
+        
     pdMsgBox scanErrMessage, vbExclamation + vbOKOnly + vbApplicationModal, "Scan Canceled"
 
     Message "Scan canceled. "

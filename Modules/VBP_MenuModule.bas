@@ -40,7 +40,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     Dim sFileList As String
     
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
-    If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, "Open an image", , ownerhWnd, 0) Then
+    If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerhWnd, 0) Then
         
         Message "Preparing to load image..."
         
@@ -104,7 +104,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     'If the user cancels the commondialog box, simply exit out
     Else
         
-        If CC.ExtendedError <> 0 Then pdMsgBox "An error occurred: " & CC.ExtendedError, vbCritical + vbOKOnly + vbApplicationModal, "Common dialog error"
+        If CC.ExtendedError <> 0 Then pdMsgBox "An error occurred: %1", vbCritical + vbOKOnly + vbApplicationModal, "Common dialog error", CC.ExtendedError
     
         PhotoDemon_OpenImageDialog = False
     End If
@@ -223,7 +223,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Dim sFile As String
     sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).OriginalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
         
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, "Save an image", g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
                 
         'Store the selected file format to the image object
         pdImages(imageID).CurrentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
@@ -300,12 +300,12 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                     
                     'If it IS supported, set the original color depth as the output color depth for this save
                     outputColorDepth = pdImages(imageID).OriginalColorDepth
-                    Message "Original color depth of " & outputColorDepth & " bpp is supported by this format.  Proceeding with save..."
+                    Message "Original color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
                 
                 'If it IS NOT supported, we need to find the closest available color depth for this format.
                 Else
                     outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, pdImages(imageID).OriginalColorDepth)
-                    Message "Original color depth of " & pdImages(imageID).OriginalColorDepth & " bpp is not supported by this format.  Proceeding to save as " & outputColorDepth & " bpp..."
+                    Message "Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", pdImages(imageID).OriginalColorDepth, outputColorDepth
                 
                 End If
             
@@ -328,18 +328,18 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                     If (Not pdImages(imageID).mainLayer.isAlphaBinary) Then outputColorDepth = 32
                 End If
                 
-                Message "Color count successful (" & outputColorDepth & " bpp recommended)"
+                Message "Color count successful (%1 bpp recommended)", outputColorDepth
                 
                 'As with case 0, we now need to see if this format supports the suggested color depth
                 If g_ImageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
                     
                     'If it IS supported, set the original color depth as the output color depth for this save
-                    Message "Recommended color depth of " & outputColorDepth & " bpp is supported by this format.  Proceeding with save..."
+                    Message "Recommended color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
                 
                 'If it IS NOT supported, we need to find the closest available color depth for this format.
                 Else
                     outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
-                    Message "Recommended color depth of " & pdImages(imageID).OriginalColorDepth & " bpp is not supported by this format.  Proceeding to save as " & outputColorDepth & " bpp..."
+                    Message "Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", pdImages(imageID).OriginalColorDepth, outputColorDepth
                 
                 End If
             
@@ -440,7 +440,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 updateMRU = SavePhotoDemonImage(imageID, dstPath)
             Else
             'If zLib doesn't exist...
-                pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow " & PROGRAMNAME & " to download plugin updates by going to the Edit Menu -> Program Preferences, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " PDI Interface Error"
+                pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
                 Message "PDI saving disabled."
             End If
         

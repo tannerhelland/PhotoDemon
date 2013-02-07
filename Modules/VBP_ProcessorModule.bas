@@ -924,13 +924,13 @@ MainErrHandler:
         
     'Out of memory error
     If Err.Number = 480 Or Err.Number = 7 Then
-        AddInfo = "There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again."
+        AddInfo = g_Language.TranslateMessage("There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.")
         Message "Out of memory.  Function cancelled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
     'Invalid picture error
     ElseIf Err.Number = 481 Then
-        AddInfo = "Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it."
+        AddInfo = g_Language.TranslateMessage("Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it.")
         Message "Invalid image.  Image load cancelled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
@@ -944,22 +944,19 @@ MainErrHandler:
     
     'File not found error
     ElseIf Err.Number = 53 Then
-        AddInfo = "The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & "2) the file location provided to " & PROGRAMNAME & " is correct."
+        AddInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & "2) the file location provided to PhotoDemon is correct.")
         Message "File not found."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
         
     'Unknown error
     Else
-        AddInfo = PROGRAMNAME & " cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!" & vbCrLf & vbCrLf & "Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses " & PROGRAMNAME & ".)"
+        AddInfo = g_Language.TranslateMessage("PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!" & vbCrLf & vbCrLf & "Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)")
         mType = vbCritical + vbYesNo + vbApplicationModal
         Message "Unknown error."
     End If
     
     'Create the message box to return the error information
-    msgReturn = pdMsgBox(PROGRAMNAME & " has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & _
-    "Error number " & Err.Number & vbCrLf & _
-    "Description: " & Err.Description & vbCrLf & vbCrLf & _
-    AddInfo, mType, PROGRAMNAME & " Error Handler: #" & Err.Number)
+    msgReturn = pdMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & AddInfo, mType, "PhotoDemon Error Handler: #%1", Err.Number, Err.Description)
     
     'If the message box return value is "Yes", the user has opted to file a bug report.
     If msgReturn = vbYes Then
@@ -967,7 +964,7 @@ MainErrHandler:
         'GitHub requires a login for submitting Issues; check for that first
         Dim secondaryReturn As VbMsgBoxResult
     
-        secondaryReturn = pdMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making " & PROGRAMNAME & " better")
+        secondaryReturn = pdMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making PhotoDemon better")
     
         'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
         If secondaryReturn = vbYes Then
@@ -975,14 +972,14 @@ MainErrHandler:
             OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
             
             'Display one final message box with additional instructions
-            pdMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the ""Title"" box, please enter the following error number with a short description of the problem: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the ""Submit new issue"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions"
+            pdMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: " & vbCrLf & "%1" & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions", Err.Number
             
         Else
             'Shell a browser window with the tannerhelland.com PhotoDemon contact form
             OpenURL "http://www.tannerhelland.com/photodemon-contact/"
             
             'Display one final message box with additional instructions
-            pdMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the ""Additional details"" box, please describe the steps that led up to this error." & vbCrLf & vbCrLf & "In the bottom box of that page, please enter the following error number: " & vbCrLf & Err.Number & vbCrLf & vbCrLf & "When finished, click the ""Submit"" button.  Thank you so much for your help!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions"
+            pdMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the Additional Details box, please describe the steps that led to this error." & vbCrLf & vbCrLf & "In the bottom box of that page, please enter the following error number: " & vbCrLf & "%1" & vbCrLf & vbCrLf & "When finished, click the Submit button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions", Err.Number
             
         End If
     
@@ -1286,5 +1283,7 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = ""
             
     End Select
+    
+    GetNameOfProcess = g_Language.TranslateMessage(GetNameOfProcess)
     
 End Function

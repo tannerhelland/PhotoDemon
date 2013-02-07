@@ -552,7 +552,7 @@ Public Sub MenuComicBook()
     Dim gThreshold As Long
     gThreshold = 8
     
-    Message "Animating image (stage 1 of 3)..."
+    Message "Animating image (stage %1 of 3)...", 1
                 
     'More color variables - in this case, sums for each color component
     Dim r As Long, g As Long, b As Long
@@ -607,7 +607,7 @@ Public Sub MenuComicBook()
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
         
-    Message "Animating image (stage 2 of 3)..."
+    Message "Animating image (stage %1 of 3)...", 2
         
     Dim blendVal As Double
     
@@ -654,7 +654,7 @@ Public Sub MenuComicBook()
     
     'The last thing we need to do is sketch in the edges of the image.
     
-    Message "Animating image (stage 3 of 3)..."
+    Message "Animating image (stage %1 of 3)...", 3
     
     'We can't do this at the borders of the image, so shrink the functional area by one in each dimension.
     initX = initX + 1
@@ -988,7 +988,7 @@ Public Sub MenuAntique()
     
 End Sub
 
-'Dull but standard "sepia" transformation.  Values are derived from the w3c standard at:
+'Dull but standard "sepia" transformation.  Values derived from the w3c standard at:
 ' https://dvcs.w3.org/hg/FXTF/raw-file/tip/filters/index.html#sepiaEquivalent
 Public Sub MenuSepia()
     
@@ -1074,7 +1074,7 @@ Public Sub MenuVibrate()
     g_FM(2, -2) = -1
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "Vibrate"
+    DoFilter g_Language.TranslateMessage("Vibrate")
 End Sub
 
 'Another filter found by trial-and-error.  "Dream" effect.
@@ -1379,7 +1379,7 @@ End Sub
 'You can use this section of code to test out your own filters.  I've left some sample code below.
 Public Sub MenuTest()
     
-    pdMsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test out your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, PROGRAMNAME & " Pro Tip"
+    pdMsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, " PhotoDemon Pro Tip"
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte

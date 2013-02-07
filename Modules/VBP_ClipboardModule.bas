@@ -90,7 +90,7 @@ Public Sub ClipboardPaste()
         Dim sFile(0) As String
         sFile(0) = tmpClipboardFile
             
-        PreLoadImage sFile, False, "Clipboard Image", "Clipboard Image (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+        PreLoadImage sFile, False, g_Language.TranslateMessage("Clipboard Image"), g_Language.TranslateMessage("Clipboard Image") & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
             
         'Be polite and remove the temporary file
         If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile

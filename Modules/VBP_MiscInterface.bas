@@ -174,10 +174,10 @@ Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
 
             'Toggle the text and picture box accordingly
             If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
-                FormMain.MnuLeftPanel.Caption = "Show left panel (file tools)"
+                FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
                 FormMain.picLeftPane.Visible = False
             Else
-                FormMain.MnuLeftPanel.Caption = "Hide left panel (file tools)"
+                FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
                 FormMain.picLeftPane.Visible = True
             End If
     
@@ -185,11 +185,11 @@ Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
             ResetMenuIcons
         
         Case VISIBILITY_FORCEDISPLAY
-            FormMain.MnuLeftPanel.Caption = "Hide left panel (file tools)"
+            FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
             FormMain.picLeftPane.Visible = True
             
         Case VISIBILITY_FORCEHIDE
-            FormMain.MnuLeftPanel.Caption = "Show left panel (file tools)"
+            FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
             FormMain.picLeftPane.Visible = False
             
     End Select
@@ -207,10 +207,10 @@ Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
 
             'Toggle the text and picture box accordingly
             If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False) Then
-                FormMain.MnuRightPanel.Caption = "Show right panel (image tools)"
+                FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
                 FormMain.picRightPane.Visible = False
             Else
-                FormMain.MnuRightPanel.Caption = "Hide right panel (image tools)"
+                FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")
                 FormMain.picRightPane.Visible = True
             End If
     
@@ -218,11 +218,11 @@ Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
             ResetMenuIcons
         
         Case VISIBILITY_FORCEDISPLAY
-            FormMain.MnuRightPanel.Caption = "Hide right panel (image tools)"
+            FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")
             FormMain.picRightPane.Visible = True
             
         Case VISIBILITY_FORCEHIDE
-            FormMain.MnuRightPanel.Caption = "Show right panel (image tools)"
+            FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
             FormMain.picRightPane.Visible = False
             
     End Select
@@ -340,7 +340,7 @@ End Sub
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
-    FormMain.lblImgSize.Caption = "size: " & iWidth & "x" & iHeight
+    FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size:") & " " & iWidth & "x" & iHeight
     DoEvents
 End Sub
 
@@ -401,7 +401,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     
     End If
 
-    If MacroStatus = MacroSTART Then newString = newString & " {-Recording-}"
+    If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
     
     If MacroStatus <> MacroBATCH Then
         If FormMain.Visible Then

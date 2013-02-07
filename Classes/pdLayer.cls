@@ -1383,7 +1383,7 @@ End Sub
 Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
     Blend2Colors = (mixRatio * Color1) + ((1 - mixRatio) * Color2)
     'Alternate blend formula from Robert Rayment - my own testing shows no measurable speed difference between the two methods
-    'Blend2Colors = mixRatio * (CInt(Color1) - Color2) + Color2 '169
+    'Blend2Colors = mixRatio * (CInt(Color1) - Color2) + Color2
 End Function
 
 

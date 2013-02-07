@@ -61,19 +61,19 @@ Public Sub textValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed A
 End Sub
 
 'Check a Long-type value to see if it falls within a given range
-Public Function RangeValid(ByVal check As Long, ByVal Min As Long, ByVal Max As Long) As Boolean
-    If (check >= Min) And (check <= Max) Then
+Public Function RangeValid(ByVal checkVal As Long, ByVal cMin As Long, ByVal cMax As Long) As Boolean
+    If (checkVal >= cMin) And (checkVal <= cMax) Then
         RangeValid = True
     Else
-        pdMsgBox check & " is not a valid entry.  Please enter a value between " & Min & " and " & Max & ".", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME
+        pdMsgBox "%1 is not a valid entry.  Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Value outside acceptable range", checkVal, cMin, cMax
         RangeValid = False
     End If
 End Function
 
 'Check a Variant-type value to see if it's numeric
-Public Function NumberValid(ByVal check) As Boolean
-    If Not IsNumeric(check) Then
-        pdMsgBox check & " is not a valid entry.  Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, PROGRAMNAME
+Public Function NumberValid(ByVal checkVal) As Boolean
+    If Not IsNumeric(checkVal) Then
+        pdMsgBox "%1 is not a valid entry.  Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Non-numeric value found", checkVal
         NumberValid = False
     Else
         NumberValid = True
@@ -81,15 +81,15 @@ Public Function NumberValid(ByVal check) As Boolean
 End Function
 
 'A pleasant combination of RangeValid and NumberValid
-Public Function EntryValid(ByVal check As Variant, ByVal Min As Long, ByVal Max As Long, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
-    If Not IsNumeric(check) Then
-        If displayNumError = True Then pdMsgBox check & " is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry"
+Public Function EntryValid(ByVal checkVal As Variant, ByVal cMin As Long, ByVal cMax As Long, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
+    If Not IsNumeric(checkVal) Then
+        If displayNumError = True Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
         EntryValid = False
     Else
-        If (check >= Min) And (check <= Max) Then
+        If (checkVal >= cMin) And (checkVal <= cMax) Then
             EntryValid = True
         Else
-            If displayRangeError = True Then pdMsgBox check & " is not a valid entry." & vbCrLf & "Please enter a value between " & Min & " and " & Max & ".", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry"
+            If displayRangeError = True Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal, cMin, cMax
             EntryValid = False
         End If
     End If

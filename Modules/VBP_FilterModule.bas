@@ -35,7 +35,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     End If
     
     'Note that the only purpose of the FilterType string is to display this message
-    If toPreview = False Then Message "Applying " & FilterType & " filter..."
+    If toPreview = False Then Message "Applying %1 filter...", FilterType
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -317,7 +317,7 @@ Public Sub FilterSoften()
     g_FilterWeight = 16
     g_FilterBias = 0
     
-    DoFilter "Soften"
+    DoFilter g_Language.TranslateMessage("Soften")
     
 End Sub
 
@@ -360,7 +360,7 @@ Public Sub FilterSoftenMore()
     g_FilterWeight = 48
     g_FilterBias = 0
     
-    DoFilter "Strong Soften"
+    DoFilter g_Language.TranslateMessage("Strong Soften")
     
 End Sub
 
@@ -385,7 +385,7 @@ Public Sub FilterBlur()
     g_FilterWeight = 9
     g_FilterBias = 0
     
-    DoFilter "Blur"
+    DoFilter g_Language.TranslateMessage("Blur")
     
 End Sub
 
@@ -428,7 +428,7 @@ Public Sub FilterBlurMore()
     g_FilterWeight = 25
     g_FilterBias = 0
     
-    DoFilter "Strong Blur"
+    DoFilter g_Language.TranslateMessage("Strong Blur")
     
 End Sub
 
@@ -453,7 +453,7 @@ Public Sub FilterSharpen()
     g_FilterWeight = 7
     g_FilterBias = 0
     
-    DoFilter "Sharpen"
+    DoFilter g_Language.TranslateMessage("Sharpen")
   
 End Sub
 
@@ -478,7 +478,7 @@ Public Sub FilterSharpenMore()
     g_FilterWeight = 1
     g_FilterBias = 0
     
-    DoFilter "Strong Sharpen"
+    DoFilter g_Language.TranslateMessage("Strong Sharpen")
   
 End Sub
 

@@ -82,7 +82,7 @@ Public Sub StopMacro()
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT, , g_UserPreferences.getMacroPath, "Save macro data", "." & MACRO_EXT, FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT, , g_UserPreferences.getMacroPath, g_Language.TranslateMessage("Save macro data"), "." & MACRO_EXT, FormMain.hWnd, 0) Then
         
         'Save this macro's directory as the default macro path
         g_UserPreferences.setMacroPath sFile
@@ -126,7 +126,7 @@ Public Sub PlayMacro()
     Set CC = New cCommonDialog
    
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , g_UserPreferences.getMacroPath, "Open Macro File", "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & "|" & g_Language.TranslateMessage("All files") & "|*.*", , g_UserPreferences.getMacroPath, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
         
         Message "Loading macro data..."
         
@@ -154,19 +154,23 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
         If (Macro_ID <> MACRO_IDENTIFIER) Then
             Close #fileNum
             Message "Invalid macro file."
-            pdMsgBox macroToPlay & " is not a valid macro file.", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Macro Error"
+            pdMsgBox "%1 is not a valid macro file.", vbOKOnly + vbExclamation + vbApplicationModal, " Macro Error", macroToPlay
             Exit Sub
         End If
+        
         'Now check to make sure that the version number is supported
         Dim Macro_Version As Long
         Get #fileNum, , Macro_Version
+        
         'Check macro version incompatibility
         If (Macro_Version <> MACRO_VERSION_2006) Then
+        
             'Attempt to save 2002 version macros
             If (Macro_Version = MACRO_VERSION_2002) Then
                 Message "Converting outdated macro format..."
                 Get #fileNum, , CurrentCall
                 ReDim Calls(0 To CurrentCall) As ProcessCall
+                
                 'Temporary structure for playing old macros
                 Dim OldCalls() As ProcessCall2002
                 ReDim OldCalls(0 To CurrentCall) As ProcessCall2002
@@ -201,19 +205,22 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
                     Put #newFileNum, , CurrentCall
                     Put #newFileNum, , Calls
                 Close #newFileNum
+                
                 'Now this is a pretty stupid method for doing this,
                 'but oh well: REOPEN the file and reorient the file pointer
                 'correctly, allowing the routine to continue normally
                 Open macroToPlay For Binary As #fileNum
                     Get #fileNum, 1, Macro_ID
                     Get #fileNum, , Macro_Version
+                    
                 'Leave the If() block and continue normally
                 Message "Macro converted successfully!  Continuing..."
+                
             'If we make it here, we have an INCOMPATIBLE macro version
             Else
                 Close #fileNum
                 Message "Invalid macro version."
-                pdMsgBox macroToPlay & " is no longer a supported macro version (#" & Macro_Version & ").", vbOKOnly + vbExclamation + vbApplicationModal, PROGRAMNAME & " Macro Error"
+                pdMsgBox "%1 is no longer a supported macro version (#%1).", vbOKOnly + vbExclamation + vbApplicationModal, " Macro Error", macroToPlay, Macro_Version
                 Exit Sub
             End If
         End If

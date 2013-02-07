@@ -440,7 +440,7 @@ ZoomErrorHandler:
         Message "Invalid zoom value."
         Exit Sub
     Else
-        Message "Viewport rendering paused due to unexpected error (#" & Err & ")."
+        Message "Viewport rendering paused due to unexpected error (#%1)", Err
         Exit Sub
     End If
 

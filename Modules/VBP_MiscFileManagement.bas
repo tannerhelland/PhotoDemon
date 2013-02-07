@@ -141,7 +141,7 @@ Public Function BrowseForFolder(ByVal srchWnd As Long) As String
     Dim returnString As String
         
     Set objShell = New Shell
-    Set objFolder = objShell.BrowseForFolder(srchWnd, "Please select a folder:", 0)
+    Set objFolder = objShell.BrowseForFolder(srchWnd, g_Language.TranslateMessage("Please select a folder:"), 0)
             
     If (Not objFolder Is Nothing) Then returnString = objFolder.Items.Item.Path Else returnString = ""
     

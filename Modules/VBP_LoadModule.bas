@@ -267,7 +267,7 @@ Public Sub LoadTheProgram()
         .TextAlignX = EVPRGcenter
         .TextAlignY = EVPRGcenter
         .ShowText = True
-        .Text = "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
+        .Text = g_Language.TranslateMessage("Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)")
         .Draw
     End With
     
@@ -437,7 +437,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         Message "Verifying that file exists..."
     
         If FileExist(sFile(thisImage)) = False Then
-            Message "File not found (" & sFile(thisImage) & "). Image load canceled."
+            Message "File not found (%1). Image load canceled.", sFile(thisImage)
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
@@ -569,13 +569,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         'Double-check to make sure the image was loaded successfully
         If (Not loadSuccessful) Or (targetImage.mainLayer.getLayerWidth = 0) Or (targetImage.mainLayer.getLayerHeight = 0) Then
-            Message "Failed to load " & sFile(thisImage) & "."
+            Message "Failed to load %1", sFile(thisImage)
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
                 brokenFiles = brokenFiles & getFilename(sFile(thisImage)) & vbCrLf
             Else
-                pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & sFile(thisImage) & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed"
+                pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
             End If
             
             targetImage.deactivateImage
@@ -681,9 +681,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             targetImage.OriginalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.mainLayer)
             
             If g_IsImageGray Then
-                Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP, grayscale)"
+                Message "Color count successful (%1 BPP, grayscale)", targetImage.OriginalColorDepth
             Else
-                Message "Color count successful (" & targetImage.OriginalColorDepth & " BPP, indexed color)"
+                Message "Color count successful (%1 BPP, indexed color)", targetImage.OriginalColorDepth
             End If
                         
         End If
@@ -824,11 +824,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Call PreLoadImage again for each individual frame in the multipage file
             For pageTracker = 1 To imagePageCount
                 If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
-                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (frame " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
-                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (icon " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (icon " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 Else
-                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (page " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (page " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 End If
             Next pageTracker
         
@@ -860,12 +860,12 @@ PreloadMoreImages:
     'Finally, if we were loading multiple images and something went wrong (missing files, broken files), let the user know about them.
     If multipleFilesLoading And (Len(missingFiles) > 0) Then
         Message "All images loaded, except for those that could not be found."
-        pdMsgBox "Unfortunately, PhotoDemon was unable to find the following image(s):" & vbCrLf & vbCrLf & missingFiles & vbCrLf & "If these imaged were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "Image files missing"
+        pdMsgBox "Unfortunately, PhotoDemon was unable to find the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & "If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "Image files missing", missingFiles
     End If
         
     If multipleFilesLoading And (Len(brokenFiles) > 0) Then
         Message "All images loaded, except for those in invalid formats."
-        pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & brokenFiles & vbCrLf & "Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Formats Not Supported"
+        pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & "Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Formats Not Supported", brokenFiles
     End If
         
 End Sub
@@ -1298,7 +1298,7 @@ Public Sub DuplicateCurrentImage()
     originalExtension = GetExtension(pdImages(imageToBeDuplicated).OriginalFileNameAndExtension)
             
     Dim newFilename As String
-    newFilename = pdImages(imageToBeDuplicated).OriginalFileName & " - Copy"
+    newFilename = pdImages(imageToBeDuplicated).OriginalFileName & " - " & g_Language.TranslateMessage("Copy")
     pdImages(CurrentImage).OriginalFileName = newFilename
     pdImages(CurrentImage).OriginalFileNameAndExtension = newFilename & "." & originalExtension
             

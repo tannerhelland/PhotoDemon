@@ -194,7 +194,7 @@ Public Sub generateInputFormats()
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
 
     'Always start with an "All Compatible Images" option
-    inputDescriptions(0) = "All Compatible Images"
+    inputDescriptions(0) = g_Language.TranslateMessage("All Compatible Images")
     
     'Unique to this first one is the full list of compatible extensions.  Instead of generating a full list here,
     ' it will be automatically generated as we go.
@@ -261,7 +261,7 @@ Public Sub generateInputFormats()
     If FreeImageEnabled Then addInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", FIF_WBMP
         
     'Finish out the list with an obligatory "All files" option
-    addInputFormat "All files", "*.*", -1
+    addInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
     
     'Resize our description and extension arrays to match their final size
     numOfInputFormats = curFormatIndex

@@ -62,11 +62,6 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     pdImages(NumOfImagesLoaded).RedoState = False
     pdImages(NumOfImagesLoaded).CurrentZoomValue = ZoomIndex100   'Default zoom is 100%
     
-    'This is kind of cheap, but let's just set a random loading point between 0 and 99% :)
-    Randomize Timer
-    Dim randPercent As Long
-    randPercent = Int(Rnd * 100)
-    
     'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
     pdImages(NumOfImagesLoaded).WindowLeft = newImageForm.Left
     pdImages(NumOfImagesLoaded).WindowTop = newImageForm.Top
@@ -74,7 +69,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     newImageForm.Top = FormMain.ScaleHeight
     
     newImageForm.Show
-    newImageForm.Caption = "Loading image (" & randPercent & "%)..."
+    newImageForm.Caption = g_Language.TranslateMessage("Loading image...")
     If FormMain.Enabled Then newImageForm.SetFocus
     
     'Set this image as the current one
