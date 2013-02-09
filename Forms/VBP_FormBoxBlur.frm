@@ -297,7 +297,6 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         If vRadius = 0 Then vRadius = 1
     End If
     
-    'I'm preemptively enabling variable x and y radii for this function, even though they're set simultaneously at present.
     Dim xRadius As Long, yRadius As Long
     xRadius = hRadius
     yRadius = vRadius
@@ -623,6 +622,10 @@ Private Sub hsWidth_Scroll()
     If CBool(chkUnison) Then syncScrollBars True
     userChange = True
     updatePreview
+End Sub
+
+Private Sub lblIDEWarning_Click()
+
 End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
