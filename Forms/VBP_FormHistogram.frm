@@ -572,15 +572,7 @@ End Sub
 
 'Just to be safe, regenerate the histogram whenever the form receives focus
 Private Sub Form_Activate()
-
-    TallyHistogramValues
-    DrawHistogram
     
-End Sub
-
-'Generate the histogram data upon form load (we only need to do it once per image)
-Private Sub Form_Load()
-
     histogramGenerated = False
 
     'Assign the system hand cursor to all relevant objects
@@ -608,6 +600,9 @@ Private Sub Form_Load()
     'cmbHistMethod.AddItem "Solid bars"
     'Set the current combo box option to be whatever we used last
     'cmbHistMethod.ListIndex = lastHistMethod
+
+    TallyHistogramValues
+    DrawHistogram
     
 End Sub
 
