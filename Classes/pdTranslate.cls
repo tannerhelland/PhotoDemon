@@ -847,9 +847,13 @@ Public Sub applyTranslations(ByRef srcForm As Form)
         
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
         If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
+            
+            'TESTING ONLY
+            'If srcForm.Name <> "FormMain" Then MsgBox eControl.Caption
+            
             If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
-            
+                        
             'jcbutton controls have multiple tooltip entries, including a tooltip title
             If (TypeOf eControl Is jcbutton) Then
                 If (Trim(eControl.TooltipTitle) <> "") Then eControl.TooltipTitle = TranslateMessage(eControl.TooltipTitle)
