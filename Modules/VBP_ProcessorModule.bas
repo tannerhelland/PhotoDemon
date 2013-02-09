@@ -87,6 +87,8 @@ Option Explicit
     Public Const Mosaic As Long = 410
     '-Rank
     '411-413 have been moved into the CustomRank function.
+    Public Const MinimumRank As Long = 411
+    Public Const MaximumRank As Long = 412
     Public Const CustomRank As Long = 414
     '-Grid Blurring
     Public Const GridBlur As Long = 415
@@ -235,12 +237,13 @@ Option Explicit
     Public Const ComicBook As Long = 840
     Public Const FilmGrain As Long = 841
     Public Const Vignetting As Long = 842
+    Public Const Median As Long = 843
     
     'Relative processes
     Public Const LastCommand As Long = 900
     Public Const FadeLastEffect As Long = 901
     
-    'Other filters end at 842
+    'Other filters end at 843
 
     'On-Canvas Tools; numbers 1000-2000
     
@@ -507,6 +510,18 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormMosaic.Show vbModal, FormMain
             Else
                 FormMosaic.MosaicFilter CInt(pOPCODE), CInt(pOPCODE2)
+            End If
+        Case MaximumRank
+            If LoadForm Then
+                FormMedian.showMedianDialog 100
+            Else
+                FormMedian.ApplyMedianFilter CLng(pOPCODE), CDbl(pOPCODE2)
+            End If
+        Case MinimumRank
+            If LoadForm Then
+                FormMedian.showMedianDialog 1
+            Else
+                FormMedian.ApplyMedianFilter CLng(pOPCODE), CDbl(pOPCODE2)
             End If
         Case CustomRank
             If LoadForm Then
@@ -855,6 +870,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Else
                 FormVignette.ApplyVignette CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CBool(pOPCODE4), CLng(pOPCODE5)
             End If
+        Case Median
+            If LoadForm Then
+                FormMedian.showMedianDialog 50
+            Else
+                FormMedian.ApplyMedianFilter CLng(pOPCODE), CDbl(pOPCODE2)
+            End If
         
     End Select
     
@@ -866,7 +887,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     If MacroStatus <> MacroBATCH Then Screen.MousePointer = vbDefault
     
     'If the histogram form is visible and images are loaded, redraw the histogram
-    If FormHistogram.Visible = True Then
+    If FormHistogram.Visible Then
         If NumOfWindows > 0 Then
             FormHistogram.TallyHistogramValues
             FormHistogram.DrawHistogram

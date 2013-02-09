@@ -328,25 +328,22 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "FILMGRAIN", 5, 8, 0      'Film grain
         AddMenuIcon "ADDNOISE", 5, 8, 1       'Add Noise
         AddMenuIcon "DESPECKLE", 5, 8, 3      'Despeckle
-        AddMenuIcon "REMOVEORPHAN", 5, 8, 4   'Remove Orphan
-    AddMenuIcon "RANK", 5, 9         'Rank
-        '--> Rank sub-menu
-        AddMenuIcon "DILATE", 5, 9, 0         'Dilate
-        AddMenuIcon "ERODE", 5, 9, 1          'Erode
-        AddMenuIcon "EXTREME", 5, 9, 2        'Extreme
-        AddMenuIcon "CUSTRANK", 5, 9, 4       'Custom Rank
-    AddMenuIcon "SHARPEN", 5, 10     'Sharpen
+        AddMenuIcon "MEDIAN", 5, 8, 4         'Median
+        AddMenuIcon "REMOVEORPHAN", 5, 8, 5   'Remove Orphan
+    AddMenuIcon "SHARPEN", 5, 9     'Sharpen
         '--> Sharpen sub-menu
-        AddMenuIcon "SHARPEN", 5, 10, 0       'Sharpen
-        AddMenuIcon "SHARPENMORE", 5, 10, 1   'Sharpen More
-        AddMenuIcon "UNSHARP", 5, 10, 3       'Unsharp
-    AddMenuIcon "STYLIZE", 5, 11     'Stylize
+        AddMenuIcon "SHARPEN", 5, 9, 0       'Sharpen
+        AddMenuIcon "SHARPENMORE", 5, 9, 1   'Sharpen More
+        AddMenuIcon "UNSHARP", 5, 9, 3       'Unsharp
+    AddMenuIcon "STYLIZE", 5, 10     'Stylize
         '--> Stylize sub-menu
-        AddMenuIcon "DIFFUSE", 5, 11, 0       'Diffuse
-        AddMenuIcon "SOLARIZE", 5, 11, 1      'Solarize
-        AddMenuIcon "TWINS", 5, 11, 2         'Twins
-        AddMenuIcon "VIGNETTE", 5, 11, 3      'Vignetting
-    AddMenuIcon "CUSTFILTER", 5, 13  'Custom Filter
+        AddMenuIcon "DIFFUSE", 5, 10, 0       'Diffuse
+        AddMenuIcon "DILATE", 5, 10, 1         'Dilate
+        AddMenuIcon "ERODE", 5, 10, 2          'Erode
+        AddMenuIcon "SOLARIZE", 5, 10, 3      'Solarize
+        AddMenuIcon "TWINS", 5, 10, 4         'Twins
+        AddMenuIcon "VIGNETTE", 5, 10, 5      'Vignetting
+    AddMenuIcon "CUSTFILTER", 5, 12  'Custom Filter
     
     'Tools Menu
     AddMenuIcon "LANGUAGES", 6, 0    'Languages

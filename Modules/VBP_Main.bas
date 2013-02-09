@@ -68,5 +68,5 @@ Public Sub Main()
     'FormMain will be now be loaded.  If the shell32 library was loaded successfully, once FormMain is closed, we
     ' need to unload the library handle
     If hMod Then FreeLibrary hMod
-
+    
 End Sub
