@@ -1160,16 +1160,20 @@ Begin VB.MDIForm FormMain
             Index           =   2
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Pencil drawing"
+            Caption         =   "Modern art..."
             Index           =   3
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Pixelate (mosaic)..."
+            Caption         =   "Pencil drawing"
             Index           =   4
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Relief"
+            Caption         =   "Pixelate (mosaic)..."
             Index           =   5
+         End
+         Begin VB.Menu MnuArtistic 
+            Caption         =   "Relief"
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1900,16 +1904,20 @@ Private Sub MnuArtistic_Click(Index As Integer)
         Case 2
             Process FilmNoir
         
-        'Pencil drawing
+        'Modern art
         Case 3
+            Process ModernArt, , , , , , , , , , True
+        
+        'Pencil drawing
+        Case 4
             Process Pencil
         
         'Pixelate (mosaic)
-        Case 4
+        Case 5
             Process Mosaic, , , , , , , , , , True
         
         'Relief
-        Case 5
+        Case 6
             Process Relief
     
     End Select

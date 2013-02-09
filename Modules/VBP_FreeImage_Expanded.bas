@@ -96,7 +96,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             fi_ImportFlags = FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE
         End If
     End If
-    
+        
     'For icons, we prefer a white background (default is black).
     ' NOTE: this is disabled, because it uses the AND mask incorrectly for mixed-format icons
     'If fileFIF = FIF_ICO Then fi_ImportFlags = FILO_ICO_MAKEALPHA

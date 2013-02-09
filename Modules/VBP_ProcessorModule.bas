@@ -86,10 +86,9 @@ Option Explicit
     '-Mosaic
     Public Const Mosaic As Long = 410
     '-Rank
-    '411-413 have been moved into the CustomRank function.
+    '413-414 have been deprecated
     Public Const MinimumRank As Long = 411
     Public Const MaximumRank As Long = 412
-    Public Const CustomRank As Long = 414
     '-Grid Blurring
     Public Const GridBlur As Long = 415
     '-Gaussian Blur
@@ -238,12 +237,13 @@ Option Explicit
     Public Const FilmGrain As Long = 841
     Public Const Vignetting As Long = 842
     Public Const Median As Long = 843
+    Public Const ModernArt As Long = 844
     
     'Relative processes
     Public Const LastCommand As Long = 900
     Public Const FadeLastEffect As Long = 901
     
-    'Other filters end at 843
+    'Other filters end at 844
 
     'On-Canvas Tools; numbers 1000-2000
     
@@ -522,12 +522,6 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormMedian.showMedianDialog 1
             Else
                 FormMedian.ApplyMedianFilter CLng(pOPCODE), CDbl(pOPCODE2)
-            End If
-        Case CustomRank
-            If LoadForm Then
-                FormRank.Show vbModal, FormMain
-            Else
-                FormRank.CustomRankFilter CInt(pOPCODE), CByte(pOPCODE2)
             End If
         Case GridBlur
             FilterGridBlur
@@ -876,6 +870,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Else
                 FormMedian.ApplyMedianFilter CLng(pOPCODE), CDbl(pOPCODE2)
             End If
+        Case ModernArt
+            If LoadForm Then
+                FormModernArt.Show vbModal, FormMain
+            Else
+                FormModernArt.ApplyModernArt CLng(pOPCODE)
+            End If
         
     End Select
     
@@ -1100,8 +1100,6 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Dilate (maximum rank)"
         Case MinimumRank
             GetNameOfProcess = "Erode (minimum rank)"
-        Case CustomRank
-            GetNameOfProcess = "Custom Rank"
         Case GridBlur
             GetNameOfProcess = "Grid Blur"
         Case GaussianBlur
@@ -1304,6 +1302,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Vignetting"
         Case Median
             GetNameOfProcess = "Median filter"
+        Case ModernArt
+            GetNameOfProcess = "Modern art"
             
         'This "Else" statement should never trigger, but if it does, return an empty string
         Case Else

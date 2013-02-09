@@ -1,8 +1,8 @@
 VERSION 5.00
-Begin VB.Form FormMedian 
+Begin VB.Form FormModernArt 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Median Filter"
+   Caption         =   " Modern Art"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -38,28 +38,9 @@ Begin VB.Form FormMedian
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   11160
-      TabIndex        =   8
-      Text            =   "5"
-      Top             =   2220
-      Width           =   615
-   End
-   Begin VB.TextBox txtPercent 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      TabIndex        =   7
-      Text            =   "50"
-      Top             =   3180
+      TabIndex        =   6
+      Text            =   "10"
+      Top             =   2700
       Width           =   615
    End
    Begin VB.HScrollBar hsRadius 
@@ -67,19 +48,9 @@ Begin VB.Form FormMedian
       Left            =   6120
       Max             =   200
       Min             =   1
-      TabIndex        =   6
-      Top             =   2280
-      Value           =   5
-      Width           =   4935
-   End
-   Begin VB.HScrollBar hsPercent 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
       TabIndex        =   5
-      Top             =   3240
-      Value           =   50
+      Top             =   2760
+      Value           =   10
       Width           =   4935
    End
    Begin VB.CommandButton CmdOK 
@@ -109,10 +80,10 @@ Begin VB.Form FormMedian
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin VB.Label lblPercentile 
+   Begin VB.Label lblStrength 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "percentile:"
+      Caption         =   "strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -125,29 +96,9 @@ Begin VB.Form FormMedian
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   10
-      Top             =   2880
-      Width           =   1110
-   End
-   Begin VB.Label lblRadius 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   1920
-      Width           =   735
+      TabIndex        =   7
+      Top             =   2400
+      Width           =   960
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -177,27 +128,29 @@ Begin VB.Form FormMedian
       Width           =   12135
    End
 End
-Attribute VB_Name = "FormMedian"
+Attribute VB_Name = "FormModernArt"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Median Filter Tool
+'Modern Art Tool
 'Copyright ©2012-2013 by Tanner Helland
-'Created: 08/Feb/13
-'Last updated: 08/Feb/13
-'Last update: initial build
+'Created: 09/Feb/13
+'Last updated: 09/Feb/13
+'Last update: initial build, though previously this effect could be accessed via "extreme rank"
 '
-'This is a heavily optimized median filter function.  An "accumulation" technique is used instead of the standard sliding
+'This is a heavily optimized "extreme rank" function.  An accumulation technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
 ' This allows the algorithm to perform extremely well, despite being written in pure VB.
 '
 'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before applying any
-' median filter of a large radius (> 20).
+' filter of a large radius (> 20).
 '
-'An optional percentile option is available.  At minimum value, this performs identically to an erode (minimum) filter.
-' Similarly, at max value it performs identically to a dilate (maximum) filter.
+'Extreme rank is a function of my own creation.  Basically, it performs both a minimum and a maxmimum rank calculation,
+' and then it sets the pixel to whichever value is further from the current one.  This leads to an odd cut-out or stencil
+' look unlike any other filter I've seen.  I'm not sure how much utility such a function provides, but it's fun so I
+' include it.  :)
 '
 '***************************************************************************
 
@@ -223,30 +176,17 @@ Private Sub cmdOK_Click()
         Exit Sub
     End If
     
-    If Not EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, True, True) Then
-        AutoSelectText txtPercent
-        Exit Sub
-    End If
-    
     Me.Visible = False
-    Process Median, hsRadius.Value, hsPercent.Value
+    Process ModernArt, hsRadius.Value
     Unload Me
     
 End Sub
 
-'Apply a median filter to the image (heavily optimized accumulation implementation!)
+'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the median (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then
-        If mPercent = 1 Then
-            Message "Applying erode (minimum rank) filter..."
-        ElseIf mPercent = 100 Then
-            Message "Applying dilate (maximum rank) filter..."
-        Else
-            Message "Applying median filter..."
-        End If
-    End If
+    If Not toPreview Then Message "Applying modern art techniques..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -286,8 +226,6 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
         If mRadius > (finalX - initX) Then mRadius = finalX - initX
     End If
         
-    mPercent = mPercent / 100
-        
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
@@ -309,7 +247,8 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
     Dim i As Long, j As Long
     Dim cutoffTotal As Long
     Dim r As Long, g As Long, b As Long
-    Dim midR As Long, midG As Long, midB As Long
+    Dim lowR As Long, lowG As Long, lowB As Long
+    Dim highR As Long, highG As Long, highB As Long
     
     Dim atBottom As Boolean
     atBottom = True
@@ -532,8 +471,6 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
                     r = srcImageData(QuickValInner + 2, lbY)
                     g = srcImageData(QuickValInner + 1, lbY)
                     b = srcImageData(QuickValInner, lbY)
-                    'curVal = gLookup(r + g + b)
-                    'lValues(curVal) = lValues(curVal) + 1
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
@@ -547,37 +484,82 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
         'With the median box successfully calculated, we can now find the actual median for this pixel.
         
         'Loop through each color component histogram, until we've passed the desired percentile of pixels
-        midR = 0
-        midG = 0
-        midB = 0
-        cutoffTotal = mPercent * NumOfPixels
+        lowR = 0
+        lowG = 0
+        lowB = 0
+        cutoffTotal = 0.01 * NumOfPixels
         If cutoffTotal = 0 Then cutoffTotal = 1
         
         i = 0
         Do
-            If rValues(i) <> 0 Then midR = midR + rValues(i)
+            If rValues(i) <> 0 Then lowR = lowR + rValues(i)
             i = i + 1
-        Loop While (midR < cutoffTotal)
-        midR = i - 1
+        Loop While (lowR < cutoffTotal)
+        lowR = i - 1
         
         i = 0
         Do
-            If gValues(i) <> 0 Then midG = midG + gValues(i)
+            If gValues(i) <> 0 Then lowG = lowG + gValues(i)
             i = i + 1
-        Loop While (midG < cutoffTotal)
-        midG = i - 1
+        Loop While (lowG < cutoffTotal)
+        lowG = i - 1
         
         i = 0
         Do
-            If bValues(i) <> 0 Then midB = midB + bValues(i)
+            If bValues(i) <> 0 Then lowB = lowB + bValues(i)
             i = i + 1
-        Loop While (midB < cutoffTotal)
-        midB = i - 1
+        Loop While (lowB < cutoffTotal)
+        lowB = i - 1
+        
+        'Now do the same thing at the top of the histogram
+        highR = 0
+        highG = 0
+        highB = 0
+        cutoffTotal = 0.01 * NumOfPixels
+        If cutoffTotal = 0 Then cutoffTotal = 1
+        
+        i = 255
+        Do
+            If rValues(i) <> 0 Then highR = highR + rValues(i)
+            i = i - 1
+        Loop While (highR < cutoffTotal)
+        highR = i + 1
+        
+        i = 255
+        Do
+            If gValues(i) <> 0 Then highG = highG + gValues(i)
+            i = i - 1
+        Loop While (highG < cutoffTotal)
+        highG = i + 1
+        
+        i = 255
+        Do
+            If bValues(i) <> 0 Then highB = highB + bValues(i)
+            i = i - 1
+        Loop While (highB < cutoffTotal)
+        highB = i + 1
+        
+        'Retrieve the original pixel data
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
                 
         'Finally, apply the results to the image.
-        dstImageData(QuickVal + 2, y) = midR
-        dstImageData(QuickVal + 1, y) = midG
-        dstImageData(QuickVal, y) = midB
+        If Abs(lowR - r) > (highR - r) Then
+            dstImageData(QuickVal + 2, y) = lowR
+        Else
+            dstImageData(QuickVal + 2, y) = highR
+        End If
+        If Abs(lowG - g) > (highG - g) Then
+            dstImageData(QuickVal + 1, y) = lowG
+        Else
+            dstImageData(QuickVal + 1, y) = highG
+        End If
+        If Abs(lowB - b) > (highB - b) Then
+            dstImageData(QuickVal, y) = lowB
+        Else
+            dstImageData(QuickVal, y) = highB
+        End If
         
     Next y
         atBottom = Not atBottom
@@ -629,33 +611,14 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'These routines keep the scroll bar and text box values in sync
-Private Sub hsPercent_Change()
-    copyToTextBoxI txtPercent, hsPercent.Value
-    updatePreview
-End Sub
-
 Private Sub hsRadius_Change()
     copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub hsPercent_Scroll()
-    copyToTextBoxI txtPercent, hsPercent.Value
     updatePreview
 End Sub
 
 Private Sub hsRadius_Scroll()
     copyToTextBoxI txtRadius, hsRadius.Value
     updatePreview
-End Sub
-
-Private Sub txtPercent_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtPercent
-    If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, False, False) Then hsPercent.Value = Val(txtPercent)
-End Sub
-
-Private Sub txtPercent_GotFocus()
-    AutoSelectText txtPercent
 End Sub
 
 Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
@@ -668,31 +631,5 @@ Private Sub txtRadius_GotFocus()
 End Sub
 
 Private Sub updatePreview()
-    If allowPreview Then ApplyMedianFilter hsRadius.Value, hsPercent.Value, True, fxPreview
-End Sub
-
-Public Sub showMedianDialog(ByVal initPercentage As Long)
-
-    If initPercentage = 1 Then
-        Me.Caption = "Erode (Minimum rank filter)"
-        hsPercent.Value = 1
-        hsPercent.Visible = False
-        txtPercent.Visible = False
-        lblPercentile.Visible = False
-    ElseIf initPercentage = 100 Then
-        Me.Caption = "Dilate (Maximum rank filter)"
-        hsPercent.Value = 100
-        hsPercent.Visible = False
-        txtPercent.Visible = False
-        lblPercentile.Visible = False
-    Else
-        Me.Caption = "Median filter"
-        hsPercent.Value = initPercentage
-        hsPercent.Visible = True
-        txtPercent.Visible = True
-        lblPercentile.Visible = True
-    End If
-    
-    Me.Show vbModal, FormMain
-
+    If allowPreview Then ApplyModernArt hsRadius.Value, True, fxPreview
 End Sub

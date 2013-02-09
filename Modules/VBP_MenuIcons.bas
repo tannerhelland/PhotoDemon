@@ -274,9 +274,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "ANTIQUE", 5, 2, 0        'Antique (Sepia)
         AddMenuIcon "COMICBOOK", 5, 2, 1      'Comic book
         AddMenuIcon "FILMNOIR", 5, 2, 2       'Film Noir
-        AddMenuIcon "PENCIL", 5, 2, 3         'Pencil
-        AddMenuIcon "MOSAIC", 5, 2, 4         'Pixelate (Mosaic)
-        AddMenuIcon "RELIEF", 5, 2, 5         'Relief
+        AddMenuIcon "MODERNART", 5, 2, 3      'Modern Art
+        AddMenuIcon "PENCIL", 5, 2, 4         'Pencil
+        AddMenuIcon "MOSAIC", 5, 2, 5         'Pixelate (Mosaic)
+        AddMenuIcon "RELIEF", 5, 2, 6         'Relief
     AddMenuIcon "BLUR", 5, 3            'Blur
         '--> Blur sub-menu
         AddMenuIcon "SOFTEN", 5, 3, 0         'Soften
