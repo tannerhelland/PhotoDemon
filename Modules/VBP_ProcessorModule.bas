@@ -1096,6 +1096,10 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Custom Diffuse"
         Case Mosaic
             GetNameOfProcess = "Mosaic"
+        Case MaximumRank
+            GetNameOfProcess = "Dilate (maximum rank)"
+        Case MinimumRank
+            GetNameOfProcess = "Erode (minimum rank)"
         Case CustomRank
             GetNameOfProcess = "Custom Rank"
         Case GridBlur
@@ -1298,6 +1302,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Clear Active Selection"
         Case Vignetting
             GetNameOfProcess = "Vignetting"
+        Case Median
+            GetNameOfProcess = "Median filter"
             
         'This "Else" statement should never trigger, but if it does, return an empty string
         Case Else
