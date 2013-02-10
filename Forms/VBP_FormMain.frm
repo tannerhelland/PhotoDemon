@@ -1103,36 +1103,24 @@ Begin VB.MDIForm FormMain
          End
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "Sepia"
+         Caption         =   "Monochrome..."
          Index           =   18
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "-"
+         Caption         =   "Sepia"
          Index           =   19
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "Count unique colors"
+         Caption         =   "-"
          Index           =   20
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "Reduce color count"
+         Caption         =   "Count unique colors"
          Index           =   21
-         Begin VB.Menu MnuReduceColors 
-            Caption         =   "Monochrome..."
-            Index           =   0
-         End
-         Begin VB.Menu MnuReduceColors 
-            Caption         =   "Posterize..."
-            Index           =   1
-         End
-         Begin VB.Menu MnuReduceColors 
-            Caption         =   "-"
-            Index           =   2
-         End
-         Begin VB.Menu MnuReduceColors 
-            Caption         =   "Indexed (256 colors)..."
-            Index           =   3
-         End
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Reduce color count..."
+         Index           =   22
       End
    End
    Begin VB.Menu MnuFilter 
@@ -1172,8 +1160,12 @@ Begin VB.MDIForm FormMain
             Index           =   5
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Relief"
+            Caption         =   "Posterize..."
             Index           =   6
+         End
+         Begin VB.Menu MnuArtistic 
+            Caption         =   "Relief"
+            Index           =   7
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1916,8 +1908,12 @@ Private Sub MnuArtistic_Click(Index As Integer)
         Case 5
             Process Mosaic, , , , , , , , , , True
         
-        'Relief
+        'Posterize
         Case 6
+            Process Posterize, , , , , , , , , , True
+            
+        'Relief
+        Case 7
             Process Relief
     
     End Select
@@ -2093,19 +2089,24 @@ Private Sub MnuColor_Click(Index As Integer)
         '<Invert top-level>
         Case 17
         
-        'Sepia
+        'Monochrome
         Case 18
+            Process BWMaster, , , , , , , , , , True
+        
+        'Sepia
+        Case 19
             Process Sepia
         
         '<separator>
-        Case 19
+        Case 20
         
         'Count colors
-        Case 20
+        Case 21
             Process CountColors
         
-        '<Reduce colors top-level>
-        Case 21
+        'Reduce color count
+        Case 22
+            Process ReduceColors, , , , , , , , , , True
         
     End Select
 
@@ -2565,30 +2566,6 @@ End Sub
 
 Private Sub MnuRedo_Click()
     Process Redo
-End Sub
-
-'All color reduction options are handled here
-Private Sub MnuReduceColors_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Monochrome
-        Case 0
-            Process BWMaster, , , , , , , , , , True
-                    
-        'Posterize
-        Case 1
-            Process Posterize, , , , , , , , , , True
-            
-        '<separator>
-        Case 2
-        
-        'Indexed palette...
-        Case 3
-            Process ReduceColors, , , , , , , , , , True
-    
-    End Select
-
 End Sub
 
 Private Sub MnuRepeatLast_Click()
