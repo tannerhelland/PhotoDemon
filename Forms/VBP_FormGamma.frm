@@ -501,7 +501,7 @@ Private Sub hsGamma_Scroll(Index As Integer)
 End Sub
 
 Private Sub txtGamma_GotFocus(Index As Integer)
-    AutoSelectText txtGamma
+    AutoSelectText txtGamma(Index)
 End Sub
 
 'If the user changes the gamma value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
