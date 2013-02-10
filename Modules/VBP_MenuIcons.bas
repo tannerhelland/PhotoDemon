@@ -259,13 +259,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "INVHUE", 4, 17, 1        'Invert Hue
         AddMenuIcon "INVRGB", 4, 17, 2        'Invert RGB
         AddMenuIcon "INVCOMPOUND", 4, 17, 4   'Compound Invert
-    AddMenuIcon "SEPIA", 4, 18          'Sepia
-    AddMenuIcon "COUNTCOLORS", 4, 20    'Count Colors
-    AddMenuIcon "REDUCECOLORS", 4, 21   'Reduce Colors
-        '--> Reduce colors sub-menu
-        AddMenuIcon "BLACKWHITE", 4, 21, 0    'Black and White
-        AddMenuIcon "POSTERIZE", 4, 21, 1     'Posterize
-        AddMenuIcon "REDUCECOLORS", 4, 21, 3  'Reduce Colors
+    AddMenuIcon "BLACKWHITE", 4, 18     'Black and White
+    AddMenuIcon "SEPIA", 4, 19          'Sepia
+    AddMenuIcon "COUNTCOLORS", 4, 21    'Count Colors
+    AddMenuIcon "REDUCECOLORS", 4, 22   'Reduce Colors
     
     'Filters Menu
     AddMenuIcon "FADELAST", 5, 0        'Fade Last
@@ -277,7 +274,8 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "MODERNART", 5, 2, 3      'Modern Art
         AddMenuIcon "PENCIL", 5, 2, 4         'Pencil
         AddMenuIcon "MOSAIC", 5, 2, 5         'Pixelate (Mosaic)
-        AddMenuIcon "RELIEF", 5, 2, 6         'Relief
+        AddMenuIcon "POSTERIZE", 5, 2, 6      'Posterize
+        AddMenuIcon "RELIEF", 5, 2, 7         'Relief
     AddMenuIcon "BLUR", 5, 3            'Blur
         '--> Blur sub-menu
         AddMenuIcon "SOFTEN", 5, 3, 0         'Soften
@@ -408,22 +406,6 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
         curIcon = curIcon + 1
     End If
     
-    'Place the icon onto the requested menu
-    If subSubMenu = -1 Then
-        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
-    Else
-        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
-    End If
-
-End Sub
-
-'When menu captions are changed, the associated images are lost.  This forces a reset.
-' Note that to keep the code small, all changeable icons are refreshed whenever this is called.
-Public Sub ResetMenuIcons()
-
-    'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-    If (Not g_IsVistaOrLater) And (g_IsProgramCompiled = False) Then Exit Sub
-
     'The position of menus changes if the MDI child is maximized.  When maximized, the form menu is given index 0, shifting
     ' everything to the right by one.
     
@@ -434,33 +416,60 @@ Public Sub ResetMenuIcons()
     If NumOfWindows > 0 Then
         If FormMain.ActiveForm.WindowState = vbMaximized Then posModifier = 1
     End If
+    
+    'Place the icon onto the requested menu
+    If subSubMenu = -1 Then
+        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu + posModifier
+    Else
+        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu + posModifier, subMenu
+    End If
+
+End Sub
+
+'When menu captions are changed, the associated images are lost.  This forces a reset.
+' Note that to keep the code small, all changeable icons are refreshed whenever this is called.
+Public Sub ResetMenuIcons()
+
+    'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
+    If (Not g_IsVistaOrLater) And (g_IsProgramCompiled = False) Then Exit Sub
         
     'Redraw the Undo/Redo menus
     With cMenuImage
-        AddMenuIcon "UNDO", 1 + posModifier, 0     'Undo
-        AddMenuIcon "REDO", 1 + posModifier, 1     'Redo
+        AddMenuIcon "UNDO", 1, 0     'Undo
+        AddMenuIcon "REDO", 1, 1     'Redo
     End With
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long
     numOfMRUFiles = MRU_ReturnCount()
-    AddMenuIcon "CLEARRECENT", 0 + posModifier, 1, numOfMRUFiles + 1
+    AddMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
     
     'Change the Show/Hide panel icon to match its current state
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
-        AddMenuIcon "LEFTPANSHOW", 2 + posModifier, 16    'Show the panel
+        AddMenuIcon "LEFTPANSHOW", 2, 16     'Show the panel
     Else
-        AddMenuIcon "LEFTPANHIDE", 2 + posModifier, 16    'Hide the panel
+        AddMenuIcon "LEFTPANHIDE", 2, 16     'Hide the panel
     End If
     
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False) Then
-        AddMenuIcon "RIGHTPANSHOW", 2 + posModifier, 17   'Show the panel
+        AddMenuIcon "RIGHTPANSHOW", 2, 17   'Show the panel
     Else
-        AddMenuIcon "RIGHTPANHIDE", 2 + posModifier, 17   'Hide the panel
+        AddMenuIcon "RIGHTPANHIDE", 2, 17   'Hide the panel
     End If
         
     'If the OS is Vista or later, render MRU icons to the Open Recent menu
     If g_IsVistaOrLater Then
+    
+        'The position of menus changes if the MDI child is maximized.  When maximized, the form menu is given index 0, shifting
+        ' everything to the right by one.
+        
+        'Thus, we must check for that and redraw the Undo/Redo menus accordingly
+        Dim posModifier As Long
+        posModifier = 0
+    
+        If NumOfWindows > 0 Then
+            If FormMain.ActiveForm.WindowState = vbMaximized Then posModifier = 1
+        End If
     
         cMRUIcons.Clear
         Dim tmpFilename As String
