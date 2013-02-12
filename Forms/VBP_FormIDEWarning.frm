@@ -75,7 +75,7 @@ Begin VB.Form dialog_IDEWarning
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormIDEWarning.frx":1052
+      Caption         =   "Warning"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -96,7 +96,7 @@ Begin VB.Form dialog_IDEWarning
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormIDEWarning.frx":111A
+      Caption         =   "Warning"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -117,7 +117,7 @@ Begin VB.Form dialog_IDEWarning
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormIDEWarning.frx":11DD
+      Caption         =   "Warning"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -192,6 +192,10 @@ Public Sub ShowDialog()
     iconY = 18
     If g_UseFancyFonts Then iconY = iconY + 2
     DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 22, iconY
+    
+    lblWarning(1).Caption = g_Language.TranslateMessage("Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.")
+    lblWarning(2).Caption = g_Language.TranslateMessage("Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.")
+    lblWarning(3).Caption = g_Language.TranslateMessage("If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.")
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbOK

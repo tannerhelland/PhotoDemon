@@ -418,7 +418,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 ElseIf g_ImageFormats.FreeImageEnabled Then
                     updateMRU = SaveJPEGImage(imageID, dstPath, optionalSaveParameter0, optionalSaveParameter1, optionalSaveParameter2)
                 Else
-                    Message "No JPEG encoder found. Save aborted."
+                    Message "No %1 encoder found. Save aborted.", "JPEG"
                     PhotoDemon_SaveImage = False
                     Exit Function
                 End If
@@ -428,7 +428,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
                 ElseIf g_ImageFormats.GDIPlusEnabled Then
                     updateMRU = GDIPlusSavePicture(imageID, dstPath, ImageJPEG, 24, optionalSaveParameter0)
                 Else
-                    Message "No JPEG encoder found. Save aborted."
+                    Message "No %1 encoder found. Save aborted.", "JPEG"
                     PhotoDemon_SaveImage = False
                     Exit Function
                 End If
@@ -441,7 +441,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             Else
             'If zLib doesn't exist...
                 pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
-                Message "PDI saving disabled."
+                Message "No %1 encoder found. Save aborted.", "PDI"
             End If
         
         'GIF
@@ -452,7 +452,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             ElseIf g_ImageFormats.GDIPlusEnabled Then
                 updateMRU = GDIPlusSavePicture(imageID, dstPath, ImageGIF, 8)
             Else
-                Message "No GIF encoder found. Save aborted."
+                Message "No %1 encoder found. Save aborted.", "GIF"
                 PhotoDemon_SaveImage = False
                 Exit Function
             End If
@@ -465,7 +465,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             ElseIf g_ImageFormats.GDIPlusEnabled Then
                 updateMRU = GDIPlusSavePicture(imageID, dstPath, ImagePNG, outputColorDepth)
             Else
-                Message "No PNG encoder found. Save aborted."
+                Message "No %1 encoder found. Save aborted.", "PNG"
                 PhotoDemon_SaveImage = False
                 Exit Function
             End If
@@ -511,7 +511,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
             ElseIf g_ImageFormats.GDIPlusEnabled Then
                 updateMRU = GDIPlusSavePicture(imageID, dstPath, ImageTIFF, outputColorDepth)
             Else
-                Message "No TIFF encoder found. Save aborted."
+                Message "No %1 encoder found. Save aborted.", "TIFF"
                 PhotoDemon_SaveImage = False
                 Exit Function
             End If

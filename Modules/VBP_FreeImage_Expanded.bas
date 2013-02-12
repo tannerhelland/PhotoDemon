@@ -649,7 +649,7 @@ FreeImageV3_AdvancedError:
     If hFreeImgLib <> 0 Then FreeLibrary hFreeImgLib
     
     'Display a relevant error message
-    Message "Import via FreeImage failed (Err#" & Err.Number & ")"
+    Message "Import via FreeImage failed (Err # %1)", Err.Number
     
     'Mark this load as unsuccessful
     LoadFreeImageV3_Advanced = False

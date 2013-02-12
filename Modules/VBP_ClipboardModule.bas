@@ -89,8 +89,14 @@ Public Sub ClipboardPaste()
         'Use the standard image load routine to import the temporary file
         Dim sFile(0) As String
         sFile(0) = tmpClipboardFile
-            
-        PreLoadImage sFile, False, g_Language.TranslateMessage("Clipboard Image"), g_Language.TranslateMessage("Clipboard Image") & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+        
+        Dim sTitle As String
+        sTitle = g_Language.TranslateMessage("Clipboard Image")
+        
+        Dim sFilename As String
+        sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+        
+        PreLoadImage sFile, False, sTitle, sFilename
             
         'Be polite and remove the temporary file
         If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile

@@ -75,14 +75,20 @@ Public Sub StopMacro()
     Dim CC As cCommonDialog
     Dim sFile As String
     Set CC = New cCommonDialog
+    
+    Dim cdFilter As String
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
             
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Save macro data")
+    
     'If the user cancels the save dialog, give them another chance to save - just in case
     Dim mReturn As VbMsgBoxResult
      
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT, , g_UserPreferences.getMacroPath, g_Language.TranslateMessage("Save macro data"), "." & MACRO_EXT, FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, FormMain.hWnd, 0) Then
         
         'Save this macro's directory as the default macro path
         g_UserPreferences.setMacroPath sFile
@@ -124,9 +130,16 @@ Public Sub PlayMacro()
     Dim CC As cCommonDialog
     Dim sFile As String
     Set CC = New cCommonDialog
-   
+    
+    Dim cdFilter As String
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
+    cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Open Macro File")
+    
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & "|" & g_Language.TranslateMessage("All files") & "|*.*", , g_UserPreferences.getMacroPath, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
         
         Message "Loading macro data..."
         
@@ -220,7 +233,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
             Else
                 Close #fileNum
                 Message "Invalid macro version."
-                pdMsgBox "%1 is no longer a supported macro version (#%1).", vbOKOnly + vbExclamation + vbApplicationModal, " Macro Error", macroToPlay, Macro_Version
+                pdMsgBox "%1 is no longer a supported macro version (#%2).", vbOKOnly + vbExclamation + vbApplicationModal, " Macro Error", macroToPlay, Macro_Version
                 Exit Sub
             End If
         End If

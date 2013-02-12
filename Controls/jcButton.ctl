@@ -3550,10 +3550,7 @@ Public Sub About()
 Attribute About.VB_Description = "Displays information about the control and its author."
 Attribute About.VB_UserMemId = -552
 
-    pdMsgBox "JCButton v 1.02" & vbNewLine & _
-           "Author: Juned S. Chhipa" & vbNewLine & _
-           "Contact: juned.chhipa@yahoo.com" & vbNewLine & vbNewLine & _
-           "Copyright ©2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"
+    MsgBox "JCButton v 1.02" & vbCrLf & "Author: Juned S. Chhipa" & vbCrLf & "Contact: juned.chhipa@yahoo.com" & vbCrLf & vbCrLf & "Copyright ©2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"
 
 End Sub
 

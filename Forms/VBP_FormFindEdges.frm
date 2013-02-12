@@ -31,18 +31,10 @@ Begin VB.Form FormFindEdges
       TabIndex        =   7
       Top             =   3360
       Width           =   2220
-      _ExtentX        =   3916
-      _ExtentY        =   847
-      Caption         =   "use black background"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   3916
+      _extenty        =   847
+      caption         =   "use black background"
+      font            =   "VBP_FormFindEdges.frx":0000
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -85,8 +77,8 @@ Begin VB.Form FormFindEdges
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -238,7 +230,7 @@ Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optio
     g_FM(0, 0) = 10
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "Hilite edge detection", Not blackBackground, , toPreview, dstPic
+    DoFilter g_Language.TranslateMessage("Hilite edge detection"), Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -251,7 +243,7 @@ Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolea
     g_FM(0, 0) = -4
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "PhotoDemon cubic edge detection", Not blackBackground, , toPreview, dstPic
+    DoFilter g_Language.TranslateMessage("PhotoDemon cubic edge detection"), Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -264,7 +256,7 @@ Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boole
     g_FM(0, 0) = 4
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "PhotoDemon linear edge detection", Not blackBackground, , toPreview, dstPic
+    DoFilter g_Language.TranslateMessage("PhotoDemon linear edge detection"), Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -278,7 +270,7 @@ Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = F
     g_FM(1, 1) = 1
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "Prewitt horizontal edge detection", Not blackBackground, , toPreview, dstPic
+    DoFilter g_Language.TranslateMessage("Prewitt horizontal edge detection"), Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -292,7 +284,7 @@ Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = Fal
     g_FM(1, 1) = -1
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "Prewitt vertical edge detection", Not blackBackground, , toPreview, dstPic
+    DoFilter g_Language.TranslateMessage("Prewitt vertical edge detection"), Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -306,7 +298,7 @@ Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = Fal
     g_FM(1, 1) = 1
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "Sobel horizontal edge detection", Not blackBackground, , toPreview, dstPic
+    DoFilter g_Language.TranslateMessage("Sobel horizontal edge detection"), Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -320,7 +312,7 @@ Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False
     g_FM(1, 1) = -1
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "Sobel vertical edge detection", Not blackBackground, , toPreview, dstPic
+    DoFilter g_Language.TranslateMessage("Sobel vertical edge detection"), Not blackBackground, , toPreview, dstPic
 End Sub
 
 Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -333,7 +325,7 @@ Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Op
     g_FM(0, 0) = 4
     g_FilterWeight = 1
     g_FilterBias = 0
-    DoFilter "Laplacian edge detection", Not blackBackground, , toPreview, dstPic
+    DoFilter g_Language.TranslateMessage("Laplacian edge detection"), Not blackBackground, , toPreview, dstPic
 End Sub
 
 'This code is a modified version of an algorithm originally developed by Manuel Augusto Santos.  A link to his original

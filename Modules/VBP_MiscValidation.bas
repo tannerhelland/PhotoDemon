@@ -65,7 +65,7 @@ Public Function RangeValid(ByVal checkVal As Long, ByVal cMin As Long, ByVal cMa
     If (checkVal >= cMin) And (checkVal <= cMax) Then
         RangeValid = True
     Else
-        pdMsgBox "%1 is not a valid entry.  Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Value outside acceptable range", checkVal, cMin, cMax
+        pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal, cMin, cMax
         RangeValid = False
     End If
 End Function
@@ -73,7 +73,7 @@ End Function
 'Check a Variant-type value to see if it's numeric
 Public Function NumberValid(ByVal checkVal) As Boolean
     If Not IsNumeric(checkVal) Then
-        pdMsgBox "%1 is not a valid entry.  Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Non-numeric value found", checkVal
+        pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
         NumberValid = False
     Else
         NumberValid = True

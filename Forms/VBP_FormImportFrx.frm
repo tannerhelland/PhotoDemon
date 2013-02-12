@@ -263,8 +263,14 @@ Private Sub cmdOK_Click()
     'Because PreLoadImage requires a string array, create one to send it
     Dim sFile(0) As String
     sFile(0) = tmpFRXFile
-        
-    PreLoadImage sFile, False, g_Language.TranslateMessage("VB Binary Image") & " " & g_Language.TranslateMessage("(Imported)"), g_Language.TranslateMessage("VB Binary Image") & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+    
+    Dim sTitle As String
+    sTitle = g_Language.TranslateMessage("VB Binary Image")
+    
+    Dim sFilename As String
+    sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+    
+    PreLoadImage sFile, False, sTitle & " (" & g_Language.TranslateMessage("Imported") & ")", sFilename
         
     'Be polite and remove the temporary file
     Kill tmpFRXFile
@@ -298,12 +304,19 @@ Private Sub Form_Load()
     
     Message "Please select a VB binary file to scan for images..."
     
+    Dim cdFilter As String
+    cdFilter = g_Language.TranslateMessage("All VB Binary Files") & " (*.frx,*.ctx,*.dsx,*.dox,*.pgx)|*.frx;*.ctx;*.dsx;*.dox;*.pgx|"
+    cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "(*.*)|*.*"
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Select a VB Binary File")
+    
     'Call up the CommonDialog routine
 TryBinaryImportAgain:
     
     Set CC = New cCommonDialog
     
-    If CC.VBGetOpenFileName(sFile, , , , , True, g_Language.TranslateMessage("All VB Binary Files") & " (*.frx,*.ctx,*.dsx,*.dox,*.pgx)|*.frx;*.ctx;*.dsx;*.dox;*.pgx|" & g_Language.TranslateMessage("All files") & "(*.*)|*.*", , tempPathString, g_Language.TranslateMessage("Select a VB Binary File"), , FormMain.hWnd, 0) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , tempPathString, cdTitle, , FormMain.hWnd, 0) Then
     
         Message "Scanning binary file..."
     
@@ -330,7 +343,7 @@ TryBinaryImportAgain:
             Message "Scan complete.  Please select an image to import."
       
         Else
-            pdMsgBox "Unfortunately, no images were found in %1.  Please select a new file.", vbExclamation + vbApplicationModal + vbOKOnly, g_Language.TranslateMessage("No Images Found"), sFile
+            pdMsgBox "Unfortunately, no images were found in %1.  Please select a new file.", vbExclamation + vbApplicationModal + vbOKOnly, "No Images Found", sFile
             GoTo TryBinaryImportAgain
         End If
         
@@ -370,7 +383,7 @@ Private Sub LstInfo_Click()
                 tmpImportLayer.CreateFromPicture m_cff(LstInfo.ListIndex + 1).Picture
                 If tmpImportLayer.getLayerWidth <> 0 And tmpImportLayer.getLayerHeight <> 0 Then tmpImportLayer.renderToPictureBox picDemo
                 
-                CmdOK.Enabled = True
+                cmdOK.Enabled = True
                 LblData.Visible = False
                 DoEvents
             
@@ -384,7 +397,7 @@ Private Sub LstInfo_Click()
                 picDemo.Picture = picDemo.Image
                 picDemo.Refresh
                 
-                CmdOK.Enabled = True
+                cmdOK.Enabled = True
                 LblData.Visible = False
                 DoEvents
             
@@ -393,7 +406,7 @@ Private Sub LstInfo_Click()
         Else
             picDemo.Picture = Nothing
             LblData.Visible = True
-            CmdOK.Enabled = False
+            cmdOK.Enabled = False
             If .ImageSize And (.ImageSize < 2 ^ 15) And (.ImageSize > 0) Then
                 LblData.Caption = g_Language.TranslateMessage("Binary data:") & " " & StrConv(.Bits, vbUnicode)
             Else

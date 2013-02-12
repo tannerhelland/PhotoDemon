@@ -624,10 +624,6 @@ Private Sub hsWidth_Scroll()
     updatePreview
 End Sub
 
-Private Sub lblIDEWarning_Click()
-
-End Sub
-
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
     userChange = False
     textValidate txtHeight

@@ -252,7 +252,6 @@ Begin VB.Form FormPrint
       Width           =   3300
       Begin VB.Label lblWarning 
          BackStyle       =   0  'Transparent
-         Caption         =   $"VBP_FormPrint.frx":0051
          ForeColor       =   &H00C00000&
          Height          =   1935
          Left            =   120
@@ -591,7 +590,9 @@ Private Sub Form_Load()
     ' I don't mind ignoring a VB-only fallback for such a peripheral feature.
     If g_ImageFormats.FreeImageEnabled = True Then
         RebuildPreview
+        lblWarning.Visible = False
     Else
+        lblWarning.Caption = g_Language.TranslateMessage("Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select ""check for missing plugins on program start.""  The next time you load PhotoDemon, it will offer to download this plugin for you.")
         lblWarning.Visible = True
     End If
     

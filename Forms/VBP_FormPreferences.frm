@@ -1328,7 +1328,6 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblFileFreeImageWarning 
          BackStyle       =   0  'Transparent
-         Caption         =   $"VBP_FormPreferences.frx":8F51
          ForeColor       =   &H000000FF&
          Height          =   495
          Left            =   600
@@ -1416,7 +1415,7 @@ Begin VB.Form FormPreferences
          Left            =   3180
          Style           =   2  'Dropdown List
          TabIndex        =   78
-         ToolTipText     =   $"VBP_FormPreferences.frx":8FFE
+         ToolTipText     =   $"VBP_FormPreferences.frx":8F51
          Top             =   1680
          Width           =   4995
       End
@@ -1435,7 +1434,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   75
-         ToolTipText     =   $"VBP_FormPreferences.frx":90C1
+         ToolTipText     =   $"VBP_FormPreferences.frx":9014
          Top             =   3840
          Width           =   5415
       End
@@ -1454,7 +1453,7 @@ Begin VB.Form FormPreferences
          Left            =   840
          Style           =   2  'Dropdown List
          TabIndex        =   67
-         ToolTipText     =   $"VBP_FormPreferences.frx":918E
+         ToolTipText     =   $"VBP_FormPreferences.frx":90E1
          Top             =   2910
          Width           =   7335
       End
@@ -1677,7 +1676,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   74
-         ToolTipText     =   $"VBP_FormPreferences.frx":9283
+         ToolTipText     =   $"VBP_FormPreferences.frx":91D6
          Top             =   825
          Width           =   7455
       End
@@ -1696,7 +1695,7 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   55
-         ToolTipText     =   $"VBP_FormPreferences.frx":9368
+         ToolTipText     =   $"VBP_FormPreferences.frx":92BB
          Top             =   4125
          Width           =   4095
       End
@@ -1717,7 +1716,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   53
-         ToolTipText     =   $"VBP_FormPreferences.frx":9410
+         ToolTipText     =   $"VBP_FormPreferences.frx":9363
          Top             =   3150
          Width           =   7455
       End
@@ -1736,7 +1735,7 @@ Begin VB.Form FormPreferences
          Left            =   3000
          Style           =   2  'Dropdown List
          TabIndex        =   42
-         ToolTipText     =   $"VBP_FormPreferences.frx":94DA
+         ToolTipText     =   $"VBP_FormPreferences.frx":942D
          Top             =   1695
          Width           =   4815
       End
@@ -1804,7 +1803,6 @@ Begin VB.Form FormPreferences
          Width           =   3870
       End
       Begin VB.Label lblFreeImageWarning 
-         Caption         =   $"VBP_FormPreferences.frx":9594
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9
@@ -1957,7 +1955,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   59
-         ToolTipText     =   $"VBP_FormPreferences.frx":96A9
+         ToolTipText     =   $"VBP_FormPreferences.frx":94E7
          Top             =   480
          Width           =   7455
       End
@@ -2074,7 +2072,7 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   21
-         ToolTipText     =   $"VBP_FormPreferences.frx":978D
+         ToolTipText     =   $"VBP_FormPreferences.frx":95CB
          Top             =   480
          Width           =   6975
       End
@@ -2162,7 +2160,6 @@ Begin VB.Form FormPreferences
       End
       Begin VB.Label lblTempPathWarning 
          BackStyle       =   0  'Transparent
-         Caption         =   $"VBP_FormPreferences.frx":987F
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -2255,7 +2252,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   17
-         ToolTipText     =   $"VBP_FormPreferences.frx":992E
+         ToolTipText     =   $"VBP_FormPreferences.frx":96BD
          Top             =   1080
          Width           =   6735
       End
@@ -2903,7 +2900,9 @@ Private Sub LoadAllPreferences()
         cmbMultiImage.AddItem " feature disabled due to missing plugin", 0
         cmbMultiImage.ListIndex = 0
         cmbMultiImage.Enabled = False
+        lblFreeImageWarning.Caption = g_Language.TranslateMessage("NOTE: Some options on this page have been disabled because the FreeImage plugin is missing.  To enable these options, please click on ""Updates"" and select ""if core plugins cannot be located, offer to download them.""  Then restart the program and select ""Yes"" when prompted.")
         lblFreeImageWarning.Visible = True
+        lblFileFreeImageWarning.Caption = g_Language.TranslateMessage("NOTE: Many of these file format options require the FreeImage plugin.  Because you do not have the FreeImage plugin installed, these options may not perform as expected.")
         lblFileFreeImageWarning.Visible = True
     Else
         chkToneMapping.Enabled = True
@@ -2930,28 +2929,26 @@ Private Sub Form_Load()
     
     'Populate the multi-line tooltips for the category command buttons
     'Interface
-    cmdCategory(0).ToolTip = "Interface options include settings for the main PhotoDemon interface, including" & vbCrLf & "things like canvas settings, font selection, and positioning."
+    cmdCategory(0).ToolTip = g_Language.TranslateMessage("Interface options include settings for the main PhotoDemon interface, including" & vbCrLf & "things like canvas settings, font selection, and positioning.")
     'Loading
-    cmdCategory(1).ToolTip = "Load options allow you to customize the way image files enter the application."
+    cmdCategory(1).ToolTip = g_Language.TranslateMessage("Load options allow you to customize the way image files enter the application.")
     'Saving
-    cmdCategory(2).ToolTip = "Save options allow you to customize the way image files leave the application."
+    cmdCategory(2).ToolTip = g_Language.TranslateMessage("Save options allow you to customize the way image files leave the application.")
     'File formats
-    cmdCategory(3).ToolTip = "File format options control how PhotoDemon handles certain types of images."
+    cmdCategory(3).ToolTip = g_Language.TranslateMessage("File format options control how PhotoDemon handles certain types of images.")
     'Performance
     'cmdCategory(3).ToolTip = "Performance preferences allow you to specify how aggressively PhotoDemon makes use" & vbCrLf & "of the system's available RAM and hard drive space."
     'Tools
-    cmdCategory(4).ToolTip = "Tool options currently include customizable options for the Selection Tool." & vbCrLf & "In the future, PhotoDemon will gain paint tools, and those settings will appear" & vbCrLf & "here as well."
+    cmdCategory(4).ToolTip = g_Language.TranslateMessage("Tool options currently include customizable options for the Selection Tool." & vbCrLf & "In the future, PhotoDemon will gain paint tools, and those settings will appear" & vbCrLf & "here as well.")
     'Transparency
-    cmdCategory(5).ToolTip = "Transparency options control how PhotoDemon displays images" & vbCrLf & "that contain alpha channels (e.g. 32bpp images)."
+    cmdCategory(5).ToolTip = g_Language.TranslateMessage("Transparency options control how PhotoDemon displays images" & vbCrLf & "that contain alpha channels (e.g. 32bpp images).")
     'Updates
-    cmdCategory(6).ToolTip = "Update options control how frequently PhotoDemon checks for" & vbCrLf & "updated versions, and how it handles the download of missing plugins."
+    cmdCategory(6).ToolTip = g_Language.TranslateMessage("Update options control how frequently PhotoDemon checks for" & vbCrLf & "updated versions, and how it handles the download of missing plugins.")
     'Advanced
-    cmdCategory(7).ToolTip = "Advanced options can be safely ignored by regular users." & vbCrLf & "Testers and developers may, however, find these settings useful."
+    cmdCategory(7).ToolTip = g_Language.TranslateMessage("Advanced options can be safely ignored by regular users." & vbCrLf & "Testers and developers may, however, find these settings useful.")
     
     'Populate the network access disclaimer in the "Update" panel
-    lblExplanation.Caption = PROGRAMNAME & " provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins (FreeImage, EZTwain, zLib, and pngnq-s9) if they aren't present in the \Data\Plugins subdirectory." _
-    & vbCrLf & vbCrLf & "The developers of " & PROGRAMNAME & " take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single ""updates.txt"" file containing the latest PhotoDemon version number. Similarly, downloading missing plugins simply involves downloading one or more of the compressed plugin files from the " & PROGRAMNAME & " server." _
-    & vbCrLf & vbCrLf & "If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program."
+    lblExplanation.Caption = g_Language.TranslateMessage("PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins (FreeImage, EZTwain, zLib, and pngnq-s9) if they aren't present in the \Data\Plugins subdirectory." & vbCrLf & vbCrLf & "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single ""updates.txt"" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more of the compressed plugin files from the PhotoDemon server." & vbCrLf & vbCrLf & "If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.")
         
     'Finally, hide the inactive category panels
     Dim i As Long
@@ -3099,6 +3096,7 @@ End Sub
 'Test to see if we can determine folder access...
 Private Sub TxtTempPath_Change()
     If Not DirectoryExist(TxtTempPath.Text) Then
+        lblTempPathWarning.Caption = g_Language.TranslateMessage("WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.")
         lblTempPathWarning.Visible = True
     Else
         lblTempPathWarning.Visible = False

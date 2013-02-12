@@ -951,7 +951,7 @@ MainErrHandler:
     
     'Invalid picture error
     ElseIf Err.Number = 481 Then
-        AddInfo = g_Language.TranslateMessage("Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that " & PROGRAMNAME & " simply doesn't understand this particular file format.  Please save the image in a generic format (such as bitmap or JPEG), then reload it.")
+        AddInfo = g_Language.TranslateMessage("Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.")
         Message "Invalid image.  Image load cancelled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
@@ -965,7 +965,7 @@ MainErrHandler:
     
     'File not found error
     ElseIf Err.Number = 53 Then
-        AddInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & "2) the file location provided to PhotoDemon is correct.")
+        AddInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & vbCrLf & "2) the file location provided to PhotoDemon is correct.")
         Message "File not found."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
         
@@ -977,7 +977,7 @@ MainErrHandler:
     End If
     
     'Create the message box to return the error information
-    msgReturn = pdMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & AddInfo, mType, "PhotoDemon Error Handler: #%1", Err.Number, Err.Description)
+    msgReturn = pdMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "PhotoDemon Error Handler: #%1", Err.Number, Err.Description, AddInfo)
     
     'If the message box return value is "Yes", the user has opted to file a bug report.
     If msgReturn = vbYes Then

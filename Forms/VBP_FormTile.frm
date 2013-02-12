@@ -128,8 +128,8 @@ Begin VB.Form FormTile
       TabIndex        =   14
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -151,7 +151,7 @@ Begin VB.Form FormTile
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "The tiled image will be 0 tiles wide by 0 tiles tall"
+      Caption         =   "The final image will be %1 %3 wide by %2 %3 tall."
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9

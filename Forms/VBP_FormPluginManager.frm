@@ -1973,7 +1973,7 @@ Private Function popPluginLabel(ByVal curPlugin As Long, ByRef pluginName As Str
                 
             'Version mismatch
             Else
-                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & ", " & g_Language.TranslateMessage("but incorrect version") & " (" & vString(0) & " " & g_Language.TranslateMessage("found") & ", " & expectedVersion & " " & g_Language.TranslateMessage("expected") & ")"
+                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & ", " & g_Language.TranslateMessage("but incorrect version (%1 found, %2 expected)", vString(0), expectedVersion)
                 lblStatus(curPlugin).ForeColor = BADCOLOR
                 popPluginLabel = False
             End If

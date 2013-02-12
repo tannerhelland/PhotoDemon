@@ -32,7 +32,7 @@ Begin VB.Form FormSplash
    Begin VB.Label lblVersion 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Version (populated at run-time)"
+      Caption         =   "Version"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -53,7 +53,7 @@ Begin VB.Form FormSplash
    Begin VB.Label lblMessage 
       Alignment       =   1  'Right Justify
       BackStyle       =   0  'Transparent
-      Caption         =   "Initializing software..."
+      Caption         =   "Live updates..."
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   8.25

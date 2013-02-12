@@ -141,7 +141,13 @@ Public Sub Twain32Scan()
         Dim sFile(0) As String
         sFile(0) = ScannerCaptureFile
         
-        PreLoadImage sFile, False, g_Language.TranslateMessage("Scanned Image"), g_Language.TranslateMessage("Scanned Image") & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+        Dim sTitle As String
+        sTitle = g_Language.TranslateMessage("Scanned Image")
+        
+        Dim sFilename As String
+        sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now)
+        
+        PreLoadImage sFile, False, sTitle, sFilename
         
         'Be polite and remove the temporary file acquired from the scanner
         Kill ScannerCaptureFile
@@ -167,19 +173,19 @@ ScanError:
     
     Select Case ScanCheck
         Case -5
-            scanErrMessage = "Unknown error occurred.  Please make sure your scanner is turned on and ready for use."
+            scanErrMessage = g_Language.TranslateMessage("Unknown error occurred.  Please make sure your scanner is turned on and ready for use.")
         Case -4
-            scanErrMessage = "Scan successful, but temporary file save failed.  Is it possible that your hard drive is full (or almost full)?"
+            scanErrMessage = g_Language.TranslateMessage("Scan successful, but temporary file save failed.  Is it possible that your hard drive is full (or almost full)?")
         Case -3
-            scanErrMessage = "Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again."
+            scanErrMessage = g_Language.TranslateMessage("Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.")
         Case -2
-            scanErrMessage = "Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again."
+            scanErrMessage = g_Language.TranslateMessage("Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.")
         Case -1
-            scanErrMessage = "Scan canceled at the user's request."
+            scanErrMessage = g_Language.TranslateMessage("Scan canceled at the user's request.")
             Message "Scan canceled."
             Exit Sub
         Case Else
-            scanErrMessage = g_Language.TranslateMessage("The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #") & " )" & ScanCheck & ").  " & g_Language.TranslateMessage("Please visit http://www.eztwain.com for more information.")
+            scanErrMessage = g_Language.TranslateMessage("The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.", ScanCheck)
     End Select
         
     pdMsgBox scanErrMessage, vbExclamation + vbOKOnly + vbApplicationModal, "Scan Canceled"

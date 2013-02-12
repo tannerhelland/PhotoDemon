@@ -44,20 +44,28 @@ Begin VB.Form FormPluginDownloader
          TabIndex        =   0
          Top             =   5520
          Width           =   5130
-         _extentx        =   9049
-         _extenty        =   2778
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormPluginDownloader.frx":0000
-         caption         =   "Yes. Download these files to the plugins folder."
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormPluginDownloader.frx":0028
-         disabledpicturemode=   1
-         captioneffects  =   0
-         picturealign    =   0
-         tooltiptitle    =   "Download All Plugins"
-         tooltip         =   $"VBP_FormPluginDownloader.frx":107A
-         tooltiptype     =   1
+         _ExtentX        =   9049
+         _ExtentY        =   2778
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "Yes. Download these files to the plugins folder."
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormPluginDownloader.frx":0000
+         PictureAlign    =   0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   $"VBP_FormPluginDownloader.frx":1052
+         TooltipType     =   1
+         TooltipTitle    =   "Download All Plugins"
       End
       Begin PhotoDemon.jcbutton cmdChoice 
          Cancel          =   -1  'True
@@ -67,20 +75,28 @@ Begin VB.Form FormPluginDownloader
          TabIndex        =   1
          Top             =   5520
          Width           =   5130
-         _extentx        =   8837
-         _extenty        =   1349
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormPluginDownloader.frx":1130
-         caption         =   "Not right now, but please remind me later."
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormPluginDownloader.frx":1158
-         disabledpicturemode=   1
-         captioneffects  =   0
-         picturealign    =   0
-         tooltiptitle    =   "Postpone Plugin Download"
-         tooltip         =   $"VBP_FormPluginDownloader.frx":21AA
-         tooltiptype     =   1
+         _ExtentX        =   8837
+         _ExtentY        =   1349
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "Not right now, but please remind me later."
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormPluginDownloader.frx":1108
+         PictureAlign    =   0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   $"VBP_FormPluginDownloader.frx":215A
+         TooltipType     =   1
+         TooltipTitle    =   "Postpone Plugin Download"
       End
       Begin PhotoDemon.jcbutton cmdChoice 
          Height          =   765
@@ -89,20 +105,28 @@ Begin VB.Form FormPluginDownloader
          TabIndex        =   2
          Top             =   6360
          Width           =   5130
-         _extentx        =   8837
-         _extenty        =   1349
-         buttonstyle     =   13
-         showfocusrect   =   -1
-         font            =   "VBP_FormPluginDownloader.frx":2255
-         caption         =   " Not now, not ever. Do not prompt me again."
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormPluginDownloader.frx":227D
-         disabledpicturemode=   1
-         captioneffects  =   0
-         picturealign    =   0
-         tooltiptitle    =   "Never Download Plugins"
-         tooltip         =   $"VBP_FormPluginDownloader.frx":32CF
-         tooltiptype     =   1
+         _ExtentX        =   8837
+         _ExtentY        =   1349
+         ButtonStyle     =   13
+         ShowFocusRect   =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   " Not now, not ever. Do not prompt me again."
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormPluginDownloader.frx":2205
+         PictureAlign    =   0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   $"VBP_FormPluginDownloader.frx":3257
+         TooltipType     =   1
+         TooltipTitle    =   "Never Download Plugins"
       End
       Begin VB.Label lblExplanation 
          BackStyle       =   0  'Transparent
@@ -228,7 +252,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   3
          Left            =   5640
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":3358
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":32E0
          MousePointer    =   99  'Custom
          TabIndex        =   14
          Top             =   3240
@@ -250,7 +274,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   1
          Left            =   5640
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":34AA
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":3432
          MousePointer    =   99  'Custom
          TabIndex        =   13
          Top             =   2160
@@ -272,7 +296,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   2
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":35FC
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":3584
          MousePointer    =   99  'Custom
          TabIndex        =   12
          Top             =   3240
@@ -294,7 +318,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":374E
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":36D6
          MousePointer    =   99  'Custom
          TabIndex        =   11
          Top             =   2160
@@ -395,7 +419,7 @@ Begin VB.Form FormPluginDownloader
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
-         Caption         =   "downloading file 1 of 4 (XXX of YYY bytes received)..."
+         Caption         =   "Downloading file %1 of %2 (%3 of %4 bytes received)..."
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12

@@ -64,7 +64,7 @@ Begin VB.Form dialog_ExportJPEG
       Width           =   1365
    End
    Begin VB.CommandButton cmdShowHide 
-      Caption         =   "<<  Hide advanced settings"
+      Caption         =   " Hide advanced settings"
       Height          =   495
       Left            =   240
       TabIndex        =   8

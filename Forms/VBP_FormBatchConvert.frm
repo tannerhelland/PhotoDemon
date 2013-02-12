@@ -246,7 +246,7 @@ Begin VB.Form FormBatchConvert
    End
    Begin VB.Label lblDisclaimer 
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormBatchConvert.frx":0000
+      Caption         =   "Disclaimer"
       ForeColor       =   &H00800000&
       Height          =   855
       Left            =   8400
@@ -963,6 +963,8 @@ End Sub
 
 'Initialize various controls and options
 Private Sub Form_Load()
+
+    lblDisclaimer.Caption = g_Language.TranslateMessage("When all steps are complete, press ""OK"" to begin.  Note: depending on the number of images being processed, batch conversion may take a long time.")
 
     'Start without a macro file loaded
     LocationOfMacroFile = "N/A"

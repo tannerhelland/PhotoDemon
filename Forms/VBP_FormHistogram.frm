@@ -259,7 +259,7 @@ Begin VB.Form FormHistogram
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "lblRed"
+      Caption         =   "Red"
       ForeColor       =   &H000000C0&
       Height          =   255
       Left            =   2040
@@ -328,7 +328,7 @@ Begin VB.Form FormHistogram
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "lblGreen"
+      Caption         =   "Green"
       ForeColor       =   &H00008000&
       Height          =   255
       Left            =   3480
@@ -352,7 +352,7 @@ Begin VB.Form FormHistogram
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "lblBlue"
+      Caption         =   "Blue"
       ForeColor       =   &H00C00000&
       Height          =   255
       Left            =   4920
@@ -376,7 +376,7 @@ Begin VB.Form FormHistogram
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "lblLuminance"
+      Caption         =   "Luminance"
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   6960

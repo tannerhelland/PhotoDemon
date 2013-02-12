@@ -129,7 +129,6 @@ Begin VB.Form FormAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormAbout.frx":0554
       ForeColor       =   &H80000008&
       Height          =   435
       Left            =   240
@@ -154,7 +153,7 @@ Begin VB.Form FormAbout
       Height          =   195
       Index           =   0
       Left            =   240
-      MouseIcon       =   "VBP_FormAbout.frx":05DF
+      MouseIcon       =   "VBP_FormAbout.frx":0554
       MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   2880
@@ -184,7 +183,7 @@ Begin VB.Form FormAbout
    Begin VB.Label lblVersion 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Version XX.XX.XXXX"
+      Caption         =   "Version"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -199,7 +198,7 @@ Begin VB.Form FormAbout
       Left            =   210
       TabIndex        =   1
       Top             =   2400
-      Width           =   2100
+      Width           =   795
    End
 End
 Attribute VB_Name = "FormAbout"
@@ -231,8 +230,9 @@ End Sub
 Private Sub Form_Load()
     
     'Automatic generation of version & copyright information
-    lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
+    lblVersion.Caption = g_Language.TranslateMessage("Version") & " " & App.Major & "." & App.Minor & "." & App.Revision
     lblDisclaimer.Caption = App.LegalCopyright & " "
+    lblLinks.Caption = g_Language.TranslateMessage("PhotoDemon uses several third-party plugins.  These plugins may be governed by additional licenses. For more information, please visit:")
     
     curCredit = 1
     
@@ -315,7 +315,7 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
     Else
         lblThanks(curCredit).FontUnderline = True
         lblThanks(curCredit).ForeColor = vbBlue
-        lblThanks(curCredit).ToolTipText = "Click to open " & creditURL
+        lblThanks(curCredit).ToolTipText = g_Language.TranslateMessage("Click to open") & " " & creditURL
     End If
     lblThanks(curCredit).Visible = True
     

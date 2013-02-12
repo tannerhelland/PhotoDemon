@@ -354,7 +354,7 @@ Begin VB.Form FormReduceColors
    Begin VB.Label lblMaxColors 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Maximum # of colors with these parameters: 252"
+      Caption         =   "Maximum # of colors with these parameters:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -369,7 +369,7 @@ Begin VB.Form FormReduceColors
       Left            =   6120
       TabIndex        =   9
       Top             =   5160
-      Width           =   4260
+      Width           =   3885
    End
    Begin VB.Label lblQuantMethod 
       Appearance      =   0  'Flat
@@ -680,7 +680,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
                 finalizeImageData toPreview, dstPic
             Else
                 ScrollViewport FormMain.ActiveForm
-                Message "Image successfully quantized to 256 unique colors. "
+                Message "Image successfully quantized to %1 unique colors. ", 256
             End If
             
         End If

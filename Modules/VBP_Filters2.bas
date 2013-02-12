@@ -552,7 +552,7 @@ Public Sub MenuComicBook()
     Dim gThreshold As Long
     gThreshold = 8
     
-    Message "Animating image (stage %1 of 3)...", 1
+    Message "Animating image (stage %1 of %2)...", 1, 3
                 
     'More color variables - in this case, sums for each color component
     Dim r As Long, g As Long, b As Long
@@ -607,7 +607,7 @@ Public Sub MenuComicBook()
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
         
-    Message "Animating image (stage %1 of 3)...", 2
+    Message "Animating image (stage %1 of %2)...", 2, 3
         
     Dim blendVal As Double
     
@@ -654,7 +654,7 @@ Public Sub MenuComicBook()
     
     'The last thing we need to do is sketch in the edges of the image.
     
-    Message "Animating image (stage %1 of 3)...", 3
+    Message "Animating image (stage %1 of %2)...", 3, 3
     
     'We can't do this at the borders of the image, so shrink the functional area by one in each dimension.
     initX = initX + 1
@@ -1372,7 +1372,7 @@ Public Sub MenuCountColors()
     
     'Show the user our final tally
     Message "Total number of unique colors: %1", totalCount
-    pdMsgBox g_Language.TranslateMessage("This image contains %1 unique colors.", totalCount), vbOKOnly + vbApplicationModal + vbInformation, g_Language.TranslateMessage("Count Image Colors")
+    pdMsgBox "This image contains %1 unique colors.", vbOKOnly + vbApplicationModal + vbInformation, "Count Image Colors", totalCount
     
 End Sub
 

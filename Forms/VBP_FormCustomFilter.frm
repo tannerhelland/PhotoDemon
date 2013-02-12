@@ -833,7 +833,15 @@ Private Sub cmdOpen_Click()
         
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " " & g_Language.TranslateMessage("Filter") & " (." & FILTER_EXT & ")|*." & FILTER_EXT & "|" & g_Language.TranslateMessage("All files") & "|*.*", , g_UserPreferences.getFilterPath, g_Language.TranslateMessage("Open a custom filter"), , FormCustomFilter.hWnd, 0) Then
+    
+    Dim cdFilter As String
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Filter") & " (." & FILTER_EXT & ")|*." & FILTER_EXT & "|"
+    cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Open a custom filter")
+    
+    If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getFilterPath, cdTitle, , FormCustomFilter.hWnd, 0) Then
         If OpenCustomFilter(sFile) = True Then
             
             'Save the new directory as the default path for future usage
@@ -857,7 +865,14 @@ Private Sub cmdSave_Click()
         
     Dim sFile As String
     Set CC = New cCommonDialog
-    If CC.VBGetSaveFileName(sFile, , True, PROGRAMNAME & " " & g_Language.TranslateMessage("Filter") & " (." & FILTER_EXT & ")|*." & FILTER_EXT & "|" & g_Language.TranslateMessage("All files") & "|*.*", , g_UserPreferences.getFilterPath, g_Language.TranslateMessage("Save a custom filter"), "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
+    
+    Dim cdFilter As String
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Filter") & " (." & FILTER_EXT & ")|*." & FILTER_EXT
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Save a custom filter")
+    
+    If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getFilterPath, cdTitle, "." & FILTER_EXT, FormCustomFilter.hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         g_UserPreferences.setFilterPath sFile
@@ -1028,7 +1043,7 @@ Private Sub updatePreview()
     g_FilterBias = Val(txtBias.Text)
         
     'Apply the preview
-    DoFilter "Preview", False, , True, fxPreview
+    DoFilter g_Language.TranslateMessage("Preview"), False, , True, fxPreview
     
 End Sub
 

@@ -137,8 +137,8 @@ Begin VB.Form FormUnsharpMask
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -297,7 +297,7 @@ End Sub
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub UnsharpMask(ByVal umRadius As Long, ByVal umAmount As Long, ByVal umThreshold As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
-    If Not toPreview Then Message "Applying unsharp mask (step 1 of 2)..."
+    If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 1, 2
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -347,7 +347,7 @@ Public Sub UnsharpMask(ByVal umRadius As Long, ByVal umAmount As Long, ByVal umT
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
         
-    If Not toPreview Then Message "Applying unsharp mask (step 2 of 2)..."
+    If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 2, 2
         
     'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
     Dim scaleFactor As Double, invScaleFactor As Double

@@ -42,7 +42,7 @@ Public Sub CaptureScreen()
     If CaptureMethod = vbYes Then FormMain.WindowState = vbMinimized
 
     'The capture happens so quickly that the message box prompting the capture will be caught in the snapshot.  Sleep for 1/4 of a second
-    ' to give the pdMsgBox time to disappear
+    ' to give the message box time to disappear
     Sleep 250
             
     'Get the window handle of the screen
@@ -101,8 +101,11 @@ Public Sub CaptureScreen()
     ' NOTE: Because PreLoadImage requires an array of strings, create an array to send to it
     Dim sFile(0) As String
     sFile(0) = tmpFilename
-        
-    PreLoadImage sFile, False, g_Language.TranslateMessage("Screen Capture"), g_Language.TranslateMessage("Screen capture") & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+    
+    Dim sTitle As String
+    sTitle = g_Language.TranslateMessage("Screen Capture")
+    
+    PreLoadImage sFile, False, sTitle, sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     
     'Erase the temp file
     If FileExist(tmpFilename) Then Kill tmpFilename

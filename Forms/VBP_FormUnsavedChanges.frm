@@ -164,7 +164,7 @@ Begin VB.Form dialog_UnsavedChanges
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   "This image (filename.jpg) has unsaved changes.  What would you like to do?"
+      Caption         =   "%1 has unsaved changes.  What would you like to do?"
       ForeColor       =   &H00202020&
       Height          =   765
       Left            =   4830

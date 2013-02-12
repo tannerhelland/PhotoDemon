@@ -391,29 +391,27 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
     Dim cName As String
     Select Case rType
         Case 0
-            cName = "red"
+            cName = g_Language.TranslateMessage("red")
         Case 1
-            cName = "green"
+            cName = g_Language.TranslateMessage("green")
         Case 2
-            cName = "blue"
+            cName = g_Language.TranslateMessage("blue")
         Case 3
-            cName = "cyan"
+            cName = g_Language.TranslateMessage("cyan")
         Case 4
-            cName = "magenta"
+            cName = g_Language.TranslateMessage("magenta")
         Case 5
-            cName = "yellow"
+            cName = g_Language.TranslateMessage("yellow")
         Case 6
-            cName = "cyan"
+            cName = g_Language.TranslateMessage("cyan")
         Case 7
-            cName = "magenta"
+            cName = g_Language.TranslateMessage("magenta")
         Case 8
-            cName = "yellow"
+            cName = g_Language.TranslateMessage("yellow")
         Case 9
-            cName = "black"
+            cName = g_Language.TranslateMessage("black")
     End Select
-    
-    cName = g_Language.TranslateMessage(cName)
-    
+        
     If toPreview = False Then Message "Isolating the %1 channel...", cName
     
     'Create a local array and point it at the pixel data we want to operate on
