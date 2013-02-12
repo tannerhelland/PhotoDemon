@@ -581,16 +581,20 @@ Private Sub postProcessText(ByRef srcString As String)
     '1) Trim the string
     srcString = Trim$(srcString)
     
-    '2) If the original had a trailing "...", restore it now
-    If hasDotDotDot Then
-        srcString = srcString & "..."
-        hasDotDotDot = False
-    End If
+    '2) If the string is now empty, return a blank string rather than attempting to reconstruct it
+    If srcString <> "" Then
     
-    '3) If the original had a trailing colon, restore it now
-    If hasTrailingColon Then
-        srcString = srcString & ":"
-        hasTrailingColon = False
+        '2) If the original had a trailing "...", restore it now
+        If hasDotDotDot Then
+            srcString = srcString & "..."
+            hasDotDotDot = False
+        End If
+        
+        '3) If the original had a trailing colon, restore it now
+        If hasTrailingColon Then
+            srcString = srcString & ":"
+            hasTrailingColon = False
+        End If
     End If
 
 End Sub
@@ -635,7 +639,11 @@ Private Function getTranslationTagFromCaption(ByVal origCaption As String) As St
         'Retrieve the <translation> tag inside this phrase tag
         origCaption = getTextBetweenTags(translationFileContents, "translation", phraseLocation)
         postProcessText origCaption
-        getTranslationTagFromCaption = origCaption
+        If origCaption <> "" Then
+            getTranslationTagFromCaption = origCaption
+        Else
+            getTranslationTagFromCaption = ""
+        End If
         
     Else
         getTranslationTagFromCaption = ""
