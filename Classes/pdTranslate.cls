@@ -14,9 +14,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'Central Language and Translation Handler
 'Copyright ©2012-2013 by Frank Donckers and Tanner Helland
-'Created: 12/21/12
-'Last updated: 22/January/13
-'Last update: began official implementation
+'Created: 21/December/12
+'Last updated: 12/February/13
+'Last update: wrap up official implementation
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
@@ -35,8 +35,6 @@ Attribute VB_Exposed = False
 ' which is an object of this class (pdTranslate).  Most subs and functions should be self-explanatory.  To
 ' really get a feel for how the translation engine works, I suggest starting with the Loading module, and
 ' looking at the order in which the various subs in this class are called.
-'
-'Additional description forthcoming once I actually have some code in place...
 '
 '***************************************************************************
 
