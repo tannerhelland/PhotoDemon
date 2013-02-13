@@ -70,28 +70,34 @@ Private curLanguage As Long
 Private defaultLanguage As Long
 
 'If the user needs to be shown a language select screen, this will be set to true at some point in the initialization process
-Private needToShowLanguageDialog As Boolean
+Private m_needToShowLanguageDialog As Boolean
 
 'If the select language dialog needs to be shown, this value can be used to determine "why"
 Private Const LANGREASON_USERINITIATED As Long = 0      ' 0) User-initiated dialog
 Private Const LANGREASON_APPROXIMATEMATCH As Long = 1   ' 1) Approximate (but not exact) language match found
 Private Const LANGREASON_NOMATCH As Long = 2            ' 2) No language match found
 Private Const LANGREASON_FILEMISSING As Long = 3        ' 3) Requested language file couldn't be located
-Private reasonForLanguageDialog As Long
+Private m_reasonForLanguageDialog As Long
 
 'The full contents of the translation file will be loaded into this string.
-Private translationFileContents As String
+Private m_translationFileContents As String
 
 'Is the class ready to be used for translations?
-Private isReady As Boolean
+Private m_isReady As Boolean
 
 'The following boolean values are marked by preProcessString, then read by postProcessString
-Private hasDotDotDot As Boolean
-Private hasTrailingColon As Boolean
+Private m_hasDotDotDot As Boolean
+Private m_hasTrailingColon As Boolean
+
+'External function for asking the translator if a language selection dialog is needed
+Public Function isLanguageDialogNeeded(Optional ByRef reasonForDialog As Long = -1) As Boolean
+    If reasonForDialog <> -1 Then reasonForDialog = m_reasonForLanguageDialog
+    isLanguageDialogNeeded = m_needToShowLanguageDialog
+End Function
 
 'If the class has successfully initialized a translation file, this function will return TRUE
 Public Function readyToTranslate() As Boolean
-    readyToTranslate = isReady
+    readyToTranslate = m_isReady
 End Function
 
 'If the currently active language is different from the default language, this function will return TRUE
@@ -114,9 +120,6 @@ Public Sub activateNewLanguage(ByVal newLangIndex As Long)
 
 End Sub
 
-'Which language file is currently active.  This may not be the same one as the INI file (for example, when the
-' program is first run, PhotoDemon has to estimate which language file to use).
-
 'Determine which language to use.  This can be done one of several ways:
 ' 1) If the user has already specified a language, use that one (obviously)
 ' 2) If the user has not specified a language, and this is not the first time they have run the program, default to English.
@@ -126,11 +129,17 @@ End Sub
 '      is NOT set to English.)
 Public Sub DetermineLanguage()
 
-    'FOR TESTING ONLY!!!
-    'SET FIRSTRUN TO TRUE TO TEST LOCALE CHECKING
+    'FOR TESTING PURPOSES ONLY: uncomment the line below to trick the program into thinking it is being run for the first time.
+    ' This will also initiate the language engine's analysis of the current system language, and it will do its best to match
+    ' the system language to the best available language in PhotoDemon's language folder.
+    ' This process only happens once, at first run - after that the user must initiate any language changes.
     'g_IsFirstRun = True
 
-    'Is this the first time PhotoDemon has been run?  If it is, check the system language.
+    'By default, do not display a language selection dialog
+    m_needToShowLanguageDialog = False
+
+    'Is this the first time PhotoDemon has been run?  If it is, check the system language - we'll use that to determine
+    ' which available PhotoDemon language file is the best match for this user.
     If g_IsFirstRun Then
     
         Dim curLangID As String
@@ -144,15 +153,15 @@ Public Sub DetermineLanguage()
         ' present that as the default language - and note that we also need to show the language selection dialog.
         If curLanguage = -1 Then
             curLanguage = isApproximateLanguageMatch(curLangID)
-            reasonForLanguageDialog = LANGREASON_APPROXIMATEMATCH
-            needToShowLanguageDialog = True
+            m_reasonForLanguageDialog = LANGREASON_APPROXIMATEMATCH
+            m_needToShowLanguageDialog = True
         End If
         
-        'TODO: If no match is found, present the language selection screen in English.
+        'If we still can't find a match, present the language selection screen in English.
         If curLanguage = -1 Then
             curLanguage = defaultLanguage
-            reasonForLanguageDialog = LANGREASON_NOMATCH
-            needToShowLanguageDialog = True
+            m_reasonForLanguageDialog = LANGREASON_NOMATCH
+            m_needToShowLanguageDialog = True
         End If
         
     'If this is not the first run, retrieve the user's language preference from the INI file
@@ -171,14 +180,14 @@ Public Sub DetermineLanguage()
                 curLanguage = getLangIndexFromFile(curLanguageFile)
             Else
                 curLanguage = defaultLanguage
-                reasonForLanguageDialog = LANGREASON_FILEMISSING
-                needToShowLanguageDialog = True
+                m_reasonForLanguageDialog = LANGREASON_FILEMISSING
+                m_needToShowLanguageDialog = True
             End If
         End If
     
     End If
     
-    isReady = True
+    m_isReady = True
 
 End Sub
 
@@ -229,8 +238,8 @@ Private Function isExactLanguageMatch(ByRef srcLangID As String)
 
 End Function
 
-'ALWAYS CALL DETERMINE LANGUAGE BEFORE THIS STAGE!
-'Once a PhotoDemon language has been determined, this function can be called to "apply" that language to the program.
+'ALWAYS CALL DetermineLanguage BEFORE THIS STAGE!
+'Once a PhotoDemon language has been selected (via DetermineLanguage), this function can be called to "apply" that language to the program.
 ' NOTE: if the language is changed, this function must be called again to set the new language program-wide.
 Public Sub ApplyLanguage()
 
@@ -242,8 +251,8 @@ Public Sub ApplyLanguage()
     
     'If the language is set to anything other than the default, load the contents of the language XML file into memory.
     If translationActive Then
-        translationFileContents = ""
-        translationFileContents = getFileAsString(g_UserPreferences.getLanguagePath & availableLanguages(curLanguage).FileName)
+        m_translationFileContents = ""
+        m_translationFileContents = getFileAsString(g_UserPreferences.getLanguagePath & availableLanguages(curLanguage).FileName)
     End If
 
     'Redraw all text on the main form using the new language
@@ -304,7 +313,7 @@ Public Sub CheckAvailableLanguages()
         
     Do While chkFile <> ""
                 
-        'Load the first 512 bytes of the file into a string (this is done to keep this routine fast)
+        'Load the first 1024 bytes of the file into a string (this is done to keep this routine fast)
         curFileAsText = getPartialFileAsString(g_UserPreferences.getLanguagePath & chkFile)
         
         'If the file has actual contents, investigate further.
@@ -558,18 +567,18 @@ Private Sub preProcessText(ByRef srcString As String)
     
     '2) Check for a trailing "..."
     If Right$(srcString, 3) = "..." Then
-        hasDotDotDot = True
+        m_hasDotDotDot = True
         srcString = Left$(srcString, Len(srcString) - 3)
     Else
-        hasDotDotDot = False
+        m_hasDotDotDot = False
     End If
     
     '3) Check for a trailing colon ":"
     If Right$(srcString, 1) = ":" Then
-        hasTrailingColon = True
+        m_hasTrailingColon = True
         srcString = Left$(srcString, Len(srcString) - 1)
     Else
-        hasTrailingColon = False
+        m_hasTrailingColon = False
     End If
     
 End Sub
@@ -583,15 +592,15 @@ Private Sub postProcessText(ByRef srcString As String)
     If srcString <> "" Then
     
         '2) If the original had a trailing "...", restore it now
-        If hasDotDotDot Then
+        If m_hasDotDotDot Then
             srcString = srcString & "..."
-            hasDotDotDot = False
+            m_hasDotDotDot = False
         End If
         
         '3) If the original had a trailing colon, restore it now
-        If hasTrailingColon Then
+        If m_hasTrailingColon Then
             srcString = srcString & ":"
-            hasTrailingColon = False
+            m_hasTrailingColon = False
         End If
     End If
 
@@ -611,7 +620,7 @@ Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As St
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        curCaption = getTextBetweenTags(translationFileContents, "original", phraseLocation)
+        curCaption = getTextBetweenTags(m_translationFileContents, "original", phraseLocation)
         postProcessText curCaption
         getOriginalTagFromTranslation = curCaption
         
@@ -635,7 +644,7 @@ Private Function getTranslationTagFromCaption(ByVal origCaption As String) As St
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        origCaption = getTextBetweenTags(translationFileContents, "translation", phraseLocation)
+        origCaption = getTextBetweenTags(m_translationFileContents, "translation", phraseLocation)
         postProcessText origCaption
         If origCaption <> "" Then
             getTranslationTagFromCaption = origCaption
@@ -653,11 +662,11 @@ End Function
 Private Function getPhraseTagLocation(ByRef srcString As String) As Long
 
     Dim sLocation As Long
-    sLocation = InStr(1, translationFileContents, srcString, vbTextCompare)
+    sLocation = InStr(1, m_translationFileContents, srcString, vbTextCompare)
     
     'If the source string was found, work backward to find the phrase tag location
     If sLocation > 0 Then
-        sLocation = InStrRev(translationFileContents, "<phrase>", sLocation, vbTextCompare)
+        sLocation = InStrRev(m_translationFileContents, "<phrase>", sLocation, vbTextCompare)
         If sLocation > 0 Then
             getPhraseTagLocation = sLocation
         Else
