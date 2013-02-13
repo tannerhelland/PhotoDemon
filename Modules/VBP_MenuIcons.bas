@@ -3,8 +3,8 @@ Attribute VB_Name = "Menu_Icon_Handler"
 'Specialized Icon Handler
 'Copyright ©2011-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 08/January/13
-'Last update: completely rewrote the icon load mechanism
+'Last updated: 13/February/13
+'Last update: removed all non-FreeImage fallbacks for custom form icons.  No custom icons are rendered unless FreeImage is available.
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of
 ' icon-related functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written
@@ -17,10 +17,11 @@ Attribute VB_Name = "Menu_Icon_Handler"
 ' (Windows Vista and 7 use a different mechanism, so menu icons are enabled in the IDE, and menu icons appear on all
 ' versions of Windows when compiled.)
 '
-'Also in this module is a heavily modified version of Paul Turcksin's "Icon Handlemaker" project, which I've modified
-' to convert bitmaps to icons on the fly (the "CreateCustomFormIcon" sub).  PhotoDemon uses this to dynamically change
-' the icon of its MDI child forms if FreeImage cannot be found.  To see Paul's original project, please visit this PSC
-' link: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1
+'This module also handles the rendering of dynamic form, program, and taskbar icons.  (When an image is loaded and active,
+' those icons can change to match the current image.)  As of February 2013, custom form icon generation has now been reworked
+' based off this MSDN article: http://support.microsoft.com/kb/318876
+' The new code is much leaner (and cleaner!) than past incarnations, and FreeImage is now required for the operation.  If
+' FreeImage is not found, custom form icons will not be generated.
 '
 '***************************************************************************
 
@@ -33,47 +34,16 @@ Private Const SWP_NOSIZE = &H1
 
 Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long) As Long
 
-'Previously, RedrawWindow was used to force a window update.  It didn't work very well, but I'm keeping it around "just in case".
-'Private Type RECT
-'    Left As Long
-'    Top As Long
-'    Right As Long
-'    Bottom As Long
-'End Type
-'Private Const RDW_FRAME As Long = 1024 'Updates the nonclient area if included in the redraw area. RDW_INVALIDATE must also be specified.
-'Private Const RDW_INVALIDATE As Long = 1 'Invalidates the redraw area.
-'Private Const RDW_UPDATENOW As Long = 256 'Updates the specified redraw area immediately.
-'Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByRef lprcUpdate As RECT, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
-
-
 'API calls for building an icon at run-time
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
 Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
-Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, lpObject As Any) As Long
-Private Declare Function GetBkColor Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
-Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
 Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
-'Types required by the above API calls
-Private Type Bitmap
-   bmType As Long
-   bmWidth As Long
-   bmHeight As Long
-   bmWidthBytes As Long
-   bmPlanes As Integer
-   bmBitsPixel As Integer
-   bmBits As Long
-End Type
-
+'Type required to create an icon on-the-fly
 Private Type ICONINFO
    fIcon As Boolean
    xHotspot As Long
@@ -94,13 +64,13 @@ Public Const ALLOW_DYNAMIC_ICONS As Boolean = True
 Private iconNames(0 To 511) As String
 
 'We also need to track how many icons have been loaded; this counter will also be used to reference icons in the database
-Dim curIcon As Long
+Private curIcon As Long
 
 'clsMenuImage does the heavy lifting for inserting icons into menus
-Dim cMenuImage As clsMenuImage
+Private cMenuImage As clsMenuImage
 
 'A second class is used to manage the icons for the MRU list.
-Dim cMRUIcons As clsMenuImage
+Private cMRUIcons As clsMenuImage
 
 'Load all the menu icons from PhotoDemon's embedded resource file
 Public Sub LoadMenuIcons()
@@ -496,9 +466,7 @@ Public Sub ResetMenuIcons()
                 cMRUIcons.PutImageToVBMenu iconLocation, i, 0 + posModifier, 1
             
             Else
-            
                 cMRUIcons.PutImageToVBMenu 0, i, 0 + posModifier, 1
-            
             End If
         
         Next i
@@ -540,25 +508,16 @@ Public Sub updateModeIcon(ByVal nMode As Boolean)
 End Sub
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
-'Again, thanks to Paul Turcksin for the original draft of this code.
+' Past versions of this sub included a pure-VB fallback if FreeImage wasn't found.  These have since been removed -
+' so FreeImage is 100% required for this sub to operate.
 Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
 
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
+    If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
 
     'Generating an icon requires many variables; see below for specific comments on each one
-    Dim BitmapData As Bitmap
-    Dim iWidth As Long
-    Dim iHeight As Long
-    Dim srcDC As Long
-    Dim oldSrcObj As Long
     Dim MonoDC As Long
     Dim MonoBmp As Long
-    Dim oldMonoObj As Long
-    Dim InvertDC As Long
-    Dim InvertBmp As Long
-    Dim oldInvertObj As Long
-    Dim cBkColor As Long
-    Dim maskClr As Long
     Dim icoInfo As ICONINFO
     Dim generatedIcon As Long
    
@@ -595,100 +554,54 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
         
     End If
     
-    'I have two systems in place for rendering the dynamic form icons.  One relies on FreeImage, and generates a very high-quality,
-    ' 32bpp with full alpha icon.  This is obviously the preferred method.  If FreeImage cannot be found, a StretchBlt-based
-    ' technique is used.  Alpha is not taken into account by that method (obviously), and the icon quality is much worse.
-    If g_ImageFormats.FreeImageEnabled Then
+    'Load the FreeImage dll into memory
+    Dim hLib As Long
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
-        'Load the FreeImage dll into memory
-        Dim hLib As Long
-        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
+    'Convert our current layer to a FreeImage-type DIB
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+    
+    'Use that handle to request an image resize
+    If fi_DIB <> 0 Then
+            
+        'Rescale the image
+        Dim returnDIB As Long
+        returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
         
-        'Convert our current layer to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+        'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
+        Dim newDIB32 As Long
+        newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
         
-        'Use that handle to request an image resize
-        If fi_DIB <> 0 Then
+        'Unload the original DIB
+        If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
             
-            'Rescale the image
-            Dim returnDIB As Long
-            returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
+        'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
+        
+        'Also, set the background of the enlarged area as transparent
+        Dim newColor As RGBQUAD
+        With newColor
+            .rgbBlue = 255
+            .rgbGreen = 255
+            .rgbRed = 255
+            .rgbReserved = 0
+        End With
             
-            'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
-            Dim newDIB32 As Long
-            newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
+        'Enlarge the canvas as necessary
+        Dim finalDIB As Long
+        finalDIB = FreeImage_EnlargeCanvas(newDIB32, TX, TY, TX, TY, newColor, FI_COLOR_IS_RGBA_COLOR)
+        
+        'Unload the original DIB
+        If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
             
-            'Unload the original DIB
-            If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
-            
-            'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
-            
-            'Also, set the background of the enlarged area as transparent
-            Dim newColor As RGBQUAD
-            With newColor
-                .rgbBlue = 255
-                .rgbGreen = 255
-                .rgbRed = 255
-                .rgbReserved = 0
-            End With
-            
-            'Enlarge the canvas as necessary
-            Dim finalDIB As Long
-            finalDIB = FreeImage_EnlargeCanvas(newDIB32, TX, TY, TX, TY, newColor, FI_COLOR_IS_RGBA_COLOR)
-            
-            'Unload the original DIB
-            If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
-            
-            'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.
-            
-            'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 32x32 icon now
-            If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+        'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.
+        
+        'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 32x32 icon now
+        If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
                 
-                'Generate a blank monochrome mask to pass to the icon creation function.
-                MonoDC = CreateCompatibleDC(0&)
-                MonoBmp = CreateCompatibleBitmap(MonoDC, icoSize, icoSize)
-                oldMonoObj = SelectObject(MonoDC, MonoBmp)
-            
-                'With the transfer complete, release the FreeImage DIB and unload the library
-                If finalDIB <> 0 Then
-                    With icoInfo
-                        .fIcon = True
-                        .xHotspot = icoSize
-                        .yHotspot = icoSize
-                        .hbmMask = MonoBmp
-                        .hbmColor = FreeImage_GetBitmapForDevice(finalDIB)
-                    End With
-                End If
-                
-                'Create the 32x32 icon
-                generatedIcon = CreateIconIndirect(icoInfo)
-                
-                'Assign it to the taskbar
-                setNewTaskbarIcon generatedIcon
-                
-                '...and remember it in our current icon collection
-                addIconToList generatedIcon
-                
-                '...and the current form
-                pdImages(imgForm.Tag).curFormIcon32 = generatedIcon
-                
-                'Now delete the temporary mask and bitmap
-                DeleteObject icoInfo.hbmMask
-                DeleteObject icoInfo.hbmColor
-                DeleteDC MonoDC
-                
-                'Finally, resize the 32x32 icon to 16x16 so it will work as the current form icon as well
-                icoSize = 16
-                finalDIB = FreeImage_RescaleByPixel(finalDIB, 16, 16, True, FILTER_BILINEAR)
-                
-            End If
-            
             'Generate a blank monochrome mask to pass to the icon creation function.
-            MonoDC = CreateCompatibleDC(0&)
-            MonoBmp = CreateCompatibleBitmap(MonoDC, icoSize, icoSize)
-            oldMonoObj = SelectObject(MonoDC, MonoBmp)
-            
+            MonoBmp = CreateBitmap(icoSize, icoSize, 1, 1, ByVal 0&)
+                        
             'With the transfer complete, release the FreeImage DIB and unload the library
             If finalDIB <> 0 Then
                 With icoInfo
@@ -699,114 +612,67 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
                     .hbmColor = FreeImage_GetBitmapForDevice(finalDIB)
                 End With
             End If
-                        
+                
+            'Create the 32x32 icon
+            generatedIcon = CreateIconIndirect(icoInfo)
+            
+            'Assign it to the taskbar
+            setNewTaskbarIcon generatedIcon
+            
+            '...and remember it in our current icon collection
+            addIconToList generatedIcon
+                
+            '...and the current form
+            pdImages(imgForm.Tag).curFormIcon32 = generatedIcon
+                                    
+            'Now delete the temporary mask and bitmap
+            DeleteObject MonoBmp
+            DeleteObject icoInfo.hbmColor
+            
         End If
-        
-    'If FreeImage isn't enabled, fall back to StretchBlt
-    Else
-    
-        'Clear out the current picture box
-        imgForm.picIcon.Picture = LoadPicture("")
-    
-        'Resize the picture box that will receive the first draft of the icon
-        imgForm.picIcon.Width = icoSize
-        imgForm.picIcon.Height = icoSize
-    
-        'Because we'll be shrinking the image dramatically, set StretchBlt to use resampling
-        SetStretchBltMode imgForm.picIcon.hDC, STRETCHBLT_HALFTONE
-    
-        'Render the bitmap that will ultimately be converted into an icon
-        StretchBlt imgForm.picIcon.hDC, CLng(TX), CLng(TY), CLng(tIcoWidth), CLng(tIcoHeight), pdImages(imgForm.Tag).mainLayer.getLayerDC, 0, 0, pdImages(imgForm.Tag).Width, pdImages(imgForm.Tag).Height, vbSrcCopy
-        imgForm.picIcon.Picture = imgForm.picIcon.Image
-        
-        'Now that we have a first draft to work from, start preparing the data types required by the icon API calls
-        GetObject imgForm.picIcon.Picture.Handle, Len(BitmapData), BitmapData
-
-        With BitmapData
-            iWidth = .bmWidth
-            iHeight = .bmHeight
-        End With
-       
-        'Create a copy of the original image; this will be used to generate a mask (necessary if the image isn't square-shaped)
-        srcDC = CreateCompatibleDC(0&)
-        oldSrcObj = SelectObject(srcDC, imgForm.picIcon.Picture.Handle)
-       
-        'If the image isn't square-shaped, the backcolor of the first draft image will need to be made transparent
-        If tIcoWidth < icoSize Or tIcoHeight < icoSize Then
-            maskClr = imgForm.picIcon.backColor
-        Else
-            maskClr = 0
+            
+        'Finally, resize the 32x32 icon to 16x16 so it will work as the current form icon as well
+        icoSize = 16
+        finalDIB = FreeImage_RescaleByPixel(finalDIB, 16, 16, True, FILTER_BILINEAR)
+            
+        'Generate a blank monochrome mask to pass to the icon creation function.
+        MonoBmp = CreateBitmap(icoSize, icoSize, 1, 1, ByVal 0&)
+            
+        'With the transfer complete, release the FreeImage DIB and unload the library
+        If finalDIB <> 0 Then
+            With icoInfo
+                .fIcon = True
+                .xHotspot = icoSize
+                .yHotspot = icoSize
+                .hbmMask = MonoBmp
+                .hbmColor = FreeImage_GetBitmapForDevice(finalDIB)
+            End With
         End If
-       
-        'Generate two masks. First, a monochrome mask.
-        MonoDC = CreateCompatibleDC(0&)
-        MonoBmp = CreateCompatibleBitmap(MonoDC, iWidth, iHeight)
-        oldMonoObj = SelectObject(MonoDC, MonoBmp)
-        cBkColor = GetBkColor(srcDC)
-        SetBkColor srcDC, maskClr
-        BitBlt MonoDC, 0, 0, iWidth, iHeight, srcDC, 0, 0, vbSrcCopy
-        SetBkColor srcDC, cBkColor
-    
-        'Second, an AND mask
-        InvertDC = CreateCompatibleDC(0&)
-        InvertBmp = CreateCompatibleBitmap(imgForm.hDC, iWidth, iHeight)
-        oldInvertObj = SelectObject(InvertDC, InvertBmp)
-        BitBlt InvertDC, 0, 0, iWidth, iHeight, srcDC, 0, 0, vbSrcCopy
-        SetBkColor InvertDC, vbBlack
-        SetTextColor InvertDC, vbWhite
-        BitBlt InvertDC, 0, 0, iWidth, iHeight, MonoDC, 0, 0, vbSrcAnd
-  
-        'We no longer need our copy of the original image, so free up that memory
-        SelectObject srcDC, oldSrcObj
-        DeleteDC srcDC
+            
+        'Render the icon to a handle and store it in our running list, so we can destroy it when the program is closed
+        generatedIcon = CreateIconIndirect(icoInfo)
+        addIconToList generatedIcon
         
-        'We can also free up the temporary DCs used to generate our two masks
-        SelectObject MonoDC, oldMonoObj
-        SelectObject InvertDC, oldInvertObj
-        
-        With icoInfo
-            .fIcon = True
-            .xHotspot = icoSize
-            .yHotspot = icoSize
-            .hbmMask = MonoBmp
-            .hbmColor = InvertBmp
-        End With
-        
-    End If
-    
-    'Render the icon to a handle
-    generatedIcon = CreateIconIndirect(icoInfo)
-        
-    If g_ImageFormats.FreeImageEnabled Then
-    
         'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 16x16 icon now
         If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
             setNewAppIcon generatedIcon
             pdImages(imgForm.Tag).curFormIcon16 = generatedIcon
         End If
-    
+        
+        'Clear out memory
         FreeImage_UnloadEx finalDIB
         FreeLibrary hLib
-        DeleteObject icoInfo.hbmMask
+        DeleteObject MonoBmp
         DeleteObject icoInfo.hbmColor
-        DeleteDC MonoDC
-    Else
-        'Clear out our temporary masks (whose info are now embedded in the icon itself)
-        DeleteObject icoInfo.hbmMask
-        DeleteObject icoInfo.hbmColor
-        DeleteDC MonoDC
-        DeleteDC InvertDC
-    End If
-   
-    'Use the API to assign this new icon to the specified MDI child form
-    SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
         
-    'Store this icon in our running list, so we can destroy it when the program is closed
-    addIconToList generatedIcon
-
-    'When an MDI child form is maximized, the icon is not updated properly - so we must force a manual refresh of the entire window frame.
-    If imgForm.WindowState = vbMaximized Then SetWindowPos FormMain.hWnd, 0&, 0&, 0&, 0&, 0&, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
-    
+        'Use the API to assign this new icon to the specified MDI child form
+        SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
+        
+        'When an MDI child form is maximized, the icon is not updated properly - so we must force a manual refresh of the entire window frame.
+        If imgForm.WindowState = vbMaximized Then SetWindowPos FormMain.hWnd, 0&, 0&, 0&, 0&, 0&, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
+        
+    End If
+       
 End Sub
 'Needs to be run only once, at the start of the program
 Public Sub initializeIconHandler()
