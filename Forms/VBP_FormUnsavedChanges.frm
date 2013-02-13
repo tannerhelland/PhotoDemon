@@ -26,10 +26,37 @@ Begin VB.Form dialog_UnsavedChanges
    ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton cmdAnswer 
+      Caption         =   "Cancel, and return to editing"
+      Height          =   735
+      Index           =   2
+      Left            =   3960
+      TabIndex        =   5
+      Top             =   2865
+      Width           =   5100
+   End
+   Begin VB.CommandButton cmdAnswer 
+      Caption         =   "Do not save the image (discard all changes)"
+      Height          =   735
+      Index           =   1
+      Left            =   3960
+      TabIndex        =   4
+      Top             =   2055
+      Width           =   5100
+   End
+   Begin VB.CommandButton cmdAnswer 
+      Caption         =   "Save the image before closing it"
+      Height          =   735
+      Index           =   0
+      Left            =   3960
+      TabIndex        =   3
+      Top             =   1260
+      Width           =   5100
+   End
    Begin PhotoDemon.smartCheckBox chkRepeat 
       Height          =   480
       Left            =   3960
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   4005
       Width           =   4875
       _ExtentX        =   8599
@@ -67,93 +94,6 @@ Begin VB.Form dialog_UnsavedChanges
       TabIndex        =   0
       Top             =   120
       Width           =   3495
-   End
-   Begin PhotoDemon.jcbutton cmdAnswer 
-      Default         =   -1  'True
-      Height          =   735
-      Index           =   0
-      Left            =   3960
-      TabIndex        =   2
-      Top             =   1260
-      Width           =   5100
-      _ExtentX        =   8996
-      _ExtentY        =   1296
-      ButtonStyle     =   13
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "Save the image before closing it"
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormUnsavedChanges.frx":0000
-      PictureAlign    =   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      ToolTip         =   "Open a previously saved convolution filter."
-      TooltipType     =   1
-      TooltipTitle    =   "Save"
-   End
-   Begin PhotoDemon.jcbutton cmdAnswer 
-      Height          =   735
-      Index           =   1
-      Left            =   3960
-      TabIndex        =   3
-      Top             =   2040
-      Width           =   5100
-      _ExtentX        =   8996
-      _ExtentY        =   1296
-      ButtonStyle     =   13
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "Do not save the image (discard all changes)"
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormUnsavedChanges.frx":1052
-      PictureAlign    =   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipType     =   1
-      TooltipTitle    =   "Do Not Save"
-   End
-   Begin PhotoDemon.jcbutton cmdAnswer 
-      Cancel          =   -1  'True
-      Height          =   735
-      Index           =   2
-      Left            =   3960
-      TabIndex        =   4
-      Top             =   2820
-      Width           =   5100
-      _ExtentX        =   8996
-      _ExtentY        =   1296
-      ButtonStyle     =   13
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "Cancel, and return to editing"
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormUnsavedChanges.frx":20A4
-      PictureAlign    =   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipType     =   1
-      TooltipTitle    =   "Cancel"
    End
    Begin VB.Line lineBottom 
       BorderColor     =   &H8000000D&
@@ -209,6 +149,9 @@ Private imageBeingClosed As Long
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
 
+'Used to render images onto the save/don't save buttons
+Private cImgCtl As clsControlImage
+
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
@@ -219,6 +162,21 @@ End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub ShowDialog()
+    
+    'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
+    ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
+    Set cImgCtl = New clsControlImage
+    With cImgCtl
+        .LoadImageFromStream cmdAnswer(0).hWnd, LoadResData("LRGSAVE", "CUSTOM"), 32, 32
+        .LoadImageFromStream cmdAnswer(1).hWnd, LoadResData("LRGDONTSAVE", "CUSTOM"), 32, 32
+        .LoadImageFromStream cmdAnswer(2).hWnd, LoadResData("LRGUNDO", "CUSTOM"), 32, 32
+        
+        Dim i As Long
+        For i = 0 To 2
+            .SetMargins cmdAnswer(i).hWnd, 10
+            .Align(cmdAnswer(i).hWnd) = Icon_Left
+        Next i
+    End With
     
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
@@ -249,14 +207,15 @@ Public Sub ShowDialog()
 
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
     If pdImages(imageBeingClosed).LocationOnDisk <> "" Then
-        cmdAnswer(0).ToolTip = vbCrLf & g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the" & vbCrLf & " File -> Save As menu item.")
+        'cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.  If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
+        cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the" & vbCrLf & " File -> Save As menu item.")
     Else
-        cmdAnswer(0).ToolTip = vbCrLf & g_Language.TranslateMessage("Because this image has not been saved before, you will be presented with a full Save As dialog.")
+        cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("Because this image has not been saved before, you will be prompted to provide a file name for it.")
     End If
     
     'Update the other tooltip buttons as well
-    cmdAnswer(1).ToolTip = vbCrLf & g_Language.TranslateMessage("If you do not save this image, any changes you have made will be permanently lost.")
-    cmdAnswer(2).ToolTip = vbCrLf & g_Language.TranslateMessage("Canceling will return you to the main PhotoDemon window.")
+    cmdAnswer(1).ToolTipText = g_Language.TranslateMessage("If you do not save this image, any changes you have made will be permanently lost.")
+    cmdAnswer(2).ToolTipText = g_Language.TranslateMessage("Canceling will return you to the main PhotoDemon window.")
 
     'Make some measurements of the form size.  We need these if we choose to display the check box at the bottom of the form
     Dim vDifference As Long
