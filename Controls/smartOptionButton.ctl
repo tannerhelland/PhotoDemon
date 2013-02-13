@@ -122,6 +122,8 @@ Public Event Click()
 Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
 
+Private origForecolor As Long
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
@@ -133,7 +135,7 @@ Public Property Let Enabled(ByVal NewValue As Boolean)
     optButton.Enabled = NewValue
     
     'Also change the label color to help indicate disablement
-    If NewValue Then lblCaption.ForeColor = ForeColor Else lblCaption.ForeColor = vbGrayText
+    If NewValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
     PropertyChanged "Enabled"
 End Property
 
@@ -197,6 +199,7 @@ End Property
 
 Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     lblCaption.ForeColor = newColor
+    origForecolor = newColor
     PropertyChanged "ForeColor"
 End Property
 
@@ -207,11 +210,11 @@ Private Sub chkFirst_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
-Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
@@ -253,7 +256,8 @@ Private Sub UserControl_Initialize()
         SubclassFrame UserControl.hWnd, False
         optButton.ZOrder 0
     End If
-            
+    
+    origForecolor = ForeColor
     lblCaption.ForeColor = ForeColor
     
     'Prepare a font object for use
@@ -267,12 +271,13 @@ Private Sub UserControl_InitProperties()
     Set mFont = UserControl.Font
     mFont_FontChanged ("")
     ForeColor = &H404040
+    origForecolor = ForeColor
     Value = False
     updateControlSize
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
