@@ -138,8 +138,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1)
 * Jason Bullen for a native-VB implementation of knot-based cubic spline interpolation
   (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1)
-* Paul Turcksin for code related to dynamic icon generation (used for MDI child icons in PhotoDemon)
-  (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1)
 * Dosadi for the EZTW32 scanner/digital camera library
   (http://eztwain.com/eztwain1.htm)
 * Jean-Loup Gailly and Mark Adler for the zLib compression library, and Gilles Vollant for the WAPI wrapper
@@ -148,8 +146,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.ppreview.net/)
 * Manuel Augusto Santos for the original version of the 'Artistic Contour' algorithm
   (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1)
-* Johannes B for the original version of the 'Fog' algorithm
-  (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42642&lngWId=1)
 * LaVolpe for his automated VB6 Manifest Creator tool
   (http://www.vbforums.com/showthread.php?t=606736)
 * Leandro Ascierto for a clean, lightweight class that adds PNGs to menu items

@@ -259,7 +259,6 @@ Private Sub Form_Load()
     GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
     GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
     GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
-    GenerateThankyou "Paul Turcksin", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=60600&lngWId=1"
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
     GenerateThankyou "Robert Rayment"
     GenerateThankyou "Ron van Tilburg", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
