@@ -505,6 +505,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Render a preview
+    updateColorLabel
     updateReductionPreview
     
 End Sub
