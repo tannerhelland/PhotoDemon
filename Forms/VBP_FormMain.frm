@@ -1167,8 +1167,16 @@ Begin VB.MDIForm FormMain
          End
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "Monochrome..."
+         Caption         =   "Monochrome"
          Index           =   18
+         Begin VB.Menu MnuMonochrome 
+            Caption         =   "Color to monochrome..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuMonochrome 
+            Caption         =   "Monochrome to grayscale..."
+            Index           =   1
+         End
       End
       Begin VB.Menu MnuColor 
          Caption         =   "Sepia"
@@ -2171,10 +2179,9 @@ Private Sub MnuColor_Click(Index As Integer)
         '<Invert top-level>
         Case 17
         
-        'Monochrome
+        '<Monochrome top-level>
         Case 18
-            Process BWMaster, , , , , , , , , , True
-        
+            
         'Sepia
         Case 19
             Process Sepia
@@ -2502,6 +2509,22 @@ End Sub
 Private Sub MnuLeftPanel_Click()
     
     ChangeLeftPane VISIBILITY_TOGGLE
+    
+End Sub
+
+Private Sub MnuMonochrome_Click(Index As Integer)
+    
+    Select Case Index
+        
+        'Convert color to monochrome
+        Case 0
+            Process BWMaster, , , , , , , , , , True
+        
+        'Convert monochrome to grayscale
+        Case 1
+            Process RemoveBW, , , , , , , , , , True
+        
+    End Select
     
 End Sub
 
