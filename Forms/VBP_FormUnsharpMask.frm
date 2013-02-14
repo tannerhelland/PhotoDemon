@@ -60,7 +60,6 @@ Begin VB.Form FormUnsharpMask
       Max             =   255
       TabIndex        =   9
       Top             =   3720
-      Value           =   50
       Width           =   4935
    End
    Begin VB.TextBox txtThreshold 
@@ -79,7 +78,7 @@ Begin VB.Form FormUnsharpMask
       Left            =   11160
       MaxLength       =   3
       TabIndex        =   8
-      Text            =   "50"
+      Text            =   "0"
       Top             =   3660
       Width           =   615
    End
@@ -137,8 +136,8 @@ Begin VB.Form FormUnsharpMask
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
