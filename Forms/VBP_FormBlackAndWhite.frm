@@ -409,6 +409,9 @@ Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
         x = x + 1
     Loop While pixelCount < NumOfPixels
     
+    'Make sure our suggestion doesn't exceed the limits allowed by the tool
+    If x > 254 Then x = 220
+    
     calculateOptimalThreshold = x
         
 End Function
