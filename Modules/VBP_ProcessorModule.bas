@@ -59,6 +59,7 @@ Option Explicit
     
     'Black/White conversion; numbers 200-299
     Public Const BWMaster As Long = 200 'Added 9/2012 - this is a single BW conversion routine to rule them all
+    Public Const RemoveBW As Long = 201
     
     'Grayscale conversion; numbers 300-399
     Public Const Desaturate As Long = 300
@@ -454,6 +455,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormBlackAndWhite.Show vbModal, FormMain
             Else
                 FormBlackAndWhite.masterBlackWhiteConversion pOPCODE, pOPCODE2, pOPCODE3, pOPCODE4
+            End If
+        Case RemoveBW
+            If LoadForm Then
+                FormMonoToColor.Show vbModal, FormMain
+            Else
+                FormMonoToColor.ConvertMonoToColor pOPCODE
             End If
         
     'Grayscale conversion
@@ -1055,7 +1062,9 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             
         'Black/White conversion; numbers 200-299
         Case BWMaster
-            GetNameOfProcess = "Black and White conversion"
+            GetNameOfProcess = "Color to Monochrome"
+        Case RemoveBW
+            GetNameOfProcess = "Monochrome to Grayscale"
             
         'Grayscale conversion; numbers 300-399
         Case Desaturate

@@ -32,7 +32,7 @@ Private Const SWP_FRAMECHANGED = &H20
 Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
 
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
@@ -229,7 +229,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "INVHUE", 4, 17, 1        'Invert Hue
         AddMenuIcon "INVRGB", 4, 17, 2        'Invert RGB
         AddMenuIcon "INVCOMPOUND", 4, 17, 4   'Compound Invert
-    AddMenuIcon "BLACKWHITE", 4, 18     'Black and White
+    AddMenuIcon "MONOCHROME", 4, 18     'Monochrome
+        '--> Monochrome sub-menu
+        AddMenuIcon "COLORTOMONO", 4, 18, 0   'Color to monochrome
+        AddMenuIcon "MONOTOCOLOR", 4, 18, 1   'Monochrome to grayscale
     AddMenuIcon "SEPIA", 4, 19          'Sepia
     AddMenuIcon "COUNTCOLORS", 4, 21    'Count Colors
     AddMenuIcon "REDUCECOLORS", 4, 22   'Reduce Colors
