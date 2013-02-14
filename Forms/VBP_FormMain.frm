@@ -1730,7 +1730,25 @@ Private Sub MDIForm_Load()
     'After the program has been successfully loaded, change the focus to the Open Image button
     Me.Visible = True
     If FormMain.Enabled And picLeftPane.Visible Then cmdOpen.SetFocus
+    
+    'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
+    ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.
+    
+    'Start by asking the translation engine if it thinks we should display a language dialog.  (The conditions that trigger
+    ' this are described in great detail in the pdTranslate class.)
+    Dim lDialogReason As Long
+    If g_Language.isLanguageDialogNeeded(lDialogReason) Then
+    
+        'If we are inside this block, the translation engine thinks we should ask the user to pick a language.  The reason
+        ' for this is stored in the lDialogReason variable, and the values correspond to the following:
+        ' 0) User-initiated dialog (irrelevant in this case; the return should never be 0)
+        ' 1) First-time user, and an approximate (but not exact) language match was found.  Ask them to clarify.
+        ' 2) First-time user, and no language match found.  Give them a language dialog in English.
+        ' 3) Not a first-time user, but the preferred language file couldn't be located.  Ask them to pick a new one.
         
+    
+    End If
+    
     'Start by seeing if we're allowed to check for software updates
     Dim allowedToUpdate As Boolean
     allowedToUpdate = g_UserPreferences.GetPreference_Boolean("General Preferences", "CheckForUpdates", True)
@@ -1792,7 +1810,7 @@ Private Sub MDIForm_Load()
                 
             Case 2
                 Message "Software update found!  Launching update notifier..."
-                FormSoftwareUpdate.Show 1, Me
+                FormSoftwareUpdate.Show vbModal, Me
             
         End Select
             
@@ -1811,7 +1829,7 @@ Private Sub MDIForm_Load()
                 
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
         If promptToDownload = True Then
-            FormPluginDownloader.Show 1, FormMain
+            FormPluginDownloader.Show vbModal, FormMain
             
             'Since plugins may have been downloaded, update the interface to match any new features that may be available.
             LoadPlugins

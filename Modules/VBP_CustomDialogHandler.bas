@@ -3,17 +3,17 @@ Attribute VB_Name = "Custom_Dialog_Handler"
 'Custom Dialog Interface
 'Copyright ©2011-2013 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 15/December/12
-'Last update: added support for the custom alpha cut-off dialog
+'Last updated: 12/February/12
+'Last update: added support for the new language selection dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and eye-catching)
-' dialogs designed for a specific purpose.
+' dialogs designed around a specific purpose.
 '
 'All dialogs are based off the same template, as you can see - they are just modal forms with a specially
 ' designed ".ShowDialog" sub or function that sets a ".userResponse" property.  The wrapper function in this
-' module simply checks that value, unloads the dialog form, then returns it; this keeps all load/unload
-' burdens here so that calling functions can simply use a pdMsgBox-style line to call the dialogs and check
+' module simply checks that value, unloads the dialog form, then returns the value; this keeps all load/unload
+' burdens here so that calling functions can simply use a MsgBox-style line to call the dialogs and check
 ' the user's response.
 '
 '***************************************************************************
@@ -116,3 +116,4 @@ Public Function displayIDEWarning() As VbMsgBoxResult
     Set dialog_IDEWarning = Nothing
 
 End Function
+

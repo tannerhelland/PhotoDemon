@@ -80,7 +80,7 @@ Public Sub LoadTheProgram()
     LoadMessage "Scanning for language files..."
     
     'Before doing anything else, check to see what languages are available in the language folder.
-    ' (Note that this function will also populate the Languages menu, though it won't check a language yet.)
+    ' (Note that this function will also populate the Languages menu, though it won't place a checkmark next to an entry yet.)
     g_Language.CheckAvailableLanguages
         
     LoadMessage "Determining which language to use..."
@@ -388,7 +388,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
     Dim colorCountCheck As Long
             
     'To improve load time, declare a variety of other variables outside the image load loop
-    Dim fileExtension As String
+    Dim FileExtension As String
     Dim loadSuccessful As Boolean
     
     Dim loadedByOtherMeans As Boolean
@@ -495,13 +495,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         targetImage.OriginalFileFormat = -1
         
         'Strip the extension from the file
-        fileExtension = UCase(GetExtension(sFile(thisImage)))
+        FileExtension = UCase(GetExtension(sFile(thisImage)))
         
         loadSuccessful = False
         loadedByOtherMeans = False
             
         'Depending on the file's extension, load the image using the most appropriate image decoding routine
-        Select Case fileExtension
+        Select Case FileExtension
         
             'PhotoDemon's custom file format must be handled specially (as obviously, FreeImage and GDI+ won't handle it)
             Case "PDI"
@@ -532,7 +532,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
                 'If FreeImage fails for some reason, offload the image to GDI+ - UNLESS the image is a WMF or EMF, which can cause
                 ' GDI+ to experience a silent fail, thus bringing down the entire program.
-                If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((fileExtension <> "EMF") And (fileExtension <> "WMF")) Then
+                If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
                     
                     Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
@@ -594,7 +594,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         If loadedByOtherMeans Then
         
-            Select Case fileExtension
+            Select Case FileExtension
                 
                 Case "GIF"
                     targetImage.OriginalFileFormat = FIF_GIF
