@@ -276,6 +276,7 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "EMBOSS", 5, 5, 0         'Emboss / Engrave
         AddMenuIcon "EDGEENHANCE", 5, 5, 1    'Enhance Edges
         AddMenuIcon "EDGES", 5, 5, 2          'Find Edges
+        AddMenuIcon "TRACECONTOUR", 5, 5, 3   'Trace Contour
     AddMenuIcon "OTHER", 5, 6        'Fun
         '--> Fun sub-menu
         AddMenuIcon "ALIEN", 5, 6, 0          'Alien

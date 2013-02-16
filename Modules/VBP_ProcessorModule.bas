@@ -120,6 +120,8 @@ Option Explicit
     Public Const PhotoDemonEdgeCubic = 514
     '-Edge enhance
     Public Const EdgeEnhance As Long = 515
+    '-Trace contour
+    Public Const Contour As Long = 516
     
     'Color operations; numbers 600-699
     '-Rechanneling
@@ -588,6 +590,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             FormFindEdges.PhotoDemonCubicEdgeDetection pOPCODE
         Case EdgeEnhance
             FilterEdgeEnhance
+        Case Contour
+            If LoadForm Then
+                FormContour.Show vbModal, FormMain
+            Else
+                FormContour.TraceContour pOPCODE, CBool(pOPCODE2), CBool(pOPCODE3)
+            End If
         
     'Color operations
         Case Rechannel
@@ -1147,6 +1155,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Find Edges (PhotoDemon Cubic)"
         Case EdgeEnhance
             GetNameOfProcess = "Edge Enhance"
+        Case Contour
+            GetNameOfProcess = "Trace Contour"
             
         'Color operations; numbers 600-699
         Case Rechannel
