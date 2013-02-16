@@ -106,8 +106,8 @@ Begin VB.Form FormMedian
       TabIndex        =   3
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblPercentile 
       AutoSize        =   -1  'True
@@ -248,352 +248,28 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
         End If
     End If
         
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
-    
-    prepSafeArray srcSA, srcLayer
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
-        
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         mRadius = (mRadius / iWidth) * curLayerValues.Width
         If mRadius = 0 Then mRadius = 1
     End If
+        
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
     
-    'Just to be safe, make sure the radius isn't larger than the image itself
-    If (finalY - initY) < (finalX - initX) Then
-        If mRadius > (finalY - initY) Then mRadius = finalY - initY
-    Else
-        If mRadius > (finalX - initX) Then mRadius = finalX - initX
-    End If
-        
-    mPercent = mPercent / 100
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer workingLayer
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    CreateMedianLayer mRadius, mPercent, srcLayer, workingLayer, toPreview
     
-    'The number of pixels in the current median box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
-            
-    'Median filtering takes a lot of variables
-    Dim rValues(0 To 255) As Long, gValues(0 To 255) As Long, bValues(0 To 255) As Long
-    Dim lbX As Long, lbY As Long, ubX As Long, ubY As Long
-    Dim obuX As Boolean, obuY As Boolean, oblY As Boolean
-    Dim i As Long, j As Long
-    Dim cutoffTotal As Long
-    Dim r As Long, g As Long, b As Long
-    Dim midR As Long, midG As Long, midB As Long
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
     
-    Dim atBottom As Boolean
-    atBottom = True
-    
-    Dim startY As Long, stopY As Long, yStep As Long
-    
-    NumOfPixels = 0
-    
-    'Generate an initial array of median data for the first pixel
-    For x = initX To initX + mRadius - 1
-        QuickVal = x * qvDepth
-    For y = initY To initY + mRadius '- 1
-    
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
-        rValues(r) = rValues(r) + 1
-        gValues(g) = gValues(g) + 1
-        bValues(b) = bValues(b) + 1
-        
-        'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
-        
-    Next y
-    Next x
-                
-    'Loop through each pixel in the image, tallying median values as we go
-    For x = initX To finalX
-            
-        QuickVal = x * qvDepth
-        
-        'Determine the bounds of the current median box in the X direction
-        lbX = x - mRadius
-        If lbX < 0 Then lbX = 0
-        ubX = x + mRadius
-        
-        If ubX > finalX Then
-            obuX = True
-            ubX = finalX
-        Else
-            obuX = False
-        End If
-                
-        'As part of my accumulation algorithm, I swap the inner loop's direction with each iteration.
-        ' Set y-related loop variables depending on the direction of the next cycle.
-        If atBottom Then
-            lbY = 0
-            ubY = mRadius
-        Else
-            lbY = finalY - mRadius
-            ubY = finalY
-        End If
-        
-        'Remove trailing values from the median box if they lie outside the processing radius
-        If lbX > 0 Then
-        
-            QuickValInner = (lbX - 1) * qvDepth
-        
-            For j = lbY To ubY
-                r = srcImageData(QuickValInner + 2, j)
-                g = srcImageData(QuickValInner + 1, j)
-                b = srcImageData(QuickValInner, j)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
-            Next j
-        
-        End If
-        
-        'Add leading values to the median box if they lie inside the processing radius
-        If Not obuX Then
-        
-            QuickValInner = ubX * qvDepth
-            
-            For j = lbY To ubY
-                r = srcImageData(QuickValInner + 2, j)
-                g = srcImageData(QuickValInner + 1, j)
-                b = srcImageData(QuickValInner, j)
-                rValues(r) = rValues(r) + 1
-                gValues(g) = gValues(g) + 1
-                bValues(b) = bValues(b) + 1
-                NumOfPixels = NumOfPixels + 1
-            Next j
-            
-        End If
-        
-        'Depending on the direction we are moving, remove a line of pixels from the median box
-        ' (because the interior loop will add it back in).
-        If atBottom Then
-                
-            For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, mRadius)
-                g = srcImageData(QuickValInner + 1, mRadius)
-                b = srcImageData(QuickValInner, mRadius)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
-            Next i
-        
-        Else
-        
-            QuickY = finalY - mRadius
-        
-            For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, QuickY)
-                g = srcImageData(QuickValInner + 1, QuickY)
-                b = srcImageData(QuickValInner, QuickY)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
-            Next i
-        
-        End If
-        
-        'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
-        If atBottom Then
-            startY = 0
-            stopY = finalY
-            yStep = 1
-        Else
-            startY = finalY
-            stopY = 0
-            yStep = -1
-        End If
-            
-    'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
-    For y = startY To stopY Step yStep
-            
-        'If we are at the bottom and moving up, we will REMOVE rows from the bottom and ADD them at the top.
-        'If we are at the top and moving down, we will REMOVE rows from the top and ADD them at the bottom.
-        'As such, there are two copies of this function, one per possible direction.
-        If atBottom Then
-        
-            'Calculate bounds
-            lbY = y - mRadius
-            If lbY < 0 Then lbY = 0
-            
-            ubY = y + mRadius
-            If ubY > finalY Then
-                obuY = True
-                ubY = finalY
-            Else
-                obuY = False
-            End If
-                                
-            'Remove trailing values from the box
-            If lbY > 0 Then
-            
-                QuickY = lbY - 1
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, QuickY)
-                    g = srcImageData(QuickValInner + 1, QuickY)
-                    b = srcImageData(QuickValInner, QuickY)
-                    rValues(r) = rValues(r) - 1
-                    gValues(g) = gValues(g) - 1
-                    bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
-                Next i
-                        
-            End If
-                    
-            'Add leading values
-            If Not obuY Then
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, ubY)
-                    g = srcImageData(QuickValInner + 1, ubY)
-                    b = srcImageData(QuickValInner, ubY)
-                    rValues(r) = rValues(r) + 1
-                    gValues(g) = gValues(g) + 1
-                    bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
-                Next i
-            
-            End If
-            
-        'The exact same code as above, but in the opposite direction
-        Else
-        
-            lbY = y - mRadius
-            If lbY < 0 Then
-                oblY = True
-                lbY = 0
-            Else
-                oblY = False
-            End If
-            
-            ubY = y + mRadius
-            If ubY > finalY Then ubY = finalY
-                                
-            If ubY < finalY Then
-            
-                QuickY = ubY + 1
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, QuickY)
-                    g = srcImageData(QuickValInner + 1, QuickY)
-                    b = srcImageData(QuickValInner, QuickY)
-                    rValues(r) = rValues(r) - 1
-                    gValues(g) = gValues(g) - 1
-                    bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
-                Next i
-                        
-            End If
-                    
-            If Not oblY Then
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, lbY)
-                    g = srcImageData(QuickValInner + 1, lbY)
-                    b = srcImageData(QuickValInner, lbY)
-                    'curVal = gLookup(r + g + b)
-                    'lValues(curVal) = lValues(curVal) + 1
-                    rValues(r) = rValues(r) + 1
-                    gValues(g) = gValues(g) + 1
-                    bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
-                Next i
-            
-            End If
-        
-        End If
-                
-        'With the median box successfully calculated, we can now find the actual median for this pixel.
-        
-        'Loop through each color component histogram, until we've passed the desired percentile of pixels
-        midR = 0
-        midG = 0
-        midB = 0
-        cutoffTotal = mPercent * NumOfPixels
-        If cutoffTotal = 0 Then cutoffTotal = 1
-        
-        i = 0
-        Do
-            If rValues(i) <> 0 Then midR = midR + rValues(i)
-            i = i + 1
-        Loop While (midR < cutoffTotal)
-        midR = i - 1
-        
-        i = 0
-        Do
-            If gValues(i) <> 0 Then midG = midG + gValues(i)
-            i = i + 1
-        Loop While (midG < cutoffTotal)
-        midG = i - 1
-        
-        i = 0
-        Do
-            If bValues(i) <> 0 Then midB = midB + bValues(i)
-            i = i + 1
-        Loop While (midB < cutoffTotal)
-        midB = i - 1
-                
-        'Finally, apply the results to the image.
-        dstImageData(QuickVal + 2, y) = midR
-        dstImageData(QuickVal + 1, y) = midG
-        dstImageData(QuickVal, y) = midB
-        
-    Next y
-        atBottom = Not atBottom
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
-        End If
-    Next x
-        
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
     finalizeImageData toPreview, dstPic
 
 End Sub
