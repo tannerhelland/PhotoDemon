@@ -165,15 +165,14 @@ Attribute VB_Exposed = False
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
 ' This allows the algorithm to perform extremely well, despite being written in pure VB.
 '
-'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before applying any
-' conversion of a large radius (> 20).
+'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before using it.
 '
 'This technique is one of my own creation, though I doubt I'm the first one to think of it.  Basically, search a box of some size,
 ' and within that box, count the number of black (<128) and white (>=128) pixels.  Average the total found to arrive at a grayscale
 ' value, and assign that to the pixel.
 '
-'The blue channel alone is used for calculations (for speed purposes - 67% faster than checking all three channels!) so results will
-' be wonky when used on a color image.  I don't intend to remedy that.
+'The blue channel alone is used for calculations (for speed purposes - three times faster than checking all three channels!) so results will
+' be wonky when used on a color image.
 '
 '***************************************************************************
 
