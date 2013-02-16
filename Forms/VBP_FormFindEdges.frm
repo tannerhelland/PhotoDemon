@@ -332,106 +332,26 @@ End Sub
 ' implementation is available from the "Help -> About PhotoDemon" menu option.
 Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Tracing image edges with virtual paintbrush..."
-    
+    If Not toPreview Then Message "Tracing image edges with virtual paintbrush..."
+        
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent already embossed pixels from screwing up our results for later pixels.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
     srcLayer.createFromExistingLayer workingLayer
     
-    prepSafeArray srcSA, srcLayer
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, z As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left + 1
-    initY = curLayerValues.Top + 1
-    finalX = curLayerValues.Right - 1
-    finalY = curLayerValues.Bottom - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValRight As Long, QuickValLeft As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    CreateContourLayer blackBackground, srcLayer, workingLayer, toPreview
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
     
-    'Color variables
-    Dim tmpColor As Long, tMin As Long
-        
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-        QuickValLeft = (x - 1) * qvDepth
-    For y = initY To finalY
-        For z = 0 To 2
-    
-            tMin = 255
-            tmpColor = srcImageData(QuickValRight + z, y)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValRight + z, y - 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValRight + z, y + 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y - 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y + 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickVal + z, y)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickVal + z, y - 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickVal + z, y + 1)
-            If tmpColor < tMin Then tMin = tmpColor
-            
-            If tMin > 255 Then tMin = 255
-            If tMin < 0 Then tMin = 0
-            
-            If blackBackground Then
-                dstImageData(QuickVal + z, y) = srcImageData(QuickVal + z, y) - tMin
-            Else
-                dstImageData(QuickVal + z, y) = 255 - (srcImageData(QuickVal + z, y) - tMin)
-            End If
-            
-            'The edges of the image will always be missed, so manually check for and correct that
-            If x = initX Then dstImageData(QuickValLeft + z, y) = dstImageData(QuickVal + z, y)
-            If x = finalX Then dstImageData(QuickValRight + z, y) = dstImageData(QuickVal + z, y)
-            If y = initY Then dstImageData(QuickVal + z, y - 1) = dstImageData(QuickVal + z, y)
-            If y = finalY Then dstImageData(QuickVal + z, y + 1) = dstImageData(QuickVal + z, y)
-        
-        Next z
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
-        End If
-    Next x
-    
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
     finalizeImageData toPreview, dstPic
-     
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
