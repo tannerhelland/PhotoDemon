@@ -156,7 +156,9 @@ Option Explicit
     Public Const AdjustHSL As Long = 619
     'Color balance
     Public Const AdjustColorBalance As Long = 620
-    'NOTE: 620 is the max value for this section (AdjustColorBalance)
+    'Shadow / midtone / highlight adjustments
+    Public Const ShadowHighlight As Long = 621
+    'NOTE: 621 is the max value for this section (ShadowHighlight)
     
     'Coordinate filters/transformations; numbers 700-799
     '-Resize
@@ -679,6 +681,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
                 FormColorBalance.Show vbModal, FormMain
             Else
                 FormColorBalance.ApplyColorBalance CLng(pOPCODE), CLng(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
+            End If
+        Case ShadowHighlight
+            If LoadForm Then
+                FormShadowHighlight.Show vbModal, FormMain
+            Else
+                FormShadowHighlight.ApplyShadowHighlight CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3)
             End If
     
     'Coordinate filters/transformations
@@ -1203,6 +1211,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Hue/Saturation/Lightness"
         Case AdjustColorBalance
             GetNameOfProcess = "Color Balance"
+        Case ShadowHighlight
+            GetNameOfProcess = "Shadow/Highlight"
             
         'Coordinate filters/transformations; numbers 700-799
         Case ImageSize

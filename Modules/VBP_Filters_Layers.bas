@@ -19,6 +19,11 @@ Attribute VB_Name = "Filters_Layers"
 
 Option Explicit
 
+'Constants required for creating a gamma curve from .1 to 10
+Private Const MAXGAMMA As Double = 1.8460498941512
+Private Const MIDGAMMA As Double = 0.68377223398334
+Private Const ROOT10 As Double = 3.16227766
+
 'Given two layers, fill one with a median-filtered version of the other
 Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
 
@@ -986,4 +991,261 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
         
 End Sub
 
+'Make shadows, midtone, and/or highlight adjustments to a given layer
+Public Sub AdjustLayerShadowHighlight(ByVal shadowClipping As Double, ByVal highlightClipping As Double, ByVal targetMidtone As Long, ByRef srcLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
 
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcLayer
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcLayer.getLayerWidth - 1
+    finalY = srcLayer.getLayerHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcLayer.getLayerColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If modifyProgBarMax = -1 Then
+        SetProgBarMax finalX
+    Else
+        SetProgBarMax modifyProgBarMax
+    End If
+    progBarCheck = findBestProgBarValue()
+    
+    'Color values
+    Dim r As Long, g As Long, b As Long
+    
+    'Maximum and minimum values, which will be detected by our initial histogram run
+    Dim rMax As Byte, gMax As Byte, bMax As Byte
+    Dim rMin As Byte, gMin As Byte, bMin As Byte
+    rMax = 0: gMax = 0: bMax = 0
+    rMin = 255: gMin = 255: bMin = 255
+    
+    'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
+    shadowClipping = shadowClipping / 100
+    highlightClipping = highlightClipping / 100
+    
+    'Prepare histogram arrays
+    Dim rCount(0 To 255) As Long, gCount(0 To 255) As Long, bCount(0 To 255) As Long
+    For x = 0 To 255
+        rCount(x) = 0
+        gCount(x) = 0
+        bCount(x) = 0
+    Next x
+    
+    'Build the image histogram
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        rCount(r) = rCount(r) + 1
+        gCount(g) = gCount(g) + 1
+        bCount(b) = bCount(b) + 1
+    Next y
+    Next x
+    
+     'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
+    ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
+    
+    Dim foundYet As Boolean
+    foundYet = False
+    
+    Dim NumOfPixels As Long
+    NumOfPixels = (finalX + 1) * (finalY + 1)
+    
+    Dim shadowThreshold As Long
+    shadowThreshold = NumOfPixels * shadowClipping
+    
+    Dim highlightThreshold As Long
+    highlightThreshold = NumOfPixels * highlightClipping
+    
+    r = 0: g = 0: b = 0
+    
+    Dim rTally As Long, gTally As Long, bTally As Long
+    rTally = 0: gTally = 0: bTally = 0
+    
+    'Find minimum values of red, green, and blue
+    Do
+        If rCount(r) + rTally < shadowThreshold Then
+            r = r + 1
+            rTally = rTally + rCount(r)
+        Else
+            rMin = r
+            foundYet = True
+        End If
+    Loop While foundYet = False
+        
+    foundYet = False
+        
+    Do
+        If gCount(g) + gTally < shadowThreshold Then
+            g = g + 1
+            gTally = gTally + gCount(g)
+        Else
+            gMin = g
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    foundYet = False
+    
+    Do
+        If bCount(b) + bTally < shadowThreshold Then
+            b = b + 1
+            bTally = bTally + bCount(b)
+        Else
+            bMin = b
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    'Now, find maximum values of red, green, and blue
+    foundYet = False
+    
+    r = 255: g = 255: b = 255
+    rTally = 0: gTally = 0: bTally = 0
+    
+    Do
+        If rCount(r) + rTally < highlightThreshold Then
+            r = r - 1
+            rTally = rTally + rCount(r)
+        Else
+            rMax = r
+            foundYet = True
+        End If
+    Loop While foundYet = False
+        
+    foundYet = False
+        
+    Do
+        If gCount(g) + gTally < highlightThreshold Then
+            g = g - 1
+            gTally = gTally + gCount(g)
+        Else
+            gMax = g
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    foundYet = False
+    
+    Do
+        If bCount(b) + bTally < highlightThreshold Then
+            b = b - 1
+            bTally = bTally + bCount(b)
+        Else
+            bMax = b
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    'Finally, calculate the difference between max and min for each color
+    Dim rdif As Long, Gdif As Long, Bdif As Long
+    rdif = CLng(rMax) - CLng(rMin)
+    Gdif = CLng(gMax) - CLng(gMin)
+    Bdif = CLng(bMax) - CLng(bMin)
+    
+    'We can now build a final set of look-up tables that contain the results of every possible color transformation
+    Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
+    
+    For x = 0 To 255
+        If rdif <> 0 Then r = 255 * ((x - rMin) / rdif) Else r = x
+        If Gdif <> 0 Then g = 255 * ((x - gMin) / Gdif) Else g = x
+        If Bdif <> 0 Then b = 255 * ((x - bMin) / Bdif) Else b = x
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
+        If g > 255 Then g = 255
+        If g < 0 Then g = 0
+        If b > 255 Then b = 255
+        If b < 0 Then b = 0
+        rFinal(x) = r
+        gFinal(x) = g
+        bFinal(x) = b
+    Next x
+    
+    'Now it is time to handle the target midtone calculation.  Start by extracting the red, green, and blue components
+    Dim targetRed As Long, targetGreen As Long, targetBlue As Long
+    targetRed = 255 - ExtractR(targetMidtone)
+    targetGreen = 255 - ExtractG(targetMidtone)
+    targetBlue = 255 - ExtractB(targetMidtone)
+    
+    'We now re-use some logic from the Levels tool to remap midtones according to the target color we've been given.
+    
+    'Look-up tables for the midtone (gamma) leveled values
+    Dim lValues(0 To 255) As Double
+    
+    'WARNING: This next chunk of code is a lot of messy math.  Don't worry too much
+    ' if you can't make sense of it ;)
+    
+    'Fill the gamma table with appropriate gamma values (from 10 to .1, ranged quadratically)
+    ' NOTE: This table is constant, and could theoretically be loaded from file instead of generated
+    ' every time we run this function.
+    Dim gStep As Double
+    gStep = (MAXGAMMA + MIDGAMMA) / 127
+    For x = 0 To 127
+        lValues(x) = (CDbl(x) / 127) * MIDGAMMA
+    Next x
+    For x = 128 To 255
+        lValues(x) = MIDGAMMA + (CDbl(x - 127) * gStep)
+    Next x
+    For x = 0 To 255
+        lValues(x) = 1 / ((lValues(x) + 1 / ROOT10) ^ 2)
+    Next x
+    
+    'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
+    Dim rValues(0 To 255) As Byte, gValues(0 To 255) As Byte, bValues(0 To 255) As Byte
+    Dim tmpRed As Double, tmpGreen As Double, tmpBlue As Double
+    For x = 0 To 255
+        tmpRed = CDbl(x) / 255
+        tmpGreen = CDbl(x) / 255
+        tmpBlue = CDbl(x) / 255
+        tmpRed = tmpRed ^ (1 / lValues(targetRed))
+        tmpGreen = tmpGreen ^ (1 / lValues(targetGreen))
+        tmpBlue = tmpBlue ^ (1 / lValues(targetBlue))
+        tmpRed = tmpRed * 255
+        tmpGreen = tmpGreen * 255
+        tmpBlue = tmpBlue * 255
+        If tmpRed > 255 Then tmpRed = 255
+        If tmpRed < 0 Then tmpRed = 0
+        If tmpGreen > 255 Then tmpGreen = 255
+        If tmpGreen < 0 Then tmpGreen = 0
+        If tmpBlue > 255 Then tmpBlue = 255
+        If tmpBlue < 0 Then tmpBlue = 0
+        rValues(x) = tmpRed
+        gValues(x) = tmpGreen
+        bValues(x) = tmpBlue
+    Next x
+    
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+            
+        'Adjust white balance in a single pass (thanks to the magic of look-up tables)
+        ImageData(QuickVal + 2, y) = rValues(rFinal(ImageData(QuickVal + 2, y)))
+        ImageData(QuickVal + 1, y) = gValues(gFinal(ImageData(QuickVal + 1, y)))
+        ImageData(QuickVal, y) = bValues(bFinal(ImageData(QuickVal, y)))
+        
+    Next y
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then SetProgBarVal x + modifyProgBarOffset
+        End If
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+End Sub

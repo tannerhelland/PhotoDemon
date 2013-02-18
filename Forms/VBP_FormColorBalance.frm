@@ -24,26 +24,6 @@ Begin VB.Form FormColorBalance
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   480
-      Left            =   6120
-      TabIndex        =   13
-      Top             =   4560
-      Width           =   2055
-      _ExtentX        =   3625
-      _ExtentY        =   847
-      Caption         =   "preserve luminance"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -174,7 +154,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   3840
       Width           =   675
    End
@@ -194,7 +174,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   2880
       Width           =   915
    End
@@ -214,7 +194,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   1920
       Width           =   480
    End
@@ -298,8 +278,8 @@ Attribute VB_Exposed = False
 'Color Balance Adjustment Form
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 31/January/13
-'Last update: initial build
+'Last updated: 17/February/13
+'Last update: remove "preserve luminance" slider.  The image always looks better with luminance preserved.
 '
 'Fairly simple and standard color adjustment form.  Layout and feature set derived from comparable tools
 ' in GIMP and Photoshop.
@@ -307,11 +287,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-
-Private Sub chkLuminance_Click()
-    updatePreview
-End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -340,7 +315,7 @@ Private Sub cmdOK_Click()
     End If
     
     Me.Visible = False
-    Process AdjustColorBalance, CLng(hsRed), CLng(hsGreen), CLng(hsBlue), CBool(chkLuminance)
+    Process AdjustColorBalance, CLng(hsRed), CLng(hsGreen), CLng(hsBlue), True
     Unload Me
     
 End Sub
@@ -539,5 +514,5 @@ Private Sub txtGreen_KeyUp(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub updatePreview()
-    ApplyColorBalance hsRed, hsGreen, hsBlue, CBool(chkLuminance), True, fxPreview
+    ApplyColorBalance hsRed, hsGreen, hsBlue, True, True, fxPreview
 End Sub

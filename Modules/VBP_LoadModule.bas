@@ -1045,6 +1045,7 @@ Public Sub LoadMenuShortcuts()
         'Color Menu
         .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color_Balance"
+        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadow_Highlight"
         
         'Window menu
         .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
@@ -1103,6 +1104,7 @@ Public Sub DrawMenuShortcuts()
     'Color menu
     FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+B"
     FormMain.MnuColor(1).Caption = FormMain.MnuColor(1).Caption & vbTab & "Ctrl+Shift+C"
+    FormMain.MnuColor(5).Caption = FormMain.MnuColor(5).Caption & vbTab & "Ctrl+Shift+H"
     
     'Tools menu
     FormMain.mnuTool(4).Caption = FormMain.mnuTool(4).Caption & vbTab & "Alt+Enter"     'Options (Preferences)
