@@ -46,12 +46,17 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     Dim srcWidth As Double, srcHeight As Double
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
-    If pdImages(CurrentImage).selectionActive Then
-        srcWidth = pdImages(CurrentImage).mainSelection.selWidth
-        srcHeight = pdImages(CurrentImage).mainSelection.selHeight
+    If useOtherPictureSrc Then
+        srcWidth = otherPictureSrc.getLayerWidth
+        srcHeight = otherPictureSrc.getLayerHeight
     Else
-        srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
-        srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+        If pdImages(CurrentImage).selectionActive Then
+            srcWidth = pdImages(CurrentImage).mainSelection.selWidth
+            srcHeight = pdImages(CurrentImage).mainSelection.selHeight
+        Else
+            srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
+            srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+        End If
     End If
             
     'Now, use that aspect ratio to determine a proper size for our temporary layer
@@ -60,7 +65,7 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
     
     'Normally this will draw a preview of FormMain.ActiveForm's relevant image.  However, another picture source can be specified.
-    If useOtherPictureSrc = False Then
+    If Not useOtherPictureSrc Then
         
         'Check to see if a selection is active; if it isn't, simply render the full form
         If pdImages(CurrentImage).selectionActive = False Then
