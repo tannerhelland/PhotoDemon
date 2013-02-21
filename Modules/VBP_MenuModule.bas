@@ -42,7 +42,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
     If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerhWnd, 0) Then
         
-        Message "Preparing to load image..."
+        'Message "Preparing to load image..."
         
         'Take the return string (a null-delimited list of filenames) and split it out into a string array
         listOfFiles = Split(sFileList, vbNullChar)
@@ -382,7 +382,7 @@ Public Function PhotoDemon_SaveImage(ByVal imageID As Long, ByVal dstPath As Str
         Case FIF_JPEG
         
             'JPEG files may need to display a dialog box so the user can set compression quality
-            If loadRelevantForm = True Then
+            If loadRelevantForm Then
                 
                 Dim gotSettings As VbMsgBoxResult
                 gotSettings = promptJPEGSettings

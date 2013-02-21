@@ -434,9 +434,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' Before attempting to load this image, make sure it exists
         '*************************************************************************************************************************************
     
-        Message "Verifying that file exists..."
+        If isThisPrimaryImage Then Message "Verifying that file exists..."
     
-        If FileExist(sFile(thisImage)) = False Then
+        If isThisPrimaryImage And (Not FileExist(sFile(thisImage))) Then
             Message "File not found (%1). Image load canceled.", sFile(thisImage)
             
             'If multiple files are being loaded, suppress any errors until the end
@@ -487,12 +487,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' Based on what type of image this is, call the most appropriate load function for it (FreeImage, GDI+, or VB's LoadPicture)
         '*************************************************************************************************************************************
             
-        Message "Determining filetype..."
+        If isThisPrimaryImage Then Message "Determining filetype..."
         
         'Initially, set the filetype of the target image to "unknown".  If the load is successful, this value will
         ' be changed to something >= 0. (Note: if FreeImage is used to load the file, this value will be set by the
         ' LoadFreeImageV3 function.)
-        targetImage.OriginalFileFormat = -1
+        If Not (targetImage Is Nothing) Then targetImage.OriginalFileFormat = -1
         
         'Strip the extension from the file
         FileExtension = UCase(GetExtension(sFile(thisImage)))
@@ -526,7 +526,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             ' VB's internal LoadPicture function.
             Case Else
                                 
-                If g_ImageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber)
+                If g_ImageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber, isThisPrimaryImage)
                 
                 If loadSuccessful Then loadedByOtherMeans = False
                 
@@ -534,7 +534,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 ' GDI+ to experience a silent fail, thus bringing down the entire program.
                 If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
                     
-                    Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
+                    If isThisPrimaryImage Then Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     
                     'If GDI+ loaded the image successfully, note that we have to count available colors ourselves
@@ -548,7 +548,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture
                 If (Not loadSuccessful) Then
                     
-                    Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
+                    If isThisPrimaryImage Then Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
                     loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                 
                     'If VB managed to load the image successfully, note that we have to count available colors ourselves
@@ -568,7 +568,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
         
         'Double-check to make sure the image was loaded successfully
-        If (Not loadSuccessful) Or (targetImage.mainLayer.getLayerWidth = 0) Or (targetImage.mainLayer.getLayerHeight = 0) Then
+        If ((Not loadSuccessful) Or (targetImage.mainLayer.getLayerWidth = 0) Or (targetImage.mainLayer.getLayerHeight = 0)) And isThisPrimaryImage Then
             Message "Failed to load %1", sFile(thisImage)
             
             'If multiple files are being loaded, suppress any errors until the end
@@ -583,7 +583,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             GoTo PreloadMoreImages
             
         Else
-            Message "Image data loaded successfully."
+            If isThisPrimaryImage Then Message "Image data loaded successfully."
         End If
         
         
@@ -632,22 +632,22 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Make sure the user hasn't disabled this capability
             If g_UserPreferences.GetPreference_Boolean("General Preferences", "ValidateAlphaChannels", True) Then
             
-                Message "Verfiying alpha channel..."
+                If isThisPrimaryImage Then Message "Verfiying alpha channel..."
             
                 'Verify the alpha channel.  If this function returns FALSE, the alpha channel is unnecessary.
                 If targetImage.mainLayer.verifyAlphaChannel = False Then
                 
-                    Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
+                    If isThisPrimaryImage Then Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
                 
                     'Transparently convert the main layer to 24bpp
                     targetImage.mainLayer.convertTo24bpp
                 
                 Else
-                    Message "Alpha channel verified.  Leaving image in 32bpp mode."
+                    If isThisPrimaryImage Then Message "Alpha channel verified.  Leaving image in 32bpp mode."
                 End If
                 
             Else
-                Message "Alpha channel validation ignored at user's request."
+                If isThisPrimaryImage Then Message "Alpha channel validation ignored at user's request."
             End If
         
         End If
@@ -673,7 +673,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' it, we have no choice but to rely on whatever color depth was returned by FreeImage or GDI+ (or was
         ' inferred by us for this format, e.g. we know that GIFs are 8bpp).
         
-        If g_UserPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors Then
+        If isThisPrimaryImage And (g_UserPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors) Then
             
             colorCountCheck = getQuickColorCount(targetImage, CurrentImage)
         
@@ -694,7 +694,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' Determine a name for this image
         '*************************************************************************************************************************************
         
-        Message "Determining image title..."
+        If isThisPrimaryImage Then Message "Determining image title..."
         
         'If a different image name has been specified, we can assume the calling routine is NOT loading a file
         ' from disk (e.g. it's a scan, or Internet download, or screen capture, etc.).  Therefore, set the
@@ -804,7 +804,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         targetImage.loadedSuccessfully = True
         
-        Message "Image loaded successfully."
+        If isThisPrimaryImage Then Message "Image loaded successfully."
         
         
         
@@ -815,7 +815,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'Before continuing on to the next image (if any), see if the just-loaded image was in multipage format.  If it was, the user
         ' may have requested that we load all frames from this image.
         If imageHasMultiplePages Then
-        
+            
             Dim pageTracker As Long
             
             Dim tmpStringArray(0) As String
@@ -852,10 +852,10 @@ PreloadMoreImages:
     '*************************************************************************************************************************************
     
     'If multiple images were loaded and everything went well, display a success message
-    If multipleFilesLoading And (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) Then Message "All images loaded successfully."
+    If multipleFilesLoading And (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) And isThisPrimaryImage Then Message "All images loaded successfully."
     
     'Restore the screen cursor if necessary
-    If pageNumber = 0 Then Screen.MousePointer = vbNormal
+    If pageNumber <= 0 Then Screen.MousePointer = vbNormal
     
     'Finally, if we were loading multiple images and something went wrong (missing files, broken files), let the user know about them.
     If multipleFilesLoading And (Len(missingFiles) > 0) Then
@@ -871,9 +871,9 @@ PreloadMoreImages:
 End Sub
 
 'Load any file that hasn't explicitly been sent elsewhere.  FreeImage will automatically determine filetype.
-Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageNumber As Long = 0) As Boolean
+Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageNumber As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
 
-    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstLayer, dstImage, pageNumber)
+    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstLayer, dstImage, pageNumber, showMessages)
     
 End Function
 
@@ -988,7 +988,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
     
     FormSplash.lblMessage = sMsg
     FormSplash.lblMessage.Refresh
-    DoEvents
+    'DoEvents
     
 End Sub
 

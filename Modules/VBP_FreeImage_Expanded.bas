@@ -33,7 +33,7 @@ Public Function isFreeImageAvailable() As Boolean
 End Function
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageToLoad As Long = 0) As Boolean
+Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
 
     On Error GoTo FreeImageV3_AdvancedError
     
@@ -55,7 +55,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     ' Determine image format
     '****************************************************************************
     
-    Message "Analyzing filetype..."
+    If showMessages Then Message "Analyzing filetype..."
     
     'While we could manually test our extension against the FreeImage database, it is capable of doing so itself.
     'First, check the file header to see if it matches a known head type
@@ -68,7 +68,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'By this point, if the file still doesn't show up in FreeImage's database, abandon the import attempt.
     If Not FreeImage_FIFSupportsReading(fileFIF) Then
-        Message "Filetype not supported by FreeImage.  Import abandoned."
+        If showMessages Then Message "Filetype not supported by FreeImage.  Import abandoned."
         FreeLibrary hFreeImgLib
         LoadFreeImageV3_Advanced = False
         Exit Function
@@ -81,7 +81,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     ' Based on the detected format, prepare any necessary load flags
     '****************************************************************************
     
-    Message "Preparing import flags..."
+    If showMessages Then Message "Preparing import flags..."
     
     'Certain filetypes offer import options.  Check the FreeImage type to see if we want to enable any optional flags.
     Dim fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS
@@ -131,11 +131,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         If chkPageCount > 1 Then
             
             If fileFIF = FIF_GIF Then
-                Message "Animated GIF file detected."
+                If showMessages Then Message "Animated GIF file detected."
             ElseIf fileFIF = FIF_ICO Then
-                Message "Multiple icons detected."
+                If showMessages Then Message "Multiple icons detected."
             Else
-                Message "Multipage TIFF file detected."
+                If showMessages Then Message "Multipage TIFF file detected."
             End If
             
             'Based on the user's preference for multipage images, we can handle the image one of several ways
@@ -152,11 +152,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                     If mpImportAnswer = vbYes Then
                     
                         If fileFIF = FIF_GIF Then
-                            Message "All frames will be loaded, per the user's request."
+                            If showMessages Then Message "All frames will be loaded, per the user's request."
                         ElseIf fileFIF = FIF_ICO Then
-                            Message "All icons will be loaded, per the user's request."
+                            If showMessages Then Message "All icons will be loaded, per the user's request."
                         Else
-                            Message "All pages will be loaded, per the user's request."
+                            If showMessages Then Message "All pages will be loaded, per the user's request."
                         End If
                     
                         imageHasMultiplePages = True
@@ -167,11 +167,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                     Else
                         
                         If fileFIF = FIF_GIF Then
-                            Message "Only the first frame will be loaded, per the user's request."
+                            If showMessages Then Message "Only the first frame will be loaded, per the user's request."
                         ElseIf fileFIF = FIF_ICO Then
-                            Message "Only the first icon will be loaded, per the user's request."
+                            If showMessages Then Message "Only the first icon will be loaded, per the user's request."
                         Else
-                            Message "Only the first page will be loaded, per the user's request."
+                            If showMessages Then Message "Only the first page will be loaded, per the user's request."
                         End If
                         
                         imageHasMultiplePages = False
@@ -182,14 +182,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 'Ignore additional images, and treat this as a single-image file.  (Load just the first frame or page, basically.)
                 Case 1
                 
-                    Message "Ignoring extra images in the file, per user's saved preference."
+                    If showMessages Then Message "Ignoring extra images in the file, per user's saved preference."
                     imageHasMultiplePages = False
                     imagePageCount = 0
                 
                 'Load every image in the file.
                 Case 2
                 
-                    Message "Loading all images in the file, per user's saved preference."
+                    If showMessages Then Message "Loading all images in the file, per user's saved preference."
                     imageHasMultiplePages = True
                     imagePageCount = chkPageCount - 1
                 
@@ -206,18 +206,18 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'With all flags set and filetype correctly determined, import the image
     Dim fi_hDIB As Long
     
-    If (pageToLoad = 0) And (chkPageCount <= 1) Then
-        Message "Importing image from file..."
+    If (pageToLoad <= 0) And (chkPageCount <= 1) Then
+        If showMessages Then Message "Importing image from file..."
         fi_hDIB = FreeImage_Load(fileFIF, srcFilename, fi_ImportFlags)
     Else
         If fileFIF = FIF_GIF Then
-            Message "Importing frame # %1 from animated GIF file...", pageToLoad + 1
+            If showMessages Then Message "Importing frame # %1 from animated GIF file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
         ElseIf fileFIF = FIF_ICO Then
-            Message "Importing icon # %1 from ICO file...", pageToLoad + 1
+            If showMessages Then Message "Importing icon # %1 from ICO file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , 0)
         Else
-            Message "Importing page # %1 from multipage TIFF file...", pageToLoad + 1
+            If showMessages Then Message "Importing page # %1 from multipage TIFF file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename, , , , 0)
         End If
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
@@ -230,7 +230,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         If FreeImage_GetBPP(fi_hDIB) < 32 Then
         
             'If this is the first frame of the icon, unload it and try again
-            If (pageToLoad = 0) And (chkPageCount <= 1) Then
+            If (pageToLoad <= 0) And (chkPageCount <= 1) Then
                 If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
                 fi_hDIB = FreeImage_Load(fileFIF, srcFilename, FILO_ICO_MAKEALPHA)
             
@@ -253,7 +253,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'If an empty handle is returned, abandon the import attempt.
     If fi_hDIB = 0 Then
-        Message "Import via FreeImage failed (blank handle)."
+        If showMessages Then Message "Import via FreeImage failed (blank handle)."
         FreeLibrary hFreeImgLib
         LoadFreeImageV3_Advanced = False
         Exit Function
@@ -295,7 +295,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'Before we continue the import, we need to make sure the pixel data is in a format appropriate for PhotoDemon.
     
-    Message "Analyzing color depth..."
+    If showMessages Then Message "Analyzing color depth..."
     
     'First thing we want to check is the color depth.  PhotoDemon is designed around 16 million color images.  This could
     ' change in the future, but for now, force high-bit-depth images to a more appropriate 24 or 32bpp.
@@ -323,7 +323,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'First, check source images without an alpha channel.  Convert these using the superior tone mapping method.
     If (fi_BPP = 48) Or (fi_BPP = 96) Then
     
-        Message "High bit-depth RGB image identified.  Checking for non-standard alpha encoding..."
+        If showMessages Then Message "High bit-depth RGB image identified.  Checking for non-standard alpha encoding..."
         
         'While images with these bit-depths may not have an alpha channel, they can have binary transparency - check for that now.
         ' (Note: as of FreeImage 3.15.3 binary bit-depths are not detected correctly.  That said, they may someday be supported -
@@ -335,11 +335,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         ' Check that preference before tone-mapping the image.
         If g_UserPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
             
-            Message "Tone mapping HDR image to preserve tonal range..."
+            If showMessages Then If showMessages Then Message "Tone mapping HDR image to preserve tonal range..."
             
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
             
-            If pageToLoad = 0 Then
+            If pageToLoad <= 0 Then
                 If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
             Else
                 If (fi_hDIB <> new_hDIB) Then
@@ -351,16 +351,16 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             
             fi_hDIB = new_hDIB
             
-            Message "Tone mapping complete."
+            If showMessages Then Message "Tone mapping complete."
         
         Else
                 
             If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
             
-                Message "Alpha found, but further tone-mapping ignored at user's request."
+                If showMessages Then Message "Alpha found, but further tone-mapping ignored at user's request."
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
-                If pageToLoad = 0 Then
+                If pageToLoad <= 0 Then
                     If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
                     If (fi_hDIB <> new_hDIB) Then
@@ -374,10 +374,10 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             
             Else
             
-                Message "No alpha found.  Further tone-mapping ignored at user's request."
+                If showMessages Then Message "No alpha found.  Further tone-mapping ignored at user's request."
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
                 
-                If pageToLoad = 0 Then
+                If pageToLoad <= 0 Then
                     If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
                     If (fi_hDIB <> new_hDIB) Then
@@ -403,12 +403,12 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         'Again, check for the user's preference on tone-mapping
         If g_UserPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
         
-            Message "High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range..."
+            If showMessages Then Message "High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range..."
         
             'Now, convert the RGB data using the superior tone-mapping method.
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
             
-            If pageToLoad = 0 Then
+            If pageToLoad <= 0 Then
                 If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
             Else
                 If (new_hDIB <> fi_hDIB) Then
@@ -420,14 +420,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             
             fi_hDIB = new_hDIB
             
-            Message "Tone mapping complete."
+            If showMessages Then Message "Tone mapping complete."
             
         Else
         
-            Message "High bit-depth RGBA image identified.  Tone-mapping ignored at user's request."
+            If showMessages Then Message "High bit-depth RGBA image identified.  Tone-mapping ignored at user's request."
             new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
             
-            If pageToLoad = 0 Then
+            If pageToLoad <= 0 Then
                 If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
             Else
                 If (fi_hDIB <> new_hDIB) Then
@@ -463,7 +463,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         'If it is such a grayscale image, it requires a unique conversion operation
         If fi_imageType = FIT_UINT16 Then
             
-            Message "Tone-mapping high-bit-depth grayscale image to 24bpp..."
+            If showMessages Then Message "Tone-mapping high-bit-depth grayscale image to 24bpp..."
             
             'First, convert it to a high-bit depth RGB image
             fi_hDIB = FreeImage_ConvertToRGB16(fi_hDIB)
@@ -475,7 +475,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
-                If pageToLoad = 0 Then
+                If pageToLoad <= 0 Then
                     If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
                     If (new_hDIB <> fi_hDIB) Then
@@ -489,7 +489,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             Else
                 new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
                 
-                If pageToLoad = 0 Then
+                If pageToLoad <= 0 Then
                     If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
                     If (new_hDIB <> fi_hDIB) Then
@@ -511,7 +511,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             If fi_hasTransparency = True Then
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
-                If pageToLoad = 0 Then
+                If pageToLoad <= 0 Then
                     If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
                     If (new_hDIB <> fi_hDIB) Then
@@ -525,7 +525,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             Else
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
                 
-                If pageToLoad = 0 Then
+                If pageToLoad <= 0 Then
                     If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
                     If (new_hDIB <> fi_hDIB) Then
@@ -551,7 +551,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'We are now finally ready to load the image.
     
-    Message "Requesting memory for image transfer..."
+    If showMessages Then Message "Requesting memory for image transfer..."
     
     'Get width and height from the file, and create a new layer to match
     Dim fi_Width As Long, fi_Height As Long
@@ -573,9 +573,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'Make sure the blank DIB creation worked
     If creationSuccess = False Then
-        Message "Import via FreeImage failed (couldn't create DIB)."
+        If showMessages Then Message "Import via FreeImage failed (couldn't create DIB)."
         
-        If (pageToLoad = 0) Or (needToCloseMulti = False) Then
+        If (pageToLoad <= 0) Or (needToCloseMulti = False) Then
             If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
         Else
             If (fi_hDIB <> 0) Then FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
@@ -591,13 +591,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     ' Copy the data from the FreeImage object to the pdLayer object
     '****************************************************************************
     
-    Message "Memory secured.  Finalizing image load..."
+    If showMessages Then Message "Memory secured.  Finalizing image load..."
         
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
               
     'With the image bits now safely in our care, release the FreeImage DIB
-    If (pageToLoad = 0) Or (needToCloseMulti = False) Then
+    If (pageToLoad <= 0) Or (needToCloseMulti = False) Then
         FreeImage_UnloadEx fi_hDIB
     Else
         FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
@@ -607,7 +607,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'Release the FreeImage library
     FreeLibrary hFreeImgLib
     
-    Message "Image load successful.  FreeImage released."
+    If showMessages Then Message "Image load successful.  FreeImage released."
     
     '****************************************************************************
     ' If necessary, restore any lost alpha data
@@ -617,13 +617,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     ' whose alpha data was lost during the tone-mapping phase.
     If tmpAlphaRequired Then
     
-        Message "Restoring alpha data..."
+        If showMessages Then Message "Restoring alpha data..."
         
         dstLayer.copyAlphaFromExistingLayer tmpAlphaLayer
         tmpAlphaLayer.eraseLayer
         Set tmpAlphaLayer = Nothing
         
-        Message "Alpha data restored successfully."
+        If showMessages Then Message "Alpha data restored successfully."
         
     End If
     
@@ -649,7 +649,7 @@ FreeImageV3_AdvancedError:
     If hFreeImgLib <> 0 Then FreeLibrary hFreeImgLib
     
     'Display a relevant error message
-    Message "Import via FreeImage failed (Err # %1)", Err.Number
+    If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
     
     'Mark this load as unsuccessful
     LoadFreeImageV3_Advanced = False
