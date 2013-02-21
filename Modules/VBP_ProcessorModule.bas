@@ -928,9 +928,9 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     FormMain.Enabled = True
     
     'If a filter or tool was just used, return focus to the active form
-    If (pType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) Then
-        If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
-    End If
+    'If (pType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) Then
+    '    If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
+    'End If
         
     'Also, re-enable drag and drop operations
     If pType >= 101 Then
@@ -1000,7 +1000,7 @@ MainErrHandler:
     End If
     
     'Create the message box to return the error information
-    msgReturn = pdMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "PhotoDemon Error Handler: #%1", Err.Number, Err.Description, AddInfo)
+    msgReturn = pdMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "PhotoDemon Error Handler", Err.Number, Err.Description, AddInfo)
     
     'If the message box return value is "Yes", the user has opted to file a bug report.
     If msgReturn = vbYes Then
