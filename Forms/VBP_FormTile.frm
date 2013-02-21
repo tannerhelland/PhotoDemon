@@ -128,8 +128,8 @@ Begin VB.Form FormTile
       TabIndex        =   14
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -450,11 +450,11 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     
     'Make sure the target width/height isn't too large.  (This limit could be set bigger... I haven't actually tested it to
     ' find a max upper limit.  I'm fairly certain it's only limited by available memory.)
-    Dim maxSize As Long
-    maxSize = 32767
+    Dim MaxSize As Long
+    MaxSize = 32767
     
-    If targetWidth > maxSize Then targetWidth = maxSize
-    If targetHeight > maxSize Then targetHeight = maxSize
+    If targetWidth > MaxSize Then targetWidth = MaxSize
+    If targetHeight > MaxSize Then targetHeight = MaxSize
     
     'Resize the target picture box to this new size
     tmpLayer.createBlank targetWidth, targetHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
@@ -518,7 +518,7 @@ Private Sub Form_Activate()
     cboTarget.AddItem "Custom image size (in pixels)", 1
     cboTarget.AddItem "Specific number of tiles", 2
     cboTarget.ListIndex = 0
-    DoEvents
+    'DoEvents
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage pdImages(CurrentImage).mainLayer

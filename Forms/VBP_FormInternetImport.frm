@@ -239,7 +239,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
                 Message "Image URL verified.  Downloading image (%1 of %2 bytes received)...", totalBytesRead, downloadSize
             End If
             
-            DoEvents
+            'DoEvents
             
         'Carry on
         Loop

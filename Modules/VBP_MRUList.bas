@@ -202,7 +202,7 @@ Public Sub MRU_SaveToINI()
         For x = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
             Unload FormMain.mnuRecDocs(x)
         Next x
-        DoEvents
+        'DoEvents
     End If
     
     'Finally, scan the MRU icon directory to make sure there are no orphaned PNG files.  (Multiple instances of PhotoDemon
@@ -325,7 +325,7 @@ MRUEntryFound:
         For x = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
             Unload FormMain.mnuRecDocs(x)
         Next x
-        DoEvents
+        'DoEvents
         'Load new menus...
         For x = 1 To numEntries - 1
             Load FormMain.mnuRecDocs(x)

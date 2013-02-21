@@ -93,7 +93,7 @@ Public Sub LoadMenuIcons()
         g_IsThemingEnabled = .CanWeTheme
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-        If (Not g_IsVistaOrLater) And (g_IsProgramCompiled = False) Then Exit Sub
+        If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then Exit Sub
         
         .Init FormMain.hWnd, 16, 16
         
@@ -406,7 +406,7 @@ End Sub
 Public Sub ResetMenuIcons()
 
     'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-    If (Not g_IsVistaOrLater) And (g_IsProgramCompiled = False) Then Exit Sub
+    If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then Exit Sub
         
     'Redraw the Undo/Redo menus
     With cMenuImage

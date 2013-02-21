@@ -27,13 +27,13 @@ Type CompressionHeader
 End Type
 
 'Actual header variable
-Dim FileHeader As CompressionHeader
+Private FileHeader As CompressionHeader
 
 'Filename used for parsing
-Dim dstFilename As String
+Private dstFilename As String
 
 'Used to compare compression ratios
-Dim OriginalSize As Long, CompressedSize As Long
+Private OriginalSize As Long, CompressedSize As Long
 
 'Is zLib available as a plugin?  (NOTE: this is now determined separately from g_ZLibEnabled.)
 Public Function isZLibAvailable() As Boolean

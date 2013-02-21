@@ -383,9 +383,9 @@ Private Sub LstInfo_Click()
                 tmpImportLayer.CreateFromPicture m_cff(LstInfo.ListIndex + 1).Picture
                 If tmpImportLayer.getLayerWidth <> 0 And tmpImportLayer.getLayerHeight <> 0 Then tmpImportLayer.renderToPictureBox picDemo
                 
-                cmdOK.Enabled = True
+                CmdOK.Enabled = True
                 LblData.Visible = False
-                DoEvents
+                'DoEvents
             
             Else
                 
@@ -397,16 +397,16 @@ Private Sub LstInfo_Click()
                 picDemo.Picture = picDemo.Image
                 picDemo.Refresh
                 
-                cmdOK.Enabled = True
+                CmdOK.Enabled = True
                 LblData.Visible = False
-                DoEvents
+                'DoEvents
             
             End If
             
         Else
             picDemo.Picture = Nothing
             LblData.Visible = True
-            cmdOK.Enabled = False
+            CmdOK.Enabled = False
             If .ImageSize And (.ImageSize < 2 ^ 15) And (.ImageSize > 0) Then
                 LblData.Caption = g_Language.TranslateMessage("Binary data:") & " " & StrConv(.Bits, vbUnicode)
             Else

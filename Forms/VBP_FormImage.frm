@@ -137,7 +137,7 @@ Public Sub ActivateWorkaround()
     'If this MDI child is maximized, double-check that it's been drawn correctly.
     ' (This is necessary because VB doesn't handle _Resize() properly when switching between maximized MDI child forms)
     If Me.WindowState = 2 Then
-        DoEvents
+        'DoEvents
         PrepareViewport Me, "Maximized MDI child redraw"
     End If
     
@@ -552,10 +552,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 
                 'If the form being saved is enabled, bring that image to the foreground.  (If a "Save As" is required, this
                 ' is the only way to show the user which image the Save As form is referencing.)
-                If FormMain.Enabled Then
-                    Me.SetFocus
-                    DoEvents
-                End If
+                If FormMain.Enabled Then Me.SetFocus
                 
                 'Attempt to save.  Note that the user can still cancel at this point, and we want to honor their cancellation
                 Dim saveSuccessful As Boolean

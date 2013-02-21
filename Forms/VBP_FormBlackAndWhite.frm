@@ -292,7 +292,7 @@ Private Sub Form_Activate()
     cboDither.AddItem "Sierra Lite", 10
     cboDither.AddItem "Atkinson / Classic Macintosh", 11
     cboDither.ListIndex = 11
-    DoEvents
+    'DoEvents
         
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me

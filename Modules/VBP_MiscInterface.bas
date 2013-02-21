@@ -233,6 +233,7 @@ End Sub
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Form)
     If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, True
+    Set tForm = Nothing
 End Sub
 
 'Perform any drawing routines related to the main form
@@ -341,7 +342,7 @@ End Sub
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size:") & " " & iWidth & "x" & iHeight
-    DoEvents
+    'DoEvents
 End Sub
 
 'This wrapper is used in place of the standard pdMsgBox function.  At present it's just a wrapper around pdMsgBox, but
@@ -410,7 +411,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         End If
     End If
     
-    If g_IsProgramCompiled = False Then Debug.Print mString
+    If Not g_IsProgramCompiled Then Debug.Print mString
     
     'If we're logging program messages, open up a log file and dump the message there
     If g_LogProgramMessages = True Then

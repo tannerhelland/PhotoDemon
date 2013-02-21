@@ -731,7 +731,7 @@ Private Function downloadAllPlugins() As Boolean
     dProgBar.Value = 0
     FormPluginDownloader.Height = 2475
     picYes.Visible = True
-    DoEvents
+    'DoEvents
     
     'Begin by creating a plugin subdirectory if it doesn't exist
     Message "Checking for plugin directory..."
@@ -898,7 +898,7 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
                 lblDownloadInfo.Caption = g_Language.TranslateMessage("Downloading file %1 of %2 (%3 of %4 bytes received)...", curNumFile, maxNumFile, totalBytesRead, downloadSize)
             End If
             
-            DoEvents
+            'DoEvents
             
         'Carry on
         Loop

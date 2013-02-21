@@ -78,7 +78,7 @@ Public Sub StripOffExtension(ByRef sString As String)
     
 End Sub
 
-'Function to strip the extension from a filename (taken long ago from the Internet; thank you to whoever wrote it!)
+'Function to strip the extension from a filename
 Public Function GetExtension(FileName As String) As String
     
     Dim pathLoc As Long, extLoc As Long

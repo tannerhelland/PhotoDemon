@@ -640,15 +640,15 @@ Private Sub FixScrollBars(Optional midMoving As Boolean = False)
     'If the user hasn't moved the midtones scrollbar, attempt to preserve its ratio
     If midMoving = False Then
         iRefresh = False
-        Dim newValue As Long
-        newValue = hsInL.Value + midRatio * (CDbl(hsInR.Value) - CDbl(hsInL.Value))
-        If newValue > hsInM.Max Then
-            newValue = hsInM.Max
-        ElseIf newValue < hsInM.Min Then
-            newValue = hsInM.Min
+        Dim NewValue As Long
+        NewValue = hsInL.Value + midRatio * (CDbl(hsInR.Value) - CDbl(hsInL.Value))
+        If NewValue > hsInM.Max Then
+            NewValue = hsInM.Max
+        ElseIf NewValue < hsInM.Min Then
+            NewValue = hsInM.Min
         End If
-        hsInM.Value = newValue
-        DoEvents
+        hsInM.Value = NewValue
+        'DoEvents
         iRefresh = True
     End If
     

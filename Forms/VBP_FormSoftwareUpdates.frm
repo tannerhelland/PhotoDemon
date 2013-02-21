@@ -338,7 +338,7 @@ Private Sub cmdNoDownload_Click()
     cmdNoDownloadNoReminder.Visible = False
     picNo.Left = 0
     picNo.Top = 0
-    DoEvents
+    'DoEvents
     txtNoExplanation.Text = g_Language.TranslateMessage("The next time you launch the program, it will remind you about this software update." & vbCrLf & vbCrLf & "Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon.")
     picNo.Visible = True
     cmdOKNo.Visible = True
@@ -358,7 +358,7 @@ Private Sub cmdNoDownloadNoReminder_Click()
     cmdNoDownloadNoReminder.Visible = False
     picNo.Left = 0
     picNo.Top = 0
-    DoEvents
+    'DoEvents
     txtNoExplanation.Text = "You will no longer be prompted about software updates.  (If you change your mind in the future, this setting can be reversed from the 'Tools' -> 'Options' menu.)" & vbCrLf & vbCrLf & "Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon."
     picNo.Visible = True
     cmdOKNo.Visible = True

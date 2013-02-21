@@ -81,10 +81,9 @@ Public Sub CaptureScreen()
     DeleteObject scrhDC
     
     'If we minimized the main window, now's the time to return it to normal size
-    If CaptureMethod = vbYes Then
-        FormMain.WindowState = vbNormal
-        DoEvents
-    End If
+    If CaptureMethod = vbYes Then FormMain.WindowState = vbNormal
+        'DoEvents
+    'End If
     
     'Set the picture of the form to equal its image
     Dim tmpFilename As String
