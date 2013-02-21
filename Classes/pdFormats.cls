@@ -220,12 +220,10 @@ Public Sub generateInputFormats()
     If FreeImageEnabled Then
         addInputFormat "IFF - Amiga Interchange Format", "*.iff", FIF_IFF
         addInputFormat "JNG - JPEG Network Graphics", "*.jng", FIF_JNG
-        addInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k", FIF_JP2
-        ' At present, the batch convert box gets overwhelmed by too many file formats - so I've shrunk the list to cut a few rare JPG2000 extensions.
-        ' addInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", FIF_JP2
+        addInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", FIF_JP2
     End If
     
-    addInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jif;*.jfif", FIF_JPEG
+    addInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", FIF_JPEG
     
     If FreeImageEnabled Then
         addInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", FIF_KOALA
