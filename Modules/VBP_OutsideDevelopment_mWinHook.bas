@@ -90,15 +90,6 @@ End Type
 Private m_tHookConsumer() As tHookConsumer
 Private m_iConsumerCount As Long
 Private m_eValidItem As eHookType
-#Const debugmsg = 0
-
-Public Sub debugmsg(ByVal sMsg As String)
-   #If debugmsg = 1 Then
-      pdMsgBox sMsg, vbInformation
-   #Else
-      Debug.Print sMsg
-   #End If
-End Sub
 
 Public Property Get ValidlParamType() As eHookType
    ValidlParamType = m_eValidItem

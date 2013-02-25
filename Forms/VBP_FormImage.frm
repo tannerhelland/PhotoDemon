@@ -113,11 +113,14 @@ Dim initMouseX As Double, initMouseY As Double
 'Used to prevent the obnoxious blinking effect of the main image scroll bars
 Private Declare Function DestroyCaret Lib "user32" () As Long
 
+'New approach to mousewheel support - should be more robust than the old system
+Dim m_Subclass As cSelfSubHookCallback
+
 Public Sub ActivateWorkaround()
 
     'Update the current form variable
     CurrentImage = Val(Me.Tag)
-    
+        
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
     ' unless they actually exist.)
@@ -196,8 +199,14 @@ End Sub
 'LOAD form
 Private Sub Form_Load()
     
-    'Add support for scrolling with the mouse wheel
-    If g_IsProgramCompiled Then Call WheelHook(Me.hWnd)
+    'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
+    Set m_Subclass = New cSelfSubHookCallback
+    
+    'Add two messages to the subclassing handler - one for handling mousewheel events, and another for handling mouse forward/back keypresses
+    If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then
+        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL        'Mouse wheel
+        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK  'Mouse forward/back keys
+    End If
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -576,9 +585,11 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             ElseIf confirmReturn = vbNo Then
                 
                 'I think this "Unload Me" statement may be causing some kind of infinite recursion - perhaps because it triggers this very
-                ' QueryUnload statement?  Not sure, but I'm disabling it to run some tests...
-                'Unload Me
+                ' QueryUnload statement?  Not sure, but I may need to revisit it if the problems don't go away...
+                Unload Me
                 'Set Me = Nothing
+                'Cancel = False
+                'Me.Visible = False
             
             End If
         
@@ -649,13 +660,14 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
+    'Release the subclassing object responsible for mouse wheel support
+    m_Subclass.ssc_Terminate
+    Set m_Subclass = Nothing
+    
     Message "Closing image..."
     
     NumOfWindows = NumOfWindows - 1
-    
-    'Release mouse wheel support
-    If g_IsProgramCompiled Then Call WheelUnHook(Me.hWnd)
-        
+            
     Me.Visible = False
     
     'Deactivate this layer
@@ -689,7 +701,7 @@ Private Sub Form_Unload(Cancel As Integer)
     End If
     
     Message "Finished."
-        
+            
 End Sub
 
 Private Sub HScroll_Change()
@@ -716,15 +728,13 @@ Private Sub VScroll_Scroll()
     ScrollViewport Me
 End Sub
 
-'In VB6, a routine this like is required to support use of a mouse wheel.
-Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal rotation As Long, ByVal Xpos As Long, ByVal Ypos As Long)
-  
-  On Error Resume Next
+'This custom routine, combined with careful subclassing, allows us to handle mouse wheel events.
+Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xPos As Long, ByVal yPos As Long)
   
   'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
   If (VScroll.Visible = True) And (Not ShiftDown) And (Not CtrlDown) Then
   
-    If rotation < 0 Then
+    If mRotation < 0 Then
         
         If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
             VScroll.Value = VScroll.Max
@@ -734,7 +744,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal rotation As Long, ByVal Xpo
         
         ScrollViewport Me
     
-    ElseIf rotation > 0 Then
+    ElseIf mRotation > 0 Then
         
         If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
             VScroll.Value = VScroll.Min
@@ -750,7 +760,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal rotation As Long, ByVal Xpo
   'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
   If (HScroll.Visible = True) And ShiftDown And (Not CtrlDown) Then
   
-    If rotation < 0 Then
+    If mRotation < 0 Then
         
         If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
             HScroll.Value = HScroll.Max
@@ -760,7 +770,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal rotation As Long, ByVal Xpo
         
         ScrollViewport Me
     
-    ElseIf rotation > 0 Then
+    ElseIf mRotation > 0 Then
         
         If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
             HScroll.Value = HScroll.Min
@@ -776,22 +786,68 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal rotation As Long, ByVal Xpo
   'Zooming - only trigger when Ctrl has been pressed
   If CtrlDown And (Not ShiftDown) Then
   
-    If rotation > 0 Then
+    If mRotation > 0 Then
         
         If FormMain.CmbZoom.ListIndex > 0 Then
             FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
-            PrepareViewport Me, "Ctrl+Mousewheel"
+            'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
+            'PrepareViewport Me, "Ctrl+Mousewheel"
         End If
     
-    ElseIf rotation < 0 Then
+    ElseIf mRotation < 0 Then
         
         If FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then
             FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
-            PrepareViewport Me, "Ctrl+Mousewheel"
+            'PrepareViewport Me, "Ctrl+Mousewheel"
         End If
         
     End If
   End If
     
+End Sub
+
+'This routine MUST BE KEPT as the final routine for this form.  Its ordinal position determines its ability to subclass properly.
+' Subclassing is required to enable mousewheel support.
+Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
+                      
+    Dim MouseKeys As Long
+    Dim mRotation As Long
+    Dim xPos As Long
+    Dim yPos As Long
+    
+    'Only handle scroll events if the message relates to this form
+    If lParamUser = Me.hWnd Then
+
+        Select Case uMsg
+  
+            Case WM_MOUSEWHEEL
+    
+            MouseKeys = wParam And 65535
+            mRotation = wParam / 65536
+            xPos = lParam And 65535
+            yPos = lParam / 65536
+      
+            Me.MouseWheel MouseKeys, mRotation, xPos, yPos
+      
+        'FYI: I used brute-force testing to discover what messages my mouse uses for its back/forward keys.
+        '      I have no idea if these values are consistent between hardware vendors
+        Case WM_MOUSEFORWARDBACK
+                    
+            'Mouse back key
+            If lParam = WM_MOUSEKEYBACK Then
+                If pdImages(Me.Tag).IsActive Then
+                    If pdImages(Me.Tag).UndoState Then Process Undo
+                End If
+            'Mouse forward key
+            ElseIf lParam = WM_MOUSEKEYFORWARD Then
+                If pdImages(Me.Tag).IsActive Then
+                    If pdImages(Me.Tag).RedoState Then Process Redo
+                End If
+            End If
+            
+        End Select
+  
+    End If
+                      
 End Sub
 
