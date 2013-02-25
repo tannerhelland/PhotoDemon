@@ -355,7 +355,6 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   110
-         ToolTipText     =   $"VBP_FormPreferences.frx":8290
          Top             =   4230
          Width           =   8055
       End
@@ -374,7 +373,6 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   48
-         ToolTipText     =   $"VBP_FormPreferences.frx":8371
          Top             =   2280
          Width           =   4575
       End
@@ -475,7 +473,7 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   10
-         ToolTipText     =   $"VBP_FormPreferences.frx":841A
+         ToolTipText     =   $"VBP_FormPreferences.frx":8290
          Top             =   390
          Width           =   4815
       End
@@ -485,7 +483,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7680
-         MouseIcon       =   "VBP_FormPreferences.frx":84B3
+         MouseIcon       =   "VBP_FormPreferences.frx":8329
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -694,7 +692,6 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   44
-         ToolTipText     =   $"VBP_FormPreferences.frx":8605
          Top             =   3240
          Width           =   7695
       End
@@ -713,7 +710,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   31
-         ToolTipText     =   $"VBP_FormPreferences.frx":86D7
+         ToolTipText     =   $"VBP_FormPreferences.frx":847B
          Top             =   2010
          Width           =   5055
       End
@@ -732,7 +729,7 @@ Begin VB.Form FormPreferences
          Left            =   360
          Style           =   2  'Dropdown List
          TabIndex        =   28
-         ToolTipText     =   $"VBP_FormPreferences.frx":876A
+         ToolTipText     =   $"VBP_FormPreferences.frx":850E
          Top             =   900
          Width           =   5055
       End
@@ -742,7 +739,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   5520
-         MouseIcon       =   "VBP_FormPreferences.frx":87FF
+         MouseIcon       =   "VBP_FormPreferences.frx":85A3
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -759,7 +756,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":8951
+         MouseIcon       =   "VBP_FormPreferences.frx":86F5
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -884,7 +881,7 @@ Begin VB.Form FormPreferences
          Left            =   600
          Style           =   2  'Dropdown List
          TabIndex        =   93
-         ToolTipText     =   $"VBP_FormPreferences.frx":8AA3
+         ToolTipText     =   $"VBP_FormPreferences.frx":8847
          Top             =   960
          Width           =   7395
       End
@@ -919,7 +916,6 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   94
-            ToolTipText     =   $"VBP_FormPreferences.frx":8B62
             Top             =   1560
             Width           =   7215
          End
@@ -938,7 +934,6 @@ Begin VB.Form FormPreferences
             Left            =   630
             Style           =   2  'Dropdown List
             TabIndex        =   88
-            ToolTipText     =   $"VBP_FormPreferences.frx":8C04
             Top             =   960
             Width           =   7095
          End
@@ -1014,7 +1009,6 @@ Begin VB.Form FormPreferences
             Left            =   2790
             Style           =   2  'Dropdown List
             TabIndex        =   85
-            ToolTipText     =   $"VBP_FormPreferences.frx":8CC0
             Top             =   600
             Width           =   4935
          End
@@ -1100,7 +1094,6 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   100
-            ToolTipText     =   $"VBP_FormPreferences.frx":8D63
             Top             =   2040
             Width           =   7215
          End
@@ -1121,7 +1114,6 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   106
-            ToolTipText     =   $"VBP_FormPreferences.frx":8E06
             Top             =   2520
             Value           =   1  'Checked
             Width           =   7215
@@ -1300,7 +1292,6 @@ Begin VB.Form FormPreferences
             Height          =   375
             Left            =   600
             TabIndex        =   97
-            ToolTipText     =   $"VBP_FormPreferences.frx":8EA5
             Top             =   600
             Width           =   7215
          End
@@ -1415,7 +1406,6 @@ Begin VB.Form FormPreferences
          Left            =   3180
          Style           =   2  'Dropdown List
          TabIndex        =   78
-         ToolTipText     =   $"VBP_FormPreferences.frx":8F51
          Top             =   1680
          Width           =   4995
       End
@@ -1434,7 +1424,6 @@ Begin VB.Form FormPreferences
          Left            =   2760
          Style           =   2  'Dropdown List
          TabIndex        =   75
-         ToolTipText     =   $"VBP_FormPreferences.frx":9014
          Top             =   3840
          Width           =   5415
       End
@@ -1453,7 +1442,6 @@ Begin VB.Form FormPreferences
          Left            =   840
          Style           =   2  'Dropdown List
          TabIndex        =   67
-         ToolTipText     =   $"VBP_FormPreferences.frx":90E1
          Top             =   2910
          Width           =   7335
       End
@@ -1676,7 +1664,6 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   74
-         ToolTipText     =   $"VBP_FormPreferences.frx":91D6
          Top             =   825
          Width           =   7455
       End
@@ -1695,7 +1682,6 @@ Begin VB.Form FormPreferences
          Left            =   3720
          Style           =   2  'Dropdown List
          TabIndex        =   55
-         ToolTipText     =   $"VBP_FormPreferences.frx":92BB
          Top             =   4125
          Width           =   4095
       End
@@ -1716,7 +1702,6 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   720
          TabIndex        =   53
-         ToolTipText     =   $"VBP_FormPreferences.frx":9363
          Top             =   3150
          Width           =   7455
       End
@@ -1735,7 +1720,6 @@ Begin VB.Form FormPreferences
          Left            =   3000
          Style           =   2  'Dropdown List
          TabIndex        =   42
-         ToolTipText     =   $"VBP_FormPreferences.frx":942D
          Top             =   1695
          Width           =   4815
       End
@@ -1955,7 +1939,6 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   360
          TabIndex        =   59
-         ToolTipText     =   $"VBP_FormPreferences.frx":94E7
          Top             =   480
          Width           =   7455
       End
@@ -2072,7 +2055,6 @@ Begin VB.Form FormPreferences
          Height          =   255
          Left            =   240
          TabIndex        =   21
-         ToolTipText     =   $"VBP_FormPreferences.frx":95CB
          Top             =   480
          Width           =   6975
       End
@@ -2252,7 +2234,6 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   240
          TabIndex        =   17
-         ToolTipText     =   $"VBP_FormPreferences.frx":96BD
          Top             =   1080
          Width           =   6735
       End
@@ -2950,6 +2931,29 @@ Private Sub Form_Load()
     'Populate the network access disclaimer in the "Update" panel
     lblExplanation.Caption = g_Language.TranslateMessage("PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins (FreeImage, EZTwain, zLib, and pngnq-s9) if they aren't present in the \Data\Plugins subdirectory." & vbCrLf & vbCrLf & "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single ""updates.txt"" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more of the compressed plugin files from the PhotoDemon server." & vbCrLf & vbCrLf & "If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.")
         
+    'Populate a few more tooltips.  These are done manually for translation purposes; the tooltips themselves are too long to fit
+    ' inside a traditional VB object, so it dumps them to a separate custom .frx resource file where they are difficult to extract.
+    ' Rather than mess with that, I manually add the tooltips here so that the automatic translation engine can easily find the text.
+    chkTaskbarIcon.ToolTipText = g_Language.TranslateMessage("While multitasking, some find it convenient to have the PhotoDemon task bar icon reflect the image currently being edited.  This option allows PhotoDemon to automatically update the task bar and window icons as necessary.")
+    cmbMRUCaption.ToolTipText = g_Language.TranslateMessage("The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.")
+    chkValidateAlpha.ToolTipText = g_Language.TranslateMessage("When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files.")
+    chkBMPRLE.ToolTipText = g_Language.TranslateMessage("Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE encoding when saving 8bpp images.")
+    chkTIFFCMYK.ToolTipText = g_Language.TranslateMessage("TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.")
+    cmbTIFFCompression.ToolTipText = g_Language.TranslateMessage("TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.")
+    chkPNGInterlacing.ToolTipText = g_Language.TranslateMessage("PNG interlacing is similar to ""progressive scan"" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can ""fade-in"" while it downloads.")
+    chkPNGBackground.ToolTipText = g_Language.TranslateMessage("PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.")
+    cmbPPMFormat.ToolTipText = g_Language.TranslateMessage("Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)")
+    chkInitialColorDepth.ToolTipText = g_Language.TranslateMessage("This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).")
+    chkToneMapping.ToolTipText = g_Language.TranslateMessage("Tone mapping is used to preserve the tonal range of HDR images.  This setting is very useful for RAW photos and scanned documents, but it adds a significant amount of time to the image load process.")
+    chkSelectionClearCrop.ToolTipText = g_Language.TranslateMessage("When the ""Crop to Selection"" command is used, the resulting image will always contain a selection the same size as the full image.  There is generally no need to retain this, so PhotoDemon can automatically clear it for you.")
+    chkLogMessages.ToolTipText = g_Language.TranslateMessage("If this is checked, PhotoDemon will create a human-readable .log file that contains the text of every message displayed on the progress bar.  This will increase processing time, so only check this option if you really need debugging data.")
+    chkPromptPluginDownload.ToolTipText = g_Language.TranslateMessage("PhotoDemon relies on three open-source plugins for full functionality. If they are missing, this will allow the software to automatically download them.")
+    cmbExportColorDepth.ToolTipText = g_Language.TranslateMessage("Some image file types support a variety of color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise.")
+    cmbSaveBehavior.ToolTipText = g_Language.TranslateMessage("In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file.")
+    cmbDefaultSaveFormat.ToolTipText = g_Language.TranslateMessage("Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option.")
+    cmbMultiImage.ToolTipText = g_Language.TranslateMessage("Some image formats can hold multiple images in one file.  When these files are encountered, PhotoDemon can ignore the extra images, or it can load them all for you.")
+    cmbLargeImages.ToolTipText = g_Language.TranslateMessage("Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.")
+    
     'Finally, hide the inactive category panels
     Dim i As Long
     For i = 0 To picContainer.Count - 1
