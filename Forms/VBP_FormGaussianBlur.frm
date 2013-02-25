@@ -78,8 +78,8 @@ Begin VB.Form FormGaussianBlur
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -203,8 +203,7 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
         If gRadius = 0 Then gRadius = 1
     End If
     
-    'CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
-    CreateGaussianBlurLayerFast gRadius, srcLayer, workingLayer, toPreview
+    CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
     
     srcLayer.eraseLayer
     Set srcLayer = Nothing
