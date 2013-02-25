@@ -506,7 +506,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If g_ConfirmClosingUnsaved And pdImages(Me.Tag).IsActive And (Not pdImages(Me.Tag).forInternalUseOnly) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
-        If pdImages(Me.Tag).HasBeenSaved = False Then
+        If Not pdImages(Me.Tag).HasBeenSaved Then
                         
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
             If g_DealWithAllUnsavedImages = False Then
@@ -551,7 +551,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             ElseIf confirmReturn = vbYes Then
                 
                 'If the form being saved is enabled, bring that image to the foreground.  (If a "Save As" is required, this
-                ' is the only way to show the user which image the Save As form is referencing.)
+                ' helps show the user which image the Save As form is referencing.)
                 If FormMain.Enabled Then Me.SetFocus
                 
                 'Attempt to save.  Note that the user can still cancel at this point, and we want to honor their cancellation
@@ -574,7 +574,11 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             
             'Do not save the image
             ElseIf confirmReturn = vbNo Then
-                Unload Me
+                
+                'I think this "Unload Me" statement may be causing some kind of infinite recursion - perhaps because it triggers this very
+                ' QueryUnload statement?  Not sure, but I'm disabling it to run some tests...
+                'Unload Me
+                'Set Me = Nothing
             
             End If
         
@@ -660,8 +664,6 @@ Private Sub Form_Unload(Cancel As Integer)
     'Remove any undo files associated with this layer
     ClearUndo Me.Tag
     
-    Message "Finished."
-
     'If this was the last (or only) open image and the histogram is loaded, unload the histogram
     ' (If we don't do this, the histogram may attempt to update, and without an active image it will throw an error)
     If NumOfWindows = 0 Then Unload FormHistogram
@@ -685,6 +687,8 @@ Private Sub Form_Unload(Cancel As Integer)
         Next i
     
     End If
+    
+    Message "Finished."
         
 End Sub
 
