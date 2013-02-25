@@ -1872,7 +1872,7 @@ Private Sub MDIForm_Load()
     If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPreference_Boolean("General Preferences", "DisplayIDEWarning", True)) Then displayIDEWarning
      
     'Finally, return focus to the main form
-    FormMain.SetFocus
+    'FormMain.SetFocus
      
 End Sub
 
@@ -2038,7 +2038,10 @@ Private Sub MnuAutoEnhanceShadows_Click()
 End Sub
 
 Private Sub MnuBatchConvert_Click()
-    FormBatchConvert.Show 1, FormMain
+    g_AllowDragAndDrop = False
+    FormBatchWizard.Show vbModal, FormMain
+    g_AllowDragAndDrop = True
+    'FormBatchConvert.Show 1, FormMain
 End Sub
 
 Private Sub MnuBlackLight_Click()
@@ -2857,7 +2860,8 @@ Private Sub MnuSynthesize_Click()
 End Sub
 
 Private Sub MnuTest_Click()
-    FormVignette.Show vbModal, FormMain
+    'FormVignette.Show vbModal, FormMain
+    FormBatchWizard.Show vbModal, FormMain
     'MenuTest
 End Sub
 

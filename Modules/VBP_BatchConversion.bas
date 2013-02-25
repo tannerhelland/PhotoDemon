@@ -251,9 +251,9 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
     For tCall = 1 To CurrentCall
         If (Calls(tCall).LoadForm = False) Then
             Process Calls(tCall).MainType, Calls(tCall).pOPCODE, Calls(tCall).pOPCODE2, Calls(tCall).pOPCODE3, Calls(tCall).pOPCODE4, Calls(tCall).pOPCODE5, Calls(tCall).pOPCODE6, Calls(tCall).pOPCODE7, Calls(tCall).pOPCODE8, Calls(tCall).pOPCODE9, Calls(tCall).LoadForm, Calls(tCall).RecordAction
-            Do
-                DoEvents
-            Loop While Processing = True
+            'Do
+            '    DoEvents
+            'Loop While Processing = True
         End If
     Next tCall
     Message "Macro complete!"

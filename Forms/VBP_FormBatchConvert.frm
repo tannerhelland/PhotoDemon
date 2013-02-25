@@ -542,6 +542,8 @@ End Sub
 
 'Update the file list box to display only images of the selected file format
 Private Sub cmbPattern_Click()
+    'Clipboard.SetText g_ImageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
+    'MsgBox g_ImageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
     File1.Pattern = g_ImageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
 End Sub
 
