@@ -203,7 +203,8 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
         If gRadius = 0 Then gRadius = 1
     End If
     
-    CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
+    'CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
+    CreateGaussianBlurLayerFast gRadius, srcLayer, workingLayer, toPreview
     
     srcLayer.eraseLayer
     Set srcLayer = Nothing
