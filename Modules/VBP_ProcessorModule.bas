@@ -289,6 +289,9 @@ Public LastFilterCall As ProcessCall
 'Track processing (i.e. whether or not the software processor is busy right now
 Public Processing As Boolean
 
+'Processing time (to enable this, see the top constant in the Public_Constants module)
+Private m_ProcessingTime As Double
+
 'PhotoDemon's software processor.  Almost every action the program takes is routed through this method.  This is what
 ' allows us to record and playback macros, among other things.  (See comment at top of page for more details.)
 Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optional pOPCODE2 As Variant = 0, Optional pOPCODE3 As Variant = 0, Optional pOPCODE4 As Variant = 0, Optional pOPCODE5 As Variant = 0, Optional pOPCODE6 As Variant = 0, Optional pOPCODE7 As Variant = 0, Optional pOPCODE8 As Variant = 0, Optional pOPCODE9 As Variant = 0, Optional LoadForm As Boolean = False, Optional RecordAction As Boolean = True)
@@ -302,14 +305,14 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     'Mark the software processor as busy
     Processing = True
         
+    FormMain.Enabled = False
+    
     'Set the mouse cursor to an hourglass and lock the main form (to prevent additional input)
     If LoadForm = False Then
         Screen.MousePointer = vbHourglass
     Else
         setArrowCursor FormMain.ActiveForm
     End If
-    
-    FormMain.Enabled = False
         
     'If we are to perform the last command, simply replace all the method parameters using data from the
     ' LastFilterCall object, then let the routine carry on as usual
@@ -429,6 +432,11 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
         LastFilterCall.pOPCODE8 = pOPCODE8
         LastFilterCall.pOPCODE9 = pOPCODE9
         LastFilterCall.LoadForm = LoadForm
+        
+        'If the user wants us to time how long this action takes, mark the current time now
+        If Not LoadForm Then
+            If DISPLAY_TIMINGS Then m_ProcessingTime = Timer
+        End If
         
     End If
     
@@ -902,6 +910,11 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
         
     End Select
     
+    'If the user wants us to time this action, display the results now
+    If (Not LoadForm) And (pType >= 100) Then
+        If DISPLAY_TIMINGS Then Message "Time taken: " & Timer - m_ProcessingTime & " seconds"
+    End If
+    
     'Finally, check to see if the user wants us to Fade the last effect applied to the image...
     If pType = FadeLastEffect Then MenuFadeLastEffect
     
@@ -928,9 +941,9 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     FormMain.Enabled = True
     
     'If a filter or tool was just used, return focus to the active form
-    'If (pType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) Then
-    '    If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
-    'End If
+    If (pType >= 101) And (MacroStatus <> MacroBATCH) And (LoadForm <> True) Then
+        If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
+    End If
         
     'Also, re-enable drag and drop operations
     If pType >= 101 Then

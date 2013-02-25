@@ -2,6 +2,9 @@ Attribute VB_Name = "Public_Constants"
 
 Option Explicit
 
+'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects
+Public Const DISPLAY_TIMINGS As Boolean = True
+
 'Constants used for pulling up an API browse-for-folder box
 Public Const BIF_RETURNONLYFSDIRS = 1
 Public Const BFFM_INITIALIZED = 1
