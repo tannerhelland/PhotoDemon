@@ -55,7 +55,7 @@ Begin VB.MDIForm FormMain
          TabIndex        =   26
          TabStop         =   0   'False
          ToolTipText     =   "Click to change the way selections are rendered"
-         Top             =   4260
+         Top             =   540
          Width           =   1845
       End
       Begin VB.VScrollBar vsSelLeft 
@@ -63,7 +63,7 @@ Begin VB.MDIForm FormMain
          Left            =   810
          TabIndex        =   25
          TabStop         =   0   'False
-         Top             =   5130
+         Top             =   1410
          Value           =   15000
          Width           =   270
       End
@@ -83,7 +83,7 @@ Begin VB.MDIForm FormMain
          Left            =   180
          MaxLength       =   5
          TabIndex        =   24
-         Top             =   5190
+         Top             =   1470
          Width           =   645
       End
       Begin VB.VScrollBar vsSelTop 
@@ -91,7 +91,7 @@ Begin VB.MDIForm FormMain
          Left            =   1740
          TabIndex        =   23
          TabStop         =   0   'False
-         Top             =   5130
+         Top             =   1410
          Value           =   15000
          Width           =   270
       End
@@ -111,7 +111,7 @@ Begin VB.MDIForm FormMain
          Left            =   1110
          MaxLength       =   5
          TabIndex        =   22
-         Top             =   5190
+         Top             =   1470
          Width           =   645
       End
       Begin VB.VScrollBar vsSelWidth 
@@ -120,7 +120,7 @@ Begin VB.MDIForm FormMain
          Min             =   1
          TabIndex        =   21
          TabStop         =   0   'False
-         Top             =   6090
+         Top             =   2370
          Value           =   15000
          Width           =   270
       End
@@ -140,7 +140,7 @@ Begin VB.MDIForm FormMain
          Left            =   180
          MaxLength       =   5
          TabIndex        =   20
-         Top             =   6150
+         Top             =   2430
          Width           =   645
       End
       Begin VB.VScrollBar vsSelHeight 
@@ -149,7 +149,7 @@ Begin VB.MDIForm FormMain
          Min             =   1
          TabIndex        =   19
          TabStop         =   0   'False
-         Top             =   6090
+         Top             =   2370
          Value           =   15000
          Width           =   270
       End
@@ -169,7 +169,7 @@ Begin VB.MDIForm FormMain
          Left            =   1110
          MaxLength       =   5
          TabIndex        =   18
-         Top             =   6150
+         Top             =   2430
          Width           =   645
       End
       Begin VB.Label lblTemporary 
@@ -189,15 +189,17 @@ Begin VB.MDIForm FormMain
          Height          =   1455
          Left            =   240
          TabIndex        =   31
-         Top             =   1320
+         Top             =   4800
+         Visible         =   0   'False
          Width           =   1695
       End
       Begin VB.Line Line3 
          BorderColor     =   &H80000002&
+         Visible         =   0   'False
          X1              =   5
          X2              =   142
-         Y1              =   248
-         Y2              =   248
+         Y1              =   216
+         Y2              =   216
       End
       Begin VB.Label lblTools 
          Appearance      =   0  'Flat
@@ -217,7 +219,8 @@ Begin VB.MDIForm FormMain
          Height          =   375
          Left            =   120
          TabIndex        =   30
-         Top             =   120
+         Top             =   3600
+         Visible         =   0   'False
          Width           =   1695
       End
       Begin VB.Label lblSelStyle 
@@ -238,7 +241,7 @@ Begin VB.MDIForm FormMain
          Height          =   375
          Left            =   120
          TabIndex        =   29
-         Top             =   3840
+         Top             =   120
          Width           =   1695
       End
       Begin VB.Label lblSelPosition 
@@ -259,7 +262,7 @@ Begin VB.MDIForm FormMain
          Height          =   375
          Left            =   120
          TabIndex        =   28
-         Top             =   4770
+         Top             =   1050
          Width           =   1935
       End
       Begin VB.Label lblSelSize 
@@ -280,7 +283,7 @@ Begin VB.MDIForm FormMain
          Height          =   375
          Left            =   120
          TabIndex        =   27
-         Top             =   5730
+         Top             =   2010
          Width           =   1935
       End
    End

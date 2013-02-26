@@ -6,7 +6,7 @@ Begin VB.Form FormBatchWizard
    ClientHeight    =   9060
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   15345
+   ClientWidth     =   15360
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,22 +21,173 @@ Begin VB.Form FormBatchWizard
    MinButton       =   0   'False
    ScaleHeight     =   604
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1023
+   ScaleWidth      =   1024
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton cmdPrevious 
+      Caption         =   "&Previous"
+      Enabled         =   0   'False
+      Height          =   615
+      Left            =   10080
+      TabIndex        =   7
+      Top             =   8355
+      Width           =   1725
+   End
+   Begin VB.PictureBox picDragAllow 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   525
+      Left            =   720
+      Picture         =   "VBP_FormBatchWizard.frx":0000
+      ScaleHeight     =   33
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   33
+      TabIndex        =   6
+      Top             =   7680
+      Visible         =   0   'False
+      Width           =   525
+   End
+   Begin VB.PictureBox picDragDisallow 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   540
+      Left            =   120
+      Picture         =   "VBP_FormBatchWizard.frx":09F6
+      ScaleHeight     =   34
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   34
+      TabIndex        =   5
+      Top             =   7680
+      Visible         =   0   'False
+      Width           =   540
+   End
+   Begin VB.CommandButton CmdCancel 
+      Caption         =   "&Cancel"
+      Height          =   615
+      Left            =   13860
+      TabIndex        =   1
+      Top             =   8355
+      Width           =   1365
+   End
+   Begin VB.CommandButton cmdNext 
+      Caption         =   "&Next"
+      Default         =   -1  'True
+      Enabled         =   0   'False
+      Height          =   615
+      Left            =   11880
+      TabIndex        =   0
+      Top             =   8355
+      Width           =   1725
+   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
-      BackColor       =   &H00C0FFC0&
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   7455
-      Index           =   2
-      Left            =   15360
-      ScaleHeight     =   7455
-      ScaleWidth      =   11775
-      TabIndex        =   10
-      Top             =   600
+      Index           =   1
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   9
+      Top             =   720
       Width           =   11775
+      Begin VB.CommandButton cmdSelectMacro 
+         Caption         =   "Select macro file..."
+         Height          =   525
+         Left            =   8400
+         TabIndex        =   34
+         Top             =   1440
+         Width           =   3015
+      End
+      Begin VB.TextBox txtMacro 
+         Enabled         =   0   'False
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   315
+         Left            =   720
+         TabIndex        =   33
+         Text            =   "no macro selected"
+         Top             =   1560
+         Width           =   7455
+      End
+      Begin PhotoDemon.smartOptionButton optActions 
+         Height          =   360
+         Index           =   0
+         Left            =   120
+         TabIndex        =   30
+         Top             =   120
+         Width           =   4110
+         _ExtentX        =   7250
+         _ExtentY        =   635
+         Caption         =   "do not apply any photo editing actions"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optActions 
+         Height          =   360
+         Index           =   1
+         Left            =   120
+         TabIndex        =   32
+         Top             =   1080
+         Width           =   4140
+         _ExtentX        =   7303
+         _ExtentY        =   635
+         Caption         =   "apply a recorded macro to the images"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblExplanation 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "if you only want to rename images or change image formats, use this option "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   1
+         Left            =   720
+         TabIndex        =   31
+         Top             =   540
+         Width           =   6615
+      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -311,79 +462,403 @@ Begin VB.Form FormBatchWizard
          Y2              =   296
       End
    End
-   Begin VB.CommandButton cmdPrevious 
-      Caption         =   "&Previous"
-      Enabled         =   0   'False
-      Height          =   615
-      Left            =   10080
-      TabIndex        =   7
-      Top             =   8355
-      Width           =   1725
-   End
-   Begin VB.PictureBox picDragAllow 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   525
-      Left            =   720
-      Picture         =   "VBP_FormBatchWizard.frx":0000
-      ScaleHeight     =   33
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   33
-      TabIndex        =   6
-      Top             =   7680
-      Visible         =   0   'False
-      Width           =   525
-   End
-   Begin VB.PictureBox picDragDisallow 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   540
-      Left            =   120
-      Picture         =   "VBP_FormBatchWizard.frx":09F6
-      ScaleHeight     =   34
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   34
-      TabIndex        =   5
-      Top             =   7680
-      Visible         =   0   'False
-      Width           =   540
-   End
-   Begin VB.CommandButton CmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   615
-      Left            =   13860
-      TabIndex        =   1
-      Top             =   8355
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdNext 
-      Caption         =   "&Next"
-      Default         =   -1  'True
-      Height          =   615
-      Left            =   11880
-      TabIndex        =   0
-      Top             =   8355
-      Width           =   1725
-   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFC0&
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   7455
-      Index           =   1
+      Index           =   3
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   35
+      Top             =   720
+      Width           =   11775
+      Begin PhotoDemon.smartOptionButton optCase 
+         Height          =   330
+         Index           =   0
+         Left            =   840
+         TabIndex        =   53
+         Top             =   5640
+         Width           =   1260
+         _ExtentX        =   2223
+         _ExtentY        =   582
+         Caption         =   "lowercase"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.TextBox txtRenameRemove 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   840
+         TabIndex        =   51
+         Top             =   4560
+         Width           =   4260
+      End
+      Begin VB.TextBox txtAppendBack 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   6120
+         TabIndex        =   50
+         Top             =   3480
+         Width           =   4260
+      End
+      Begin VB.TextBox txtAppendFront 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   840
+         TabIndex        =   49
+         Text            =   "NEW_"
+         Top             =   3480
+         Width           =   4260
+      End
+      Begin PhotoDemon.smartCheckBox chkRenamePrefix 
+         Height          =   480
+         Left            =   480
+         TabIndex        =   46
+         Top             =   3000
+         Width           =   2955
+         _ExtentX        =   5212
+         _ExtentY        =   847
+         Caption         =   "add a prefix to each filename:"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.ComboBox cmbOutputOptions 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   480
+         Style           =   2  'Dropdown List
+         TabIndex        =   45
+         Top             =   1800
+         Width           =   7455
+      End
+      Begin VB.CommandButton cmdSelectOutputPath 
+         Caption         =   "Select destination folder..."
+         Height          =   525
+         Left            =   8280
+         TabIndex        =   42
+         Top             =   480
+         Width           =   3135
+      End
+      Begin VB.TextBox txtOutputPath 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   315
+         Left            =   480
+         TabIndex        =   41
+         Text            =   "C:\"
+         Top             =   600
+         Width           =   7455
+      End
+      Begin PhotoDemon.smartCheckBox chkRenameSuffix 
+         Height          =   480
+         Left            =   5760
+         TabIndex        =   47
+         Top             =   3000
+         Width           =   2925
+         _ExtentX        =   5159
+         _ExtentY        =   847
+         Caption         =   "add a suffix to each filename:"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkRenameRemove 
+         Height          =   480
+         Left            =   480
+         TabIndex        =   48
+         Top             =   4080
+         Width           =   5205
+         _ExtentX        =   9181
+         _ExtentY        =   847
+         Caption         =   "remove the following text (if found) from each filename:"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkRenameCase 
+         Height          =   480
+         Left            =   480
+         TabIndex        =   52
+         Top             =   5160
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   847
+         Caption         =   "force each filename, including extension, to the following case:"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optCase 
+         Height          =   330
+         Index           =   1
+         Left            =   3240
+         TabIndex        =   54
+         Top             =   5640
+         Width           =   1410
+         _ExtentX        =   2487
+         _ExtentY        =   582
+         Caption         =   "UPPERCASE"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkRenameSpaces 
+         Height          =   480
+         Left            =   480
+         TabIndex        =   55
+         Top             =   6240
+         Width           =   4275
+         _ExtentX        =   7541
+         _ExtentY        =   847
+         Caption         =   "replace spaces in filenames with underscores"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblDstFilename 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "the base name of processed files will be:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   44
+         Top             =   1320
+         Width           =   4305
+      End
+      Begin VB.Label lblOptionalText 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "additional rename options"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   43
+         Top             =   2520
+         Width           =   2760
+      End
+      Begin VB.Label lblDstFolder 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "output images to this folder:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   40
+         Top             =   120
+         Width           =   3030
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   2
       Left            =   3480
       ScaleHeight     =   7455
       ScaleWidth      =   11775
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   720
       Width           =   11775
+      Begin VB.ComboBox cmbOutputFormat 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   720
+         Style           =   2  'Dropdown List
+         TabIndex        =   39
+         Top             =   1920
+         Width           =   6735
+      End
+      Begin PhotoDemon.smartOptionButton optFormat 
+         Height          =   360
+         Index           =   0
+         Left            =   120
+         TabIndex        =   36
+         Top             =   120
+         Width           =   3795
+         _ExtentX        =   6694
+         _ExtentY        =   635
+         Caption         =   "keep images in their original format"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optFormat 
+         Height          =   360
+         Index           =   1
+         Left            =   120
+         TabIndex        =   37
+         Top             =   1320
+         Width           =   3690
+         _ExtentX        =   6509
+         _ExtentY        =   635
+         Caption         =   "convert images to a single format"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblExplanationFormat 
+         BackStyle       =   0  'Transparent
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   600
+         Left            =   720
+         TabIndex        =   38
+         Top             =   540
+         Width           =   10980
+         WordWrap        =   -1  'True
+      End
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -470,19 +945,19 @@ Attribute VB_Exposed = False
 '1) Build the batch list, e.g. the list of files to be processed.  This is by far the most complicated section of the wizard.
 '    I have revisited the design of this page many times, and I think the current incarnation is pretty damn good.  It exposes
 '    a lot of functionality without being overwhelming, and the user has many tools at their disposal to build an ideal list
-'    of images from any number of source directories.  (Many batch tools limit you to just one.)
+'    of images from any number of source directories.  (Many batch tools limit you to just one source folder, which I hate.)
 '
-'2) Choose where the files will go.  This includes a number of renaming options, which is a big step up from the original
-'    batch process tool in earlier versions.  I am open to suggestions for other renaming features, but at present I think the
-'    selection is sufficiently comprehensive.
-'
-'3) Select the operation to apply to the images.  This is really two pages in one, condensed for simplicity.  First, the user
+'2) Select the operation to apply to the images.  This is really two pages in one, condensed for simplicity.  First, the user
 '    must select an output file format.  There are three choices: retain original format (e.g. "rename only", which allows the
 '    user to use the tool as a batch renamer), pick optimal format for web (which will intermix JPEG and PNG intelligently),
 '    or the user can pick their own format.  Some mechanism must be provided for the user to adjust certain settings, such as
 '    JPEG quality.  I need to investigate how to handle that.  Additionally, the user can select what image editing options
 '    to apply to each image.  A list of presets would be ideal, or they can optionally supply a recorded macro of any
 '    complexity.  This feature places PD among the most comprehensive batch processing tools available anywhere.
+'
+'3) Choose where the files will go and what they will be named.  This includes a number of renaming options, which is a big
+'    step up from the original batch process tool in earlier versions.  I am open to suggestions for other renaming features,
+'    but at present I think the selection is sufficiently comprehensive.
 '
 'Due to the complexity of this tool, there may be some odd combinations of things that don't work quite right - I'm hoping
 ' others can help test and provide feedback to ensure that everything runs smoothly.
@@ -638,6 +1113,9 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
         If cmdNext.Caption <> g_Language.TranslateMessage("Next") Then cmdNext.Caption = g_Language.TranslateMessage("Next")
     End If
     
+    'Finally, update all the label captions that change according to the active panel
+    updateWizardText
+    
 End Sub
 
 'Used to display unique text for each page of the wizard.  The value of m_currentPage is used to determine what text to display.
@@ -656,11 +1134,26 @@ Private Sub updateWizardText()
             lblExplanation(0).Caption = lblExplanation(0).Caption & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.")
             lblExplanation(0).Caption = lblExplanation(0).Caption & vbCrLf & vbCrLf & g_Language.TranslateMessage("Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.")
         
-        'Step 2: choose where processed images will be placed
+        'Step 2: choose what photo editing you will apply to each image
         Case 1
         
-        'Step 3: choose what you will do to each image
+            lblWizardTitle.Caption = g_Language.TranslateMessage("Step 2: select the photo editing action(s) to apply to each image")
+            
+            lblExplanation(0).Caption = g_Language.TranslateMessage("(description forthcoming)")
+        
+        'Step 3: choose the output image format
         Case 2
+        
+            lblWizardTitle.Caption = g_Language.TranslateMessage("Step 3: choose a destination image format")
+            
+            lblExplanation(0).Caption = g_Language.TranslateMessage("(description forthcoming)")
+        
+        'Step 4: choose where processed images will be placed and named
+        Case 3
+        
+            lblWizardTitle.Caption = g_Language.TranslateMessage("Step 4: provide a destination folder and any renaming options")
+            
+            lblExplanation(0).Caption = g_Language.TranslateMessage("(description forthcoming)")
         
     End Select
 
@@ -686,6 +1179,7 @@ Private Sub cmdRemove_Click()
     If lstFiles.ListCount = 0 Then
         cmdRemoveAll.Enabled = False
         cmdSaveList.Enabled = False
+        cmdNext.Enabled = False
     End If
         
 End Sub
@@ -699,6 +1193,7 @@ Private Sub cmdRemoveAll_Click()
     cmdRemove.Enabled = False
     cmdRemoveAll.Enabled = False
     cmdSaveList.Enabled = False
+    cmdNext.Enabled = False
     
 End Sub
 
@@ -771,6 +1266,38 @@ Private Sub cmdSelectAll_Click()
     
 End Sub
 
+'Open a common dialog and allow the user to select a macro file (to apply to each image in the batch list)
+Private Sub cmdSelectMacro_Click()
+    
+    'Get the last macro-related path from the INI file
+    Dim tempPathString As String
+    tempPathString = g_UserPreferences.GetPreference_String("Program Paths", "Macro", "")
+    
+    'Prepare a common dialog object
+    Dim cDialog As cCommonDialog
+    Set cDialog = New cCommonDialog
+    
+    Dim sFile As String
+   
+    'If the user provides a valid macro file, use that as part of the batch process
+    If cDialog.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, "Open Macro File", "." & MACRO_EXT, Me.hWnd, OFN_HIDEREADONLY) Then
+        
+        'As a convenience to the user, save this directory as the default macro path
+        tempPathString = sFile
+        StripDirectory tempPathString
+        g_UserPreferences.SetPreference_String "Program Paths", "Macro", tempPathString
+        
+        'Display the selected macro location in the relevant text box
+        txtMacro.Text = sFile
+        
+        'Also, select the macro option button by default
+        optActions(1).Value = True
+        
+    End If
+
+End Sub
+
+'Unselect all files in the top-center list box
 Private Sub cmdSelectNone_Click()
 
     Dim enablePreviews As Boolean
@@ -827,6 +1354,25 @@ Private Sub Form_Load()
     Next x
     cmbPattern.ListIndex = 0
     
+    'Populate a combo box that displays user-friendly summaries of all possible output filetypes
+    For x = 0 To g_ImageFormats.getNumOfOutputFormats
+        cmbOutputFormat.AddItem g_ImageFormats.getOutputFormatDescription(x), x
+    Next x
+    
+    'Save JPEGs by default
+    For x = 0 To cmbOutputFormat.ListCount
+        If g_ImageFormats.getOutputFormatExtension(x) = "jpg" Then
+            cmbOutputFormat.ListIndex = x
+            'jpegFormatIndex = x
+            Exit For
+        End If
+    Next x
+    
+    'Populate the combo box for file rename options
+    cmbOutputOptions.AddItem "Original filenames"
+    cmbOutputOptions.AddItem "Ascending numbers (1, 2, 3, etc.)"
+    cmbOutputOptions.ListIndex = 0
+    
     updateSourceImageList
     
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
@@ -851,6 +1397,11 @@ Private Sub Form_Load()
     'Display appropriate help text and wizard title
     updateWizardText
     
+    'Display some text manually to make sure translations are handled correctly
+    txtMacro.Text = g_Language.TranslateMessage("no macro selected")
+    lblExplanationFormat.Caption = g_Language.TranslateMessage("if PhotoDemon does not support a particular output format, a standard format will be used instead")
+    lblExplanationFormat.Caption = lblExplanationFormat.Caption & vbCrLf & " " & g_Language.TranslateMessage("( JPEG @ 92% quality will be used for photographs, and lossless PNG will be used for non-photographs )")
+        
     'Hide all inactive wizard panes
     Dim i As Long
     For i = 1 To picContainer.Count - 1
@@ -1095,16 +1646,13 @@ Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     ' a previously saved batch list from file)
     If novelAddition Then
         If FileExist(srcFile) Then lstFiles.AddItem srcFile
-        'SendMessageByString lstFiles.hWnd, LB_ADDSTRING, 0, srcFile
-            'lstFiles.AddItem srcFile
-            
-        'End If
     End If
     
     'Enable the "remove all images" button if at least one image exists in the processing list
     If lstFiles.ListCount > 0 Then
         If Not cmdRemoveAll.Enabled Then cmdRemoveAll.Enabled = True
         If Not cmdSaveList.Enabled Then cmdSaveList.Enabled = True
+        If Not cmdNext.Enabled Then cmdNext.Enabled = True
     End If
     
 End Sub
@@ -1121,4 +1669,8 @@ End Sub
 
 Private Sub lstSource_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     lstSource.DragIcon = LoadPicture("")
+End Sub
+
+Private Sub optCase_Click(Index As Integer)
+    chkRenameCase.Value = vbChecked
 End Sub
