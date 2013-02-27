@@ -639,6 +639,9 @@ Private Sub Form_Load()
     
     updateDownloadSize
     
+    'Clear the download progress placeholder text
+    lblDownloadInfo.Caption = ""
+    
     Message "Ready to download required plugins. Awaiting user permission..."
     
     'Assign the system hand cursor to all relevant objects
@@ -731,7 +734,9 @@ Private Function downloadAllPlugins() As Boolean
     dProgBar.Value = 0
     FormPluginDownloader.Height = 2475
     picYes.Visible = True
-    'DoEvents
+    
+    'This DoEvents is necessary to refresh the picture boxes we have hidden and displayed
+    DoEvents
     
     'Begin by creating a plugin subdirectory if it doesn't exist
     Message "Checking for plugin directory..."
@@ -896,9 +901,8 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
             If downloadSize <> 0 Then
                 If curDownloadSize < dProgBar.Max Then dProgBar.Value = curDownloadSize
                 lblDownloadInfo.Caption = g_Language.TranslateMessage("Downloading file %1 of %2 (%3 of %4 bytes received)...", curNumFile, maxNumFile, totalBytesRead, downloadSize)
+                lblDownloadInfo.Refresh
             End If
-            
-            'DoEvents
             
         'Carry on
         Loop
