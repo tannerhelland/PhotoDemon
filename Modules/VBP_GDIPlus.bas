@@ -172,8 +172,8 @@ Private Const PixelFormat32bppPARGB = &HE200B
 'Public Const PixelFormatMax = 15 '&HF
 
 'GDI+ required types
-Private Type GDIPlusStartupInput
-    GDIPlusVersion           As Long
+Private Type GdiplusStartupInput
+    GdiplusVersion           As Long
     DebugEventCallback       As Long
     SuppressBackgroundThread As Long
     SuppressExternalCodecs   As Long
@@ -223,15 +223,15 @@ Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, hGlobal As Long) As Long
     
 'Start-up and shutdown
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef InputBuf As GDIPlusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
+Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
 Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As GDIPlusStatus
 
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, GpImage As Long) As Long
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef Scan0 As Any, ByRef pBitmap As Long) As Long
-Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal Bitmap As Long, hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
+Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal BITMAP As Long, hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) As GDIPlusStatus
-Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, Bitmap As Long) As GDIPlusStatus
+Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, BITMAP As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GDIPlusStatus
 Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GDIPlusStatus
@@ -315,7 +315,7 @@ End Function
 
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
 ' Additional save options are currently available for JPEGs (save quality, range [1,100]) and TIFFs (compression type).
-Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, ByVal outputColorDepth As Long, Optional ByVal JPEGQuality As Long = 92) As Boolean
+Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, ByVal outputColorDepth As Long, Optional ByVal JPEGQuality As Long = 92) As Boolean
 
     On Error GoTo GDIPlusSaveError
 
@@ -324,7 +324,7 @@ Public Function GDIPlusSavePicture(ByVal imageID As Long, ByVal dstFilename As S
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer pdImages(imageID).mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
     If tmpLayer.getLayerColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpLayer.compositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current layer
@@ -549,8 +549,8 @@ End Function
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
 Public Function isGDIPlusAvailable() As Boolean
 
-    Dim gdiCheck As GDIPlusStartupInput
-    gdiCheck.GDIPlusVersion = 1
+    Dim gdiCheck As GdiplusStartupInput
+    gdiCheck.GdiplusVersion = 1
     
     If (GdiplusStartup(GDIPlusToken, gdiCheck) <> [OK]) Then
         isGDIPlusAvailable = False
@@ -677,7 +677,7 @@ Private Function iparseIsArrayEmpty(FarPointer As Long) As Long
 End Function
 
 'Save an image to a PNG stream using GDI+.  Per the current save spec, ImageID must be specified.
-Public Function GDIPlusSavePNGStream(ByVal imageID As Long, ByRef outStream() As Byte, ByRef IIStream As IUnknown) As Boolean
+Public Function GDIPlusSavePNGStream(ByRef srcPDImage As pdImage, ByRef outStream() As Byte, ByRef IIStream As IUnknown) As Boolean
 
     'Message "Initializing GDI+..."
 
@@ -687,9 +687,9 @@ Public Function GDIPlusSavePNGStream(ByVal imageID As Long, ByRef outStream() As
     With imgHeader.Header
         .Size = Len(imgHeader.Header)
         .Planes = 1
-        .BitCount = pdImages(imageID).mainLayer.getLayerColorDepth
-        .Width = pdImages(imageID).mainLayer.getLayerWidth
-        .Height = -pdImages(imageID).mainLayer.getLayerHeight
+        .BitCount = srcPDImage.mainLayer.getLayerColorDepth
+        .Width = srcPDImage.mainLayer.getLayerWidth
+        .Height = -srcPDImage.mainLayer.getLayerHeight
     End With
 
     'Use GDI+ to create a GDI+-compatible bitmap
@@ -698,13 +698,13 @@ Public Function GDIPlusSavePNGStream(ByVal imageID As Long, ByRef outStream() As
     
     'Message "Creating GDI+ compatible image copy..."
     
-    GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal pdImages(imageID).mainLayer.getLayerDIBits, hImage)
+    GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal srcPDImage.mainLayer.getLayerDIBits, hImage)
     
     If GDIPlusReturn <> 0 Then Exit Function
     
     'PNG requires extra parameters, and because the values are passed ByRef, they can't be constants
     Dim PNG_ColorDepth As Long
-    PNG_ColorDepth = pdImages(imageID).mainLayer.getLayerColorDepth
+    PNG_ColorDepth = srcPDImage.mainLayer.getLayerColorDepth
     
     'Request an encoder from GDI+ based on the type passed to this routine
     Dim uEncCLSID As clsid

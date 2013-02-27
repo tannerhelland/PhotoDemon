@@ -551,7 +551,7 @@ Private Sub cmdExportHistogram_Click()
         pdImages(CurrentImage).updateSize
 
         'Use the core PhotoDemon save function to save the histogram image to file
-        PhotoDemon_SaveImage CurrentImage, sFile, False, &H8
+        PhotoDemon_SaveImage pdImages(CurrentImage), sFile, CurrentImage, False, &H8
         
         'Unload the temporary form
         Unload FormMain.ActiveForm
@@ -784,7 +784,7 @@ Private Sub Form_Resize()
     
     CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
     For x = 0 To lineStats.Count - 1
-        lineStats(x).x2 = Me.ScaleWidth - lineStats(x).x1
+        lineStats(x).X2 = Me.ScaleWidth - lineStats(x).X1
     Next x
     lblMouseInstructions.Left = Me.ScaleWidth - 194
     
@@ -882,14 +882,14 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     
     'Now run a loop through the knots, calculating spline values as we go
     Call SetPandU
-    Dim Xpos As Long, Ypos As Double
+    Dim xPos As Long, yPos As Double
     For i = 1 To nPoints - 1
-        For Xpos = iX(i) To iX(i + 1)
-            Ypos = getCurvePoint(i, Xpos)
+        For xPos = iX(i) To iX(i + 1)
+            yPos = getCurvePoint(i, xPos)
             'If yPos > 255 Then yPos = 254       'Force values to be in the 1-254 range (0-255 also
             'If yPos < 0 Then yPos = 1           ' works, but is harder to see on the picture box)
-            results(Xpos) = Ypos
-        Next Xpos
+            results(xPos) = yPos
+        Next xPos
     Next i
     
     'Draw the finished spline
