@@ -28,12 +28,12 @@ What makes PhotoDemon preferable to other photo editing tools?
 	professionals alike.
 	
 :: A comprehensive selection of image editing tools and filters
-	2D transformations: image resize, crop rotate, isometric conversion.
-	Color tools: image levels, white balance, grayscale, sepia, color reduction,
-	full-featured histogram (including equalization and stretching).
-	Filters: blur, sharpen, edge detection, solarize, despeckle, dilate/erode,
-	diffuse, mosaic, pinch and swirl, lens diffraction, and many more.
-	70+ tools in the current build – and that’s not including a custom filter tool
+	2D transformations: image resize, crop, rotate, isometric conversion.
+	Color tools: levels, white balance, shadow/highlights, grayscale, sepia, color
+	reduction, full-featured histogram (including equalization and stretching).
+	Filters: blur, sharpen, edge detection, solarize, despeckle, noise removal,
+	diffuse, mosaic, pinch and swirl, lens diffraction, vignetting, and many more.
+	80+ tools in the current build – and that’s not including a custom filter tool
 	that allows you to construct your own filters.
 
 

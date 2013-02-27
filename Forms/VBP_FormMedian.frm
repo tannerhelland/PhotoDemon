@@ -247,16 +247,16 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
             Message "Applying median filter..."
         End If
     End If
-        
+            
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         mRadius = (mRadius / iWidth) * curLayerValues.Width
         If mRadius = 0 Then mRadius = 1
     End If
-        
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)

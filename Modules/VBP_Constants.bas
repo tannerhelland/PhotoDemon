@@ -3,7 +3,7 @@ Attribute VB_Name = "Public_Constants"
 Option Explicit
 
 'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects
-Public Const DISPLAY_TIMINGS As Boolean = True
+Public Const DISPLAY_TIMINGS As Boolean = False
 
 'Constants related to mousewheel handling
 Public Const WM_MOUSEWHEEL As Long = &H20A

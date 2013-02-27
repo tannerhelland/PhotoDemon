@@ -411,7 +411,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         End If
     End If
     
-    If Not g_IsProgramCompiled Then Debug.Print mString
+    If Not g_IsProgramCompiled Then Debug.Print newString
     
     'If we're logging program messages, open up a log file and dump the message there
     If g_LogProgramMessages = True Then
