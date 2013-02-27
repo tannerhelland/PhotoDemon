@@ -133,6 +133,45 @@ noWriteAccess:
     DirectoryExist = False
 End Function
 
+'Returns a boolean as to whether or not we have write access to a given directory.
+' (If we do not have write access, the function will return "False".)
+Public Function DirectoryHasWriteAccess(ByRef dName As String) As Boolean
+    
+    'Before checking write access, make sure the directory exists
+    Dim chkExistence As Boolean
+    chkExistence = Abs(GetFileAttributesW(StrPtr(dName))) And vbDirectory
+        
+    'Next, make sure we have write access
+    On Error GoTo noWriteAccess
+    
+    If chkExistence Then
+        
+        Dim tmpFilename As String
+        tmpFilename = FixPath(dName) & "tmp.tmp"
+        
+        Dim fileNum As Integer
+        fileNum = FreeFile
+    
+        'Attempt to create a file within this directory.  If we succeed, delete the file and return "true".
+        ' If we fail, we do not have access rights.
+        Open tmpFilename For Binary As #fileNum
+            Put #fileNum, 1, "0"
+        Close #fileNum
+        
+        If FileExist(tmpFilename) Then Kill tmpFilename
+        
+        DirectoryHasWriteAccess = True
+        Exit Function
+        
+    Else
+        DirectoryHasWriteAccess = True
+    End If
+    
+noWriteAccess:
+
+    DirectoryHasWriteAccess = False
+End Function
+
 'Straight from MSDN - generate a "browse for folder" dialog
 Public Function BrowseForFolder(ByVal srchWnd As Long) As String
     
