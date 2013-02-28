@@ -1091,137 +1091,7 @@ To enable PDI saving, please allow %1 to download plugin updates by going to the
 		<translation></translation>
 	</phrase>
 
-	<phrase>
-		<original>3200%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>2400%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>1600%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>1200%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>800%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>700%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>600%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>500%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>400%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>300%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>200%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>100%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>75%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>67%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>50%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>33%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>25%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>20%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>16%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>12%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>8%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>6%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>4%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>3%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>2%</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>1%</original>
-		<translation></translation>
-	</phrase>
-
-	<!-- VBP_ZoomModule.bas contains 31 phrases.  All 31 were unique, so 31 new phrases were written to file. -->
+	<!-- VBP_ZoomModule.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_ZoomModule.bas-->
 
@@ -1260,6 +1130,11 @@ To enable PDI saving, please allow %1 to download plugin updates by going to the
 
 	<phrase>
 		<original>Color reduction error</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Time taken</original>
 		<translation></translation>
 	</phrase>
 
@@ -2023,7 +1898,7 @@ When finished, click the Submit button.  Thank you!</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_ProcessorModule.bas contains 157 phrases. 8 were duplicates of existing phrases, so only 149 new phrases were written to file. -->
+	<!-- VBP_ProcessorModule.bas contains 158 phrases. 8 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
 
 	<!-- END text for VBP_ProcessorModule.bas-->
 
@@ -2298,17 +2173,12 @@ When finished, click the Submit button.  Thank you!</original>
 	</phrase>
 
 	<phrase>
-		<original>lblLevel</original>
+		<original>Level</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
 		<original>Maximum count</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Level</original>
 		<translation></translation>
 	</phrase>
 
@@ -2342,7 +2212,7 @@ When finished, click the Submit button.  Thank you!</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormHistogram.frm contains 31 phrases. 13 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+	<!-- VBP_FormHistogram.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormHistogram.frm-->
 
@@ -2566,11 +2436,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<!-- BEGIN text for VBP_FormMain.frm-->
 
 	<phrase>
-		<original>PhotoDemon by Tanner Helland - www.tannerhelland.com</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>(tool buttons will appear here in the near future...)</original>
 		<translation></translation>
 	</phrase>
@@ -2621,11 +2486,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>(X, Y)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>size</original>
 		<translation></translation>
 	</phrase>
@@ -2647,11 +2507,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Empty</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>-</original>
 		<translation></translation>
 	</phrase>
 
@@ -2786,47 +2641,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>16:1 (1600%)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>8:1 (800%)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>4:1 (400%)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>2:1 (200%)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>1:1 (actual size, 100%)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>1:2 (50%)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>1:4 (25%)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>1:8 (12.5%)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>1:16 (6.25%)</original>
 		<translation></translation>
 	</phrase>
 
@@ -3377,7 +3192,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 267 phrases. 105 were duplicates of existing phrases, so only 162 new phrases were written to file. -->
+	<!-- VBP_FormMain.frm contains 218 phrases. 67 were duplicates of existing phrases, so only 151 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3905,42 +3720,72 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>Interface</original>
+		<original>enable GDI+ support</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Updates</original>
+		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Tools</original>
+		<original>Click to open a browse-for-folder dialog</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Advanced</original>
+		<original>log all program messages to file</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Transparency</original>
+		<original>memory usage will be displayed here</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Loading</original>
+		<original>memory diagnostics</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Saving</original>
+		<original>temporary file location</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>File formats</original>
+		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>debugging</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>if core plugins cannot be located, offer to download them</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically check for software updates every 10 days</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>update options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>(disclaimer populated at run-time)</original>
 		<translation></translation>
 	</phrase>
 
@@ -4236,76 +4081,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>selections</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>enable GDI+ support</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Click to open a browse-for-folder dialog</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>log all program messages to file</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>memory usage will be displayed here</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>memory diagnostics</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>temporary file location</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>debugging</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>if core plugins cannot be located, offer to download them</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically check for software updates every 10 days</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>update options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>(disclaimer populated at run-time)</original>
 		<translation></translation>
 	</phrase>
 
@@ -4747,7 +4522,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 177 phrases. 10 were duplicates of existing phrases, so only 167 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 169 phrases. 10 were duplicates of existing phrases, so only 159 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -5282,206 +5057,6 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_PublicAPI.bas-->
 
-	<!-- BEGIN text for VBP_FormBatchConvert.frm-->
-
-	<phrase>
-		<original>Batch Convert Images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Apply the following macro to each image</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Do not apply a macro.  (Use this if you just want to convert file formats.)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Remove selected file(s)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Load an image list</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Save the current list</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Remove all files</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Add selected files to the batch list -></original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Alternatively, you can use a Windows "Common Dialog" to select images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Disclaimer</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Output images to this folder</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Step 5 - Select Output Image Format</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Step 4 - Select Output Location</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Optional text to append to start of filenames</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Output image files should be named using</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Step 3 - Select Macro to Apply</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Export/import image lists</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Step 2 - Verify List of Images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>The following image files will be processed</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Step 1 - Select Source Images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Drive</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Folder</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Image Files (multi-select using Shift or Ctrl)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Image Format</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>This is not a valid list of images. Please try a different file.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Invalid list file</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>You have already created a list of images for processing. Would you like to replace the current list with the entries from this file? (Selecting 'no' will only append the entries from the file to the existing list.)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Append or replace existing files?</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>You haven't selected any image files.  Please add one or more image files to the conversion list before attempting to save the list to file.
-
-Note: this is done by using the tools under the "Step 1 - Select Source Images" label.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Empty image list</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>You haven't selected any image files.  Please add one or more image files to the conversion list before continuing.
-
-Note: this is done by using the tools under the "Step 1 - Select Source Images" label.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>No image files selected</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Please select a valid macro file (Step 3!).</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>No macro file selected</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Batch conversion of</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>When all steps are complete, press "OK" to begin.  Note: depending on the number of images being processed, batch conversion may take a long time.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Original filenames</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Ascending numbers (1, 2, 3, etc.)</original>
-		<translation></translation>
-	</phrase>
-
-	<!-- VBP_FormBatchConvert.frm contains 43 phrases. 5 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
-
-	<!-- END text for VBP_FormBatchConvert.frm-->
-
 	<!-- BEGIN text for VBP_FormDespeckle.frm-->
 
 	<phrase>
@@ -5517,12 +5092,6 @@ Note: this is done by using the tools under the "Step 1 - Select Source Images" 
 	<!-- VBP_FormDespeckle.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormDespeckle.frm-->
-
-	<!-- BEGIN text for VBP_OutsideDevelopment_MouseWheel.bas-->
-
-	<!-- VBP_OutsideDevelopment_MouseWheel.bas contains 0 phrases. -->
-
-	<!-- END text for VBP_OutsideDevelopment_MouseWheel.bas-->
 
 	<!-- BEGIN text for VBP_OutsideDevelopment_FreeImageV3.bas-->
 
@@ -5708,26 +5277,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 	</phrase>
 
 	<phrase>
-		<original>pngnq-s9 2.0.1</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>zLib 1.2.5</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>EZTwain 1.18</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>FreeImage 3.15.4</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>Would you like PhotoDemon to download these plugins for you?</original>
 		<translation></translation>
 	</phrase>
@@ -5881,7 +5430,7 @@ To improve your user experience, please allow the program to automatically downl
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPluginDownloader.frm contains 51 phrases. 8 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
+	<!-- VBP_FormPluginDownloader.frm contains 47 phrases. 8 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPluginDownloader.frm-->
 
@@ -5981,11 +5530,6 @@ To improve your user experience, please allow the program to automatically downl
 	</phrase>
 
 	<phrase>
-		<original>http://www.tannerhelland.com/photodemon</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>PhotoDemon website</original>
 		<translation></translation>
 	</phrase>
@@ -6011,17 +5555,7 @@ To improve your user experience, please allow the program to automatically downl
 	</phrase>
 
 	<phrase>
-		<original>http://update-announcement-goes-here</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>To learn about the latest version before downloading it, please visit</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>X.X</original>
 		<translation></translation>
 	</phrase>
 
@@ -6062,7 +5596,7 @@ Note: you can always manually download the latest version by visiting tannerhell
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormSoftwareUpdates.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_FormSoftwareUpdates.frm contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormSoftwareUpdates.frm-->
 
@@ -7205,17 +6739,7 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>http://sourceforge.net/projects/pngnqs9/</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>version found</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>XX.XX.XX</original>
 		<translation></translation>
 	</phrase>
 
@@ -7240,11 +6764,6 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>http://www.eztwain.com/eztwain1.htm</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>EZTwain license</original>
 		<translation></translation>
 	</phrase>
@@ -7256,11 +6775,6 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>zLib License</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>http://www.zlib.net/</original>
 		<translation></translation>
 	</phrase>
 
@@ -7285,11 +6799,6 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>http://freeimage.sourceforge.net/</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>FreeImage license</original>
 		<translation></translation>
 	</phrase>
@@ -7306,26 +6815,6 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>GOOD</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>pngnq-s9</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>zLib</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>EZTwain</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>FreeImage</original>
 		<translation></translation>
 	</phrase>
 
@@ -7414,7 +6903,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPluginManager.frm contains 85 phrases. 30 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+	<!-- VBP_FormPluginManager.frm contains 65 phrases. 19 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPluginManager.frm-->
 
@@ -7667,12 +7156,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- BEGIN text for cSelfSubHookCallback.cls-->
 
-	<phrase>
-		<original>.</original>
-		<translation></translation>
-	</phrase>
-
-	<!-- cSelfSubHookCallback.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+	<!-- cSelfSubHookCallback.cls contains 0 phrases. -->
 
 	<!-- END text for cSelfSubHookCallback.cls-->
 
@@ -8032,6 +7516,46 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>&Previous</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>&Next</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>keep images in their original format</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>convert all images to a new format</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Select macro file</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>do not apply any photo editing actions</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>apply a recorded macro to the images</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>if you only want to rename images or change image formats, use this option</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Add selected image(s) to batch list</original>
 		<translation></translation>
 	</phrase>
@@ -8047,7 +7571,7 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>Add images from an "Open Image" dialog</original>
+		<original>Add images using "Open Image" dialog</original>
 		<translation></translation>
 	</phrase>
 
@@ -8072,6 +7596,11 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>show image previews</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>potential source images</original>
 		<translation></translation>
 	</phrase>
@@ -8092,12 +7621,62 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>&Previous</original>
+		<original>lowercase</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>&Next</original>
+		<original>add a prefix to each filename</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Select destination folder</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>add a suffix to each filename</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>remove the following text (if found) from each filename</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>force each filename, including extension, to the following case</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>UPPERCASE</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>replace spaces in filenames with underscores</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>use case-sensitive matching</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>after images are processed, save them with the following name</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>additional rename options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>output images to this folder</original>
 		<translation></translation>
 	</phrase>
 
@@ -8117,12 +7696,42 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>This is not a valid list of images. Please try a different file.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Invalid list file</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
 		<original>Batch process notification</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>No macro file selected</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Folder access unavailable</original>
 		<translation></translation>
 	</phrase>
 
@@ -8147,7 +7756,7 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>2) The "Add images from an Open Image dialog..." button.  You can then select one or more image files to be processed.</original>
+		<original>2) The "Add images using Open Image dialog..." button.  You can then select one or more image files to be processed.</original>
 		<translation></translation>
 	</phrase>
 
@@ -8162,7 +7771,57 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>Step 2: select the photo editing action(s) to apply to each image</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>(description forthcoming)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Step 3: choose a destination image format</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Step 4: provide a destination folder and any renaming options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Empty image list</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Original filenames</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Ascending numbers (1, 2, 3, etc.)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>no macro selected</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>( specifically, JPEG at 92% quality is used for photographs, and lossless PNG is used for non-photographs )</original>
 		<translation></translation>
 	</phrase>
 
@@ -8171,14 +7830,74 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormBatchWizard.frm contains 34 phrases. 5 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+	<phrase>
+		<original>(Batch converting file # %1 of %2) %3</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Estimated time remaining</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>minute</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>minutes</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>second</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>seconds</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Estimating time remaining</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Batch conversion of %1 files was successful!</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Batch conversion canceled.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>images were</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>image was</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>processed before cancelation. Last processed image was "%1".</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_FormBatchWizard.frm contains 82 phrases. 6 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBatchWizard.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 2007 phrases in total. -->
-<!-- 562 are duplicate phrases, so only 1445 phrases have been written to file. -->
-<!-- These 1445 phrases contain approximately 8701 total words. -->
+<!-- As of this build, PhotoDemon contains 1901 phrases in total. -->
+<!-- 509 are duplicate phrases, so only 1392 phrases have been written to file. -->
+<!-- These 1392 phrases contain approximately 8585 total words. -->
 
 </language>
