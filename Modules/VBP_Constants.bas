@@ -22,10 +22,8 @@ Public Const PROGRAMNAME As String = "PhotoDemon"
 Public Const FILTER_EXT As String * 3 = "thf"
 Public Const MACRO_EXT As String * 3 = "thm"
 
-
 'Constants used for passing image resize options
 ' Note that options 3-6 require use of the FreeImage library
-'Constants used for passing image resize options
 Public Const RESIZE_NORMAL As Long = 0
 Public Const RESIZE_HALFTONE As Long = 1
 Public Const RESIZE_BILINEAR As Long = 2

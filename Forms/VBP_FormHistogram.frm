@@ -234,13 +234,13 @@ Begin VB.Form FormHistogram
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "lblLevel"
+      Caption         =   "Level"
       ForeColor       =   &H00400000&
       Height          =   195
       Left            =   720
       TabIndex        =   15
       Top             =   6000
-      Width           =   525
+      Width           =   375
    End
    Begin VB.Label lblMaxCount 
       Appearance      =   0  'Flat
