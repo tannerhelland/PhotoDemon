@@ -4,9 +4,9 @@
 
 	<langid>de-DE</langid>
 	<langname>Deutsch</langname>
-	<langversion>1.0.2</langversion>
+	<langversion>5.4.0</langversion>
 	<langstatus>Complete</langstatus>
-		
+
 	<author>Frank Donckers</author>
 
 	<!-- BEGIN AUTOMATIC TEXT GENERATION --!>
@@ -180,6 +180,55 @@
 	<phrase>
 		<original>Initializing user interface</original>
 		<translation>Initialisieren UI</translation>
+	</phrase>
+
+	<phrase>
+		<original>Open one or more images for editing.
+
+(Another way to open images is dragging them from your desktop
+ or Windows Explorer and dropping them onto PhotoDemon.)</original>
+		<translation>Öffnen Sie ein oder mehrere Bilder zu bearbeiten.
+
+(Ein anderer Weg, um Bilder zu öffnen ist Drag & Drop von Ihrem Desktop
+  oder Windows Explorer und Ablegen in PhotoDemon.)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close the current image.
+
+If the current image has not been saved, you will
+ receive a prompt to save it before it closes.</original>
+		<translation>Schließen Sie das aktuelle Bild. 
+		
+ Wenn das aktuelle Bild nicht gespeichert wurde, werden Sie 
+ erhalten eine Aufforderung, es zu speichern, bevor es geschlossen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close the current image.
+
+Because you have turned off save prompts (via Edit -> Preferences),
+ you WILL NOT receive a prompt to save this image before it closes.</original>
+		<translation>Schließen Sie das aktuelle Bild.
+
+Weil du off save fordert eingeschaltet (über Bearbeiten -> Einstellungen),
+  Sie erhalten keine Eingabeaufforderung, um dieses Bild zu retten, bevor es sich schließt.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current image.
+
+WARNING: this will overwrite the current image file.
+ To save to a different file, use the "Save As" button.</original>
+		<translation>Speichern Sie das aktuelle Bild.
+
+WARNUNG: Dies wird das aktuelle Bild-Datei zu überschreiben.
+  Um zu einer anderen Datei zu speichern, verwenden Sie die Schaltfläche Speichern unter.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current image to a new file.</original>
+		<translation>Speichern Sie das aktuelle Bild in einer neuen Datei.</translation>
 	</phrase>
 
 	<phrase>
@@ -425,7 +474,7 @@ Please use another program to save these images in a generic format (such as JPE
 		<translation>Bild Vervielfältigung abzuschließen.</translation>
 	</phrase>
 
-	<!-- VBP_LoadModule.bas contains 60 phrases.  One was a duplicate of an existing phrase, so only 59 new phrases were written to file. -->
+	<!-- VBP_LoadModule.bas contains 65 phrases.  One was a duplicate of an existing phrase, so only 64 new phrases were written to file. -->
 
 	<!-- END text for VBP_LoadModule.bas-->
 
@@ -2483,6 +2532,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<!-- BEGIN text for VBP_FormMain.frm-->
 
 	<phrase>
+		<original>Click to change the way selections are rendered</original>
+		<translation>Klicken Sie auf den Weg Auswahl gerendert ändern</translation>
+	</phrase>
+
+	<phrase>
 		<original>(tool buttons will appear here in the near future...)</original>
 		<translation>(Tool-Schaltflächen erscheinen hier in naher Zukunft...)</translation>
 	</phrase>
@@ -2505,6 +2559,36 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<phrase>
 		<original>selection size</original>
 		<translation>Auswahl Größe</translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to adjust image zoom</original>
+		<translation>Klicken Sie auf Zoom einstellen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close</original>
+		<translation>schließen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this button to increase image zoom.</original>
+		<translation>Verwenden Sie diese Taste, um Zoom zu erhöhen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom In</original>
+		<translation>Zoom In</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this button to decrease image zoom.</original>
+		<translation>Verwenden Sie diese Taste, um Zoom zu verringern.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom Out</original>
+		<translation>Verkleinern</translation>
 	</phrase>
 
 	<phrase>
@@ -3241,7 +3325,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 		<translation>Vorbereiten auf den letzten Eintrag in der Datei laden</translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 218 phrases. 67 were duplicates of existing phrases, so only 151 new phrases were written to file. -->
+	<!-- VBP_FormMain.frm contains 230 phrases. 72 were duplicates of existing phrases, so only 158 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3773,6 +3857,86 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Interface</original>
+		<translation>Interface</translation>
+	</phrase>
+
+	<phrase>
+		<original>Interface Options</original>
+		<translation>Interface-Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Updates</original>
+		<translation>Updates</translation>
+	</phrase>
+
+	<phrase>
+		<original>Update Options</original>
+		<translation>Update-Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tools</original>
+		<translation>Werkzeuge</translation>
+	</phrase>
+
+	<phrase>
+		<original>Tool Options</original>
+		<translation>Werkzeugoptionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced</original>
+		<translation>Fortgeschritten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced Options</original>
+		<translation>Erweiterte Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Transparency</original>
+		<translation>Transparenz</translation>
+	</phrase>
+
+	<phrase>
+		<original>Transparency Options</original>
+		<translation>Transparenz Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading</original>
+		<translation>Beladung</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load (Import) Options</original>
+		<translation>Load (Import) Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving</original>
+		<translation>Speichern</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save (Export) Options</original>
+		<translation>Speichern (Export) Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>File formats</original>
+		<translation>Dateiformate</translation>
+	</phrase>
+
+	<phrase>
+		<original>File Format Options</original>
+		<translation>Dateiformat -Optionen</translation>
+	</phrase>
+
+	<phrase>
 		<original>enable GDI+ support</original>
 		<translation>ermöglichen GDI -Unterstützung</translation>
 	</phrase>
@@ -3780,6 +3944,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
 		<translation>Verwenden Sie diese manuell zu deaktivieren GDI -Unterstützung. Diese Kräfte PhotoDemon auf seine FreeImage und internen VB -only -Routinen verlassen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Folder used for temporary files</original>
+		<translation>Ordner für temporäre Dateien verwendet</translation>
 	</phrase>
 
 	<phrase>
@@ -3833,11 +4002,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>update options</original>
-		<translation>Update-Optionen</translation>
-	</phrase>
-
-	<phrase>
 		<original>(disclaimer populated at run-time)</original>
 		<translation>(Disclaimer Laufzeit bestückt)</translation>
 	</phrase>
@@ -3883,6 +4047,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Click to change the image window background color</original>
+		<translation>Klicken Sie auf das Bildfenster Hintergrundfarbe ändern</translation>
+	</phrase>
+
+	<phrase>
 		<original>taskbar icon</original>
 		<translation>Symbol in der Taskleiste</translation>
 	</phrase>
@@ -3915,6 +4084,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>automatically validate all incoming alpha channels</original>
 		<translation>automatisch überprüft alle eingehenden Alpha-Kanäle</translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to change the second checkerboard background color for alpha channels</original>
+		<translation>Klicken Sie auf das zweite Schachbrettmuster Hintergrundfarbe für Alpha-Kanäle ändern</translation>
 	</phrase>
 
 	<phrase>
@@ -4020,11 +4194,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>please select a file type</original>
 		<translation>Bitte wählen Sie einen Dateityp</translation>
-	</phrase>
-
-	<phrase>
-		<original>file format options</original>
-		<translation>Dateiformat -Optionen</translation>
 	</phrase>
 
 	<phrase>
@@ -4135,17 +4304,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>selections</original>
 		<translation>Auswahl</translation>
-	</phrase>
-
-	<phrase>
-		<original>Close the current image.
-
-If the current image has not been saved, you will
- receive a prompt to save it before it closes.</original>
-		<translation>Schließen Sie das aktuelle Bild. 
-		
- Wenn das aktuelle Bild nicht gespeichert wurde, werden Sie 
- erhalten eine Aufforderung, es zu speichern, bevor es geschlossen.</translation>
 	</phrase>
 
 	<phrase>
@@ -4589,11 +4747,31 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 	</phrase>
 
 	<phrase>
+		<original>The image canvas sits "behind" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it.</original>
+		<translation>Het beeld canvas zit "achter" het beeld op het scherm. Donkere kleuren zijn over het algemeen de voorkeur, omdat zij bijdragen aan het imago opvallen terwijl u aan het.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
+		<translation>Wenn ein Bild mit transparenten Bereichen, ist ein Schachbrettmuster normalerweise angezeigt "hinter" dem Bild. Dieses Feld lässt Sie das Schachbrettmuster der Farben.</translation>
+	</phrase>
+
+	<phrase>
+		<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
+		<translation>Wenn ein Bild mit transparenten Bereichen, ist ein Schachbrettmuster normalerweise angezeigt "hinter" dem Bild. Dieses Feld lässt Sie das Schachbrettmuster der Größe.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.</original>
+		<translation>Einige Bild-Dateitypen unterstützt zusätzliche Parameter beim Import und Export. Standardmäßig wird PhotoDemon diese für Sie zu verwalten, aber Sie können verschiedene Parameter angeben, wenn nötig.</translation>
+	</phrase>
+
+	<phrase>
 		<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 		<translation>WARNUNG: Dieser Ordner ist ungültig (Zugang verboten). Bitte geben Sie eine gültige Ordner. Wenn keine neuen Ordner bereitgestellt wird, wird PhotoDemon verwenden die Standardsprache des Systems temporären Speicherort.</translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 169 phrases. 10 were duplicates of existing phrases, so only 159 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -5317,13 +5495,28 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 	</phrase>
 
 	<phrase>
+		<original>Download All Plugins</original>
+		<translation>Download Alle Plugins</translation>
+	</phrase>
+
+	<phrase>
 		<original>Not right now, but please remind me later.</original>
 		<translation>Nicht jetzt, aber bitte erinnern Sie mich später.</translation>
 	</phrase>
 
 	<phrase>
+		<original>Postpone Plugin Download</original>
+		<translation>Verschieben Plugin herunterladen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Not now, not ever. Do not prompt me again.</original>
 		<translation>Nicht jetzt, nicht immer. Meldung nicht wieder.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Never Download Plugins</original>
+		<translation>Nie herunterladen Plugins</translation>
 	</phrase>
 
 	<phrase>
@@ -5420,6 +5613,21 @@ To improve your user experience, please allow the program to automatically downl
 	</phrase>
 
 	<phrase>
+		<original>This is the recommended selection.  PhotoDemon will automatically download the selected plugins for you.  These plugins will be saved in the program's /Data/Plugins subdirectory.</original>
+		<translation>Dies ist die empfohlene Auswahl. PhotoDemon lädt automatisch die gewählten Plugins für Sie. Diese Plugins werden in das Programm /Data/Plugins Unterverzeichnis gespeichert werden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be temporarily disabled until these plugins are available.</original>
+		<translation>Diese Option wird nicht empfohlen. PhotoDemon noch ohne Plugins laufen, aber viele Funktionen und Tools werden vorübergehend deaktiviert werden, bis diese Plugins zur Verfügung stehen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be permanently disabled.</original>
+		<translation>Diese Option wird nicht empfohlen. PhotoDemon noch ohne Plugins laufen, aber viele Funktionen und Tools werden dauerhaft deaktiviert werden.</translation>
+	</phrase>
+
+	<phrase>
 		<original>Ready to download required plugins. Awaiting user permission</original>
 		<translation>Bereit benötigten Plugins herunterladen. Warten Benutzerberechtigung</translation>
 	</phrase>
@@ -5509,7 +5717,7 @@ To improve your user experience, please allow the program to automatically downl
 		<translation>Download-Größe gesamt</translation>
 	</phrase>
 
-	<!-- VBP_FormPluginDownloader.frm contains 47 phrases. 8 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+	<!-- VBP_FormPluginDownloader.frm contains 53 phrases. 8 were duplicates of existing phrases, so only 45 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPluginDownloader.frm-->
 
@@ -6565,7 +6773,22 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation>erweiterten Einstellungen erfordern die Free Image plugin</translation>
 	</phrase>
 
-	<!-- VBP_FormExportJPEG.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+	<phrase>
+		<original>Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.</original>
+		<translation>Optimierung wird dringend empfohlen. Diese Option ermöglicht die JPEG-Encoder, um eine optimale Huffman-Kodierung Tabelle für die Datei zu berechnen. Es hat keinen Einfluss auf die Bildqualität - nur die Dateigröße.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).</original>
+		<translation>Eingebettete Miniaturansichten erhöhen die Dateigröße, aber sie helfen Vorschauen des Bildes schneller erscheinen in anderer Software (zB Windows Explorer).</translation>
+	</phrase>
+
+	<phrase>
+		<original>Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.</original>
+		<translation>Progressive Kodierung wird manchmal für JPEG-Dateien, die im Internet verwendet werden verwendet. Es speichert das Bild in drei Schritten, die sie nach und nach werden Fade-in das Bild einer langsamen Internet-Verbindung.</translation>
+	</phrase>
+
+	<!-- VBP_FormExportJPEG.frm contains 30 phrases. 5 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormExportJPEG.frm-->
 
@@ -7983,9 +8206,9 @@ effectively treating at as a non-animated GIF file.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1901 phrases in total. -->
-<!-- 509 are duplicate phrases, so only 1392 phrases have been written to file. -->
-<!-- These 1392 phrases contain approximately 8585 total words. -->
+<!-- As of this build, PhotoDemon contains 1955 phrases in total. -->
+<!-- 522 are duplicate phrases, so only 1433 phrases have been written to file. -->
+<!-- These 1433 phrases contain approximately 9020 total words. -->
 
 </language>
 

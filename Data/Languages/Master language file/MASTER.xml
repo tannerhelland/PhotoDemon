@@ -183,6 +183,43 @@
 	</phrase>
 
 	<phrase>
+		<original>Open one or more images for editing.
+
+(Another way to open images is dragging them from your desktop
+ or Windows Explorer and dropping them onto PhotoDemon.)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Close the current image.
+
+If the current image has not been saved, you will
+ receive a prompt to save it before it closes.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Close the current image.
+
+Because you have turned off save prompts (via Edit -> Preferences),
+ you WILL NOT receive a prompt to save this image before it closes.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current image.
+
+WARNING: this will overwrite the current image file.
+ To save to a different file, use the "Save As" button.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Save the current image to a new file.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Preparing program menus</original>
 		<translation></translation>
 	</phrase>
@@ -411,7 +448,7 @@ Please use another program to save these images in a generic format (such as JPE
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_LoadModule.bas contains 60 phrases.  One was a duplicate of an existing phrase, so only 59 new phrases were written to file. -->
+	<!-- VBP_LoadModule.bas contains 65 phrases.  One was a duplicate of an existing phrase, so only 64 new phrases were written to file. -->
 
 	<!-- END text for VBP_LoadModule.bas-->
 
@@ -2436,6 +2473,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<!-- BEGIN text for VBP_FormMain.frm-->
 
 	<phrase>
+		<original>Click to change the way selections are rendered</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>(tool buttons will appear here in the near future...)</original>
 		<translation></translation>
 	</phrase>
@@ -2457,6 +2499,36 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>selection size</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to adjust image zoom</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Close</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this button to increase image zoom.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom In</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this button to decrease image zoom.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom Out</original>
 		<translation></translation>
 	</phrase>
 
@@ -3192,7 +3264,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 218 phrases. 67 were duplicates of existing phrases, so only 151 new phrases were written to file. -->
+	<!-- VBP_FormMain.frm contains 230 phrases. 72 were duplicates of existing phrases, so only 158 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3720,12 +3792,97 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Interface</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Interface Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Updates</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Update Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Tools</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Tool Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Transparency</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Transparency Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Loading</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Load (Import) Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Saving</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Save (Export) Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>File formats</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>File Format Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>enable GDI+ support</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
 		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Folder used for temporary files</original>
 		<translation></translation>
 	</phrase>
 
@@ -3780,11 +3937,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>update options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>(disclaimer populated at run-time)</original>
 		<translation></translation>
 	</phrase>
@@ -3830,6 +3982,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Click to change the image window background color</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>taskbar icon</original>
 		<translation></translation>
 	</phrase>
@@ -3861,6 +4018,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>automatically validate all incoming alpha channels</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to change the second checkerboard background color for alpha channels</original>
 		<translation></translation>
 	</phrase>
 
@@ -3966,11 +4128,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>please select a file type</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>file format options</original>
 		<translation></translation>
 	</phrase>
 
@@ -4081,14 +4238,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>selections</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Close the current image.
-
-If the current image has not been saved, you will
- receive a prompt to save it before it closes.</original>
 		<translation></translation>
 	</phrase>
 
@@ -4518,11 +4667,31 @@ If you choose to disable these features, note that you can always visit tannerhe
 	</phrase>
 
 	<phrase>
+		<original>The image canvas sits "behind" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 169 phrases. 10 were duplicates of existing phrases, so only 159 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -5242,12 +5411,27 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 	</phrase>
 
 	<phrase>
+		<original>Download All Plugins</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Not right now, but please remind me later.</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
+		<original>Postpone Plugin Download</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Not now, not ever. Do not prompt me again.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Never Download Plugins</original>
 		<translation></translation>
 	</phrase>
 
@@ -5341,6 +5525,21 @@ To improve your user experience, please allow the program to automatically downl
 	</phrase>
 
 	<phrase>
+		<original>This is the recommended selection.  PhotoDemon will automatically download the selected plugins for you.  These plugins will be saved in the program's /Data/Plugins subdirectory.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be temporarily disabled until these plugins are available.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be permanently disabled.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Ready to download required plugins. Awaiting user permission</original>
 		<translation></translation>
 	</phrase>
@@ -5430,7 +5629,7 @@ To improve your user experience, please allow the program to automatically downl
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPluginDownloader.frm contains 47 phrases. 8 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+	<!-- VBP_FormPluginDownloader.frm contains 53 phrases. 8 were duplicates of existing phrases, so only 45 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPluginDownloader.frm-->
 
@@ -6478,7 +6677,22 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormExportJPEG.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+	<phrase>
+		<original>Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_FormExportJPEG.frm contains 30 phrases. 5 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormExportJPEG.frm-->
 
@@ -7896,8 +8110,8 @@ effectively treating at as a non-animated GIF file.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1901 phrases in total. -->
-<!-- 509 are duplicate phrases, so only 1392 phrases have been written to file. -->
-<!-- These 1392 phrases contain approximately 8585 total words. -->
+<!-- As of this build, PhotoDemon contains 1955 phrases in total. -->
+<!-- 522 are duplicate phrases, so only 1433 phrases have been written to file. -->
+<!-- These 1433 phrases contain approximately 9020 total words. -->
 
 </language>
