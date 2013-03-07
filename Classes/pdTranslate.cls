@@ -814,6 +814,15 @@ Public Sub undoTranslations(ByRef srcForm As Form)
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
         If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
             If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then g_Language.restoreObjectCaption eControl
+            
+            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = RestoreMessage(eControl.ToolTipText)
+                        
+            'jcbutton controls have multiple tooltip entries, including a tooltip title
+            If (TypeOf eControl Is jcbutton) Then
+                If (Trim(eControl.TooltipTitle) <> "") Then eControl.TooltipTitle = RestoreMessage(eControl.TooltipTitle)
+                If (Trim(eControl.ToolTip) <> "") Then eControl.ToolTip = RestoreMessage(eControl.ToolTip)
+            End If
+            
         End If
         
         'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
@@ -836,6 +845,9 @@ Public Sub undoTranslations(ByRef srcForm As Form)
             For i = 0 To eControl.ListCount - 1
                 If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = RestoreMessage(eControl.List(i))
             Next i
+            
+            'Restore the tooltip as well
+            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = RestoreMessage(eControl.ToolTipText)
             
         End If
     
@@ -897,8 +909,10 @@ Public Sub applyTranslations(ByRef srcForm As Form)
             'Enumerate through each entry in the control
             For i = 0 To eControl.ListCount - 1
                 If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = TranslateMessage(eControl.List(i))
-                If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
             Next i
+            
+            'Translate the tooltip as well
+            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
             
         End If
         

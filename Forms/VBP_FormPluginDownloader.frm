@@ -63,7 +63,6 @@ Begin VB.Form FormPluginDownloader
          PictureAlign    =   0
          DisabledPictureMode=   1
          CaptionEffects  =   0
-         ToolTip         =   $"VBP_FormPluginDownloader.frx":1052
          TooltipType     =   1
          TooltipTitle    =   "Download All Plugins"
       End
@@ -90,11 +89,10 @@ Begin VB.Form FormPluginDownloader
          EndProperty
          Caption         =   "Not right now, but please remind me later."
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormPluginDownloader.frx":1108
+         PictureNormal   =   "VBP_FormPluginDownloader.frx":1052
          PictureAlign    =   0
          DisabledPictureMode=   1
          CaptionEffects  =   0
-         ToolTip         =   $"VBP_FormPluginDownloader.frx":215A
          TooltipType     =   1
          TooltipTitle    =   "Postpone Plugin Download"
       End
@@ -120,11 +118,10 @@ Begin VB.Form FormPluginDownloader
          EndProperty
          Caption         =   " Not now, not ever. Do not prompt me again."
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormPluginDownloader.frx":2205
+         PictureNormal   =   "VBP_FormPluginDownloader.frx":20A4
          PictureAlign    =   0
          DisabledPictureMode=   1
          CaptionEffects  =   0
-         ToolTip         =   $"VBP_FormPluginDownloader.frx":3257
          TooltipType     =   1
          TooltipTitle    =   "Never Download Plugins"
       End
@@ -252,7 +249,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   3
          Left            =   5640
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":32E0
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":30F6
          MousePointer    =   99  'Custom
          TabIndex        =   14
          Top             =   3240
@@ -274,7 +271,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   1
          Left            =   5640
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":3432
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":3248
          MousePointer    =   99  'Custom
          TabIndex        =   13
          Top             =   2160
@@ -296,7 +293,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   2
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":3584
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":339A
          MousePointer    =   99  'Custom
          TabIndex        =   12
          Top             =   3240
@@ -318,7 +315,7 @@ Begin VB.Form FormPluginDownloader
          Height          =   285
          Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":36D6
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":34EC
          MousePointer    =   99  'Custom
          TabIndex        =   11
          Top             =   2160
@@ -586,6 +583,11 @@ Private Sub Form_Load()
     
     totalDownloadSize = 0
     numOfFiles = 0
+    
+    'Manually apply some long tooltips at run-time.  This allows the translation engine to find the text and translate it.
+    cmdChoice(0).ToolTip = g_Language.TranslateMessage("This is the recommended selection.  PhotoDemon will automatically download the selected plugins for you.  These plugins will be saved in the program's /Data/Plugins subdirectory.")
+    cmdChoice(1).ToolTip = g_Language.TranslateMessage("This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be temporarily disabled until these plugins are available.")
+    cmdChoice(2).ToolTip = g_Language.TranslateMessage("This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be permanently disabled.")
     
     'Upon program load, populate the list of files to be downloaded based on which could not be found.
     

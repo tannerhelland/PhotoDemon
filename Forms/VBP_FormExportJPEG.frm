@@ -28,7 +28,6 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   540
       Left            =   600
       TabIndex        =   10
-      ToolTipText     =   $"VBP_FormExportJPEG.frx":0000
       Top             =   1920
       Width           =   3105
       _ExtentX        =   5477
@@ -144,7 +143,6 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   540
       Left            =   600
       TabIndex        =   11
-      ToolTipText     =   $"VBP_FormExportJPEG.frx":00B9
       Top             =   2400
       Width           =   2715
       _ExtentX        =   4789
@@ -164,7 +162,6 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   540
       Left            =   600
       TabIndex        =   12
-      ToolTipText     =   $"VBP_FormExportJPEG.frx":0147
       Top             =   2880
       Width           =   2835
       _ExtentX        =   5001
@@ -464,10 +461,10 @@ Private Sub toggleAdvancedSettings()
         cmbSubsample.Visible = False
     
         'Move all other controls accordingly
-        lineSeparator.y1 = hsQuality.Top + 48
-        lineSeparator.y2 = lineSeparator.y1
-        lblBackground.Top = lineSeparator.y1
-        cmdShowHide.Top = lineSeparator.y1 + 10
+        lineSeparator.Y1 = hsQuality.Top + 48
+        lineSeparator.Y2 = lineSeparator.Y1
+        lblBackground.Top = lineSeparator.Y1
+        cmdShowHide.Top = lineSeparator.Y1 + 10
         CmdOK.Top = cmdShowHide.Top
         CmdCancel.Top = CmdOK.Top
     
@@ -485,10 +482,10 @@ Private Sub toggleAdvancedSettings()
         cmbSubsample.Visible = True
         
         'Move all other controls accordingly
-        lineSeparator.y1 = cmbSubsample.Top + 48
-        lineSeparator.y2 = lineSeparator.y1
-        lblBackground.Top = lineSeparator.y1
-        cmdShowHide.Top = lineSeparator.y1 + 10
+        lineSeparator.Y1 = cmbSubsample.Top + 48
+        lineSeparator.Y2 = lineSeparator.Y1
+        lblBackground.Top = lineSeparator.Y1
+        cmdShowHide.Top = lineSeparator.Y1 + 10
         CmdOK.Top = cmdShowHide.Top
         CmdCancel.Top = CmdOK.Top
     
@@ -499,7 +496,7 @@ Private Sub toggleAdvancedSettings()
     Me.ScaleMode = vbTwips
     formSizeDiff = Me.Height - Me.ScaleHeight
     
-    Me.Height = formSizeDiff + cmdShowHide.Top + cmdShowHide.Height + Abs(lineSeparator.y1 - cmdShowHide.Top)
+    Me.Height = formSizeDiff + cmdShowHide.Top + cmdShowHide.Height + Abs(lineSeparator.Y1 - cmdShowHide.Top)
     
     Me.ScaleMode = vbPixels
 
@@ -547,6 +544,11 @@ Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
         lblTitle(1).Caption = g_Language.TranslateMessage("advanced settings require the FreeImage plugin")
     End If
         
+    'Apply some tooltips manually (so the translation engine can find them)
+    chkOptimize.ToolTipText = g_Language.TranslateMessage("Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.")
+    chkThumbnail.ToolTipText = g_Language.TranslateMessage("Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).")
+    chkProgressive.ToolTipText = g_Language.TranslateMessage("Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.")
+    
     'Hide the advanced settings unless the user has specifically requested otherwise
     'If Not showAdvanced Then toggleAdvancedSettings
     toggleAdvancedSettings

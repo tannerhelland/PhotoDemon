@@ -83,6 +83,7 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
     Dim cutoffTotal As Long
     Dim r As Long, g As Long, b As Long
     Dim midR As Long, midG As Long, midB As Long
+    'Dim rBins As Long, gBins As Long, bBins As Long
     
     Dim atBottom As Boolean
     atBottom = True
@@ -117,8 +118,8 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
         'Determine the bounds of the current median box in the X direction
         lbX = x - mRadius
         If lbX < 0 Then lbX = 0
-        ubX = x + mRadius
         
+        ubX = x + mRadius
         If ubX > finalX Then
             obuX = True
             ubX = finalX
@@ -173,7 +174,7 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
         'Depending on the direction we are moving, remove a line of pixels from the median box
         ' (because the interior loop will add it back in).
         If atBottom Then
-                
+        
             For i = lbX To ubX
                 QuickValInner = i * qvDepth
                 r = srcImageData(QuickValInner + 2, mRadius)
@@ -184,11 +185,11 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
                 bValues(b) = bValues(b) - 1
                 NumOfPixels = NumOfPixels - 1
             Next i
-        
+       
         Else
-        
+       
             QuickY = finalY - mRadius
-        
+       
             For i = lbX To ubX
                 QuickValInner = i * qvDepth
                 r = srcImageData(QuickValInner + 2, QuickY)
@@ -199,7 +200,7 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
                 bValues(b) = bValues(b) - 1
                 NumOfPixels = NumOfPixels - 1
             Next i
-        
+       
         End If
         
         'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
@@ -316,7 +317,7 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
         End If
                 
         'With the median box successfully calculated, we can now find the actual median for this pixel.
-        
+                
         'Loop through each color component histogram, until we've passed the desired percentile of pixels
         midR = 0
         midG = 0
@@ -326,21 +327,21 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
         
         i = 0
         Do
-            If rValues(i) <> 0 Then midR = midR + rValues(i)
+            If rValues(i) > 0 Then midR = midR + rValues(i)
             i = i + 1
         Loop While (midR < cutoffTotal)
         midR = i - 1
         
         i = 0
         Do
-            If gValues(i) <> 0 Then midG = midG + gValues(i)
+            If gValues(i) > 0 Then midG = midG + gValues(i)
             i = i + 1
         Loop While (midG < cutoffTotal)
         midG = i - 1
         
         i = 0
         Do
-            If bValues(i) <> 0 Then midB = midB + bValues(i)
+            If bValues(i) > 0 Then midB = midB + bValues(i)
             i = i + 1
         Loop While (midB < cutoffTotal)
         midB = i - 1
