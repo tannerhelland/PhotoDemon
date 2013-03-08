@@ -91,8 +91,13 @@ Attribute mFont.VB_VarHelpID = -1
 
 Private origForecolor As Long
 
+'Used to render themed and multiline tooltips
+Private m_ToolTip As clsToolTip
+Private m_ToolString As String
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
@@ -159,6 +164,7 @@ End Property
 
 'The control's caption is simply passed on to the label
 Public Property Get Caption() As String
+Attribute Caption.VB_UserMemId = -518
     Caption = lblCaption.Caption
 End Property
 
@@ -203,7 +209,7 @@ Private Sub UserControl_Initialize()
       
     origForecolor = ForeColor
     lblCaption.ForeColor = ForeColor
-    
+        
     'Prepare a font object for use
     Set mFont = New StdFont
     Set UserControl.Font = mFont
@@ -240,6 +246,27 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Value = .ReadProperty("Value", vbUnchecked)
     End With
 
+End Sub
+
+Private Sub UserControl_Show()
+    
+    'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
+    ' using a custom solution (which allows for linebreaks and theming).
+    m_ToolString = Extender.ToolTipText
+    
+    If m_ToolString <> "" Then
+    
+        Set m_ToolTip = New clsToolTip
+        With m_ToolTip
+        
+            .Create Me
+            .MaxTipWidth = 400
+            .AddTool chkBox, m_ToolString
+            
+        End With
+        
+    End If
+        
 End Sub
 
 Private Sub UserControl_Terminate()

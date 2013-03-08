@@ -45,8 +45,8 @@ Private Type NMHDR
   code                            As Long
 End Type
 Private Type POINTAPI
-  x                               As Long
-  y                               As Long
+  X                               As Long
+  Y                               As Long
 End Type
 Private Type RECT
   Left                            As Long
@@ -65,14 +65,14 @@ Private Type TOOLINFO
   hWnd                            As Long
   uId                             As Long
   RECT                            As RECT
-  hinst                           As Long
+  hInst                           As Long
   lpszText                        As String
 #If (WIN32_IE >= &H300) Then
   lParam                          As Long
 #End If
 End Type
 Public Enum TT_Flags
-  TTF_IDISHWND = &H1
+  TTF_IDIShWnd = &H1
   TTF_CENTERTIP = &H2
   TTF_RTLREADING = &H4
   TTF_SUBCLASS = &H10
@@ -84,7 +84,7 @@ Public Enum TT_Flags
 #End If
 End Enum
 #If False Then 'Trick preserves Case of Enums when typing in IDE
-Private TTF_IDISHWND, TTF_CENTERTIP, TTF_RTLREADING, TTF_SUBCLASS, TTF_TRACK, TTF_ABSOLUTE, TTF_TRANSPARENT
+Private TTF_IDIShWnd, TTF_CENTERTIP, TTF_RTLREADING, TTF_SUBCLASS, TTF_TRACK, TTF_ABSOLUTE, TTF_TRANSPARENT
 Private TTF_DI_SETITEM
 #End If
 Public Enum TT_DelayTime
@@ -197,7 +197,7 @@ Private Type NMTTDISPINFO
 #Else
   szText                          As String * 80
 #End If
-  hinst                           As Long
+  hInst                           As Long
   uFlags                          As Long
 #If (WIN32_IE >= &H300) Then
   lParam                          As Long
@@ -222,11 +222,11 @@ Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (By
                                                                               ByVal lpClassName As String, _
                                                                               ByVal lpWindowName As String, _
                                                                               ByVal dwStyle As Long, _
-                                                                              ByVal x As Long, _
-                                                                              ByVal y As Long, _
+                                                                              ByVal X As Long, _
+                                                                              ByVal Y As Long, _
                                                                               ByVal nWidth As Long, _
                                                                               ByVal nHeight As Long, _
-                                                                              ByVal hwndParent As Long, _
+                                                                              ByVal hWndParent As Long, _
                                                                               ByVal hMenu As Long, _
                                                                               ByVal hInstance As Long, _
                                                                               lpParam As Any) As Long
@@ -257,7 +257,7 @@ Public Function AddTool(ByRef ctrl As Control, _
 ' control to retrieve the control's rect from
 ' it's hWnd specified in uId.
 '
-      .uFlags = TTF_SUBCLASS Or TTF_IDISHWND
+      .uFlags = TTF_SUBCLASS Or TTF_IDIShWnd
       .hWnd = ctrl.Container.hWnd
       .uId = ctrl.hWnd
       If Len(strText) > 0 Then
@@ -288,7 +288,7 @@ Public Function AddTool(ByRef ctrl As Control, _
 
 End Function
 
-Public Property Get BackColor() As OLE_COLOR
+Public Property Get backColor() As OLE_COLOR
 
   If (mnlgHwndTT = 0) Then
     Exit Property
@@ -296,11 +296,11 @@ Public Property Get BackColor() As OLE_COLOR
 '
 ' OLE_COLOR is defined in stdole2.tlb
 '
-  BackColor = SendMessageT(mnlgHwndTT, TTM_GETTIPBKCOLOR, 0, 0)
+  backColor = SendMessageT(mnlgHwndTT, TTM_GETTIPBKCOLOR, 0, 0)
 
 End Property
 
-Public Property Let BackColor(clr As OLE_COLOR)
+Public Property Let backColor(clr As OLE_COLOR)
 
   If (mnlgHwndTT = 0) Then
     Exit Property
@@ -323,7 +323,7 @@ Private Sub Class_Terminate()
 
 End Sub
 
-Public Function Create(ByRef frm As Form) As Boolean
+Public Function Create(ByRef frm As Object) As Boolean
 
   If (mnlgHwndTT = 0) Then
     Call InitCommonControls
@@ -378,24 +378,24 @@ Private Function fGetToolInfo(ByVal lnghwndTool As Long, _
                               Optional ByVal fGetText As Boolean = False) As Boolean
 
   Dim nItems As Long
-  Dim I      As Long
+  Dim i      As Long
 
   ti.cbSize = Len(ti)
   If fGetText Then
     ti.lpszText = String$(mnlgMaxTip, 0)
   End If
   nItems = ToolCount
-  For I = 0 To nItems - 1
+  For i = 0 To nItems - 1
 '
 ' Returns 1 on success, 0 on failure.
 '
-    If SendMessageT(mnlgHwndTT, TTM_ENUMTOOLS, (I), ti) Then
+    If SendMessageT(mnlgHwndTT, TTM_ENUMTOOLS, (i), ti) Then
       If (lnghwndTool = ti.uId) Then
         fGetToolInfo = True
         Exit Function
       End If
     End If
-  Next I
+  Next i
 
 End Function
 
