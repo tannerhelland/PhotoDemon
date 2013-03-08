@@ -1116,12 +1116,12 @@ Pour activer les économies PDI, s'il vous plaît permettre %1 pour télécharger le
 
 	<phrase>
 		<original>block width</original>
-		<translation>largeur de bloclargeur</translation>
+		<translation>largeur de bloc</translation>
 	</phrase>
 
 	<phrase>
 		<original>block height</original>
-		<translation>hauteur de blochauteur</translation>
+		<translation>hauteur de bloc</translation>
 	</phrase>
 
 	<phrase>
@@ -2559,7 +2559,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>selection size</original>
-		<translation>TailleTaille de la sélection</translation>
+		<translation>Taille de la sélection</translation>
 	</phrase>
 
 	<phrase>
@@ -3554,6 +3554,11 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	<!-- BEGIN text for VBP_FormFindEdges.frm-->
 
 	<phrase>
+		<original>use black background</original>
+		<translation>Utilisez fond noir</translation>
+	</phrase>
+
+	<phrase>
 		<original>description</original>
 		<translation>Description</translation>
 	</phrase>
@@ -3668,7 +3673,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 		<translation>Avancée de routine mathématique basée sur les relations cubes en diagonale entre les pixels.</translation>
 	</phrase>
 
-	<!-- VBP_FormFindEdges.frm contains 32 phrases. 9 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+	<!-- VBP_FormFindEdges.frm contains 33 phrases. 9 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFindEdges.frm-->
 
@@ -3863,18 +3868,8 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>Interface Options</original>
-		<translation>Options de l'interface</translation>
-	</phrase>
-
-	<phrase>
 		<original>Updates</original>
 		<translation>Mises à jour</translation>
-	</phrase>
-
-	<phrase>
-		<original>Update Options</original>
-		<translation>mettre à jour les options</translation>
 	</phrase>
 
 	<phrase>
@@ -3883,18 +3878,8 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>Tool Options</original>
-		<translation>Options de l'outil</translation>
-	</phrase>
-
-	<phrase>
 		<original>Advanced</original>
 		<translation>Avancé</translation>
-	</phrase>
-
-	<phrase>
-		<original>Advanced Options</original>
-		<translation>Options avancées</translation>
 	</phrase>
 
 	<phrase>
@@ -3903,18 +3888,8 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>Transparency Options</original>
-		<translation>Options Transparence</translation>
-	</phrase>
-
-	<phrase>
 		<original>Loading</original>
 		<translation>Bourrage</translation>
-	</phrase>
-
-	<phrase>
-		<original>Load (Import) Options</original>
-		<translation>Options Charger (Importer)</translation>
 	</phrase>
 
 	<phrase>
@@ -3923,93 +3898,24 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>Save (Export) Options</original>
-		<translation>Options Enregistrer (Exporter)</translation>
-	</phrase>
-
-	<phrase>
 		<original>File formats</original>
-		<translation>Les formats de fichiers</translation>
+		<translation>Les formats
+		de fichiers</translation>
 	</phrase>
 
 	<phrase>
-		<original>File Format Options</original>
-		<translation>les options de format de fichier</translation>
+		<original>draw drop shadow between image and canvas</original>
+		<translation>attirer l' ombre portée entre l'image et la toile</translation>
 	</phrase>
 
 	<phrase>
-		<original>enable GDI+ support</original>
-		<translation>activer le support GDI</translation>
-	</phrase>
-
-	<phrase>
-		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
-		<translation>Utilisez cette option pour désactiver manuellement soutien GDI. Cette PhotoDemon forces de s'appuyer sur son FreeImage et internes VB- seulement routines.</translation>
-	</phrase>
-
-	<phrase>
-		<original>Folder used for temporary files</original>
-		<translation>Dossier utilisé pour les fichiers temporaires</translation>
-	</phrase>
-
-	<phrase>
-		<original>Click to open a browse-for-folder dialog</original>
-		<translation>Cliquez pour ouvrir un dialogue de navigation-à-de-s fins-de-dossier</translation>
-	</phrase>
-
-	<phrase>
-		<original>log all program messages to file</original>
-		<translation>consigner tous les messages du programme de déposer</translation>
-	</phrase>
-
-	<phrase>
-		<original>memory usage will be displayed here</original>
-		<translation>utilisation de la mémoire sera affichée ici</translation>
-	</phrase>
-
-	<phrase>
-		<original>memory diagnostics</original>
-		<translation>diagnostics de mémoire</translation>
-	</phrase>
-
-	<phrase>
-		<original>temporary file location</original>
-		<translation>emplacement des fichiers temporaires</translation>
-	</phrase>
-
-	<phrase>
-		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
-		<translation>options de test run-time (NOTE: ce ne sont pas enregistrées dans le fichier INI)</translation>
-	</phrase>
-
-	<phrase>
-		<original>debugging</original>
-		<translation>débogage</translation>
-	</phrase>
-
-	<phrase>
-		<original>if core plugins cannot be located, offer to download them</original>
-		<translation>En tant que plugins de base ne peut être trouvé, proposant de télécharger</translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically check for software updates every 10 days</original>
-		<translation>vérifier automatiquement les mises à jour logicielles tous les 10 jours</translation>
-	</phrase>
-
-	<phrase>
-		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-		<translation>Si cette option est désactivée, vous pouvez visiter tannerhelland.com/photodemon pour télécharger manuellement la dernière version de PhotoDemon</translation>
-	</phrase>
-
-	<phrase>
-		<original>(disclaimer populated at run-time)</original>
-		<translation>(disclaimer peuplée au moment de l'exécution)</translation>
+		<original>This setting helps images stand out from the canvas behind them</original>
+		<translation>Ce paramètre permet de se démarquer des images de la toile derrière eux</translation>
 	</phrase>
 
 	<phrase>
 		<original>dynamically update taskbar icon to match current image</original>
-		<translation>mettre à jour dynamiquement icône barre des tâches pour correspondre à l'image courante</translation>
+		<translation>changer l'icône de la barre des tâches pour correspondre à l'image courante</translation>
 	</phrase>
 
 	<phrase>
@@ -4028,16 +3934,6 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>draw drop shadow between image and canvas</original>
-		<translation>attirer l' ombre portée entre l'image et la toile</translation>
-	</phrase>
-
-	<phrase>
-		<original>This setting helps images stand out from the canvas behind them</original>
-		<translation>Ce paramètre permet de se démarquer des images de la toile derrière eux</translation>
-	</phrase>
-
-	<phrase>
 		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
 		<translation>rendre le texte avec des polices de caractères PhotoDemon modernes (disponible uniquement sur Vista ou plus récent)</translation>
 	</phrase>
@@ -4053,8 +3949,8 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>taskbar icon</original>
-		<translation>icône de la barre des tâches</translation>
+		<original>recently used file shortcuts should be</original>
+		<translation>raccourcis de fichiers récemment utilisés doivent être</translation>
 	</phrase>
 
 	<phrase>
@@ -4063,13 +3959,13 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>window location</original>
-		<translation>emplacement de la fenêtre</translation>
+		<original>image window titles should be</original>
+		<translation>titre de la fenêtre d'image doit être</translation>
 	</phrase>
 
 	<phrase>
-		<original>interface text</original>
-		<translation>texte de l'interface</translation>
+		<original>miscellaneous</original>
+		<translation>divers</translation>
 	</phrase>
 
 	<phrase>
@@ -4198,6 +4094,11 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
+		<original>file format options</original>
+		<translation>les options de format de fichier</translation>
+	</phrase>
+
+	<phrase>
 		<original>when closing image files, warn me me about unsaved changes</original>
 		<translation>lors de la fermeture des fichiers image, m'avertir moi au sujet de modifications non enregistrées</translation>
 	</phrase>
@@ -4305,6 +4206,81 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	<phrase>
 		<original>selections</original>
 		<translation>sélections</translation>
+	</phrase>
+
+	<phrase>
+		<original>enable GDI+ support</original>
+		<translation>activer le support GDI</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
+		<translation>Utilisez cette option pour désactiver manuellement soutien GDI. Cette PhotoDemon forces de s'appuyer sur son FreeImage et internes VB- seulement routines.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Folder used for temporary files</original>
+		<translation>Dossier utilisé pour les fichiers temporaires</translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to open a browse-for-folder dialog</original>
+		<translation>Cliquez pour ouvrir un dialogue de navigation-à-de-s fins-de-dossier</translation>
+	</phrase>
+
+	<phrase>
+		<original>log all program messages to file</original>
+		<translation>consigner tous les messages du programme de déposer</translation>
+	</phrase>
+
+	<phrase>
+		<original>memory usage will be displayed here</original>
+		<translation>utilisation de la mémoire sera affichée ici</translation>
+	</phrase>
+
+	<phrase>
+		<original>memory diagnostics</original>
+		<translation>diagnostics de mémoire</translation>
+	</phrase>
+
+	<phrase>
+		<original>temporary file location</original>
+		<translation>emplacement des fichiers temporaires</translation>
+	</phrase>
+
+	<phrase>
+		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
+		<translation>options de test run-time (NOTE: ce ne sont pas enregistrées dans le fichier INI)</translation>
+	</phrase>
+
+	<phrase>
+		<original>debugging</original>
+		<translation>débogage</translation>
+	</phrase>
+
+	<phrase>
+		<original>if core plugins cannot be located, offer to download them</original>
+		<translation>En tant que plugins de base ne peut être trouvé, proposant de télécharger</translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically check for software updates every 10 days</original>
+		<translation>vérifier automatiquement les mises à jour logicielles tous les 10 jours</translation>
+	</phrase>
+
+	<phrase>
+		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
+		<translation>Si cette option est désactivée, vous pouvez visiter tannerhelland.com/photodemon pour télécharger manuellement la dernière version de PhotoDemon</translation>
+	</phrase>
+
+	<phrase>
+		<original>update options</original>
+		<translation>mettre à jour les options</translation>
+	</phrase>
+
+	<phrase>
+		<original>(disclaimer populated at run-time)</original>
+		<translation>(disclaimer peuplée au moment de l'exécution)</translation>
 	</phrase>
 
 	<phrase>
@@ -4646,6 +4622,7 @@ The developers of PhotoDemon take privacy very seriously, so no information - st
 
 If you choose to disable these features, note that you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.</original>
 		<translation>PhotoDemon offre deux caractéristiques non essentielles qui nécessitent un accès à Internet:. Vérification des mises à jour logicielles, et proposant de télécharger des plugins de base (FreeImage, EZTwain, zlib, et pngnq -s9) s'ils ne sont pas présents dans le sous-répertoire\Data\Plugins 
+		
  Les développeurs de PhotoDemon prenons la vie privée très au sérieux, de sorte qu'aucune information - statistiques ou autres - est chargé par ces caractéristiques. Vérification des mises à jour logicielles implique le téléchargement d'un seul " updates.txt " fichier contenant le numéro de la dernière version du logiciel. De même, le téléchargement de plugins manquants consiste simplement en téléchargeant un ou plusieurs des fichiers du plugin compressées du serveur PhotoDemon. 
 
  Si vous choisissez de désactiver ces fonctionnalités, veuillez noter que vous pouvez toujours visiter tannerhelland.com/photodemon pour télécharger manuellement la version la plus récente du programme.</translation>
@@ -4658,7 +4635,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<phrase>
 		<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-		<translation>La largeur "Fichiers récents " menu est limité par Windows. Pour éviter ce menu ne déborde, PhotoDemon pouvez afficher les noms d'image seulement au lieu de l'emplacement des images complètes.</translation>
+		<translation>La largeur "Fichiers récents" menu est limité par Windows. Pour éviter ce menu ne déborde, PhotoDemon pouvez afficher les noms d'image seulement au lieu de l'emplacement des images complètes.</translation>
 	</phrase>
 
 	<phrase>
@@ -4771,7 +4748,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 		<translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 188 phrases. 15 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -7456,18 +7433,6 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormPolar.frm-->
 
-	<!-- BEGIN text for pdFilterSupport.cls-->
-
-	<!-- pdFilterSupport.cls contains 0 phrases. -->
-
-	<!-- END text for pdFilterSupport.cls-->
-
-	<!-- BEGIN text for cSelfSubHookCallback.cls-->
-
-	<!-- cSelfSubHookCallback.cls contains 0 phrases. -->
-
-	<!-- END text for cSelfSubHookCallback.cls-->
-
 	<!-- BEGIN text for VBP_FormGaussianBlur.frm-->
 
 	<phrase>
@@ -7529,12 +7494,12 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>box height</original>
-		<translation>Hauteur de la placehauteur</translation>
+		<translation>Hauteur de la place</translation>
 	</phrase>
 
 	<phrase>
 		<original>box width</original>
-		<translation>Largeur de la placelargeur</translation>
+		<translation>Largeur de la place</translation>
 	</phrase>
 
 	<phrase>
@@ -7666,6 +7631,16 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>fit to image</original>
+		<translation>s'adapter à l'image</translation>
+	</phrase>
+
+	<phrase>
+		<original>circular</original>
+		<translation>circulaire</translation>
+	</phrase>
+
+	<phrase>
 		<original>shape</original>
 		<translation>façonner</translation>
 	</phrase>
@@ -7680,7 +7655,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation>L'application de vignettage</translation>
 	</phrase>
 
-	<!-- VBP_FormVignette.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormVignette.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormVignette.frm-->
 
@@ -7721,12 +7696,6 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormModernArt.frm-->
 
-	<!-- BEGIN text for clsControlImages.cls-->
-
-	<!-- clsControlImages.cls contains 0 phrases. -->
-
-	<!-- END text for clsControlImages.cls-->
-
 	<!-- BEGIN text for VBP_FormMonoToColor.frm-->
 
 	<phrase>
@@ -7761,11 +7730,6 @@ effectively treating at as a non-animated GIF file.</original>
 	<!-- BEGIN text for VBP_FormContour.frm-->
 
 	<phrase>
-		<original>use black background</original>
-		<translation>Utilisez fond noir</translation>
-	</phrase>
-
-	<phrase>
 		<original>apply contour smoothing</original>
 		<translation>s'appliquent lissage du contour</translation>
 	</phrase>
@@ -7780,7 +7744,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation>Contour tracé de l'image</translation>
 	</phrase>
 
-	<!-- VBP_FormContour.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormContour.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormContour.frm-->
 
@@ -8204,9 +8168,9 @@ effectively treating at as a non-animated GIF file.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1955 phrases in total. -->
-<!-- 522 are duplicate phrases, so only 1433 phrases have been written to file. -->
-<!-- These 1433 phrases contain approximately 9020 total words. -->
+<!-- As of this build, PhotoDemon contains 1950 phrases in total. -->
+<!-- 521 are duplicate phrases, so only 1429 phrases have been written to file. -->
+<!-- These 1429 phrases contain approximately 9016 total words. -->
 
 </language>
 

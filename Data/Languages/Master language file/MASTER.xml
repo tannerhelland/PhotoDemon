@@ -3488,6 +3488,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<!-- BEGIN text for VBP_FormFindEdges.frm-->
 
 	<phrase>
+		<original>use black background</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>description</original>
 		<translation></translation>
 	</phrase>
@@ -3602,7 +3607,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormFindEdges.frm contains 32 phrases. 9 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+	<!-- VBP_FormFindEdges.frm contains 33 phrases. 9 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFindEdges.frm-->
 
@@ -3797,17 +3802,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>Interface Options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>Updates</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Update Options</original>
 		<translation></translation>
 	</phrase>
 
@@ -3817,17 +3812,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>Tool Options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>Advanced</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Advanced Options</original>
 		<translation></translation>
 	</phrase>
 
@@ -3837,17 +3822,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>Transparency Options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>Loading</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Load (Import) Options</original>
 		<translation></translation>
 	</phrase>
 
@@ -3857,87 +3832,17 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>Save (Export) Options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>File formats</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>File Format Options</original>
+		<original>draw drop shadow between image and canvas</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>enable GDI+ support</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Folder used for temporary files</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Click to open a browse-for-folder dialog</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>log all program messages to file</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>memory usage will be displayed here</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>memory diagnostics</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>temporary file location</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>debugging</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>if core plugins cannot be located, offer to download them</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically check for software updates every 10 days</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>(disclaimer populated at run-time)</original>
+		<original>This setting helps images stand out from the canvas behind them</original>
 		<translation></translation>
 	</phrase>
 
@@ -3962,16 +3867,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>draw drop shadow between image and canvas</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>This setting helps images stand out from the canvas behind them</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
 		<translation></translation>
 	</phrase>
@@ -3987,7 +3882,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>taskbar icon</original>
+		<original>recently used file shortcuts should be</original>
 		<translation></translation>
 	</phrase>
 
@@ -3997,12 +3892,12 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>window location</original>
+		<original>image window titles should be</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>interface text</original>
+		<original>miscellaneous</original>
 		<translation></translation>
 	</phrase>
 
@@ -4132,6 +4027,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>file format options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>when closing image files, warn me me about unsaved changes</original>
 		<translation></translation>
 	</phrase>
@@ -4238,6 +4138,81 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>selections</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>enable GDI+ support</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Folder used for temporary files</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to open a browse-for-folder dialog</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>log all program messages to file</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>memory usage will be displayed here</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>memory diagnostics</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>temporary file location</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>debugging</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>if core plugins cannot be located, offer to download them</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically check for software updates every 10 days</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>update options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>(disclaimer populated at run-time)</original>
 		<translation></translation>
 	</phrase>
 
@@ -4691,7 +4666,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 188 phrases. 15 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -7362,18 +7337,6 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormPolar.frm-->
 
-	<!-- BEGIN text for pdFilterSupport.cls-->
-
-	<!-- pdFilterSupport.cls contains 0 phrases. -->
-
-	<!-- END text for pdFilterSupport.cls-->
-
-	<!-- BEGIN text for cSelfSubHookCallback.cls-->
-
-	<!-- cSelfSubHookCallback.cls contains 0 phrases. -->
-
-	<!-- END text for cSelfSubHookCallback.cls-->
-
 	<!-- BEGIN text for VBP_FormGaussianBlur.frm-->
 
 	<phrase>
@@ -7572,6 +7535,16 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>fit to image</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>circular</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>shape</original>
 		<translation></translation>
 	</phrase>
@@ -7586,7 +7559,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormVignette.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormVignette.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormVignette.frm-->
 
@@ -7627,12 +7600,6 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormModernArt.frm-->
 
-	<!-- BEGIN text for clsControlImages.cls-->
-
-	<!-- clsControlImages.cls contains 0 phrases. -->
-
-	<!-- END text for clsControlImages.cls-->
-
 	<!-- BEGIN text for VBP_FormMonoToColor.frm-->
 
 	<phrase>
@@ -7667,11 +7634,6 @@ effectively treating at as a non-animated GIF file.</original>
 	<!-- BEGIN text for VBP_FormContour.frm-->
 
 	<phrase>
-		<original>use black background</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>apply contour smoothing</original>
 		<translation></translation>
 	</phrase>
@@ -7686,7 +7648,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormContour.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormContour.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormContour.frm-->
 
@@ -8110,8 +8072,8 @@ effectively treating at as a non-animated GIF file.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1955 phrases in total. -->
-<!-- 522 are duplicate phrases, so only 1433 phrases have been written to file. -->
-<!-- These 1433 phrases contain approximately 9020 total words. -->
+<!-- As of this build, PhotoDemon contains 1950 phrases in total. -->
+<!-- 521 are duplicate phrases, so only 1429 phrases have been written to file. -->
+<!-- These 1429 phrases contain approximately 9016 total words. -->
 
 </language>

@@ -3555,6 +3555,11 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	<!-- BEGIN text for VBP_FormFindEdges.frm-->
 
 	<phrase>
+		<original>use black background</original>
+		<translation>Gebruik zwarte achtergrond</translation>
+	</phrase>
+
+	<phrase>
 		<original>description</original>
 		<translation>beschrijving</translation>
 	</phrase>
@@ -3669,7 +3674,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 		<translation>Geavanceerde wiskundige routine gebaseerd op kubieke relaties tussen diagonale pixels.</translation>
 	</phrase>
 
-	<!-- VBP_FormFindEdges.frm contains 32 phrases. 9 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+	<!-- VBP_FormFindEdges.frm contains 33 phrases. 9 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFindEdges.frm-->
 
@@ -3864,18 +3869,8 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>Interface Options</original>
-		<translation>Interface-opties</translation>
-	</phrase>
-
-	<phrase>
 		<original>Updates</original>
 		<translation>Updates</translation>
-	</phrase>
-
-	<phrase>
-		<original>Update Options</original>
-		<translation>opties update</translation>
 	</phrase>
 
 	<phrase>
@@ -3884,18 +3879,8 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>Tool Options</original>
-		<translation>Opties voor gereedschap</translation>
-	</phrase>
-
-	<phrase>
 		<original>Advanced</original>
 		<translation>Gevorderd</translation>
-	</phrase>
-
-	<phrase>
-		<original>Advanced Options</original>
-		<translation>Geavanceerde opties</translation>
 	</phrase>
 
 	<phrase>
@@ -3904,18 +3889,8 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>Transparency Options</original>
-		<translation>Doorzichtigheid opties</translation>
-	</phrase>
-
-	<phrase>
 		<original>Loading</original>
 		<translation>Geladen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Load (Import) Options</original>
-		<translation>Load (Import) Opties</translation>
 	</phrase>
 
 	<phrase>
@@ -3924,88 +3899,18 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>Save (Export) Options</original>
-		<translation>Opslaan (exporteren) Opties</translation>
-	</phrase>
-
-	<phrase>
 		<original>File formats</original>
 		<translation>Bestandsformaten</translation>
 	</phrase>
 
 	<phrase>
-		<original>File Format Options</original>
-		<translation>opties voor het bestandsformaat</translation>
+		<original>draw drop shadow between image and canvas</original>
+		<translation>Tekenen slagschaduw tussen afbeelding en canvas</translation>
 	</phrase>
 
 	<phrase>
-		<original>enable GDI+ support</original>
-		<translation>inschakelen GDI+ ondersteuning</translation>
-	</phrase>
-
-	<phrase>
-		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
-		<translation>Gebruik dit om GDI ondersteuning handmatig uit te schakelen. Dit forceert PhotoDemon te vertrouwen op zijn FreeImage en interne VB -only routines.</translation>
-	</phrase>
-
-	<phrase>
-		<original>Folder used for temporary files</original>
-		<translation>Folder voor tijdelijke bestanden</translation>
-	</phrase>
-
-	<phrase>
-		<original>Click to open a browse-for-folder dialog</original>
-		<translation>Klik hier om een browse -naar- map dialoogvenster te openen</translation>
-	</phrase>
-
-	<phrase>
-		<original>log all program messages to file</original>
-		<translation>log alle programmaberichten naar bestand</translation>
-	</phrase>
-
-	<phrase>
-		<original>memory usage will be displayed here</original>
-		<translation>geheugengebruik zal hier worden weergegeven</translation>
-	</phrase>
-
-	<phrase>
-		<original>memory diagnostics</original>
-		<translation>geheugen diagnostiek</translation>
-	</phrase>
-
-	<phrase>
-		<original>temporary file location</original>
-		<translation>tijdelijke bestandslocatie</translation>
-	</phrase>
-
-	<phrase>
-		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
-		<translation>Opties run-time testen (LET OP: deze worden niet opgeslagen in het INI-bestand)</translation>
-	</phrase>
-
-	<phrase>
-		<original>debugging</original>
-		<translation>debugging</translation>
-	</phrase>
-
-	<phrase>
-		<original>if core plugins cannot be located, offer to download them</original>
-		<translation>als core plugins niet gevonden worden, aanbieden om ze te downloaden</translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically check for software updates every 10 days</original>
-		<translation>automatisch controleren op software-updates om de 10 dagen</translation>
-	</phrase>
-
-	<phrase>
-		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-		<translation>Als dit uitgeschakeld is, kan u een bezoek brengen aan tannerhelland.com/photodemon voor het handmatig downloaden van de nieuwste versie van PhotoDemon</translation>
-	</phrase>
-
-	<phrase>
-		<original>(disclaimer populated at run-time)</original>
-		<translation>(disclaimer opgevuld in run-time)</translation>
+		<original>This setting helps images stand out from the canvas behind them</original>
+		<translation>Deze instelling helpt afbeeldingen te onderscheiden van het canvas achter hen</translation>
 	</phrase>
 
 	<phrase>
@@ -4029,16 +3934,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>draw drop shadow between image and canvas</original>
-		<translation>Tekenen slagschaduw tussen afbeelding en canvas</translation>
-	</phrase>
-
-	<phrase>
-		<original>This setting helps images stand out from the canvas behind them</original>
-		<translation>Deze instelling helpt afbeeldingen te onderscheiden van het canvas achter hen</translation>
-	</phrase>
-
-	<phrase>
 		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
 		<translation>Verfraai PhotoDemon tekst met moderne lettertypes (alleen beschikbaar op Vista of nieuwer)</translation>
 	</phrase>
@@ -4054,8 +3949,8 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>taskbar icon</original>
-		<translation>taakbalkpictogram</translation>
+		<original>recently used file shortcuts should be</original>
+		<translation>laatst gebruikte bestanden snelkoppelingen moeten worden</translation>
 	</phrase>
 
 	<phrase>
@@ -4064,13 +3959,13 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>window location</original>
-		<translation>venster locatie</translation>
+		<original>image window titles should be</original>
+		<translation>beeldvenster titels moeten worden</translation>
 	</phrase>
 
 	<phrase>
-		<original>interface text</original>
-		<translation>interface- tekst</translation>
+		<original>miscellaneous</original>
+		<translation>gemengd</translation>
 	</phrase>
 
 	<phrase>
@@ -4199,6 +4094,11 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
+		<original>file format options</original>
+		<translation>opties voor het bestandsformaat</translation>
+	</phrase>
+
+	<phrase>
 		<original>when closing image files, warn me me about unsaved changes</original>
 		<translation>waarschuw me bij het sluiten van afbeeldingen over niet-opgeslagen wijzigingen</translation>
 	</phrase>
@@ -4306,6 +4206,81 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	<phrase>
 		<original>selections</original>
 		<translation>selecties</translation>
+	</phrase>
+
+	<phrase>
+		<original>enable GDI+ support</original>
+		<translation>inschakelen GDI+ ondersteuning</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
+		<translation>Gebruik dit om GDI ondersteuning handmatig uit te schakelen. Dit forceert PhotoDemon te vertrouwen op zijn FreeImage en interne VB -only routines.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Folder used for temporary files</original>
+		<translation>Folder voor tijdelijke bestanden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to open a browse-for-folder dialog</original>
+		<translation>Klik hier om een browse -naar- map dialoogvenster te openen</translation>
+	</phrase>
+
+	<phrase>
+		<original>log all program messages to file</original>
+		<translation>log alle programmaberichten naar bestand</translation>
+	</phrase>
+
+	<phrase>
+		<original>memory usage will be displayed here</original>
+		<translation>geheugengebruik zal hier worden weergegeven</translation>
+	</phrase>
+
+	<phrase>
+		<original>memory diagnostics</original>
+		<translation>geheugen diagnostiek</translation>
+	</phrase>
+
+	<phrase>
+		<original>temporary file location</original>
+		<translation>tijdelijke bestandslocatie</translation>
+	</phrase>
+
+	<phrase>
+		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
+		<translation>Opties run-time testen (LET OP: deze worden niet opgeslagen in het INI-bestand)</translation>
+	</phrase>
+
+	<phrase>
+		<original>debugging</original>
+		<translation>debugging</translation>
+	</phrase>
+
+	<phrase>
+		<original>if core plugins cannot be located, offer to download them</original>
+		<translation>als core plugins niet gevonden worden, aanbieden om ze te downloaden</translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically check for software updates every 10 days</original>
+		<translation>automatisch controleren op software-updates om de 10 dagen</translation>
+	</phrase>
+
+	<phrase>
+		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
+		<translation>Als dit uitgeschakeld is, kan u een bezoek brengen aan tannerhelland.com/photodemon voor het handmatig downloaden van de nieuwste versie van PhotoDemon</translation>
+	</phrase>
+
+	<phrase>
+		<original>update options</original>
+		<translation>opties update</translation>
+	</phrase>
+
+	<phrase>
+		<original>(disclaimer populated at run-time)</original>
+		<translation>(disclaimer opgevuld in run-time)</translation>
 	</phrase>
 
 	<phrase>
@@ -4660,7 +4635,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 
 	<phrase>
 		<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-		<translation>De breedte van het " Recente bestanden" menu wordt beperkt door Windows. Om te voorkomen dat dit menu overloopt, kan PhotoDemon enkel afbeeldingsnamen weergeven  in plaats van volledige afbeeldingslocaties.</translation>
+		<translation>De breedte van het "Recente bestanden" menu wordt beperkt door Windows. Om te voorkomen dat dit menu overloopt, kan PhotoDemon enkel afbeeldingsnamen weergeven  in plaats van volledige afbeeldingslocaties.</translation>
 	</phrase>
 
 	<phrase>
@@ -4773,7 +4748,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt voorzien, zal PhotoDemon gebruik maken van de systeem standaard temp locatie.</translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 188 phrases. 15 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -7458,18 +7433,6 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormPolar.frm-->
 
-	<!-- BEGIN text for pdFilterSupport.cls-->
-
-	<!-- pdFilterSupport.cls contains 0 phrases. -->
-
-	<!-- END text for pdFilterSupport.cls-->
-
-	<!-- BEGIN text for cSelfSubHookCallback.cls-->
-
-	<!-- cSelfSubHookCallback.cls contains 0 phrases. -->
-
-	<!-- END text for cSelfSubHookCallback.cls-->
-
 	<!-- BEGIN text for VBP_FormGaussianBlur.frm-->
 
 	<phrase>
@@ -7668,6 +7631,16 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>fit to image</original>
+		<translation>passen om de afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>circular</original>
+		<translation>cirkelvormig</translation>
+	</phrase>
+
+	<phrase>
 		<original>shape</original>
 		<translation>vorm</translation>
 	</phrase>
@@ -7682,7 +7655,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation>Toepassen vignettering</translation>
 	</phrase>
 
-	<!-- VBP_FormVignette.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormVignette.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormVignette.frm-->
 
@@ -7723,12 +7696,6 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormModernArt.frm-->
 
-	<!-- BEGIN text for clsControlImages.cls-->
-
-	<!-- clsControlImages.cls contains 0 phrases. -->
-
-	<!-- END text for clsControlImages.cls-->
-
 	<!-- BEGIN text for VBP_FormMonoToColor.frm-->
 
 	<phrase>
@@ -7763,11 +7730,6 @@ effectively treating at as a non-animated GIF file.</original>
 	<!-- BEGIN text for VBP_FormContour.frm-->
 
 	<phrase>
-		<original>use black background</original>
-		<translation>Gebruik zwarte achtergrond</translation>
-	</phrase>
-
-	<phrase>
 		<original>apply contour smoothing</original>
 		<translation>toepassing contourafronding</translation>
 	</phrase>
@@ -7782,7 +7744,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation>Overtrekafbeelding contour</translation>
 	</phrase>
 
-	<!-- VBP_FormContour.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormContour.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormContour.frm-->
 
@@ -8206,9 +8168,9 @@ effectively treating at as a non-animated GIF file.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1955 phrases in total. -->
-<!-- 522 are duplicate phrases, so only 1433 phrases have been written to file. -->
-<!-- These 1433 phrases contain approximately 9020 total words. -->
+<!-- As of this build, PhotoDemon contains 1950 phrases in total. -->
+<!-- 521 are duplicate phrases, so only 1429 phrases have been written to file. -->
+<!-- These 1429 phrases contain approximately 9016 total words. -->
 
 </language>
 
