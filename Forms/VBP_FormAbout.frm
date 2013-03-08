@@ -261,6 +261,7 @@ Private Sub Form_Load()
     GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
     GenerateThankyou "Robert Rayment"
+    GenerateThankyou "Rod Stephens", "http://www.vb-helper.com"
     GenerateThankyou "Ron van Tilburg", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
     GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateThankyou "Tango Icon Library", "http://tango.freedesktop.org/"

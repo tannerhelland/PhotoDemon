@@ -167,6 +167,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 * Jerry Huxtable and JHLabs for an excellent reference on Distort-style filters (Apache 2.0)
   (http://www.jhlabs.com/ip/filters/index.html)
 * Frank Donckers for extensive help with the translation engine and core translation files
+* Rod Stephens and VB-Helper.com for a themable, multiline-supporting tooltip class
+  (http://www.vb-helper.com/howto_multi_line_tooltip.html)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
   * Andrew Yeoman
   * Zhu JinYong
