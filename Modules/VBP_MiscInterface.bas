@@ -124,7 +124,12 @@ Public Sub makeFormPretty(ByRef tForm As Form)
     If g_Language.translationActive Then g_Language.applyTranslations tForm
     
     'Refresh all non-MDI forms after making the changes above
-    If tForm.Name <> "FormMain" Then tForm.Refresh
+    If tForm.Name <> "FormMain" Then
+        tForm.Refresh
+    Else
+        'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned.
+        If FormMain.Visible Then ApplyAllMenuIcons
+    End If
         
 End Sub
 
