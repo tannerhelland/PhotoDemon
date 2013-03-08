@@ -11,6 +11,16 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within PhotoDemon.
+
+'To my knowledge, this class is ©2007 Paul Caton and LaVolpe
+
+'You may download the original version of this code from the following link (good as of February '13):
+' http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=68737&lngWId=1
+
+'Many thanks to these fine gentlemen for their work on IDE-safe subclassing in VB6.
+
+
 Option Explicit
 
 '========================================
