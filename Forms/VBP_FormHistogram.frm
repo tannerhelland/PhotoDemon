@@ -451,7 +451,7 @@ Dim maxChannel As Byte          'This identifies the channel with the highest va
 Dim hEnabled(0 To 3) As Boolean
 
 'Loop and position variables
-Dim x As Long, y As Long
+Dim X As Long, Y As Long
 
 'Modified cubic spline variables:
 Dim nPoints As Integer
@@ -464,9 +464,9 @@ Private results() As Long   'Stores the y-values for each x-value in the final s
 'When channels are enabled or disabled, redraw the histogram
 Private Sub chkChannel_Click(Index As Integer)
     
-    For x = 0 To 3
-        If chkChannel(x).Value = vbChecked Then hEnabled(x) = True Else hEnabled(x) = False
-    Next x
+    For X = 0 To 3
+        If chkChannel(X).Value = vbChecked Then hEnabled(X) = True Else hEnabled(X) = False
+    Next X
     
     DrawHistogram
     
@@ -579,9 +579,9 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'For now, initialize all histogram types
-    For x = 0 To 3
-        hEnabled(x) = True
-    Next x
+    For X = 0 To 3
+        hEnabled(X) = True
+    Next X
     
     'Blank out the specific level labels populated by moving the mouse across the form
     lblLevel = ""
@@ -638,15 +638,15 @@ Public Sub DrawHistogram()
     'We now need to calculate a max histogram value based on which RGB channels are enabled
     hMax = 0:    hMaxLog = 0:   maxChannel = 4  'Set maxChannel to an arbitrary value higher than 2
     
-    For x = 0 To 2
-        If hEnabled(x) = True Then
-            If channelMax(x) > hMax Then
-                hMax = channelMax(x)
-                hMaxLog = channelMaxLog(x)
-                maxChannel = x
+    For X = 0 To 2
+        If hEnabled(X) = True Then
+            If channelMax(X) > hMax Then
+                hMax = channelMax(X)
+                hMaxLog = channelMaxLog(X)
+                maxChannel = X
             End If
         End If
-    Next x
+    Next X
     
     'We'll need to draw up to four lines - one each for red, green, blue, and luminance,
     ' depending on what channels the user has enabled.
@@ -699,35 +699,35 @@ Public Sub DrawHistogram()
                     Dim xCalc As Long
                     
                     'Run a loop through every histogram value...
-                    For x = 0 To picH.ScaleWidth
+                    For X = 0 To picH.ScaleWidth
                 
                         'The y-value of the histogram is drawn as a percentage (RData(x) / MaxVal) * tHeight) with tHeight being
                         ' the tallest possible value (when RData(x) = MaxVal).  We then subtract that value from tHeight because
                         ' y values INCREASE as we move DOWN a picture box - remember that (0,0) is in the top left.
-                        xCalc = Int((x / picH.ScaleWidth) * 256)
+                        xCalc = Int((X / picH.ScaleWidth) * 256)
                         If xCalc > 255 Then xCalc = 255
                         
                         If chkLog.Value = vbChecked Then
-                            y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
+                            Y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
                         Else
-                            y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
+                            Y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
                         End If
                         
                         'For connecting lines...
                         If drawMethod = 0 Then
                             'Then draw a line from the last (x,y) to the current (x,y)
-                            picH.Line (LastX, LastY + 2)-(x, y + 2)
+                            picH.Line (LastX, LastY + 2)-(X, Y + 2)
                             'The line below can be used for antialiased drawing, FYI
                             'DrawLineWuAA picH.hDC, LastX, LastY + 2, x, y + 2, picH.ForeColor
-                            LastX = x
-                            LastY = y
+                            LastX = X
+                            LastY = Y
                             
                         'For a bar graph...
                         ElseIf drawMethod = 1 Then
                             'Draw a line from the bottom of the picture box to the calculated y-value
-                            picH.Line (x, tHeight + 2)-(x, y + 2)
+                            picH.Line (X, tHeight + 2)-(X, Y + 2)
                         End If
-                    Next x
+                    Next X
                     
                 Case 2
             
@@ -742,36 +742,35 @@ Public Sub DrawHistogram()
     
     picH.Picture = picH.Image
     picH.Refresh
-    Clipboard.Clear
-    Clipboard.SetData picH.Picture
     
     'Last but not least, generate the statistics at the bottom of the form
     
     'Total number of pixels
-    lblTotalPixels.Caption = "Total pixels: " & (pdImages(CurrentImage).Width * pdImages(CurrentImage).Height)
+    lblTotalPixels.Caption = g_Language.TranslateMessage("Total pixels") & ": " & (pdImages(CurrentImage).Width * pdImages(CurrentImage).Height)
     
     'Maximum value; if a color channel is enabled, use that
-    If hEnabled(0) = True Or hEnabled(1) = True Or hEnabled(2) = True Then
+    If hEnabled(0) Or hEnabled(1) Or hEnabled(2) Then
         
         'Reset hMax, which may have been changed if the luminance histogram was rendered
         hMax = channelMax(maxChannel)
-        lblMaxCount.Caption = "Maximum count: " & hMax
+        lblMaxCount.Caption = g_Language.TranslateMessage("Maximum count") & ": " & hMax
         
         'Also display the channel with that max value, if applicable
         Select Case maxChannel
             Case 0
-                lblMaxCount.Caption = lblMaxCount.Caption & " (Red"
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("Red")
             Case 1
-                lblMaxCount.Caption = lblMaxCount.Caption & " (Green"
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("Green")
             Case 2
-                lblMaxCount.Caption = lblMaxCount.Caption & " (Blue"
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("Blue")
         End Select
         
-        lblMaxCount.Caption = lblMaxCount.Caption & ", level " & channelMaxPosition(maxChannel) & ")"
+        lblMaxCount.Caption = lblMaxCount.Caption & ", " & g_Language.TranslateMessage("level") & " " & channelMaxPosition(maxChannel) & ")"
     
     'Otherwise, default to luminance
     Else
-        lblMaxCount.Caption = channelMax(3) & " (Luminance, level " & channelMaxPosition(3) & ")"
+        lblMaxCount.Caption = channelMax(3) & " (" & g_Language.TranslateMessage("Luminance")
+        lblMaxCount.Caption = lblMaxCount.Caption & ", " & g_Language.TranslateMessage("level") & " " & channelMaxPosition(3) & ")"
     End If
         
 End Sub
@@ -783,9 +782,9 @@ Private Sub Form_Resize()
     picGradient.Width = Me.ScaleWidth - picGradient.Left - 8
     
     CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
-    For x = 0 To lineStats.Count - 1
-        lineStats(x).X2 = Me.ScaleWidth - lineStats(x).X1
-    Next x
+    For X = 0 To lineStats.Count - 1
+        lineStats(X).X2 = Me.ScaleWidth - lineStats(X).X1
+    Next X
     lblMouseInstructions.Left = Me.ScaleWidth - 194
     
     'Only draw the histogram if the histogram data has been initialized
@@ -796,9 +795,9 @@ End Sub
 
 'When the mouse moves over the histogram, display the level and count for the histogram
 'entry at the x-value over which the mouse passes
-Private Sub picH_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picH_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Dim xCalc As Long
-    xCalc = Int((x / picH.ScaleWidth) * 256)
+    xCalc = Int((X / picH.ScaleWidth) * 256)
     If xCalc > 255 Then xCalc = 255
     lblLevel.Caption = xCalc
     lblCountRed.Caption = hData(0, xCalc)
@@ -847,13 +846,13 @@ Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As
     If b2 < b Then VB = -VB
     'Last, run a loop through the width of the picture box, incrementing the color as
     'we go (thus creating a gradient effect)
-    Dim x As Long
-    For x = 0 To iWidth
-        r2 = r + VR * x
-        g2 = g + VG * x
-        b2 = b + VB * x
-        DstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
-    Next x
+    Dim X As Long
+    For X = 0 To iWidth
+        r2 = r + VR * X
+        g2 = g + VG * X
+        b2 = b + VB * X
+        DstObject.Line (X, 0)-(X, iHeight), RGB(r2, g2, b2)
+    Next X
 End Sub
 
 'This routine draws the histogram using cubic splines to smooth the output
@@ -911,8 +910,8 @@ Private Function getCurvePoint(ByVal i As Long, ByVal v As Double) As Double
 End Function
 
 'Original required spline function:
-Private Function f(x As Double) As Double
-        f = x * x * x - x
+Private Function f(X As Double) As Double
+        f = X * X * X - X
 End Function
 
 'Original required spline function:
@@ -971,7 +970,7 @@ Public Sub TallyHistogramValues()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -989,30 +988,30 @@ Public Sub TallyHistogramValues()
     'maximum values and histogram values
     hMax = 0:    hMaxLog = 0
     
-    For x = 0 To 3
-        channelMax(x) = 0
-        channelMaxLog(x) = 0
-        For y = 0 To 255
-            hData(x, y) = 0
-        Next y
-    Next x
+    For X = 0 To 3
+        channelMax(X) = 0
+        channelMaxLog(X) = 0
+        For Y = 0 To 255
+            hData(X, Y) = 0
+        Next Y
+    Next X
     
     'Build a look-up table for luminance conversion; 765 = 255 * 3
     Dim lumLookup(0 To 765) As Byte
     
-    For x = 0 To 765
-        lumLookup(x) = x \ 3
-    Next x
+    For X = 0 To 765
+        lumLookup(X) = X \ 3
+    Next X
     
     'Run a quick loop through the image, gathering what we need to calculate our histogram
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'We have to gather the red, green, and blue in order to calculate luminance
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we'll use
         ' a simpler average value.
@@ -1031,37 +1030,37 @@ Public Sub TallyHistogramValues()
         'Luminance
         hData(3, l) = hData(3, l) + 1
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     'With our dataset successfully collected, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
     'Run a quick loop through the completed array to find maximum values
-    For x = 0 To 3
-        For y = 0 To 255
-            If hData(x, y) > channelMax(x) Then
-                channelMax(x) = hData(x, y)
-                channelMaxPosition(x) = y
+    For X = 0 To 3
+        For Y = 0 To 255
+            If hData(X, Y) > channelMax(X) Then
+                channelMax(X) = hData(X, Y)
+                channelMaxPosition(X) = Y
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     'Now calculate the logarithmic version of the histogram
-    For x = 0 To 3
-        If channelMax(x) <> 0 Then channelMaxLog(x) = Log(channelMax(x)) Else channelMaxLog(x) = 0
-    Next x
+    For X = 0 To 3
+        If channelMax(X) <> 0 Then channelMaxLog(X) = Log(channelMax(X)) Else channelMaxLog(X) = 0
+    Next X
     
-    For x = 0 To 3
-        For y = 0 To 255
-            If hData(x, y) <> 0 Then
-                hDataLog(x, y) = Log(hData(x, y))
+    For X = 0 To 3
+        For Y = 0 To 255
+            If hData(X, Y) <> 0 Then
+                hDataLog(X, Y) = Log(hData(X, Y))
             Else
-                hDataLog(x, y) = 0
+                hDataLog(X, Y) = 0
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     histogramGenerated = True
     
@@ -1082,7 +1081,7 @@ Public Sub StretchHistogram()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -1109,14 +1108,14 @@ Public Sub StretchHistogram()
     bMin = 255
         
     'Loop through each pixel in the image, checking max/min values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         If r < rMin Then rMin = r
         If r > rMax Then rMax = r
@@ -1125,8 +1124,8 @@ Public Sub StretchHistogram()
         If b < bMin Then bMin = b
         If b > bMax Then bMax = b
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     Message "Stretching histogram..."
     Dim rdif As Long, Gdif As Long, Bdif As Long
@@ -1138,50 +1137,50 @@ Public Sub StretchHistogram()
     'Lookup tables make the stretching go faster
     Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
-    For x = 0 To 255
+    For X = 0 To 255
         If rdif <> 0 Then
-            r = 255 * ((x - rMin) / rdif)
+            r = 255 * ((X - rMin) / rdif)
             If r < 0 Then r = 0
             If r > 255 Then r = 255
-            rLookup(x) = r
+            rLookup(X) = r
         Else
-            rLookup(x) = x
+            rLookup(X) = X
         End If
         If Gdif <> 0 Then
-            g = 255 * ((x - gMin) / Gdif)
+            g = 255 * ((X - gMin) / Gdif)
             If g < 0 Then g = 0
             If g > 255 Then g = 255
-            gLookup(x) = g
+            gLookup(X) = g
         Else
-            gLookup(x) = x
+            gLookup(X) = X
         End If
         If Bdif <> 0 Then
-            b = 255 * ((x - bMin) / Bdif)
+            b = 255 * ((X - bMin) / Bdif)
             If b < 0 Then b = 0
             If b > 255 Then b = 255
-            bLookup(x) = b
+            bLookup(X) = b
         Else
-            bLookup(x) = x
+            bLookup(X) = X
         End If
-    Next x
+    Next X
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
                 
-        ImageData(QuickVal + 2, y) = rLookup(r)
-        ImageData(QuickVal + 1, y) = gLookup(g)
-        ImageData(QuickVal, y) = bLookup(b)
+        ImageData(QuickVal + 2, Y) = rLookup(r)
+        ImageData(QuickVal + 1, Y) = gLookup(g)
+        ImageData(QuickVal, Y) = bLookup(b)
         
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+    Next Y
+        If (X And progBarCheck) = 0 Then SetProgBarVal X
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

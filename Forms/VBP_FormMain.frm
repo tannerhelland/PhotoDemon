@@ -203,6 +203,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Label lblTools 
          Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "image tools"
@@ -216,15 +217,16 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   375
+         Height          =   285
          Left            =   120
          TabIndex        =   30
          Top             =   3600
          Visible         =   0   'False
-         Width           =   1695
+         Width           =   1230
       End
       Begin VB.Label lblSelStyle 
          Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "selection style"
@@ -238,14 +240,15 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   375
+         Height          =   285
          Left            =   120
          TabIndex        =   29
          Top             =   120
-         Width           =   1695
+         Width           =   1470
       End
       Begin VB.Label lblSelPosition 
          Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "selection position"
@@ -259,14 +262,15 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   375
+         Height          =   285
          Left            =   120
          TabIndex        =   28
          Top             =   1050
-         Width           =   1935
+         Width           =   1830
       End
       Begin VB.Label lblSelSize 
          Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "selection size"
@@ -280,11 +284,11 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   375
+         Height          =   285
          Left            =   120
          TabIndex        =   27
          Top             =   2010
-         Width           =   1935
+         Width           =   1380
       End
    End
    Begin VB.PictureBox picProgBar 
@@ -628,6 +632,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Label lblUndoRedo 
          Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "undo / redo"
@@ -641,14 +646,15 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   375
+         Height          =   285
          Left            =   120
          TabIndex        =   15
          Top             =   2505
-         Width           =   1695
+         Width           =   1260
       End
       Begin VB.Label lblSaveSaveas 
          Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "save / save as"
@@ -662,14 +668,15 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   375
+         Height          =   285
          Left            =   120
          TabIndex        =   14
          Top             =   1185
-         Width           =   1695
+         Width           =   1470
       End
       Begin VB.Label lblOpenClose 
          Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "open / close"
@@ -683,11 +690,11 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   375
+         Height          =   285
          Left            =   120
          TabIndex        =   11
          Top             =   90
-         Width           =   1695
+         Width           =   1290
       End
       Begin VB.Label lblRecording 
          Alignment       =   2  'Center
@@ -1880,7 +1887,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1916,7 +1923,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
