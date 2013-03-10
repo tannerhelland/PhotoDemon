@@ -159,7 +159,7 @@
 
 	<phrase>
 		<original>Highlight (Blue)</original>
-		<translation>Highlight (Bleu)</translation>
+		<translation>Mettez en surbrillance (Bleu)</translation>
 	</phrase>
 
 	<phrase>
@@ -1668,7 +1668,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<phrase>
 		<original>Auto-Enhance Highlights</original>
-		<translation>Auto - Améliorer Exposition</translation>
+		<translation>Auto - Améliorer Saillants</translation>
 	</phrase>
 
 	<phrase>
@@ -1713,7 +1713,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<phrase>
 		<original>Shadow/Highlight</original>
-		<translation>Ombre / Clou</translation>
+		<translation>Ombre / Mettez en surbrillance</translation>
 	</phrase>
 
 	<phrase>
@@ -2305,7 +2305,7 @@ When finished, click the Submit button.  Thank you!</original>
 		<translation>Etirer l'histogramme</translation>
 	</phrase>
 
-	<!-- VBP_FormHistogram.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_FormHistogram.frm contains 39 phrases. 22 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormHistogram.frm-->
 
@@ -2869,7 +2869,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Shadows and highlights</original>
-		<translation>Ombres et des reflets</translation>
+		<translation>Ombres et des saillants</translation>
 	</phrase>
 
 	<phrase>
@@ -2904,7 +2904,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Highlights</original>
-		<translation>Exposition</translation>
+		<translation>Saillants</translation>
 	</phrase>
 
 	<phrase>
@@ -3868,8 +3868,18 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
+		<original>Interface Options</original>
+		<translation>Options de l'interface</translation>
+	</phrase>
+
+	<phrase>
 		<original>Updates</original>
 		<translation>Mises à jour</translation>
+	</phrase>
+
+	<phrase>
+		<original>Update Options</original>
+		<translation>mettre à jour les options</translation>
 	</phrase>
 
 	<phrase>
@@ -3878,8 +3888,18 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
+		<original>Tool Options</original>
+		<translation>Options de l'outil</translation>
+	</phrase>
+
+	<phrase>
 		<original>Advanced</original>
 		<translation>Avancé</translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced Options</original>
+		<translation>Options avancées</translation>
 	</phrase>
 
 	<phrase>
@@ -3888,13 +3908,28 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
+		<original>Transparency Options</original>
+		<translation>Options Transparence</translation>
+	</phrase>
+
+	<phrase>
 		<original>Loading</original>
 		<translation>Bourrage</translation>
 	</phrase>
 
 	<phrase>
+		<original>Load (Import) Options</original>
+		<translation>Options Charger (Importer)</translation>
+	</phrase>
+
+	<phrase>
 		<original>Saving</original>
 		<translation>L'enregistrement</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save (Export) Options</original>
+		<translation>Options Enregistrer (Exporter)</translation>
 	</phrase>
 
 	<phrase>
@@ -3904,23 +3939,18 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>draw drop shadow between image and canvas</original>
-		<translation>attirer l' ombre portée entre l'image et la toile</translation>
+		<original>File Format Options</original>
+		<translation>les options de format de fichier</translation>
 	</phrase>
 
 	<phrase>
-		<original>This setting helps images stand out from the canvas behind them</original>
-		<translation>Ce paramètre permet de se démarquer des images de la toile derrière eux</translation>
+		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
+		<translation>rendre le texte avec des polices de caractères PhotoDemon modernes (disponible uniquement sur Vista ou plus récent)</translation>
 	</phrase>
 
 	<phrase>
-		<original>dynamically update taskbar icon to match current image</original>
-		<translation>changer l'icône de la barre des tâches pour correspondre à l'image courante</translation>
-	</phrase>
-
-	<phrase>
-		<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
-		<translation>Fenêtres d'image ont tendance à être grande, alors n'hésitez pas à afficher l'emplacement de chaque image complète dans les bars titre de la fenêtre d'image.</translation>
+		<original>This setting uses "Segoe UI" as the PhotoDemon interface font. Leaving it unchecked defaults to "Tahoma".</original>
+		<translation>Ce paramètre utilise " Segoe UI " comme police de l'interface PhotoDemon. Laissant sa valeur par défaut non vérifiées à "Tahoma".</translation>
 	</phrase>
 
 	<phrase>
@@ -3934,13 +3964,23 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	</phrase>
 
 	<phrase>
-		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
-		<translation>rendre le texte avec des polices de caractères PhotoDemon modernes (disponible uniquement sur Vista ou plus récent)</translation>
+		<original>dynamically update taskbar icon to match current image</original>
+		<translation>changer l'icône de la barre des tâches pour correspondre à l'image courante</translation>
 	</phrase>
 
 	<phrase>
-		<original>This setting uses "Segoe UI" as the PhotoDemon interface font. Leaving it unchecked defaults to "Tahoma".</original>
-		<translation>Ce paramètre utilise " Segoe UI " comme police de l'interface PhotoDemon. Laissant sa valeur par défaut non vérifiées à "Tahoma".</translation>
+		<original>draw drop shadow between image and canvas</original>
+		<translation>attirer l' ombre portée entre l'image et la toile</translation>
+	</phrase>
+
+	<phrase>
+		<original>This setting helps images stand out from the canvas behind them</original>
+		<translation>Ce paramètre permet de se démarquer des images de la toile derrière eux</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
+		<translation>Fenêtres d'image ont tendance à être grande, alors n'hésitez pas à afficher l'emplacement de chaque image complète dans les bars titre de la fenêtre d'image.</translation>
 	</phrase>
 
 	<phrase>
@@ -4091,11 +4131,6 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	<phrase>
 		<original>please select a file type</original>
 		<translation>s'il vous plaît sélectionner un type de fichier</translation>
-	</phrase>
-
-	<phrase>
-		<original>file format options</original>
-		<translation>les options de format de fichier</translation>
 	</phrase>
 
 	<phrase>
@@ -4271,11 +4306,6 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	<phrase>
 		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
 		<translation>Si cette option est désactivée, vous pouvez visiter tannerhelland.com/photodemon pour télécharger manuellement la dernière version de PhotoDemon</translation>
-	</phrase>
-
-	<phrase>
-		<original>update options</original>
-		<translation>mettre à jour les options</translation>
 	</phrase>
 
 	<phrase>
@@ -4480,7 +4510,7 @@ Are you sure you want to continue?</original>
 
 	<phrase>
 		<original>Highlight checks</original>
-		<translation>Mise en évidence des chèques</translation>
+		<translation>Contrôles Saillants</translation>
 	</phrase>
 
 	<phrase>
@@ -4748,7 +4778,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 		<translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 188 phrases. 15 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -5709,12 +5739,6 @@ To improve your user experience, please allow the program to automatically downl
 	<!-- VBP_Main.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_Main.bas-->
-
-	<!-- BEGIN text for jcButton.ctl-->
-
-	<!-- jcButton.ctl contains 0 phrases. -->
-
-	<!-- END text for jcButton.ctl-->
 
 	<!-- BEGIN text for VBP_OutsideDevelopment_mWinHook.bas-->
 
@@ -8168,9 +8192,9 @@ effectively treating at as a non-animated GIF file.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1950 phrases in total. -->
-<!-- 521 are duplicate phrases, so only 1429 phrases have been written to file. -->
-<!-- These 1429 phrases contain approximately 9016 total words. -->
+<!-- As of this build, PhotoDemon contains 1973 phrases in total. -->
+<!-- 536 are duplicate phrases, so only 1437 phrases have been written to file. -->
+<!-- These 1437 phrases contain approximately 9040 total words. -->
 
 </language>
 

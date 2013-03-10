@@ -2249,7 +2249,7 @@ When finished, click the Submit button.  Thank you!</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormHistogram.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_FormHistogram.frm contains 39 phrases. 22 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormHistogram.frm-->
 
@@ -3802,7 +3802,17 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Interface Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Updates</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Update Options</original>
 		<translation></translation>
 	</phrase>
 
@@ -3812,7 +3822,17 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Tool Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Advanced</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced Options</original>
 		<translation></translation>
 	</phrase>
 
@@ -3822,7 +3842,17 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Transparency Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Loading</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Load (Import) Options</original>
 		<translation></translation>
 	</phrase>
 
@@ -3832,27 +3862,27 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Save (Export) Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>File formats</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>draw drop shadow between image and canvas</original>
+		<original>File Format Options</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>This setting helps images stand out from the canvas behind them</original>
+		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>dynamically update taskbar icon to match current image</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
+		<original>This setting uses "Segoe UI" as the PhotoDemon interface font. Leaving it unchecked defaults to "Tahoma".</original>
 		<translation></translation>
 	</phrase>
 
@@ -3867,12 +3897,22 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
+		<original>dynamically update taskbar icon to match current image</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>This setting uses "Segoe UI" as the PhotoDemon interface font. Leaving it unchecked defaults to "Tahoma".</original>
+		<original>draw drop shadow between image and canvas</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>This setting helps images stand out from the canvas behind them</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
 		<translation></translation>
 	</phrase>
 
@@ -4023,11 +4063,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>please select a file type</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>file format options</original>
 		<translation></translation>
 	</phrase>
 
@@ -4203,11 +4238,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>update options</original>
 		<translation></translation>
 	</phrase>
 
@@ -4666,7 +4696,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 188 phrases. 15 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -5619,12 +5649,6 @@ To improve your user experience, please allow the program to automatically downl
 	<!-- VBP_Main.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_Main.bas-->
-
-	<!-- BEGIN text for jcButton.ctl-->
-
-	<!-- jcButton.ctl contains 0 phrases. -->
-
-	<!-- END text for jcButton.ctl-->
 
 	<!-- BEGIN text for VBP_OutsideDevelopment_mWinHook.bas-->
 
@@ -8072,8 +8096,8 @@ effectively treating at as a non-animated GIF file.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1950 phrases in total. -->
-<!-- 521 are duplicate phrases, so only 1429 phrases have been written to file. -->
-<!-- These 1429 phrases contain approximately 9016 total words. -->
+<!-- As of this build, PhotoDemon contains 1966 phrases in total. -->
+<!-- 531 are duplicate phrases, so only 1435 phrases have been written to file. -->
+<!-- These 1435 phrases contain approximately 9030 total words. -->
 
 </language>

@@ -159,12 +159,12 @@
 
 	<phrase>
 		<original>Highlight (Blue)</original>
-		<translation>Oplichtingen (Blauw)</translation>
+		<translation>Glanspunt (Blauw)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Highlight (Red)</original>
-		<translation>Oplichtingen (Rood)</translation>
+		<translation>Glanspunt (Rood)</translation>
 	</phrase>
 
 	<phrase>
@@ -628,7 +628,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 	<phrase>
 		<original>Note: due to missing plugins, some options on this page have been disabled</original>
-		<translation>Opmerking: als gevolg van ontbrekende plug-ins, zijn sommige opties op deze pagina uitgeschakeld</translation>
+		<translation>Opmerking: als gevolg van ontbrekende insteekmodules, zijn sommige opties op deze pagina uitgeschakeld</translation>
 	</phrase>
 
 	<phrase>
@@ -665,9 +665,9 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 		<original>The FreeImage interface plug-ins (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.</original>
-		<translation>De FreeImage -interface plug-ins (FreeImage.dll) werd gemarkeerd als missend of uitgeschakeld bij initialisatie van het programma.
+		<translation>De FreeImage -interface plug-in (FreeImage.dll) werd gemarkeerd als missend of uitgeschakeld bij initialisatie van het programma.
 
-Om ondersteuning voor deze functie in te schakelen, kopieer je het FreeImage.dll bestand in de plug-in directory en herstart je het programma.</translation>
+Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het FreeImage.dll bestand (te downloaden van http://freeimage.sourceforge.net/download.html) in de plug-in directory en start je het programma opnieuw.</translation>
 	</phrase>
 
 	<phrase>
@@ -1609,7 +1609,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 
 	<phrase>
 		<original>Trace Contour</original>
-		<translation>Trace contour</translation>
+		<translation>Omtreklijn</translation>
 	</phrase>
 
 	<phrase>
@@ -1669,7 +1669,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 
 	<phrase>
 		<original>Auto-Enhance Highlights</original>
-		<translation>Auto- Verbetering Oplichtingen</translation>
+		<translation>Auto- Verbetering Glanspunten</translation>
 	</phrase>
 
 	<phrase>
@@ -1714,7 +1714,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 
 	<phrase>
 		<original>Shadow/Highlight</original>
-		<translation>Shadow / Highlight</translation>
+		<translation>Shaduw/Glanspunt</translation>
 	</phrase>
 
 	<phrase>
@@ -2306,7 +2306,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Uitrekken histogram</translation>
 	</phrase>
 
-	<!-- VBP_FormHistogram.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_FormHistogram.frm contains 39 phrases. 22 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormHistogram.frm-->
 
@@ -2870,7 +2870,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 	<phrase>
 		<original>Shadows and highlights</original>
-		<translation>Schaduwen en hoge lichten</translation>
+		<translation>Schaduwen en glanspunten</translation>
 	</phrase>
 
 	<phrase>
@@ -2905,7 +2905,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 	<phrase>
 		<original>Highlights</original>
-		<translation>Oplichtingen</translation>
+		<translation>Glanspunten</translation>
 	</phrase>
 
 	<phrase>
@@ -3869,8 +3869,18 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
+		<original>Interface Options</original>
+		<translation>Interface-opties</translation>
+	</phrase>
+
+	<phrase>
 		<original>Updates</original>
 		<translation>Updates</translation>
+	</phrase>
+
+	<phrase>
+		<original>Update Options</original>
+		<translation>opties update</translation>
 	</phrase>
 
 	<phrase>
@@ -3879,8 +3889,18 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
+		<original>Tool Options</original>
+		<translation>Opties voor gereedschap</translation>
+	</phrase>
+
+	<phrase>
 		<original>Advanced</original>
 		<translation>Gevorderd</translation>
+	</phrase>
+
+	<phrase>
+		<original>Advanced Options</original>
+		<translation>Geavanceerde opties</translation>
 	</phrase>
 
 	<phrase>
@@ -3889,8 +3909,18 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
+		<original>Transparency Options</original>
+		<translation>Geavanceerde opties</translation>
+	</phrase>
+
+	<phrase>
 		<original>Loading</original>
-		<translation>Geladen</translation>
+		<translation>Laden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Load (Import) Options</original>
+		<translation>Laden (Importeren) Opties</translation>
 	</phrase>
 
 	<phrase>
@@ -3899,28 +3929,28 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
+		<original>Save (Export) Options</original>
+		<translation>Opslaan (exporteren) Opties</translation>
+	</phrase>
+
+	<phrase>
 		<original>File formats</original>
 		<translation>Bestandsformaten</translation>
 	</phrase>
 
 	<phrase>
-		<original>draw drop shadow between image and canvas</original>
-		<translation>Tekenen slagschaduw tussen afbeelding en canvas</translation>
+		<original>File Format Options</original>
+		<translation>opties voor het bestandsformaat</translation>
 	</phrase>
 
 	<phrase>
-		<original>This setting helps images stand out from the canvas behind them</original>
-		<translation>Deze instelling helpt afbeeldingen te onderscheiden van het canvas achter hen</translation>
+		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
+		<translation>Verfraai PhotoDemon tekst met moderne lettertypes (alleen beschikbaar op Vista of nieuwer)</translation>
 	</phrase>
 
 	<phrase>
-		<original>dynamically update taskbar icon to match current image</original>
-		<translation>dynamisch bijwerken taakbalk-pictogram overeenstemmend  met de huidige afbeelding</translation>
-	</phrase>
-
-	<phrase>
-		<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
-		<translation>Afbeeldingsvensters zijn vaak groot, dus voel je vrij om voor elke afbeelding de volledige locatie in de beeldvenstertitelbalk weer te geven.</translation>
+		<original>This setting uses "Segoe UI" as the PhotoDemon interface font. Leaving it unchecked defaults to "Tahoma".</original>
+		<translation>Deze instelling maakt gebruik van " Segoe UI " als PhotoDemon -interface lettertype. Het niet aanvinken zet de standaard  naar "Tahoma".</translation>
 	</phrase>
 
 	<phrase>
@@ -3934,13 +3964,23 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
-		<translation>Verfraai PhotoDemon tekst met moderne lettertypes (alleen beschikbaar op Vista of nieuwer)</translation>
+		<original>dynamically update taskbar icon to match current image</original>
+		<translation>dynamisch bijwerken taakbalk-pictogram overeenstemmend  met de huidige afbeelding</translation>
 	</phrase>
 
 	<phrase>
-		<original>This setting uses "Segoe UI" as the PhotoDemon interface font. Leaving it unchecked defaults to "Tahoma".</original>
-		<translation>Deze instelling maakt gebruik van " Segoe UI " als PhotoDemon -interface lettertype. Het niet aanvinken zet de standaard  naar "Tahoma".</translation>
+		<original>draw drop shadow between image and canvas</original>
+		<translation>Tekenen slagschaduw tussen afbeelding en canvas</translation>
+	</phrase>
+
+	<phrase>
+		<original>This setting helps images stand out from the canvas behind them</original>
+		<translation>Deze instelling helpt afbeeldingen te onderscheiden van het canvas achter hen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
+		<translation>Afbeeldingsvensters zijn vaak groot, dus voel je vrij om voor elke afbeelding de volledige locatie in de beeldvenstertitelbalk weer te geven.</translation>
 	</phrase>
 
 	<phrase>
@@ -4091,11 +4131,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	<phrase>
 		<original>please select a file type</original>
 		<translation>selecteer een bestandstype</translation>
-	</phrase>
-
-	<phrase>
-		<original>file format options</original>
-		<translation>opties voor het bestandsformaat</translation>
 	</phrase>
 
 	<phrase>
@@ -4271,11 +4306,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	<phrase>
 		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
 		<translation>Als dit uitgeschakeld is, kan u een bezoek brengen aan tannerhelland.com/photodemon voor het handmatig downloaden van de nieuwste versie van PhotoDemon</translation>
-	</phrase>
-
-	<phrase>
-		<original>update options</original>
-		<translation>opties update</translation>
 	</phrase>
 
 	<phrase>
@@ -4480,7 +4510,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 	<phrase>
 		<original>Highlight checks</original>
-		<translation>Oplichtingen checks</translation>
+		<translation>Glanspunten checks</translation>
 	</phrase>
 
 	<phrase>
@@ -4490,7 +4520,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 	<phrase>
 		<original>Shadow checks</original>
-		<translation>Shaduw checks</translation>
+		<translation>Schaduw checks</translation>
 	</phrase>
 
 	<phrase>
@@ -4605,7 +4635,7 @@ die alfa- kanalen bevatten(bijv. 32bpp beelden).</translation>
 		<original>Update options control how frequently PhotoDemon checks for
 updated versions, and how it handles the download of missing plugins.</original>
 		<translation>Update-opties bepalen hoe vaak PhotoDemon controleert
-op nieuwe versies, en hoe hij omgaat met het downloaden van ontbrekende plug-ins.</translation>
+op nieuwe versies, en hoe hij omgaat met het downloaden van ontbrekende insteekmodules.</translation>
 	</phrase>
 
 	<phrase>
@@ -4748,7 +4778,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt voorzien, zal PhotoDemon gebruik maken van de systeem standaard temp locatie.</translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 188 phrases. 15 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -4834,7 +4864,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 
 	<phrase>
 		<original>Enhancing image highlights</original>
-		<translation>Verbetering oplichtingen afbeelding</translation>
+		<translation>Verbetering glanspunten afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -5151,7 +5181,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 
 	<phrase>
 		<original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-		<translation>Afdrukvoorbeeld vereist de FreeImage plugin die niet gevonden kon worden op deze computer. Voor het inschakelen van afdrukvvorbeelden, ga je naar Bewerken -> Voorkeuren en selecteer "Controleren op ontbrekende plug-ins wanneer het programma start".  De volgende keer dat u PhotoDemon start, zal deze aanbieden om de  plugin te downloaden.</translation>
+		<translation>Afdrukvoorbeeld vereist de FreeImage plugin die niet gevonden kon worden op deze computer. Voor het inschakelen van afdrukvvorbeelden, ga je naar Bewerken -> Voorkeuren en selecteer "Controleren op ontbrekende insteekmodules wanneer het programma start".  De volgende keer dat u PhotoDemon start, zal deze aanbieden om de  plugin te downloaden.</translation>
 	</phrase>
 
 	<phrase>
@@ -5709,12 +5739,6 @@ Om uw gebruikerservaring te verbeteren, dient u het programma toegang te geven v
 	<!-- VBP_Main.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_Main.bas-->
-
-	<!-- BEGIN text for jcButton.ctl-->
-
-	<!-- jcButton.ctl contains 0 phrases. -->
-
-	<!-- END text for jcButton.ctl-->
 
 	<!-- BEGIN text for VBP_OutsideDevelopment_mWinHook.bas-->
 
@@ -7720,7 +7744,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-		<translation>Net als alle zwart-wit-naar-grijswaarden tools, zal deze tool produceren een wazig beeld. U kunt gebruik maken van de Effecten -> Verscherpen -> Onscherp Masking tool om dit op te lossen. (Voor de beste resultaten een onscherp masker straal tenminste zo groot als deze radius.)</translation>
+		<translation>Net als alle zwart-wit-naar-grijswaarden tools, zal deze tool een wazig beeld produceren. U kunt gebruik maken van de Effecten -> Verscherpen -> Onscherp maskeren tool om dit op te lossen. (Voor de beste resultaten een onscherp masker straal tenminste zo groot als deze radius.)</translation>
 	</phrase>
 
 	<!-- VBP_FormMonoToColor.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -7758,7 +7782,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>Shadow / Midtone / Highlight</original>
-		<translation>Shadow / Middentonen / Highlight</translation>
+		<translation>Schaduw / Middentoon / Glanspunt</translation>
 	</phrase>
 
 	<phrase>
@@ -7773,7 +7797,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>Adjusting shadows, midtones, and highlights</original>
-		<translation>Het aanpassen van schaduwen, middentonen en hooglichten</translation>
+		<translation>Het aanpassen van schaduwen, middentonen en glanspunten</translation>
 	</phrase>
 
 	<!-- VBP_FormShadowHighlight.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8168,9 +8192,9 @@ effectively treating at as a non-animated GIF file.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1950 phrases in total. -->
-<!-- 521 are duplicate phrases, so only 1429 phrases have been written to file. -->
-<!-- These 1429 phrases contain approximately 9016 total words. -->
+<!-- As of this build, PhotoDemon contains 1973 phrases in total. -->
+<!-- 536 are duplicate phrases, so only 1437 phrases have been written to file. -->
+<!-- These 1437 phrases contain approximately 9040 total words. -->
 
 </language>
 
