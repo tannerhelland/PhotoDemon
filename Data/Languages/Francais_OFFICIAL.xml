@@ -1648,7 +1648,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<phrase>
 		<original>Invert Hue</original>
-		<translation>Inverser Hue</translation>
+		<translation>Inverser Teinte</translation>
 	</phrase>
 
 	<phrase>
@@ -1898,7 +1898,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<phrase>
 		<original>Solarize</original>
-		<translation>solariser</translation>
+		<translation>Solariser</translation>
 	</phrase>
 
 	<phrase>
@@ -1918,7 +1918,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<phrase>
 		<original>Rainbow</original>
-		<translation>Arc-en-</translation>
+		<translation>Arc en ciel</translation>
 	</phrase>
 
 	<phrase>
@@ -2222,7 +2222,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<phrase>
 		<original>Histogram</original>
-		<translation>histogramme</translation>
+		<translation>Histogramme</translation>
 	</phrase>
 
 	<phrase>
@@ -2679,12 +2679,12 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>&Save</original>
-		<translation>Enregistrer</translation>
+		<translation>&Enregistrer</translation>
 	</phrase>
 
 	<phrase>
 		<original>Save &as</original>
-		<translation>Sauvegarder &que</translation>
+		<translation>Enregistrer &sous</translation>
 	</phrase>
 
 	<phrase>
@@ -2704,7 +2704,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>&Print</original>
-		<translation>&imprimer</translation>
+		<translation>&Imprimer</translation>
 	</phrase>
 
 	<phrase>
@@ -2764,12 +2764,12 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Zoom &in</original>
-		<translation>Zoom &En</translation>
+		<translation>Zoom &avant</translation>
 	</phrase>
 
 	<phrase>
 		<original>Zoom &out</original>
-		<translation>Zoom &A partir de</translation>
+		<translation>Zoom a&rrière</translation>
 	</phrase>
 
 	<phrase>
@@ -2819,17 +2819,17 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Autocrop Image</original>
-		<translation>autocrop Image</translation>
+		<translation>Découpage automatique de l'image</translation>
 	</phrase>
 
 	<phrase>
 		<original>Flip horizontal</original>
-		<translation>horizontal</translation>
+		<translation>Retourner horizontalement</translation>
 	</phrase>
 
 	<phrase>
 		<original>Flip vertical</original>
-		<translation>verticalement</translation>
+		<translation>Retourner verticalement</translation>
 	</phrase>
 
 	<phrase>
@@ -2849,7 +2849,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Brightness and contrast</original>
-		<translation>contraste</translation>
+		<translation>Luminosité / Contraste</translation>
 	</phrase>
 
 	<phrase>
@@ -2859,7 +2859,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Hue and saturation</original>
-		<translation>saturation</translation>
+		<translation>Teinte / Saturation</translation>
 	</phrase>
 
 	<phrase>
@@ -2939,7 +2939,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Grayscale</original>
-		<translation>échelleNiveaux de gris</translation>
+		<translation>Niveaux de gris</translation>
 	</phrase>
 
 	<phrase>
