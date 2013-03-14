@@ -261,9 +261,13 @@ Public Sub ApplyLanguage()
         DrawMenuShortcuts
         ApplyAllMenuIcons
         ResetMenuIcons
-        DisplaySize
+        If (NumOfWindows > 0) Then
+            If Not pdImages(CurrentImage) Is Nothing Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+        End If
     End If
-
+    
+    FixToolboxText
+    
 End Sub
 
 'Check the current default user language, and return it as a standard language code, e.g. "en" or "en-GB" or "de-CH"
