@@ -287,18 +287,18 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     Dim zVal As Long
     zVal = ZoomIndex100
     
-    Dim x As Long
+    Dim X As Long
     
     'First, let's check to see if we need to adjust zppm because the width is too big
     If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) > (FormMain.ScaleWidth - tDif) Then
         'If it is too big, run a loop backwards through the possible zoom values to see
         'if one will make it fit
-        For x = ZoomIndex100 To g_Zoom.ZoomCount Step 1
-            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < (FormMain.ScaleWidth - tDif) Then
-                zVal = x
+        For X = ZoomIndex100 To g_Zoom.ZoomCount Step 1
+            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(X)) < (FormMain.ScaleWidth - tDif) Then
+                zVal = X
                 Exit For
             End If
-        Next x
+        Next X
         
     End If
     
@@ -306,12 +306,12 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) > (FormMain.ScaleHeight - hDif) Then
         'If the image's height is too big for the form, run a loop backwards through all
         ' possible zoom values to see if one will make it fit
-        For x = zVal To g_Zoom.ZoomCount Step 1
-            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
-                zVal = x
+        For X = zVal To g_Zoom.ZoomCount Step 1
+            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(X)) < FormMain.ScaleHeight - hDif Then
+                zVal = X
                 Exit For
             End If
-        Next x
+        Next X
         
     End If
     
@@ -355,24 +355,24 @@ Public Sub FitOnScreen()
     Dim zVal As Long
     zVal = 0
     
-    Dim x As Long
+    Dim X As Long
     
     'Run a loop backwards through the possible zoom values to see
     'if one will make it fit at the maximum possible size
-    For x = 0 To g_Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
-            zVal = x
+    For X = 0 To g_Zoom.ZoomCount Step 1
+        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(X)) < FormMain.ScaleWidth - tDif Then
+            zVal = X
             Exit For
         End If
-    Next x
+    Next X
     
     'Now we do the same thing for the height
-    For x = zVal To g_Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
-            zVal = x
+    For X = zVal To g_Zoom.ZoomCount Step 1
+        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(X)) < FormMain.ScaleHeight - hDif Then
+            zVal = X
             Exit For
         End If
-    Next x
+    Next X
     FormMain.CmbZoom.ListIndex = zVal
     pdImages(CurrentImage).CurrentZoomValue = zVal
     
@@ -422,7 +422,7 @@ Public Sub UpdateMDIStatus()
         FormMain.MnuFitOnScreen.Enabled = False
         If FormMain.CmbZoom.Enabled = True Then
             FormMain.CmbZoom.Enabled = False
-            FormMain.lblZoom.ForeColor = &H606060
+            FormMain.lblLeftToolBox(3).ForeColor = &H606060
             FormMain.CmbZoom.ListIndex = ZoomIndex100   'Reset zoom to 100%
             FormMain.cmdZoomIn.Enabled = False
             FormMain.cmdZoomOut.Enabled = False
@@ -491,7 +491,7 @@ Public Sub UpdateMDIStatus()
         FormMain.lblCoordinates.ForeColor = &H544E43
         If FormMain.CmbZoom.Enabled = False Then
             FormMain.CmbZoom.Enabled = True
-            FormMain.lblZoom.ForeColor = &H544E43
+            FormMain.lblLeftToolBox(3).ForeColor = &H544E43
             FormMain.cmdZoomIn.Enabled = True
             FormMain.cmdZoomOut.Enabled = True
         End If

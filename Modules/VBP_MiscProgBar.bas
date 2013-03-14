@@ -23,7 +23,7 @@ Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (
 Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 
 'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
-' it only processing messages for the supplied hWnd.
+' it only processes messages for the supplied hWnd.
 Public Sub Replacement_DoEvents(ByVal srchWnd As Long)
 
     Dim tmpMsg As winMsg
