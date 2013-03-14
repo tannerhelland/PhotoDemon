@@ -4235,7 +4235,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 	<phrase>
 		<original>automatically clear the active selection after "Crop to Selection" is used</original>
-		<translation>effacer automatiquement après la sélection active " Découper la sélection " est utilisé</translation>
+		<translation>effacer automatiquement après la sélection active "Découper la sélection" est utilisé</translation>
 	</phrase>
 
 	<phrase>
@@ -4460,7 +4460,7 @@ Are you sure you want to continue?</original>
 
 	<phrase>
 		<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-		<translation>enregistrer une nouvelle copie, par exemple " nomdefichier(2). jpg" (un comportement sécuritaire)</translation>
+		<translation>enregistrer une nouvelle copie, par exemple "fichier(2).jpg" (un comportement sécuritaire)</translation>
 	</phrase>
 
 	<phrase>
