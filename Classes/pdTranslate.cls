@@ -259,9 +259,9 @@ Public Sub ApplyLanguage()
     If FormMain.Visible Then
         makeFormPretty FormMain
         DrawMenuShortcuts
-        'LoadMenuIcons
         ApplyAllMenuIcons
         ResetMenuIcons
+        DisplaySize
     End If
 
 End Sub
