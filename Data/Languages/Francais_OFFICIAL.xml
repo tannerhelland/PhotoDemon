@@ -2599,17 +2599,17 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>undo / redo</original>
-		<translation>annuler / refaire</translation>
+		<translation>annuler/refaire</translation>
 	</phrase>
 
 	<phrase>
 		<original>save / save as</original>
-		<translation>Enregistrer / Enregistrer sous</translation>
+		<translation>enregistrer/enregistrer sous</translation>
 	</phrase>
 
 	<phrase>
 		<original>open / close</original>
-		<translation>ouvrir / fermer</translation>
+		<translation>ouvrir/fermer</translation>
 	</phrase>
 
 	<phrase>
