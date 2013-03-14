@@ -1697,7 +1697,7 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 
 	<phrase>
 		<original>Color Temperature</original>
-		<translation>TemperaturFarbtemperatur</translation>
+		<translation>Farb temperatur</translation>
 	</phrase>
 
 	<phrase>
@@ -4283,7 +4283,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
-		<translation>run-time Testmöglichkeiten (Hinweis: diese sind nicht in der INI- Datei gespeichert)</translation>
+		<translation>run-time Testmöglichkeiten (diese sind nicht in der INI- Datei gespeichert)</translation>
 	</phrase>
 
 	<phrase>
@@ -5124,7 +5124,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 
 	<phrase>
 		<original>center on page</original>
-		<translation>Auf der Seite zentrierenSeite</translation>
+		<translation>Auf der Seite zentrieren</translation>
 	</phrase>
 
 	<phrase>
@@ -5134,7 +5134,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 
 	<phrase>
 		<original>fit on page</original>
-		<translation>passen auf SeiteSeite</translation>
+		<translation>passen auf Seite</translation>
 	</phrase>
 
 	<phrase>
@@ -5315,7 +5315,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 
 	<phrase>
 		<original>Advanced Despeckle</original>
-		<translation>Erweiterte FleckfilterSchmutz entfernenSchmutz entfernen</translation>
+		<translation>Erweiterte Fleckfilter</translation>
 	</phrase>
 
 	<phrase>
@@ -7003,7 +7003,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>when reducing alpha channels, attempt to preserve values of 0 and 255</original>
-		<translation>bei der Senkung von alpha Kanälen, versuchen die Werte von 0 und 255 zu erhalten</translation>
+		<translation>Versuchen die Alpha-Werte von 0 und 255 zu erhalten</translation>
 	</phrase>
 
 	<phrase>
@@ -7038,7 +7038,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>custom license, see PNGNQ-S9-LICENSE file</original>
-		<translation>Custom License, siehe pngnq -S9- Datei LICENSE</translation>
+		<translation>Custom License, siehe PNGNQ-S9-LICENSE Datei</translation>
 	</phrase>
 
 	<phrase>

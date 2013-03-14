@@ -1408,7 +1408,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<phrase>
 		<original>Stretch Histogram</original>
-		<translation>histogramme</translation>
+		<translation>Étirer l'histogramme</translation>
 	</phrase>
 
 	<phrase>
@@ -5915,7 +5915,7 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 	<phrase>
 		<original>Current screen size</original>
-		<translation>Taille de l'écranTaille</translation>
+		<translation>Taille de l'écran</translation>
 	</phrase>
 
 	<phrase>
@@ -5925,7 +5925,7 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 	<phrase>
 		<original>Specific number of tiles</original>
-		<translation>tuilesCertain nombre de tuiles</translation>
+		<translation>Certain nombre de tuiles</translation>
 	</phrase>
 
 	<phrase>
@@ -6999,7 +6999,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
-		<translation>analyser les couleurs avec YUV au lieu de RGB (plus lent, mais de meilleure qualité)</translation>
+		<translation>analyser les couleurs avec YUV au lieu de RGB</translation>
 	</phrase>
 
 	<phrase>
@@ -7039,7 +7039,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>custom license, see PNGNQ-S9-LICENSE file</original>
-		<translation>licence personnalisée, reportez-vous pngnq -S9- fichier LICENSE</translation>
+		<translation>reportez-vous fichier PNGNQ-S9-LICENSE</translation>
 	</phrase>
 
 	<phrase>
