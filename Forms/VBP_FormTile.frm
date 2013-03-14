@@ -120,7 +120,7 @@ Begin VB.Form FormTile
       Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   2280
-      Width           =   3375
+      Width           =   5175
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -162,11 +162,12 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   435
+      Height          =   1155
       Left            =   6000
       TabIndex        =   12
       Top             =   3720
       Width           =   5355
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblWidth 
       AutoSize        =   -1  'True
@@ -467,14 +468,14 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If isPreview = False Then SetProgBarMax xLoop
     
     'Using that loop variable, render the original image to the target picture box that many times
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     
-    For x = 0 To xLoop
-    For y = 0 To yLoop
-        BitBlt tmpLayer.getLayerDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
-    Next y
-        If isPreview = False Then SetProgBarVal x
-    Next x
+    For X = 0 To xLoop
+    For Y = 0 To yLoop
+        BitBlt tmpLayer.getLayerDC, X * iWidth, Y * iHeight, iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
+    Next Y
+        If isPreview = False Then SetProgBarVal X
+    Next X
     
     If Not isPreview Then
     

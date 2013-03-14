@@ -161,7 +161,7 @@ Begin VB.Form FormMedian
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H000000FF&
-      Height          =   735
+      Height          =   1095
       Left            =   6000
       TabIndex        =   4
       Top             =   4440

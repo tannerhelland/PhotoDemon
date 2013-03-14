@@ -5,10 +5,10 @@ Begin VB.Form FormHistogram
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Histogram"
-   ClientHeight    =   8445
+   ClientHeight    =   9120
    ClientLeft      =   120
    ClientTop       =   360
-   ClientWidth     =   11910
+   ClientWidth     =   10590
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,92 +21,77 @@ Begin VB.Form FormHistogram
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   563
+   ScaleHeight     =   608
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   794
+   ScaleWidth      =   706
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CheckBox chkChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "Luminance"
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Index           =   3
-      Left            =   5160
-      TabIndex        =   22
-      Top             =   6480
-      Value           =   1  'Checked
-      Width           =   1215
+   Begin PhotoDemon.smartCheckBox chkLog 
+      Height          =   480
+      Left            =   5400
+      TabIndex        =   25
+      Top             =   5520
+      Width           =   2280
+      _ExtentX        =   4022
+      _ExtentY        =   847
+      Caption         =   "use logarithmic values"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
-   Begin VB.CheckBox chkChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "Blue"
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Index           =   2
-      Left            =   4080
-      TabIndex        =   21
-      Top             =   6480
-      Value           =   1  'Checked
-      Width           =   855
+   Begin PhotoDemon.smartCheckBox chkSmooth 
+      Height          =   480
+      Left            =   5400
+      TabIndex        =   24
+      Top             =   5040
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   847
+      Caption         =   "use smooth lines"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
-   Begin VB.CheckBox chkChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "Green"
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Index           =   1
-      Left            =   3000
-      TabIndex        =   20
-      Top             =   6480
-      Value           =   1  'Checked
-      Width           =   855
-   End
-   Begin VB.CheckBox chkChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "Red"
-      ForeColor       =   &H80000008&
-      Height          =   375
+   Begin PhotoDemon.smartCheckBox chkChannel 
+      Height          =   480
       Index           =   0
-      Left            =   2040
-      TabIndex        =   19
-      Top             =   6480
-      Value           =   1  'Checked
-      Width           =   855
-   End
-   Begin VB.CheckBox chkLog 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "Use logarithmic values"
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Left            =   3720
-      TabIndex        =   17
-      Top             =   7080
-      Width           =   2055
-   End
-   Begin VB.CheckBox chkSmooth 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      Caption         =   "Use smooth lines"
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Left            =   1920
-      TabIndex        =   16
-      Top             =   7080
-      Value           =   1  'Checked
-      Width           =   1695
+      Left            =   5400
+      TabIndex        =   20
+      Top             =   6240
+      Width           =   660
+      _ExtentX        =   1164
+      _ExtentY        =   847
+      Caption         =   "red"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton cmdExportHistogram 
       Caption         =   "&Export Histogram to File..."
       Height          =   495
       Left            =   240
       TabIndex        =   3
-      Top             =   7800
+      Top             =   8520
       Visible         =   0   'False
       Width           =   2535
    End
@@ -114,9 +99,9 @@ Begin VB.Form FormHistogram
       Caption         =   "Close Histogram"
       Default         =   -1  'True
       Height          =   495
-      Left            =   9600
+      Left            =   8280
       TabIndex        =   0
-      Top             =   7800
+      Top             =   8520
       Width           =   2085
    End
    Begin VB.PictureBox picH 
@@ -133,15 +118,15 @@ Begin VB.Form FormHistogram
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   4815
+      Height          =   4035
       Left            =   120
       MousePointer    =   2  'Cross
-      ScaleHeight     =   319
+      ScaleHeight     =   267
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   775
+      ScaleWidth      =   687
       TabIndex        =   2
       Top             =   120
-      Width           =   11655
+      Width           =   10335
    End
    Begin VB.PictureBox picGradient 
       Appearance      =   0  'Flat
@@ -161,10 +146,101 @@ Begin VB.Form FormHistogram
       Left            =   120
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   775
+      ScaleWidth      =   687
       TabIndex        =   1
-      Top             =   4950
-      Width           =   11655
+      Top             =   4200
+      Width           =   10335
+   End
+   Begin PhotoDemon.smartCheckBox chkChannel 
+      Height          =   480
+      Index           =   1
+      Left            =   5400
+      TabIndex        =   21
+      Top             =   6720
+      Width           =   870
+      _ExtentX        =   1535
+      _ExtentY        =   847
+      Caption         =   "green"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkChannel 
+      Height          =   480
+      Index           =   2
+      Left            =   5400
+      TabIndex        =   22
+      Top             =   7200
+      Width           =   735
+      _ExtentX        =   1296
+      _ExtentY        =   847
+      Caption         =   "blue"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkChannel 
+      Height          =   480
+      Index           =   3
+      Left            =   5400
+      TabIndex        =   23
+      Top             =   7680
+      Width           =   1245
+      _ExtentX        =   2196
+      _ExtentY        =   847
+      Caption         =   "luminance"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Line Line1 
+      BorderColor     =   &H8000000D&
+      X1              =   352
+      X2              =   664
+      Y1              =   408
+      Y2              =   408
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "statistics"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   240
+      TabIndex        =   19
+      Top             =   4680
+      Width           =   885
    End
    Begin VB.Label lblMouseInstructions 
       Alignment       =   2  'Center
@@ -173,222 +249,313 @@ Begin VB.Form FormHistogram
       BackStyle       =   0  'Transparent
       Caption         =   "(Note: move the mouse over the histogram to calculate these values)"
       ForeColor       =   &H00808080&
-      Height          =   435
-      Left            =   9000
-      TabIndex        =   24
-      Top             =   5880
-      Width           =   2745
-   End
-   Begin VB.Line lineStats 
-      BorderColor     =   &H80000002&
-      Index           =   3
-      X1              =   8
-      X2              =   784
-      Y1              =   504
-      Y2              =   504
+      Height          =   675
+      Left            =   240
+      TabIndex        =   17
+      Top             =   7740
+      Width           =   4305
    End
    Begin VB.Label lblDrawOptions 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Rendering Options:"
-      ForeColor       =   &H00400000&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   23
-      Top             =   7155
-      Width           =   1395
+      Caption         =   "rendering options"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   5040
+      TabIndex        =   16
+      Top             =   4680
+      Width           =   1875
    End
-   Begin VB.Line lineStats 
-      BorderColor     =   &H80000002&
-      Index           =   2
-      X1              =   8
-      X2              =   784
-      Y1              =   464
-      Y2              =   464
-   End
-   Begin VB.Label lblDrawThese 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "Draw these channels:"
-      ForeColor       =   &H00400000&
-      Height          =   195
-      Left            =   240
-      TabIndex        =   18
-      Top             =   6555
-      Width           =   1560
-   End
-   Begin VB.Line lineStats 
-      BorderColor     =   &H80000002&
-      Index           =   1
-      X1              =   8
-      X2              =   784
-      Y1              =   424
-      Y2              =   424
-   End
-   Begin VB.Label lblLevel 
+   Begin VB.Label lblValue 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Level"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00400000&
-      Height          =   195
-      Left            =   720
+      Height          =   240
+      Index           =   0
+      Left            =   1080
       TabIndex        =   15
-      Top             =   6000
-      Width           =   375
+      Top             =   5880
+      Width           =   435
    End
    Begin VB.Label lblMaxCount 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Maximum count:"
-      ForeColor       =   &H00400000&
-      Height          =   195
-      Left            =   2400
+      Caption         =   "maximum count:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Left            =   480
       TabIndex        =   14
-      Top             =   5460
-      Width           =   1170
+      Top             =   5520
+      Width           =   1440
    End
-   Begin VB.Label lblCountRed 
+   Begin VB.Label lblValue 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Red"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H000000C0&
-      Height          =   255
-      Left            =   2040
+      Height          =   240
+      Index           =   1
+      Left            =   1080
       TabIndex        =   13
-      Top             =   6000
-      Width           =   1095
+      Top             =   6240
+      Width           =   330
    End
-   Begin VB.Label lblRedTitle 
+   Begin VB.Label lblValueTitle 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Red:"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   1680
+      Caption         =   "red:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   1
+      Left            =   480
       TabIndex        =   12
-      Top             =   6000
-      Width           =   375
+      Top             =   6240
+      Width           =   360
    End
-   Begin VB.Line lineStats 
-      BorderColor     =   &H80000002&
-      Index           =   0
-      X1              =   8
-      X2              =   784
-      Y1              =   387
-      Y2              =   387
-   End
-   Begin VB.Label lblLevelTitle 
+   Begin VB.Label lblValueTitle 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Level:"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   240
+      Caption         =   "level:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   0
+      Left            =   480
       TabIndex        =   11
-      Top             =   6000
-      Width           =   495
+      Top             =   5880
+      Width           =   465
    End
    Begin VB.Label lblTotalPixels 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Total pixels:"
-      ForeColor       =   &H00400000&
-      Height          =   195
-      Left            =   240
+      Caption         =   "total pixels:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Left            =   480
       TabIndex        =   10
-      Top             =   5460
-      Width           =   870
+      Top             =   5160
+      Width           =   990
    End
-   Begin VB.Label lblGreenTitle 
+   Begin VB.Label lblValueTitle 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Green:"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   2880
+      Caption         =   "green:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   2
+      Left            =   480
       TabIndex        =   9
-      Top             =   6000
-      Width           =   495
+      Top             =   6600
+      Width           =   570
    End
-   Begin VB.Label lblCountGreen 
+   Begin VB.Label lblValue 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Green"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00008000&
-      Height          =   255
-      Left            =   3480
+      Height          =   240
+      Index           =   2
+      Left            =   1200
       TabIndex        =   8
-      Top             =   6000
-      Width           =   855
+      Top             =   6600
+      Width           =   510
    End
-   Begin VB.Label lblBlueTitle 
+   Begin VB.Label lblValueTitle 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Blue:"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   4440
+      Caption         =   "blue:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   3
+      Left            =   480
       TabIndex        =   7
-      Top             =   6000
-      Width           =   375
+      Top             =   6960
+      Width           =   435
    End
-   Begin VB.Label lblCountBlue 
+   Begin VB.Label lblValue 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Blue"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00C00000&
-      Height          =   255
-      Left            =   4920
+      Height          =   240
+      Index           =   3
+      Left            =   1200
       TabIndex        =   6
-      Top             =   6000
-      Width           =   975
+      Top             =   6960
+      Width           =   360
    End
-   Begin VB.Label lblLumTitle 
+   Begin VB.Label lblValueTitle 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Luminance:"
-      ForeColor       =   &H00400000&
-      Height          =   255
-      Left            =   6000
+      Caption         =   "luminance:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   4
+      Left            =   480
       TabIndex        =   5
-      Top             =   6000
-      Width           =   855
+      Top             =   7320
+      Width           =   945
    End
-   Begin VB.Label lblCountLuminance 
+   Begin VB.Label lblValue 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Luminance"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H80000008&
-      Height          =   255
-      Left            =   6960
+      Height          =   240
+      Index           =   4
+      Left            =   1680
       TabIndex        =   4
-      Top             =   6000
-      Width           =   1215
+      Top             =   7320
+      Width           =   915
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   25
-      Top             =   7560
+      TabIndex        =   18
+      Top             =   8400
       Width           =   11895
    End
 End
@@ -451,7 +618,7 @@ Dim maxChannel As Byte          'This identifies the channel with the highest va
 Dim hEnabled(0 To 3) As Boolean
 
 'Loop and position variables
-Dim X As Long, Y As Long
+Dim x As Long, Y As Long
 
 'Modified cubic spline variables:
 Dim nPoints As Integer
@@ -464,9 +631,9 @@ Private results() As Long   'Stores the y-values for each x-value in the final s
 'When channels are enabled or disabled, redraw the histogram
 Private Sub chkChannel_Click(Index As Integer)
     
-    For X = 0 To 3
-        If chkChannel(X).Value = vbChecked Then hEnabled(X) = True Else hEnabled(X) = False
-    Next X
+    For x = 0 To 3
+        If chkChannel(x).Value = vbChecked Then hEnabled(x) = True Else hEnabled(x) = False
+    Next x
     
     DrawHistogram
     
@@ -579,17 +746,18 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'For now, initialize all histogram types
-    For X = 0 To 3
-        hEnabled(X) = True
-    Next X
+    Dim i As Long
+    For i = 0 To 3
+        hEnabled(i) = True
+    Next i
     
     'Blank out the specific level labels populated by moving the mouse across the form
-    lblLevel = ""
-    lblCountRed = ""
-    lblCountGreen = ""
-    lblCountBlue = ""
-    lblCountLuminance = ""
-
+    ' Also, align the value labels with their (potentially translated) corresponding title labels
+    For i = 0 To lblValue.Count - 1
+        lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + 8
+        lblValue(i) = ""
+    Next i
+        
     'Commented code below is from a previous build where the user could specify bars or lines.
     ' I haven't implemented transparent line drawing yet, so that code is disabled for now.
     
@@ -638,15 +806,15 @@ Public Sub DrawHistogram()
     'We now need to calculate a max histogram value based on which RGB channels are enabled
     hMax = 0:    hMaxLog = 0:   maxChannel = 4  'Set maxChannel to an arbitrary value higher than 2
     
-    For X = 0 To 2
-        If hEnabled(X) = True Then
-            If channelMax(X) > hMax Then
-                hMax = channelMax(X)
-                hMaxLog = channelMaxLog(X)
-                maxChannel = X
+    For x = 0 To 2
+        If hEnabled(x) = True Then
+            If channelMax(x) > hMax Then
+                hMax = channelMax(x)
+                hMaxLog = channelMaxLog(x)
+                maxChannel = x
             End If
         End If
-    Next X
+    Next x
     
     'We'll need to draw up to four lines - one each for red, green, blue, and luminance,
     ' depending on what channels the user has enabled.
@@ -699,12 +867,12 @@ Public Sub DrawHistogram()
                     Dim xCalc As Long
                     
                     'Run a loop through every histogram value...
-                    For X = 0 To picH.ScaleWidth
+                    For x = 0 To picH.ScaleWidth
                 
                         'The y-value of the histogram is drawn as a percentage (RData(x) / MaxVal) * tHeight) with tHeight being
                         ' the tallest possible value (when RData(x) = MaxVal).  We then subtract that value from tHeight because
                         ' y values INCREASE as we move DOWN a picture box - remember that (0,0) is in the top left.
-                        xCalc = Int((X / picH.ScaleWidth) * 256)
+                        xCalc = Int((x / picH.ScaleWidth) * 256)
                         If xCalc > 255 Then xCalc = 255
                         
                         If chkLog.Value = vbChecked Then
@@ -716,18 +884,18 @@ Public Sub DrawHistogram()
                         'For connecting lines...
                         If drawMethod = 0 Then
                             'Then draw a line from the last (x,y) to the current (x,y)
-                            picH.Line (LastX, LastY + 2)-(X, Y + 2)
+                            picH.Line (LastX, LastY + 2)-(x, Y + 2)
                             'The line below can be used for antialiased drawing, FYI
                             'DrawLineWuAA picH.hDC, LastX, LastY + 2, x, y + 2, picH.ForeColor
-                            LastX = X
+                            LastX = x
                             LastY = Y
                             
                         'For a bar graph...
                         ElseIf drawMethod = 1 Then
                             'Draw a line from the bottom of the picture box to the calculated y-value
-                            picH.Line (X, tHeight + 2)-(X, Y + 2)
+                            picH.Line (x, tHeight + 2)-(x, Y + 2)
                         End If
-                    Next X
+                    Next x
                     
                 Case 2
             
@@ -782,10 +950,6 @@ Private Sub Form_Resize()
     picGradient.Width = Me.ScaleWidth - picGradient.Left - 8
     
     CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
-    For X = 0 To lineStats.Count - 1
-        lineStats(X).X2 = Me.ScaleWidth - lineStats(X).X1
-    Next X
-    lblMouseInstructions.Left = Me.ScaleWidth - 194
     
     'Only draw the histogram if the histogram data has been initialized
     ' (This is necessary because VB triggers the Resize event before the Activate event)
@@ -795,15 +959,15 @@ End Sub
 
 'When the mouse moves over the histogram, display the level and count for the histogram
 'entry at the x-value over which the mouse passes
-Private Sub picH_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picH_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
     Dim xCalc As Long
-    xCalc = Int((X / picH.ScaleWidth) * 256)
+    xCalc = Int((x / picH.ScaleWidth) * 256)
     If xCalc > 255 Then xCalc = 255
-    lblLevel.Caption = xCalc
-    lblCountRed.Caption = hData(0, xCalc)
-    lblCountGreen.Caption = hData(1, xCalc)
-    lblCountBlue.Caption = hData(2, xCalc)
-    lblCountLuminance.Caption = hData(3, xCalc)
+    lblValue(0).Caption = xCalc
+    lblValue(1).Caption = hData(0, xCalc)
+    lblValue(2).Caption = hData(1, xCalc)
+    lblValue(3).Caption = hData(2, xCalc)
+    lblValue(4).Caption = hData(3, xCalc)
 End Sub
 
 'UNLOAD form
@@ -846,13 +1010,13 @@ Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As
     If b2 < b Then VB = -VB
     'Last, run a loop through the width of the picture box, incrementing the color as
     'we go (thus creating a gradient effect)
-    Dim X As Long
-    For X = 0 To iWidth
-        r2 = r + VR * X
-        g2 = g + VG * X
-        b2 = b + VB * X
-        DstObject.Line (X, 0)-(X, iHeight), RGB(r2, g2, b2)
-    Next X
+    Dim x As Long
+    For x = 0 To iWidth
+        r2 = r + VR * x
+        g2 = g + VG * x
+        b2 = b + VB * x
+        DstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
+    Next x
 End Sub
 
 'This routine draws the histogram using cubic splines to smooth the output
@@ -910,8 +1074,8 @@ Private Function getCurvePoint(ByVal i As Long, ByVal v As Double) As Double
 End Function
 
 'Original required spline function:
-Private Function f(X As Double) As Double
-        f = X * X * X - X
+Private Function f(x As Double) As Double
+        f = x * x * x - x
 End Function
 
 'Original required spline function:
@@ -957,10 +1121,10 @@ Public Sub TallyHistogramValues()
     Message "Updating histogram..."
     
     'Blank the red, green, blue, and luminance count text boxes
-    lblCountRed = ""
-    lblCountGreen = ""
-    lblCountBlue = ""
-    lblCountLuminance = ""
+    Dim i As Long
+    For i = 0 To lblValue.Count - 1
+        lblValue(i) = ""
+    Next i
     
     'Create a local array and point it at the pixel data we want to scan
     Dim ImageData() As Byte
@@ -970,7 +1134,7 @@ Public Sub TallyHistogramValues()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -988,24 +1152,24 @@ Public Sub TallyHistogramValues()
     'maximum values and histogram values
     hMax = 0:    hMaxLog = 0
     
-    For X = 0 To 3
-        channelMax(X) = 0
-        channelMaxLog(X) = 0
+    For x = 0 To 3
+        channelMax(x) = 0
+        channelMaxLog(x) = 0
         For Y = 0 To 255
-            hData(X, Y) = 0
+            hData(x, Y) = 0
         Next Y
-    Next X
+    Next x
     
     'Build a look-up table for luminance conversion; 765 = 255 * 3
     Dim lumLookup(0 To 765) As Byte
     
-    For X = 0 To 765
-        lumLookup(X) = X \ 3
-    Next X
+    For x = 0 To 765
+        lumLookup(x) = x \ 3
+    Next x
     
     'Run a quick loop through the image, gathering what we need to calculate our histogram
-    For X = initX To finalX
-        QuickVal = X * qvDepth
+    For x = initX To finalX
+        QuickVal = x * qvDepth
     For Y = initY To finalY
     
         'We have to gather the red, green, and blue in order to calculate luminance
@@ -1031,36 +1195,36 @@ Public Sub TallyHistogramValues()
         hData(3, l) = hData(3, l) + 1
         
     Next Y
-    Next X
+    Next x
     
     'With our dataset successfully collected, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
     'Run a quick loop through the completed array to find maximum values
-    For X = 0 To 3
+    For x = 0 To 3
         For Y = 0 To 255
-            If hData(X, Y) > channelMax(X) Then
-                channelMax(X) = hData(X, Y)
-                channelMaxPosition(X) = Y
+            If hData(x, Y) > channelMax(x) Then
+                channelMax(x) = hData(x, Y)
+                channelMaxPosition(x) = Y
             End If
         Next Y
-    Next X
+    Next x
     
     'Now calculate the logarithmic version of the histogram
-    For X = 0 To 3
-        If channelMax(X) <> 0 Then channelMaxLog(X) = Log(channelMax(X)) Else channelMaxLog(X) = 0
-    Next X
+    For x = 0 To 3
+        If channelMax(x) <> 0 Then channelMaxLog(x) = Log(channelMax(x)) Else channelMaxLog(x) = 0
+    Next x
     
-    For X = 0 To 3
+    For x = 0 To 3
         For Y = 0 To 255
-            If hData(X, Y) <> 0 Then
-                hDataLog(X, Y) = Log(hData(X, Y))
+            If hData(x, Y) <> 0 Then
+                hDataLog(x, Y) = Log(hData(x, Y))
             Else
-                hDataLog(X, Y) = 0
+                hDataLog(x, Y) = 0
             End If
         Next Y
-    Next X
+    Next x
     
     histogramGenerated = True
     
@@ -1081,7 +1245,7 @@ Public Sub StretchHistogram()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -1108,8 +1272,8 @@ Public Sub StretchHistogram()
     bMin = 255
         
     'Loop through each pixel in the image, checking max/min values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
+    For x = initX To finalX
+        QuickVal = x * qvDepth
     For Y = initY To finalY
     
         'Get the source pixel color values
@@ -1125,7 +1289,7 @@ Public Sub StretchHistogram()
         If b > bMax Then bMax = b
         
     Next Y
-    Next X
+    Next x
     
     Message "Stretching histogram..."
     Dim rdif As Long, Gdif As Long, Bdif As Long
@@ -1137,36 +1301,36 @@ Public Sub StretchHistogram()
     'Lookup tables make the stretching go faster
     Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
-    For X = 0 To 255
+    For x = 0 To 255
         If rdif <> 0 Then
-            r = 255 * ((X - rMin) / rdif)
+            r = 255 * ((x - rMin) / rdif)
             If r < 0 Then r = 0
             If r > 255 Then r = 255
-            rLookup(X) = r
+            rLookup(x) = r
         Else
-            rLookup(X) = X
+            rLookup(x) = x
         End If
         If Gdif <> 0 Then
-            g = 255 * ((X - gMin) / Gdif)
+            g = 255 * ((x - gMin) / Gdif)
             If g < 0 Then g = 0
             If g > 255 Then g = 255
-            gLookup(X) = g
+            gLookup(x) = g
         Else
-            gLookup(X) = X
+            gLookup(x) = x
         End If
         If Bdif <> 0 Then
-            b = 255 * ((X - bMin) / Bdif)
+            b = 255 * ((x - bMin) / Bdif)
             If b < 0 Then b = 0
             If b > 255 Then b = 255
-            bLookup(X) = b
+            bLookup(x) = b
         Else
-            bLookup(X) = X
+            bLookup(x) = x
         End If
-    Next X
+    Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
+    For x = initX To finalX
+        QuickVal = x * qvDepth
     For Y = initY To finalY
     
         'Get the source pixel color values
@@ -1179,8 +1343,8 @@ Public Sub StretchHistogram()
         ImageData(QuickVal, Y) = bLookup(b)
         
     Next Y
-        If (X And progBarCheck) = 0 Then SetProgBarVal X
-    Next X
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

@@ -78,8 +78,8 @@ Begin VB.Form FormGaussianBlur
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -93,7 +93,7 @@ Begin VB.Form FormGaussianBlur
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H000000FF&
-      Height          =   735
+      Height          =   1215
       Left            =   6000
       TabIndex        =   7
       Top             =   4440

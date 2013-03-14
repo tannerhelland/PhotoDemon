@@ -152,7 +152,7 @@ Begin VB.Form FormResize
       X1              =   280
       X2              =   280
       Y1              =   84
-      Y2              =   97
+      Y2              =   98
    End
    Begin VB.Line Line3 
       BorderColor     =   &H00808080&
@@ -165,8 +165,8 @@ Begin VB.Form FormResize
       BorderColor     =   &H00808080&
       X1              =   240
       X2              =   280
-      Y1              =   96
-      Y2              =   96
+      Y1              =   97
+      Y2              =   97
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -654,28 +654,28 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 yScale = (pdImages(CurrentImage).Height - 1) / iHeight
                             
                 'Coordinate variables for source and destination
-                Dim x As Long, y As Long
+                Dim X As Long, Y As Long
                 Dim srcX As Double, srcY As Double
                             
-                For x = 0 To iWidth - 1
+                For X = 0 To iWidth - 1
                     
                     'Generate the x calculation variables
-                    srcX = x * xScale
+                    srcX = X * xScale
                     
                     'Draw each pixel in the new image
-                    For y = 0 To iHeight - 1
+                    For Y = 0 To iHeight - 1
                         
                         'Generate the y calculation variables
-                        srcY = y * yScale
+                        srcY = Y * yScale
                         
                         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-                        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+                        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                                             
-                    Next y
+                    Next Y
                 
-                    If (x And progBarCheck) = 0 Then SetProgBarVal x
+                    If (X And progBarCheck) = 0 Then SetProgBarVal X
                     
-                Next x
+                Next X
             
                 'Now copy the resized image back into the main layer
                 pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer

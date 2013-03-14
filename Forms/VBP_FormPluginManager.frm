@@ -127,7 +127,7 @@ Begin VB.Form FormPluginManager
          TabIndex        =   68
          Top             =   4320
          Value           =   5
-         Width           =   5055
+         Width           =   5295
       End
       Begin VB.HScrollBar hsPngnqSample 
          Height          =   255
@@ -137,7 +137,7 @@ Begin VB.Form FormPluginManager
          TabIndex        =   64
          Top             =   3600
          Value           =   -3
-         Width           =   5055
+         Width           =   5295
       End
       Begin VB.Label lblHSDescription 
          Alignment       =   1  'Right Justify
@@ -156,7 +156,7 @@ Begin VB.Form FormPluginManager
          ForeColor       =   &H00404040&
          Height          =   195
          Index           =   3
-         Left            =   6045
+         Left            =   6240
          TabIndex        =   70
          Top             =   4665
          Width           =   1080
@@ -221,7 +221,7 @@ Begin VB.Form FormPluginManager
          ForeColor       =   &H00404040&
          Height          =   195
          Index           =   1
-         Left            =   5355
+         Left            =   5520
          TabIndex        =   66
          Top             =   3945
          Width           =   1770
@@ -290,7 +290,7 @@ Begin VB.Form FormPluginManager
          Top             =   2160
          Width           =   1890
       End
-      Begin VB.Label lblLink 
+      Begin VB.Label lblLicenseLink 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "custom license, see PNGNQ-S9-LICENSE file"
@@ -305,7 +305,7 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00C07031&
          Height          =   270
-         Index           =   7
+         Index           =   3
          Left            =   2760
          MouseIcon       =   "VBP_FormPluginManager.frx":0000
          MousePointer    =   99  'Custom
@@ -313,7 +313,7 @@ Begin VB.Form FormPluginManager
          Top             =   1560
          Width           =   4290
       End
-      Begin VB.Label lbPluginSubheader 
+      Begin VB.Label lblLicense 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "pngnq-s9 license:"
@@ -328,15 +328,13 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   270
-         Index           =   15
+         Index           =   3
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":0152
-         MousePointer    =   99  'Custom
          TabIndex        =   60
          Top             =   1560
          Width           =   1680
       End
-      Begin VB.Label lblLink 
+      Begin VB.Label lblHomepageLink 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "http://sourceforge.net/projects/pngnqs9/"
@@ -351,15 +349,15 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00C07031&
          Height          =   270
-         Index           =   6
+         Index           =   3
          Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
+         MouseIcon       =   "VBP_FormPluginManager.frx":0152
          MousePointer    =   99  'Custom
          TabIndex        =   59
          Top             =   1080
          Width           =   4065
       End
-      Begin VB.Label lbPluginSubheader 
+      Begin VB.Label lblHomepage 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "pngnq-s9 homepage:"
@@ -374,10 +372,8 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   270
-         Index           =   14
+         Index           =   3
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
-         MousePointer    =   99  'Custom
          TabIndex        =   58
          Top             =   1080
          Width           =   2085
@@ -400,8 +396,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   13
          Left            =   3960
-         MouseIcon       =   "VBP_FormPluginManager.frx":0548
-         MousePointer    =   99  'Custom
          TabIndex        =   57
          Top             =   600
          Width           =   1395
@@ -423,8 +417,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   2400
-         MouseIcon       =   "VBP_FormPluginManager.frx":069A
-         MousePointer    =   99  'Custom
          TabIndex        =   56
          Top             =   600
          Width           =   960
@@ -446,8 +438,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   5520
-         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
-         MousePointer    =   99  'Custom
          TabIndex        =   55
          Top             =   600
          Width           =   960
@@ -470,8 +460,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   12
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":093E
-         MousePointer    =   99  'Custom
          TabIndex        =   54
          Top             =   600
          Width           =   1740
@@ -551,8 +539,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   11
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
-         MousePointer    =   99  'Custom
          TabIndex        =   50
          Top             =   600
          Width           =   1740
@@ -574,8 +560,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   5520
-         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
-         MousePointer    =   99  'Custom
          TabIndex        =   49
          Top             =   600
          Width           =   960
@@ -597,8 +581,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2400
-         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
-         MousePointer    =   99  'Custom
          TabIndex        =   48
          Top             =   600
          Width           =   960
@@ -621,13 +603,11 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   10
          Left            =   3960
-         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
-         MousePointer    =   99  'Custom
          TabIndex        =   47
          Top             =   600
          Width           =   1395
       End
-      Begin VB.Label lbPluginSubheader 
+      Begin VB.Label lblHomepage 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "EZTwain homepage:"
@@ -642,15 +622,13 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   270
-         Index           =   9
+         Index           =   2
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":0FD8
-         MousePointer    =   99  'Custom
          TabIndex        =   46
          Top             =   1080
          Width           =   1995
       End
-      Begin VB.Label lblLink 
+      Begin VB.Label lblHomepageLink 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "http://www.eztwain.com/eztwain1.htm"
@@ -665,15 +643,15 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00C07031&
          Height          =   270
-         Index           =   4
+         Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":112A
+         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
          MousePointer    =   99  'Custom
          TabIndex        =   45
          Top             =   1080
          Width           =   3780
       End
-      Begin VB.Label lbPluginSubheader 
+      Begin VB.Label lblLicense 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "EZTwain license:"
@@ -688,15 +666,13 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   270
-         Index           =   8
+         Index           =   2
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":127C
-         MousePointer    =   99  'Custom
          TabIndex        =   44
          Top             =   1560
          Width           =   1590
       End
-      Begin VB.Label lblLink 
+      Begin VB.Label lblLicenseLink 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "public domain"
@@ -711,9 +687,9 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00C07031&
          Height          =   270
-         Index           =   5
+         Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":13CE
+         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
          MousePointer    =   99  'Custom
          TabIndex        =   43
          Top             =   1560
@@ -734,7 +710,7 @@ Begin VB.Form FormPluginManager
       TabIndex        =   22
       Top             =   240
       Width           =   7695
-      Begin VB.Label lblLink 
+      Begin VB.Label lblLicenseLink 
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
@@ -750,15 +726,15 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00C07031&
          Height          =   270
-         Index           =   3
+         Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":1520
+         MouseIcon       =   "VBP_FormPluginManager.frx":0548
          MousePointer    =   99  'Custom
          TabIndex        =   31
          Top             =   1560
          Width           =   1140
       End
-      Begin VB.Label lbPluginSubheader 
+      Begin VB.Label lblLicense 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "zLib license:"
@@ -773,15 +749,13 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   270
-         Index           =   4
+         Index           =   1
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":1672
-         MousePointer    =   99  'Custom
          TabIndex        =   30
          Top             =   1560
          Width           =   1140
       End
-      Begin VB.Label lblLink 
+      Begin VB.Label lblHomepageLink 
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
@@ -797,15 +771,15 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00C07031&
          Height          =   270
-         Index           =   2
+         Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":17C4
+         MouseIcon       =   "VBP_FormPluginManager.frx":069A
          MousePointer    =   99  'Custom
          TabIndex        =   29
          Top             =   1080
          Width           =   1935
       End
-      Begin VB.Label lbPluginSubheader 
+      Begin VB.Label lblHomepage 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "zLib homepage:"
@@ -820,10 +794,8 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   270
-         Index           =   5
+         Index           =   1
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":1916
-         MousePointer    =   99  'Custom
          TabIndex        =   28
          Top             =   1080
          Width           =   1545
@@ -846,8 +818,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   6
          Left            =   3960
-         MouseIcon       =   "VBP_FormPluginManager.frx":1A68
-         MousePointer    =   99  'Custom
          TabIndex        =   27
          Top             =   600
          Width           =   1395
@@ -870,8 +840,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2400
-         MouseIcon       =   "VBP_FormPluginManager.frx":1BBA
-         MousePointer    =   99  'Custom
          TabIndex        =   26
          Top             =   600
          Width           =   960
@@ -894,8 +862,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   5520
-         MouseIcon       =   "VBP_FormPluginManager.frx":1D0C
-         MousePointer    =   99  'Custom
          TabIndex        =   25
          Top             =   600
          Width           =   960
@@ -918,8 +884,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   7
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":1E5E
-         MousePointer    =   99  'Custom
          TabIndex        =   24
          Top             =   600
          Width           =   1740
@@ -999,8 +963,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":1FB0
-         MousePointer    =   99  'Custom
          TabIndex        =   40
          Top             =   600
          Width           =   1740
@@ -1022,8 +984,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   5520
-         MouseIcon       =   "VBP_FormPluginManager.frx":2102
-         MousePointer    =   99  'Custom
          TabIndex        =   39
          Top             =   600
          Width           =   960
@@ -1045,8 +1005,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2400
-         MouseIcon       =   "VBP_FormPluginManager.frx":2254
-         MousePointer    =   99  'Custom
          TabIndex        =   38
          Top             =   600
          Width           =   960
@@ -1069,13 +1027,11 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   3960
-         MouseIcon       =   "VBP_FormPluginManager.frx":23A6
-         MousePointer    =   99  'Custom
          TabIndex        =   37
          Top             =   600
          Width           =   1395
       End
-      Begin VB.Label lbPluginSubheader 
+      Begin VB.Label lblHomepage 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "FreeImage homepage:"
@@ -1090,15 +1046,13 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   270
-         Index           =   2
+         Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":24F8
-         MousePointer    =   99  'Custom
          TabIndex        =   36
          Top             =   1080
          Width           =   2265
       End
-      Begin VB.Label lblLink 
+      Begin VB.Label lblHomepageLink 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "http://freeimage.sourceforge.net/"
@@ -1115,13 +1069,13 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":264A
+         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
          MousePointer    =   99  'Custom
          TabIndex        =   35
          Top             =   1080
          Width           =   3330
       End
-      Begin VB.Label lbPluginSubheader 
+      Begin VB.Label lblLicense 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "FreeImage license:"
@@ -1136,15 +1090,13 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   270
-         Index           =   3
+         Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":279C
-         MousePointer    =   99  'Custom
          TabIndex        =   34
          Top             =   1560
          Width           =   1860
       End
-      Begin VB.Label lblLink 
+      Begin VB.Label lblLicenseLink 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "FreeImage Public License (FIPL)"
@@ -1159,9 +1111,9 @@ Begin VB.Form FormPluginManager
          EndProperty
          ForeColor       =   &H00C07031&
          Height          =   270
-         Index           =   1
+         Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":28EE
+         MouseIcon       =   "VBP_FormPluginManager.frx":093E
          MousePointer    =   99  'Custom
          TabIndex        =   33
          Top             =   1560
@@ -1240,8 +1192,6 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   3
          Left            =   240
-         MouseIcon       =   "VBP_FormPluginManager.frx":2A40
-         MousePointer    =   99  'Custom
          TabIndex        =   19
          Top             =   3960
          Width           =   1005
@@ -1263,8 +1213,6 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   1
          Left            =   240
-         MouseIcon       =   "VBP_FormPluginManager.frx":2B92
-         MousePointer    =   99  'Custom
          TabIndex        =   18
          Top             =   1800
          Width           =   420
@@ -1286,8 +1234,6 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   2
          Left            =   240
-         MouseIcon       =   "VBP_FormPluginManager.frx":2CE4
-         MousePointer    =   99  'Custom
          TabIndex        =   17
          Top             =   2880
          Width           =   915
@@ -1309,8 +1255,6 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   0
          Left            =   240
-         MouseIcon       =   "VBP_FormPluginManager.frx":2E36
-         MousePointer    =   99  'Custom
          TabIndex        =   16
          Top             =   720
          Width           =   1125
@@ -1333,8 +1277,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":2F88
-         MousePointer    =   99  'Custom
          TabIndex        =   15
          Top             =   1080
          Width           =   675
@@ -1378,8 +1320,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":30DA
-         MousePointer    =   99  'Custom
          TabIndex        =   13
          Top             =   2160
          Width           =   675
@@ -1423,8 +1363,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":322C
-         MousePointer    =   99  'Custom
          TabIndex        =   11
          Top             =   3240
          Width           =   675
@@ -1468,8 +1406,6 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   480
-         MouseIcon       =   "VBP_FormPluginManager.frx":337E
-         MousePointer    =   99  'Custom
          TabIndex        =   9
          Top             =   4320
          Width           =   675
@@ -1513,7 +1449,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   0
          Left            =   5760
-         MouseIcon       =   "VBP_FormPluginManager.frx":34D0
+         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
          MousePointer    =   99  'Custom
          TabIndex        =   7
          Top             =   765
@@ -1537,7 +1473,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   1
          Left            =   6360
-         MouseIcon       =   "VBP_FormPluginManager.frx":3622
+         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
          MousePointer    =   99  'Custom
          TabIndex        =   6
          Top             =   1845
@@ -1561,7 +1497,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   2
          Left            =   5955
-         MouseIcon       =   "VBP_FormPluginManager.frx":3774
+         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
          MousePointer    =   99  'Custom
          TabIndex        =   5
          Top             =   2925
@@ -1585,7 +1521,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   3
          Left            =   5895
-         MouseIcon       =   "VBP_FormPluginManager.frx":38C6
+         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
          MousePointer    =   99  'Custom
          TabIndex        =   4
          Top             =   4005
@@ -1847,6 +1783,21 @@ Private Sub Form_Load()
     'Apply visual styles
     makeFormPretty Me
     
+    'If a translation is active, realign text as necessary
+    If g_Language.translationActive Then
+        lblPluginStatus.Left = lblTitle(0).Left + lblTitle(0).Width + 8
+        
+        For i = 0 To lblStatus.Count - 1
+            lblStatus(i).Left = lblInterfaceSubheader(i).Left + lblInterfaceSubheader(i).Width + 8
+        Next i
+        
+        For i = 0 To lblHomepage.Count - 1
+            lblHomepageLink(i).Left = lblHomepage(i).Left + lblHomepage(i).Width + 8
+            lblLicenseLink(i).Left = lblLicense(i).Left + lblLicense(i).Width + 8
+        Next i
+        
+    End If
+    
 End Sub
 
 'When the dialog is first launched, use this to populate the dialog with any settings the user may have modified
@@ -2031,36 +1982,48 @@ Private Sub lblDisable_Click(Index As Integer)
 
 End Sub
 
-Private Sub lblLink_Click(Index As Integer)
-    
+Private Sub lblHomepageLink_Click(Index As Integer)
+
     Select Case Index
         
         'FreeImage
         Case 0
             OpenURL "http://freeimage.sourceforge.net/"
-        
+            
+        'zLib
         Case 1
+            OpenURL "http://www.zlib.net/"
+        
+        'ezTwain
+        Case 2
+            OpenURL "http://www.eztwain.com/eztwain1.htm"
+        
+        'pngnq-s9
+        Case 3
+            OpenURL "http://sourceforge.net/projects/pngnqs9/"
+        
+    End Select
+
+End Sub
+
+Private Sub lblLicenseLink_Click(Index As Integer)
+
+    Select Case Index
+        
+        'FreeImage
+        Case 0
             OpenURL "http://freeimage.sourceforge.net/freeimage-license.txt"
             
         'zLib
-        Case 2
-            OpenURL "http://www.zlib.net/"
-            
-        Case 3
+        Case 1
             OpenURL "http://www.zlib.net/zlib_license.html"
         
         'ezTwain
-        Case 4
-            OpenURL "http://www.eztwain.com/eztwain1.htm"
-            
-        Case 5
+        Case 2
             OpenURL "http://www.eztwain.com/ezt1faq.htm"
             
         'pngnq-s9
-        Case 6
-            OpenURL "http://sourceforge.net/projects/pngnqs9/"
-        
-        Case 7
+        Case 3
             OpenURL "http://sourceforge.net/projects/pngnqs9/files/"
         
     End Select

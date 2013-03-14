@@ -133,7 +133,7 @@ Private Sub FillPictureInfo()
       m_sTypeName = "Cursor"
       m_sExtension = "cur"
     Case ptNone
-      m_sTypeName = "Binary"
+      m_sTypeName = "Binary data"
       m_sExtension = "txt"
   End Select
   

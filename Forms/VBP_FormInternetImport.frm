@@ -66,10 +66,10 @@ Begin VB.Form FormInternetImport
       BackStyle       =   0  'Transparent
       Caption         =   "Copyright"
       ForeColor       =   &H00808080&
-      Height          =   495
+      Height          =   615
       Left            =   240
       TabIndex        =   4
-      Top             =   1755
+      Top             =   1725
       Width           =   6735
    End
    Begin VB.Label lblBackground 

@@ -52,7 +52,7 @@ Begin VB.Form FormAbout
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   195
-      Left            =   4050
+      Left            =   4650
       MouseIcon       =   "VBP_FormAbout.frx":000C
       MousePointer    =   99  'Custom
       TabIndex        =   8
@@ -74,7 +74,7 @@ Begin VB.Form FormAbout
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   195
-      Left            =   2235
+      Left            =   2535
       MouseIcon       =   "VBP_FormAbout.frx":015E
       MousePointer    =   99  'Custom
       TabIndex        =   7
@@ -96,7 +96,7 @@ Begin VB.Form FormAbout
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   195
-      Left            =   5520
+      Left            =   6420
       MouseIcon       =   "VBP_FormAbout.frx":02B0
       MousePointer    =   99  'Custom
       TabIndex        =   6

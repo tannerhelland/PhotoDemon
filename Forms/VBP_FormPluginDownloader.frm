@@ -160,7 +160,7 @@ Begin VB.Form FormPluginDownloader
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   615
+         Height          =   735
          Index           =   3
          Left            =   5880
          TabIndex        =   18
@@ -182,7 +182,7 @@ Begin VB.Form FormPluginDownloader
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   615
+         Height          =   735
          Index           =   2
          Left            =   720
          TabIndex        =   17
@@ -204,7 +204,7 @@ Begin VB.Form FormPluginDownloader
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   615
+         Height          =   735
          Index           =   1
          Left            =   5880
          TabIndex        =   16
@@ -226,7 +226,7 @@ Begin VB.Form FormPluginDownloader
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   615
+         Height          =   735
          Index           =   0
          Left            =   720
          TabIndex        =   15

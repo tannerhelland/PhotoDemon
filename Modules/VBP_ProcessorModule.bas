@@ -443,7 +443,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     'Histogram functions
     Select Case pType
         Case ViewHistogram
-            FormHistogram.Show 0
+            FormHistogram.Show 0, FormMain
         Case StretchHistogram
             FormHistogram.StretchHistogram
         Case Equalize

@@ -3,7 +3,7 @@ Begin VB.Form FormPrint
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Print Image"
-   ClientHeight    =   6285
+   ClientHeight    =   6630
    ClientLeft      =   45
    ClientTop       =   270
    ClientWidth     =   8745
@@ -20,7 +20,7 @@ Begin VB.Form FormPrint
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   419
+   ScaleHeight     =   442
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
@@ -51,7 +51,7 @@ Begin VB.Form FormPrint
       Height          =   495
       Left            =   5760
       TabIndex        =   0
-      Top             =   5670
+      Top             =   6030
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
@@ -60,7 +60,7 @@ Begin VB.Form FormPrint
       Height          =   495
       Left            =   7230
       TabIndex        =   1
-      Top             =   5670
+      Top             =   6030
       Width           =   1365
    End
    Begin VB.PictureBox picOut 
@@ -92,7 +92,7 @@ Begin VB.Form FormPrint
       Height          =   360
       Left            =   4080
       TabIndex        =   7
-      Top             =   4680
+      Top             =   5040
       Width           =   1335
    End
    Begin VB.CommandButton cmdPaperSize 
@@ -109,7 +109,7 @@ Begin VB.Form FormPrint
       Height          =   495
       Left            =   240
       TabIndex        =   3
-      Top             =   4560
+      Top             =   5040
       Width           =   3300
    End
    Begin VB.PictureBox picThumbFinal 
@@ -171,11 +171,11 @@ Begin VB.Form FormPrint
       Height          =   360
       ItemData        =   "VBP_FormPrint.frx":0000
       Left            =   4080
-      List            =   "VBP_FormPrint.frx":000A
+      List            =   "VBP_FormPrint.frx":0002
       Style           =   2  'Dropdown List
       TabIndex        =   6
       Top             =   2550
-      Width           =   2370
+      Width           =   2610
    End
    Begin VB.ComboBox cbQuality 
       BeginProperty Font 
@@ -189,13 +189,13 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      ItemData        =   "VBP_FormPrint.frx":0023
+      ItemData        =   "VBP_FormPrint.frx":0004
       Left            =   4080
-      List            =   "VBP_FormPrint.frx":0033
+      List            =   "VBP_FormPrint.frx":0006
       Style           =   2  'Dropdown List
       TabIndex        =   4
       Top             =   1575
-      Width           =   2370
+      Width           =   2610
    End
    Begin VB.ComboBox cbPrinters 
       BeginProperty Font 
@@ -213,7 +213,7 @@ Begin VB.Form FormPrint
       Style           =   2  'Dropdown List
       TabIndex        =   2
       Top             =   600
-      Width           =   3855
+      Width           =   4335
    End
    Begin VB.TextBox txtCopies 
       Alignment       =   2  'Center
@@ -228,7 +228,7 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   6840
+      Left            =   7080
       TabIndex        =   5
       TabStop         =   0   'False
       Text            =   "1"
@@ -241,9 +241,9 @@ Begin VB.Form FormPrint
       BackColor       =   &H80000005&
       ClipControls    =   0   'False
       ForeColor       =   &H80000008&
-      Height          =   3300
+      Height          =   3900
       Left            =   240
-      ScaleHeight     =   218
+      ScaleHeight     =   258
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   218
       TabIndex        =   8
@@ -253,19 +253,19 @@ Begin VB.Form FormPrint
       Begin VB.Label lblWarning 
          BackStyle       =   0  'Transparent
          ForeColor       =   &H00C00000&
-         Height          =   1935
+         Height          =   3015
          Left            =   120
          TabIndex        =   16
-         Top             =   720
+         Top             =   480
          Visible         =   0   'False
          Width           =   3015
       End
    End
    Begin PhotoDemon.smartCheckBox chkFit 
       Height          =   480
-      Left            =   6360
+      Left            =   4080
       TabIndex        =   24
-      Top             =   3480
+      Top             =   3960
       Width           =   1290
       _ExtentX        =   2275
       _ExtentY        =   847
@@ -305,7 +305,7 @@ Begin VB.Form FormPrint
       Height          =   855
       Left            =   -120
       TabIndex        =   21
-      Top             =   5520
+      Top             =   5880
       Width           =   8895
    End
    Begin VB.Label lblDPIWarning 
@@ -321,10 +321,10 @@ Begin VB.Form FormPrint
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   495
+      Height          =   855
       Left            =   5640
       TabIndex        =   19
-      Top             =   4620
+      Top             =   4980
       Width           =   3015
    End
    Begin VB.Label lblDPI 
@@ -344,7 +344,7 @@ Begin VB.Form FormPrint
       Height          =   285
       Left            =   3960
       TabIndex        =   18
-      Top             =   4200
+      Top             =   4560
       Width           =   2295
    End
    Begin VB.Label lblPaperSize 
@@ -364,7 +364,7 @@ Begin VB.Form FormPrint
       Height          =   375
       Left            =   240
       TabIndex        =   17
-      Top             =   3840
+      Top             =   4560
       Width           =   3300
    End
    Begin VB.Label lblLayoutOptions 
@@ -442,7 +442,7 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   6600
+      Left            =   6840
       TabIndex        =   9
       Top             =   1200
       Width           =   1290
@@ -596,20 +596,27 @@ Private Sub Form_Load()
         lblWarning.Visible = True
     End If
     
-    Dim x As Long
+    Dim X As Long
     
     'Load a list of printers into the combo box
-    For x = 0 To Printers.Count - 1
-        cbPrinters.AddItem Printers(x).DeviceName
-    Next x
+    For X = 0 To Printers.Count - 1
+        cbPrinters.AddItem Printers(X).DeviceName
+    Next X
 
     'Pre-select the current printer
     cbPrinters = Printer.DeviceName
 
     'Set a default quality (high, since we're working with images)
+    cbQuality.AddItem "Draft", 0
+    cbQuality.AddItem "Low", 1
+    cbQuality.AddItem "Medium", 2
+    cbQuality.AddItem "High", 3
     cbQuality.ListIndex = 3
 
     'Set image orientation based on its aspect ratio (as compared to an 8.5" x 11" sheet of paper)
+    cbOrientation.AddItem "Portrait", 0
+    cbOrientation.AddItem "Landscape", 1
+    
     Dim imgAspect As Double, paperAspect As Double
     imgAspect = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
     paperAspect = 8.5 / 11
@@ -965,7 +972,7 @@ Private Sub UpdatePaperSize()
     If Right(txtWidth, 1) = "." Then txtWidth = Left$(txtWidth, Len(txtWidth) - 1)
     If Right(txtHeight, 1) = "." Then txtHeight = Left$(txtHeight, Len(txtHeight) - 1)
     
-    lblPaperSize = g_Language.TranslateMessage("paper size:") & " " & txtWidth & """ x  " & txtHeight & """"
+    lblPaperSize = g_Language.TranslateMessage("paper size") & ": " & txtWidth & """ x  " & txtHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
     Dim aspectRatio As Double
@@ -980,7 +987,7 @@ Private Sub UpdatePaperSize()
         iSrc.Width = 220
         iSrc.Left = 16
         iSrc.Height = 220 * aspectRatio
-        iSrc.Top = 16 + (220 - iSrc.Height) / 2
+        iSrc.Top = 16 + (260 - iSrc.Height) / 2
     Else
         iSrc.Height = 220
         iSrc.Top = 16
