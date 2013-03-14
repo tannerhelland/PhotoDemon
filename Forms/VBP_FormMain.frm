@@ -342,11 +342,11 @@ Begin VB.MDIForm FormMain
       Left            =   0
       ScaleHeight     =   602
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   149
+      ScaleWidth      =   153
       TabIndex        =   0
       TabStop         =   0   'False
       Top             =   0
-      Width           =   2235
+      Width           =   2300
       Begin VB.PictureBox picLogo 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -394,15 +394,15 @@ Begin VB.MDIForm FormMain
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
          Top             =   4320
-         Width           =   1140
+         Width           =   1185
       End
       Begin PhotoDemon.jcbutton cmdOpen 
          Height          =   615
          Left            =   120
          TabIndex        =   1
          Top             =   465
-         Width           =   900
-         _ExtentX        =   1588
+         Width           =   930
+         _ExtentX        =   1640
          _ExtentY        =   1085
          ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -427,8 +427,8 @@ Begin VB.MDIForm FormMain
          Left            =   120
          TabIndex        =   2
          Top             =   1560
-         Width           =   900
-         _ExtentX        =   1588
+         Width           =   930
+         _ExtentX        =   1640
          _ExtentY        =   1085
          ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -453,8 +453,8 @@ Begin VB.MDIForm FormMain
          Left            =   120
          TabIndex        =   3
          Top             =   2880
-         Width           =   900
-         _ExtentX        =   1588
+         Width           =   930
+         _ExtentX        =   1640
          _ExtentY        =   1085
          ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -477,11 +477,11 @@ Begin VB.MDIForm FormMain
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
-         Left            =   1155
+         Left            =   1200
          TabIndex        =   4
          Top             =   2880
-         Width           =   900
-         _ExtentX        =   1588
+         Width           =   930
+         _ExtentX        =   1640
          _ExtentY        =   1085
          ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -504,11 +504,11 @@ Begin VB.MDIForm FormMain
       End
       Begin PhotoDemon.jcbutton cmdClose 
          Height          =   615
-         Left            =   1155
+         Left            =   1200
          TabIndex        =   12
          Top             =   465
-         Width           =   900
-         _ExtentX        =   1588
+         Width           =   930
+         _ExtentX        =   1640
          _ExtentY        =   1085
          ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -530,11 +530,11 @@ Begin VB.MDIForm FormMain
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
-         Left            =   1155
+         Left            =   1200
          TabIndex        =   13
          Top             =   1560
-         Width           =   900
-         _ExtentX        =   1588
+         Width           =   930
+         _ExtentX        =   1640
          _ExtentY        =   1085
          ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -556,7 +556,7 @@ Begin VB.MDIForm FormMain
       End
       Begin PhotoDemon.jcbutton cmdZoomIn 
          Height          =   390
-         Left            =   1755
+         Left            =   1800
          TabIndex        =   32
          Top             =   4305
          Width           =   390
@@ -608,7 +608,7 @@ Begin VB.MDIForm FormMain
          ToolTip         =   "Use this button to decrease image zoom."
          TooltipTitle    =   "Zoom Out"
       End
-      Begin VB.Label lblZoom 
+      Begin VB.Label lblLeftToolBox 
          Appearance      =   0  'Flat
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
@@ -625,12 +625,13 @@ Begin VB.MDIForm FormMain
          EndProperty
          ForeColor       =   &H00606060&
          Height          =   285
-         Left            =   135
+         Index           =   3
+         Left            =   105
          TabIndex        =   16
          Top             =   3945
          Width           =   675
       End
-      Begin VB.Label lblUndoRedo 
+      Begin VB.Label lblLeftToolBox 
          Appearance      =   0  'Flat
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
@@ -647,12 +648,13 @@ Begin VB.MDIForm FormMain
          EndProperty
          ForeColor       =   &H00606060&
          Height          =   285
-         Left            =   120
+         Index           =   2
+         Left            =   105
          TabIndex        =   15
          Top             =   2505
          Width           =   1260
       End
-      Begin VB.Label lblSaveSaveas 
+      Begin VB.Label lblLeftToolBox 
          Appearance      =   0  'Flat
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
@@ -669,12 +671,13 @@ Begin VB.MDIForm FormMain
          EndProperty
          ForeColor       =   &H00606060&
          Height          =   285
-         Left            =   120
+         Index           =   1
+         Left            =   105
          TabIndex        =   14
          Top             =   1185
          Width           =   1470
       End
-      Begin VB.Label lblOpenClose 
+      Begin VB.Label lblLeftToolBox 
          Appearance      =   0  'Flat
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
@@ -691,7 +694,8 @@ Begin VB.MDIForm FormMain
          EndProperty
          ForeColor       =   &H00606060&
          Height          =   285
-         Left            =   120
+         Index           =   0
+         Left            =   105
          TabIndex        =   11
          Top             =   90
          Width           =   1290
@@ -710,7 +714,7 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H000000FF&
-         Height          =   660
+         Height          =   1380
          Left            =   120
          TabIndex        =   9
          Top             =   5880
@@ -760,14 +764,14 @@ Begin VB.MDIForm FormMain
       Begin VB.Line Line2 
          BorderColor     =   &H80000002&
          X1              =   5
-         X2              =   142
+         X2              =   147
          Y1              =   247
          Y2              =   247
       End
       Begin VB.Line Line1 
          BorderColor     =   &H80000002&
          X1              =   5
-         X2              =   142
+         X2              =   147
          Y1              =   158
          Y2              =   158
       End
@@ -1758,7 +1762,10 @@ Private Sub MDIForm_Load()
     
     'After the program has been successfully loaded, change the focus to the Open Image button
     Me.Visible = True
-    If FormMain.Enabled And picLeftPane.Visible Then cmdOpen.SetFocus
+    If FormMain.Enabled And picLeftPane.Visible Then
+        cmdOpen.SetFocus
+        FixToolboxText
+    End If
     
     'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
     ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.

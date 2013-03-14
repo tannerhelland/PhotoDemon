@@ -57,6 +57,9 @@ Private hc_Handle_SizeNS As Long
 Private hc_Handle_SizeNWSE As Long
 Private hc_Handle_SizeWE As Long
 
+'Used to measure the expected length of a string
+Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
+
 'These constants are used to toggle visibility of display elements.
 Public Const VISIBILITY_TOGGLE As Long = 0
 Public Const VISIBILITY_FORCEDISPLAY As Long = 1
@@ -133,6 +136,7 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         
 End Sub
 
+'This sub is used to render control backgrounds as transparent
 Public Sub SubclassFrame(FramehWnd As Long, ReleaseSubclass As Boolean)
     Dim prevProc As Long
 
@@ -346,11 +350,11 @@ End Sub
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
-    FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size:") & " " & iWidth & "x" & iHeight
-    'DoEvents
+    FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size") & ": " & iWidth & "x" & iHeight
+    FormMain.lblImgSize.Refresh
 End Sub
 
-'This wrapper is used in place of the standard pdMsgBox function.  At present it's just a wrapper around pdMsgBox, but
+'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but
 ' in the future I may replace the dialog function with something custom.
 Public Function pdMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxStyle, ByVal pTitle As String, ParamArray ExtraText() As Variant) As VbMsgBoxResult
 
@@ -384,7 +388,7 @@ End Function
 
 'This popular function is used to display a message in the main form's status bar.
 ' INPUTS:
-' 1) the message to be displayed (mString), with any run-time dependent
+' 1) the message to be displayed (mString), with any run-time dependent values
 Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
 
     Dim newString As String
@@ -432,8 +436,8 @@ End Sub
 
 'Pass AutoSelectText a text box and it will select all text currently in the text box
 Public Function AutoSelectText(ByRef tBox As TextBox)
-    If tBox.Visible = False Then Exit Function
-    If tBox.Enabled = False Then Exit Function
+    If Not tBox.Visible Then Exit Function
+    If Not tBox.Enabled Then Exit Function
     tBox.SetFocus
     tBox.SelStart = 0
     tBox.SelLength = Len(tBox.Text)
@@ -456,3 +460,80 @@ Public Sub popDistortEdgeBox(ByRef cmbEdges As ComboBox, Optional ByVal defaultE
     cmbEdges.ListIndex = defaultEdgeMethod
     
 End Sub
+
+'The labels on the main form's left-hand toolbox may extend past the edge of the toolbar when using a language other than English.
+' This function can be used to iterate through the labels, and set them to their largest possible size without extending past
+' the edge of the toolbar.
+Public Sub FixToolboxText()
+
+    Dim i As Long
+    
+    'Size 12 font is ideal, if possible
+    Dim currentFontSize As Single
+    currentFontSize = 12
+    
+    'We need an object with a DC to use for API calls related to font measuring.  The left-hand toolbox works fine for this.
+    FormMain.picLeftPane.Font = FormMain.lblLeftToolBox(0).Font
+    FormMain.picLeftPane.FontSize = currentFontSize
+        
+    'Next, iterate through the controls to find the largest (widest) one
+    Dim maxWidth As Long, maxIndex As Long
+    maxWidth = 0
+
+    Dim txtWidth As Long
+    
+    For i = 0 To FormMain.lblLeftToolBox.Count - 1
+        txtWidth = getPixelWidthOfString(FormMain.lblLeftToolBox(i).Caption, FormMain.picLeftPane.hDC)
+        If txtWidth > maxWidth Then
+            maxWidth = txtWidth
+            maxIndex = i
+        End If
+    Next i
+    
+    'See if the largest (widest) caption extends past the edge of the toolbox
+    Dim leftPadding As Long
+    leftPadding = FormMain.lblLeftToolBox(0).Left
+    
+    If maxWidth + leftPadding > FormMain.picLeftPane.ScaleWidth Then
+                
+        'Iterate through increasingly smaller font sizes, until one is reached that fits inside the toolbox
+        Do
+        
+            currentFontSize = currentFontSize - 1
+            FormMain.picLeftPane.FontSize = currentFontSize
+            txtWidth = getPixelWidthOfString(FormMain.lblLeftToolBox(maxIndex).Caption, FormMain.picLeftPane.hDC)
+        
+        Loop While txtWidth + leftPadding > FormMain.picLeftPane.ScaleWidth
+        
+    End If
+    
+    'currentFontSize now contains the most appropriate font size for the current language.  Apply it to all toolbox labels.
+    For i = 0 To FormMain.lblLeftToolBox.Count - 1
+        FormMain.lblLeftToolBox(i).FontSize = currentFontSize
+        FormMain.lblLeftToolBox(i).Refresh
+    Next i
+    
+    'Finally, we need to bottom-align all labels manually.
+    ' (NOTE: this is an inelegant and ugly way to do this, but I've yet to devise a better solution for bottom-alignment using VB labels)
+    Dim newHeight As Long
+    newHeight = getPixelHeightOfString(FormMain.lblLeftToolBox(0).Caption, FormMain.picLeftPane.hDC)
+    
+    FormMain.lblLeftToolBox(0).Top = 25 - newHeight
+    FormMain.lblLeftToolBox(1).Top = 98 - newHeight
+    FormMain.lblLeftToolBox(2).Top = 186 - newHeight
+    FormMain.lblLeftToolBox(3).Top = 282 - newHeight
+    
+End Sub
+
+'Return the width (and below, height) of a string, in pixels, according to the font assigned to fontContainerDC
+Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
+    Dim txtSize As POINTAPI
+    GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
+    getPixelWidthOfString = txtSize.X
+End Function
+
+Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
+    Dim txtSize As POINTAPI
+    GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
+    getPixelHeightOfString = txtSize.Y
+End Function
