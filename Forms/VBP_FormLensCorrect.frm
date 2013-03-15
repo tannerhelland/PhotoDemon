@@ -42,7 +42,7 @@ Begin VB.Form FormLensCorrect
       Style           =   2  'Dropdown List
       TabIndex        =   14
       Top             =   3735
-      Width           =   4860
+      Width           =   5700
    End
    Begin VB.HScrollBar hsZoom 
       Height          =   255
@@ -413,7 +413,7 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -468,11 +468,11 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For Y = initY To finalY
                             
         'Remap the coordinates around a center point of (0, 0)
         nX = x - midX
-        nY = y - midY
+        nY = Y - midY
         
         'Calculate distance automatically
         sDistance = (nX * nX) + (nY * nY)
@@ -489,14 +489,14 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
         Else
         
             srcX = x
-            srcY = y
+            srcY = Y
             
         End If
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, Y, srcX, srcY, srcImageData, dstImageData
                 
-    Next y
+    Next Y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If

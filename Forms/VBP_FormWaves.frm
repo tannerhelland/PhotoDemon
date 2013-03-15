@@ -42,7 +42,7 @@ Begin VB.Form FormWaves
       Style           =   2  'Dropdown List
       TabIndex        =   18
       Top             =   3975
-      Width           =   4860
+      Width           =   5700
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -464,7 +464,7 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -498,19 +498,19 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For Y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = (y - yAmplitude) / xWavelength
+        nX = (Y - yAmplitude) / xWavelength
         nY = (x - xAmplitude) / yWavelength
         
         srcX = x + Sin(nX) * xAmplitude
-        srcY = y + Sin(nY) * yAmplitude
+        srcY = Y + Sin(nY) * yAmplitude
                 
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, Y, srcX, srcY, srcImageData, dstImageData
                         
-    Next y
+    Next Y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
