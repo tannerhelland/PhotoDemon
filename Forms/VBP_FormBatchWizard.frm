@@ -90,202 +90,6 @@ Begin VB.Form FormBatchWizard
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   7455
-      Index           =   2
-      Left            =   3480
-      ScaleHeight     =   7455
-      ScaleWidth      =   11775
-      TabIndex        =   10
-      Top             =   720
-      Width           =   11775
-      Begin VB.ComboBox cmbOutputFormat 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   720
-         Style           =   2  'Dropdown List
-         TabIndex        =   39
-         Top             =   1920
-         Width           =   6735
-      End
-      Begin PhotoDemon.smartOptionButton optFormat 
-         Height          =   360
-         Index           =   0
-         Left            =   120
-         TabIndex        =   36
-         Top             =   120
-         Width           =   3795
-         _ExtentX        =   6694
-         _ExtentY        =   635
-         Caption         =   "keep images in their original format"
-         Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartOptionButton optFormat 
-         Height          =   360
-         Index           =   1
-         Left            =   120
-         TabIndex        =   37
-         Top             =   1320
-         Width           =   3810
-         _ExtentX        =   6720
-         _ExtentY        =   635
-         Caption         =   "convert all images to a new format"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblExplanationFormat 
-         BackStyle       =   0  'Transparent
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   600
-         Left            =   720
-         TabIndex        =   38
-         Top             =   540
-         Width           =   10980
-         WordWrap        =   -1  'True
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   7455
-      Index           =   1
-      Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
-      TabIndex        =   9
-      Top             =   720
-      Width           =   11775
-      Begin VB.CommandButton cmdSelectMacro 
-         Caption         =   "Select macro file..."
-         Height          =   525
-         Left            =   8400
-         TabIndex        =   34
-         Top             =   1440
-         Width           =   3015
-      End
-      Begin VB.TextBox txtMacro 
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   315
-         Left            =   720
-         TabIndex        =   33
-         Text            =   "no macro selected"
-         Top             =   1560
-         Width           =   7455
-      End
-      Begin PhotoDemon.smartOptionButton optActions 
-         Height          =   360
-         Index           =   0
-         Left            =   120
-         TabIndex        =   30
-         Top             =   120
-         Width           =   4110
-         _ExtentX        =   7250
-         _ExtentY        =   635
-         Caption         =   "do not apply any photo editing actions"
-         Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartOptionButton optActions 
-         Height          =   360
-         Index           =   1
-         Left            =   120
-         TabIndex        =   32
-         Top             =   1080
-         Width           =   4140
-         _ExtentX        =   7303
-         _ExtentY        =   635
-         Caption         =   "apply a recorded macro to the images"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblExplanation 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "if you only want to rename images or change image formats, use this option "
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   1
-         Left            =   720
-         TabIndex        =   31
-         Top             =   540
-         Width           =   6615
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
       Height          =   7500
       Index           =   0
       Left            =   3480
@@ -880,6 +684,202 @@ Begin VB.Form FormBatchWizard
          Width           =   3030
       End
    End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   2
+      Left            =   3480
+      ScaleHeight     =   7455
+      ScaleWidth      =   11775
+      TabIndex        =   10
+      Top             =   720
+      Width           =   11775
+      Begin VB.ComboBox cmbOutputFormat 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   720
+         Style           =   2  'Dropdown List
+         TabIndex        =   39
+         Top             =   1920
+         Width           =   6735
+      End
+      Begin PhotoDemon.smartOptionButton optFormat 
+         Height          =   360
+         Index           =   0
+         Left            =   120
+         TabIndex        =   36
+         Top             =   120
+         Width           =   3795
+         _ExtentX        =   6694
+         _ExtentY        =   635
+         Caption         =   "keep images in their original format"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optFormat 
+         Height          =   360
+         Index           =   1
+         Left            =   120
+         TabIndex        =   37
+         Top             =   1320
+         Width           =   3810
+         _ExtentX        =   6720
+         _ExtentY        =   635
+         Caption         =   "convert all images to a new format"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblExplanationFormat 
+         BackStyle       =   0  'Transparent
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   600
+         Left            =   720
+         TabIndex        =   38
+         Top             =   540
+         Width           =   10980
+         WordWrap        =   -1  'True
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   1
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   9
+      Top             =   720
+      Width           =   11775
+      Begin VB.CommandButton cmdSelectMacro 
+         Caption         =   "Select macro file..."
+         Height          =   525
+         Left            =   8400
+         TabIndex        =   34
+         Top             =   1440
+         Width           =   3015
+      End
+      Begin VB.TextBox txtMacro 
+         Enabled         =   0   'False
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   315
+         Left            =   720
+         TabIndex        =   33
+         Text            =   "no macro selected"
+         Top             =   1560
+         Width           =   7455
+      End
+      Begin PhotoDemon.smartOptionButton optActions 
+         Height          =   360
+         Index           =   0
+         Left            =   120
+         TabIndex        =   30
+         Top             =   120
+         Width           =   4110
+         _ExtentX        =   7250
+         _ExtentY        =   635
+         Caption         =   "do not apply any photo editing actions"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optActions 
+         Height          =   360
+         Index           =   1
+         Left            =   120
+         TabIndex        =   32
+         Top             =   1080
+         Width           =   4140
+         _ExtentX        =   7303
+         _ExtentY        =   635
+         Caption         =   "apply a recorded macro to the images"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblExplanation 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "if you only want to rename images or change image formats, use this option "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   1
+         Left            =   720
+         TabIndex        =   31
+         Top             =   540
+         Width           =   6615
+      End
+   End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
       Index           =   0
@@ -999,7 +999,11 @@ Private Declare Function LockWindowUpdate Lib "user32" (ByVal hWnd As Long) As L
 'Used to render images onto command buttons at run-time
 Dim cImgCtl As clsControlImage
 
+'Current active page in the wizard
 Dim m_currentPage As Long
+
+'Has the current list of images been saved?
+Dim m_ImageListSaved As Boolean
 
 Private Sub chkEnablePreview_Click()
     
@@ -1032,18 +1036,51 @@ End Sub
 'cmdAddFiles allows the user to move files from the source image list box to the batch list box
 Private Sub cmdAddFiles_Click()
     Screen.MousePointer = vbHourglass
-    Dim x As Long
-    For x = 0 To lstSource.ListCount - 1
-        If lstSource.Selected(x) Then addFileToBatchList Dir1.Path & "\" & lstSource.List(x)
-    Next x
+    Dim X As Long
+    For X = 0 To lstSource.ListCount - 1
+        If lstSource.Selected(X) Then addFileToBatchList Dir1.Path & "\" & lstSource.List(X)
+    Next X
     fixHorizontalListBoxScrolling lstFiles, 16
     Screen.MousePointer = vbDefault
-    makeFormPretty Me
+    'makeFormPretty Me
 End Sub
 
+'Cancel and exit the dialog, with optional prompts as necessary (see Form_QueryUnload)
 Private Sub CmdCancel_Click()
+    
     Unload Me
+    
 End Sub
+
+Private Function allowedToExit() As Boolean
+
+    'If the user has created a list of images to process and they attempt to exit without saving the list,
+    ' give them a chance to save it.
+    If (Not m_ImageListSaved) Then
+    
+        If (lstFiles.ListCount > 0) Then
+            Dim msgReturn As VbMsgBoxResult
+            msgReturn = pdMsgBox("If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date." & vbCrLf & vbCrLf & "Would you like to save your batch list before exiting?", vbApplicationModal + vbExclamation + vbYesNoCancel, "Unsaved image list")
+            
+            Select Case msgReturn
+                
+                Case vbYes
+                    If saveCurrentBatchList() Then allowedToExit = True Else allowedToExit = False
+                
+                Case vbNo
+                    allowedToExit = True
+                
+                Case vbCancel
+                    allowedToExit = False
+                        
+            End Select
+        End If
+        
+    Else
+        allowedToExit = True
+    End If
+    
+End Function
 
 'Load a list of images (previously saved from within PhotoDemon) to the batch list
 Private Sub cmdLoadList_Click()
@@ -1102,6 +1139,11 @@ Private Sub cmdLoadList_Click()
             Screen.MousePointer = vbDefault
             makeFormPretty Me
         Close #fileNum
+        
+        'Note that the current list has been saved (technically it hasn't, I realize, but it exists in a file in this exact state
+        ' so close enough!)
+        m_ImageListSaved = True
+        
     End If
     
 End Sub
@@ -1114,7 +1156,7 @@ Private Sub cmdPrevious_Click()
     changeBatchPage False
 End Sub
 
-'This function is used to advance (or retreat) the active wizard panel
+'This function is used to advance (TRUE) or retreat (FALSE) the active wizard panel
 Private Sub changeBatchPage(ByVal moveForward As Boolean)
 
     'Before doing anything else, see if the user is on the final step.  If they are, initiate the batch conversion.
@@ -1190,6 +1232,9 @@ End Sub
 'Used to display unique text for each page of the wizard.  The value of m_currentPage is used to determine what text to display.
 Private Sub updateWizardText()
 
+    Dim sideText As String
+    sideText = "(description forthcoming)"
+
     Select Case m_currentPage
         
         'Step 1: add images to list
@@ -1197,47 +1242,56 @@ Private Sub updateWizardText()
         
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 1: prepare the batch list (the list of images to be processed)")
             
-            lblExplanation(0).Caption = g_Language.TranslateMessage("You can add files to the batch list in several ways:")
-            lblExplanation(0).Caption = lblExplanation(0).Caption & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("1) The folder and file lists at the top of this page.  Use the ""Add selected image(s) to batch list"" button to move images to the batch list, or use the right mouse button to drag-and-drop one or more items.")
-            lblExplanation(0).Caption = lblExplanation(0).Caption & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("2) The ""Add images using Open Image dialog..."" button.  You can then select one or more image files to be processed.")
-            lblExplanation(0).Caption = lblExplanation(0).Caption & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.")
-            lblExplanation(0).Caption = lblExplanation(0).Caption & vbCrLf & vbCrLf & g_Language.TranslateMessage("Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.")
+            sideText = g_Language.TranslateMessage("You can add files to the batch list in several ways:")
+            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("1) The folder and file lists at the top of this page.  Use the ""Add selected image(s) to batch list"" button to move images to the batch list, or use the right mouse button to drag-and-drop one or more items.")
+            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("2) The ""Add images using Open Image dialog..."" button.  You can then select one or more image files to be processed.")
+            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.")
         
         'Step 2: choose what photo editing you will apply to each image
         Case 1
         
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 2: select the photo editing action(s) to apply to each image")
             
-            lblExplanation(0).Caption = g_Language.TranslateMessage("(description forthcoming)")
+            sideText = g_Language.TranslateMessage("This step is optional.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If requested, PhotoDemon can apply a recorded set of actions (a ""macro"") to each image in the batch list.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Macros can be recorded using the ""Tools -> Macros -> Record new macro"" menu in the main PhotoDemon window.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(FYI: the next version of PhotoDemon will add a selection of standard photo editing options to this screen, but at present you are limited to macros for any photo editing actions.)")
         
         'Step 3: choose the output image format
         Case 2
         
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 3: choose a destination image format")
             
-            lblExplanation(0).Caption = g_Language.TranslateMessage("(description forthcoming)")
-        
+            sideText = g_Language.TranslateMessage("PhotoDemon needs to know which format to use when saving the images in your batch list.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If ""keep images in their original format"" is selected, PhotoDemon will attempt to save each image in its current format.  However, some esoteric formats may not be supported.  If such images are encountered, a standard format (JPEG or PNG, depending on color depth) will be used instead.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If you choose to save these images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency need to be saved to a format that supports transparency!)")
+            
         'Step 4: choose where processed images will be placed and named
         Case 3
         
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 4: provide a destination folder and any renaming options")
             
-            lblExplanation(0).Caption = g_Language.TranslateMessage("(description forthcoming)")
+            sideText = g_Language.TranslateMessage("In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("For your convenience, a number of standard renaming options are also provided.  Note that all options under ""additional rename options"" are optional.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Finally, if two or more images in the batch list have the same filename, and the ""original filenames"" option is selected, such files will automatically be given unique filenames upon saving (e.g. ""original-filename (2)"").")
         
     End Select
+    
+    lblExplanation(0).Caption = sideText
 
 End Sub
 
 'Remove all selected items from the batch conversion list
 Private Sub cmdRemove_Click()
     
-    Dim x As Long
-    Do While (x <= lstFiles.ListCount - 1) And (x >= 0)
-        If lstFiles.Selected(x) Then
-            lstFiles.RemoveItem x
-            x = x - 1
+    Dim X As Long
+    Do While (X <= lstFiles.ListCount - 1) And (X >= 0)
+        If lstFiles.Selected(X) Then
+            lstFiles.RemoveItem X
+            X = X - 1
         Else
-            x = x + 1
+            X = X + 1
         End If
     Loop
     
@@ -1250,11 +1304,15 @@ Private Sub cmdRemove_Click()
         cmdSaveList.Enabled = False
         cmdNext.Enabled = False
     End If
+    
+    'Note that the current list has NOT been saved
+    m_ImageListSaved = False
         
 End Sub
 
 'Remove ALL items from the batch conversion list
 Private Sub cmdRemoveAll_Click()
+    
     lstFiles.Clear
     fixHorizontalListBoxScrolling lstFiles
     
@@ -1264,16 +1322,13 @@ Private Sub cmdRemoveAll_Click()
     cmdSaveList.Enabled = False
     cmdNext.Enabled = False
     
+    'Note that the current list has NOT been saved
+    m_ImageListSaved = False
+    
 End Sub
 
-Private Sub cmdSaveList_Click()
-    
-    'Before attempting to save, make sure at least one image has been placed in the list
-    If lstFiles.ListCount = 0 Then
-        pdMsgBox "You haven't selected any image files.  Please add one or more files to the batch list before saving.", vbExclamation + vbOKOnly + vbApplicationModal, "Empty image list"
-        Exit Sub
-    End If
-        
+Private Function saveCurrentBatchList() As Boolean
+
     'Get the last "open/save image list" path from the INI file
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
@@ -1294,17 +1349,37 @@ Private Sub cmdSaveList_Click()
         Dim fileNum As Integer
         fileNum = FreeFile
         
-        Dim x As Long
+        Dim X As Long
         
         Open sFile For Output As #fileNum
             Print #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
             Print #fileNum, Trim(CStr(lstFiles.ListCount))
-            For x = 0 To lstFiles.ListCount - 1
-                Print #fileNum, lstFiles.List(x)
-            Next x
+            For X = 0 To lstFiles.ListCount - 1
+                Print #fileNum, lstFiles.List(X)
+            Next X
             Print #fileNum, "<END OF LIST>"
         Close #fileNum
+        
+        saveCurrentBatchList = True
+        
+    Else
+        saveCurrentBatchList = False
     End If
+
+End Function
+
+Private Sub cmdSaveList_Click()
+    
+    'Before attempting to save, make sure at least one image has been placed in the list
+    If lstFiles.ListCount = 0 Then
+        pdMsgBox "You haven't selected any image files.  Please add one or more files to the batch list before saving.", vbExclamation + vbOKOnly + vbApplicationModal, "Empty image list"
+        Exit Sub
+    End If
+        
+    saveCurrentBatchList
+    
+    'Note that the current list has been saved
+    m_ImageListSaved = True
     
 End Sub
 
@@ -1321,10 +1396,10 @@ Private Sub cmdSelectAll_Click()
         chkEnablePreview.Value = vbUnchecked
     End If
 
-    Dim x As Long
-    For x = 0 To lstSource.ListCount - 1
-        lstSource.Selected(x) = True
-    Next x
+    Dim X As Long
+    For X = 0 To lstSource.ListCount - 1
+        lstSource.Selected(X) = True
+    Next X
 
     'Restore the user's preference upon completion
     If enablePreviews Then chkEnablePreview.Value = vbChecked
@@ -1375,10 +1450,10 @@ Private Sub cmdSelectNone_Click()
         chkEnablePreview.Value = vbUnchecked
     End If
 
-    Dim x As Long
-    For x = 0 To lstSource.ListCount - 1
-        lstSource.Selected(x) = False
-    Next x
+    Dim X As Long
+    For X = 0 To lstSource.ListCount - 1
+        lstSource.Selected(X) = False
+    Next X
     
     If enablePreviews Then chkEnablePreview.Value = vbChecked
 
@@ -1403,10 +1478,10 @@ Private Sub cmdUseCD_Click()
     
     If PhotoDemon_OpenImageDialog(sFile, Me.hWnd) Then
         
-        Dim x As Long
-        For x = 0 To UBound(sFile)
-            addFileToBatchList sFile(x)
-        Next x
+        Dim X As Long
+        For X = 0 To UBound(sFile)
+            addFileToBatchList sFile(X)
+        Next X
         fixHorizontalListBoxScrolling lstFiles, 16
     End If
 End Sub
@@ -1420,14 +1495,11 @@ Private Sub Drive1_Change()
 End Sub
 
 'Dragged image files must be placed on the batch listbox - not anywhere else.
-Private Sub Form_DragOver(Source As Control, x As Single, y As Single, State As Integer)
+Private Sub Form_DragOver(Source As Control, X As Single, Y As Single, State As Integer)
     If Source = lstSource Then lstSource.DragIcon = picDragDisallow.Picture
 End Sub
 
 Private Sub Form_Load()
-        
-    'TESTING ONLY: warn the user that this form is not yet complete
-    'MsgBox "This tool is under heavy construction.  It may not work at all in this development build." & vbCrLf & vbCrLf & "It will be finished by the time 5.4 releases.", vbApplicationModal + vbExclamation + vbOKOnly, "Development still active"
     
     'Build default paths from INI file values
     Dim tempPathString As String
@@ -1439,25 +1511,25 @@ Private Sub Form_Load()
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = Dir1
         
     'Populate a combo box that will display user-friendly summaries of all possible input image types
-    Dim x As Long
-    For x = 0 To g_ImageFormats.getNumOfInputFormats
-        cmbPattern.AddItem g_ImageFormats.getInputFormatDescription(x), x
-    Next x
+    Dim X As Long
+    For X = 0 To g_ImageFormats.getNumOfInputFormats
+        cmbPattern.AddItem g_ImageFormats.getInputFormatDescription(X), X
+    Next X
     cmbPattern.ListIndex = 0
     
     'Populate a combo box that displays user-friendly summaries of all possible output filetypes
-    For x = 0 To g_ImageFormats.getNumOfOutputFormats
-        cmbOutputFormat.AddItem g_ImageFormats.getOutputFormatDescription(x), x
-    Next x
+    For X = 0 To g_ImageFormats.getNumOfOutputFormats
+        cmbOutputFormat.AddItem g_ImageFormats.getOutputFormatDescription(X), X
+    Next X
     
     'Save JPEGs by default
-    For x = 0 To cmbOutputFormat.ListCount
-        If g_ImageFormats.getOutputFormatExtension(x) = "jpg" Then
-            cmbOutputFormat.ListIndex = x
+    For X = 0 To cmbOutputFormat.ListCount
+        If g_ImageFormats.getOutputFormatExtension(X) = "jpg" Then
+            cmbOutputFormat.ListIndex = X
             'jpegFormatIndex = x
             Exit For
         End If
-    Next x
+    Next X
     
     'Populate the combo box for file rename options
     cmbOutputOptions.AddItem "Original filenames"
@@ -1485,13 +1557,16 @@ Private Sub Form_Load()
     'Set the current page number to 0
     m_currentPage = 0
     
+    'Mark the current image list as "not saved"
+    m_ImageListSaved = False
+    
     'Display appropriate help text and wizard title
     updateWizardText
     
     'Display some text manually to make sure translations are handled correctly
     txtMacro.Text = g_Language.TranslateMessage("no macro selected")
     lblExplanationFormat.Caption = g_Language.TranslateMessage("if PhotoDemon does not support an image's original format, a standard format will be used")
-    lblExplanationFormat.Caption = lblExplanationFormat.Caption & vbCrLf & " " & g_Language.TranslateMessage("( specifically, JPEG at 92% quality is used for photographs, and lossless PNG is used for non-photographs )")
+    lblExplanationFormat.Caption = lblExplanationFormat.Caption & vbCrLf & " " & g_Language.TranslateMessage("( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )")
         
     'Hide all inactive wizard panes
     Dim i As Long
@@ -1561,6 +1636,12 @@ Private Sub updateSourceImageList()
             
 End Sub
 
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    
+    Cancel = Not allowedToExit()
+    
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
@@ -1587,7 +1668,7 @@ Private Sub lstFiles_Click()
 End Sub
 
 'Allow dropping of files from the source file list box
-Private Sub lstFiles_DragDrop(Source As Control, x As Single, y As Single)
+Private Sub lstFiles_DragDrop(Source As Control, X As Single, Y As Single)
     
     If Source Is lstSource Then
         Dim i As Long
@@ -1599,12 +1680,12 @@ Private Sub lstFiles_DragDrop(Source As Control, x As Single, y As Single)
     
 End Sub
 
-Private Sub lstFiles_DragOver(Source As Control, x As Single, y As Single, State As Integer)
+Private Sub lstFiles_DragOver(Source As Control, X As Single, Y As Single, State As Integer)
     If Source = lstSource Then lstSource.DragIcon = picDragAllow.Picture
 End Sub
 
 'This latest version of the batch wizard now supports full drag-and-drop from both Explorer and common dialogs
-Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) Then
@@ -1624,7 +1705,7 @@ Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As I
     
 End Sub
 
-Private Sub lstFiles_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub lstFiles_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
     
     'Check to make sure the type of OLE object is files
     If Data.GetFormat(vbCFFiles) Then
@@ -1724,13 +1805,13 @@ Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     novelAddition = True
     
     If Not suppressDuplicatesCheck Then
-        Dim x As Long
-        For x = 0 To lstFiles.ListCount - 1
-            If StrComp(lstFiles.List(x), srcFile, vbTextCompare) = 0 Then
+        Dim X As Long
+        For X = 0 To lstFiles.ListCount - 1
+            If StrComp(lstFiles.List(X), srcFile, vbTextCompare) = 0 Then
                 novelAddition = False
                 Exit For
             End If
-        Next x
+        Next X
     End If
     
     'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
@@ -1746,9 +1827,12 @@ Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
         If Not cmdNext.Enabled Then cmdNext.Enabled = True
     End If
     
+    'Note that the current list has NOT been saved
+    m_ImageListSaved = False
+    
 End Sub
 
-Private Sub lstSource_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lstSource_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Allow drag operations via the RIGHT mouse button
     If Button = vbRightButton Then
@@ -1758,7 +1842,7 @@ Private Sub lstSource_MouseDown(Button As Integer, Shift As Integer, x As Single
     
 End Sub
 
-Private Sub lstSource_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lstSource_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     lstSource.DragIcon = LoadPicture("")
 End Sub
 
@@ -1901,22 +1985,23 @@ Private Sub prepareForBatchConversion()
                 
                 End If
                 
-                'Attach a proper image format file extension and ID number based off the user's requested output format preference
+                'Attach a proper image format file extension and save format ID number based off the user's
+                ' requested output format
                 
-                'Use original file format
+                'Possibility 1: use original file format
                 If optFormat(0) Then
                     
-                    'See if this image's file format is supported
+                    'See if this image's file format is supported by the export engine
                     If g_ImageFormats.getIndexOfOutputFIF(pdImages(CurrentImage).CurrentFileFormat) = -1 Then
                         
                         'If it isn't, save as JPEG or PNG contingent on color depth
                         
-                        '24bpp layers default to JPEG
+                        '24bpp images default to JPEG
                         If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then
                             tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
                             pdImages(CurrentImage).CurrentFileFormat = FIF_JPEG
                         
-                        '32bpp layers default to PNG
+                        '32bpp images default to PNG
                         Else
                             tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
                             pdImages(CurrentImage).CurrentFileFormat = FIF_PNG
@@ -1929,7 +2014,7 @@ Private Sub prepareForBatchConversion()
                     
                     End If
                     
-                'Force to new file format
+                'Possibility 2: force all images to a single file format
                 Else
                     tmpFileExtension = g_ImageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
                     pdImages(CurrentImage).CurrentFileFormat = g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
@@ -1963,7 +2048,7 @@ Private Sub prepareForBatchConversion()
                 timePerFile = timeElapsed / numFilesProcessed
                 timeRemaining = timePerFile * numFilesRemaining
                 
-                'Convert timeRemaining to seconds (its currently in milliseconds)
+                'Convert timeRemaining to seconds (it is currently in milliseconds)
                 timeRemaining = timeRemaining / 1000
                 
                 minutesRemaining = Int(timeRemaining / 60)
