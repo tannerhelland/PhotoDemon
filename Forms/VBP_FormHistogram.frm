@@ -248,6 +248,15 @@ Begin VB.Form FormHistogram
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "(Note: move the mouse over the histogram to calculate these values)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00808080&
       Height          =   675
       Left            =   240
@@ -914,23 +923,23 @@ Public Sub DrawHistogram()
     'Last but not least, generate the statistics at the bottom of the form
     
     'Total number of pixels
-    lblTotalPixels.Caption = g_Language.TranslateMessage("Total pixels") & ": " & (pdImages(CurrentImage).Width * pdImages(CurrentImage).Height)
+    lblTotalPixels.Caption = g_Language.TranslateMessage("total pixels") & ": " & (pdImages(CurrentImage).Width * pdImages(CurrentImage).Height)
     
     'Maximum value; if a color channel is enabled, use that
     If hEnabled(0) Or hEnabled(1) Or hEnabled(2) Then
         
         'Reset hMax, which may have been changed if the luminance histogram was rendered
         hMax = channelMax(maxChannel)
-        lblMaxCount.Caption = g_Language.TranslateMessage("Maximum count") & ": " & hMax
+        lblMaxCount.Caption = g_Language.TranslateMessage("maximum count") & ": " & hMax
         
         'Also display the channel with that max value, if applicable
         Select Case maxChannel
             Case 0
-                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("Red")
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("red")
             Case 1
-                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("Green")
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("green")
             Case 2
-                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("Blue")
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("blue")
         End Select
         
         lblMaxCount.Caption = lblMaxCount.Caption & ", " & g_Language.TranslateMessage("level") & " " & channelMaxPosition(maxChannel) & ")"

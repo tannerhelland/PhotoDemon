@@ -3,7 +3,7 @@ Begin VB.MDIForm FormMain
    AutoShowChildren=   0   'False
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   9405
+   ClientHeight    =   8745
    ClientLeft      =   225
    ClientTop       =   855
    ClientWidth     =   15045
@@ -27,9 +27,9 @@ Begin VB.MDIForm FormMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   9030
+      Height          =   8370
       Left            =   12810
-      ScaleHeight     =   602
+      ScaleHeight     =   558
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   149
       TabIndex        =   17
@@ -313,7 +313,7 @@ Begin VB.MDIForm FormMain
       ScaleWidth      =   1003
       TabIndex        =   6
       TabStop         =   0   'False
-      Top             =   9030
+      Top             =   8370
       Width           =   15045
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
@@ -338,9 +338,9 @@ Begin VB.MDIForm FormMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   9030
+      Height          =   8370
       Left            =   0
-      ScaleHeight     =   602
+      ScaleHeight     =   558
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   153
       TabIndex        =   0
@@ -1894,7 +1894,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1930,7 +1930,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
