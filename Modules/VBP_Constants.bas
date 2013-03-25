@@ -1,5 +1,4 @@
 Attribute VB_Name = "Public_Constants"
-
 Option Explicit
 
 'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects

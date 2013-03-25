@@ -28,7 +28,6 @@ Begin VB.Form FormSplash
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   600
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   2  'CenterScreen
    Begin VB.Label lblVersion 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent

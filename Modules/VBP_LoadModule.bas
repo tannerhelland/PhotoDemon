@@ -20,7 +20,7 @@ Option Explicit
 Public Sub LoadTheProgram()
     
     '*************************************************************************************************************************************
-    ' Prepare the splash screen and display it
+    ' Prepare the splash screen (but don't display it yet)
     '*************************************************************************************************************************************
     
     'Load FormSplash into memory, but don't make it visible.  Then ask it to prepare itself.
@@ -29,11 +29,6 @@ Public Sub LoadTheProgram()
     
     'Check the environment.  If inside the the IDE, the splash needs to be modified slightly.
     CheckLoadingEnvironment
-    
-    'Once prepared, we can display the splash screen to the user. Note that the splash form will determine
-    ' whether we're running in the IDE or as a standalone EXE.  It will also determine the appropriate program
-    ' path, and from that the plug-in path.
-    FormSplash.Show
     
     
     
@@ -55,7 +50,7 @@ Public Sub LoadTheProgram()
     
     Set g_UserPreferences = New pdPreferences
     
-    'Ask the new preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them)
+    'Ask the preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them.)
     LoadMessage "Initializing all program directories..."
     
     g_UserPreferences.initializePaths
@@ -65,9 +60,37 @@ Public Sub LoadTheProgram()
     
     g_UserPreferences.loadUserSettings
             
-    'Before loading plugins, we need to initialize the image format handler (as the plugins interact with it)
+    'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
     
+    
+    
+    '*************************************************************************************************************************************
+    ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
+    '*************************************************************************************************************************************
+    
+    LoadMessage "Analyzing current monitor setup..."
+    
+    Set g_cMonitors = New clsMonitors
+    g_cMonitors.Refresh
+    
+    
+    
+    '*************************************************************************************************************************************
+    ' Now we have what we need to properly display the splash screen.  Do so now.
+    '*************************************************************************************************************************************
+        
+    'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
+    Dim wRect As RECT
+    wRect.Left = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
+    wRect.Top = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
+    wRect.Right = wRect.Left + g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowWidth", 1)
+    wRect.Bottom = wRect.Top + g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowHeight", 1)
+    g_cMonitors.CenterFormOnMonitor FormSplash, , wRect.Left, wRect.Right, wRect.Top, wRect.Bottom
+            
+    'Display the splash screen, centered on whichever monitor the user previously used the program on.
+    FormSplash.Show
+            
     
     
     '*************************************************************************************************************************************
@@ -145,16 +168,7 @@ Public Sub LoadTheProgram()
     g_selectionRenderPreference = 0
     
     g_UserPreferences.loadToolSettings
-    
-    '*************************************************************************************************************************************
-    ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
-    '*************************************************************************************************************************************
-    
-    LoadMessage "Analyzing current monitor setup..."
-    
-    Set g_cMonitors = New clsMonitors
-    g_cMonitors.Refresh
-        
+            
         
         
     '*************************************************************************************************************************************
@@ -331,10 +345,10 @@ Private Sub LoadImagesFromCommandLine()
         Dim tChar As String
         
         'Scan the command line one character at a time
-        Dim x As Long
-        For x = 1 To Len(g_CommandLine)
+        Dim X As Long
+        For X = 1 To Len(g_CommandLine)
             
-            tChar = Mid(g_CommandLine, x, 1)
+            tChar = Mid(g_CommandLine, X, 1)
                 
             'If the current character is a quotation mark, change inQuotes to specify that we are either inside
             ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
@@ -346,11 +360,11 @@ Private Sub LoadImagesFromCommandLine()
                     
                 '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
                 ' filename and NOT a delimiter.  Replace it with an asterisk.
-                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, x - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - x)
+                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, X - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - X)
                     
             End If
             
-        Next x
+        Next X
             
         'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
         ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
@@ -359,10 +373,10 @@ Private Sub LoadImagesFromCommandLine()
             
         'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
         ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-        For x = 0 To UBound(sFile)
-            sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
-            sFile(x) = Replace$(sFile(x), Chr(34), "")
-        Next x
+        For X = 0 To UBound(sFile)
+            sFile(X) = Replace$(sFile(X), Chr(42), Chr(32))
+            sFile(X) = Replace$(sFile(X), Chr(34), "")
+        Next X
         
     End If
         
@@ -986,8 +1000,10 @@ Public Sub LoadMessage(ByVal sMsg As String)
         End If
     End If
     
-    FormSplash.lblMessage = sMsg
-    FormSplash.lblMessage.Refresh
+    If FormSplash.Visible Then
+        FormSplash.lblMessage = sMsg
+        FormSplash.lblMessage.Refresh
+    End If
     'DoEvents
     
 End Sub
