@@ -2225,17 +2225,12 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
-		<original>Luminance</original>
-		<translation>Luminanz</translation>
-	</phrase>
-
-	<phrase>
-		<original>Use logarithmic values</original>
+		<original>use logarithmic values</original>
 		<translation>Mit logarithmische Werte</translation>
 	</phrase>
 
 	<phrase>
-		<original>Use smooth lines</original>
+		<original>use smooth lines</original>
 		<translation>Verwenden glatten Linien</translation>
 	</phrase>
 
@@ -2250,18 +2245,23 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
+		<original>luminance</original>
+		<translation>Luminanz</translation>
+	</phrase>
+
+	<phrase>
+		<original>statistics</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>(Note: move the mouse over the histogram to calculate these values)</original>
 		<translation>(Hinweis: Bewegen Sie die Maus über das Histogramm für die Werte zu berechnen)</translation>
 	</phrase>
 
 	<phrase>
-		<original>Rendering Options</original>
+		<original>rendering options</original>
 		<translation>Rendering-Optionen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Draw these channels</original>
-		<translation>Zeichnen Sie diese Kanäle</translation>
 	</phrase>
 
 	<phrase>
@@ -2270,12 +2270,12 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
-		<original>Maximum count</original>
+		<original>maximum count</original>
 		<translation>Maximale Anzahl</translation>
 	</phrase>
 
 	<phrase>
-		<original>Total pixels</original>
+		<original>total pixels</original>
 		<translation>Gesamtanzahl der Pixeln</translation>
 	</phrase>
 
@@ -3942,6 +3942,71 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>enable GDI+ support</original>
+		<translation>ermöglichen GDI -Unterstützung</translation>
+	</phrase>
+
+	<phrase>
+		<original>log all program messages to file</original>
+		<translation>log alle Programm-Meldungen in die Datei</translation>
+	</phrase>
+
+	<phrase>
+		<original>Folder used for temporary files</original>
+		<translation>Ordner für temporäre Dateien verwendet</translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to open a browse-for-folder dialog</original>
+		<translation>Klicken Sie für eine browse -for- Ordner zu öffnen</translation>
+	</phrase>
+
+	<phrase>
+		<original>memory usage will be displayed here</original>
+		<translation>Speicherauslastung wird hier angezeigt</translation>
+	</phrase>
+
+	<phrase>
+		<original>memory diagnostics</original>
+		<translation>Speicher -Diagnose</translation>
+	</phrase>
+
+	<phrase>
+		<original>temporary file location</original>
+		<translation>Speicherort für temporäre Dateien</translation>
+	</phrase>
+
+	<phrase>
+		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
+		<translation>run-time Testmöglichkeiten (diese sind nicht in der INI- Datei gespeichert)</translation>
+	</phrase>
+
+	<phrase>
+		<original>debugging</original>
+		<translation>Fehlerbeseitigung</translation>
+	</phrase>
+
+	<phrase>
+		<original>if core plugins cannot be located, offer to download them</original>
+		<translation>Als Core-Plugins nicht gefunden werden kann, bietet zum herunterladen</translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically check for software updates every 10 days</original>
+		<translation>automatisch alle 10 Tage überprüfen nach Software-Updates</translation>
+	</phrase>
+
+	<phrase>
+		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
+		<translation>Wenn diese Option deaktiviert ist, können Sie tannerhelland.com/photodemon besuchen manuell laden Sie die neueste Version von PhotoDemon</translation>
+	</phrase>
+
+	<phrase>
+		<original>(disclaimer populated at run-time)</original>
+		<translation>(Disclaimer Laufzeit bestückt)</translation>
+	</phrase>
+
+	<phrase>
 		<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
 		<translation>rendern PhotoDemon Text mit modernen Schriften (nur auf Vista oder neuer)</translation>
 	</phrase>
@@ -4047,6 +4112,16 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>use RLE encoding when saving 8bpp BMP images</original>
+		<translation>Verwenden RLE -Kodierung beim Speichern 8bpp BMP-Bilder</translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP (Bitmap) options</original>
+		<translation>BMP (Bitmap) Optionen</translation>
+	</phrase>
+
+	<phrase>
 		<original>save TIFFs as separated CMYK (for printing)</original>
 		<translation>sparen TIFFs als getrennte CMYK (für den Druck)</translation>
 	</phrase>
@@ -4072,13 +4147,13 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>use interlacing (Adam7)</original>
-		<translation>verwenden Interlacing (Adam7)</translation>
+		<original>preserve file's original background color, if available</original>
+		<translation>Erhaltung Datei ursprüngliche Hintergrundfarbe, wenn verfügbar</translation>
 	</phrase>
 
 	<phrase>
-		<original>preserve file's original background color, if available</original>
-		<translation>Erhaltung Datei ursprüngliche Hintergrundfarbe, wenn verfügbar</translation>
+		<original>use interlacing (Adam7)</original>
+		<translation>verwenden Interlacing (Adam7)</translation>
 	</phrase>
 
 	<phrase>
@@ -4114,16 +4189,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>TGA (Truevision) options</original>
 		<translation>TGA (Truevision) Optionen</translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE encoding when saving 8bpp BMP images</original>
-		<translation>Verwenden RLE -Kodierung beim Speichern 8bpp BMP-Bilder</translation>
-	</phrase>
-
-	<phrase>
-		<original>BMP (Bitmap) options</original>
-		<translation>BMP (Bitmap) Optionen</translation>
 	</phrase>
 
 	<phrase>
@@ -4174,11 +4239,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>default file format when saving</original>
 		<translation>Standard-Dateiformat beim Speichern</translation>
-	</phrase>
-
-	<phrase>
-		<original>save options</original>
-		<translation>Speicheroptionen</translation>
 	</phrase>
 
 	<phrase>
@@ -4239,76 +4299,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>selections</original>
 		<translation>Auswahl</translation>
-	</phrase>
-
-	<phrase>
-		<original>enable GDI+ support</original>
-		<translation>ermöglichen GDI -Unterstützung</translation>
-	</phrase>
-
-	<phrase>
-		<original>Use this to manually disable GDI+ support. This forces PhotoDemon to rely on its FreeImage and internal VB-only routines.</original>
-		<translation>Verwenden Sie diese manuell zu deaktivieren GDI -Unterstützung. Diese Kräfte PhotoDemon auf seine FreeImage und internen VB -only -Routinen verlassen.</translation>
-	</phrase>
-
-	<phrase>
-		<original>Folder used for temporary files</original>
-		<translation>Ordner für temporäre Dateien verwendet</translation>
-	</phrase>
-
-	<phrase>
-		<original>Click to open a browse-for-folder dialog</original>
-		<translation>Klicken Sie für eine browse -for- Ordner zu öffnen</translation>
-	</phrase>
-
-	<phrase>
-		<original>log all program messages to file</original>
-		<translation>log alle Programm-Meldungen in die Datei</translation>
-	</phrase>
-
-	<phrase>
-		<original>memory usage will be displayed here</original>
-		<translation>Speicherauslastung wird hier angezeigt</translation>
-	</phrase>
-
-	<phrase>
-		<original>memory diagnostics</original>
-		<translation>Speicher -Diagnose</translation>
-	</phrase>
-
-	<phrase>
-		<original>temporary file location</original>
-		<translation>Speicherort für temporäre Dateien</translation>
-	</phrase>
-
-	<phrase>
-		<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
-		<translation>run-time Testmöglichkeiten (diese sind nicht in der INI- Datei gespeichert)</translation>
-	</phrase>
-
-	<phrase>
-		<original>debugging</original>
-		<translation>Fehlerbeseitigung</translation>
-	</phrase>
-
-	<phrase>
-		<original>if core plugins cannot be located, offer to download them</original>
-		<translation>Als Core-Plugins nicht gefunden werden kann, bietet zum herunterladen</translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically check for software updates every 10 days</original>
-		<translation>automatisch alle 10 Tage überprüfen nach Software-Updates</translation>
-	</phrase>
-
-	<phrase>
-		<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-		<translation>Wenn diese Option deaktiviert ist, können Sie tannerhelland.com/photodemon besuchen manuell laden Sie die neueste Version von PhotoDemon</translation>
-	</phrase>
-
-	<phrase>
-		<original>(disclaimer populated at run-time)</original>
-		<translation>(Disclaimer Laufzeit bestückt)</translation>
 	</phrase>
 
 	<phrase>
@@ -4776,7 +4766,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 		<translation>WARNUNG: Dieser Ordner ist ungültig (Zugang verboten). Bitte geben Sie eine gültige Ordner. Wenn keine neuen Ordner bereitgestellt wird, wird PhotoDemon verwenden die Standardsprache des Systems temporären Speicherort.</translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 196 phrases. 17 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 195 phrases. 18 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -5183,6 +5173,36 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 	</phrase>
 
 	<phrase>
+		<original>Draft</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Low</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Medium</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>High</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Portrait</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Landscape</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Sending image to printer</original>
 		<translation>Senden Sie das Bild an den Drucker</translation>
 	</phrase>
@@ -5207,7 +5227,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 		<translation>Bild erfolgreich gedruckt. (Hinweis: Je nach Drucker erscheint keine zusätzliche Bestätigung Bildschirme.)</translation>
 	</phrase>
 
-	<!-- VBP_FormPrint.frm contains 21 phrases. 3 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+	<!-- VBP_FormPrint.frm contains 27 phrases. 3 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPrint.frm-->
 
@@ -7991,6 +8011,18 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
+
+Would you like to save your batch list before exiting?</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Unsaved image list</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>This is not a valid list of images. Please try a different file.</original>
 		<translation>Dies ist nicht ein gültiges Bild Liste. Probieren Sie eine andere Datei.</translation>
 	</phrase>
@@ -8071,7 +8103,22 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>(description forthcoming)</original>
+		<original>This step is optional.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>If requested, PhotoDemon can apply a recorded set of actions (a "macro") to each image in the batch list.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Macros can be recorded using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>(FYI: the next version of PhotoDemon will add a selection of standard photo editing options to this screen, but at present you are limited to macros for any photo editing actions.)</original>
 		<translation></translation>
 	</phrase>
 
@@ -8081,7 +8128,37 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>PhotoDemon needs to know which format to use when saving the images in your batch list.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its current format.  However, some esoteric formats may not be supported.  If such images are encountered, a standard format (JPEG or PNG, depending on color depth) will be used instead.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>If you choose to save these images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency need to be saved to a format that supports transparency!)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Step 4: provide a destination folder and any renaming options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>For your convenience, a number of standard renaming options are also provided.  Note that all options under "additional rename options" are optional.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
 		<translation></translation>
 	</phrase>
 
@@ -8116,7 +8193,7 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>( specifically, JPEG at 92% quality is used for photographs, and lossless PNG is used for non-photographs )</original>
+		<original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
 		<translation></translation>
 	</phrase>
 
@@ -8185,15 +8262,15 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormBatchWizard.frm contains 82 phrases. 6 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+	<!-- VBP_FormBatchWizard.frm contains 91 phrases. 4 were duplicates of existing phrases, so only 87 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBatchWizard.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1973 phrases in total. -->
-<!-- 536 are duplicate phrases, so only 1437 phrases have been written to file. -->
-<!-- These 1437 phrases contain approximately 9040 total words. -->
+<!-- As of this build, PhotoDemon contains 1980 phrases in total. -->
+<!-- 530 are duplicate phrases, so only 1450 phrases have been written to file. -->
+<!-- These 1450 phrases contain approximately 9312 total words. -->
 
 </language>
 
