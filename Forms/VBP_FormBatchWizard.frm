@@ -1074,6 +1074,8 @@ Private Function allowedToExit() As Boolean
                     allowedToExit = False
                         
             End Select
+        Else
+            allowedToExit = True
         End If
         
     Else
