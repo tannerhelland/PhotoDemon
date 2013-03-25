@@ -85,6 +85,10 @@ Private Declare Function MonitorFromWindow Lib "user32" ( _
 Private Declare Function MonitorFromRect Lib "user32" ( _
         rc As RECT, _
         ByVal dwFlags As Long) As Long
+        
+Private Declare Function GetWindowRect Lib "user32.dll" _
+          (ByVal hWnd As Long, _
+           rc As RECT) As Long
 
 '==================================================================================================
 'Public Members
@@ -112,12 +116,17 @@ End Property
 
 Public Function GetMonitorFromWindow(hWnd As Long, dwFlags As Long) As Long
     '=====================================================
-    'Returns a monitor handle that the Window (hWnd) is in
+    'Returns a monitor handle that the Window (hwnd) is in
     '=====================================================
     Dim lReturn As Long
     
     On Error GoTo GetMonitorFromWindow_Err
-    lReturn = MonitorFromWindow(hWnd, dwFlags)
+    'lReturn = MonitorFromWindow(hWnd, dwFlags)
+    'FIX BY TANNER: MonitorFromWindow is prone to failing (returns null for no good reason).  Using the window
+    ' rect instead ensures accurate results.
+    Dim fRect As RECT
+    GetWindowRect hWnd, fRect
+    lReturn = MonitorFromRect(fRect, MONITOR_DEFAULTTONEAREST)
     GetMonitorFromWindow = lReturn
     Exit Function
 GetMonitorFromWindow_Err:
@@ -127,7 +136,32 @@ GetMonitorFromWindow_Err:
     End If
 End Function
 
-Public Function CenterFormOnMonitor(FormToCenter As Form, Optional ReferenceForm As Variant) As Boolean
+Public Function GetMonitorFromRect(ByVal wLeft As Long, ByVal wRight As Long, ByVal wTop As Long, ByVal wBottom As Long, dwFlags As Long) As Long
+    '=====================================================
+    'Returns a monitor handle that the Window (hwnd) is in
+    '=====================================================
+    Dim lReturn As Long
+    
+    Dim rc As RECT
+    With rc
+        .Left = wLeft
+        .Right = wRight
+        .Top = wTop
+        .Bottom = wBottom
+    End With
+    
+    On Error GoTo GetMonitorFromRect_Err
+    lReturn = MonitorFromRect(rc, MONITOR_DEFAULTTONEAREST)
+    GetMonitorFromRect = lReturn
+    Exit Function
+GetMonitorFromRect_Err:
+    If Err.Number = 453 Then
+        'Non-Multimonitor OS, return -1
+        GetMonitorFromRect = -1
+    End If
+End Function
+
+Public Function CenterFormOnMonitor(FormToCenter As Form, Optional ReferenceForm As Variant, Optional ByVal wLeft As Long, Optional ByVal wRight As Long, Optional ByVal wTop As Long, Optional ByVal wBottom As Long) As Boolean
     '====================================================================
     'Centers the FormToCenter on the monitor that the ReferenceForm is on
     'or the primary monitor if the ReferenceForm is ommited
@@ -142,9 +176,13 @@ Public Function CenterFormOnMonitor(FormToCenter As Form, Optional ReferenceForm
     
     'Get the handle to the monitor that the reference form is on
     If IsMissing(ReferenceForm) Then
-        lMonitor = GetMonitorFromXYPoint(1, 1, MONITOR_DEFAULTTOPRIMARY)
+        If IsMissing(wLeft) Then
+            lMonitor = GetMonitorFromXYPoint(1, 1, MONITOR_DEFAULTTONEAREST)
+        Else
+            lMonitor = GetMonitorFromRect(wLeft, wRight, wTop, wBottom, MONITOR_DEFAULTTONEAREST)
+        End If
     Else
-        lMonitor = GetMonitorFromWindow(ReferenceForm.hWnd, MONITOR_DEFAULTTOPRIMARY)
+        lMonitor = GetMonitorFromWindow(ReferenceForm.hWnd, MONITOR_DEFAULTTONEAREST)
     End If
     
     'If we get a valid lMonitor
@@ -175,7 +213,7 @@ CenterFormOnMonitor_Err:
     End If
 End Function
 
-Public Function GetMonitorFromXYPoint(x As Long, y As Long, dwFlags As Long) As Long
+Public Function GetMonitorFromXYPoint(X As Long, Y As Long, dwFlags As Long) As Long
     '==========================================
     'Gets a monitor handle from the xy point
     'Workaround for the GetMonitorFromPoint API
@@ -187,10 +225,10 @@ Public Function GetMonitorFromXYPoint(x As Long, y As Long, dwFlags As Long) As 
     
     'Transfer the x y into a rect 1 pixel square
     With rcRect
-        .Top = y
-        .Left = x
-        .Right = x + 1
-        .Bottom = y + 1
+        .Top = Y
+        .Left = X
+        .Right = X + 1
+        .Bottom = Y + 1
     End With
     On Error Resume Next
     lReturn = MonitorFromRect(rcRect, dwFlags)
