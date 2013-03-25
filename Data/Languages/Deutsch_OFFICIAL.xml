@@ -2251,7 +2251,7 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 
 	<phrase>
 		<original>statistics</original>
-		<translation></translation>
+		<translation>statistiken</translation>
 	</phrase>
 
 	<phrase>
@@ -5174,32 +5174,32 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 
 	<phrase>
 		<original>Draft</original>
-		<translation></translation>
+		<translation>Entwurf</translation>
 	</phrase>
 
 	<phrase>
 		<original>Low</original>
-		<translation></translation>
+		<translation>Gering</translation>
 	</phrase>
 
 	<phrase>
 		<original>Medium</original>
-		<translation></translation>
+		<translation>Medium</translation>
 	</phrase>
 
 	<phrase>
 		<original>High</original>
-		<translation></translation>
+		<translation>Hoch</translation>
 	</phrase>
 
 	<phrase>
 		<original>Portrait</original>
-		<translation></translation>
+		<translation>Portrait</translation>
 	</phrase>
 
 	<phrase>
 		<original>Landscape</original>
-		<translation></translation>
+		<translation>Landschaft</translation>
 	</phrase>
 
 	<phrase>
@@ -7827,167 +7827,167 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>Batch Process Wizard</original>
-		<translation></translation>
+		<translation>Batch Process Wizard</translation>
 	</phrase>
 
 	<phrase>
 		<original>&Previous</original>
-		<translation></translation>
+		<translation>&Früher</translation>
 	</phrase>
 
 	<phrase>
 		<original>&Next</original>
-		<translation></translation>
+		<translation>Nächste</translation>
 	</phrase>
 
 	<phrase>
 		<original>keep images in their original format</original>
-		<translation></translation>
+		<translation>Bilder in ihrem nativen Format erhalten</translation>
 	</phrase>
 
 	<phrase>
 		<original>convert all images to a new format</original>
-		<translation></translation>
+		<translation>konvertiert alle Bilder in ein neues Format</translation>
 	</phrase>
 
 	<phrase>
 		<original>Select macro file</original>
-		<translation></translation>
+		<translation>Wählen Makrodatei</translation>
 	</phrase>
 
 	<phrase>
 		<original>do not apply any photo editing actions</original>
-		<translation></translation>
+		<translation>Wenden Sie keine Foto-Bearbeitungs-Aktionen</translation>
 	</phrase>
 
 	<phrase>
 		<original>apply a recorded macro to the images</original>
-		<translation></translation>
+		<translation>Anwendung einer aufgezeichneten Makros zu den Bildern</translation>
 	</phrase>
 
 	<phrase>
 		<original>if you only want to rename images or change image formats, use this option</original>
-		<translation></translation>
+		<translation>verwenden Sie diese Option, wenn Sie nur wollen, um Bilder oder Änderung Bildformate umzubenennen</translation>
 	</phrase>
 
 	<phrase>
 		<original>Add selected image(s) to batch list</original>
-		<translation></translation>
+		<translation>Ausgewählte Bild(er) zum Batch-Liste Fügen</translation>
 	</phrase>
 
 	<phrase>
 		<original>Select all</original>
-		<translation></translation>
+		<translation>Wählen Sie alle</translation>
 	</phrase>
 
 	<phrase>
 		<original>Select none</original>
-		<translation></translation>
+		<translation>Wählen Sie keine</translation>
 	</phrase>
 
 	<phrase>
 		<original>Add images using "Open Image" dialog</original>
-		<translation></translation>
+		<translation>Fügen Sie Bilder mit der "Open Image"-Dialog</translation>
 	</phrase>
 
 	<phrase>
 		<original>Load list</original>
-		<translation></translation>
+		<translation>Liste laden</translation>
 	</phrase>
 
 	<phrase>
 		<original>Save current list</original>
-		<translation></translation>
+		<translation>Speichern der aktuellen Liste</translation>
 	</phrase>
 
 	<phrase>
 		<original>Remove selected image(s)</original>
-		<translation></translation>
+		<translation>Entfernen Sie ausgewählte Bild(er)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Remove all images</original>
-		<translation></translation>
+		<translation>Entfernen Sie alle Bilder</translation>
 	</phrase>
 
 	<phrase>
 		<original>show image previews</original>
-		<translation></translation>
+		<translation>Bildvorschau zeigen</translation>
 	</phrase>
 
 	<phrase>
 		<original>potential source images</original>
-		<translation></translation>
+		<translation>tial Quellbilder</translation>
 	</phrase>
 
 	<phrase>
 		<original>batch list</original>
-		<translation></translation>
+		<translation>batch-Liste</translation>
 	</phrase>
 
 	<phrase>
 		<original>modify batch list</original>
-		<translation></translation>
+		<translation>ändern Batch-Liste</translation>
 	</phrase>
 
 	<phrase>
 		<original>load / save batch list</original>
-		<translation></translation>
+		<translation>en / speichern Batch-Liste</translation>
 	</phrase>
 
 	<phrase>
 		<original>lowercase</original>
-		<translation></translation>
+		<translation>Kleinbuchstaben</translation>
 	</phrase>
 
 	<phrase>
 		<original>add a prefix to each filename</original>
-		<translation></translation>
+		<translation>ein Präfix zu jedem Dateinamen fügen</translation>
 	</phrase>
 
 	<phrase>
 		<original>Select destination folder</original>
-		<translation></translation>
+		<translation>Wählen des Zielordner</translation>
 	</phrase>
 
 	<phrase>
 		<original>add a suffix to each filename</original>
-		<translation></translation>
+		<translation>ein Suffix an jeden Dateinamen fügen</translation>
 	</phrase>
 
 	<phrase>
 		<original>remove the following text (if found) from each filename</original>
-		<translation></translation>
+		<translation>entfernen Sie den folgenden Text (falls vorhanden) aus den Dateinamen</translation>
 	</phrase>
 
 	<phrase>
 		<original>force each filename, including extension, to the following case</original>
-		<translation></translation>
+		<translation>zwingen jeden Dateinamen, einschließlich der Verlängerung, auf den folgenden fall</translation>
 	</phrase>
 
 	<phrase>
 		<original>UPPERCASE</original>
-		<translation></translation>
+		<translation>GROSSBUCHSTABEN</translation>
 	</phrase>
 
 	<phrase>
 		<original>replace spaces in filenames with underscores</original>
-		<translation></translation>
+		<translation>ersetzen Sie Leerzeichen in Dateinamen durch Unterstriche</translation>
 	</phrase>
 
 	<phrase>
 		<original>use case-sensitive matching</original>
-		<translation></translation>
+		<translation>Use-Case-sensitive Matching</translation>
 	</phrase>
 
 	<phrase>
 		<original>after images are processed, save them with the following name</original>
-		<translation></translation>
+		<translation>nach Bilder verarbeitet werden, speichern Sie sie mit dem folgenden Namen</translation>
 	</phrase>
 
 	<phrase>
 		<original>additional rename options</original>
-		<translation></translation>
+		<translation>zusätzliche rename Optionen</translation>
 	</phrase>
 
 	<phrase>
@@ -7997,29 +7997,31 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>You can add files to the batch process list in several ways</original>
-		<translation></translation>
+		<translation>Sie können Dateien in den Batch-Prozess-Liste auf verschiedene Weise hinzufügen</translation>
 	</phrase>
 
 	<phrase>
 		<original>Step 1: prepare the batch list (the list of images to be processed)</original>
-		<translation></translation>
+		<translation>Schritt 1: Vorbereitung der Batch-Liste (die Liste der zu bearbeitenden Bilder)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Previews disabled</original>
-		<translation></translation>
+		<translation>Vorschauen deaktiviert</translation>
 	</phrase>
 
 	<phrase>
 		<original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-		<translation></translation>
+		<translation>Wenn Sie jetzt beenden, wird Ihre Batch-Liste (die Liste der zu bearbeitenden Bilder) verloren. Durch das Speichern Ihrer Liste, können Sie einfach das Batch-Betrieb zu einem späteren Zeitpunkt fortzusetzen.
+
+Möchten Sie Ihre Batch-Liste vor dem Beenden speichern?</translation>
 	</phrase>
 
 	<phrase>
 		<original>Unsaved image list</original>
-		<translation></translation>
+		<translation>Ungesicherte Bildliste</translation>
 	</phrase>
 
 	<phrase>
@@ -8034,17 +8036,17 @@ Would you like to save your batch list before exiting?</original>
 
 	<phrase>
 		<original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
-		<translation></translation>
+		<translation>Sie haben bereits eine Liste der Bilder für die Verarbeitung erstellt. Die Liste der Bilder, in dieser Datei wird am Ende der aktuellen Liste angehängt.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Batch process notification</original>
-		<translation></translation>
+		<translation>Batch-Prozess Benachrichtigung</translation>
 	</phrase>
 
 	<phrase>
 		<original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
-		<translation></translation>
+		<translation>Sie haben angefordert, dass ein Makro zu jedem Bild angewendet werden, aber kein Makro-Datei ist ausgewählt wurde. Bitte wählen Sie eine gültige Makro-Datei.</translation>
 	</phrase>
 
 	<phrase>
@@ -8054,117 +8056,117 @@ Would you like to save your batch list before exiting?</original>
 
 	<phrase>
 		<original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-		<translation></translation>
+		<translation>PhotoDemon kann nicht auf den angeforderten Ordner Ausgang. Bitte wählen Sie ein Nicht-System-, unbeschränkte Ordner für den Batch-Prozess.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Folder access unavailable</original>
-		<translation></translation>
+		<translation>Zugriff auf den Ordner nicht zur Verfügung</translation>
 	</phrase>
 
 	<phrase>
 		<original>Start processing!</original>
-		<translation></translation>
+		<translation>Bearbeitung starten!</translation>
 	</phrase>
 
 	<phrase>
 		<original>Next</original>
-		<translation></translation>
+		<translation>Nächste</translation>
 	</phrase>
 
 	<phrase>
 		<original>You can add files to the batch list in several ways</original>
-		<translation></translation>
+		<translation>Sie können Dateien auf die Batch-Liste hinzufügen auf verschiedene Weise</translation>
 	</phrase>
 
 	<phrase>
 		<original>1) The folder and file lists at the top of this page.  Use the "Add selected image(s) to batch list" button to move images to the batch list, or use the right mouse button to drag-and-drop one or more items.</original>
-		<translation></translation>
+		<translation>1) Der Ordner und Datei-Listen ganz oben auf dieser Seite. Verwenden Sie die "Hinzufügen ausgewählte Bild(er) zum Batch-Liste", um Bilder auf den Batch-Liste zu verschieben, oder verwenden Sie die rechte Maustaste per Drag-and-Drop ein oder mehrere Elemente.</translation>
 	</phrase>
 
 	<phrase>
 		<original>2) The "Add images using Open Image dialog..." button.  You can then select one or more image files to be processed.</original>
-		<translation></translation>
+		<translation>2) Die "Bilder hinzufügen Verwendung von Open Dialog Bild ..." Taste. Sie können dann ein oder mehrere Bilddateien verarbeitet werden.</translation>
 	</phrase>
 
 	<phrase>
 		<original>3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.</original>
-		<translation></translation>
+		<translation>3) Drag-and-Drop von Dateien direkt auf die Batch-Liste aus Windows Explorer oder dem Desktop.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.</original>
-		<translation></translation>
+		<translation>Jede dieser Methoden unterstützt die Verwendung der Tasten Strg und Umschalt, um mehrere Dateien auf einmal auswählen.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Step 2: select the photo editing action(s) to apply to each image</original>
-		<translation></translation>
+		<translation>Schritt 2: Wählen Sie das Foto-Bearbeitungs-Aktion(en), um jedes Bild anwenden</translation>
 	</phrase>
 
 	<phrase>
 		<original>This step is optional.</original>
-		<translation></translation>
+		<translation>Dieser Schritt ist optional.</translation>
 	</phrase>
 
 	<phrase>
 		<original>If requested, PhotoDemon can apply a recorded set of actions (a "macro") to each image in the batch list.</original>
-		<translation></translation>
+		<translation>Falls gewünscht, kann PhotoDemon eine aufgezeichnete Reihe von Aktionen (ein "Makro"), um jedes Bild in der Batch-Liste gelten.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Macros can be recorded using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-		<translation></translation>
+		<translation>Makros können mit dem "Tools -> Makros -> Neues Makro aufzeichnen"-Menü in der Haupt-PhotoDemon Fenster aufgezeichnet werden.</translation>
 	</phrase>
 
 	<phrase>
 		<original>(FYI: the next version of PhotoDemon will add a selection of standard photo editing options to this screen, but at present you are limited to macros for any photo editing actions.)</original>
-		<translation></translation>
+		<translation>(Info:. Die nächste Version von PhotoDemon werden eine Auswahl von Standard-Foto-Bearbeitungs-Optionen auf diesem Bildschirm hinzufügen, aber zurzeit werden Sie die Makros für alle Foto-Bearbeitungs-Aktionen beschränkt)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Step 3: choose a destination image format</original>
-		<translation></translation>
+		<translation>Schritt 3: Wählen Sie ein Ziel Bildformat</translation>
 	</phrase>
 
 	<phrase>
 		<original>PhotoDemon needs to know which format to use when saving the images in your batch list.</original>
-		<translation></translation>
+		<translation>PhotoDemon muss wissen, welches Format zu verwenden, bei das Speichern der Bilder in Batch-Liste.</translation>
 	</phrase>
 
 	<phrase>
 		<original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its current format.  However, some esoteric formats may not be supported.  If such images are encountered, a standard format (JPEG or PNG, depending on color depth) will be used instead.</original>
-		<translation></translation>
+		<translation>Wenn "Halten Bilder in ihrer ursprünglichen Format" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seiner aktuellen Format zu speichern. Jedoch können einige esoterische Formate nicht unterstützt werden. Wenn solche Bilder angetroffen werden, wird ein Standard-Format (JPEG oder PNG, je nach Farbtiefe) stattdessen verwendet werden.</translation>
 	</phrase>
 
 	<phrase>
 		<original>If you choose to save these images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency need to be saved to a format that supports transparency!)</original>
-		<translation></translation>
+		<translation>Wenn Sie diese Bilder in ein neues Format speichern möchten, stellen Sie bitte sicher, dass das Format, das Sie ausgewählt haben, ist für alle Bilder in Ihrer Liste. (Zum Beispiel müssen Bilder mit Transparenz in ein Format, das Transparenz unterstützt gerettet werden!)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Step 4: provide a destination folder and any renaming options</original>
-		<translation></translation>
+		<translation>Schritt 4: geben sie einen Zielordner und alle Umbenennungsoptionen</translation>
 	</phrase>
 
 	<phrase>
 		<original>In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.</original>
-		<translation></translation>
+		<translation>In diesem letzten Schritt muss PhotoDemon wissen, wo die bearbeiteten Bilder zu speichern, und welchen Namen auf die neuen Dateien geben.</translation>
 	</phrase>
 
 	<phrase>
 		<original>For your convenience, a number of standard renaming options are also provided.  Note that all options under "additional rename options" are optional.</original>
-		<translation></translation>
+		<translation>Für Ihre Bequemlichkeit, sind eine Reihe von Standard-Umbenennen-Optionen ebenfalls zur Verfügung. Beachten Sie, dass alle Optionen unter "zusätzliche rename Optionen" optional sind.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-		<translation></translation>
+		<translation>Schließlich, wenn zwei oder mehr Bilder im Batch-Liste den gleichen Dateinamen haben, und die "ursprünglichen Dateinamen"-Option ausgewählt ist, werden solche Dateien automatisch eindeutige Dateinamen beim Speichern (zB "Original-Dateinamen (2)") angegeben werden.</translation>
 	</phrase>
 
 	<phrase>
 		<original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
-		<translation></translation>
+		<translation>Sie haben keine Bilddateien ausgewählt. Bitte fügen Sie eine oder mehrere Dateien auf die Batch-Liste vor dem Speichern.</translation>
 	</phrase>
 
 	<phrase>
@@ -8184,82 +8186,82 @@ Would you like to save your batch list before exiting?</original>
 
 	<phrase>
 		<original>no macro selected</original>
-		<translation></translation>
+		<translation>kein Makro gewählt</translation>
 	</phrase>
 
 	<phrase>
 		<original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
-		<translation></translation>
+		<translation>wenn PhotoDemon eines Bildes ursprünglichen Format nicht unterstützt, wird ein Standard-Format verwendet werden</translation>
 	</phrase>
 
 	<phrase>
 		<original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-		<translation></translation>
+		<translation>(Speziell JPEG bei 92% Qualität für Fotos und verlustfreie PNG für Nicht-Fotografien)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Preview not available</original>
-		<translation></translation>
+		<translation>Vorschau nicht verfügbar</translation>
 	</phrase>
 
 	<phrase>
 		<original>(Batch converting file # %1 of %2) %3</original>
-		<translation></translation>
+		<translation>(Batch-Konvertierung Datei # %1 %2) %3</translation>
 	</phrase>
 
 	<phrase>
 		<original>Estimated time remaining</original>
-		<translation></translation>
+		<translation>Geschätzte verbleibende Zeit</translation>
 	</phrase>
 
 	<phrase>
 		<original>minute</original>
-		<translation></translation>
+		<translation>minute</translation>
 	</phrase>
 
 	<phrase>
 		<original>minutes</original>
-		<translation></translation>
+		<translation>Minuten</translation>
 	</phrase>
 
 	<phrase>
 		<original>second</original>
-		<translation></translation>
+		<translation>sekund</translation>
 	</phrase>
 
 	<phrase>
 		<original>seconds</original>
-		<translation></translation>
+		<translation>sekunden</translation>
 	</phrase>
 
 	<phrase>
 		<original>Estimating time remaining</original>
-		<translation></translation>
+		<translation>Geschätzte verbleibende Zeit</translation>
 	</phrase>
 
 	<phrase>
 		<original>Batch conversion of %1 files was successful!</original>
-		<translation></translation>
+		<translation>Batch-Konvertierung von %1 Dateien war erfolgreich!</translation>
 	</phrase>
 
 	<phrase>
 		<original>Batch conversion canceled.</original>
-		<translation></translation>
+		<translation>Batch-Konvertierung abgebrochen.</translation>
 	</phrase>
 
 	<phrase>
 		<original>images were</original>
-		<translation></translation>
+		<translation>Bilder waren</translation>
 	</phrase>
 
 	<phrase>
 		<original>image was</original>
-		<translation></translation>
+		<translation>Bild war</translation>
 	</phrase>
 
 	<phrase>
 		<original>processed before cancelation. Last processed image was "%1".</original>
-		<translation></translation>
+		<translation>verarbeitet werden, bevor Stornobedingungen. Zuletzt bearbeitete Bild war "%1".</translation>
 	</phrase>
 
 	<!-- VBP_FormBatchWizard.frm contains 91 phrases. 4 were duplicates of existing phrases, so only 87 new phrases were written to file. -->

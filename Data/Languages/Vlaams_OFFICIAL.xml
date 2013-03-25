@@ -2253,7 +2253,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 
 	<phrase>
 		<original>statistics</original>
-		<translation></translation>
+		<translation>statistieken</translation>
 	</phrase>
 
 	<phrase>
@@ -5176,32 +5176,32 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 
 	<phrase>
 		<original>Draft</original>
-		<translation></translation>
+		<translation>Ontwerp</translation>
 	</phrase>
 
 	<phrase>
 		<original>Low</original>
-		<translation></translation>
+		<translation>Laag</translation>
 	</phrase>
 
 	<phrase>
 		<original>Medium</original>
-		<translation></translation>
+		<translation>Medium</translation>
 	</phrase>
 
 	<phrase>
 		<original>High</original>
-		<translation></translation>
+		<translation>Hoog</translation>
 	</phrase>
 
 	<phrase>
 		<original>Portrait</original>
-		<translation></translation>
+		<translation>Staand</translation>
 	</phrase>
 
 	<phrase>
 		<original>Landscape</original>
-		<translation></translation>
+		<translation>Liggend</translation>
 	</phrase>
 
 	<phrase>
@@ -7828,167 +7828,167 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>Batch Process Wizard</original>
-		<translation></translation>
+		<translation>Batch Proces Wizard</translation>
 	</phrase>
 
 	<phrase>
 		<original>&Previous</original>
-		<translation></translation>
+		<translation>Vorige</translation>
 	</phrase>
 
 	<phrase>
 		<original>&Next</original>
-		<translation></translation>
+		<translation>Origineel</translation>
 	</phrase>
 
 	<phrase>
 		<original>keep images in their original format</original>
-		<translation></translation>
+		<translation>afbeeldingen in hun origineel formaat houden </translation>
 	</phrase>
 
 	<phrase>
 		<original>convert all images to a new format</original>
-		<translation></translation>
+		<translation>converteer alle afbeeldingen naar een nieuw formaat</translation>
 	</phrase>
 
 	<phrase>
 		<original>Select macro file</original>
-		<translation></translation>
+		<translation>Selecteer macro bestand</translation>
 	</phrase>
 
 	<phrase>
 		<original>do not apply any photo editing actions</original>
-		<translation></translation>
+		<translation>geen enkele fotobewerking acties toepassen</translation>
 	</phrase>
 
 	<phrase>
 		<original>apply a recorded macro to the images</original>
-		<translation></translation>
+		<translation>pas een opgenomen macro toe op de afbeelding</translation>
 	</phrase>
 
 	<phrase>
 		<original>if you only want to rename images or change image formats, use this option</original>
-		<translation></translation>
+		<translation>wanneer je enkel een afbeelding wilt hernoemen of afbeeldingsformaten wilt wijzigen, gebruik dan deze optie</translation>
 	</phrase>
 
 	<phrase>
 		<original>Add selected image(s) to batch list</original>
-		<translation></translation>
+		<translation>Voeg geselecteerd(e) bestand(en) toe aan de batchlijst</translation>
 	</phrase>
 
 	<phrase>
 		<original>Select all</original>
-		<translation></translation>
+		<translation>Selecteer alles</translation>
 	</phrase>
 
 	<phrase>
 		<original>Select none</original>
-		<translation></translation>
+		<translation>Selecteer niets</translation>
 	</phrase>
 
 	<phrase>
 		<original>Add images using "Open Image" dialog</original>
-		<translation></translation>
+		<translation>Voeg afbeeldingen toe met gebruik van "Open Image" dialoog</translation>
 	</phrase>
 
 	<phrase>
 		<original>Load list</original>
-		<translation></translation>
+		<translation>Laad lijst</translation>
 	</phrase>
 
 	<phrase>
 		<original>Save current list</original>
-		<translation></translation>
+		<translation>Bewaar huidige lijst</translation>
 	</phrase>
 
 	<phrase>
 		<original>Remove selected image(s)</original>
-		<translation></translation>
+		<translation>Verwijder geselecteerd(e) afbeelding(en)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Remove all images</original>
-		<translation></translation>
+		<translation>Verwijder alle afbeeldingen</translation>
 	</phrase>
 
 	<phrase>
 		<original>show image previews</original>
-		<translation></translation>
+		<translation>toon afbeeldingsvoorbeelden</translation>
 	</phrase>
 
 	<phrase>
 		<original>potential source images</original>
-		<translation></translation>
+		<translation>potentiele bronafbeeldingen</translation>
 	</phrase>
 
 	<phrase>
 		<original>batch list</original>
-		<translation></translation>
+		<translation>batch lijst</translation>
 	</phrase>
 
 	<phrase>
 		<original>modify batch list</original>
-		<translation></translation>
+		<translation>aanpassen batch lijst</translation>
 	</phrase>
 
 	<phrase>
 		<original>load / save batch list</original>
-		<translation></translation>
+		<translation>laden / opslaan batch lijst</translation>
 	</phrase>
 
 	<phrase>
 		<original>lowercase</original>
-		<translation></translation>
+		<translation>kleine letters</translation>
 	</phrase>
 
 	<phrase>
 		<original>add a prefix to each filename</original>
-		<translation></translation>
+		<translation>voeg een voorvoegsel to aan elke bestandsnaam</translation>
 	</phrase>
 
 	<phrase>
 		<original>Select destination folder</original>
-		<translation></translation>
+		<translation>Selecteer doelmap</translation>
 	</phrase>
 
 	<phrase>
 		<original>add a suffix to each filename</original>
-		<translation></translation>
+		<translation>voeg een achtervoegsel toe aan elke bestandsnaam</translation>
 	</phrase>
 
 	<phrase>
 		<original>remove the following text (if found) from each filename</original>
-		<translation></translation>
+		<translation>verwijder de volgende tekst (indien gevonden) van elke bestandsnaam</translation>
 	</phrase>
 
 	<phrase>
 		<original>force each filename, including extension, to the following case</original>
-		<translation></translation>
+		<translation>forceer elke bestandsnaam, inclusief de extensie, tot het volgende geval</translation>
 	</phrase>
 
 	<phrase>
 		<original>UPPERCASE</original>
-		<translation></translation>
+		<translation>GROTE LETTERS</translation>
 	</phrase>
 
 	<phrase>
 		<original>replace spaces in filenames with underscores</original>
-		<translation></translation>
+		<translation>vervang spaties in bestandsnamen met onderstrepingstekens</translation>
 	</phrase>
 
 	<phrase>
 		<original>use case-sensitive matching</original>
-		<translation></translation>
+		<translation>gebruik lettergevoelige matching</translation>
 	</phrase>
 
 	<phrase>
 		<original>after images are processed, save them with the following name</original>
-		<translation></translation>
+		<translation>nadat ze zijn verwerkt, sla de afbeeldingen op met de volgende naam</translation>
 	</phrase>
 
 	<phrase>
 		<original>additional rename options</original>
-		<translation></translation>
+		<translation>bijkomende hernoemen opties</translation>
 	</phrase>
 
 	<phrase>
@@ -7998,29 +7998,30 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>You can add files to the batch process list in several ways</original>
-		<translation></translation>
+		<translation>U kunt bestanden aan de batch processen lijst toevoegen met op verschillende manieren</translation>
 	</phrase>
 
 	<phrase>
 		<original>Step 1: prepare the batch list (the list of images to be processed)</original>
-		<translation></translation>
+		<translation>Stap 1: de batch lijst voorbereiden (de lijst met te verwerken afbeeldingen)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Previews disabled</original>
-		<translation></translation>
-	</phrase>
+		<translation>Voorbeelden uitgeschakeld</translation>
 
 	<phrase>
 		<original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-		<translation></translation>
+		<translation>Wanneer je nu afsluit, zal uw batch lijst (de lijst met te verwerken afbeeldingen) verloren gaan.  Door de lijst op te slaan, kan je deze batch operatie verderzetten op een later tijdstip.
+
+Wil je de batch lijst opslaan voordat je afsluit?</translation>
 	</phrase>
 
 	<phrase>
 		<original>Unsaved image list</original>
-		<translation></translation>
+		<translation>Lijst niet bewaarde afbeeldingen</translation>
 	</phrase>
 
 	<phrase>
@@ -8035,17 +8036,17 @@ Would you like to save your batch list before exiting?</original>
 
 	<phrase>
 		<original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
-		<translation></translation>
+		<translation>U hebt al een lijst met afbeeldingen voor verwerking. De lijst van afbeeldingen in dit bestand wordt toegevoegd aan de onderkant van uw huidige lijst.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Batch process notification</original>
-		<translation></translation>
+		<translation>Batch proces bericht</translation>
 	</phrase>
 
 	<phrase>
 		<original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
-		<translation></translation>
+		<translation>U heeft verzocht om een macro te laten toepadden op elke afbeelding, maar geen macro-bestand is geselecteerd. Selecteer een geldige macro-bestand.</translation>
 	</phrase>
 
 	<phrase>
@@ -8055,117 +8056,117 @@ Would you like to save your batch list before exiting?</original>
 
 	<phrase>
 		<original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-		<translation></translation>
+		<translation>PhotoDemon heeft geen toegang tot de gevraagde output map. Selecteer een niet-systeem, onbeperkte map voor het batchproces.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Folder access unavailable</original>
-		<translation></translation>
+		<translation>Map toegang niet beschikbaar</translation>
 	</phrase>
 
 	<phrase>
 		<original>Start processing!</original>
-		<translation></translation>
+		<translation>Start verwerking!</translation>
 	</phrase>
 
 	<phrase>
 		<original>Next</original>
-		<translation></translation>
+		<translation>Volgende</translation>
 	</phrase>
 
 	<phrase>
 		<original>You can add files to the batch list in several ways</original>
-		<translation></translation>
+		<translation>U kan op verschillende manieren bestanden toevoegen aan de batch</translation>
 	</phrase>
 
 	<phrase>
 		<original>1) The folder and file lists at the top of this page.  Use the "Add selected image(s) to batch list" button to move images to the batch list, or use the right mouse button to drag-and-drop one or more items.</original>
-		<translation></translation>
+		<translation>1) De map en het bestandslijsten aan de bovenkant van deze pagina. Gebruik de "Toevoegen geselecteerde afbeelding(en) aan batch lijst" knop om afbeeldingen te verplaatsen naar de batch lijst, of gebruik de rechter muisknop voor slepen-en-neerzetten van een of meer items</translation>
 	</phrase>
 
 	<phrase>
 		<original>2) The "Add images using Open Image dialog..." button.  You can then select one or more image files to be processed.</original>
-		<translation></translation>
+		<translation>2) De "Toevoegen afbeeldingen met behulp van het dialoogvenster Afbeeldingen openen ..." knop. Vervolgens kan u één of meerdere afbeeldingen selecteren om te verwerken.</translation>
 	</phrase>
 
 	<phrase>
 		<original>3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.</original>
-		<translation></translation>
+		<translation>3) Slepen en neerzetten van bestanden op de batch lijst vanuit Windows Verkenner of uw bureaublad.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.</original>
-		<translation></translation>
+		<translation>Elk van deze methoden ondersteunt het gebruik van de Ctrl en Shift toetsen om meerdere bestanden tegelijk te selecteren.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Step 2: select the photo editing action(s) to apply to each image</original>
-		<translation></translation>
+		<translation>Stap 2: selecteer de fotobewerking actie(s) voor toepassing op elke afbeelding</translation>
 	</phrase>
 
 	<phrase>
 		<original>This step is optional.</original>
-		<translation></translation>
+		<translation>Deze stap is optioneel</translation>
 	</phrase>
 
 	<phrase>
 		<original>If requested, PhotoDemon can apply a recorded set of actions (a "macro") to each image in the batch list.</original>
-		<translation></translation>
+		<translation>Indien gevraagd, kan PhotoDemon een set opgenomen acties (een "macro") toepassen op elke afbeelding in de batch lijst.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Macros can be recorded using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-		<translation></translation>
+		<translation>Macros kunnen opgenomen worden met gebruik van het menu "Gereedschappen -> Macros -> Nieuwe macro opnemen in het hoofdvenster van PhotoDemon.</translation>
 	</phrase>
 
 	<phrase>
 		<original>(FYI: the next version of PhotoDemon will add a selection of standard photo editing options to this screen, but at present you are limited to macros for any photo editing actions.)</original>
-		<translation></translation>
+		<translation>Ter info: de volgende versie van PhotoDemon zal een selectie standaard fotobewerking opties toevoegen aan dit scherm, maar op dit moment bent u beperkt tot macro's voor fotobewerking acties.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Step 3: choose a destination image format</original>
-		<translation></translation>
+		<translation>Stap 3: kies een afbeeldingsformaat voor bestemming</translation>
 	</phrase>
 
 	<phrase>
 		<original>PhotoDemon needs to know which format to use when saving the images in your batch list.</original>
-		<translation></translation>
+		<translation>PhotoDemon moet weten welk formaat te gebruiken tijdens het opslaan van de afbeeldingen in uw batch lijst.</translation>
 	</phrase>
 
 	<phrase>
 		<original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its current format.  However, some esoteric formats may not be supported.  If such images are encountered, a standard format (JPEG or PNG, depending on color depth) will be used instead.</original>
-		<translation></translation>
+		<translation>Wanneer "afbeeldingen in hun origineel formaat houden" geselecteerd is, zal PhotoDemon proberen om elke afbeelding op te slaan in zijn huidig formaat. Echter, sommige esoterische formaten worden niet ondersteund. Indien dergelijke afbeeldingen worden aangetroffen, wordt er een standaard formaat (JPEG of PNG, afhankelijk van de kleurdiepte) gebruikt.</translation>
 	</phrase>
 
 	<phrase>
 		<original>If you choose to save these images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency need to be saved to a format that supports transparency!)</original>
-		<translation></translation>
+		<translation>Als u ervoor kiest om deze beelden op te slaan in een nieuw formaat, gelieve er dan voor te zorgen, dat het formaat dat u hebt geselecteerd geschikt is voor alle afbeeldingen in uw lijst. (Bijvoorbeeld, afbeeldingen met transparantie moeten worden opgeslagen in een formaat dat transparantie ondersteunt!)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Step 4: provide a destination folder and any renaming options</original>
-		<translation></translation>
+		<translation>Stap 4: geef een doelmap en eventuele hernoemen opties op</translation>
 	</phrase>
 
 	<phrase>
 		<original>In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.</original>
-		<translation></translation>
+		<translation>In deze laatste stap, moet PhotoDemon weten waar de verwerkte afbeelding moet opgeslagen worden, en welke naam de nieuwe bestanden moeten krijgen</translation>
 	</phrase>
 
 	<phrase>
 		<original>For your convenience, a number of standard renaming options are also provided.  Note that all options under "additional rename options" are optional.</original>
-		<translation></translation>
+		<translation>Voor uw gemak, zijn er ook een aantal overblijvende opties voorzien. Merk op dat alle opties onder "Bijkomende hernoemen opties" optionaal zijn.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-		<translation></translation>
+		<translation>Tenslotte, wanneer twee of meerdere afbeeldingen in de batch lijst de zelfde bestandsnaam hebben, en de optie "origenele bestandsnamen" geselecteerd is, zullen zulke bestanden een unieke bestandsnaam krijgen (bv: "origineel bestand (2)"). </translation>
 	</phrase>
 
 	<phrase>
 		<original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
-		<translation></translation>
+		<translation>U heeft geen afbeeldingsbestanden geselecteerd. Voeg één of meer bestanden toe aan de batch lijst voor het opslaan.</translation>
 	</phrase>
 
 	<phrase>
@@ -8185,82 +8186,82 @@ Would you like to save your batch list before exiting?</original>
 
 	<phrase>
 		<original>no macro selected</original>
-		<translation></translation>
+		<translation>geen macro geselecteerd</translation>
 	</phrase>
 
 	<phrase>
 		<original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
-		<translation></translation>
+		<translation>als PhotoDemon het origineel formaat voor een afbeelding niet supporteert, zal er een standaard formaat gebruikt worden</translation>
 	</phrase>
 
 	<phrase>
-		<original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-		<translation></translation>
+		<original>( specifically, JPEG at 92% quality is used for photographs, and lossless PNG is used for non-photographs )</original>
+		<translation>(In het bijzonder, wordt JPEG met 92% kwaliteit gebruikt voor foto's, en lossless PNG wordt gebruikt voor niet-foto's)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Preview not available</original>
-		<translation></translation>
+		<translation>Voorbeeld niet beschikbaar</translation>
 	</phrase>
 
 	<phrase>
 		<original>(Batch converting file # %1 of %2) %3</original>
-		<translation></translation>
+		<translation>(Batch converteren bestand #% 1 van %2) %3</translation>
 	</phrase>
 
 	<phrase>
 		<original>Estimated time remaining</original>
-		<translation></translation>
+		<translation>Geschatte resterende tijd</translation>
 	</phrase>
 
 	<phrase>
 		<original>minute</original>
-		<translation></translation>
+		<translation>minuut</translation>
 	</phrase>
 
 	<phrase>
 		<original>minutes</original>
-		<translation></translation>
+		<translation>minuten</translation>
 	</phrase>
 
 	<phrase>
 		<original>second</original>
-		<translation></translation>
+		<translation>second</translation>
 	</phrase>
 
 	<phrase>
 		<original>seconds</original>
-		<translation></translation>
+		<translation>seconden</translation>
 	</phrase>
 
 	<phrase>
 		<original>Estimating time remaining</original>
-		<translation></translation>
+		<translation>Geschatte resterende tijd</translation>
 	</phrase>
 
 	<phrase>
 		<original>Batch conversion of %1 files was successful!</original>
-		<translation></translation>
+		<translation>Batch-conversie van %1 bestanden gelukt!</translation>
 	</phrase>
 
 	<phrase>
 		<original>Batch conversion canceled.</original>
-		<translation></translation>
+		<translation>Batch-conversie geannuleerd</translation>
 	</phrase>
 
 	<phrase>
 		<original>images were</original>
-		<translation></translation>
+		<translation>afbeeldingen waren</translation>
 	</phrase>
 
 	<phrase>
 		<original>image was</original>
-		<translation></translation>
+		<translation>afbeelding was</translation>
 	</phrase>
 
 	<phrase>
 		<original>processed before cancelation. Last processed image was "%1".</original>
-		<translation></translation>
+		<translation>verwerkt voor annulering. Laatst bewerkt beeld was "%1"</translation>
 	</phrase>
 
 	<!-- VBP_FormBatchWizard.frm contains 91 phrases. 4 were duplicates of existing phrases, so only 87 new phrases were written to file. -->
