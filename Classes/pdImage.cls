@@ -109,9 +109,9 @@ Option Explicit
     'Original color depth (a BPP value, most commonly 24 or 32, may be 8)
     Public OriginalColorDepth As Long
     
-    'Save flags let us save the image using settings the user has already specified (so we don't have to pester
+    'saveParameters let us save the image using settings the user has already specified (so we don't have to pester
     ' them every time they save)
-    Private saveFlags(0 To 9) As Long
+    Public saveParameters As String
     
     'For JPEGs specifically, has a quality value been set?  If it hasn't, the user needs to be prompted at least once.
     Public hasSeenJPEGPrompt As Boolean
@@ -194,15 +194,6 @@ Public Sub deactivateImage()
     'Mark this image as inactive
     IsActive = False
     
-End Sub
-    
-'Because arrays in a class module cannot be declared as Public, save flags must be read/stored via these two routines
-Public Function getSaveFlag(ByVal fIndex As Long) As Long
-    getSaveFlag = saveFlags(fIndex)
-End Function
-
-Public Sub setSaveFlag(ByVal fIndex As Long, ByVal fValue As Long)
-    saveFlags(fIndex) = fValue
 End Sub
     
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
@@ -337,11 +328,11 @@ Public Sub ClearUndos()
     'Using a temporary string, destroy every possible Undo file
     Dim tempFile As String
     
-    Dim x As Long
-    For x = 0 To UndoTotal
-        tempFile = GenerateUndoFile(x)
+    Dim X As Long
+    For X = 0 To UndoTotal
+        tempFile = GenerateUndoFile(X)
         If FileExist(tempFile) Then Kill tempFile
-    Next x
+    Next X
     
     'Set the current and maximum Undo number to 0
     UndoNum = 0
