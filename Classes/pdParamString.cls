@@ -34,109 +34,135 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Dim m_ParamString As String
-Dim m_Params() As Variant
-Dim m_numOfParams As Long
+Private m_ParamString As String
+Private m_Params() As String
+Private m_numOfParams As Long
 
-'Assign the class a parameter string, and parse it as necessary into the
+Public Function getParamString() As String
+    getParamString = m_ParamString
+End Function
+
+'Assign the class a parameter string, and parse it as necessary into its individual components
 Public Sub setParamString(ByVal pString As String)
     m_ParamString = pString
     If InStr(1, m_ParamString, "|", vbBinaryCompare) > 0 Then
-        m_Params = Split(m_ParamString, "|")
-        m_numOfParams = UBound(m_Params)
+        m_Params() = Split(m_ParamString, "|")
+        m_numOfParams = UBound(m_Params) + 1
     Else
-        ReDim m_Params(0) As Variant
-        m_Params(0) = m_ParamString
-        m_numOfParams = 1
+        If Len(pString) > 0 Then
+            ReDim m_Params(0) As String
+            m_Params(0) = m_ParamString
+            m_numOfParams = 1
+        Else
+            m_numOfParams = 0
+        End If
     End If
 End Sub
 
+'Does the parameter at location X exist?
+Public Function doesParamExist(ByVal pIndex As Long) As Boolean
+    If m_numOfParams = 0 Then
+        doesParamExist = False
+    Else
+        If pIndex <= m_numOfParams And pIndex > 0 Then
+            doesParamExist = True
+        Else
+            doesParamExist = False
+        End If
+    End If
+End Function
+
 'Retrieve a bool-type parameter
-Public Function GetBool(ByVal pIndex As Long) As Boolean
+Public Function GetBool(ByVal pIndex As Long, Optional ByVal defaultReturn As Boolean = False) As Boolean
 
     If m_numOfParams = 1 Then
         GetBool = CBool(m_ParamString)
     Else
-        If pIndex <= m_numOfParams Then
+        If doesParamExist(pIndex) Then
             GetBool = CBool(m_Params(pIndex - 1))
         Else
-            GetBool = False
+            GetBool = defaultReturn
         End If
     End If
 
 End Function
 
 'Retrieve a byte-type parameter
-Public Function GetByte(ByVal pIndex As Long) As Byte
+Public Function GetByte(ByVal pIndex As Long, Optional ByVal defaultReturn As Byte = 0) As Byte
 
     If m_numOfParams = 1 Then
         GetByte = CByte(m_ParamString)
     Else
-        If pIndex <= m_numOfParams Then
+        If doesParamExist(pIndex) Then
             GetByte = CByte(m_Params(pIndex - 1))
         Else
-            GetByte = 0
+            GetByte = defaultReturn
         End If
     End If
 
 End Function
 
 'Retrieve an int-type parameter
-Public Function GetInteger(ByVal pIndex As Long) As Integer
+Public Function GetInteger(ByVal pIndex As Long, Optional ByVal defaultReturn As Integer = 0) As Integer
 
     If m_numOfParams = 1 Then
         GetInteger = CInt(m_ParamString)
     Else
-        If pIndex <= m_numOfParams Then
+        If doesParamExist(pIndex) Then
             GetInteger = CInt(m_Params(pIndex - 1))
         Else
-            GetInteger = 0
+            GetInteger = defaultReturn
         End If
     End If
 
 End Function
 
 'Retrieve a long-type parameter
-Public Function GetLong(ByVal pIndex As Long) As Long
+Public Function GetLong(ByVal pIndex As Long, Optional ByVal defaultReturn As Long = 0) As Long
 
     If m_numOfParams = 1 Then
         GetLong = CLng(m_ParamString)
     Else
-        If pIndex <= m_numOfParams Then
+        If doesParamExist(pIndex) Then
             GetLong = CLng(m_Params(pIndex - 1))
         Else
-            GetLong = 0
+            GetLong = defaultReturn
         End If
     End If
 
 End Function
 
 'Retrieve a single-type parameter
-Public Function GetSingle(ByVal pIndex As Long) As Single
+Public Function GetSingle(ByVal pIndex As Long, Optional ByVal defaultReturn As Single = 0#) As Single
 
     If m_numOfParams = 1 Then
         GetSingle = CSng(m_ParamString)
     Else
-        If pIndex <= m_numOfParams Then
+        If doesParamExist(pIndex) Then
             GetSingle = CSng(m_Params(pIndex - 1))
         Else
-            GetSingle = 0#
+            GetSingle = defaultReturn
         End If
     End If
 
 End Function
 
 'Retrieve a double-type parameter
-Public Function GetDouble(ByVal pIndex As Long) As Double
+Public Function GetDouble(ByVal pIndex As Long, Optional ByVal defaultReturn As Double = 0#) As Double
 
     If m_numOfParams = 1 Then
         GetDouble = CDbl(m_ParamString)
     Else
-        If pIndex <= m_numOfParams Then
+        If doesParamExist(pIndex) Then
             GetDouble = CDbl(m_Params(pIndex - 1))
         Else
-            GetDouble = 0#
+            GetDouble = defaultReturn
         End If
     End If
 
 End Function
+
+Private Sub Class_Initialize()
+    m_ParamString = ""
+    m_numOfParams = 0
+End Sub
