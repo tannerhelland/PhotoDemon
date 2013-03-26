@@ -4112,7 +4112,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>use RLE encoding when saving 8bpp BMP images</original>
+		<original>use RLE compression when saving 8bpp BMP images</original>
 		<translation>Verwenden RLE -Kodierung beim Speichern 8bpp BMP-Bilder</translation>
 	</phrase>
 
@@ -4177,12 +4177,12 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>use RLE encoding when saving TGA images</original>
+		<original>use RLE compression when saving TGA images</original>
 		<translation>Verwenden RLE -Kodierung beim Speichern TGA-Bilder</translation>
 	</phrase>
 
 	<phrase>
-		<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE encoding when saving TGA images.</original>
+		<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
 		<translation>TGA-Dateien unterstützen nur eine Art von Kompression. PhotoDemon können einfache RLE -Kodierung anwenden beim Speichern TGA Bildern.</translation>
 	</phrase>
 
@@ -4662,7 +4662,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 	</phrase>
 
 	<phrase>
-		<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE encoding when saving 8bpp images.</original>
+		<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
 		<translation>Bitmap-Dateien unterstützen nur eine Art der Komprimierung, und sie unterstützen nur sie für bestimmte Farbtiefen. PhotoDemon anwenden können einfache RLE-Kodierung beim Speichern 8bpp Bildern.</translation>
 	</phrase>
 
