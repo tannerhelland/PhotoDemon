@@ -589,7 +589,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If multipleFilesLoading Then
                 brokenFiles = brokenFiles & getFilename(sFile(thisImage)) & vbCrLf
             Else
-                pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
+                If MacroStatus <> MacroBATCH Then pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
             End If
             
             targetImage.deactivateImage
@@ -865,12 +865,12 @@ PreloadMoreImages:
     ' Before finishing, display any relevant load problems (missing files, invalid formats, etc)
     '*************************************************************************************************************************************
     
-    'If multiple images were loaded and everything went well, display a success message
-    If multipleFilesLoading And (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) And isThisPrimaryImage Then Message "All images loaded successfully."
-    
     'Restore the screen cursor if necessary
     If pageNumber <= 0 Then Screen.MousePointer = vbNormal
     
+    'If multiple images were loaded and everything went well, display a success message
+    If multipleFilesLoading And (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) And isThisPrimaryImage Then Message "All images loaded successfully."
+        
     'Finally, if we were loading multiple images and something went wrong (missing files, broken files), let the user know about them.
     If multipleFilesLoading And (Len(missingFiles) > 0) Then
         Message "All images loaded, except for those that could not be found."
