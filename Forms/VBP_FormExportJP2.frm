@@ -120,6 +120,7 @@ Begin VB.Form dialog_ExportJP2
       Width           =   1545
    End
    Begin VB.Label lblAfter 
+      Alignment       =   1  'Right Justify
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "low quality, small file"
