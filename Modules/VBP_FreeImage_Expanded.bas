@@ -25,7 +25,7 @@ Public imageHasMultiplePages As Boolean
 Public imagePageCount As Long
 
 'DIB declarations
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
 Public Function isFreeImageAvailable() As Boolean
@@ -108,10 +108,17 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     Dim fi_multi_hDIB As Long
     Dim chkPageCount As Long
     Dim needToCloseMulti As Boolean
-    
+        
     If pageToLoad > 0 Then needToCloseMulti = True Else needToCloseMulti = False
     
-    'If the image is a GIF, it might be animated.  Check for that now.
+    'This is a temporary fix for batch convert.  For now, ignore all extra images.  A better option needs to be developed for handling
+    ' these types of files during batch processing.
+    If MacroStatus = MacroBATCH Then
+        imageHasMultiplePages = False
+        imagePageCount = 0
+    End If
+    
+    'If the image is a GIF, TIFF, or icon, it might contain multiple images.  Check for that now.
     If ((fileFIF = FIF_GIF) Or (fileFIF = FIF_TIFF) Or (fileFIF = FIF_ICO)) And (pageToLoad = 0) And (MacroStatus <> MacroBATCH) Then
     
         If fileFIF = FIF_GIF Then
