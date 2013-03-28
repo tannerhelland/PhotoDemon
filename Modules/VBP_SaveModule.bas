@@ -208,7 +208,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the user clicked OK, replace the function's save parameters with the ones set by the user
                 cParams.setParamString CStr(g_JPEGQuality)
-                cParams.setParamString cParams.getParamString() & "|" & g_JPEGFlags
+                cParams.setParamString cParams.getParamString & "|" & g_JPEGFlags
                 cParams.setParamString cParams.getParamString & "|" & g_JPEGThumbnail
                 
             End If
@@ -243,9 +243,14 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
         'GIF
         Case FIF_GIF
+        
             'GIFs are preferentially exported by FreeImage, then GDI+ (if available)
             If g_ImageFormats.FreeImageEnabled Then
-                updateMRU = SaveGIFImage(srcPDImage, dstPath)
+                If Not cParams.doesParamExist(1) Then
+                    updateMRU = SaveGIFImage(srcPDImage, dstPath)
+                Else
+                    updateMRU = SaveGIFImage(srcPDImage, dstPath, cParams.GetLong(1))
+                End If
             ElseIf g_ImageFormats.GDIPlusEnabled Then
                 updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageGIF, 8)
             Else
@@ -709,8 +714,15 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
             If tmpLayer.isAlphaBinary Then
                 tmpLayer.applyAlphaCutoff
             Else
-                'If we are in the midst of a batch conversion, force the cut-off to 127.  Otherwise, let the user pick a cut-off.
-                If MacroStatus <> MacroBATCH Then
+            
+                'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
+                ' Thus, use a default cut-off of 127 and continue on.
+                If MacroStatus = MacroBATCH Then
+                    tmpLayer.applyAlphaCutoff
+                
+                'We're not in a batch conversion, so ask the user which cut-off they would like to use.
+                Else
+            
                     Dim alphaCheck As VbMsgBoxResult
                     alphaCheck = promptAlphaCutoff(tmpLayer)
                     
@@ -726,8 +738,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                     Else
                         tmpLayer.applyAlphaCutoff g_AlphaCutoff
                     End If
-                Else
-                    tmpLayer.applyAlphaCutoff
+                
                 End If
                 
             End If
@@ -1044,20 +1055,30 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
         If tmpLayer.isAlphaBinary Then
             tmpLayer.applyAlphaCutoff
         Else
-            Dim alphaCheck As VbMsgBoxResult
-            alphaCheck = promptAlphaCutoff(tmpLayer)
+        
+            'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
+            ' Thus, use a default cut-off of 127 and continue on.
+            If MacroStatus = MacroBATCH Then
+                tmpLayer.applyAlphaCutoff
             
-            'If the alpha dialog is canceled, abandon the entire save
-            If alphaCheck = vbCancel Then
-            
-                tmpLayer.eraseLayer
-                Set tmpLayer = Nothing
-                SaveTGAImage = False
-                Exit Function
-            
-            'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+            'We're not in a batch conversion, so ask the user which cut-off they would like to use.
             Else
-                tmpLayer.applyAlphaCutoff g_AlphaCutoff
+            
+                Dim alphaCheck As VbMsgBoxResult
+                alphaCheck = promptAlphaCutoff(tmpLayer)
+                
+                'If the alpha dialog is canceled, abandon the entire save
+                If alphaCheck = vbCancel Then
+                
+                    tmpLayer.eraseLayer
+                    Set tmpLayer = Nothing
+                    SaveTGAImage = False
+                    Exit Function
+                
+                'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+                Else
+                    tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                End If
             End If
             
         End If
@@ -1308,20 +1329,29 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         If tmpLayer.isAlphaBinary Then
             tmpLayer.applyAlphaCutoff
         Else
-            Dim alphaCheck As VbMsgBoxResult
-            alphaCheck = promptAlphaCutoff(tmpLayer)
             
-            'If the alpha dialog is canceled, abandon the entire save
-            If alphaCheck = vbCancel Then
+            'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
+            ' Thus, use a default cut-off of 127 and continue on.
+            If MacroStatus = MacroBATCH Then
+                tmpLayer.applyAlphaCutoff
             
-                tmpLayer.eraseLayer
-                Set tmpLayer = Nothing
-                SaveTIFImage = False
-                Exit Function
-            
-            'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+            'We're not in a batch conversion, so ask the user which cut-off they would like to use.
             Else
-                tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                Dim alphaCheck As VbMsgBoxResult
+                alphaCheck = promptAlphaCutoff(tmpLayer)
+                
+                'If the alpha dialog is canceled, abandon the entire save
+                If alphaCheck = vbCancel Then
+                
+                    tmpLayer.eraseLayer
+                    Set tmpLayer = Nothing
+                    SaveTIFImage = False
+                    Exit Function
+                
+                'If it wasn't canceled, use the value it provided to apply our alpha cut-off
+                Else
+                    tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                End If
             End If
             
         End If
