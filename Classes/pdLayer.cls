@@ -56,7 +56,7 @@ Private Type RGBQUAD
     Alpha As Byte
 End Type
 
-Private Type Bitmap
+Private Type BITMAP
     Type As Long
     Width As Long
     Height As Long
@@ -95,10 +95,10 @@ End Type
 
 'Rectangle type for use with SetRect/FillRect API calls
 Private Type RECT
-    x1 As Long
-    y1 As Long
-    x2 As Long
-    y2 As Long
+    X1 As Long
+    Y1 As Long
+    X2 As Long
+    Y2 As Long
 End Type
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
@@ -149,7 +149,7 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 
 'Rectangle objects to be used with brushes
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
 
 'Brush creation
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
@@ -227,7 +227,12 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
 
         'Make sure this layer isn't empty
         If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
-    
+            
+            If cutOff = 0 Then
+                convertTo24bpp
+                Exit Sub
+            End If
+            
             'Loop through the image and force each alpha value to 0 and 255 based on the supplied cutoff.
             Dim iData() As Byte
             Dim tmpSA As SAFEARRAY2D
@@ -270,13 +275,13 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                     'Blank the alpha channel
                     iData(QuickX + 3, y) = 0
                     
-                'If the pixel is not beneath the cut-off, and not full opaque, composite it against white
-                ElseIf chkAlpha <> 255 Then
+                'If the pixel is not beneath the cut-off, and not fully opaque, composite it against white
+                ElseIf chkAlpha < 255 Then
                 
                     'Convert the alpha value to a floating-point variable
-                    tmpAlpha = CSng(chkAlpha) / 255
+                    tmpAlpha = CDbl(chkAlpha) / 255
             
-                    'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
+                    'Use that alpha value to blend the current color against white
                     iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), 255, tmpAlpha)
                     iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), 255, tmpAlpha)
                     iData(QuickX, y) = Blend2Colors(iData(QuickX, y), 255, tmpAlpha)
@@ -844,7 +849,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
         If GetObjectType(srcPicture) = OBJ_BITMAP Then
         
             'Select the picture's attributes into a bitmap object
-            Dim tmpBitmap As Bitmap
+            Dim tmpBitmap As BITMAP
             GetObject srcPicture.Handle, Len(tmpBitmap), tmpBitmap
             
             'Use that bitmap object to create a new, blank DIB of the same size
