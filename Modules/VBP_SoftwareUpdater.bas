@@ -1,7 +1,7 @@
 Attribute VB_Name = "Software_Updater"
 '***************************************************************************
 'Automatic Software Updater (note: at present this doesn't techincally DO the updating (e.g. overwriting program files), it just CHECKS for updates)
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 05/October/12
 'Last update: improve status reports; now the update function is of type "Long", and it returns failure, success but no update
@@ -38,6 +38,7 @@ Public Function CheckForSoftwareUpdate() As Long
     'First things first - set up our target URL
     Dim URL As String
     URL = "http://tannerhelland.com/photodemon_files/updates.txt"
+    'URL = "http://tannerhelland.com/photodemon_files/updates_testing.txt"
        
     'Open an Internet session and assign it a handle
     Dim hInternetSession As Long
