@@ -118,6 +118,11 @@
 	</phrase>
 
 	<phrase>
+		<original>Analyzing current monitor setup</original>
+		<translation>Analysieren der aktuellen Monitor-Setup</translation>
+	</phrase>
+
+	<phrase>
 		<original>Scanning for language files</original>
 		<translation>Scannen für Sprachdateien</translation>
 	</phrase>
@@ -165,11 +170,6 @@
 	<phrase>
 		<original>Highlight (Red)</original>
 		<translation>Strähnchen (Röt)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Analyzing current monitor setup</original>
-		<translation>Analysieren der aktuellen Monitor-Setup</translation>
 	</phrase>
 
 	<phrase>
@@ -481,6 +481,80 @@ Please use another program to save these images in a generic format (such as JPE
 	<!-- BEGIN text for VBP_SaveModule.bas-->
 
 	<phrase>
+		<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation>Original Farbtiefe von %1 bpp wird durch dieses Format unterstützt. Ausgehend sparen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation>Original Farbtiefe von %1 bpp wird nicht durch dieses Format unterstützt. Ausgehend als %2 speichern bpp</translation>
+	</phrase>
+
+	<phrase>
+		<original>Counting image colors to determine optimal exported color depth</original>
+		<translation>FarbtiefeZählen Bildfarben, um eine optimale exportiert Farbtiefe bestimmen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color count successful (%1 bpp recommended)</original>
+		<translation>Farbe Anzahl erfolgreich (%1 bpp empfohlen)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation>Empfohlene Farbtiefe von %1 bpp wird durch dieses Format unterstützt. Ausgehend sparen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation>Empfohlene Farbtiefe von %1 bpp wird nicht durch dieses Format unterstützt. Ausgehend als %2 speichern bpp</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save canceled.</original>
+		<translation>Speichern abgebrochen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Requested color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation>Farbtiefe von %1 bpp wird durch dieses Format unterstützt. Ausgehend sparen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation>Farbtiefe von %1 bpp wird nicht durch dieses Format unterstützt. Ausgehend als %2 speichern bpp</translation>
+	</phrase>
+
+	<phrase>
+		<original>No %1 encoder found. Save aborted.</original>
+		<translation>Kein %1 Geber gefunden. Speichern abgebrochen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
+
+To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
+		<translation>Die zLib -Schnittstelle Plug-Ins (zLib.dll) wurde als fehlend markiert oder deaktiviert beim Programmstart Initialisierung. 
+		
+ Um die Unterstützung für diese Funktion zu aktivieren, kopieren Sie bitte den zLib.dll Datei in das Plugin-Verzeichnis und laden Sie das Programm erneut..</translation>
+	</phrase>
+
+	<phrase>
+		<original>PDI Interface Error</original>
+		<translation>PDI Interface Fehler</translation>
+	</phrase>
+
+	<phrase>
+		<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
+		<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Bitte benutzen Sie die Hilfe -> Fehlerbericht einreichen Menüpunkt, um diesen Vorfall zu berichten.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save complete.</original>
+		<translation>Speichern abgeschlossen.</translation>
+	</phrase>
+
+	<phrase>
 		<original>Saving %1 file</original>
 		<translation>Speichern %1 Datei</translation>
 	</phrase>
@@ -569,7 +643,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 		<translation>Farbe gefunden. Speichern 24bpp Vollfarb- JPEG.</translation>
 	</phrase>
 
-	<!-- VBP_SaveModule.bas contains 64 phrases. 47 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_SaveModule.bas contains 83 phrases. 52 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 	<!-- END text for VBP_SaveModule.bas-->
 
@@ -706,71 +780,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 		<translation>Speichern eines Bildes</translation>
 	</phrase>
 
-	<phrase>
-		<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-		<translation>Original Farbtiefe von %1 bpp wird durch dieses Format unterstützt. Ausgehend sparen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-		<translation>Original Farbtiefe von %1 bpp wird nicht durch dieses Format unterstützt. Ausgehend als %2 speichern bpp</translation>
-	</phrase>
-
-	<phrase>
-		<original>Counting image colors to determine optimal exported color depth</original>
-		<translation>FarbtiefeZählen Bildfarben, um eine optimale exportiert Farbtiefe bestimmen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Color count successful (%1 bpp recommended)</original>
-		<translation>Farbe Anzahl erfolgreich (%1 bpp empfohlen)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-		<translation>Empfohlene Farbtiefe von %1 bpp wird durch dieses Format unterstützt. Ausgehend sparen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-		<translation>Empfohlene Farbtiefe von %1 bpp wird nicht durch dieses Format unterstützt. Ausgehend als %2 speichern bpp</translation>
-	</phrase>
-
-	<phrase>
-		<original>Save canceled.</original>
-		<translation>Speichern abgebrochen.</translation>
-	</phrase>
-
-	<phrase>
-		<original>No %1 encoder found. Save aborted.</original>
-		<translation>Kein %1 Geber gefunden. Speichern abgebrochen.</translation>
-	</phrase>
-
-	<phrase>
-		<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-		<translation>Die zLib -Schnittstelle Plug-Ins (zLib.dll) wurde als fehlend markiert oder deaktiviert beim Programmstart Initialisierung. 
-		
- Um die Unterstützung für diese Funktion zu aktivieren, kopieren Sie bitte den zLib.dll Datei in das Plugin-Verzeichnis und laden Sie das Programm erneut..</translation>
-	</phrase>
-
-	<phrase>
-		<original>PDI Interface Error</original>
-		<translation>PDI Interface Fehler</translation>
-	</phrase>
-
-	<phrase>
-		<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-		<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Bitte benutzen Sie die Hilfe -> Fehlerbericht einreichen Menüpunkt, um diesen Vorfall zu berichten.</translation>
-	</phrase>
-
-	<phrase>
-		<original>Save complete.</original>
-		<translation>Speichern abgeschlossen.</translation>
-	</phrase>
-
-	<!-- VBP_MenuModule.bas contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+	<!-- VBP_MenuModule.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_MenuModule.bas-->
 
@@ -1821,6 +1831,11 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
+		<original>Autocrop image</original>
+		<translation>Autocrop Bild</translation>
+	</phrase>
+
+	<phrase>
 		<original>Fade</original>
 		<translation>Verblassen</translation>
 	</phrase>
@@ -1990,7 +2005,7 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 		<translation>Moderne Kunst</translation>
 	</phrase>
 
-	<!-- VBP_ProcessorModule.bas contains 158 phrases. 8 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+	<!-- VBP_ProcessorModule.bas contains 159 phrases. 8 were duplicates of existing phrases, so only 151 new phrases were written to file. -->
 
 	<!-- END text for VBP_ProcessorModule.bas-->
 
@@ -2572,23 +2587,23 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>Use this button to increase image zoom.</original>
-		<translation>Verwenden Sie diese Taste, um Zoom zu erhöhen.</translation>
-	</phrase>
-
-	<phrase>
 		<original>Zoom In</original>
 		<translation>Zoom In</translation>
 	</phrase>
 
 	<phrase>
-		<original>Use this button to decrease image zoom.</original>
-		<translation>Verwenden Sie diese Taste, um Zoom zu verringern.</translation>
+		<original>Use this button to increase image zoom.</original>
+		<translation>Verwenden Sie diese Taste, um Zoom zu erhöhen.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Zoom Out</original>
 		<translation>Verkleinern</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this button to decrease image zoom.</original>
+		<translation>Verwenden Sie diese Taste, um Zoom zu verringern.</translation>
 	</phrase>
 
 	<phrase>
@@ -2814,11 +2829,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<phrase>
 		<original>Crop to selection</original>
 		<translation>Auf Auswahl zuschneiden</translation>
-	</phrase>
-
-	<phrase>
-		<original>Autocrop Image</original>
-		<translation>Autocrop Bild</translation>
 	</phrase>
 
 	<phrase>
@@ -3325,7 +3335,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 		<translation>Vorbereiten auf den letzten Eintrag in der Datei laden</translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 230 phrases. 72 were duplicates of existing phrases, so only 158 new phrases were written to file. -->
+	<!-- VBP_FormMain.frm contains 230 phrases. 73 were duplicates of existing phrases, so only 157 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3942,6 +3952,191 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>use RLE compression when saving 8bpp BMP images</original>
+		<translation>Verwenden RLE -Kodierung beim Speichern 8bpp BMP-Bilder</translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP (Bitmap) options</original>
+		<translation>BMP (Bitmap) Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>save TIFFs as separated CMYK (for printing)</original>
+		<translation>sparen TIFFs als getrennte CMYK (für den Druck)</translation>
+	</phrase>
+
+	<phrase>
+		<original>TIFF (Tagged Image File Format) options</original>
+		<translation>TIFF (Tagged Image File Format)-Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving, compress TIFFs using</original>
+		<translation>beim Speichern, komprimieren TIFFs mit</translation>
+	</phrase>
+
+	<phrase>
+		<original>PPM (Portable Pixmap) options</original>
+		<translation>PPM (Portable Pixmap) Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>export PPM files using</original>
+		<translation>exportieren PPM -Dateien mit</translation>
+	</phrase>
+
+	<phrase>
+		<original>preserve file's original background color, if available</original>
+		<translation>Erhaltung Datei ursprüngliche Hintergrundfarbe, wenn verfügbar</translation>
+	</phrase>
+
+	<phrase>
+		<original>use interlacing (Adam7)</original>
+		<translation>verwenden Interlacing (Adam7)</translation>
+	</phrase>
+
+	<phrase>
+		<original>maximum compression</original>
+		<translation>maximale Kompression</translation>
+	</phrase>
+
+	<phrase>
+		<original>no compression</original>
+		<translation>keine Kompression</translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving, compress PNG files at the following level</original>
+		<translation>beim Speichern komprimiert PNG Dateien auf der folgenden Ebene</translation>
+	</phrase>
+
+	<phrase>
+		<original>PNG (Portable Network Graphic) options</original>
+		<translation>PNG (Portable Network Graphic) Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>use RLE compression when saving TGA images</original>
+		<translation>Verwenden RLE -Kodierung beim Speichern TGA-Bilder</translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA (Truevision) options</original>
+		<translation>TGA (Truevision) Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>please select a file type</original>
+		<translation>Bitte wählen Sie einen Dateityp</translation>
+	</phrase>
+
+	<phrase>
+		<original>when closing image files, warn me me about unsaved changes</original>
+		<translation>beim Schließen Bilddateien, warnen mich über nicht gespeicherte Änderungen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
+		<translation>Aktivieren Sie diese Option, wenn Sie gewarnt werden, wenn Sie ein Bild mit ungesicherten Änderungen zu schließen versuchen wollen</translation>
+	</phrase>
+
+	<phrase>
+		<original>set outgoing color depth</original>
+		<translation>Farbtiefegesetzt ausgehenden Farbtiefe</translation>
+	</phrase>
+
+	<phrase>
+		<original>color depth of saved images</original>
+		<translation>Farbtiefe von gespeicherten Bildern</translation>
+	</phrase>
+
+	<phrase>
+		<original>save behavior: overwrite vs make a copy</original>
+		<translation>sparen Verhalten: überschreiben vs erstellen Sie eine Kopie</translation>
+	</phrase>
+
+	<phrase>
+		<original>when "Save" is used</original>
+		<translation>wenn "Speichern" wird verwendet,</translation>
+	</phrase>
+
+	<phrase>
+		<original>closing unsaved images</original>
+		<translation>Schließen gespeicherte Bilder</translation>
+	</phrase>
+
+	<phrase>
+		<original>when using the "Save As" command, set the default file format according to</original>
+		<translation>bei Verwendung des Befehls "Speichern unter", die standardmäßige Datei- Format nach</translation>
+	</phrase>
+
+	<phrase>
+		<original>default file format when saving</original>
+		<translation>Standard-Dateiformat beim Speichern</translation>
+	</phrase>
+
+	<phrase>
+		<original>count unique colors in incoming images (to determine optimal color depth)</original>
+		<translation>zählen einzigartige Farben in eingehenden Bilder (optimale Farbtiefe bestimmen)</translation>
+	</phrase>
+
+	<phrase>
+		<original>apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)</original>
+		<translation>gelten Tone Mapping auf eingeführte HDR und RAW-Bilder (48, 64, 96, 128 bpp)</translation>
+	</phrase>
+
+	<phrase>
+		<original>color depth</original>
+		<translation>Farbtiefe</translation>
+	</phrase>
+
+	<phrase>
+		<original>global load options</original>
+		<translation>globalen Ladeoptionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>load options for specific image types</original>
+		<translation>Last Optionen für bestimmte Bildtypen</translation>
+	</phrase>
+
+	<phrase>
+		<original>if a file contains multiple images</original>
+		<translation>wenn eine Datei mehrere Bilder enthält</translation>
+	</phrase>
+
+	<phrase>
+		<original>multi-image files (animated GIF, multipage TIFF)</original>
+		<translation>Multi-Image- Dateien (animiertes GIF, mehrseitige TIFF)</translation>
+	</phrase>
+
+	<phrase>
+		<original>high-dynamic range (HDR) files</original>
+		<translation>High-Dynamic Range (HDR) -Dateien</translation>
+	</phrase>
+
+	<phrase>
+		<original>initial viewport</original>
+		<translation>Anfangs Ansichtsfenster</translation>
+	</phrase>
+
+	<phrase>
+		<original>set initial image zoom to</original>
+		<translation>gesetzt anfängliche Bild Zoom</translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically clear the active selection after "Crop to Selection" is used</original>
+		<translation>automatisch löschen die aktive Auswahl nach "Auf Auswahl zuschneiden" wird verwendet</translation>
+	</phrase>
+
+	<phrase>
+		<original>selections</original>
+		<translation>Auswahl</translation>
+	</phrase>
+
+	<phrase>
 		<original>enable GDI+ support</original>
 		<translation>ermöglichen GDI -Unterstützung</translation>
 	</phrase>
@@ -4109,196 +4304,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>appearance</original>
 		<translation>Aussehen</translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE compression when saving 8bpp BMP images</original>
-		<translation>Verwenden RLE -Kodierung beim Speichern 8bpp BMP-Bilder</translation>
-	</phrase>
-
-	<phrase>
-		<original>BMP (Bitmap) options</original>
-		<translation>BMP (Bitmap) Optionen</translation>
-	</phrase>
-
-	<phrase>
-		<original>save TIFFs as separated CMYK (for printing)</original>
-		<translation>sparen TIFFs als getrennte CMYK (für den Druck)</translation>
-	</phrase>
-
-	<phrase>
-		<original>TIFF (Tagged Image File Format) options</original>
-		<translation>TIFF (Tagged Image File Format)-Optionen</translation>
-	</phrase>
-
-	<phrase>
-		<original>when saving, compress TIFFs using</original>
-		<translation>beim Speichern, komprimieren TIFFs mit</translation>
-	</phrase>
-
-	<phrase>
-		<original>PPM (Portable Pixmap) options</original>
-		<translation>PPM (Portable Pixmap) Optionen</translation>
-	</phrase>
-
-	<phrase>
-		<original>export PPM files using</original>
-		<translation>exportieren PPM -Dateien mit</translation>
-	</phrase>
-
-	<phrase>
-		<original>preserve file's original background color, if available</original>
-		<translation>Erhaltung Datei ursprüngliche Hintergrundfarbe, wenn verfügbar</translation>
-	</phrase>
-
-	<phrase>
-		<original>use interlacing (Adam7)</original>
-		<translation>verwenden Interlacing (Adam7)</translation>
-	</phrase>
-
-	<phrase>
-		<original>maximum compression</original>
-		<translation>maximale Kompression</translation>
-	</phrase>
-
-	<phrase>
-		<original>no compression</original>
-		<translation>keine Kompression</translation>
-	</phrase>
-
-	<phrase>
-		<original>when saving, compress PNG files at the following level</original>
-		<translation>beim Speichern komprimiert PNG Dateien auf der folgenden Ebene</translation>
-	</phrase>
-
-	<phrase>
-		<original>PNG (Portable Network Graphic) options</original>
-		<translation>PNG (Portable Network Graphic) Optionen</translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE compression when saving TGA images</original>
-		<translation>Verwenden RLE -Kodierung beim Speichern TGA-Bilder</translation>
-	</phrase>
-
-	<phrase>
-		<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
-		<translation>TGA-Dateien unterstützen nur eine Art von Kompression. PhotoDemon können einfache RLE -Kodierung anwenden beim Speichern TGA Bildern.</translation>
-	</phrase>
-
-	<phrase>
-		<original>TGA (Truevision) options</original>
-		<translation>TGA (Truevision) Optionen</translation>
-	</phrase>
-
-	<phrase>
-		<original>please select a file type</original>
-		<translation>Bitte wählen Sie einen Dateityp</translation>
-	</phrase>
-
-	<phrase>
-		<original>when closing image files, warn me me about unsaved changes</original>
-		<translation>beim Schließen Bilddateien, warnen mich über nicht gespeicherte Änderungen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
-		<translation>Aktivieren Sie diese Option, wenn Sie gewarnt werden, wenn Sie ein Bild mit ungesicherten Änderungen zu schließen versuchen wollen</translation>
-	</phrase>
-
-	<phrase>
-		<original>set outgoing color depth</original>
-		<translation>Farbtiefegesetzt ausgehenden Farbtiefe</translation>
-	</phrase>
-
-	<phrase>
-		<original>color depth of saved images</original>
-		<translation>Farbtiefe von gespeicherten Bildern</translation>
-	</phrase>
-
-	<phrase>
-		<original>save behavior: overwrite vs make a copy</original>
-		<translation>sparen Verhalten: überschreiben vs erstellen Sie eine Kopie</translation>
-	</phrase>
-
-	<phrase>
-		<original>when "Save" is used</original>
-		<translation>wenn "Speichern" wird verwendet,</translation>
-	</phrase>
-
-	<phrase>
-		<original>closing unsaved images</original>
-		<translation>Schließen gespeicherte Bilder</translation>
-	</phrase>
-
-	<phrase>
-		<original>when using the "Save As" command, set the default file format according to</original>
-		<translation>bei Verwendung des Befehls "Speichern unter", die standardmäßige Datei- Format nach</translation>
-	</phrase>
-
-	<phrase>
-		<original>default file format when saving</original>
-		<translation>Standard-Dateiformat beim Speichern</translation>
-	</phrase>
-
-	<phrase>
-		<original>count unique colors in incoming images (to determine optimal color depth)</original>
-		<translation>zählen einzigartige Farben in eingehenden Bilder (optimale Farbtiefe bestimmen)</translation>
-	</phrase>
-
-	<phrase>
-		<original>apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)</original>
-		<translation>gelten Tone Mapping auf eingeführte HDR und RAW-Bilder (48, 64, 96, 128 bpp)</translation>
-	</phrase>
-
-	<phrase>
-		<original>color depth</original>
-		<translation>Farbtiefe</translation>
-	</phrase>
-
-	<phrase>
-		<original>global load options</original>
-		<translation>globalen Ladeoptionen</translation>
-	</phrase>
-
-	<phrase>
-		<original>load options for specific image types</original>
-		<translation>Last Optionen für bestimmte Bildtypen</translation>
-	</phrase>
-
-	<phrase>
-		<original>if a file contains multiple images</original>
-		<translation>wenn eine Datei mehrere Bilder enthält</translation>
-	</phrase>
-
-	<phrase>
-		<original>multi-image files (animated GIF, multipage TIFF)</original>
-		<translation>Multi-Image- Dateien (animiertes GIF, mehrseitige TIFF)</translation>
-	</phrase>
-
-	<phrase>
-		<original>high-dynamic range (HDR) files</original>
-		<translation>High-Dynamic Range (HDR) -Dateien</translation>
-	</phrase>
-
-	<phrase>
-		<original>initial viewport</original>
-		<translation>Anfangs Ansichtsfenster</translation>
-	</phrase>
-
-	<phrase>
-		<original>set initial image zoom to</original>
-		<translation>gesetzt anfängliche Bild Zoom</translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically clear the active selection after "Crop to Selection" is used</original>
-		<translation>automatisch löschen die aktive Auswahl nach "Auf Auswahl zuschneiden" wird verwendet</translation>
-	</phrase>
-
-	<phrase>
-		<original>selections</original>
-		<translation>Auswahl</translation>
 	</phrase>
 
 	<phrase>
@@ -4664,6 +4669,11 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 	<phrase>
 		<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
 		<translation>Bitmap-Dateien unterstützen nur eine Art der Komprimierung, und sie unterstützen nur sie für bestimmte Farbtiefen. PhotoDemon anwenden können einfache RLE-Kodierung beim Speichern 8bpp Bildern.</translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
+		<translation>TGA-Dateien unterstützen nur eine Art von Kompression. PhotoDemon können einfache RLE -Kodierung anwenden beim Speichern TGA Bildern.</translation>
 	</phrase>
 
 	<phrase>
@@ -7851,6 +7861,51 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>JPEG options</original>
+		<translation>JPEG Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>PNG options</original>
+		<translation>PNG Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>GIF options</original>
+		<translation>GIF Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency threshold for images with complex (32bpp) alpha channels</original>
+		<translation>Transparenz-Schwelle für Bilder mit Alphakanälen Komplex (32bpp)</translation>
+	</phrase>
+
+	<phrase>
+		<original>PPM options</original>
+		<translation>PPM Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>TIFF options</original>
+		<translation>TIFF Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>JPEG-2000 options</original>
+		<translation>JPEG-2000 Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP options</original>
+		<translation>BMP Optionen</translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA options</original>
+		<translation>TGA Optionen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Select macro file</original>
 		<translation>Wählen Makrodatei</translation>
 	</phrase>
@@ -8175,6 +8230,15 @@ Möchten Sie Ihre Batch-Liste vor dem Beenden speichern?</translation>
 	</phrase>
 
 	<phrase>
+		<original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
+
+By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
+		<translation>GIF-Bilder unterstützen nur einfache Transparenz, was bedeutet, dass jedes Pixel in ein GIF-Bild vollständig transparent oder vollständig deckend sein muss. Wenn Ihre Batchliste 32bpp Bilder mit komplexen Alphakanälen enthält, müssen sie PhotoDemon vor dem Speichern in GIF-Format vereinfachen.
+
+In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Sie können einen benutzerdefinierten Cut-Off-Wert angeben.</translation>
+	</phrase>
+
+	<phrase>
 		<original>Original filenames</original>
 		<translation>Ursprünglichen Dateinamen</translation>
 	</phrase>
@@ -8264,15 +8328,21 @@ Möchten Sie Ihre Batch-Liste vor dem Beenden speichern?</translation>
 		<translation>verarbeitet werden, bevor Stornobedingungen. Zuletzt bearbeitete Bild war "%1".</translation>
 	</phrase>
 
-	<!-- VBP_FormBatchWizard.frm contains 91 phrases. 4 were duplicates of existing phrases, so only 87 new phrases were written to file. -->
+	<!-- VBP_FormBatchWizard.frm contains 166 phrases. 69 were duplicates of existing phrases, so only 97 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBatchWizard.frm-->
 
+	<!-- BEGIN text for pdParamString.cls-->
+
+	<!-- pdParamString.cls contains 0 phrases. -->
+
+	<!-- END text for pdParamString.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1980 phrases in total. -->
-<!-- 530 are duplicate phrases, so only 1450 phrases have been written to file. -->
-<!-- These 1450 phrases contain approximately 9312 total words. -->
+<!-- As of this build, PhotoDemon contains 2055 phrases in total. -->
+<!-- 593 are duplicate phrases, so only 1462 phrases have been written to file. -->
+<!-- These 1462 phrases contain approximately 9428 total words. -->
 
 </language>
 

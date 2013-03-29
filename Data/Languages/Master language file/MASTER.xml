@@ -118,6 +118,11 @@
 	</phrase>
 
 	<phrase>
+		<original>Analyzing current monitor setup</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Scanning for language files</original>
 		<translation></translation>
 	</phrase>
@@ -164,11 +169,6 @@
 
 	<phrase>
 		<original>Highlight (Red)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Analyzing current monitor setup</original>
 		<translation></translation>
 	</phrase>
 
@@ -455,6 +455,78 @@ Please use another program to save these images in a generic format (such as JPE
 	<!-- BEGIN text for VBP_SaveModule.bas-->
 
 	<phrase>
+		<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Counting image colors to determine optimal exported color depth</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Color count successful (%1 bpp recommended)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Save canceled.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Requested color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>No %1 encoder found. Save aborted.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
+
+To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>PDI Interface Error</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Save complete.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Saving %1 file</original>
 		<translation></translation>
 	</phrase>
@@ -541,7 +613,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_SaveModule.bas contains 64 phrases. 47 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_SaveModule.bas contains 83 phrases. 52 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 	<!-- END text for VBP_SaveModule.bas-->
 
@@ -676,69 +748,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 		<translation></translation>
 	</phrase>
 
-	<phrase>
-		<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Counting image colors to determine optimal exported color depth</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Color count successful (%1 bpp recommended)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Save canceled.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>No %1 encoder found. Save aborted.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>PDI Interface Error</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Save complete.</original>
-		<translation></translation>
-	</phrase>
-
-	<!-- VBP_MenuModule.bas contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+	<!-- VBP_MenuModule.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_MenuModule.bas-->
 
@@ -1766,6 +1776,11 @@ When finished, click the Submit button.  Thank you!</original>
 	</phrase>
 
 	<phrase>
+		<original>Autocrop image</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Fade</original>
 		<translation></translation>
 	</phrase>
@@ -1935,7 +1950,7 @@ When finished, click the Submit button.  Thank you!</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_ProcessorModule.bas contains 158 phrases. 8 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+	<!-- VBP_ProcessorModule.bas contains 159 phrases. 8 were duplicates of existing phrases, so only 151 new phrases were written to file. -->
 
 	<!-- END text for VBP_ProcessorModule.bas-->
 
@@ -2513,22 +2528,22 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>Use this button to increase image zoom.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>Zoom In</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Use this button to decrease image zoom.</original>
+		<original>Use this button to increase image zoom.</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
 		<original>Zoom Out</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this button to decrease image zoom.</original>
 		<translation></translation>
 	</phrase>
 
@@ -2754,11 +2769,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<phrase>
 		<original>Crop to selection</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Autocrop Image</original>
 		<translation></translation>
 	</phrase>
 
@@ -3264,7 +3274,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 230 phrases. 72 were duplicates of existing phrases, so only 158 new phrases were written to file. -->
+	<!-- VBP_FormMain.frm contains 230 phrases. 73 were duplicates of existing phrases, so only 157 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3877,6 +3887,191 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>use RLE compression when saving 8bpp BMP images</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP (Bitmap) options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>save TIFFs as separated CMYK (for printing)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>TIFF (Tagged Image File Format) options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving, compress TIFFs using</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>PPM (Portable Pixmap) options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>export PPM files using</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>preserve file's original background color, if available</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>use interlacing (Adam7)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>maximum compression</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>no compression</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving, compress PNG files at the following level</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>PNG (Portable Network Graphic) options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>use RLE compression when saving TGA images</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA (Truevision) options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>please select a file type</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>when closing image files, warn me me about unsaved changes</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>set outgoing color depth</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>color depth of saved images</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>save behavior: overwrite vs make a copy</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>when "Save" is used</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>closing unsaved images</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>when using the "Save As" command, set the default file format according to</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>default file format when saving</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>count unique colors in incoming images (to determine optimal color depth)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>color depth</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>global load options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>load options for specific image types</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>if a file contains multiple images</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>multi-image files (animated GIF, multipage TIFF)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>high-dynamic range (HDR) files</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>initial viewport</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>set initial image zoom to</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically clear the active selection after "Crop to Selection" is used</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>selections</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>enable GDI+ support</original>
 		<translation></translation>
 	</phrase>
@@ -4043,196 +4238,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>appearance</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE encoding when saving 8bpp BMP images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>BMP (Bitmap) options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>save TIFFs as separated CMYK (for printing)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>TIFF (Tagged Image File Format) options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>when saving, compress TIFFs using</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>PPM (Portable Pixmap) options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>export PPM files using</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>preserve file's original background color, if available</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>use interlacing (Adam7)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>maximum compression</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>no compression</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>when saving, compress PNG files at the following level</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>PNG (Portable Network Graphic) options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE encoding when saving TGA images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE encoding when saving TGA images.</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>TGA (Truevision) options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>please select a file type</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>when closing image files, warn me me about unsaved changes</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>set outgoing color depth</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>color depth of saved images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>save behavior: overwrite vs make a copy</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>when "Save" is used</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>closing unsaved images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>when using the "Save As" command, set the default file format according to</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>default file format when saving</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>count unique colors in incoming images (to determine optimal color depth)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>color depth</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>global load options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>load options for specific image types</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>if a file contains multiple images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>multi-image files (animated GIF, multipage TIFF)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>high-dynamic range (HDR) files</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>initial viewport</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>set initial image zoom to</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically clear the active selection after "Crop to Selection" is used</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>selections</original>
 		<translation></translation>
 	</phrase>
 
@@ -4582,7 +4587,12 @@ If you choose to disable these features, note that you can always visit tannerhe
 	</phrase>
 
 	<phrase>
-		<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE encoding when saving 8bpp images.</original>
+		<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
 		<translation></translation>
 	</phrase>
 
@@ -7756,6 +7766,51 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>JPEG options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>PNG options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>GIF options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency threshold for images with complex (32bpp) alpha channels</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>PPM options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>TIFF options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>JPEG-2000 options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Select macro file</original>
 		<translation></translation>
 	</phrase>
@@ -8078,6 +8133,13 @@ Would you like to save your batch list before exiting?</original>
 	</phrase>
 
 	<phrase>
+		<original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
+
+By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Original filenames</original>
 		<translation></translation>
 	</phrase>
@@ -8167,14 +8229,20 @@ Would you like to save your batch list before exiting?</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormBatchWizard.frm contains 91 phrases. 4 were duplicates of existing phrases, so only 87 new phrases were written to file. -->
+	<!-- VBP_FormBatchWizard.frm contains 166 phrases. 69 were duplicates of existing phrases, so only 97 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBatchWizard.frm-->
 
+	<!-- BEGIN text for pdParamString.cls-->
+
+	<!-- pdParamString.cls contains 0 phrases. -->
+
+	<!-- END text for pdParamString.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1980 phrases in total. -->
-<!-- 530 are duplicate phrases, so only 1450 phrases have been written to file. -->
-<!-- These 1450 phrases contain approximately 9312 total words. -->
+<!-- As of this build, PhotoDemon contains 2055 phrases in total. -->
+<!-- 593 are duplicate phrases, so only 1462 phrases have been written to file. -->
+<!-- These 1462 phrases contain approximately 9428 total words. -->
 
 </language>

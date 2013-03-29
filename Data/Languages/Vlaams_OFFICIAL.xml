@@ -118,6 +118,11 @@
 	</phrase>
 
 	<phrase>
+		<original>Analyzing current monitor setup</original>
+		<translation>Analyseren van de huidige monitor setup</translation>
+	</phrase>
+
+	<phrase>
 		<original>Scanning for language files</original>
 		<translation>Scannen naar taalbestanden</translation>
 	</phrase>
@@ -165,11 +170,6 @@
 	<phrase>
 		<original>Highlight (Red)</original>
 		<translation>Glanspunt (Rood)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Analyzing current monitor setup</original>
-		<translation>Analyseren van de huidige monitor setup</translation>
 	</phrase>
 
 	<phrase>
@@ -481,6 +481,80 @@ Please use another program to save these images in a generic format (such as JPE
 	<!-- BEGIN text for VBP_SaveModule.bas-->
 
 	<phrase>
+		<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation>Originele kleurdiepte van %1 bpp wordt ondersteund door dit formaat . Verdergaan met opslaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation>Originele kleurdiepte van %1 bpp wordt niet ondersteund door dit formaat. Verdergaan met opslaan als %2 bpp</translation>
+	</phrase>
+
+	<phrase>
+		<original>Counting image colors to determine optimal exported color depth</original>
+		<translation>Tellen van kleuren in de afbeelding om een optimale geëxporteerd kleurdiepte te bepalen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color count successful (%1 bpp recommended)</original>
+		<translation>Tellen aantal kleuren succesvol (%1 bpp aanbevolen)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation>Aanbevolen kleurdiepte van %1 bpp wordt ondersteund door dit formaat . Verdergaan met opslaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation>Aanbevolen kleurdiepte van %1 bpp wordt niet ondersteund door dit formaat. Verdergaan met opslaan als %2 bpp</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save canceled.</original>
+		<translation>Opslaan geannuleerd.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Requested color depth of %1 bpp is supported by this format.  Proceeding with save</original>
+		<translation>Kleurdiepte van %1 bpp wordt ondersteund door dit formaat . Verdergaan met opslaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
+		<translation>Kleurdiepte van %1 bpp wordt niet ondersteund door dit formaat. Verdergaan met opslaan als %2 bpp</translation>
+	</phrase>
+
+	<phrase>
+		<original>No %1 encoder found. Save aborted.</original>
+		<translation>Geen %1 encoder gevonden. Opslaan afgebroken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
+
+To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
+		<translation>De Zlib compressie bibliotheek (zlibwapi.dll) werd gemarkeerd als missend of uitgeschakeld bij initialisatie van het programma.
+
+Om PDI opslag mogelijk te maken, staat u %1 toe plugin updates te downloaden door te gaan naar het menu Extra - > Opties -, en ' aanbieden om kern plugins downloaden ' aan te klikken.</translation>
+	</phrase>
+
+	<phrase>
+		<original>PDI Interface Error</original>
+		<translation>PDI Interface fout</translation>
+	</phrase>
+
+	<phrase>
+		<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
+		<translation>Output formaat niet herkend. Opslaan afgebroken. Gebruik het Help -> Indienen Bug Report menu-item om dit incident te melden .</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save complete.</original>
+		<translation>Opslaan voltooid.</translation>
+	</phrase>
+
+	<phrase>
 		<original>Saving %1 file</original>
 		<translation>Opslaan %1 bestand</translation>
 	</phrase>
@@ -569,7 +643,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 		<translation>Kleur gevonden. Opslaan 24bpp full-color JPEG.</translation>
 	</phrase>
 
-	<!-- VBP_SaveModule.bas contains 64 phrases. 47 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_SaveModule.bas contains 83 phrases. 52 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 	<!-- END text for VBP_SaveModule.bas-->
 
@@ -706,71 +780,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 		<translation>Een afbeelding opslaan</translation>
 	</phrase>
 
-	<phrase>
-		<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-		<translation>Originele kleurdiepte van %1 bpp wordt ondersteund door dit formaat . Verdergaan met opslaan</translation>
-	</phrase>
-
-	<phrase>
-		<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-		<translation>Originele kleurdiepte van %1 bpp wordt niet ondersteund door dit formaat. Verdergaan met opslaan als %2 bpp</translation>
-	</phrase>
-
-	<phrase>
-		<original>Counting image colors to determine optimal exported color depth</original>
-		<translation>Tellen van kleuren in de afbeelding om een optimale geëxporteerd kleurdiepte te bepalen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Color count successful (%1 bpp recommended)</original>
-		<translation>Tellen aantal kleuren succesvol (%1 bpp aanbevolen)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-		<translation>Aanbevolen kleurdiepte van %1 bpp wordt ondersteund door dit formaat . Verdergaan met opslaan</translation>
-	</phrase>
-
-	<phrase>
-		<original>Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-		<translation>Aanbevolen kleurdiepte van %1 bpp wordt niet ondersteund door dit formaat. Verdergaan met opslaan als %2 bpp</translation>
-	</phrase>
-
-	<phrase>
-		<original>Save canceled.</original>
-		<translation>Opslaan geannuleerd.</translation>
-	</phrase>
-
-	<phrase>
-		<original>No %1 encoder found. Save aborted.</original>
-		<translation>Geen %1 encoder gevonden. Opslaan afgebroken.</translation>
-	</phrase>
-
-	<phrase>
-		<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
-
-To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-		<translation>De Zlib compressie bibliotheek (zlibwapi.dll) werd gemarkeerd als missend of uitgeschakeld bij initialisatie van het programma.
-
-Om PDI opslag mogelijk te maken, staat u %1 toe plugin updates te downloaden door te gaan naar het menu Extra - > Opties -, en ' aanbieden om kern plugins downloaden ' aan te klikken.</translation>
-	</phrase>
-
-	<phrase>
-		<original>PDI Interface Error</original>
-		<translation>PDI Interface fout</translation>
-	</phrase>
-
-	<phrase>
-		<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-		<translation>Output formaat niet herkend. Opslaan afgebroken. Gebruik het Help -> Indienen Bug Report menu-item om dit incident te melden .</translation>
-	</phrase>
-
-	<phrase>
-		<original>Save complete.</original>
-		<translation>Opslaan voltooid.</translation>
-	</phrase>
-
-	<!-- VBP_MenuModule.bas contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+	<!-- VBP_MenuModule.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_MenuModule.bas-->
 
@@ -1823,6 +1833,11 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	</phrase>
 
 	<phrase>
+		<original>Autocrop image</original>
+		<translation>Automatisch bijsnijden Afbeelding</translation>
+	</phrase>
+
+	<phrase>
 		<original>Fade</original>
 		<translation>Vervagen</translation>
 	</phrase>
@@ -1992,7 +2007,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Moderne kunst</translation>
 	</phrase>
 
-	<!-- VBP_ProcessorModule.bas contains 158 phrases. 8 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+	<!-- VBP_ProcessorModule.bas contains 159 phrases. 8 were duplicates of existing phrases, so only 151 new phrases were written to file. -->
 
 	<!-- END text for VBP_ProcessorModule.bas-->
 
@@ -2574,23 +2589,23 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
-		<original>Use this button to increase image zoom.</original>
-		<translation>Gebruik deze knop om de afbeelding te vergroten zoom.</translation>
-	</phrase>
-
-	<phrase>
 		<original>Zoom In</original>
 		<translation>Inzoomen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Use this button to decrease image zoom.</original>
-		<translation>Gebruik deze knop aan de zoom te verlagen.</translation>
+		<original>Use this button to increase image zoom.</original>
+		<translation>Gebruik deze knop om de afbeelding te vergroten zoom.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Zoom Out</original>
 		<translation>uitzoomen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this button to decrease image zoom.</original>
+		<translation>Gebruik deze knop aan de zoom te verlagen.</translation>
 	</phrase>
 
 	<phrase>
@@ -2816,11 +2831,6 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	<phrase>
 		<original>Crop to selection</original>
 		<translation>Bijsnijden tot selectie</translation>
-	</phrase>
-
-	<phrase>
-		<original>Autocrop Image</original>
-		<translation>Automatisch bijsnijden Afbeelding</translation>
 	</phrase>
 
 	<phrase>
@@ -3327,7 +3337,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 		<translation>Voorbereidingen om invoer van recente bestand te laden</translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 230 phrases. 72 were duplicates of existing phrases, so only 158 new phrases were written to file. -->
+	<!-- VBP_FormMain.frm contains 230 phrases. 73 were duplicates of existing phrases, so only 157 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3944,6 +3954,191 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
+		<original>use RLE compression when saving 8bpp BMP images</original>
+		<translation>gebruik RLE -codering bij het opslaan van 8bpp BMP-afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP (Bitmap) options</original>
+		<translation>Opties BMP (Bitmap)</translation>
+	</phrase>
+
+	<phrase>
+		<original>save TIFFs as separated CMYK (for printing)</original>
+		<translation>TIFF's opslaan als gescheiden CMYK (voor afdrukken)</translation>
+	</phrase>
+
+	<phrase>
+		<original>TIFF (Tagged Image File Format) options</original>
+		<translation>Opties TIFF (Tagged Image File Format)</translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving, compress TIFFs using</original>
+		<translation>bij het opslaan, comprimeren TIFF's met behulp van</translation>
+	</phrase>
+
+	<phrase>
+		<original>PPM (Portable Pixmap) options</original>
+		<translation>Opties PPM (Portable Pixmap)</translation>
+	</phrase>
+
+	<phrase>
+		<original>export PPM files using</original>
+		<translation>exporteren PPM bestanden met behulp van</translation>
+	</phrase>
+
+	<phrase>
+		<original>preserve file's original background color, if available</original>
+		<translation>bewaren oorspronkelijke achtergrondkleur van bestand, indien beschikbaar</translation>
+	</phrase>
+
+	<phrase>
+		<original>use interlacing (Adam7)</original>
+		<translation>gebruik maken van interlacing (Adam7)</translation>
+	</phrase>
+
+	<phrase>
+		<original>maximum compression</original>
+		<translation>maximale compressie</translation>
+	</phrase>
+
+	<phrase>
+		<original>no compression</original>
+		<translation>geen compressie</translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving, compress PNG files at the following level</original>
+		<translation>bij het opslaan, PNG-bestanden comprimeren op het volgende niveau</translation>
+	</phrase>
+
+	<phrase>
+		<original>PNG (Portable Network Graphic) options</original>
+		<translation>Opties PNG (Portable Network Graphic)</translation>
+	</phrase>
+
+	<phrase>
+		<original>use RLE compression when saving TGA images</original>
+		<translation>gebruik RLE -codering bij het opslaan van TGA afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA (Truevision) options</original>
+		<translation>Opties TGA (Truevision)</translation>
+	</phrase>
+
+	<phrase>
+		<original>please select a file type</original>
+		<translation>selecteer een bestandstype</translation>
+	</phrase>
+
+	<phrase>
+		<original>when closing image files, warn me me about unsaved changes</original>
+		<translation>waarschuw me bij het sluiten van afbeeldingen over niet-opgeslagen wijzigingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
+		<translation>Vink dit aan als u wilt worden gewaarschuwd wanneer u probeert een afbeelding te sluiten met niet-opgeslagen wijzigingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>set outgoing color depth</original>
+		<translation>instellen uitgaande kleurdiepte</translation>
+	</phrase>
+
+	<phrase>
+		<original>color depth of saved images</original>
+		<translation>kleurdiepte van opgeslagen afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>save behavior: overwrite vs make a copy</original>
+		<translation>opslaan gedrag: overschrijven vs een kopie maken</translation>
+	</phrase>
+
+	<phrase>
+		<original>when "Save" is used</original>
+		<translation>wanneer "Opslaan" wordt gebruikt</translation>
+	</phrase>
+
+	<phrase>
+		<original>closing unsaved images</original>
+		<translation>sluiten van niet-opgeslagen afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>when using the "Save As" command, set the default file format according to</original>
+		<translation>bij gebruik van het "Opslaan als " commando, zet dan de standaard bestandsindeling op basis van</translation>
+	</phrase>
+
+	<phrase>
+		<original>default file format when saving</original>
+		<translation>standaard bestandsformaat tijdens het opslaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>count unique colors in incoming images (to determine optimal color depth)</original>
+		<translation>bereken unieke kleuren in binnenkomende afbeeldingen (om een optimale kleurdiepte te bepalen)</translation>
+	</phrase>
+
+	<phrase>
+		<original>apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)</original>
+		<translation>toepassen tonemapping op ingevoerde HDR en RAW-afbeeldingen (48, 64, 96, 128bpp)</translation>
+	</phrase>
+
+	<phrase>
+		<original>color depth</original>
+		<translation>kleurdiepte</translation>
+	</phrase>
+
+	<phrase>
+		<original>global load options</original>
+		<translation>globale laden opties</translation>
+	</phrase>
+
+	<phrase>
+		<original>load options for specific image types</original>
+		<translation>laden opties voor specifieke soorten afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>if a file contains multiple images</original>
+		<translation>indien een bestand meerdere afbeeldingen bevat</translation>
+	</phrase>
+
+	<phrase>
+		<original>multi-image files (animated GIF, multipage TIFF)</original>
+		<translation>multi-image -bestanden (animated GIF, meerbladige TIFF)</translation>
+	</phrase>
+
+	<phrase>
+		<original>high-dynamic range (HDR) files</original>
+		<translation>hoog - dynamisch bereik (HDR) -bestanden</translation>
+	</phrase>
+
+	<phrase>
+		<original>initial viewport</original>
+		<translation>eerste viewport</translation>
+	</phrase>
+
+	<phrase>
+		<original>set initial image zoom to</original>
+		<translation>zet eerste afbeeldingszoom op</translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically clear the active selection after "Crop to Selection" is used</original>
+		<translation>automatisch wissen van de actieve selectie nadat "Bijsnijden tot selectie" is gebruikt</translation>
+	</phrase>
+
+	<phrase>
+		<original>selections</original>
+		<translation>selecties</translation>
+	</phrase>
+
+	<phrase>
 		<original>enable GDI+ support</original>
 		<translation>inschakelen GDI+ ondersteuning</translation>
 	</phrase>
@@ -4111,196 +4306,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	<phrase>
 		<original>appearance</original>
 		<translation>uitzicht</translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE compression when saving 8bpp BMP images</original>
-		<translation>gebruik RLE -codering bij het opslaan van 8bpp BMP-afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>BMP (Bitmap) options</original>
-		<translation>Opties BMP (Bitmap)</translation>
-	</phrase>
-
-	<phrase>
-		<original>save TIFFs as separated CMYK (for printing)</original>
-		<translation>TIFF's opslaan als gescheiden CMYK (voor afdrukken)</translation>
-	</phrase>
-
-	<phrase>
-		<original>TIFF (Tagged Image File Format) options</original>
-		<translation>Opties TIFF (Tagged Image File Format)</translation>
-	</phrase>
-
-	<phrase>
-		<original>when saving, compress TIFFs using</original>
-		<translation>bij het opslaan, comprimeren TIFF's met behulp van</translation>
-	</phrase>
-
-	<phrase>
-		<original>PPM (Portable Pixmap) options</original>
-		<translation>Opties PPM (Portable Pixmap)</translation>
-	</phrase>
-
-	<phrase>
-		<original>export PPM files using</original>
-		<translation>exporteren PPM bestanden met behulp van</translation>
-	</phrase>
-
-	<phrase>
-		<original>preserve file's original background color, if available</original>
-		<translation>bewaren oorspronkelijke achtergrondkleur van bestand, indien beschikbaar</translation>
-	</phrase>
-
-	<phrase>
-		<original>use interlacing (Adam7)</original>
-		<translation>gebruik maken van interlacing (Adam7)</translation>
-	</phrase>
-
-	<phrase>
-		<original>maximum compression</original>
-		<translation>maximale compressie</translation>
-	</phrase>
-
-	<phrase>
-		<original>no compression</original>
-		<translation>geen compressie</translation>
-	</phrase>
-
-	<phrase>
-		<original>when saving, compress PNG files at the following level</original>
-		<translation>bij het opslaan, PNG-bestanden comprimeren op het volgende niveau</translation>
-	</phrase>
-
-	<phrase>
-		<original>PNG (Portable Network Graphic) options</original>
-		<translation>Opties PNG (Portable Network Graphic)</translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE compression when saving TGA images</original>
-		<translation>gebruik RLE -codering bij het opslaan van TGA afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
-		<translation>TGA -bestanden ondersteunen slechts één type compressie. PhotoDemon kan eenvoudige RLE -codering toepassen bij het opslaan van TGA afbeeldingen.</translation>
-	</phrase>
-
-	<phrase>
-		<original>TGA (Truevision) options</original>
-		<translation>Opties TGA (Truevision)</translation>
-	</phrase>
-
-	<phrase>
-		<original>please select a file type</original>
-		<translation>selecteer een bestandstype</translation>
-	</phrase>
-
-	<phrase>
-		<original>when closing image files, warn me me about unsaved changes</original>
-		<translation>waarschuw me bij het sluiten van afbeeldingen over niet-opgeslagen wijzigingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
-		<translation>Vink dit aan als u wilt worden gewaarschuwd wanneer u probeert een afbeelding te sluiten met niet-opgeslagen wijzigingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>set outgoing color depth</original>
-		<translation>instellen uitgaande kleurdiepte</translation>
-	</phrase>
-
-	<phrase>
-		<original>color depth of saved images</original>
-		<translation>kleurdiepte van opgeslagen afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>save behavior: overwrite vs make a copy</original>
-		<translation>opslaan gedrag: overschrijven vs een kopie maken</translation>
-	</phrase>
-
-	<phrase>
-		<original>when "Save" is used</original>
-		<translation>wanneer "Opslaan" wordt gebruikt</translation>
-	</phrase>
-
-	<phrase>
-		<original>closing unsaved images</original>
-		<translation>sluiten van niet-opgeslagen afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>when using the "Save As" command, set the default file format according to</original>
-		<translation>bij gebruik van het "Opslaan als " commando, zet dan de standaard bestandsindeling op basis van</translation>
-	</phrase>
-
-	<phrase>
-		<original>default file format when saving</original>
-		<translation>standaard bestandsformaat tijdens het opslaan</translation>
-	</phrase>
-
-	<phrase>
-		<original>count unique colors in incoming images (to determine optimal color depth)</original>
-		<translation>bereken unieke kleuren in binnenkomende afbeeldingen (om een optimale kleurdiepte te bepalen)</translation>
-	</phrase>
-
-	<phrase>
-		<original>apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)</original>
-		<translation>toepassen tonemapping op ingevoerde HDR en RAW-afbeeldingen (48, 64, 96, 128bpp)</translation>
-	</phrase>
-
-	<phrase>
-		<original>color depth</original>
-		<translation>kleurdiepte</translation>
-	</phrase>
-
-	<phrase>
-		<original>global load options</original>
-		<translation>globale laden opties</translation>
-	</phrase>
-
-	<phrase>
-		<original>load options for specific image types</original>
-		<translation>laden opties voor specifieke soorten afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>if a file contains multiple images</original>
-		<translation>indien een bestand meerdere afbeeldingen bevat</translation>
-	</phrase>
-
-	<phrase>
-		<original>multi-image files (animated GIF, multipage TIFF)</original>
-		<translation>multi-image -bestanden (animated GIF, meerbladige TIFF)</translation>
-	</phrase>
-
-	<phrase>
-		<original>high-dynamic range (HDR) files</original>
-		<translation>hoog - dynamisch bereik (HDR) -bestanden</translation>
-	</phrase>
-
-	<phrase>
-		<original>initial viewport</original>
-		<translation>eerste viewport</translation>
-	</phrase>
-
-	<phrase>
-		<original>set initial image zoom to</original>
-		<translation>zet eerste afbeeldingszoom op</translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically clear the active selection after "Crop to Selection" is used</original>
-		<translation>automatisch wissen van de actieve selectie nadat "Bijsnijden tot selectie" is gebruikt</translation>
-	</phrase>
-
-	<phrase>
-		<original>selections</original>
-		<translation>selecties</translation>
 	</phrase>
 
 	<phrase>
@@ -4666,6 +4671,11 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 	<phrase>
 		<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
 		<translation>Bitmap bestanden ondersteunt slechts een type compressie, en zij alleen het ondersteunen van bepaalde kleurdiepte. PhotoDemon kunnen toepassen eenvoudige RLE-codering bij het opslaan van 8bpp beelden.</translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
+		<translation>TGA -bestanden ondersteunen slechts één type compressie. PhotoDemon kan eenvoudige RLE -codering toepassen bij het opslaan van TGA afbeeldingen.</translation>
 	</phrase>
 
 	<phrase>
@@ -7852,6 +7862,51 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>JPEG options</original>
+		<translation>Opties JPEG</translation>
+	</phrase>
+
+	<phrase>
+		<original>PNG options</original>
+		<translation>Opties PNG</translation>
+	</phrase>
+
+	<phrase>
+		<original>GIF options</original>
+		<translation>Opties GIF</translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency threshold for images with complex (32bpp) alpha channels</original>
+		<translation>transparantie drempel voor afbeeldingen met alfakanalen complex (32bpp)</translation>
+	</phrase>
+
+	<phrase>
+		<original>PPM options</original>
+		<translation>Opties PPM</translation>
+	</phrase>
+
+	<phrase>
+		<original>TIFF options</original>
+		<translation>Opties TIFF</translation>
+	</phrase>
+
+	<phrase>
+		<original>JPEG-2000 options</original>
+		<translation>Opties JPEG-2000</translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP options</original>
+		<translation>Opties BMP</translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA options</original>
+		<translation>Opties TGA</translation>
+	</phrase>
+
+	<phrase>
 		<original>Select macro file</original>
 		<translation>Selecteer macro bestand</translation>
 	</phrase>
@@ -8009,6 +8064,7 @@ effectively treating at as a non-animated GIF file.</original>
 	<phrase>
 		<original>Previews disabled</original>
 		<translation>Voorbeelden uitgeschakeld</translation>
+	</phrase>
 
 	<phrase>
 		<original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
@@ -8175,6 +8231,15 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 	</phrase>
 
 	<phrase>
+		<original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
+
+By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
+		<translation>GIF-afbeeldingen ondersteunen alleen eenvoudige transparantie, wat betekent dat elke pixel in een GIF-afbeelding moet volledig transparant of volledig ondoorzichtig. Als de partij lijst 32bpp afbeeldingen met complexe alfakanalen bevat, moeten PhotoDemon vereenvoudigen hen alvorens op te slaan naar de GIF-indeling.
+
+Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangepaste cut-off waarde opgeven.</translation>
+	</phrase>
+
+	<phrase>
 		<original>Original filenames</original>
 		<translation>Originele bestandsnamen</translation>
 	</phrase>
@@ -8195,7 +8260,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 	</phrase>
 
 	<phrase>
-		<original>( specifically, JPEG at 92% quality is used for photographs, and lossless PNG is used for non-photographs )</original>
+		<original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
 		<translation>(In het bijzonder, wordt JPEG met 92% kwaliteit gebruikt voor foto's, en lossless PNG wordt gebruikt voor niet-foto's)</translation>
 	</phrase>
 
@@ -8264,15 +8329,21 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 		<translation>verwerkt voor annulering. Laatst bewerkt beeld was "%1"</translation>
 	</phrase>
 
-	<!-- VBP_FormBatchWizard.frm contains 91 phrases. 4 were duplicates of existing phrases, so only 87 new phrases were written to file. -->
+	<!-- VBP_FormBatchWizard.frm contains 166 phrases. 69 were duplicates of existing phrases, so only 97 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBatchWizard.frm-->
 
+	<!-- BEGIN text for pdParamString.cls-->
+
+	<!-- pdParamString.cls contains 0 phrases. -->
+
+	<!-- END text for pdParamString.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 1980 phrases in total. -->
-<!-- 530 are duplicate phrases, so only 1450 phrases have been written to file. -->
-<!-- These 1450 phrases contain approximately 9312 total words. -->
+<!-- As of this build, PhotoDemon contains 2055 phrases in total. -->
+<!-- 593 are duplicate phrases, so only 1462 phrases have been written to file. -->
+<!-- These 1462 phrases contain approximately 9428 total words. -->
 
 </language>
 
