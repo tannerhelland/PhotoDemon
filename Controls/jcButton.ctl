@@ -92,31 +92,31 @@ Option Explicit
 '* N'joy ;)
 
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINT) As Long
+Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, lpPoint As POINT) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
 Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
-Private Declare Function SetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
-Private Declare Function GetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function SetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
+Private Declare Function GetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
 Private Declare Function CreateRectRgn Lib "gdi32" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
 Private Declare Function GetTextColor Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function OleTranslateColor Lib "OLEPRO32.DLL" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, ByRef pccolorref As Long) As Long
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetNearestColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (lpLogFont As tLOGFONT) As Long
 Private Declare Function GetObject Lib "gdi32.dll" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 
 'User32 Declares
-Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal X As Long, ByVal Y As Long) As Long
 Private Declare Function CopyRect Lib "user32" (lpDestRect As RECT, lpSourceRect As RECT) As Long
 Private Declare Function DrawEdge Lib "user32" (ByVal hDC As Long, qrc As RECT, ByVal edge As Long, ByVal grfFlags As Long) As Long
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
@@ -124,8 +124,8 @@ Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect 
 Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
-Private Declare Function TransparentBlt Lib "MSIMG32.dll" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal crTransparent As Long) As Boolean
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function TransparentBlt Lib "MSIMG32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal crTransparent As Long) As Boolean
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINT) As Long
 Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
@@ -135,11 +135,11 @@ Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 
 ' --for tooltips
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
+Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
 Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetClassLong Lib "user32" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 
 ' --Theme Stuff
@@ -380,8 +380,8 @@ Private Type TOOLINFOW
 End Type
 
 Private Type POINT
-    x                    As Long
-    y                    As Long
+    X                    As Long
+    Y                    As Long
 End Type
 
 ' --Used for creating a drop down symbol
@@ -713,9 +713,9 @@ Public Event MouseEnter()
 Attribute MouseEnter.VB_Description = "Occrus when the cursor moves around the button for the first time."
 Public Event MouseLeave()
 Attribute MouseLeave.VB_Description = "Occurs when the cursor leaves/moves outside the button."
-Public Event MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-Public Event MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
-Public Event MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Public Event MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Public Event MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Public Event MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 Public Event KeyDown(KeyCode As Integer, Shift As Integer)
 Attribute KeyDown.VB_Description = "Occurs when the user presses a key while the button has the focus."
 Attribute KeyDown.VB_UserMemId = -602
@@ -790,7 +790,7 @@ Private Function BlendColors(ByVal lBackColorFrom As Long, ByVal lBackColorTo As
 
 End Function
 
-Private Sub DrawRectangle(ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long, ByVal Color As Long)
+Private Sub DrawRectangle(ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long, ByVal Color As Long)
 
 '****************************************************************************
 '*  Draws a rectangle specified by coords and color of the rectangle        *
@@ -801,10 +801,10 @@ Dim hBrush           As Long
 Dim ret              As Long
 
     With brect
-        .Left = x
-        .Top = y
-        .Right = x + Width
-        .Bottom = y + Height
+        .Left = X
+        .Top = Y
+        .Right = X + Width
+        .Bottom = Y + Height
     End With
 
     hBrush = CreateSolidBrush(Color)
@@ -815,7 +815,7 @@ Dim ret              As Long
 
 End Sub
 
-Private Sub DrawFocusRectangle(ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long)
+Private Sub DrawFocusRectangle(ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long)
 
 '****************************************************************************
 '*  Draws a Focus Rectangle inside button if m_bShowFocus property is True  *
@@ -825,10 +825,10 @@ Dim brect            As RECT
 Dim retVal           As Long
 
     With brect
-        .Left = x
-        .Top = y
-        .Right = x + Width
-        .Bottom = y + Height
+        .Left = X
+        .Top = Y
+        .Right = X + Width
+        .Bottom = Y + Height
     End With
 
     retVal = DrawFocusRect(hDC, brect)
@@ -1196,7 +1196,7 @@ Private Function Darken(ByVal Color As Byte) As Byte
 
 End Function
 
-Private Sub DrawGradientEx(ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long, ByVal Color1 As Long, ByVal Color2 As Long, ByVal GradientDirection As GradientDirectionCts)
+Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long, ByVal Color1 As Long, ByVal Color2 As Long, ByVal GradientDirection As GradientDirectionCts)
 
 '****************************************************************************
 '* Draws very fast Gradient in four direction.                              *
@@ -1337,7 +1337,7 @@ Dim iGrad            As Long
     End With
 
     '-- Paint it!
-    StretchDIBits hDC, x, y, Width, Height, 0, 0, Width, Height, lBits(0), uBIH, DIB_RGB_COLORS, vbSrcCopy
+    StretchDIBits hDC, X, Y, Width, Height, 0, 0, Width, Height, lBits(0), uBIH, DIB_RGB_COLORS, vbSrcCopy
 
 End Sub
 
@@ -2567,8 +2567,8 @@ Dim Align            As enumMenuAlign
 Dim Flags            As Long
 Dim DefaultMenu      As VB.Menu
 
-Dim x                As Long
-Dim y                As Long
+Dim X                As Long
+Dim Y                As Long
 
     Set Menu = DropDownMenu
     Align = MenuAlign
@@ -2582,24 +2582,24 @@ Dim y                As Long
     ' --Set the drop down menu position
     Select Case Align
     Case edaBottom
-        y = lh
+        Y = lh
 
     Case edaLeft, edaBottomLeft
         MenuFlags = MenuFlags Or vbPopupMenuRightAlign
         If (MenuAlign = edaBottomLeft) Then
-            y = lh
+            Y = lh
         End If
 
     Case edaRight, edaBottomRight
-        x = lw
+        X = lw
         If (MenuAlign = edaBottomRight) Then
-            y = lh
+            Y = lh
         End If
 
     Case edaTop, edaTopRight, edaTopLeft
         MenuFlags = TPM_BOTTOMALIGN
         If (MenuAlign = edaTopRight) Then
-            x = lw
+            X = lw
         ElseIf (MenuAlign = edaTopLeft) Then
             MenuFlags = MenuFlags Or vbPopupMenuRightAlign
         End If
@@ -2613,15 +2613,15 @@ Dim y                As Long
 
         ' /--Show the dropdown menu
         If (DefaultMenu Is Nothing) Then
-            UserControl.PopupMenu DropDownMenu, MenuFlags, x, y
+            UserControl.PopupMenu DropDownMenu, MenuFlags, X, Y
         Else
-            UserControl.PopupMenu DropDownMenu, MenuFlags, x, y, DefaultMenu
+            UserControl.PopupMenu DropDownMenu, MenuFlags, X, Y, DefaultMenu
         End If
 
 Dim lpPoint          As POINT
         GetCursorPos lpPoint
 
-        If (WindowFromPoint(lpPoint.x, lpPoint.y) = UserControl.hWnd) Then
+        If (WindowFromPoint(lpPoint.X, lpPoint.Y) = UserControl.hWnd) Then
             m_bPopupShown = True
         Else
             m_bIsDown = False
@@ -2918,11 +2918,11 @@ Private Sub UserControl_LostFocus()
 
 End Sub
 
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     m_lDownButton = Button                       'Button pressed for Dblclick
-    m_lDX = x
-    m_lDY = y
+    m_lDX = X
+    m_lDY = Y
     m_lDShift = Shift
 
     If Button = vbLeftButton Or m_bPopupShown Then
@@ -2937,7 +2937,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
         End If
 
         If Not m_bPopupEnabled Then
-            RaiseEvent MouseDown(Button, Shift, x, y)
+            RaiseEvent MouseDown(Button, Shift, X, Y)
         Else
             If Not m_bPopupShown Then
                 ShowPopupMenu
@@ -3140,13 +3140,13 @@ Private Sub SetThemeColors()
 
 End Sub
 
-Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
 Dim lp               As POINT
 
     GetCursorPos lp
 
-    If Not (WindowFromPoint(lp.x, lp.y) = UserControl.hWnd) Then
+    If Not (WindowFromPoint(lp.X, lp.Y) = UserControl.hWnd) Then
         ' --Mouse yet not entered in the control
         m_bMouseInCtl = False
     Else
@@ -3193,7 +3193,7 @@ Dim lp               As POINT
 
 End Sub
 
-Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     ' --Popupmenu enabled
     If m_bPopupEnabled Then
@@ -3209,7 +3209,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
         '--Button released
         m_bIsDown = False
         ' --If button released in button area
-        If (x > 0 And y > 0) And (x < ScaleWidth And y < ScaleHeight) Then
+        If (X > 0 And Y > 0) And (X < ScaleWidth And Y < ScaleHeight) Then
 
             ' --If check box mode
             If m_ButtonMode = ebmCheckBox Then
@@ -3228,7 +3228,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
         End If
     End If
 
-    RaiseEvent MouseUp(Button, Shift, x, y)
+    RaiseEvent MouseUp(Button, Shift, X, Y)
 
 End Sub
 
@@ -3550,7 +3550,7 @@ Public Sub About()
 Attribute About.VB_Description = "Displays information about the control and its author."
 Attribute About.VB_UserMemId = -552
 
-    MsgBox "JCButton v 1.02" & vbCrLf & "Author: Juned S. Chhipa" & vbCrLf & "Contact: juned.chhipa@yahoo.com" & vbCrLf & vbCrLf & "Copyright ©2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"
+    'MsgBox "JCButton v 1.02" & vbCrLf & "Author: Juned S. Chhipa" & vbCrLf & "Contact: juned.chhipa@yahoo.com" & vbCrLf & vbCrLf & "Copyright ©2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"
 
 End Sub
 
