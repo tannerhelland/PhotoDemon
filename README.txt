@@ -1,4 +1,4 @@
-PhotoDemon v5.4 beta - Copyright (c) 2013 by Tanner Helland
+PhotoDemon v5.4 - Copyright (c) 2013 by Tanner Helland
 =====================================================================================
 A free, open-source photo editor and image processing tool.
 http://tannerhelland.com/photodemon
@@ -41,7 +41,7 @@ What makes PhotoDemon preferable to other photo editing tools?
 What doesn't PhotoDemon do?
 -------------------------------------------------------------------------------------
 :: Painting tools.
-	PhotoDemon does not provide any painting tools.  These are coming, but they will
+	PhotoDemon does not provide any painting tools.  These are coming, but they did
 	not make the cut for version 5.4.
 		
 :: Advanced color management (ICC profiles)
@@ -89,7 +89,7 @@ If you can't contribute monetarily to the project, here are other ways to help:
   ...or this dedicated PhotoDemon feedback form:
   http://www.tannerhelland.com/photodemon-contact/
 * Are you a VB6 coder?  I'm always open to outside bug fixes and feature implementations
-  from fellow VB6 programmers.
+  from fellow programmers.
 * Tell friends, family, and other websites about PhotoDemon.  If you know a site that
   tests or reviews image processing tools, email and ask if they've tried it.
 * Send me an email and let me know how you use PhotoDemon.  I love to hear from users.
@@ -169,10 +169,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 * Frank Donckers for extensive help with the translation engine and core translation files
 * Rod Stephens and VB-Helper.com for a themable, multiline-supporting tooltip class
   (http://www.vb-helper.com/howto_multi_line_tooltip.html)
+* Robert Rayment for detailed research and bug-testing on a variety of features
+  (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
-  * Andrew Yeoman
   * Zhu JinYong
-  * Robert Rayment
+  * Andrew Yeoman
   * Herman Liu
   * Dave Jamison
   * Alfred Hellmueller
