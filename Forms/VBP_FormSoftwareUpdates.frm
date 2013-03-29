@@ -4,10 +4,10 @@ Begin VB.Form FormSoftwareUpdate
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Update Notifier"
-   ClientHeight    =   6015
+   ClientHeight    =   5310
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   5535
+   ClientWidth     =   10710
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,17 +20,17 @@ Begin VB.Form FormSoftwareUpdate
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   401
+   ScaleHeight     =   354
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   369
+   ScaleWidth      =   714
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdOKNo 
       Caption         =   "&OK"
-      Height          =   495
-      Left            =   3960
+      Height          =   615
+      Left            =   9120
       TabIndex        =   15
-      Top             =   5280
+      Top             =   4560
       Visible         =   0   'False
       Width           =   1335
    End
@@ -38,37 +38,45 @@ Begin VB.Form FormSoftwareUpdate
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5175
+      Height          =   5295
       Left            =   0
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   345
+      ScaleHeight     =   353
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   369
+      ScaleWidth      =   721
       TabIndex        =   11
-      Top             =   6240
+      Top             =   5520
       Visible         =   0   'False
-      Width           =   5535
+      Width           =   10815
       Begin VB.TextBox txtNoExplanation 
          Appearance      =   0  'Flat
          BackColor       =   &H8000000F&
          BorderStyle     =   0  'None
-         ForeColor       =   &H00400000&
-         Height          =   1335
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   2415
          Left            =   240
          Locked          =   -1  'True
          MultiLine       =   -1  'True
          TabIndex        =   12
-         Top             =   1440
-         Width           =   5055
+         Top             =   360
+         Width           =   10335
       End
       Begin VB.Label lblDirectPDDownload 
-         Alignment       =   2  'Center
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "http://www.tannerhelland.com/photodemon"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   8.25
+            Size            =   12
             Charset         =   0
             Weight          =   400
             Underline       =   -1  'True
@@ -76,41 +84,50 @@ Begin VB.Form FormSoftwareUpdate
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00C00000&
-         Height          =   195
-         Left            =   120
+         Height          =   285
+         Left            =   600
          MouseIcon       =   "VBP_FormSoftwareUpdates.frx":0000
          MousePointer    =   99  'Custom
          TabIndex        =   14
-         Top             =   3360
-         Width           =   5355
+         Top             =   3480
+         Width           =   4710
       End
       Begin VB.Label lblDownloadTitle 
          Alignment       =   2  'Center
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "PhotoDemon website:"
-         ForeColor       =   &H00800000&
-         Height          =   195
-         Left            =   1995
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   240
          TabIndex        =   13
-         Top             =   3000
-         Width           =   1605
+         Top             =   3120
+         Width           =   2355
       End
    End
    Begin VB.CommandButton cmdNoDownloadNoReminder 
       Caption         =   "Not now, not ever.  Do not prompt me about future updates."
-      Height          =   495
-      Left            =   240
+      Height          =   735
+      Left            =   5400
       TabIndex        =   9
-      Top             =   5280
+      Top             =   4440
       Width           =   5055
    End
    Begin VB.CommandButton cmdNoDownload 
       Caption         =   "Not right now, but please remind me again in the future."
-      Height          =   495
-      Left            =   240
+      Height          =   735
+      Left            =   5400
       TabIndex        =   8
-      Top             =   4680
+      Top             =   3600
       Width           =   5055
    End
    Begin VB.CommandButton cmdYesDownload 
@@ -118,21 +135,21 @@ Begin VB.Form FormSoftwareUpdate
       Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   9.75
          Charset         =   0
-         Weight          =   700
+         Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   615
+      Height          =   1575
       Left            =   240
       TabIndex        =   7
-      Top             =   3960
+      Top             =   3600
       Width           =   5055
    End
    Begin VB.Label lblQuestion 
-      Alignment       =   2  'Center
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "Do you want to download the new version?"
       BeginProperty Font 
@@ -145,18 +162,18 @@ Begin VB.Form FormSoftwareUpdate
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   555
-      Left            =   120
+      Height          =   285
+      Left            =   240
       TabIndex        =   10
-      Top             =   3405
-      Width           =   5340
+      Top             =   3000
+      Width           =   4620
    End
    Begin VB.Line Line2 
-      BorderColor     =   &H80000002&
-      X1              =   360
+      BorderColor     =   &H8000000D&
+      X1              =   704
       X2              =   8
-      Y1              =   208
-      Y2              =   208
+      Y1              =   184
+      Y2              =   184
    End
    Begin VB.Label lblUpdateAnnouncement 
       Alignment       =   2  'Center
@@ -164,7 +181,7 @@ Begin VB.Form FormSoftwareUpdate
       Caption         =   "http://update-announcement-goes-here"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   -1  'True
@@ -177,59 +194,23 @@ Begin VB.Form FormSoftwareUpdate
       MouseIcon       =   "VBP_FormSoftwareUpdates.frx":0152
       MousePointer    =   99  'Custom
       TabIndex        =   6
-      Top             =   2520
-      Width           =   5295
+      Top             =   2190
+      Width           =   10335
    End
    Begin VB.Line Line1 
-      BorderColor     =   &H80000002&
-      X1              =   360
+      BorderColor     =   &H8000000D&
+      X1              =   704
       X2              =   8
-      Y1              =   120
-      Y2              =   120
-   End
-   Begin VB.Line Line0 
-      BorderColor     =   &H80000002&
-      X1              =   360
-      X2              =   8
-      Y1              =   40
-      Y2              =   40
+      Y1              =   56
+      Y2              =   56
    End
    Begin VB.Label lblAnnouncementExplanation 
       Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
       Caption         =   "To learn about the latest version before downloading it, please visit:"
-      ForeColor       =   &H00404040&
-      Height          =   315
-      Left            =   120
-      TabIndex        =   5
-      Top             =   2160
-      Width           =   5220
-   End
-   Begin VB.Label lblNewestAppVersion 
-      BackStyle       =   0  'Transparent
-      Caption         =   "X.X"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   210
-      Left            =   3120
-      TabIndex        =   4
-      Top             =   1320
-      Width           =   2205
-   End
-   Begin VB.Label lblCurrentAppVersion 
-      BackStyle       =   0  'Transparent
-      Caption         =   "X.X"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -237,19 +218,60 @@ Begin VB.Form FormSoftwareUpdate
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   210
-      Left            =   3120
+      Height          =   240
+      Left            =   120
+      TabIndex        =   5
+      Top             =   1800
+      Width           =   10290
+   End
+   Begin VB.Label lblNewestAppVersion 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "X.X"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   285
+      Left            =   7680
+      TabIndex        =   4
+      Top             =   1200
+      Width           =   405
+   End
+   Begin VB.Label lblCurrentAppVersion 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "X.X"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   3600
       TabIndex        =   3
-      Top             =   960
-      Width           =   1950
+      Top             =   1200
+      Width           =   345
    End
    Begin VB.Label lblNewVersion 
       Alignment       =   1  'Right Justify
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "Newest version:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   700
          Underline       =   0   'False
@@ -257,19 +279,20 @@ Begin VB.Form FormSoftwareUpdate
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00800000&
-      Height          =   210
-      Left            =   -480
+      Height          =   285
+      Left            =   5475
       TabIndex        =   2
-      Top             =   1320
-      Width           =   3360
+      Top             =   1200
+      Width           =   1965
    End
    Begin VB.Label lblCurVersion 
       Alignment       =   1  'Right Justify
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "Your version:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -277,14 +300,14 @@ Begin VB.Form FormSoftwareUpdate
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   210
-      Left            =   -480
+      Height          =   285
+      Left            =   1920
       TabIndex        =   1
-      Top             =   960
-      Width           =   3360
+      Top             =   1200
+      Width           =   1440
    End
    Begin VB.Label lblUpdateIntro 
-      Alignment       =   2  'Center
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "A new version of PhotoDemon is available!"
       BeginProperty Font 
@@ -297,11 +320,11 @@ Begin VB.Form FormSoftwareUpdate
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   315
-      Left            =   120
+      Height          =   285
+      Left            =   240
       TabIndex        =   0
-      Top             =   165
-      Width           =   5220
+      Top             =   240
+      Width           =   4545
    End
 End
 Attribute VB_Name = "FormSoftwareUpdate"
@@ -325,6 +348,8 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+Dim cImgCtl As clsControlImage
 
 'Do not download the update, but prompt the user again in the future
 Private Sub cmdNoDownload_Click()
@@ -380,6 +405,25 @@ End Sub
 
 'LOAD form
 Private Sub Form_Load()
+    
+    'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
+    ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
+    Set cImgCtl = New clsControlImage
+    With cImgCtl
+        .LoadImageFromStream cmdYesDownload.hWnd, LoadResData("LRGUPDATE", "CUSTOM"), 32, 32
+        .LoadImageFromStream cmdNoDownload.hWnd, LoadResData("LRGDELAY", "CUSTOM"), 32, 32
+        .LoadImageFromStream cmdNoDownloadNoReminder.hWnd, LoadResData("LRGCANCEL", "CUSTOM"), 32, 32
+        
+        .SetMargins cmdYesDownload.hWnd, 10
+        .Align(cmdYesDownload.hWnd) = Icon_Left
+        
+        .SetMargins cmdNoDownload.hWnd, 10
+        .Align(cmdNoDownload.hWnd) = Icon_Left
+        
+        .SetMargins cmdNoDownloadNoReminder.hWnd, 10
+        .Align(cmdNoDownloadNoReminder.hWnd) = Icon_Left
+        
+    End With
     
     'Update the form labels with the version information
     lblCurrentAppVersion = App.Major & "." & App.Minor & "." & App.Revision
