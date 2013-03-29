@@ -98,156 +98,6 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   10
       Top             =   720
       Width           =   11775
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   7
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   705
-         TabIndex        =   100
-         Tag             =   "JP2 - JPEG 2000"
-         Top             =   2520
-         Width           =   10575
-         Begin VB.TextBox txtJP2Quality 
-            Alignment       =   2  'Center
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   7560
-            MaxLength       =   3
-            TabIndex        =   104
-            Text            =   "90"
-            Top             =   1710
-            Width           =   735
-         End
-         Begin VB.ComboBox cmbJP2SaveQuality 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   600
-            Style           =   2  'Dropdown List
-            TabIndex        =   103
-            Top             =   1110
-            Width           =   6855
-         End
-         Begin VB.HScrollBar hsJP2Quality 
-            Height          =   330
-            LargeChange     =   5
-            Left            =   600
-            Max             =   256
-            Min             =   1
-            TabIndex        =   102
-            TabStop         =   0   'False
-            Top             =   1725
-            Value           =   16
-            Width           =   6840
-         End
-         Begin VB.Label lblTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "image compression ratio:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Index           =   2
-            Left            =   360
-            TabIndex        =   107
-            Top             =   720
-            Width           =   2190
-         End
-         Begin VB.Label lblAfter 
-            Alignment       =   1  'Right Justify
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "low quality, small file"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Index           =   1
-            Left            =   5730
-            TabIndex        =   106
-            Top             =   2160
-            Width           =   1470
-         End
-         Begin VB.Label lblBefore 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "high quality, large file"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Left            =   840
-            TabIndex        =   105
-            Top             =   2160
-            Width           =   1545
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "JPEG-2000 options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   2
-            Left            =   120
-            TabIndex        =   101
-            Top             =   120
-            Width           =   2025
-         End
-      End
       Begin VB.ComboBox cmbOutputFormat 
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -306,118 +156,6 @@ Begin VB.Form FormBatchWizard
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   0
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   705
-         TabIndex        =   77
-         Tag             =   "BMP - Windows Bitmap"
-         Top             =   2520
-         Width           =   10575
-         Begin PhotoDemon.smartCheckBox chkBMPRLE 
-            Height          =   480
-            Left            =   360
-            TabIndex        =   78
-            Top             =   600
-            Width           =   4890
-            _ExtentX        =   8625
-            _ExtentY        =   847
-            Caption         =   "use RLE compression when saving 8bpp BMP images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "BMP options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   19
-            Left            =   120
-            TabIndex        =   79
-            Top             =   120
-            Width           =   1305
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4695
-         Index           =   3
-         Left            =   600
-         ScaleHeight     =   313
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   713
-         TabIndex        =   74
-         Tag             =   "TGA - Truevision (TARGA)"
-         Top             =   2520
-         Width           =   10695
-         Begin PhotoDemon.smartCheckBox chkTGARLE 
-            Height          =   480
-            Left            =   360
-            TabIndex        =   75
-            Top             =   600
-            Width           =   4410
-            _ExtentX        =   7779
-            _ExtentY        =   847
-            Caption         =   "use RLE compression when saving TGA images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "TGA options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   21
-            Left            =   120
-            TabIndex        =   76
-            Top             =   120
-            Width           =   1335
-         End
       End
       Begin VB.PictureBox picFileContainer 
          Appearance      =   0  'Flat
@@ -1107,6 +845,268 @@ Begin VB.Form FormBatchWizard
             Index           =   7
             Left            =   120
             TabIndex        =   60
+            Top             =   120
+            Width           =   1335
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   7
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   705
+         TabIndex        =   100
+         Tag             =   "JP2 - JPEG 2000"
+         Top             =   2520
+         Width           =   10575
+         Begin VB.TextBox txtJP2Quality 
+            Alignment       =   2  'Center
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   7560
+            MaxLength       =   3
+            TabIndex        =   104
+            Text            =   "90"
+            Top             =   1710
+            Width           =   735
+         End
+         Begin VB.ComboBox cmbJP2SaveQuality 
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   600
+            Style           =   2  'Dropdown List
+            TabIndex        =   103
+            Top             =   1110
+            Width           =   6855
+         End
+         Begin VB.HScrollBar hsJP2Quality 
+            Height          =   330
+            LargeChange     =   5
+            Left            =   600
+            Max             =   256
+            Min             =   1
+            TabIndex        =   102
+            TabStop         =   0   'False
+            Top             =   1725
+            Value           =   16
+            Width           =   6840
+         End
+         Begin VB.Label lblTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "image compression ratio:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   2
+            Left            =   360
+            TabIndex        =   107
+            Top             =   720
+            Width           =   2190
+         End
+         Begin VB.Label lblAfter 
+            Alignment       =   1  'Right Justify
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "low quality, small file"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Index           =   1
+            Left            =   5730
+            TabIndex        =   106
+            Top             =   2160
+            Width           =   1470
+         End
+         Begin VB.Label lblBefore 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "high quality, large file"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Left            =   840
+            TabIndex        =   105
+            Top             =   2160
+            Width           =   1545
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "JPEG-2000 options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   2
+            Left            =   120
+            TabIndex        =   101
+            Top             =   120
+            Width           =   2025
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   0
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   705
+         TabIndex        =   77
+         Tag             =   "BMP - Windows Bitmap"
+         Top             =   2520
+         Width           =   10575
+         Begin PhotoDemon.smartCheckBox chkBMPRLE 
+            Height          =   480
+            Left            =   360
+            TabIndex        =   78
+            Top             =   600
+            Width           =   4890
+            _ExtentX        =   8625
+            _ExtentY        =   847
+            Caption         =   "use RLE compression when saving 8bpp BMP images"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "BMP options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   19
+            Left            =   120
+            TabIndex        =   79
+            Top             =   120
+            Width           =   1305
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4695
+         Index           =   3
+         Left            =   600
+         ScaleHeight     =   313
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   713
+         TabIndex        =   74
+         Tag             =   "TGA - Truevision (TARGA)"
+         Top             =   2520
+         Width           =   10695
+         Begin PhotoDemon.smartCheckBox chkTGARLE 
+            Height          =   480
+            Left            =   360
+            TabIndex        =   75
+            Top             =   600
+            Width           =   4410
+            _ExtentX        =   7779
+            _ExtentY        =   847
+            Caption         =   "use RLE compression when saving TGA images"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "TGA options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   21
+            Left            =   120
+            TabIndex        =   76
             Top             =   120
             Width           =   1335
          End
@@ -1908,8 +1908,8 @@ Attribute VB_Exposed = False
 'Batch Conversion Form
 'Copyright ©2007-2013 by Tanner Helland
 'Created: 3/Nov/07
-'Last updated: 26/February/13
-'Last update: during the past month, I rewrote the entire dialog from scratch.  Now it's a batch *wizard*.  Ooooo...
+'Last updated: 28/March/13
+'Last update: finished adding full support for all file format export options (there are a TON!)
 '
 'PhotoDemon's batch process wizard is one of its most unique - and in my opinion, most impressive - features.  It integrates
 ' tightly with the macro recording feature to allow any combination of actions to be applied to any set of images.
@@ -1925,13 +1925,13 @@ Attribute VB_Exposed = False
 '    or a macro can be used.  In the future, I plan to build a list of presets for common tasks.
 '
 '3) Select output file format.  There are three choices: retain original format (e.g. "rename only", which allows the user to
-'    use the tool as a batch renamer), pick optimal format for web (which will intermix JPEG and PNG intelligently), or the
-'    user can pick their own format.  Some mechanism must be provided for the user to adjust certain settings, such as JPEG
-'    quality.  I need to investigate how best to handle this.
+'    use the tool as a batch renamer), pick optimal format for web (which will intermix JPEG and PNG intelligently) - POSTPONED
+'    UNTIL 5.6 - or the user can pick their own format.  A comprehensive selection of PhotoDemon's many file format options is
+'    also provided.
 '
 '4) Choose where the files will go and what they will be named.  This includes a number of renaming options, which is a big
-'    step up from the original batch process tool in earlier versions.  I am open to suggestions for other renaming features,
-'    but at present I think the selection is sufficiently comprehensive.
+'    step up from the batch process tool of earlier versions.  I am open to suggestions for other renaming features, but at
+'    present I think the selection is sufficiently comprehensive.
 '
 'Due to the complexity of this tool, there may be odd combinations of things that don't work quite right - I'm hoping
 ' others can help test and provide feedback to ensure that everything runs smoothly.
@@ -2242,7 +2242,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         'Determine any extra flags based on the advanced settings
                         Dim tmpJPEGFlags As Long
                         tmpJPEGFlags = 0
-        
+                        
                         'Optimize
                         If CBool(chkOptimize) Then tmpJPEGFlags = tmpJPEGFlags Or JPEG_OPTIMIZE
         
@@ -2533,7 +2533,7 @@ Private Sub cmdSelectMacro_Click()
     Dim sFile As String
    
     'If the user provides a valid macro file, use that as part of the batch process
-    If cDialog.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, "Open Macro File", "." & MACRO_EXT, Me.hWnd, OFN_HIDEREADONLY) Then
+    If cDialog.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, Me.hWnd, OFN_HIDEREADONLY) Then
         
         'As a convenience to the user, save this directory as the default macro path
         tempPathString = sFile
@@ -2726,10 +2726,12 @@ Private Sub Form_Load()
     For X = 0 To cmbOutputFormat.ListCount
         If g_ImageFormats.getOutputFormatExtension(X) = "jpg" Then
             cmbOutputFormat.ListIndex = X
-            'jpegFormatIndex = x
             Exit For
         End If
     Next X
+    
+    'By default, offer to save processed images in their original format
+    optFormat(0).Value = True
     
     'Populate the combo box for file rename options
     cmbOutputOptions.AddItem "Original filenames"
@@ -3103,6 +3105,61 @@ Private Sub optCase_Click(Index As Integer)
     chkRenameCase.Value = vbChecked
 End Sub
 
+
+'Used to keep the "image quality" text box, scroll bar, and combo box in sync
+Private Sub updateJPEGComboBox()
+    
+    Select Case hsQuality.Value
+        
+        Case 40
+            If cmbJPEGSaveQuality.ListIndex <> 4 Then cmbJPEGSaveQuality.ListIndex = 4
+                            
+        Case 65
+            If cmbJPEGSaveQuality.ListIndex <> 3 Then cmbJPEGSaveQuality.ListIndex = 3
+                
+        Case 80
+            If cmbJPEGSaveQuality.ListIndex <> 2 Then cmbJPEGSaveQuality.ListIndex = 2
+                
+        Case 92
+            If cmbJPEGSaveQuality.ListIndex <> 1 Then cmbJPEGSaveQuality.ListIndex = 1
+                
+        Case 99
+            If cmbJPEGSaveQuality.ListIndex <> 0 Then cmbJPEGSaveQuality.ListIndex = 0
+                
+        Case Else
+            If cmbJPEGSaveQuality.ListIndex <> 5 Then cmbJPEGSaveQuality.ListIndex = 5
+                
+    End Select
+    
+End Sub
+
+'Used to keep the JPEG-2000 "compression ratio" text box, scroll bar, and combo box in sync
+Private Sub updateJP2ComboBox()
+    
+    Select Case hsJP2Quality.Value
+        
+        Case 1
+            If cmbJP2SaveQuality.ListIndex <> 0 Then cmbJP2SaveQuality.ListIndex = 0
+                
+        Case 16
+            If cmbJP2SaveQuality.ListIndex <> 1 Then cmbJP2SaveQuality.ListIndex = 1
+                
+        Case 32
+            If cmbJP2SaveQuality.ListIndex <> 2 Then cmbJP2SaveQuality.ListIndex = 2
+                
+        Case 64
+            If cmbJP2SaveQuality.ListIndex <> 3 Then cmbJP2SaveQuality.ListIndex = 3
+                
+        Case 256
+            If cmbJP2SaveQuality.ListIndex <> 4 Then cmbJP2SaveQuality.ListIndex = 4
+                
+        Case Else
+            If cmbJP2SaveQuality.ListIndex <> 5 Then cmbJP2SaveQuality.ListIndex = 5
+                
+    End Select
+    
+End Sub
+
 'When the user presses "Start Conversion", this routine is triggered.
 Private Sub prepareForBatchConversion()
 
@@ -3140,6 +3197,9 @@ Private Sub prepareForBatchConversion()
     Dim numFilesProcessed As Long, numFilesRemaining As Long
     Dim minutesRemaining As Long, secondsRemaining As Long
     Dim timeMsg As String
+    Dim lastTimeCalculation As Long
+    lastTimeCalculation = &H7FFFFFFF
+    
     timeStarted = GetTickCount
     timeMsg = ""
     
@@ -3244,6 +3304,8 @@ Private Sub prepareForBatchConversion()
                 'Possibility 1: use original file format
                 If optFormat(0) Then
                     
+                    m_FormatParams = ""
+                    
                     'See if this image's file format is supported by the export engine
                     If g_ImageFormats.getIndexOfOutputFIF(pdImages(CurrentImage).CurrentFileFormat) = -1 Then
                         
@@ -3306,6 +3368,7 @@ Private Sub prepareForBatchConversion()
             
             'If a good number of images have been processed, start estimating the amount of time remaining
             If (curBatchFile > 40) Then
+            
                 timeElapsed = GetTickCount - timeStarted
                 numFilesProcessed = curBatchFile + 1
                 numFilesRemaining = totalNumOfFiles - numFilesProcessed
@@ -3318,25 +3381,33 @@ Private Sub prepareForBatchConversion()
                 minutesRemaining = Int(timeRemaining / 60)
                 secondsRemaining = Int(timeRemaining) Mod 60
                 
-                'This lets us format our time nicely (e.g. "minute" vs "minutes")
-                Select Case minutesRemaining
-                    'No minutes remaining - only seconds
-                    Case 0
-                        timeMsg = ".  " & g_Language.TranslateMessage("Estimated time remaining") & ": "
-                    Case 1
-                        timeMsg = ".  " & g_Language.TranslateMessage("Estimated time remaining") & ": " & minutesRemaining
-                        timeMsg = timeMsg & " " & g_Language.TranslateMessage("minute") & " "
-                    Case Else
-                        timeMsg = ".  " & g_Language.TranslateMessage("Estimated time remaining") & ": " & minutesRemaining
-                        timeMsg = timeMsg & " " & g_Language.TranslateMessage("minutes") & " "
-                End Select
+                'Only update the time remaining message if it is LESS than our previous result, the seconds are a multiple
+                ' of 5, or there is 0 minutes remaining (in which case we can display an exact seconds estimate).
+                If (timeRemaining < lastTimeCalculation) And ((secondsRemaining Mod 5 = 0) Or (minutesRemaining = 0)) Then
                 
-                Select Case secondsRemaining
-                    Case 1
-                        timeMsg = timeMsg & "1 " & g_Language.TranslateMessage("second")
-                    Case Else
-                        timeMsg = timeMsg & secondsRemaining & " " & g_Language.TranslateMessage("seconds")
-                End Select
+                    lastTimeCalculation = timeRemaining
+                
+                    'This lets us format our time nicely (e.g. "minute" vs "minutes")
+                    Select Case minutesRemaining
+                        'No minutes remaining - only seconds
+                        Case 0
+                            timeMsg = ".  " & g_Language.TranslateMessage("Estimated time remaining") & ": "
+                        Case 1
+                            timeMsg = ".  " & g_Language.TranslateMessage("Estimated time remaining") & ": " & minutesRemaining
+                            timeMsg = timeMsg & " " & g_Language.TranslateMessage("minute") & " "
+                        Case Else
+                            timeMsg = ".  " & g_Language.TranslateMessage("Estimated time remaining") & ": " & minutesRemaining
+                            timeMsg = timeMsg & " " & g_Language.TranslateMessage("minutes") & " "
+                    End Select
+                    
+                    Select Case secondsRemaining
+                        Case 1
+                            timeMsg = timeMsg & "1 " & g_Language.TranslateMessage("second")
+                        Case Else
+                            timeMsg = timeMsg & secondsRemaining & " " & g_Language.TranslateMessage("seconds")
+                    End Select
+                
+                End If
 
             ElseIf (curBatchFile > 20) And (totalNumOfFiles > 50) Then
                 timeMsg = ".  " & g_Language.TranslateMessage("Estimating time remaining") & "..."
@@ -3391,59 +3462,5 @@ MacroCanceled:
     
     m_ImageListSaved = True
     Unload Me
-    
-End Sub
-
-'Used to keep the "image quality" text box, scroll bar, and combo box in sync
-Private Sub updateJPEGComboBox()
-    
-    Select Case hsQuality.Value
-        
-        Case 40
-            If cmbJPEGSaveQuality.ListIndex <> 4 Then cmbJPEGSaveQuality.ListIndex = 4
-                            
-        Case 65
-            If cmbJPEGSaveQuality.ListIndex <> 3 Then cmbJPEGSaveQuality.ListIndex = 3
-                
-        Case 80
-            If cmbJPEGSaveQuality.ListIndex <> 2 Then cmbJPEGSaveQuality.ListIndex = 2
-                
-        Case 92
-            If cmbJPEGSaveQuality.ListIndex <> 1 Then cmbJPEGSaveQuality.ListIndex = 1
-                
-        Case 99
-            If cmbJPEGSaveQuality.ListIndex <> 0 Then cmbJPEGSaveQuality.ListIndex = 0
-                
-        Case Else
-            If cmbJPEGSaveQuality.ListIndex <> 5 Then cmbJPEGSaveQuality.ListIndex = 5
-                
-    End Select
-    
-End Sub
-
-'Used to keep the JPEG-2000 "compression ratio" text box, scroll bar, and combo box in sync
-Private Sub updateJP2ComboBox()
-    
-    Select Case hsJP2Quality.Value
-        
-        Case 1
-            If cmbJP2SaveQuality.ListIndex <> 0 Then cmbJP2SaveQuality.ListIndex = 0
-                
-        Case 16
-            If cmbJP2SaveQuality.ListIndex <> 1 Then cmbJP2SaveQuality.ListIndex = 1
-                
-        Case 32
-            If cmbJP2SaveQuality.ListIndex <> 2 Then cmbJP2SaveQuality.ListIndex = 2
-                
-        Case 64
-            If cmbJP2SaveQuality.ListIndex <> 3 Then cmbJP2SaveQuality.ListIndex = 3
-                
-        Case 256
-            If cmbJP2SaveQuality.ListIndex <> 4 Then cmbJP2SaveQuality.ListIndex = 4
-                
-        Case Else
-            If cmbJP2SaveQuality.ListIndex <> 5 Then cmbJP2SaveQuality.ListIndex = 5
-                
-    End Select
     
 End Sub
