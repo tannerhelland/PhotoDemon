@@ -223,7 +223,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If g_ImageFormats.FreeImageEnabled And (cParams.doesParamExist(2) Or cParams.doesParamExist(3)) Then
                 updateMRU = SaveJPEGImage(srcPDImage, dstPath, cParams.getParamString)
             ElseIf g_ImageFormats.GDIPlusEnabled Then
-                updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageJPEG, 24, cParams.GetLong(1))
+                updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageJPEG, 24, cParams.GetLong(1, 92))
             Else
                 Message "No %1 encoder found. Save aborted.", "JPEG"
                 PhotoDemon_SaveImage = False
@@ -1169,7 +1169,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     Set cParams = New pdParamString
     If Not IsMissing(jpegParams) Then cParams.setParamString jpegParams
     Dim JPEGFlags As Long
-    JPEGFlags = cParams.GetLong(1)
+    JPEGFlags = cParams.GetLong(1, 92)
     
     'If FreeImage is not available, fall back to GDI+.  If that is not available, fail the function.
     If Not g_ImageFormats.FreeImageEnabled Then
