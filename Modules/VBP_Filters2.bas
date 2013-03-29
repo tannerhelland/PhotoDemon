@@ -1174,16 +1174,17 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, 
         h = 0
     Else
         
+        delta = Max - Min
+        
         'Calculate saturation
         If l <= 0.5 Then
-            s = (Max - Min) / (Max + Min)
+            s = delta / (Max + Min)
         Else
-            s = (Max - Min) / (2 - Max - Min)
+            s = delta / (2 - Max - Min)
         End If
         
         'Calculate hue
-        delta = Max - Min
-
+        
         If rR = Max Then
             h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
         ElseIf rG = Max Then
