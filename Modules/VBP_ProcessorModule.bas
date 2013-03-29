@@ -1270,6 +1270,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Kaleidoscope"
         Case ConvertPolar
             GetNameOfProcess = "Polar conversion"
+        Case Autocrop
+            GetNameOfProcess = "Autocrop image"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade
