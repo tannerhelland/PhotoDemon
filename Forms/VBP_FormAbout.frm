@@ -260,7 +260,7 @@ Private Sub Form_Load()
     GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
     GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
-    GenerateThankyou "Robert Rayment"
+    GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1"
     GenerateThankyou "Rod Stephens", "http://www.vb-helper.com"
     GenerateThankyou "Ron van Tilburg", "http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1"
     GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
