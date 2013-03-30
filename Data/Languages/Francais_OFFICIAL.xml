@@ -4285,6 +4285,11 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 	<phrase>
 		<original>Click to change the second checkerboard background color for alpha channels</original>
+		<translation>Cliquez pour changer la couleur d'arrière-plan en damier premier pour les canaux alpha</translation>
+	</phrase>
+	
+	<phrase>
+		<original>Click to change the second checkerboard background color for alpha channels</original>
 		<translation>Cliquez pour changer la couleur d'arrière-plan en damier secondes pour les canaux alpha</translation>
 	</phrase>
 
@@ -5100,7 +5105,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<phrase>
 		<original>use custom background color (click colored box to change)</original>
-		<translation>utiliser la couleur de fond personnalisée (cliquez sur la case de couleur pour modifier)</translation>
+		<translation>utiliser la couleur personnalisée</translation>
 	</phrase>
 
 	<phrase>
@@ -6734,7 +6739,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>image quality</original>
-		<translation>qualité d'imageQualité</translation>
+		<translation>qualité d'image</translation>
 	</phrase>
 
 	<phrase>
@@ -7334,7 +7339,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>pinch amount</original>
-		<translation>QuantitéNombre serrant</translation>
+		<translation>Quantité serrant</translation>
 	</phrase>
 
 	<phrase>
