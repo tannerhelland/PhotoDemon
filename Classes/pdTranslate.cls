@@ -893,6 +893,11 @@ Public Sub applyTranslations(ByRef srcForm As Form)
             
         End If
         
+        'Picture boxes can have tooltips.  Translate those too.
+        If (TypeOf eControl Is PictureBox) Then
+            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
+        End If
+        
         'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
         ' We can detect these by checking for a vbTab character in the menu entry.  If this is found, strip it out before searching
         ' for a translation.
