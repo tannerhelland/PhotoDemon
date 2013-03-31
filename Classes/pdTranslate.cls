@@ -692,7 +692,7 @@ Private Function getPhraseTagLocation(ByRef srcString As String) As Long
     'If the user has activated shortcut searching, start from the position previously discovered
     If m_shortcutActive Then
         sLocation = InStr(m_shortcutLocation, m_translationFileContents, srcString, vbTextCompare)
-        If sLocation = 0 Then sLocation = InStr(1, m_translationFileContents, srcString, vbTextCompare)
+        If sLocation = 0 Then sLocation = InStrRev(m_translationFileContents, srcString, m_shortcutLocation, vbTextCompare)
     'If shortcuts are inactive, or if they're active but the previous search failed, search starting from the start of the file
     Else
         sLocation = InStr(1, m_translationFileContents, srcString, vbTextCompare)
