@@ -89,6 +89,28 @@ Private m_isReady As Boolean
 Private m_hasDotDotDot As Boolean
 Private m_hasTrailingColon As Boolean
 
+'Searching the main XML string is a time-consuming process.  Shortcuts can be activated if all text lies on the same form.
+Dim m_shortcutActive As Boolean
+Dim m_shortcutLocation As Long
+
+'To improve performance, the user can specify a "shortcut" - e.g. the name of the form being processed.  The translation engine
+' will then attempt to search in the vicinity of that shortcut, which should help it find a match more quickly
+Public Sub activateShortcut(ByVal shortcutText As String)
+
+    m_shortcutLocation = InStr(1, m_translationFileContents, "(" & shortcutText & ")", vbTextCompare)
+    'MsgBox m_shortcutLocation
+    If m_shortcutLocation = 0 Then
+        m_shortcutActive = False
+        m_shortcutLocation = 1
+    End If
+
+End Sub
+
+Public Sub deactivateShortcut()
+    m_shortcutActive = False
+    m_shortcutLocation = 1
+End Sub
+
 'External function for asking the translator if a language selection dialog is needed
 Public Function isLanguageDialogNeeded(Optional ByRef reasonForDialog As Long = -1) As Boolean
     If reasonForDialog <> -1 Then reasonForDialog = m_reasonForLanguageDialog
@@ -666,7 +688,15 @@ End Function
 Private Function getPhraseTagLocation(ByRef srcString As String) As Long
 
     Dim sLocation As Long
-    sLocation = InStr(1, m_translationFileContents, srcString, vbTextCompare)
+    
+    'If the user has activated shortcut searching, start from the position previously discovered
+    If m_shortcutActive Then
+        sLocation = InStr(m_shortcutLocation, m_translationFileContents, srcString, vbTextCompare)
+        If sLocation = 0 Then sLocation = InStr(1, m_translationFileContents, srcString, vbTextCompare)
+    'If shortcuts are inactive, or if they're active but the previous search failed, search starting from the start of the file
+    Else
+        sLocation = InStr(1, m_translationFileContents, srcString, vbTextCompare)
+    End If
     
     'If the source string was found, work backward to find the phrase tag location
     If sLocation > 0 Then
@@ -864,6 +894,9 @@ Public Sub applyTranslations(ByRef srcForm As Form)
 
     If Not translationActive Then Exit Sub
 
+    'Dim localTimeTaken As Long
+    'localTimeTaken = Timer
+
     'Start by translating the form's caption
     translateFormCaption srcForm
 
@@ -926,5 +959,15 @@ Public Sub applyTranslations(ByRef srcForm As Form)
         End If
         
     Next
+    
+    'If DISPLAY_TIMINGS Then MsgBox "Translation of " & srcForm.Name & " took " & (Timer - localTimeTaken) & " seconds."
+    
+End Sub
+
+Private Sub Class_Initialize()
+    
+    'By default, shortcut searching is inactive
+    m_shortcutActive = False
+    m_shortcutLocation = 1
     
 End Sub
