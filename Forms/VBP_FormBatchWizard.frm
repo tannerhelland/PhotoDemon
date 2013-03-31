@@ -247,19 +247,11 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   21
          Top             =   3600
          Width           =   2235
-         _ExtentX        =   3942
-         _ExtentY        =   847
-         Caption         =   "show image previews"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   3942
+         _extenty        =   847
+         caption         =   "show image previews"
+         value           =   1
+         font            =   "VBP_FormBatchWizard.frx":1418
       End
       Begin VB.Label lblFiles 
          AutoSize        =   -1  'True
@@ -379,18 +371,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   53
          Top             =   5640
          Width           =   1260
-         _ExtentX        =   2223
-         _ExtentY        =   582
-         Caption         =   "lowercase"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   2223
+         _extenty        =   582
+         caption         =   "lowercase"
+         font            =   "VBP_FormBatchWizard.frx":1440
       End
       Begin VB.TextBox txtRenameRemove 
          BeginProperty Font 
@@ -450,18 +434,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   46
          Top             =   3000
          Width           =   2955
-         _ExtentX        =   5212
-         _ExtentY        =   847
-         Caption         =   "add a prefix to each filename:"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   5212
+         _extenty        =   847
+         caption         =   "add a prefix to each filename:"
+         font            =   "VBP_FormBatchWizard.frx":1468
       End
       Begin VB.ComboBox cmbOutputOptions 
          BeginProperty Font 
@@ -513,18 +489,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   47
          Top             =   3000
          Width           =   2925
-         _ExtentX        =   5159
-         _ExtentY        =   847
-         Caption         =   "add a suffix to each filename:"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   5159
+         _extenty        =   847
+         caption         =   "add a suffix to each filename:"
+         font            =   "VBP_FormBatchWizard.frx":1490
       End
       Begin PhotoDemon.smartCheckBox chkRenameRemove 
          Height          =   480
@@ -532,18 +500,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   48
          Top             =   4080
          Width           =   5205
-         _ExtentX        =   9181
-         _ExtentY        =   847
-         Caption         =   "remove the following text (if found) from each filename:"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   9181
+         _extenty        =   847
+         caption         =   "remove the following text (if found) from each filename:"
+         font            =   "VBP_FormBatchWizard.frx":14B8
       End
       Begin PhotoDemon.smartCheckBox chkRenameCase 
          Height          =   480
@@ -551,18 +511,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   52
          Top             =   5160
          Width           =   5775
-         _ExtentX        =   10186
-         _ExtentY        =   847
-         Caption         =   "force each filename, including extension, to the following case:"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   10186
+         _extenty        =   847
+         caption         =   "force each filename, including extension, to the following case:"
+         font            =   "VBP_FormBatchWizard.frx":14E0
       End
       Begin PhotoDemon.smartOptionButton optCase 
          Height          =   330
@@ -571,18 +523,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   54
          Top             =   5640
          Width           =   1410
-         _ExtentX        =   2487
-         _ExtentY        =   582
-         Caption         =   "UPPERCASE"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   2487
+         _extenty        =   582
+         caption         =   "UPPERCASE"
+         font            =   "VBP_FormBatchWizard.frx":1508
       End
       Begin PhotoDemon.smartCheckBox chkRenameSpaces 
          Height          =   480
@@ -590,18 +534,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   55
          Top             =   6240
          Width           =   4275
-         _ExtentX        =   7541
-         _ExtentY        =   847
-         Caption         =   "replace spaces in filenames with underscores"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   7541
+         _extenty        =   847
+         caption         =   "replace spaces in filenames with underscores"
+         font            =   "VBP_FormBatchWizard.frx":1530
       End
       Begin PhotoDemon.smartCheckBox chkRenameCaseSensitive 
          Height          =   480
@@ -609,19 +545,11 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   56
          Top             =   4515
          Width           =   2775
-         _ExtentX        =   4895
-         _ExtentY        =   847
-         Caption         =   "use case-sensitive matching"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   4895
+         _extenty        =   847
+         caption         =   "use case-sensitive matching"
+         value           =   1
+         font            =   "VBP_FormBatchWizard.frx":1558
       End
       Begin VB.Label lblDstFilename 
          AutoSize        =   -1  'True
@@ -722,19 +650,11 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   36
          Top             =   120
          Width           =   3795
-         _ExtentX        =   6694
-         _ExtentY        =   635
-         Caption         =   "keep images in their original format"
-         Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   6694
+         _extenty        =   635
+         caption         =   "keep images in their original format"
+         value           =   -1  'True
+         font            =   "VBP_FormBatchWizard.frx":1580
       End
       Begin PhotoDemon.smartOptionButton optFormat 
          Height          =   360
@@ -743,18 +663,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   37
          Top             =   1320
          Width           =   3810
-         _ExtentX        =   6720
-         _ExtentY        =   635
-         Caption         =   "convert all images to a new format"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   6720
+         _extenty        =   635
+         caption         =   "convert all images to a new format"
+         font            =   "VBP_FormBatchWizard.frx":15A8
       End
       Begin VB.PictureBox picFileContainer 
          Appearance      =   0  'Flat
@@ -847,19 +759,11 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   82
             Top             =   1920
             Width           =   2805
-            _ExtentX        =   4948
-            _ExtentY        =   847
-            Caption         =   "optimize compression tables"
-            Value           =   1
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   4948
+            _extenty        =   847
+            caption         =   "optimize compression tables"
+            value           =   1
+            font            =   "VBP_FormBatchWizard.frx":15D0
          End
          Begin PhotoDemon.smartCheckBox chkThumbnail 
             Height          =   480
@@ -867,18 +771,10 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   86
             Top             =   2400
             Width           =   2445
-            _ExtentX        =   4313
-            _ExtentY        =   847
-            Caption         =   "embed thumbnail image"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   4313
+            _extenty        =   847
+            caption         =   "embed thumbnail image"
+            font            =   "VBP_FormBatchWizard.frx":15F8
          End
          Begin PhotoDemon.smartCheckBox chkProgressive 
             Height          =   480
@@ -886,18 +782,10 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   87
             Top             =   2880
             Width           =   2550
-            _ExtentX        =   4498
-            _ExtentY        =   847
-            Caption         =   "use progressive encoding"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   4498
+            _extenty        =   847
+            caption         =   "use progressive encoding"
+            font            =   "VBP_FormBatchWizard.frx":1620
          End
          Begin PhotoDemon.smartCheckBox chkSubsample 
             Height          =   480
@@ -906,18 +794,10 @@ Begin VB.Form FormBatchWizard
             ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
             Top             =   3360
             Width           =   2565
-            _ExtentX        =   4524
-            _ExtentY        =   847
-            Caption         =   "use specific subsampling:"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   4524
+            _extenty        =   847
+            caption         =   "use specific subsampling:"
+            font            =   "VBP_FormBatchWizard.frx":1648
          End
          Begin VB.Label lblTitle 
             AutoSize        =   -1  'True
@@ -1013,18 +893,10 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   67
             Top             =   2520
             Width           =   4830
-            _ExtentX        =   8520
-            _ExtentY        =   847
-            Caption         =   "preserve file's original background color, if available"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   8520
+            _extenty        =   847
+            caption         =   "preserve file's original background color, if available"
+            font            =   "VBP_FormBatchWizard.frx":1670
          End
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   480
@@ -1032,18 +904,10 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   68
             Top             =   2040
             Width           =   2430
-            _ExtentX        =   4286
-            _ExtentY        =   847
-            Caption         =   "use interlacing (Adam7)"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   4286
+            _extenty        =   847
+            caption         =   "use interlacing (Adam7)"
+            font            =   "VBP_FormBatchWizard.frx":1698
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -1392,18 +1256,10 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   58
             Top             =   1560
             Width           =   4230
-            _ExtentX        =   7461
-            _ExtentY        =   847
-            Caption         =   " save TIFFs as separated CMYK (for printing)"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   7461
+            _extenty        =   847
+            caption         =   " save TIFFs as separated CMYK (for printing)"
+            font            =   "VBP_FormBatchWizard.frx":16C0
          End
          Begin VB.Label lblFileStuff 
             AutoSize        =   -1  'True
@@ -1619,18 +1475,10 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   78
             Top             =   600
             Width           =   4890
-            _ExtentX        =   8625
-            _ExtentY        =   847
-            Caption         =   "use RLE compression when saving 8bpp BMP images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   8625
+            _extenty        =   847
+            caption         =   "use RLE compression when saving 8bpp BMP images"
+            font            =   "VBP_FormBatchWizard.frx":16E8
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -1675,18 +1523,10 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   75
             Top             =   600
             Width           =   4410
-            _ExtentX        =   7779
-            _ExtentY        =   847
-            Caption         =   "use RLE compression when saving TGA images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   7779
+            _extenty        =   847
+            caption         =   "use RLE compression when saving TGA images"
+            font            =   "VBP_FormBatchWizard.frx":1710
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -1778,19 +1618,11 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   30
          Top             =   120
          Width           =   4110
-         _ExtentX        =   7250
-         _ExtentY        =   635
-         Caption         =   "do not apply any photo editing actions"
-         Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   7250
+         _extenty        =   635
+         caption         =   "do not apply any photo editing actions"
+         value           =   -1  'True
+         font            =   "VBP_FormBatchWizard.frx":1738
       End
       Begin PhotoDemon.smartOptionButton optActions 
          Height          =   360
@@ -1799,18 +1631,10 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   32
          Top             =   1080
          Width           =   4140
-         _ExtentX        =   7303
-         _ExtentY        =   635
-         Caption         =   "apply a recorded macro to the images"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   7303
+         _extenty        =   635
+         caption         =   "apply a recorded macro to the images"
+         font            =   "VBP_FormBatchWizard.frx":1760
       End
       Begin VB.Label lblExplanation 
          AutoSize        =   -1  'True
@@ -1961,6 +1785,10 @@ Dim m_ImageListSaved As Boolean
 
 'Current list of image format parameters
 Dim m_FormatParams As String
+
+'Currently rendered image preview, and which box it came from (top or bottom)
+Dim m_CurImagePreview As String
+Dim m_LastPreviewSource As Long
 
 Private Sub chkEnablePreview_Click()
     
@@ -2394,6 +2222,9 @@ End Sub
 'Remove all selected items from the batch conversion list
 Private Sub cmdRemove_Click()
     
+    'If the lower box was the source of the current image preview, erase the preview now
+    If m_LastPreviewSource = 1 Then updatePreview ""
+    
     Dim X As Long
     Do While (X <= lstFiles.ListCount - 1) And (X >= 0)
         If lstFiles.Selected(X) Then
@@ -2424,6 +2255,9 @@ Private Sub cmdRemoveAll_Click()
     
     lstFiles.Clear
     fixHorizontalListBoxScrolling lstFiles
+    
+    'If the lower box was the source of the current image preview, erase the preview now
+    If m_LastPreviewSource = 1 Then updatePreview ""
     
     'Because all entries have been removed, disable actions that require at least one image to be present
     cmdRemove.Enabled = False
@@ -2904,7 +2738,9 @@ Private Sub txtQuality_GotFocus()
 End Sub
 
 Private Sub lstFiles_Click()
+    
     updatePreview lstFiles.List(lstFiles.ListIndex)
+    m_LastPreviewSource = 1
     
     'See if any files are selected.  If they are, enable the "remove selected images" button
     Dim enableRemoveButton As Boolean
@@ -2988,6 +2824,7 @@ Private Sub lstSource_Click()
     
     'Redraw the preview
     updatePreview Dir1.Path & "\" & lstSource.List(lstSource.ListIndex)
+    m_LastPreviewSource = 0
     
 End Sub
 
@@ -3008,11 +2845,9 @@ End Sub
 
 'Update the active image preview in the top-right
 Private Sub updatePreview(ByVal srcImagePath As String)
-
-    Static lastPreview As String
-    
+       
     'Only redraw the preview if it doesn't match the last image we previewed
-    If CBool(chkEnablePreview) And (StrComp(lastPreview, srcImagePath, vbTextCompare) <> 0) Then
+    If CBool(chkEnablePreview) And (StrComp(m_CurImagePreview, srcImagePath, vbTextCompare) <> 0) Then
     
         'Display a preview of the selected image
         Dim tmpImagePath(0) As String
@@ -3047,7 +2882,7 @@ Private Sub updatePreview(ByVal srcImagePath As String)
             picPreview.Print strToPrint
         End If
     
-        lastPreview = srcImagePath
+        m_CurImagePreview = srcImagePath
     
     End If
     
