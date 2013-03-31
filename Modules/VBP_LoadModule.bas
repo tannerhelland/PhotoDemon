@@ -673,7 +673,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
         
         targetImage.updateSize
-        targetImage.OriginalFileSize = fileLen(sFile(thisImage))
+        If FileExist(sFile(thisImage)) Then targetImage.OriginalFileSize = fileLen(sFile(thisImage))
         targetImage.CurrentFileFormat = targetImage.OriginalFileFormat
                 
                 
