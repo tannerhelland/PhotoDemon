@@ -112,7 +112,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         forceMaxHeight = False
     
         'Change the scalemode to twips to match the MDI form
-        FormMain.ActiveForm.ScaleMode = 1
+        FormMain.ActiveForm.ScaleMode = vbTwips
     
         'Now let's get some dimensions for our calculations
         Dim wDif As Long, hDif As Long
@@ -135,7 +135,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             curLeft = FormMain.ActiveForm.Left
             curTop = FormMain.ActiveForm.Top
         End If
-        
+                
         ' Check for the image being off-viewport, starting with the vertical measurement.
         If curTop + curHeight > FormMain.ScaleHeight Then
         
@@ -176,7 +176,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             curWidth = curWidth + FormMain.ActiveForm.VScroll.Width
             
             'If this addition pushes the image off-screen, nudge it slightly left
-            If curLeft + curWidth > FormMain.ActiveForm.ScaleWidth Then curLeft = curWidth
+            If curLeft + curWidth > FormMain.ScaleWidth Then curLeft = FormMain.ScaleWidth - curWidth
             
         End If
         
@@ -184,7 +184,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             curHeight = curHeight + FormMain.ActiveForm.HScroll.Height
             
             'If this addition pushes the image off-screen, nudge it slightly up
-            If curTop + curHeight > FormMain.ActiveForm.ScaleHeight Then curTop = curHeight
+            If curTop + curHeight > FormMain.ScaleHeight Then curTop = FormMain.ScaleHeight - curHeight
             
         End If
         
@@ -198,8 +198,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             FormMain.ActiveForm.Move curLeft, curTop, curWidth, curHeight
         End If
         
-        'Set the scalemode back to a decent pixels
-        FormMain.ActiveForm.ScaleMode = 3
+        'Set the scalemode back to pixels
+        FormMain.ActiveForm.ScaleMode = vbPixels
     
         'Re-enable scrolling
         g_FixScrolling = True
