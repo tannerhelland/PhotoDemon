@@ -1,4 +1,4 @@
-Attribute VB_Name = "Misc_Interface"
+Attribute VB_Name = "Interface"
 '***************************************************************************
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2000-2013 by Tanner Helland
@@ -124,7 +124,11 @@ Public Sub makeFormPretty(ByRef tForm As Form)
     If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
     
     'FORM STEP 3: translate the form (and all controls on it)
-    If g_Language.translationActive Then g_Language.applyTranslations tForm
+    If g_Language.translationActive And tForm.Enabled Then
+        g_Language.activateShortcut tForm.Name
+        g_Language.applyTranslations tForm
+        g_Language.deactivateShortcut
+    End If
     
     'Refresh all non-MDI forms after making the changes above
     If tForm.Name <> "FormMain" Then
