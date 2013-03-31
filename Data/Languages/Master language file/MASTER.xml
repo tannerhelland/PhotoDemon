@@ -2522,22 +2522,22 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>Zoom In</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>Use this button to increase image zoom.</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Zoom Out</original>
+		<original>Zoom In</original>
 		<translation></translation>
 	</phrase>
 
 	<phrase>
 		<original>Use this button to decrease image zoom.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom Out</original>
 		<translation></translation>
 	</phrase>
 
@@ -7755,81 +7755,6 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>keep images in their original format</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>convert all images to a new format</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>JPEG options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>PNG options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>GIF options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>transparency threshold for images with complex (32bpp) alpha channels</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>PPM options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>TIFF options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>JPEG-2000 options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>BMP options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>TGA options</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Select macro file</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>do not apply any photo editing actions</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>apply a recorded macro to the images</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>if you only want to rename images or change image formats, use this option</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>Add selected image(s) to batch list</original>
 		<translation></translation>
 	</phrase>
@@ -7951,6 +7876,81 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>output images to this folder</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>keep images in their original format</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>convert all images to a new format</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>JPEG options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>PNG options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>GIF options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency threshold for images with complex (32bpp) alpha channels</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>PPM options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>TIFF options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>JPEG-2000 options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Select macro file</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>do not apply any photo editing actions</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>apply a recorded macro to the images</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>if you only want to rename images or change image formats, use this option</original>
 		<translation></translation>
 	</phrase>
 
@@ -8169,6 +8169,16 @@ By default, transparency will be split down the middle, or you can specify a cus
 	</phrase>
 
 	<phrase>
+		<original>item</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>items</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>(Batch converting file # %1 of %2) %3</original>
 		<translation></translation>
 	</phrase>
@@ -8228,14 +8238,14 @@ By default, transparency will be split down the middle, or you can specify a cus
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormBatchWizard.frm contains 166 phrases. 69 were duplicates of existing phrases, so only 97 new phrases were written to file. -->
+	<!-- VBP_FormBatchWizard.frm contains 169 phrases. 70 were duplicates of existing phrases, so only 99 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBatchWizard.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 2055 phrases in total. -->
-<!-- 592 are duplicate phrases, so only 1463 phrases have been written to file. -->
-<!-- These 1463 phrases contain approximately 9439 total words. -->
+<!-- As of this build, PhotoDemon contains 2058 phrases in total. -->
+<!-- 593 are duplicate phrases, so only 1465 phrases have been written to file. -->
+<!-- These 1465 phrases contain approximately 9441 total words. -->
 
 </language>
