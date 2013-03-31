@@ -496,7 +496,7 @@ Public Sub FixToolboxText()
     
     'See if the largest (widest) caption extends past the edge of the toolbox
     Dim leftPadding As Long
-    leftPadding = FormMain.lblLeftToolBox(0).Left
+    leftPadding = 4 'FormMain.lblLeftToolBox(0).Left
     
     If maxWidth + leftPadding > FormMain.picLeftPane.ScaleWidth Then
                 
@@ -516,6 +516,17 @@ Public Sub FixToolboxText()
         FormMain.lblLeftToolBox(i).FontSize = currentFontSize
         FormMain.lblLeftToolBox(i).Refresh
     Next i
+    
+    'If size 12 font was chosen as the default size, we can left-align all text.  Otherwise, we need to center-align it.
+    If currentFontSize = 12 Then
+        For i = 0 To FormMain.lblLeftToolBox.Count - 1
+            FormMain.lblLeftToolBox(i).Left = 8
+        Next i
+    Else
+        For i = 0 To FormMain.lblLeftToolBox.Count - 1
+            FormMain.lblLeftToolBox(i).Left = (FormMain.picLeftPane.ScaleWidth - FormMain.lblLeftToolBox(i).Width) \ 2
+        Next i
+    End If
     
     'Finally, we need to bottom-align all labels manually.
     ' (NOTE: this is an inelegant and ugly way to do this, but I've yet to devise a better solution for bottom-alignment using VB labels)
