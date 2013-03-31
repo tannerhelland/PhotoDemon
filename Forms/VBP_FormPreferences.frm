@@ -2268,9 +2268,11 @@ Dim m_ToolTip As clsToolTip
 'For this particular box, update the interface instantly
 Private Sub chkFancyFonts_Click()
 
-    g_UseFancyFonts = CBool(chkFancyFonts)
-    makeFormPretty Me
-    makeFormPretty FormMain
+    If Me.Visible Then
+        g_UseFancyFonts = CBool(chkFancyFonts)
+        makeFormPretty Me
+        makeFormPretty FormMain
+    End If
 
 End Sub
 
@@ -2788,7 +2790,7 @@ Private Sub LoadAllPreferences()
     
     'Clear selections after "Crop to Selection"
     If g_UserPreferences.GetPreference_Boolean("Tool Preferences", "ClearSelectionAfterCrop", True) Then chkSelectionClearCrop.Value = vbChecked Else chkSelectionClearCrop.Value = vbUnchecked
-    
+
     'If any preferences rely on FreeImage to operate, en/disable them as necessary
     If g_ImageFormats.FreeImageEnabled = False Then
         'chkToneMapping.Value = vbUnchecked
@@ -2821,7 +2823,7 @@ End Sub
 
 'When the form is loaded, populate the various checkboxes and textboxes with the values from the INI file
 Private Sub Form_Load()
-    
+
     'Populate all controls with their corresponding values
     LoadAllPreferences
     
@@ -2912,15 +2914,8 @@ Private Sub Form_Load()
     cmbFiletype.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "LastFilePreferencesPage", 1)
     picFileContainer(g_UserPreferences.GetPreference_Long("General Preferences", "LastFilePreferencesPage", 1)).Visible = True
     
-    'Assign the system hand cursor to all relevant objects
+    'Translate and decorate the form
     makeFormPretty Me
-    
-    'Note: at present, this doesn't seem to be working, and I'm not sure why.  It has something to do with
-    ' picture boxes contained within other picture boxes.  Because of this, I've manually set the mouse icon
-    ' to an old-school hand cursor (which is all VB will accept).
-    'setHandCursor picCanvasColor
-    'setHandCursor picAlphaOne
-    'setHandCursor picAlphaTwo
     
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.
