@@ -9,15 +9,9 @@
 
 	<author>VBP Text Extraction App (by Tanner Helland)</author>
 
-	<!-- BEGIN AUTOMATIC TEXT GENERATION --!>
+	<!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
-	<!-- BEGIN text for VBP_PublicVariables.bas-->
-
-	<!-- VBP_PublicVariables.bas contains 0 phrases. -->
-
-	<!-- END text for VBP_PublicVariables.bas-->
-
-	<!-- BEGIN text for VBP_FormAbout.frm-->
+	<!-- BEGIN text for VBP_FormAbout.frm (FormAbout) -->
 
 	<phrase>
 		<original>About PhotoDemon</original>
@@ -78,7 +72,7 @@
 
 	<!-- END text for VBP_FormAbout.frm-->
 
-	<!-- BEGIN text for VBP_FormSplash.frm-->
+	<!-- BEGIN text for VBP_FormSplash.frm (FormSplash) -->
 
 	<phrase>
 		<original>Live updates</original>
@@ -89,7 +83,7 @@
 
 	<!-- END text for VBP_FormSplash.frm-->
 
-	<!-- BEGIN text for VBP_SubModule.bas-->
+	<!-- BEGIN text for VBP_SubModule.bas -->
 
 	<phrase>
 		<original>Verifying image color count</original>
@@ -100,7 +94,7 @@
 
 	<!-- END text for VBP_SubModule.bas-->
 
-	<!-- BEGIN text for VBP_LoadModule.bas-->
+	<!-- BEGIN text for VBP_LoadModule.bas -->
 
 	<phrase>
 		<original>Detecting Windows® version</original>
@@ -452,7 +446,7 @@ Please use another program to save these images in a generic format (such as JPE
 
 	<!-- END text for VBP_LoadModule.bas-->
 
-	<!-- BEGIN text for VBP_SaveModule.bas-->
+	<!-- BEGIN text for VBP_SaveModule.bas -->
 
 	<phrase>
 		<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
@@ -617,13 +611,13 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 	<!-- END text for VBP_SaveModule.bas-->
 
-	<!-- BEGIN text for VBP_Constants.bas-->
+	<!-- BEGIN text for VBP_Constants.bas -->
 
 	<!-- VBP_Constants.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_Constants.bas-->
 
-	<!-- BEGIN text for VBP_FormReduceColors.frm-->
+	<!-- BEGIN text for VBP_FormReduceColors.frm (FormReduceColors) -->
 
 	<phrase>
 		<original>Reduce Image Colors</original>
@@ -726,7 +720,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_FormReduceColors.frm-->
 
-	<!-- BEGIN text for VBP_MenuModule.bas-->
+	<!-- BEGIN text for VBP_MenuModule.bas -->
 
 	<phrase>
 		<original>Open an image</original>
@@ -752,7 +746,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_MenuModule.bas-->
 
-	<!-- BEGIN text for VBP_ClipboardModule.bas-->
+	<!-- BEGIN text for VBP_ClipboardModule.bas -->
 
 	<phrase>
 		<original>Clipboard Image</original>
@@ -788,7 +782,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_ClipboardModule.bas-->
 
-	<!-- BEGIN text for VBP_FormResize.frm-->
+	<!-- BEGIN text for VBP_FormResize.frm (FormResize) -->
 
 	<phrase>
 		<original>Resize Image</original>
@@ -879,7 +873,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_FormResize.frm-->
 
-	<!-- BEGIN text for VBP_FormTwins.frm-->
+	<!-- BEGIN text for VBP_FormTwins.frm (FormTwins) -->
 
 	<phrase>
 		<original>Generate Twins</original>
@@ -910,7 +904,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_FormTwins.frm-->
 
-	<!-- BEGIN text for VBP_FilterModule.bas-->
+	<!-- BEGIN text for VBP_FilterModule.bas -->
 
 	<phrase>
 		<original>Loading custom filter information</original>
@@ -981,7 +975,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_FilterModule.bas-->
 
-	<!-- BEGIN text for VBP_UndoModule.bas-->
+	<!-- BEGIN text for VBP_UndoModule.bas -->
 
 	<phrase>
 		<original>Saving Undo data</original>
@@ -1002,7 +996,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_UndoModule.bas-->
 
-	<!-- BEGIN text for VBP_ScreenCaptureModule.bas-->
+	<!-- BEGIN text for VBP_ScreenCaptureModule.bas -->
 
 	<phrase>
 		<original>Waiting for capture</original>
@@ -1033,13 +1027,13 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_ScreenCaptureModule.bas-->
 
-	<!-- BEGIN text for VBP_DrawModule.bas-->
+	<!-- BEGIN text for VBP_DrawModule.bas -->
 
 	<!-- VBP_DrawModule.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_DrawModule.bas-->
 
-	<!-- BEGIN text for VBP_FormBrightnessContrast.frm-->
+	<!-- BEGIN text for VBP_FormBrightnessContrast.frm (FormBrightnessContrast) -->
 
 	<phrase>
 		<original>Brightness/Contrast</original>
@@ -1080,7 +1074,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_FormBrightnessContrast.frm-->
 
-	<!-- BEGIN text for VBP_FormMosaic.frm-->
+	<!-- BEGIN text for VBP_FormMosaic.frm (FormMosaic) -->
 
 	<phrase>
 		<original>Mosaic Options</original>
@@ -1111,7 +1105,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_FormMosaic.frm-->
 
-	<!-- BEGIN text for VBP_ZoomModule.bas-->
+	<!-- BEGIN text for VBP_ZoomModule.bas -->
 
 	<phrase>
 		<original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
@@ -1142,7 +1136,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_ZoomModule.bas-->
 
-	<!-- BEGIN text for VBP_FormNoise.frm-->
+	<!-- BEGIN text for VBP_FormNoise.frm (FormNoise) -->
 
 	<phrase>
 		<original>Add Noise</original>
@@ -1168,7 +1162,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_FormNoise.frm-->
 
-	<!-- BEGIN text for VBP_ProcessorModule.bas-->
+	<!-- BEGIN text for VBP_ProcessorModule.bas -->
 
 	<phrase>
 		<original>Unsupported color reduction method.</original>
@@ -1954,7 +1948,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_ProcessorModule.bas-->
 
-	<!-- BEGIN text for VBP_FormDiffuse.frm-->
+	<!-- BEGIN text for VBP_FormDiffuse.frm (FormDiffuse) -->
 
 	<phrase>
 		<original>wrap edge values</original>
@@ -1980,7 +1974,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_FormDiffuse.frm-->
 
-	<!-- BEGIN text for VBP_FormFade.frm-->
+	<!-- BEGIN text for VBP_FormFade.frm (FormFade) -->
 
 	<phrase>
 		<original>Fade Image</original>
@@ -2006,13 +2000,13 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_FormFade.frm-->
 
-	<!-- BEGIN text for VBP_ToolbarModule.bas-->
+	<!-- BEGIN text for VBP_ToolbarModule.bas -->
 
 	<!-- VBP_ToolbarModule.bas contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 	<!-- END text for VBP_ToolbarModule.bas-->
 
-	<!-- BEGIN text for VBP_FormSolarize.frm-->
+	<!-- BEGIN text for VBP_FormSolarize.frm (FormSolarize) -->
 
 	<phrase>
 		<original>solarize threshold</original>
@@ -2028,7 +2022,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_FormSolarize.frm-->
 
-	<!-- BEGIN text for VBP_FormCustomFilter.frm-->
+	<!-- BEGIN text for VBP_FormCustomFilter.frm (FormCustomFilter) -->
 
 	<phrase>
 		<original>Save filter</original>
@@ -2109,7 +2103,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_FormCustomFilter.frm-->
 
-	<!-- BEGIN text for VBP_FastDrawing.bas-->
+	<!-- BEGIN text for VBP_FastDrawing.bas -->
 
 	<phrase>
 		<original>Rendering image to screen</original>
@@ -2120,7 +2114,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_FastDrawing.bas-->
 
-	<!-- BEGIN text for cCommonDialog.cls-->
+	<!-- BEGIN text for cCommonDialog.cls -->
 
 	<phrase>
 		<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
@@ -2141,7 +2135,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for cCommonDialog.cls-->
 
-	<!-- BEGIN text for VBP_FormGamma.frm-->
+	<!-- BEGIN text for VBP_FormGamma.frm (FormGamma) -->
 
 	<phrase>
 		<original>keep all colors in sync</original>
@@ -2177,7 +2171,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_FormGamma.frm-->
 
-	<!-- BEGIN text for VBP_FormHistogram.frm-->
+	<!-- BEGIN text for VBP_FormHistogram.frm (FormHistogram) -->
 
 	<phrase>
 		<original>Histogram</original>
@@ -2268,7 +2262,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_FormHistogram.frm-->
 
-	<!-- BEGIN text for VBP_BatchConversion.bas-->
+	<!-- BEGIN text for VBP_BatchConversion.bas -->
 
 	<phrase>
 		<original>Macro recording started.</original>
@@ -2376,7 +2370,7 @@ When finished, click the Submit button.  Thank you!</original>
 
 	<!-- END text for VBP_BatchConversion.bas-->
 
-	<!-- BEGIN text for VBP_Filters2.bas-->
+	<!-- BEGIN text for VBP_Filters2.bas -->
 
 	<phrase>
 		<original>Converting image mode</original>
@@ -2464,7 +2458,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<!-- END text for VBP_Filters2.bas-->
 
-	<!-- BEGIN text for VBP_FormBlackLight.frm-->
+	<!-- BEGIN text for VBP_FormBlackLight.frm (FormBlackLight) -->
 
 	<phrase>
 		<original>Black Light Options</original>
@@ -2485,7 +2479,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 	<!-- END text for VBP_FormBlackLight.frm-->
 
-	<!-- BEGIN text for VBP_FormMain.frm-->
+	<!-- BEGIN text for VBP_FormMain.frm (FormMain) -->
 
 	<phrase>
 		<original>Click to change the way selections are rendered</original>
@@ -3278,7 +3272,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 	<!-- END text for VBP_FormMain.frm-->
 
-	<!-- BEGIN text for VBP_ScannerInterface.bas-->
+	<!-- BEGIN text for VBP_ScannerInterface.bas -->
 
 	<phrase>
 		<original>Scanner successfully enabled</original>
@@ -3378,7 +3372,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<!-- END text for VBP_ScannerInterface.bas-->
 
-	<!-- BEGIN text for VBP_FormGrayscale.frm-->
+	<!-- BEGIN text for VBP_FormGrayscale.frm (FormGrayscale) -->
 
 	<phrase>
 		<original>minimum</original>
@@ -3484,7 +3478,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<!-- END text for VBP_FormGrayscale.frm-->
 
-	<!-- BEGIN text for VBP_Filters_Edge.bas-->
+	<!-- BEGIN text for VBP_Filters_Edge.bas -->
 
 	<phrase>
 		<original>pencil sketch</original>
@@ -3495,7 +3489,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<!-- END text for VBP_Filters_Edge.bas-->
 
-	<!-- BEGIN text for VBP_FormFindEdges.frm-->
+	<!-- BEGIN text for VBP_FormFindEdges.frm (FormFindEdges) -->
 
 	<phrase>
 		<original>use black background</original>
@@ -3621,7 +3615,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<!-- END text for VBP_FormFindEdges.frm-->
 
-	<!-- BEGIN text for VBP_Filters_Natural.bas-->
+	<!-- BEGIN text for VBP_Filters_Natural.bas -->
 
 	<phrase>
 		<original>Sprinkling image with shimmering rainbows</original>
@@ -3667,7 +3661,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<!-- END text for VBP_Filters_Natural.bas-->
 
-	<!-- BEGIN text for VBP_CompressionUtility.bas-->
+	<!-- BEGIN text for VBP_CompressionUtility.bas -->
 
 	<phrase>
 		<original>An error (#%1) has occurred.  Compression halted.</original>
@@ -3698,7 +3692,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<!-- END text for VBP_CompressionUtility.bas-->
 
-	<!-- BEGIN text for VBP_FormBlackAndWhite.frm-->
+	<!-- BEGIN text for VBP_FormBlackAndWhite.frm (FormBlackAndWhite) -->
 
 	<phrase>
 		<original>Monochrome Conversion</original>
@@ -3794,7 +3788,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<!-- END text for VBP_FormBlackAndWhite.frm-->
 
-	<!-- BEGIN text for VBP_FormPreferences.frm-->
+	<!-- BEGIN text for VBP_FormPreferences.frm (FormPreferences) -->
 
 	<phrase>
 		<original>PhotoDemon Options</original>
@@ -3883,6 +3877,31 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>File Format Options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>automatically validate all incoming alpha channels</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>validation</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency checkerboard size</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency checkerboard colors</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>appearance</original>
 		<translation></translation>
 	</phrase>
 
@@ -4177,11 +4196,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
-		<original>Click to change the image window background color</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
 		<original>recently used file shortcuts should be</original>
 		<translation></translation>
 	</phrase>
@@ -4208,36 +4222,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 	<phrase>
 		<original>canvas appearance</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically validate all incoming alpha channels</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Click to change the second checkerboard background color for alpha channels</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>validation</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>transparency checkerboard size</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>transparency checkerboard colors</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>appearance</original>
 		<translation></translation>
 	</phrase>
 
@@ -4692,15 +4676,30 @@ If you choose to disable these features, note that you can always visit tannerhe
 	</phrase>
 
 	<phrase>
+		<original>Click to change the image window background color</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to change the first checkerboard background color for alpha channels</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Click to change the second checkerboard background color for alpha channels</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 195 phrases. 18 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 195 phrases. 17 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
-	<!-- BEGIN text for VBP_FormPosterize.frm-->
+	<!-- BEGIN text for VBP_FormPosterize.frm (FormPosterize) -->
 
 	<phrase>
 		<original>posterize to this many bits</original>
@@ -4716,7 +4715,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_FormPosterize.frm-->
 
-	<!-- BEGIN text for VBP_FormImage.frm-->
+	<!-- BEGIN text for VBP_FormImage.frm (FormImage) -->
 
 	<phrase>
 		<original>Image Window</original>
@@ -4732,7 +4731,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_FormImage.frm-->
 
-	<!-- BEGIN text for VBP_MDIWindow.bas-->
+	<!-- BEGIN text for VBP_MDIWindow.bas -->
 
 	<phrase>
 		<original>Loading image</original>
@@ -4743,7 +4742,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_MDIWindow.bas-->
 
-	<!-- BEGIN text for VBP_Filters_Color_Effects.bas-->
+	<!-- BEGIN text for VBP_Filters_Color_Effects.bas -->
 
 	<phrase>
 		<original>Inverting the image</original>
@@ -4799,7 +4798,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_Filters_Color_Effects.bas-->
 
-	<!-- BEGIN text for VBP_Filters_Rotate.bas-->
+	<!-- BEGIN text for VBP_Filters_Rotate.bas -->
 
 	<phrase>
 		<original>Analyzing top edge of image</original>
@@ -4885,7 +4884,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_Filters_Rotate.bas-->
 
-	<!-- BEGIN text for VBP_FormImportFrx.frm-->
+	<!-- BEGIN text for VBP_FormImportFrx.frm (FormImportFrx) -->
 
 	<phrase>
 		<original>Import From VB Binary File</original>
@@ -4991,25 +4990,25 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_FormImportFrx.frm-->
 
-	<!-- BEGIN text for OutsideDevelopment_FrxFile.cls-->
+	<!-- BEGIN text for OutsideDevelopment_FrxFile.cls -->
 
 	<!-- OutsideDevelopment_FrxFile.cls contains 0 phrases. -->
 
 	<!-- END text for OutsideDevelopment_FrxFile.cls-->
 
-	<!-- BEGIN text for OutsideDevelopment_FrxItem.cls-->
+	<!-- BEGIN text for OutsideDevelopment_FrxItem.cls -->
 
 	<!-- OutsideDevelopment_FrxItem.cls contains 0 phrases. -->
 
 	<!-- END text for OutsideDevelopment_FrxItem.cls-->
 
-	<!-- BEGIN text for VBP_OutsideDevelopment_ModFRX.bas-->
+	<!-- BEGIN text for VBP_OutsideDevelopment_ModFRX.bas -->
 
 	<!-- VBP_OutsideDevelopment_ModFRX.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_OutsideDevelopment_ModFRX.bas-->
 
-	<!-- BEGIN text for VBP_FormEmbossEngrave.frm-->
+	<!-- BEGIN text for VBP_FormEmbossEngrave.frm (FormEmbossEngrave) -->
 
 	<phrase>
 		<original>Emboss/Engrave</original>
@@ -5035,7 +5034,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_FormEmbossEngrave.frm-->
 
-	<!-- BEGIN text for VBP_FormPrint.frm-->
+	<!-- BEGIN text for VBP_FormPrint.frm (FormPrint) -->
 
 	<phrase>
 		<original>Print Image</original>
@@ -5161,7 +5160,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_FormPrint.frm-->
 
-	<!-- BEGIN text for VBP_MRUList.bas-->
+	<!-- BEGIN text for VBP_MRUList.bas -->
 
 	<phrase>
 		<original>Saving recent file menu thumbnail</original>
@@ -5182,13 +5181,13 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_MRUList.bas-->
 
-	<!-- BEGIN text for pdImage.cls-->
+	<!-- BEGIN text for pdImage.cls -->
 
 	<!-- pdImage.cls contains 0 phrases. -->
 
 	<!-- END text for pdImage.cls-->
 
-	<!-- BEGIN text for VBP_FormImageLevels.frm-->
+	<!-- BEGIN text for VBP_FormImageLevels.frm (FormLevels) -->
 
 	<phrase>
 		<original>Adjust Image Levels</original>
@@ -5229,7 +5228,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_FormImageLevels.frm-->
 
-	<!-- BEGIN text for VBP_FormColorize.frm-->
+	<!-- BEGIN text for VBP_FormColorize.frm (FormColorize) -->
 
 	<phrase>
 		<original>Colorize Options</original>
@@ -5255,13 +5254,13 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_FormColorize.frm-->
 
-	<!-- BEGIN text for VBP_PublicAPI.bas-->
+	<!-- BEGIN text for VBP_PublicAPI.bas -->
 
 	<!-- VBP_PublicAPI.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_PublicAPI.bas-->
 
-	<!-- BEGIN text for VBP_FormDespeckle.frm-->
+	<!-- BEGIN text for VBP_FormDespeckle.frm (FormDespeckle) -->
 
 	<phrase>
 		<original>Advanced Despeckle</original>
@@ -5297,13 +5296,13 @@ If you choose to disable these features, note that you can always visit tannerhe
 
 	<!-- END text for VBP_FormDespeckle.frm-->
 
-	<!-- BEGIN text for VBP_OutsideDevelopment_FreeImageV3.bas-->
+	<!-- BEGIN text for VBP_OutsideDevelopment_FreeImageV3.bas -->
 
 	<!-- VBP_OutsideDevelopment_FreeImageV3.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_OutsideDevelopment_FreeImageV3.bas-->
 
-	<!-- BEGIN text for VBP_FormInternetImport.frm-->
+	<!-- BEGIN text for VBP_FormInternetImport.frm (FormInternetImport) -->
 
 	<phrase>
 		<original>Download Image</original>
@@ -5433,7 +5432,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 	<!-- END text for VBP_FormInternetImport.frm-->
 
-	<!-- BEGIN text for VBP_FormPluginDownloader.frm-->
+	<!-- BEGIN text for VBP_FormPluginDownloader.frm (FormPluginDownloader) -->
 
 	<phrase>
 		<original>PhotoDemon Plugin Downloader</original>
@@ -5668,61 +5667,61 @@ To improve your user experience, please allow the program to automatically downl
 
 	<!-- END text for VBP_FormPluginDownloader.frm-->
 
-	<!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas-->
+	<!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
 
 	<!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_OutsideDevelopment_SetIcon.bas-->
 
-	<!-- BEGIN text for VBP_Main.bas-->
+	<!-- BEGIN text for VBP_Main.bas -->
 
 	<!-- VBP_Main.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_Main.bas-->
 
-	<!-- BEGIN text for VBP_OutsideDevelopment_mWinHook.bas-->
+	<!-- BEGIN text for VBP_OutsideDevelopment_mWinHook.bas -->
 
 	<!-- VBP_OutsideDevelopment_mWinHook.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_OutsideDevelopment_mWinHook.bas-->
 
-	<!-- BEGIN text for IWindowsHook.cls-->
+	<!-- BEGIN text for IWindowsHook.cls -->
 
 	<!-- IWindowsHook.cls contains 0 phrases. -->
 
 	<!-- END text for IWindowsHook.cls-->
 
-	<!-- BEGIN text for vbalHookControl.ctl-->
+	<!-- BEGIN text for vbalHookControl.ctl -->
 
 	<!-- vbalHookControl.ctl contains 0 phrases. -->
 
 	<!-- END text for vbalHookControl.ctl-->
 
-	<!-- BEGIN text for cProgressBar.cls-->
+	<!-- BEGIN text for cProgressBar.cls -->
 
 	<!-- cProgressBar.cls contains 0 phrases. -->
 
 	<!-- END text for cProgressBar.cls-->
 
-	<!-- BEGIN text for pcMemDC.cls-->
+	<!-- BEGIN text for pcMemDC.cls -->
 
 	<!-- pcMemDC.cls contains 0 phrases. -->
 
 	<!-- END text for pcMemDC.cls-->
 
-	<!-- BEGIN text for VBP_MenuIcons.bas-->
+	<!-- BEGIN text for VBP_MenuIcons.bas -->
 
 	<!-- VBP_MenuIcons.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_MenuIcons.bas-->
 
-	<!-- BEGIN text for clsMenuImage.cls-->
+	<!-- BEGIN text for clsMenuImage.cls -->
 
 	<!-- clsMenuImage.cls contains 0 phrases. -->
 
 	<!-- END text for clsMenuImage.cls-->
 
-	<!-- BEGIN text for VBP_FormWhiteBalance.frm-->
+	<!-- BEGIN text for VBP_FormWhiteBalance.frm (FormWhiteBalance) -->
 
 	<phrase>
 		<original>strength</original>
@@ -5738,19 +5737,19 @@ To improve your user experience, please allow the program to automatically downl
 
 	<!-- END text for VBP_FormWhiteBalance.frm-->
 
-	<!-- BEGIN text for VBP_TextModule.bas-->
+	<!-- BEGIN text for VBP_TextModule.bas -->
 
 	<!-- VBP_TextModule.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_TextModule.bas-->
 
-	<!-- BEGIN text for VBP_OutsideDevelopment_mGfxWu.bas-->
+	<!-- BEGIN text for VBP_OutsideDevelopment_mGfxWu.bas -->
 
 	<!-- VBP_OutsideDevelopment_mGfxWu.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_OutsideDevelopment_mGfxWu.bas-->
 
-	<!-- BEGIN text for VBP_FormSoftwareUpdates.frm-->
+	<!-- BEGIN text for VBP_FormSoftwareUpdates.frm (FormSoftwareUpdate) -->
 
 	<phrase>
 		<original>Update Notifier</original>
@@ -5828,13 +5827,13 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for VBP_FormSoftwareUpdates.frm-->
 
-	<!-- BEGIN text for VBP_SoftwareUpdater.bas-->
+	<!-- BEGIN text for VBP_SoftwareUpdater.bas -->
 
 	<!-- VBP_SoftwareUpdater.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_SoftwareUpdater.bas-->
 
-	<!-- BEGIN text for VBP_FormTile.frm-->
+	<!-- BEGIN text for VBP_FormTile.frm (FormTile) -->
 
 	<phrase>
 		<original>The final image will be %1 %3 wide by %2 %3 tall.</original>
@@ -5875,7 +5874,7 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for VBP_FormTile.frm-->
 
-	<!-- BEGIN text for pdLayer.cls-->
+	<!-- BEGIN text for pdLayer.cls -->
 
 	<phrase>
 		<original>Failed to load layer from disk: invalid layer file specified.</original>
@@ -5886,7 +5885,7 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for pdLayer.cls-->
 
-	<!-- BEGIN text for VBP_GDIPlus.bas-->
+	<!-- BEGIN text for VBP_GDIPlus.bas -->
 
 	<phrase>
 		<original>Initializing GDI+</original>
@@ -5917,7 +5916,7 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for VBP_GDIPlus.bas-->
 
-	<!-- BEGIN text for VBP_FreeImage_Expanded.bas-->
+	<!-- BEGIN text for VBP_FreeImage_Expanded.bas -->
 
 	<phrase>
 		<original>Analyzing filetype</original>
@@ -6098,7 +6097,7 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for VBP_FreeImage_Expanded.bas-->
 
-	<!-- BEGIN text for VBP_FormColorTemp.frm-->
+	<!-- BEGIN text for VBP_FormColorTemp.frm (FormColorTemp) -->
 
 	<phrase>
 		<original>Adjust Color Temperature</original>
@@ -6129,7 +6128,7 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for VBP_FormColorTemp.frm-->
 
-	<!-- BEGIN text for VBP_FormEqualize.frm-->
+	<!-- BEGIN text for VBP_FormEqualize.frm (FormEqualize) -->
 
 	<phrase>
 		<original>Equalize Histogram</original>
@@ -6150,13 +6149,13 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for VBP_FormEqualize.frm-->
 
-	<!-- BEGIN text for pdSelection.cls-->
+	<!-- BEGIN text for pdSelection.cls -->
 
 	<!-- pdSelection.cls contains 0 phrases. -->
 
 	<!-- END text for pdSelection.cls-->
 
-	<!-- BEGIN text for VBP_FormRechannel.frm-->
+	<!-- BEGIN text for VBP_FormRechannel.frm (FormRechannel) -->
 
 	<phrase>
 		<original>cyan</original>
@@ -6207,7 +6206,7 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for VBP_FormRechannel.frm-->
 
-	<!-- BEGIN text for VBP_MiscFileManagement.bas-->
+	<!-- BEGIN text for VBP_MiscFileManagement.bas -->
 
 	<phrase>
 		<original>Please select a folder</original>
@@ -6218,7 +6217,7 @@ Note: you can always manually download the latest version by visiting tannerhell
 
 	<!-- END text for VBP_MiscFileManagement.bas-->
 
-	<!-- BEGIN text for VBP_MiscValidation.bas-->
+	<!-- BEGIN text for VBP_MiscValidation.bas -->
 
 	<phrase>
 		<original>%1 is not a valid entry.
@@ -6241,13 +6240,13 @@ Please enter a numeric value.</original>
 
 	<!-- END text for VBP_MiscValidation.bas-->
 
-	<!-- BEGIN text for VBP_MiscProgBar.bas-->
+	<!-- BEGIN text for VBP_MiscProgBar.bas -->
 
 	<!-- VBP_MiscProgBar.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_MiscProgBar.bas-->
 
-	<!-- BEGIN text for VBP_MiscInterface.bas-->
+	<!-- BEGIN text for VBP_MiscInterface.bas -->
 
 	<phrase>
 		<original>Show left panel (file tools)</original>
@@ -6288,7 +6287,7 @@ Please enter a numeric value.</original>
 
 	<!-- END text for VBP_MiscInterface.bas-->
 
-	<!-- BEGIN text for VBP_FormHSL.frm-->
+	<!-- BEGIN text for VBP_FormHSL.frm (FormHSL) -->
 
 	<phrase>
 		<original>Adjust Hue / Saturation / Lightness</original>
@@ -6319,31 +6318,31 @@ Please enter a numeric value.</original>
 
 	<!-- END text for VBP_FormHSL.frm-->
 
-	<!-- BEGIN text for pdShadow.cls-->
+	<!-- BEGIN text for pdShadow.cls -->
 
 	<!-- pdShadow.cls contains 0 phrases. -->
 
 	<!-- END text for pdShadow.cls-->
 
-	<!-- BEGIN text for pdPreferences.cls-->
+	<!-- BEGIN text for pdPreferences.cls -->
 
 	<!-- pdPreferences.cls contains 0 phrases. -->
 
 	<!-- END text for pdPreferences.cls-->
 
-	<!-- BEGIN text for OutsideDevelopment_Monitor.cls-->
+	<!-- BEGIN text for OutsideDevelopment_Monitor.cls -->
 
 	<!-- OutsideDevelopment_Monitor.cls contains 0 phrases. -->
 
 	<!-- END text for OutsideDevelopment_Monitor.cls-->
 
-	<!-- BEGIN text for OutsideDevelopment_Monitors.cls-->
+	<!-- BEGIN text for OutsideDevelopment_Monitors.cls -->
 
 	<!-- OutsideDevelopment_Monitors.cls contains 0 phrases. -->
 
 	<!-- END text for OutsideDevelopment_Monitors.cls-->
 
-	<!-- BEGIN text for VBP_FormRotate.frm-->
+	<!-- BEGIN text for VBP_FormRotate.frm (FormRotate) -->
 
 	<phrase>
 		<original>Rotate Image</original>
@@ -6399,7 +6398,7 @@ Please enter a numeric value.</original>
 
 	<!-- END text for VBP_FormRotate.frm-->
 
-	<!-- BEGIN text for VBP_FormUnsavedChanges.frm-->
+	<!-- BEGIN text for VBP_FormUnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 	<phrase>
 		<original>Unsaved Changes</original>
@@ -6468,7 +6467,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 	<!-- END text for VBP_FormUnsavedChanges.frm-->
 
-	<!-- BEGIN text for pdFormats.cls-->
+	<!-- BEGIN text for pdFormats.cls -->
 
 	<phrase>
 		<original>All Compatible Images</original>
@@ -6479,19 +6478,19 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 	<!-- END text for pdFormats.cls-->
 
-	<!-- BEGIN text for cSHA256.cls-->
+	<!-- BEGIN text for cSHA256.cls -->
 
 	<!-- cSHA256.cls contains 0 phrases. -->
 
 	<!-- END text for cSHA256.cls-->
 
-	<!-- BEGIN text for VBP_MiscOSInteractions.bas-->
+	<!-- BEGIN text for VBP_MiscOSInteractions.bas -->
 
 	<!-- VBP_MiscOSInteractions.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_MiscOSInteractions.bas-->
 
-	<!-- BEGIN text for VBP_FormMultiImage.frm-->
+	<!-- BEGIN text for VBP_FormMultiImage.frm (dialog_MultiImage) -->
 
 	<phrase>
 		<original>Multiple Images Found</original>
@@ -6588,13 +6587,13 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormMultiImage.frm-->
 
-	<!-- BEGIN text for VBP_CustomDialogHandler.bas-->
+	<!-- BEGIN text for VBP_CustomDialogHandler.bas -->
 
 	<!-- VBP_CustomDialogHandler.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_CustomDialogHandler.bas-->
 
-	<!-- BEGIN text for VBP_FormExportJPEG.frm-->
+	<!-- BEGIN text for VBP_FormExportJPEG.frm (dialog_ExportJPEG) -->
 
 	<phrase>
 		<original>JPEG Export Options</original>
@@ -6725,7 +6724,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormExportJPEG.frm-->
 
-	<!-- BEGIN text for VBP_FormExportJP2.frm-->
+	<!-- BEGIN text for VBP_FormExportJP2.frm (dialog_ExportJP2) -->
 
 	<phrase>
 		<original>JPEG 2000 Export Options</original>
@@ -6786,7 +6785,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormExportJP2.frm-->
 
-	<!-- BEGIN text for VBP_FormExportColorDepth.frm-->
+	<!-- BEGIN text for VBP_FormExportColorDepth.frm (dialog_ExportColorDepth) -->
 
 	<phrase>
 		<original>Please Choose Exported Color Depth</original>
@@ -6832,7 +6831,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormExportColorDepth.frm-->
 
-	<!-- BEGIN text for VBP_FormAlphaCutoff.frm-->
+	<!-- BEGIN text for VBP_FormAlphaCutoff.frm (dialog_AlphaCutoff) -->
 
 	<phrase>
 		<original>Please Choose A Transparency Threshold</original>
@@ -6868,7 +6867,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormAlphaCutoff.frm-->
 
-	<!-- BEGIN text for VBP_FormIDEWarning.frm-->
+	<!-- BEGIN text for VBP_FormIDEWarning.frm (dialog_IDEWarning) -->
 
 	<phrase>
 		<original>Visual Basic IDE Detected</original>
@@ -6914,7 +6913,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormIDEWarning.frm-->
 
-	<!-- BEGIN text for VBP_FormPluginManager.frm-->
+	<!-- BEGIN text for VBP_FormPluginManager.frm (FormPluginManager) -->
 
 	<phrase>
 		<original>PhotoDemon Plugin Manager</original>
@@ -7150,13 +7149,13 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormPluginManager.frm-->
 
-	<!-- BEGIN text for VBP_pngnqInterface.bas-->
+	<!-- BEGIN text for VBP_pngnqInterface.bas -->
 
 	<!-- VBP_pngnqInterface.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_pngnqInterface.bas-->
 
-	<!-- BEGIN text for VBP_FormSwirl.frm-->
+	<!-- BEGIN text for VBP_FormSwirl.frm (FormSwirl) -->
 
 	<phrase>
 		<original>speed</original>
@@ -7192,7 +7191,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormSwirl.frm-->
 
-	<!-- BEGIN text for VBP_FormLens.frm-->
+	<!-- BEGIN text for VBP_FormLens.frm (FormLens) -->
 
 	<phrase>
 		<original>lens strength (refractive index)</original>
@@ -7208,7 +7207,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormLens.frm-->
 
-	<!-- BEGIN text for VBP_FormRipple.frm-->
+	<!-- BEGIN text for VBP_FormRipple.frm (FormRipple) -->
 
 	<phrase>
 		<original>time (phase)</original>
@@ -7234,7 +7233,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormRipple.frm-->
 
-	<!-- BEGIN text for VBP_FormPinch.frm-->
+	<!-- BEGIN text for VBP_FormPinch.frm (FormPinch) -->
 
 	<phrase>
 		<original>pinch amount</original>
@@ -7255,7 +7254,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormPinch.frm-->
 
-	<!-- BEGIN text for VBP_FormWaves.frm-->
+	<!-- BEGIN text for VBP_FormWaves.frm (FormWaves) -->
 
 	<phrase>
 		<original>vertical wavelength</original>
@@ -7286,7 +7285,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormWaves.frm-->
 
-	<!-- BEGIN text for VBP_FormEtchGlass.frm-->
+	<!-- BEGIN text for VBP_FormEtchGlass.frm (FormFiguredGlass) -->
 
 	<phrase>
 		<original>turbulence</original>
@@ -7307,13 +7306,13 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormEtchGlass.frm-->
 
-	<!-- BEGIN text for cPerlin3D.cls-->
+	<!-- BEGIN text for cPerlin3D.cls -->
 
 	<!-- cPerlin3D.cls contains 0 phrases. -->
 
 	<!-- END text for cPerlin3D.cls-->
 
-	<!-- BEGIN text for fxPreview.ctl-->
+	<!-- BEGIN text for fxPreview.ctl -->
 
 	<phrase>
 		<original>show original image</original>
@@ -7329,7 +7328,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for fxPreview.ctl-->
 
-	<!-- BEGIN text for VBP_FormKaleidoscope.frm-->
+	<!-- BEGIN text for VBP_FormKaleidoscope.frm (FormKaleidoscope) -->
 
 	<phrase>
 		<original>secondary angle</original>
@@ -7355,7 +7354,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormKaleidoscope.frm-->
 
-	<!-- BEGIN text for VBP_FormPolar.frm-->
+	<!-- BEGIN text for VBP_FormPolar.frm (FormPolar) -->
 
 	<phrase>
 		<original>Polar Coordinate Conversion</original>
@@ -7391,7 +7390,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormPolar.frm-->
 
-	<!-- BEGIN text for VBP_FormGaussianBlur.frm-->
+	<!-- BEGIN text for VBP_FormGaussianBlur.frm (FormGaussianBlur) -->
 
 	<phrase>
 		<original>blur radius</original>
@@ -7412,7 +7411,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormGaussianBlur.frm-->
 
-	<!-- BEGIN text for VBP_FormSmartBlur.frm-->
+	<!-- BEGIN text for VBP_FormSmartBlur.frm (FormSmartBlur) -->
 
 	<phrase>
 		<original>smooth areas</original>
@@ -7448,7 +7447,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormSmartBlur.frm-->
 
-	<!-- BEGIN text for VBP_FormBoxBlur.frm-->
+	<!-- BEGIN text for VBP_FormBoxBlur.frm (FormBoxBlur) -->
 
 	<phrase>
 		<original>box height</original>
@@ -7469,7 +7468,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormBoxBlur.frm-->
 
-	<!-- BEGIN text for VBP_FormUnsharpMask.frm-->
+	<!-- BEGIN text for VBP_FormUnsharpMask.frm (FormUnsharpMask) -->
 
 	<phrase>
 		<original>amount</original>
@@ -7485,7 +7484,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormUnsharpMask.frm-->
 
-	<!-- BEGIN text for VBP_FormLensCorrect.frm-->
+	<!-- BEGIN text for VBP_FormLensCorrect.frm (FormLensCorrect) -->
 
 	<phrase>
 		<original>Correct or Fix Lens Distortion</original>
@@ -7516,25 +7515,25 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormLensCorrect.frm-->
 
-	<!-- BEGIN text for pdTranslate.cls-->
+	<!-- BEGIN text for pdTranslate.cls -->
 
 	<!-- pdTranslate.cls contains 0 phrases. -->
 
 	<!-- END text for pdTranslate.cls-->
 
-	<!-- BEGIN text for smartOptionButton.ctl-->
+	<!-- BEGIN text for smartOptionButton.ctl -->
 
 	<!-- smartOptionButton.ctl contains 0 phrases. -->
 
 	<!-- END text for smartOptionButton.ctl-->
 
-	<!-- BEGIN text for smartCheckBox.ctl-->
+	<!-- BEGIN text for smartCheckBox.ctl -->
 
 	<!-- smartCheckBox.ctl contains 0 phrases. -->
 
 	<!-- END text for smartCheckBox.ctl-->
 
-	<!-- BEGIN text for VBP_FormFilmGrain.frm-->
+	<!-- BEGIN text for VBP_FormFilmGrain.frm (FormFilmGrain) -->
 
 	<phrase>
 		<original>Apply Film Grain</original>
@@ -7565,7 +7564,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormFilmGrain.frm-->
 
-	<!-- BEGIN text for VBP_FormColorBalance.frm-->
+	<!-- BEGIN text for VBP_FormColorBalance.frm (FormColorBalance) -->
 
 	<phrase>
 		<original>Adjust Color Balance</original>
@@ -7581,7 +7580,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormColorBalance.frm-->
 
-	<!-- BEGIN text for VBP_FormVignette.frm-->
+	<!-- BEGIN text for VBP_FormVignette.frm (FormVignette) -->
 
 	<phrase>
 		<original>Apply Vignetting</original>
@@ -7617,7 +7616,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormVignette.frm-->
 
-	<!-- BEGIN text for VBP_FormMedian.frm-->
+	<!-- BEGIN text for VBP_FormMedian.frm (FormMedian) -->
 
 	<phrase>
 		<original>percentile</original>
@@ -7643,7 +7642,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormMedian.frm-->
 
-	<!-- BEGIN text for VBP_FormModernArt.frm-->
+	<!-- BEGIN text for VBP_FormModernArt.frm (FormModernArt) -->
 
 	<phrase>
 		<original>Applying modern art techniques</original>
@@ -7654,7 +7653,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormModernArt.frm-->
 
-	<!-- BEGIN text for VBP_FormMonoToColor.frm-->
+	<!-- BEGIN text for VBP_FormMonoToColor.frm (FormMonoToColor) -->
 
 	<phrase>
 		<original>Convert Monochrome Image to Grayscale</original>
@@ -7685,7 +7684,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormMonoToColor.frm-->
 
-	<!-- BEGIN text for VBP_FormContour.frm-->
+	<!-- BEGIN text for VBP_FormContour.frm (FormContour) -->
 
 	<phrase>
 		<original>apply contour smoothing</original>
@@ -7706,13 +7705,13 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormContour.frm-->
 
-	<!-- BEGIN text for VBP_Filters_Layers.bas-->
+	<!-- BEGIN text for VBP_Filters_Layers.bas -->
 
 	<!-- VBP_Filters_Layers.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_Filters_Layers.bas-->
 
-	<!-- BEGIN text for VBP_FormShadowHighlight.frm-->
+	<!-- BEGIN text for VBP_FormShadowHighlight.frm (FormShadowHighlight) -->
 
 	<phrase>
 		<original>Shadow / Midtone / Highlight</original>
@@ -7738,7 +7737,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<!-- END text for VBP_FormShadowHighlight.frm-->
 
-	<!-- BEGIN text for VBP_FormBatchWizard.frm-->
+	<!-- BEGIN text for VBP_FormBatchWizard.frm (FormBatchWizard) -->
 
 	<phrase>
 		<original>Batch Process Wizard</original>
@@ -8233,16 +8232,10 @@ By default, transparency will be split down the middle, or you can specify a cus
 
 	<!-- END text for VBP_FormBatchWizard.frm-->
 
-	<!-- BEGIN text for pdParamString.cls-->
-
-	<!-- pdParamString.cls contains 0 phrases. -->
-
-	<!-- END text for pdParamString.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <!-- As of this build, PhotoDemon contains 2055 phrases in total. -->
-<!-- 593 are duplicate phrases, so only 1462 phrases have been written to file. -->
-<!-- These 1462 phrases contain approximately 9428 total words. -->
+<!-- 592 are duplicate phrases, so only 1463 phrases have been written to file. -->
+<!-- These 1463 phrases contain approximately 9439 total words. -->
 
 </language>
