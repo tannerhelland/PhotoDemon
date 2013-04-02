@@ -218,7 +218,7 @@ Begin VB.Form FormSoftwareUpdate
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   240
+      Height          =   360
       Left            =   120
       TabIndex        =   5
       Top             =   1800
