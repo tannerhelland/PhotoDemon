@@ -257,7 +257,7 @@ Private Sub UserControl_Initialize()
     setHandCursor optButton
     
     'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
-    If g_IsProgramCompiled And g_IsThemingEnabled Then
+    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
         SubclassFrame UserControl.hWnd, False
         optButton.ZOrder 0
     End If
@@ -351,7 +351,7 @@ Private Sub updateControlSize()
     'When compiled, set the option button to be the full size of the user control.  Thanks to subclassing, the option
     ' button will still be fully transparent.  This allows the caption to be seen, while also allowing Vista/7's
     ' "hover" animation to still work with the mouse.  In the IDE, an underline is used to display focus.
-    If g_IsProgramCompiled And g_IsThemingEnabled Then optButton.Width = UserControl.ScaleWidth - 2
+    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then optButton.Width = UserControl.ScaleWidth - 2
             
     lblCaption.Refresh
     optButton.Refresh
