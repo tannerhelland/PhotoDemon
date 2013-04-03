@@ -32,11 +32,19 @@ Begin VB.Form FormVignette
       TabIndex        =   16
       Top             =   4440
       Width           =   1500
-      _extentx        =   2646
-      _extenty        =   635
-      caption         =   "fit to image"
-      value           =   -1  'True
-      font            =   "VBP_FormVignette.frx":0000
+      _ExtentX        =   2646
+      _ExtentY        =   635
+      Caption         =   "fit to image"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox PicColor 
       Appearance      =   0  'Flat
@@ -174,8 +182,8 @@ Begin VB.Form FormVignette
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartOptionButton optShape 
       Height          =   360
@@ -184,10 +192,18 @@ Begin VB.Form FormVignette
       TabIndex        =   17
       Top             =   4440
       Width           =   1050
-      _extentx        =   1852
-      _extenty        =   635
-      caption         =   "circular"
-      font            =   "VBP_FormVignette.frx":0028
+      _ExtentX        =   1852
+      _ExtentY        =   635
+      Caption         =   "circular"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblShape 
       AutoSize        =   -1  'True

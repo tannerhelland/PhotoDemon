@@ -212,7 +212,7 @@ End Sub
 
 'Subroutine for adding noise to an image
 ' Inputs: Amount of noise, monochromatic or not, preview settings
-Public Sub AddFilmGrain(ByVal gStrength As Long, ByVal gSoftness As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
     If Not toPreview Then Message "Generating film grain texture..."
     

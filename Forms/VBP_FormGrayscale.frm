@@ -477,7 +477,7 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -503,40 +503,40 @@ Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview 
     'Build a look-up table for our custom grayscale conversion results
     Dim LookUp(0 To 255) As Byte
     
-    For X = 0 To 255
-        grayVal = Int((CDbl(X) / conversionFactor) + 0.5) * conversionFactor
+    For x = 0 To 255
+        grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
         If grayVal > 255 Then grayVal = 255
-        LookUp(X) = CByte(grayVal)
-    Next X
+        LookUp(x) = CByte(grayVal)
+    Next x
     
     'Build another look-up table for our initial grayscale index calculation
     Dim grayLookUp(0 To 765) As Byte
-    For X = 0 To 765
-        grayLookUp(X) = X \ 3
-    Next X
+    For x = 0 To 765
+        grayLookUp(x) = x \ 3
+    Next x
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         grayVal = grayLookUp(r + g + b)
         
         'Assign all color channels the new gray value
-        ImageData(QuickVal + 2, Y) = LookUp(grayVal)
-        ImageData(QuickVal + 1, Y) = LookUp(grayVal)
-        ImageData(QuickVal, Y) = LookUp(grayVal)
+        ImageData(QuickVal + 2, y) = LookUp(grayVal)
+        ImageData(QuickVal + 1, y) = LookUp(grayVal)
+        ImageData(QuickVal, y) = LookUp(grayVal)
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -560,7 +560,7 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -586,9 +586,9 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     
     'Build another look-up table for our initial grayscale index calculation
     Dim grayLookUp(0 To 765) As Byte
-    For X = 0 To 765
-        grayLookUp(X) = X \ 3
-    Next X
+    For x = 0 To 765
+        grayLookUp(x) = x \ 3
+    Next x
     
     'Unfortunately, this algorithm (unlike its non-dithering counterpart) is not well-suited to using a look-up table,
     ' so all calculations have been moved into the loop
@@ -599,15 +599,15 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     errorValue = 0
         
     'Loop through each pixel in the image, converting values as we go
-    For Y = initY To finalY
-    For X = initX To finalX
+    For y = initY To finalY
+    For x = initX To finalX
     
-        QuickVal = X * qvDepth
+        QuickVal = x * qvDepth
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Look up our initial grayscale value in the table
         grayVal = grayLookUp(r + g + b)
@@ -627,20 +627,20 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
         grayVal = CByte(grayTempCalc)
         
         'Assign all color channels the new gray value
-        ImageData(QuickVal + 2, Y) = grayVal
-        ImageData(QuickVal + 1, Y) = grayVal
-        ImageData(QuickVal, Y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal, y) = grayVal
         
-    Next X
+    Next x
         
         'Reset the error value at the end of each line
         errorValue = 0
         
         If toPreview = False Then
-            If (Y And progBarCheck) = 0 Then SetProgBarVal Y
+            If (y And progBarCheck) = 0 Then SetProgBarVal y
         End If
         
-    Next Y
+    Next y
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -664,7 +664,7 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -686,33 +686,33 @@ Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Opt
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
     Dim grayLookUp(0 To 765) As Byte
-    For X = 0 To 765
-        grayLookUp(X) = X \ 3
-    Next X
+    For x = 0 To 765
+        grayLookUp(x) = x \ 3
+    Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, Y) = grayVal
-        ImageData(QuickVal + 1, Y) = grayVal
-        ImageData(QuickVal + 2, Y) = grayVal
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -736,7 +736,7 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional B
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -757,29 +757,29 @@ Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional B
     Dim grayVal As Long
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
         If grayVal > 255 Then grayVal = 255
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, Y) = grayVal
-        ImageData(QuickVal + 1, Y) = grayVal
-        ImageData(QuickVal + 2, Y) = grayVal
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -803,7 +803,7 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -824,28 +824,28 @@ Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional 
     Dim grayVal As Byte
        
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Calculate a grayscale value by using a short-hand RGB <-> HSL conversion
         grayVal = CByte(getLuminance(r, g, b))
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, Y) = grayVal
-        ImageData(QuickVal + 1, Y) = grayVal
-        ImageData(QuickVal + 2, Y) = grayVal
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -869,7 +869,7 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -890,28 +890,28 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
     Dim grayVal As Byte
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Find the highest or lowest of the RGB values
         If maxOrMin = 0 Then grayVal = CByte(MinimumInt(r, g, b)) Else grayVal = CByte(MaximumInt(r, g, b))
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, Y) = grayVal
-        ImageData(QuickVal + 1, Y) = grayVal
-        ImageData(QuickVal + 2, Y) = grayVal
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -946,7 +946,7 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -967,14 +967,14 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
     Dim grayVal As Byte
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Assign the gray value to a single color channel based on the value of cChannel
         Select Case cChannel
@@ -987,15 +987,15 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
         End Select
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, Y) = grayVal
-        ImageData(QuickVal + 1, Y) = grayVal
-        ImageData(QuickVal + 2, Y) = grayVal
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

@@ -309,7 +309,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Long, ByVal u
     srcLayer.createFromExistingLayer workingLayer
             
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -324,7 +324,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Long, ByVal u
         End If
     End If
     
-    CreateGaussianBlurLayerInt umRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX
+    CreateGaussianBlurLayer umRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX
     
     'Now that we have a gaussian layer created in workingLayer, we can point arrays toward it and the source layer
     Dim dstImageData() As Byte
@@ -363,19 +363,19 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Long, ByVal u
     umThreshold = umThreshold \ 5
     
     'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
         'Retrieve the original image's pixels
-        r = dstImageData(QuickVal + 2, Y)
-        g = dstImageData(QuickVal + 1, Y)
-        b = dstImageData(QuickVal, Y)
+        r = dstImageData(QuickVal + 2, y)
+        g = dstImageData(QuickVal + 1, y)
+        b = dstImageData(QuickVal, y)
         
         'Now, retrieve the gaussian pixels
-        r2 = srcImageData(QuickVal + 2, Y)
-        g2 = srcImageData(QuickVal + 1, Y)
-        b2 = srcImageData(QuickVal, Y)
+        r2 = srcImageData(QuickVal + 2, y)
+        g2 = srcImageData(QuickVal + 1, y)
+        b2 = srcImageData(QuickVal, y)
         
         tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
                         
@@ -400,26 +400,26 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Long, ByVal u
             newG = BlendColors(newG, g, blendVal)
             newB = BlendColors(newB, b, blendVal)
             
-            dstImageData(QuickVal + 2, Y) = newR
-            dstImageData(QuickVal + 1, Y) = newG
-            dstImageData(QuickVal, Y) = newB
+            dstImageData(QuickVal + 2, y) = newR
+            dstImageData(QuickVal + 1, y) = newG
+            dstImageData(QuickVal, y) = newB
             
             If qvDepth = 4 Then
-                a2 = srcImageData(QuickVal + 3, Y)
-                a = dstImageData(QuickVal + 3, Y)
+                a2 = srcImageData(QuickVal + 3, y)
+                a = dstImageData(QuickVal + 3, y)
                 newA = (scaleFactor * a) + (invScaleFactor * a2)
                 If newA > 255 Then newA = 255
                 If newA < 0 Then newA = 0
-                dstImageData(QuickVal + 3, Y) = BlendColors(newA, a, blendVal)
+                dstImageData(QuickVal + 3, y) = BlendColors(newA, a, blendVal)
             End If
             
         End If
                 
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X + (finalY * 2)
+            If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalY * 2)
         End If
-    Next X
+    Next x
     
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData

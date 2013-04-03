@@ -468,7 +468,7 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -522,11 +522,11 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For Y = initY To finalY
+    For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
         nX = x - midX
-        nY = Y - midY
+        nY = y - midY
         
         'Calculate distance automatically
         sDistance = (nX * nX) + (nY * nY)
@@ -534,7 +534,7 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
         'Calculate remapped x and y values
         If sDistance > sRadius2 Then
             srcX = x
-            srcY = Y
+            srcY = y
         Else
         
             sDistance = Sqr(sDistance)
@@ -549,14 +549,14 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
             If (sDistance <> 0) Then theta = theta * (rippleWavelength / sDistance)
             
             srcX = x + (nX * theta)
-            srcY = Y + (nY * theta)
+            srcY = y + (nY * theta)
             
         End If
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If

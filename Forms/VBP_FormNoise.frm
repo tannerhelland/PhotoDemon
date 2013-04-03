@@ -147,7 +147,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub ChkM_Click()
-    AddNoise hsNoise.Value, ChkM.Value, True, fxPreview
+    AddNoise hsNoise.Value, chkM.Value, True, fxPreview
 End Sub
 
 'CANCEL button
@@ -159,7 +159,7 @@ End Sub
 Private Sub cmdOK_Click()
     If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max) Then
         FormNoise.Visible = False
-        Process Noise, hsNoise.Value, ChkM.Value
+        Process Noise, hsNoise.Value, chkM.Value
         Unload Me
     Else
         AutoSelectText txtNoise
@@ -269,7 +269,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Render a preview
-    AddNoise hsNoise.Value, ChkM.Value, True, fxPreview
+    AddNoise hsNoise.Value, chkM.Value, True, fxPreview
     
 End Sub
 
@@ -280,12 +280,12 @@ End Sub
 'The following four routines keep the value of the textbox and scroll bar in lock-step
 Private Sub hsNoise_Change()
     copyToTextBoxI txtNoise, hsNoise.Value
-    AddNoise hsNoise.Value, ChkM.Value, True, fxPreview
+    AddNoise hsNoise.Value, chkM.Value, True, fxPreview
 End Sub
 
 Private Sub hsNoise_Scroll()
     copyToTextBoxI txtNoise, hsNoise.Value
-    AddNoise hsNoise.Value, ChkM.Value, True, fxPreview
+    AddNoise hsNoise.Value, chkM.Value, True, fxPreview
 End Sub
 
 Private Sub txtNoise_KeyUp(KeyCode As Integer, Shift As Integer)

@@ -364,7 +364,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -416,21 +416,21 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For Y = initY To finalY
+    For y = initY To finalY
     
         'Calculate a displacement for this point
-        pDisplace = 127 * (1 + cPerlin.Noise(x / fxScale, Y / fxScale, m_zOffset))
+        pDisplace = 127 * (1 + cPerlin.Noise(x / fxScale, y / fxScale, m_zOffset))
         If pDisplace < 0 Then pDisplace = 0
         If pDisplace > 255 Then pDisplace = 255
         
         'Calculate a new source pixel using the sin and cos look-up tables and our calculated displacement
         srcX = x + sinTable(pDisplace)
-        srcY = Y + sinTable(pDisplace)
+        srcY = y + sinTable(pDisplace)
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If

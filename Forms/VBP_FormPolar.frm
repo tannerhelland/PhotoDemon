@@ -344,7 +344,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -401,7 +401,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For Y = initY To finalY
+    For y = initY To finalY
     
         'Each polar conversion requires a unique set of code
         Select Case conversionMethod
@@ -411,7 +411,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
                             
                 'Remap the coordinates around a center point of (0, 0)
                 nX = x - midX
-                nY = Y - midY
+                nY = y - midY
                 
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
@@ -421,24 +421,24 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
                     'X is handled differently based on its relation to the center of the image
                     If x >= midX Then
                         nX = x - midX
-                        If Y > midY Then
+                        If y > midY Then
                             theta = PI - Atn(nX / nY)
                             r = Sqr(sDistance)
-                        ElseIf Y < midY Then
-                            theta = Atn(nX / (midY - Y))
-                            r = Sqr(nX * nX + (midY - Y) * (midY - Y))
+                        ElseIf y < midY Then
+                            theta = Atn(nX / (midY - y))
+                            r = Sqr(nX * nX + (midY - y) * (midY - y))
                         Else
                             theta = PI_HALF
                             r = nX
                         End If
                     Else
                         nX = midX - x
-                        If Y > midY Then
+                        If y > midY Then
                             theta = PI + Atn(nX / nY)
                             r = Sqr(sDistance)
-                        ElseIf Y < midY Then
-                            theta = PI_DOUBLE - Atn(nX / (midY - Y))
-                            r = Sqr(nX * nX + (midY - Y) * (midY - Y))
+                        ElseIf y < midY Then
+                            theta = PI_DOUBLE - Atn(nX / (midY - y))
+                            r = Sqr(nX * nX + (midY - y) * (midY - y))
                         Else
                             theta = PI * 1.5
                             r = nX
@@ -451,7 +451,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
                 Else
                 
                     srcX = x
-                    srcY = Y
+                    srcY = y
                     
                 End If
                 
@@ -460,7 +460,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
             
                 'Remap the coordinates around a center point of (0, 0)
                 nX = x - midX
-                nY = Y - midY
+                nY = y - midY
                 
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
@@ -479,7 +479,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
                         t = theta
                     End If
                     
-                    r = sRadius * (Y / (finalY + 1))
+                    r = sRadius * (y / (finalY + 1))
                     
                     nX = -r * Sin(t)
                     nY = r * Cos(t)
@@ -501,7 +501,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
                 Else
                 
                     srcX = x
-                    srcY = Y
+                    srcY = y
                 
                 End If
                             
@@ -510,7 +510,7 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
             
                 'Remap the coordinates around a center point of (0, 0)
                 nX = x - midX
-                nY = Y - midY
+                nY = y - midY
                 
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
@@ -522,15 +522,15 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
                     srcY = Modulo(srcY, (finalY + 1))
                 Else
                     srcX = x
-                    srcY = Y
+                    srcY = y
                 End If
             
         End Select
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If

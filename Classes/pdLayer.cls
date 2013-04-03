@@ -74,8 +74,8 @@ Private Type BITMAPINFOHEADER
     BitCount As Integer
     Compression As Long
     ImageSize As Long
-    XPelsPerMeter As Long
-    YPelsPerMeter As Long
+    xPelsPerMeter As Long
+    yPelsPerMeter As Long
     Colorused As Long
     ColorImportant As Long
 End Type
@@ -95,10 +95,10 @@ End Type
 
 'Rectangle type for use with SetRect/FillRect API calls
 Private Type RECT
-    X1 As Long
-    Y1 As Long
-    X2 As Long
-    Y2 As Long
+    x1 As Long
+    y1 As Long
+    x2 As Long
+    y2 As Long
 End Type
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
@@ -149,7 +149,7 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 
 'Rectangle objects to be used with brushes
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
+Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 
 'Brush creation
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long

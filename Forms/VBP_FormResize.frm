@@ -654,28 +654,28 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 yScale = (pdImages(CurrentImage).Height - 1) / iHeight
                             
                 'Coordinate variables for source and destination
-                Dim X As Long, Y As Long
+                Dim x As Long, y As Long
                 Dim srcX As Double, srcY As Double
                             
-                For X = 0 To iWidth - 1
+                For x = 0 To iWidth - 1
                     
                     'Generate the x calculation variables
-                    srcX = X * xScale
+                    srcX = x * xScale
                     
                     'Draw each pixel in the new image
-                    For Y = 0 To iHeight - 1
+                    For y = 0 To iHeight - 1
                         
                         'Generate the y calculation variables
-                        srcY = Y * yScale
+                        srcY = y * yScale
                         
                         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-                        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+                        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                                             
-                    Next Y
+                    Next y
                 
-                    If (X And progBarCheck) = 0 Then SetProgBarVal X
+                    If (x And progBarCheck) = 0 Then SetProgBarVal x
                     
-                Next X
+                Next x
             
                 'Now copy the resized image back into the main layer
                 pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer

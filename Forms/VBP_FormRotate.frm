@@ -286,17 +286,17 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 Case 1
                 
                     'This call requires an explicit center-point.  Calculate one accordingly.
-                    Dim cX As Double, cY As Double
+                    Dim cx As Double, cy As Double
                     
                     If isPreview Then
-                        cX = smallLayer.getLayerWidth / 2
-                        cY = smallLayer.getLayerHeight / 2
+                        cx = smallLayer.getLayerWidth / 2
+                        cy = smallLayer.getLayerHeight / 2
                     Else
-                        cX = pdImages(CurrentImage).Width / 2
-                        cY = pdImages(CurrentImage).Height / 2
+                        cx = pdImages(CurrentImage).Width / 2
+                        cy = pdImages(CurrentImage).Height / 2
                     End If
                     
-                    returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cX, cY, True)
+                    returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
                     
                     nWidth = FreeImage_GetWidth(returnDIB)
                     nHeight = FreeImage_GetHeight(returnDIB)

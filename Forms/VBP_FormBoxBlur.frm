@@ -283,7 +283,7 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -334,30 +334,30 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
     NumOfPixels = 0
     
     'Generate an initial array of blur data for the first pixel
-    For X = initX To initX + xRadius - 1
-        QuickVal = X * qvDepth
-    For Y = initY To initY + yRadius '- 1
+    For x = initX To initX + xRadius - 1
+        QuickVal = x * qvDepth
+    For y = initY To initY + yRadius '- 1
     
-        rTotal = rTotal + srcImageData(QuickVal + 2, Y)
-        gTotal = gTotal + srcImageData(QuickVal + 1, Y)
-        bTotal = bTotal + srcImageData(QuickVal, Y)
-        If qvDepth = 4 Then aTotal = aTotal + srcImageData(QuickVal + 3, Y)
+        rTotal = rTotal + srcImageData(QuickVal + 2, y)
+        gTotal = gTotal + srcImageData(QuickVal + 1, y)
+        bTotal = bTotal + srcImageData(QuickVal, y)
+        If qvDepth = 4 Then aTotal = aTotal + srcImageData(QuickVal + 3, y)
         
         'Increase the pixel tally
         NumOfPixels = NumOfPixels + 1
         
-    Next Y
-    Next X
+    Next y
+    Next x
                 
     'Loop through each pixel in the image, tallying blur values as we go
-    For X = initX To finalX
+    For x = initX To finalX
             
-        QuickVal = X * qvDepth
+        QuickVal = x * qvDepth
         
         'Determine the bounds of the current blur box in the X direction
-        lbX = X - xRadius
+        lbX = x - xRadius
         If lbX < 0 Then lbX = 0
-        ubX = X + xRadius
+        ubX = x + xRadius
         
         If ubX > finalX Then
             obuX = True
@@ -446,7 +446,7 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         End If
             
     'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
-    For Y = startY To stopY Step yStep
+    For y = startY To stopY Step yStep
             
         'If we are at the bottom and moving up, we will REMOVE rows from the bottom and ADD them at the top.
         'If we are at the top and moving down, we will REMOVE rows from the top and ADD them at the bottom.
@@ -454,10 +454,10 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         If atBottom Then
         
             'Calculate bounds
-            lbY = Y - yRadius
+            lbY = y - yRadius
             If lbY < 0 Then lbY = 0
             
-            ubY = Y + yRadius
+            ubY = y + yRadius
             If ubY > finalY Then
                 obuY = True
                 ubY = finalY
@@ -498,7 +498,7 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         'The exact same code as above, but in the opposite direction
         Else
         
-            lbY = Y - yRadius
+            lbY = y - yRadius
             If lbY < 0 Then
                 oblY = True
                 lbY = 0
@@ -506,7 +506,7 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
                 oblY = False
             End If
             
-            ubY = Y + yRadius
+            ubY = y + yRadius
             If ubY > finalY Then ubY = finalY
                                 
             If ubY < finalY Then
@@ -540,17 +540,17 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         End If
                 
         'With the blur box successfully calculated, we can finally apply the results to the image.
-        dstImageData(QuickVal + 2, Y) = rTotal \ NumOfPixels
-        dstImageData(QuickVal + 1, Y) = gTotal \ NumOfPixels
-        dstImageData(QuickVal, Y) = bTotal \ NumOfPixels
-        If qvDepth = 4 Then dstImageData(QuickVal + 3, Y) = aTotal \ NumOfPixels
+        dstImageData(QuickVal + 2, y) = rTotal \ NumOfPixels
+        dstImageData(QuickVal + 1, y) = gTotal \ NumOfPixels
+        dstImageData(QuickVal, y) = bTotal \ NumOfPixels
+        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotal \ NumOfPixels
     
-    Next Y
+    Next y
         atBottom = Not atBottom
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
-    Next X
+    Next x
         
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

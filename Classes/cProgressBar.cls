@@ -187,10 +187,10 @@ Public Property Let Segments(ByVal bState As Boolean)
    Draw
 End Property
 
-Public Property Get XpStyle() As Boolean
-   XpStyle = m_bXpStyle
+Public Property Get xpStyle() As Boolean
+   xpStyle = m_bXpStyle
 End Property
-Public Property Let XpStyle(ByVal bState As Boolean)
+Public Property Let xpStyle(ByVal bState As Boolean)
    m_bXpStyle = bState
    Draw
 End Property
@@ -286,9 +286,9 @@ End Property
 
 Public Sub Draw()
    If Not m_obj Is Nothing Then
-      Dim tR As RECT
-      GetClientRect m_obj.hWnd, tR
-      DrawToDC m_obj.hWnd, m_obj.hDC, tR.Left, tR.Top, tR.Right, tR.Bottom
+      Dim TR As RECT
+      GetClientRect m_obj.hWnd, TR
+      DrawToDC m_obj.hWnd, m_obj.hDC, TR.Left, TR.Top, TR.Right, TR.Bottom
       Me.DrawObject.Picture = Me.DrawObject.Image
       Me.DrawObject.Refresh
       Replacement_DoEvents FormMain.hWnd
@@ -312,7 +312,7 @@ Public Sub DrawToDC( _
 Dim lhDCU As Long
 Dim lHDC As Long
 Dim bMem As Boolean
-Dim tR As RECT, tBR As RECT, tSR As RECT, tWR As RECT
+Dim TR As RECT, tBR As RECT, tSR As RECT, tWR As RECT
 Dim lWidth As Long, lHeight As Long
 Dim lColor As Long
 Dim hBr As Long
@@ -329,16 +329,16 @@ Dim hR As Long
 Dim bDrawn As Boolean
    
    ' Reconstruct the rectangle:
-   tR.Left = lLeft
-   tR.Top = lTop
-   tR.Right = lRight
-   tR.Bottom = lBottom
+   TR.Left = lLeft
+   TR.Top = lTop
+   TR.Right = lRight
+   TR.Bottom = lBottom
    
-   LSet m_tLastR = tR
+   LSet m_tLastR = TR
    m_hWndLast = WindowFromDC(hDC)
 
-   lWidth = Abs(tR.Right - tR.Left)
-   lHeight = Abs(tR.Bottom - tR.Top)
+   lWidth = Abs(TR.Right - TR.Left)
+   lHeight = Abs(TR.Bottom - TR.Top)
 
    lhDCU = hDC
    lHDC = m_cMemDC.hDC(lWidth, lHeight)
@@ -346,7 +346,7 @@ Dim bDrawn As Boolean
       lHDC = lhDCU
    Else
       bMem = True
-      OffsetRect tR, -tR.Left, -tR.Top
+      OffsetRect TR, -TR.Left, -TR.Top
    End If
    
    ' Draw background:
@@ -378,9 +378,9 @@ Dim bDrawn As Boolean
                If (hR = S_OK) Then
                   lSegmentWidth = lSegmentWidth + lSegmentSpacing
                   If (lWidth > lHeight) Then
-                     hR = DrawThemeBackground(hTheme, lHDC, 1, 0, tR, tR)
+                     hR = DrawThemeBackground(hTheme, lHDC, 1, 0, TR, TR)
                   Else
-                     hR = DrawThemeBackground(hTheme, lHDC, 2, 0, tR, tR)
+                     hR = DrawThemeBackground(hTheme, lHDC, 2, 0, TR, TR)
                   End If
                   If (hR = S_OK) Then
                      bDrawn = True
@@ -397,7 +397,7 @@ Dim bDrawn As Boolean
          Else
             hBr = CreateSolidBrush(lColor)
          End If
-         FillRect lHDC, tR, hBr
+         FillRect lHDC, TR, hBr
          DeleteObject hBr
       End If
    End If
@@ -408,15 +408,15 @@ Dim bDrawn As Boolean
    End If
 
       
-   LSet tWR = tR
+   LSet tWR = TR
    If m_eBorderStyle > EVPRGNone Then
       If bDrawn Then
-         InflateRect tR, -1, -1
+         InflateRect TR, -1, -1
       Else
          If m_eAppearance = EVPRG3D Then
-            InflateRect tR, -2, -2
+            InflateRect TR, -2, -2
          Else
-            InflateRect tR, -1, -1
+            InflateRect TR, -1, -1
          End If
       End If
    End If
@@ -429,35 +429,35 @@ Dim bDrawn As Boolean
       hFntOld = SelectObject(lHDC, iFnt.hFont)
       SetBkMode lHDC, TRANSPARENT
       SetTextColor lHDC, TranslateColor(m_oForeColor)
-      DrawText lHDC, " " & m_sText & " ", -1, tR, DT_SINGLELINE Or m_eTextAlignX Or m_eTextAlignY * 4
+      DrawText lHDC, " " & m_sText & " ", -1, TR, DT_SINGLELINE Or m_eTextAlignX Or m_eTextAlignY * 4
       SelectObject lHDC, hFntOld
    End If
    
    ' Draw bar:
    ' Get the bar rectangle:
-   LSet tBR = tR
+   LSet tBR = TR
    If m_lMax <= m_lMin Then m_lMax = m_lMin + 1
    fPercent = (m_lValue - m_lMin) / (m_lMax - m_lMin)
    If fPercent > 1# Then fPercent = 1#
    If fPercent < 0# Then fPercent = 0#
    If lWidth > lHeight Then
-      tBR.Right = tR.Left + (tR.Right - tR.Left) * fPercent
+      tBR.Right = TR.Left + (TR.Right - TR.Left) * fPercent
       If (m_bSegments Or bDrawn) Then
          ' Quantise bar:
          tBR.Right = tBR.Right - ((tBR.Right - tBR.Left) Mod (lSegmentWidth + lSegmentSpacing))
          'Debug.Assert ((tBR.Right - tBR.Left) Mod (lSegmentWidth + lSegmentSpacing) = 0)
-         If tBR.Right < tR.Left Then
-            tBR.Right = tR.Left
+         If tBR.Right < TR.Left Then
+            tBR.Right = TR.Left
          End If
       End If
    Else
       fPercent = 1# - fPercent
-      tBR.Top = tR.Top + (tR.Bottom - tR.Top) * fPercent
+      tBR.Top = TR.Top + (TR.Bottom - TR.Top) * fPercent
       If (m_bSegments Or bDrawn) Then
          ' Quantise bar:
          tBR.Top = tBR.Top - ((tBR.Top - tBR.Bottom) Mod (lSegmentWidth + lSegmentSpacing))
-         If tBR.Top > tR.Bottom Then
-            tBR.Top = tR.Bottom
+         If tBR.Top > TR.Bottom Then
+            tBR.Top = TR.Bottom
          End If
       End If
    End If
@@ -511,7 +511,7 @@ Dim bDrawn As Boolean
       Else
          hBr = CreateSolidBrush(lColor)
       End If
-      LSet tSR = tR
+      LSet tSR = TR
       If lWidth > lHeight Then
          For i = tBR.Left + lSegmentWidth To tBR.Right Step lSegmentWidth + lSegmentSpacing
             tSR.Left = i
@@ -534,7 +534,7 @@ Dim bDrawn As Boolean
       If (bDrawn) Then
          Dim rcContent As RECT
          hR = GetThemeBackgroundContentRect(hTheme, _
-                lHDC, 0, 0, tR, rcContent)
+                lHDC, 0, 0, TR, rcContent)
          hR = DrawThemeText(hTheme, lHDC, 0, 0, _
             StrPtr(m_sText), -1, _
             DT_SINGLELINE Or m_eTextAlignX Or m_eTextAlignY * 4, _
@@ -543,7 +543,7 @@ Dim bDrawn As Boolean
          SetBkMode lHDC, TRANSPARENT
          SetTextColor lHDC, TranslateColor(m_oBarForeColor)
          DrawText lHDC, " " & m_sText & " ", -1, _
-            tR, DT_SINGLELINE Or m_eTextAlignX Or m_eTextAlignY * 4
+            TR, DT_SINGLELINE Or m_eTextAlignX Or m_eTextAlignY * 4
       End If
       SelectObject lHDC, hFntOld
    End If
@@ -559,7 +559,7 @@ Dim bDrawn As Boolean
          Case EVPRGFlat
             Border lHDC, EVPRGFlat, tWR, True
          Case EVPRG3DThin
-            Border lHDC, EVPRG3DThin, tR, True
+            Border lHDC, EVPRG3DThin, TR, True
          Case EVPRG3D
             Border lHDC, EVPRG3D, tWR, True
          End Select
@@ -588,7 +588,7 @@ End Sub
 Private Sub Border( _
       ByVal lHDC As Long, _
       ByVal lStyle As Long, _
-      ByRef tR As RECT, _
+      ByRef TR As RECT, _
       ByVal bRaised As Boolean _
    )
 Dim hPenDark As Long, hPenLight As Long, hPenBlack As Long
@@ -599,46 +599,46 @@ Dim tJunk As POINTAPI
    Case 0
       hPenBlack = CreatePen(0, 1, 0)
       hPenOld = SelectObject(lHDC, hPenBlack)
-      MoveToEx lHDC, tR.Left, tR.Top, tJunk
-      LineTo lHDC, tR.Right - 1, tR.Top
-      LineTo lHDC, tR.Right - 1, tR.Bottom - 1
-      LineTo lHDC, tR.Left, tR.Bottom - 1
-      LineTo lHDC, tR.Left, tR.Top
+      MoveToEx lHDC, TR.Left, TR.Top, tJunk
+      LineTo lHDC, TR.Right - 1, TR.Top
+      LineTo lHDC, TR.Right - 1, TR.Bottom - 1
+      LineTo lHDC, TR.Left, TR.Bottom - 1
+      LineTo lHDC, TR.Left, TR.Top
       SelectObject lHDC, hPenOld
       DeleteObject hPenBlack
    Case 1
       hPenDark = CreatePen(0, 1, GetSysColor(vbButtonShadow And &H1F&))
       hPenLight = CreatePen(0, 1, GetSysColor(vb3DHighlight And &H1F&))
       If bRaised Then
-         MoveToEx lHDC, tR.Left, tR.Bottom - 2, tJunk
+         MoveToEx lHDC, TR.Left, TR.Bottom - 2, tJunk
          hPenOld = SelectObject(lHDC, hPenLight)
-         LineTo lHDC, tR.Left, tR.Top
-         LineTo lHDC, tR.Right - 1, tR.Top
+         LineTo lHDC, TR.Left, TR.Top
+         LineTo lHDC, TR.Right - 1, TR.Top
          SelectObject lHDC, hPenOld
-         MoveToEx lHDC, tR.Right - 1, tR.Top, tJunk
+         MoveToEx lHDC, TR.Right - 1, TR.Top, tJunk
          hPenOld = SelectObject(lHDC, hPenDark)
-         LineTo lHDC, tR.Right - 1, tR.Bottom - 1
-         LineTo lHDC, tR.Left - 1, tR.Bottom - 1
+         LineTo lHDC, TR.Right - 1, TR.Bottom - 1
+         LineTo lHDC, TR.Left - 1, TR.Bottom - 1
          SelectObject lHDC, hPenOld
       Else
-         MoveToEx lHDC, tR.Left, tR.Bottom - 1, tJunk
+         MoveToEx lHDC, TR.Left, TR.Bottom - 1, tJunk
          hPenOld = SelectObject(lHDC, hPenDark)
-         LineTo lHDC, tR.Left, tR.Top
-         LineTo lHDC, tR.Right, tR.Top
+         LineTo lHDC, TR.Left, TR.Top
+         LineTo lHDC, TR.Right, TR.Top
          SelectObject lHDC, hPenOld
-         MoveToEx lHDC, tR.Right - 1, tR.Top + 1, tJunk
+         MoveToEx lHDC, TR.Right - 1, TR.Top + 1, tJunk
          hPenOld = SelectObject(lHDC, hPenLight)
-         LineTo lHDC, tR.Right - 1, tR.Bottom - 1
-         LineTo lHDC, tR.Left, tR.Bottom - 1
+         LineTo lHDC, TR.Right - 1, TR.Bottom - 1
+         LineTo lHDC, TR.Left, TR.Bottom - 1
          SelectObject lHDC, hPenOld
       End If
       DeleteObject hPenDark
       DeleteObject hPenLight
    Case 2
       If bRaised Then
-         DrawEdge lHDC, tR, EDGE_RAISED, BF_RECT Or BF_SOFT
+         DrawEdge lHDC, TR, EDGE_RAISED, BF_RECT Or BF_SOFT
       Else
-         DrawEdge lHDC, tR, EDGE_SUNKEN, BF_RECT Or BF_SOFT
+         DrawEdge lHDC, TR, EDGE_SUNKEN, BF_RECT Or BF_SOFT
       End If
    End Select
 End Sub
