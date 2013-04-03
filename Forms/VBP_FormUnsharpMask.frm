@@ -103,11 +103,11 @@ Begin VB.Form FormUnsharpMask
    Begin VB.HScrollBar hsRadius 
       Height          =   255
       Left            =   6120
-      Max             =   200
+      Max             =   2000
       Min             =   1
       TabIndex        =   2
       Top             =   1800
-      Value           =   5
+      Value           =   50
       Width           =   4935
    End
    Begin VB.TextBox txtRadius 
@@ -124,9 +124,9 @@ Begin VB.Form FormUnsharpMask
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   11160
-      MaxLength       =   3
+      MaxLength       =   5
       TabIndex        =   3
-      Text            =   "5"
+      Text            =   "5.0"
       Top             =   1740
       Width           =   615
    End
@@ -271,7 +271,7 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Validate all text box entries
-    If Not EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
+    If Not EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, True, True) Then
         AutoSelectText txtRadius
         Exit Sub
     End If
@@ -287,14 +287,14 @@ Private Sub cmdOK_Click()
     End If
 
     Me.Visible = False
-    Process Unsharp, hsRadius, hsAmount, hsThreshold
+    Process Unsharp, CDbl(hsRadius) / 10, hsAmount, hsThreshold
     Unload Me
     
 End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub UnsharpMask(ByVal umRadius As Long, ByVal umAmount As Long, ByVal umThreshold As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Long, ByVal umThreshold As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
     If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 1, 2
         
@@ -322,10 +322,9 @@ Public Sub UnsharpMask(ByVal umRadius As Long, ByVal umAmount As Long, ByVal umT
         Else
             umRadius = (umRadius / iHeight) * curLayerValues.Height
         End If
-        If umRadius = 0 Then umRadius = 1
     End If
     
-    CreateGaussianBlurLayer umRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX
+    CreateGaussianBlurLayerInt umRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX
     
     'Now that we have a gaussian layer created in workingLayer, we can point arrays toward it and the source layer
     Dim dstImageData() As Byte
@@ -450,12 +449,12 @@ Private Sub Form_Activate()
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
-        hsRadius.Max = 50
+        hsRadius.Max = 500
         lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
         lblIDEWarning.Visible = True
     Else
         '32bpp images take quite a bit longer to process.  Limit the radius to 100 in this case.
-        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then hsRadius.Max = 100 Else hsRadius.Max = 200
+        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then hsRadius.Max = 1000 Else hsRadius.Max = 2000
     End If
     
 End Sub
@@ -487,12 +486,12 @@ Private Sub txtAmount_KeyUp(KeyCode As Integer, Shift As Integer)
 End Sub
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
+    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
     updatePreview
 End Sub
 
 Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
+    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
     updatePreview
 End Sub
 
@@ -512,8 +511,8 @@ End Sub
 
 Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then
-        hsRadius.Value = Val(txtRadius)
+    If EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, False, False) Then
+        hsRadius.Value = Val(txtRadius) * 10
     End If
 End Sub
 
@@ -529,5 +528,5 @@ Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub updatePreview()
-    UnsharpMask hsRadius, hsAmount, hsThreshold, True, fxPreview
+    UnsharpMask CDbl(hsRadius) / 10, hsAmount, hsThreshold, True, fxPreview
 End Sub
