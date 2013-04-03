@@ -548,7 +548,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             If LoadForm Then
                 FormGaussianBlur.Show vbModal, FormMain
             Else
-                FormGaussianBlur.GaussianBlurFilter CLng(pOPCODE)
+                FormGaussianBlur.GaussianBlurFilter CDbl(pOPCODE)
             End If
         Case SmartBlur
             If LoadForm Then

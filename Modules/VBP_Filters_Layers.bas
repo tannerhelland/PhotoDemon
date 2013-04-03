@@ -322,29 +322,29 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
         midR = 0
         midG = 0
         midB = 0
-        cutoffTotal = mPercent * NumOfPixels
-        If cutoffTotal = 0 Then cutoffTotal = 1
+        cutoffTotal = (mPercent * NumOfPixels)
+        'If cutoffTotal = 0 Then cutoffTotal = 1
         
-        i = 0
+        i = -1
         Do
+            i = i + 1
             If rValues(i) > 0 Then midR = midR + rValues(i)
-            i = i + 1
-        Loop While (midR < cutoffTotal)
-        midR = i - 1
+        Loop Until (midR >= cutoffTotal)
+        midR = i
         
-        i = 0
+        i = -1
         Do
+            i = i + 1
             If gValues(i) > 0 Then midG = midG + gValues(i)
-            i = i + 1
-        Loop While (midG < cutoffTotal)
-        midG = i - 1
+        Loop Until (midG >= cutoffTotal)
+        midG = i
         
-        i = 0
+        i = -1
         Do
-            If bValues(i) > 0 Then midB = midB + bValues(i)
             i = i + 1
-        Loop While (midB < cutoffTotal)
-        midB = i - 1
+            If bValues(i) > 0 Then midB = midB + bValues(i)
+        Loop Until (midB >= cutoffTotal)
+        midB = i
                 
         'Finally, apply the results to the image.
         dstImageData(QuickVal + 2, y) = midR
@@ -1286,3 +1286,403 @@ Public Sub CreateGaussianBlurLayer(ByVal gRadius As Long, ByRef srcLayer As pdLa
     Set gaussLayer = Nothing
         
 End Sub
+
+
+
+'Given two layers, fill one with a gaussian-blur version of the other.
+' This is an integer-based version of the standard gaussian blur routine.
+Public Sub CreateGaussianBlurLayerInt(ByVal userRadius As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
+            
+    'Create a local array and point it at the pixel data of the destination image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Do the same for the source image
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Create one more local array.  This will contain the intermediate copy of the gaussian blur, as it must be done in two passes.
+    Dim gaussLayer As pdLayer
+    Set gaussLayer = New pdLayer
+    gaussLayer.createFromExistingLayer srcLayer
+    
+    Dim GaussImageData() As Byte
+    Dim gaussSA As SAFEARRAY2D
+    prepSafeArray gaussSA, gaussLayer
+    CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcLayer.getLayerWidth - 1
+    finalY = srcLayer.getLayerHeight - 1
+    
+    'Make sure we were passed a valid radius
+    If userRadius < 0.1 Then userRadius = 0.1
+    If finalX > finalY Then
+        If userRadius > finalX Then userRadius = finalX
+    Else
+        If userRadius > finalY Then userRadius = finalY
+    End If
+    
+    'Because the radius can now be a floating-point value, make the actual radius one larger as necessary
+    Dim gRadius As Long
+    Dim gRadiusModifier As Double
+    gRadiusModifier = 0
+    
+    If userRadius - Int(userRadius) > 0.0001 Then
+        gRadiusModifier = userRadius - Int(userRadius)
+        gRadius = Int(userRadius + 1)
+    Else
+        gRadius = Int(userRadius)
+    End If
+        
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
+    qvDepth = srcLayer.getLayerColorDepth \ 8
+    
+    Dim chkAlpha As Boolean
+    If qvDepth = 4 Then chkAlpha = True Else chkAlpha = False
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If modifyProgBarMax = -1 Then
+        SetProgBarMax finalY + finalY
+    Else
+        SetProgBarMax modifyProgBarMax
+    End If
+    progBarCheck = findBestProgBarValue()
+    
+    'Create a one-dimensional Gaussian kernel using the requested radius
+    Dim gKernel() As Double
+    ReDim gKernel(-gRadius To gRadius) As Double
+    
+    Dim gKernelInt() As Long
+    ReDim gKernelInt(-gRadius To gRadius) As Long
+    
+    'Dim numPixels As Long
+    'numPixels = (gRadius * 2) + 1
+    
+    'Calculate a standard deviation (sigma) using the GIMP formula:
+    Dim stdDev As Double, stdDev2 As Double, stdDev3 As Double
+    If gRadius > 1 Then
+        stdDev = Sqr(-(gRadius * gRadius) / (2 * Log(1# / 255#)))
+    'Note that this is my addition - for a radius of 1 the GIMP formula results in too small of a sigma value
+    Else
+        stdDev = 0.5
+    End If
+    stdDev2 = stdDev * stdDev
+    stdDev3 = stdDev * 3
+    
+    'Populate the kernel using that sigma
+    Dim i As Long
+    Dim curVal As Double
+    
+    For i = -gRadius To gRadius
+        curVal = (1 / (Sqr(PI_DOUBLE) * stdDev)) * (EULER ^ (-1 * ((i * i) / (2 * stdDev2))))
+        
+        'Ignore values less than 3 sigma
+        If curVal < stdDev3 Then
+            gKernel(i) = curVal
+        Else
+            gKernel(i) = 0
+        End If
+    Next i
+    
+    'Because floating-point radii are now allowed, adjust the far ends of the gaussian look-up manually
+    If gRadiusModifier > 0 Then
+        gKernel(-gRadius) = gKernel(-gRadius) * gRadiusModifier
+        gKernel(gRadius) = gKernel(gRadius) * gRadiusModifier
+    End If
+    
+    'Find new bounds, which may exist if parts of the kernel lie outside the 3-sigma relevance limit
+    Dim gLB As Long, gUB As Long
+    
+    gLB = -gRadius
+    gUB = gRadius
+    
+    'If gRadius > 1 Then
+        For i = gLB To 0
+            If gKernel(i) = 0 Then gLB = i + 1
+        Next i
+   
+        For i = gUB To 0 Step -1
+            If gKernel(i) = 0 Then gUB = i - 1
+        Next i
+   
+    'End If
+    
+    'gRadius = gUB
+    'ReDim Preserve gKernelInt(gLB To gUB) As Long
+        
+    'For the integer version of this function, we need to find the smallest value in the gaussian table.
+    Dim gMin As Double
+    gMin = 1
+    For i = gLB To gUB
+        If gKernel(i) < gMin Then gMin = gKernel(i)
+    Next i
+    
+    'Fill the integer version of the gaussian table with normalized values
+    For i = gLB To gUB
+        gKernelInt(i) = gKernel(i) / gMin
+    Next i
+    
+    'Finally, sum all the values in the table to find our divisor
+    Dim gaussSum As Long
+    gaussSum = 0
+    For i = gLB To gUB
+        gaussSum = gaussSum + gKernelInt(i)
+    Next i
+        
+    'We now have a normalized 1-dimensional integer-based gaussian kernel available for convolution.
+    
+    'Finally, generate a specialized sum value for the low end of the gaussian kernel
+    Dim gLookupLow() As Long
+    ReDim gLookupLow(gLB To gUB) As Long
+    
+    Dim runningSum As Long
+    runningSum = 0
+    
+    For i = gLB To 0
+        runningSum = runningSum + gKernelInt(i)
+        gLookupLow(i) = runningSum
+    Next i
+    
+    '...and repeat for the high end
+    runningSum = 0
+    
+    For i = gUB To 1 Step -1
+        runningSum = runningSum + gKernelInt(i)
+        gLookupLow(i) = runningSum
+    Next i
+    
+    
+    'Color variables - in this case, sums for each color component
+    Dim rSum As Long, gSum As Long, bSum As Long, aSum As Long
+    
+    'To increase speed, we now build a look-up table of gaussian values.  This can be used in place of floating-point multiplication.
+    'Dim glLookup() As Long
+    'ReDim glLookup(0 To 255, gLB To gUB) As Long
+    'For X = gLB To gUB
+    '    For Y = 0 To 255
+    '        glLookup(Y, X) = Y * gKernelInt(X)
+    '    Next Y
+    'Next X
+        
+    'Next, prepare 1D arrays that will be used to point at source and destination pixel data.  VB accesses 1D arrays more quickly
+    ' than 2D arrays, and this technique shaves precious time off the final calculation.
+    Dim scanlineSize As Long
+    scanlineSize = srcLayer.getLayerArrayWidth
+    Dim origDIBPointer As Long
+    origDIBPointer = srcLayer.getLayerDIBits
+    Dim dstDIBPointer As Long
+    dstDIBPointer = gaussLayer.getLayerDIBits
+    
+    Dim tmpImageData() As Byte
+    Dim tmpSA As SAFEARRAY1D
+    With tmpSA
+        .cbElements = 1
+        .cDims = 1
+        .lBound = 0
+        .cElements = scanlineSize
+        .pvData = origDIBPointer
+    End With
+        
+    Dim tmpDstImageData() As Byte
+    Dim tmpDstSA As SAFEARRAY1D
+    With tmpDstSA
+        .cbElements = 1
+        .cDims = 1
+        .lBound = 0
+        .cElements = scanlineSize
+        .pvData = dstDIBPointer
+    End With
+    
+    'We now convolve the image twice - once in the horizontal direction, then again in the vertical direction.  This is
+    ' referred to as "separable" convolution, and it's much faster than than traditional convolution, especially for
+    ' large radii (the exact speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel
+    ' of 9x9) the processing time is 4.5x faster).
+    
+    'First, perform a horizontal convolution.
+        
+    Dim chkX As Long, finalChkX As Long
+    finalChkX = finalX * qvDepth
+    
+    'Loop through each pixel in the image, converting values as we go
+    For y = 0 To finalY
+        
+        'Accessing multidimensional arrays in VB is slow.  We cheat this by pointing a one-dimensional array
+        ' at the current source and destination lines, then using that to access pixel data.
+        tmpSA.pvData = origDIBPointer + scanlineSize * y
+        CopyMemory ByVal VarPtrArray(tmpImageData()), VarPtr(tmpSA), 4
+        
+        tmpDstSA.pvData = dstDIBPointer + scanlineSize * y
+        CopyMemory ByVal VarPtrArray(tmpDstImageData()), VarPtr(tmpDstSA), 4
+                
+    For x = initX To finalX
+        
+        QuickVal = x * qvDepth
+    
+        rSum = 0
+        gSum = 0
+        bSum = 0
+                
+        'Apply the convolution to the intermediate gaussian array
+        For i = gLB To gUB
+                        
+            chkX = x + i
+            
+            'We need to give special treatment to pixels that lie off the image
+            If chkX >= initX Then
+                If chkX < finalX Then
+                    QuickValInner = chkX * qvDepth
+                    rSum = rSum + tmpImageData(QuickValInner + 2) * gKernelInt(i)
+                    gSum = gSum + tmpImageData(QuickValInner + 1) * gKernelInt(i)
+                    bSum = bSum + tmpImageData(QuickValInner) * gKernelInt(i)
+                Else
+                    chkX = i
+                    rSum = rSum + tmpImageData(finalChkX + 2) * gLookupLow(chkX)
+                    gSum = gSum + tmpImageData(finalChkX + 1) * gLookupLow(chkX)
+                    bSum = bSum + tmpImageData(finalChkX) * gLookupLow(chkX)
+                    Exit For
+                End If
+            Else
+                chkX = gLB + Abs(chkX)
+                rSum = tmpImageData(2) * gLookupLow(chkX)
+                gSum = tmpImageData(1) * gLookupLow(chkX)
+                bSum = tmpImageData(0) * gLookupLow(chkX)
+                i = chkX
+            End If
+                   
+        Next i
+        
+        'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
+        tmpDstImageData(QuickVal + 2) = rSum \ gaussSum
+        tmpDstImageData(QuickVal + 1) = gSum \ gaussSum
+        tmpDstImageData(QuickVal) = bSum \ gaussSum
+        
+        'If alpha must be checked, do it now
+        If chkAlpha Then
+            
+            aSum = 0
+            
+            For i = gLB To gUB
+            
+                'curFactor = gKernel(i)
+                chkX = x + i
+                If chkX < initX Then chkX = initX
+                If chkX > finalX Then chkX = finalX
+                aSum = aSum + tmpImageData(chkX * qvDepth + 3) * gKernelInt(i)
+                
+            Next i
+            
+            tmpDstImageData(QuickVal + 3) = aSum \ gaussSum
+            
+        End If
+        
+    Next x
+        If Not suppressMessages Then
+            If (y And progBarCheck) = 0 Then SetProgBarVal y + modifyProgBarOffset
+        End If
+    Next y
+    
+    CopyMemory ByVal VarPtrArray(tmpImageData()), 0&, 4
+    CopyMemory ByVal VarPtrArray(tmpDstImageData()), 0&, 4
+    
+    dstDIBPointer = dstLayer.getLayerDIBits
+    tmpDstSA.pvData = dstDIBPointer
+    
+    'The source array now contains a horizontally convolved image.  We now need to convolve it vertically.
+    Dim chkY As Long
+    
+    For y = initY To finalY
+    
+        'Accessing multidimensional arrays in VB is slow.  We cheat this by pointing a one-dimensional array
+        ' at the current destination line, then using that to access pixel data.
+        tmpDstSA.pvData = dstDIBPointer + scanlineSize * y
+        CopyMemory ByVal VarPtrArray(tmpDstImageData()), VarPtr(tmpDstSA), 4
+    
+    For x = initX To finalX
+    
+        QuickVal = x * qvDepth
+    
+        rSum = 0
+        gSum = 0
+        bSum = 0
+        
+        'Apply the convolution to the destination array, using the gaussian array as the source.
+        For i = gLB To gUB
+        
+            chkY = y + i
+            
+            'We need to give special treatment to pixels that lie off the image
+            If chkY >= initY Then
+                If chkY > finalY Then chkY = finalY
+                rSum = rSum + GaussImageData(QuickVal + 2, chkY) * gKernelInt(i)
+                gSum = gSum + GaussImageData(QuickVal + 1, chkY) * gKernelInt(i)
+                bSum = bSum + GaussImageData(QuickVal, chkY) * gKernelInt(i)
+            Else
+                chkY = gLB + Abs(chkY)
+                rSum = GaussImageData(QuickVal + 2, 0) * gLookupLow(chkY)
+                gSum = GaussImageData(QuickVal + 1, 0) * gLookupLow(chkY)
+                bSum = GaussImageData(QuickVal, 0) * gLookupLow(chkY)
+                i = chkY
+            End If
+                                
+        Next i
+        
+        'We now have sums for each of red, green, blue (and potentially alpha).  Apply those values to the source array.
+        tmpDstImageData(QuickVal + 2) = rSum \ gaussSum
+        tmpDstImageData(QuickVal + 1) = gSum \ gaussSum
+        tmpDstImageData(QuickVal) = bSum \ gaussSum
+        
+        'If alpha must be checked, do it now
+        If chkAlpha Then
+        
+            aSum = 0
+        
+            'Apply the convolution to the destination array, using the gaussian array as the source.
+            For i = gLB To gUB
+                'curFactor = gKernel(i)
+                chkY = y + i
+                If chkY < initY Then chkY = initY
+                If chkY > finalY Then chkY = finalY
+                aSum = aSum + GaussImageData(QuickVal + 3, chkY) * gKernelInt(i)
+            Next i
+        
+            tmpDstImageData(QuickVal + 3) = aSum \ gaussSum
+        
+        End If
+                
+    Next x
+        If Not suppressMessages Then
+            If (y And progBarCheck) = 0 Then SetProgBarVal (y + finalY) + modifyProgBarOffset
+        End If
+    Next y
+        
+    'With our work complete, point all ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(tmpDstImageData()), 0&, 4
+    
+    CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
+    Erase GaussImageData
+    
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'We can also erase our intermediate gaussian layer
+    gaussLayer.eraseLayer
+    Set gaussLayer = Nothing
+        
+End Sub
+
+

@@ -45,11 +45,11 @@ Begin VB.Form FormGaussianBlur
    Begin VB.HScrollBar hsRadius 
       Height          =   255
       Left            =   6120
-      Max             =   200
+      Max             =   2000
       Min             =   1
       TabIndex        =   2
       Top             =   2760
-      Value           =   5
+      Value           =   50
       Width           =   4935
    End
    Begin VB.TextBox txtRadius 
@@ -66,11 +66,11 @@ Begin VB.Form FormGaussianBlur
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   11160
-      MaxLength       =   3
+      MaxLength       =   5
       TabIndex        =   3
-      Text            =   "5"
+      Text            =   "5.0"
       Top             =   2700
-      Width           =   615
+      Width           =   735
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -167,9 +167,9 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
 
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
+    If EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, True, True) Then
         Me.Visible = False
-        Process GaussianBlur, hsRadius.Value
+        Process GaussianBlur, CDbl(hsRadius.Value / 10)
         Unload Me
     Else
         AutoSelectText txtRadius
@@ -179,7 +179,7 @@ End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
     If Not toPreview Then Message "Applying gaussian blur..."
         
@@ -203,7 +203,7 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Long, Optional ByVal toPreview As
         If gRadius = 0 Then gRadius = 1
     End If
     
-    CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
+    CreateGaussianBlurLayerInt gRadius, srcLayer, workingLayer, toPreview
     
     srcLayer.eraseLayer
     Set srcLayer = Nothing
@@ -227,12 +227,12 @@ Private Sub Form_Activate()
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
-        hsRadius.Max = 50
+        hsRadius.Max = 500
         lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
         lblIDEWarning.Visible = True
     Else
         '32bpp images take quite a bit longer to process.  Limit the radius to 100 in this case.
-        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then hsRadius.Max = 100 Else hsRadius.Max = 200
+        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then hsRadius.Max = 1000 Else hsRadius.Max = 2000
     End If
     
 End Sub
@@ -243,12 +243,12 @@ End Sub
 
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
+    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
     updatePreview
 End Sub
 
 Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
+    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
     updatePreview
 End Sub
 
@@ -258,9 +258,9 @@ End Sub
 
 Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
+    If EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, False, False) Then hsRadius.Value = Val(txtRadius) * 10
 End Sub
 
 Private Sub updatePreview()
-    GaussianBlurFilter hsRadius.Value, True, fxPreview
+    GaussianBlurFilter hsRadius.Value / 10, True, fxPreview
 End Sub
