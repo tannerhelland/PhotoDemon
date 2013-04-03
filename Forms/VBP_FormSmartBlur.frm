@@ -95,11 +95,11 @@ Begin VB.Form FormSmartBlur
    Begin VB.HScrollBar hsRadius 
       Height          =   255
       Left            =   6120
-      Max             =   50
+      Max             =   500
       Min             =   1
       TabIndex        =   2
       Top             =   3000
-      Value           =   5
+      Value           =   50
       Width           =   4935
    End
    Begin VB.TextBox txtRadius 
@@ -116,9 +116,9 @@ Begin VB.Form FormSmartBlur
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   11160
-      MaxLength       =   3
+      MaxLength       =   4
       TabIndex        =   3
-      Text            =   "5"
+      Text            =   "5.0"
       Top             =   2940
       Width           =   615
    End
@@ -282,7 +282,7 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Validate all text box entries
-    If Not EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
+    If Not EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, True, True) Then
         AutoSelectText txtRadius
         Exit Sub
     End If
@@ -293,14 +293,14 @@ Private Sub cmdOK_Click()
     End If
     
     Me.Visible = False
-    Process SmartBlur, hsRadius.Value, hsThreshold.Value, optEdges(1)
+    Process SmartBlur, CDbl(hsRadius.Value) / 10, hsThreshold.Value, optEdges(1)
     Unload Me
     
 End Sub
 
 'Convolve an image using a selective gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
-Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Analyzing image in preparation for smart blur..."
             
@@ -337,10 +337,9 @@ Public Sub SmartBlurFilter(ByVal gRadius As Long, ByVal gThreshold As Byte, ByVa
         Else
             gRadius = (gRadius / iHeight) * curLayerValues.Height
         End If
-        If gRadius = 0 Then gRadius = 1
     End If
     
-    CreateGaussianBlurLayer gRadius, srcLayer, gaussLayer, toPreview, finalY * 2 + finalX
+    CreateGaussianBlurLayerInt gRadius, srcLayer, gaussLayer, toPreview, finalY * 2 + finalX
         
     'Now that we have a gaussian layer created in gaussLayer, we can point arrays toward it and the source layer
     Dim dstImageData() As Byte
@@ -465,12 +464,12 @@ End Sub
 
 'The next three routines keep the scroll bar and text box values in sync
 Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
+    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
     updatePreview
 End Sub
 
 Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
+    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
     updatePreview
 End Sub
 
@@ -494,8 +493,8 @@ End Sub
 
 Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
     textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then
-        hsRadius.Value = Val(txtRadius)
+    If EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, False, False) Then
+        hsRadius.Value = Val(txtRadius) * 10
     End If
 End Sub
 
@@ -512,5 +511,5 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    SmartBlurFilter hsRadius.Value, hsThreshold.Value, optEdges(1), True, fxPreview
+    SmartBlurFilter CDbl(hsRadius.Value) / 10, hsThreshold.Value, optEdges(1), True, fxPreview
 End Sub

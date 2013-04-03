@@ -554,7 +554,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             If LoadForm Then
                 FormSmartBlur.Show vbModal, FormMain
             Else
-                FormSmartBlur.SmartBlurFilter CLng(pOPCODE), CByte(pOPCODE2), CBool(pOPCODE3)
+                FormSmartBlur.SmartBlurFilter CDbl(pOPCODE), CByte(pOPCODE2), CBool(pOPCODE3)
             End If
         Case BoxBlur
             If LoadForm Then
