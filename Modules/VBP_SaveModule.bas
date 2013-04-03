@@ -26,7 +26,7 @@ Option Explicit
 '   3) Optional: imageID (if provided, the function can write information about the save to the relevant object in the pdImages array)
 '   4) Optional: whether to display a form for the user to input additional save options (JPEG quality, etc)
 '   5) Optional: a string of relevant save parameters.  If this is not provided, relevant parameters will be loaded from the INI file.
-Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal imageID As Long = -1, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long) As Boolean
+Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal imageID As Long = -1, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long = -1) As Boolean
     
     'Only update the MRU list if 1) no form is shown (because the user may cancel it), 2) a form was shown and the user
     ' successfully navigated it, and 3) no errors occured during the export process.  By default, this is set to "do not update."
@@ -58,7 +58,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     If saveFormat <> FIF_JPEG Then
     
         Dim colorDepthMode As Long
-        If IsMissing(forceColorDepthMethod) Then
+        If forceColorDepthMethod = -1 Then
             colorDepthMode = g_UserPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
         Else
             colorDepthMode = forceColorDepthMethod
@@ -395,14 +395,14 @@ End Function
 
 
 'Save the current image to BMP format
-Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, ByVal outputColorDepth As Long, Optional ByVal bmpParams As String) As Boolean
+Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, ByVal outputColorDepth As Long, Optional ByVal bmpParams As String = "") As Boolean
     
     On Error GoTo SaveBMPError
     
     'Parse all possible BMP parameters (at present there is only one possible parameter, which specifies RLE compression for 8bpp images)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Not IsMissing(bmpParams) Then cParams.setParamString bmpParams
+    If Len(bmpParams) > 0 Then cParams.setParamString bmpParams
     Dim BMPCompression As Boolean
     BMPCompression = cParams.GetBool(1, False)
     
@@ -653,7 +653,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     ' (At present, three are possible: compression level, interlacing, BKGD chunk preservation (background color)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Not IsMissing(pngParams) Then cParams.setParamString pngParams
+    If Len(pngParams) > 0 Then cParams.setParamString pngParams
     Dim pngCompressionLevel As Long
     pngCompressionLevel = cParams.GetLong(1, 9)
     Dim pngUseInterlacing As Boolean, pngPreserveBKGD As Boolean
@@ -942,7 +942,7 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     'Parse all possible PPM parameters (at present there is only one possible parameter, which sets RAW vs ASCII encoding)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Not IsMissing(ppmParams) Then cParams.setParamString ppmParams
+    If Len(ppmParams) > 0 Then cParams.setParamString ppmParams
     Dim ppmFormat As Long
     ppmFormat = cParams.GetLong(1, 0)
 
@@ -1017,7 +1017,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     'Parse all possible TGA parameters (at present there is only one possible parameter, which specifies RLE compression)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Not IsMissing(tgaParams) Then cParams.setParamString tgaParams
+    If Len(tgaParams) > 0 Then cParams.setParamString tgaParams
     Dim TGACompression As Boolean
     TGACompression = cParams.GetBool(1, False)
     
@@ -1166,7 +1166,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     'Parse all possible JPEG parameters
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Not IsMissing(jpegParams) Then cParams.setParamString jpegParams
+    If Len(jpegParams) > 0 Then cParams.setParamString jpegParams
     Dim JPEGFlags As Long
     JPEGFlags = cParams.GetLong(1, 92)
     
@@ -1271,7 +1271,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     ' (At present, two are possible: one for compression type, and another for CMYK encoding)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Not IsMissing(tiffParams) Then cParams.setParamString tiffParams
+    If Len(tiffParams) > 0 Then cParams.setParamString tiffParams
     Dim tiffEncoding As Long
     tiffEncoding = cParams.GetLong(1, 0)
     Dim tiffUseCMYK As Boolean
@@ -1479,15 +1479,15 @@ SaveTIFError:
         
 End Function
 
-'Save to JPEG-2000 format using the FreeImage library.  This is currently deemed "experimental".
-Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As String, ByVal outputColorDepth As Long, Optional ByVal jp2Params As String) As Boolean
+'Save to JPEG-2000 format using the FreeImage library.
+Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As String, ByVal outputColorDepth As Long, Optional ByVal jp2Params As String = "") As Boolean
     
     On Error GoTo SaveJP2Error
     
     'Parse all possible JPEG-2000 params
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Not IsMissing(jp2Params) Then cParams.setParamString jp2Params
+    If Len(jp2Params) > 0 Then cParams.setParamString jp2Params
     Dim jp2Quality As Long
     If cParams.doesParamExist(1) Then jp2Quality = cParams.GetLong(1) Else jp2Quality = 16
     
