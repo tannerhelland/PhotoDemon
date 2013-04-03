@@ -100,7 +100,7 @@
  *  modified to accept a numebr of colors argument. 
  *  Copyright (c) Stuart Coyle 2004-2006
  * 
- *  Rewritten by Kornel Lesiński (2009):
+ *  Rewritten by Kornel Lesinski (2009):
  *  Euclidean distance, color matching dependent on alpha channel and with
  *  gamma correction. code refreshed for modern compilers/architectures:
  *  ANSI C, floats, removed pointer tricks and used arrays and structs.
@@ -109,7 +109,7 @@
  *  Copyright (C) 1997, 2000, 2002 by Greg Roelofs; based on an idea by
  *                                Stefan Schneider.
  *  Copyright (C) 2004-2009 by Stuart Coyle
- *  Copyright (C) Kornel Lesiński (2009)
+ *  Copyright (C) Kornel Lesinski (2009)
  *
  *  Permission to use, copy, modify, and distribute this software and
  *  its documentation for any purpose and without fee is hereby granted,
