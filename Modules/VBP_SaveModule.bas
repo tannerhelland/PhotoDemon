@@ -269,7 +269,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 cParams.setParamString cParams.getParamString() & "|" & CStr(g_UserPreferences.GetPreference_Boolean("General Preferences", "PNGInterlacing", False))
                 cParams.setParamString cParams.getParamString() & "|" & CStr(g_UserPreferences.GetPreference_Boolean("General Preferences", "PNGBackgroundPreservation", True))
             End If
-                    
+            
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
             If g_ImageFormats.FreeImageEnabled Then
                 updateMRU = SavePNGImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
@@ -701,7 +701,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         
         'Check to see if the current image had its colors counted before coming here.  If not, count it.
         Dim numColors As Long
-        If g_LastImageScanned <> srcPDImage Then
+        If g_LastImageScanned <> srcPDImage.imageID Then
             numColors = getQuickColorCount(srcPDImage, srcPDImage)
         Else
             numColors = g_LastColorCount
@@ -923,7 +923,6 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
     'Release FreeImage from memory
     FreeLibrary hLib
-    
     SavePNGImage = True
     Exit Function
     
