@@ -269,8 +269,9 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "PINCHWHIRL", 5, 4, 4     'Pinch and whirl
         AddMenuIcon "POLAR", 5, 4, 5          'Polar conversion
         AddMenuIcon "RIPPLE", 5, 4, 6         'Ripple
-        AddMenuIcon "SWIRL", 5, 4, 7          'Swirl
-        AddMenuIcon "WAVES", 5, 4, 8          'Waves
+        AddMenuIcon "SHEAR", 5, 4, 7          'Shear
+        AddMenuIcon "SWIRL", 5, 4, 8          'Swirl
+        AddMenuIcon "WAVES", 5, 4, 9          'Waves
         
     AddMenuIcon "EDGES", 5, 5        'Edges
         '--> Edges sub-menu

@@ -200,6 +200,8 @@ Option Explicit
     Public Const ConvertPolar As Long = 720
     'Autocrop
     Public Const Autocrop As Long = 721
+    '-Distort: Shear
+    Public Const DistortShear As Long = 722
     
     'Other filters; numbers 800-899
     Public Const FilmNoir As Long = 801
@@ -790,6 +792,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             End If
         Case Autocrop
             AutocropImage
+        Case DistortShear
+            If LoadForm Then
+                FormShear.Show vbModal, FormMain
+            Else
+                FormShear.ShearImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
+            End If
             
             
     'Other filters
