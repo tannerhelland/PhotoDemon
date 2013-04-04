@@ -202,6 +202,8 @@ Option Explicit
     Public Const Autocrop As Long = 721
     '-Distort: Shear
     Public Const DistortShear As Long = 722
+    '-Distort: Perspective
+    Public Const DistortPerspective As Long = 723
     
     'Other filters; numbers 800-899
     Public Const FilmNoir As Long = 801
@@ -798,6 +800,12 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Else
                 FormShear.ShearImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
             End If
+        Case DistortPerspective
+            If LoadForm Then
+                FormPerspective.Show vbModal, FormMain
+            Else
+                FormPerspective.PerspectiveImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
+            End If
             
             
     'Other filters
@@ -1280,6 +1288,10 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Polar conversion"
         Case Autocrop
             GetNameOfProcess = "Autocrop image"
+        Case DistortShear
+            GetNameOfProcess = "Shear"
+        Case DistortPerspective
+            GetNameOfProcess = "Perspective"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade
