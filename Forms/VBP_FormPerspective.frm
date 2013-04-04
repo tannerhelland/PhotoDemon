@@ -282,8 +282,8 @@ Attribute VB_Exposed = False
 'Last updated: 04/April/13
 'Last update: initial build
 '
-'This tool allows the user to apply perspective to an image.  The code is closely related to the shearing algorithm
-' (as used in FormShear).  Reverse-mapping is used to allow for high-quality antialiasing.
+'This tool allows the user to apply forced perspective to an image.  The code is similar (in theory) to the
+' shearing algorithm used in FormShear.  Reverse-mapping is used to allow for high-quality antialiasing.
 '
 '***************************************************************************
 
@@ -387,9 +387,9 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     yRatio = yRatio / 100
     
     'Store region width and height as floating-point
-    Dim imgWidth As Double, imgHeight As Double
-    imgWidth = finalX - initX
-    imgHeight = finalY - initY
+    Dim ImgWidth As Double, ImgHeight As Double
+    ImgWidth = finalX - initX
+    ImgHeight = finalY - initY
     
     'Build a look-up table for horizontal line size and offset
     Dim leftX() As Double, lineWidth() As Double
@@ -398,7 +398,7 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     
     For y = initY To finalY
             leftX(y) = ((finalY - y) / finalY) * midX * xRatio
-            lineWidth(y) = imgWidth - (leftX(y) * 2)
+            lineWidth(y) = ImgWidth - (leftX(y) * 2)
             If lineWidth(y) = 0 Then lineWidth(y) = 0.000000001
     Next y
     
@@ -409,7 +409,7 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     
     For x = initX To finalX
             topY(x) = ((finalX - x) / finalX) * midY * yRatio
-            lineHeight(x) = imgHeight - (topY(x) * 2)
+            lineHeight(x) = ImgHeight - (topY(x) * 2)
             If lineHeight(x) = 0 Then lineHeight(x) = 0.000000001
     Next x
     
@@ -422,8 +422,8 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     For y = initY To finalY
                 
         'Reverse-map the coordinates back onto the original image (to allow for AA)
-        srcX = ((x - leftX(y)) / lineWidth(y)) * imgWidth
-        srcY = ((y - topY(x)) / lineHeight(x)) * imgHeight
+        srcX = ((x - leftX(y)) / lineWidth(y)) * ImgWidth
+        srcY = ((y - topY(x)) / lineHeight(x)) * ImgHeight
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
@@ -450,7 +450,7 @@ Private Sub Form_Activate()
         
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_ERASE
+    popDistortEdgeBox cmbEdges, EDGE_WRAP
         
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
