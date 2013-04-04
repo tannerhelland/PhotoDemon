@@ -282,16 +282,11 @@ Attribute VB_Exposed = False
 'Last updated: 03/April/13
 'Last update: initial build
 '
-'This tool allows the user to "pinch" an image.  Negative pinch values result in a "bulging" effect.  A "whirl"
-' component has also been added, as that seems to be standard for this tool in other software.  Bilinear interpolation
-' (via reverse-mapping) is available for a high-quality transformation.
+'This tool allows the user to "shear" an image, or convert it from a rectangle to a parallelogram.  Bilinear
+' interpolation (via reverse-mapping) is available for a high-quality transformation.
 '
-'At present, the tool assumes that you want to pinch the image at its center.  The code is already set up to handle
-' alternative center points - there simply needs to be a good user interface technique for establishing the center.
-'
-'Finally, the transformation used by this tool is a modified version of a transformation originally written by
-' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
-' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
+'This version does not change the size of the final image.  A separate shear tool should be written that operates
+' at an Image level, and it will provide the ability to resize the output to contain the entire sheared image.
 '
 '***************************************************************************
 
