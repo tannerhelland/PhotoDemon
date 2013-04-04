@@ -32,7 +32,7 @@ Begin VB.Form FormPerspective
       Max             =   1000
       Min             =   -1000
       TabIndex        =   13
-      Top             =   2700
+      Top             =   2580
       Width           =   4815
    End
    Begin VB.TextBox txtRatioY 
@@ -52,7 +52,7 @@ Begin VB.Form FormPerspective
       MaxLength       =   6
       TabIndex        =   12
       Text            =   "0.0"
-      Top             =   2640
+      Top             =   2520
       Width           =   735
    End
    Begin VB.ComboBox cmbEdges 
@@ -109,7 +109,7 @@ Begin VB.Form FormPerspective
       MaxLength       =   6
       TabIndex        =   4
       Text            =   "0.0"
-      Top             =   1800
+      Top             =   1560
       Width           =   735
    End
    Begin VB.HScrollBar hsRatioX 
@@ -119,7 +119,7 @@ Begin VB.Form FormPerspective
       Max             =   1000
       Min             =   -1000
       TabIndex        =   3
-      Top             =   1860
+      Top             =   1620
       Width           =   4815
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -192,7 +192,7 @@ Begin VB.Form FormPerspective
       Index           =   1
       Left            =   6000
       TabIndex        =   14
-      Top             =   2280
+      Top             =   2160
       Width           =   2100
    End
    Begin VB.Label lblTitle 
@@ -266,7 +266,7 @@ Begin VB.Form FormPerspective
       Index           =   0
       Left            =   6000
       TabIndex        =   2
-      Top             =   1440
+      Top             =   1200
       Width           =   2400
    End
 End
@@ -397,9 +397,13 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     ReDim lineWidth(initY To finalY) As Double
     
     For y = initY To finalY
+        If xRatio >= 0 Then
             leftX(y) = ((finalY - y) / finalY) * midX * xRatio
-            lineWidth(y) = ImgWidth - (leftX(y) * 2)
-            If lineWidth(y) = 0 Then lineWidth(y) = 0.000000001
+        Else
+            leftX(y) = (y / finalY) * midX * -xRatio
+        End If
+        lineWidth(y) = ImgWidth - (leftX(y) * 2)
+        If lineWidth(y) = 0 Then lineWidth(y) = 0.000000001
     Next y
     
     'Do the same for vertical line size and offset
@@ -408,9 +412,13 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     ReDim lineHeight(initX To finalX) As Double
     
     For x = initX To finalX
+        If yRatio >= 0 Then
             topY(x) = ((finalX - x) / finalX) * midY * yRatio
-            lineHeight(x) = ImgHeight - (topY(x) * 2)
-            If lineHeight(x) = 0 Then lineHeight(x) = 0.000000001
+        Else
+            topY(x) = (x / finalX) * midY * -yRatio
+        End If
+        lineHeight(x) = ImgHeight - (topY(x) * 2)
+        If lineHeight(x) = 0 Then lineHeight(x) = 0.000000001
     Next x
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
@@ -421,7 +429,7 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
         QuickVal = x * qvDepth
     For y = initY To finalY
                 
-        'Reverse-map the coordinates back onto the original image (to allow for AA)
+        'Reverse-map the coordinates back onto the original image (to allow for resampling)
         srcX = ((x - leftX(y)) / lineWidth(y)) * ImgWidth
         srcY = ((y - topY(x)) / lineHeight(x)) * ImgHeight
         
