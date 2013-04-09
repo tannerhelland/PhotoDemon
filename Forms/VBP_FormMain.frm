@@ -321,7 +321,7 @@ Begin VB.MDIForm FormMain
       Top             =   7560
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0   'False
+      enabled         =   0
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -408,7 +408,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":81F5
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":821D
          disabledpicturemode=   1
          captioneffects  =   0
@@ -426,7 +426,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":926F
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":9297
          disabledpicturemode=   1
          captioneffects  =   0
@@ -444,7 +444,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":A2E9
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":A311
          disabledpicturemode=   1
          captioneffects  =   0
@@ -463,7 +463,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":B363
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":B38B
          disabledpicturemode=   1
          captioneffects  =   0
@@ -482,7 +482,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":C3DD
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":C405
          disabledpicturemode=   1
          captioneffects  =   0
@@ -500,7 +500,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":D457
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":D47F
          disabledpicturemode=   1
          captioneffects  =   0
@@ -518,7 +518,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":E4D1
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":E4F9
          disabledpicturemode=   1
          captioneffects  =   0
@@ -537,7 +537,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":E94B
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":E973
          disabledpicturemode=   1
          captioneffects  =   0
@@ -1254,32 +1254,36 @@ Begin VB.MDIForm FormMain
             Index           =   3
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Perspective..."
+            Caption         =   "Perspective (fixed)..."
             Index           =   4
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Pinch and whirl..."
+            Caption         =   "Perspective (free)..."
             Index           =   5
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Polar conversion..."
+            Caption         =   "Pinch and whirl..."
             Index           =   6
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Ripple..."
+            Caption         =   "Polar conversion..."
             Index           =   7
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Shear..."
+            Caption         =   "Ripple..."
             Index           =   8
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Swirl..."
+            Caption         =   "Shear..."
             Index           =   9
          End
          Begin VB.Menu MnuDistortFilter 
-            Caption         =   "Waves..."
+            Caption         =   "Swirl..."
             Index           =   10
+         End
+         Begin VB.Menu MnuDistortFilter 
+            Caption         =   "Waves..."
+            Index           =   11
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2225,32 +2229,36 @@ Private Sub MnuDistortFilter_Click(Index As Integer)
         Case 3
             Process DistortKaleidoscope, , , , , , , , , , True
                 
-        'Perspective
+        'Perspective (fixed)
         Case 4
-            Process DistortPerspective, , , , , , , , , , True
+            Process FixedPerspective, , , , , , , , , , True
+            
+        'Perspective (free)
+        Case 5
+            Process FreePerspective, , , , , , , , , , True
             
         'Pinch and whirl
-        Case 5
+        Case 6
             Process DistortPinchAndWhirl, , , , , , , , , , True
         
         'Polar conversion
-        Case 6
+        Case 7
             Process ConvertPolar, , , , , , , , , , True
         
         'Ripple
-        Case 7
+        Case 8
             Process DistortRipple, , , , , , , , , , True
         
         'Shear
-        Case 8
+        Case 9
             Process DistortShear, , , , , , , , , , True
         
         'Swirl
-        Case 9
+        Case 10
             Process DistortSwirl, , , , , , , , , , True
         
         'Waves
-        Case 10
+        Case 11
             Process DistortWaves, , , , , , , , , , True
     
     End Select
@@ -2822,7 +2830,8 @@ End Sub
 
 Private Sub MnuTest_Click()
     'FormShear.Show vbModal, FormMain
-    FormPerspective.Show vbModal, FormMain
+    'FormPerspective.Show vbModal, FormMain
+    FormTruePerspective.Show vbModal, FormMain
     'MenuTest
 End Sub
 

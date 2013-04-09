@@ -266,13 +266,14 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "FIXLENS", 5, 4, 1        'Remove or correct existing lens distortion
         AddMenuIcon "FIGGLASS", 5, 4, 2       'Figured glass
         AddMenuIcon "KALEIDOSCOPE", 5, 4, 3   'Kaleidoscope
-        AddMenuIcon "PERSPECTIVE", 5, 4, 4    'Perspective
-        AddMenuIcon "PINCHWHIRL", 5, 4, 5     'Pinch and whirl
-        AddMenuIcon "POLAR", 5, 4, 6          'Polar conversion
-        AddMenuIcon "RIPPLE", 5, 4, 7         'Ripple
-        AddMenuIcon "SHEAR", 5, 4, 8          'Shear
-        AddMenuIcon "SWIRL", 5, 4, 9          'Swirl
-        AddMenuIcon "WAVES", 5, 4, 10          'Waves
+        AddMenuIcon "PERSPECTIVE", 5, 4, 4    'Perspective (fixed)
+        'AddMenuIcon "PERSPECTIVE", 5, 4, 5    'Perspective (free)
+        AddMenuIcon "PINCHWHIRL", 5, 4, 6     'Pinch and whirl
+        AddMenuIcon "POLAR", 5, 4, 7          'Polar conversion
+        AddMenuIcon "RIPPLE", 5, 4, 8         'Ripple
+        AddMenuIcon "SHEAR", 5, 4, 9          'Shear
+        AddMenuIcon "SWIRL", 5, 4, 10          'Swirl
+        AddMenuIcon "WAVES", 5, 4, 11          'Waves
         
     AddMenuIcon "EDGES", 5, 5        'Edges
         '--> Edges sub-menu
