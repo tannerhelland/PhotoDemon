@@ -322,7 +322,7 @@ Private Sub cmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    Process DistortPerspective, CDbl(hsRatioX / 10), CDbl(hsRatioY / 10), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+    Process FixedPerspective, CDbl(hsRatioX / 10), CDbl(hsRatioY / 10), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
     
     Unload Me
     
@@ -387,9 +387,9 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     yRatio = yRatio / 100
     
     'Store region width and height as floating-point
-    Dim ImgWidth As Double, ImgHeight As Double
-    ImgWidth = finalX - initX
-    ImgHeight = finalY - initY
+    Dim imgWidth As Double, imgHeight As Double
+    imgWidth = finalX - initX
+    imgHeight = finalY - initY
     
     'Build a look-up table for horizontal line size and offset
     Dim leftX() As Double, lineWidth() As Double
@@ -402,7 +402,7 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
         Else
             leftX(y) = (y / finalY) * midX * -xRatio
         End If
-        lineWidth(y) = ImgWidth - (leftX(y) * 2)
+        lineWidth(y) = imgWidth - (leftX(y) * 2)
         If lineWidth(y) = 0 Then lineWidth(y) = 0.000000001
     Next y
     
@@ -417,7 +417,7 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
         Else
             topY(x) = (x / finalX) * midY * -yRatio
         End If
-        lineHeight(x) = ImgHeight - (topY(x) * 2)
+        lineHeight(x) = imgHeight - (topY(x) * 2)
         If lineHeight(x) = 0 Then lineHeight(x) = 0.000000001
     Next x
     
@@ -430,8 +430,8 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     For y = initY To finalY
                 
         'Reverse-map the coordinates back onto the original image (to allow for resampling)
-        srcX = ((x - leftX(y)) / lineWidth(y)) * ImgWidth
-        srcY = ((y - topY(x)) / lineHeight(x)) * ImgHeight
+        srcX = ((x - leftX(y)) / lineWidth(y)) * imgWidth
+        srcY = ((y - topY(x)) / lineHeight(x)) * imgHeight
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
