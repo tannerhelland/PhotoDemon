@@ -3,7 +3,7 @@ Begin VB.Form FormPerspective
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Perspective"
+   Caption         =   " Fixed Perspective"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
@@ -368,7 +368,7 @@ Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVa
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
