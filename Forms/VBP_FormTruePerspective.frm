@@ -230,7 +230,7 @@ Dim m_isMouseDown As Boolean
 Dim m_selPoint As Long
 
 'How close to a point the user must click to select that point
-Private Const MOUSEACCURACY As Byte = 6
+Private Const mouseAccuracy As Byte = 6
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -316,7 +316,7 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -327,10 +327,7 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     Dim cParams As pdParamString
     Set cParams = New pdParamString
     If Len(listOfModifiers) > 0 Then cParams.setParamString listOfModifiers
-    
-    'Certain values can lead to divide-by-zero problems - check those in advance and convert 0 to something like 0.000001
-    Dim chkDenom As Double
-    
+        
     'Store region width and height as floating-point
     Dim imgWidth As Double, imgHeight As Double
     imgWidth = finalX - initX
@@ -341,8 +338,8 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     wModifier = 1
     hModifier = 1
     If toPreview Then
-        wModifier = (imgWidth / iWidth) '* imgWidth
-        hModifier = (imgHeight / iHeight) '* imgHeight
+        wModifier = (imgWidth / iWidth)
+        hModifier = (imgHeight / iHeight)
     End If
     
     'Scale quad coordinates to the size of the image
@@ -350,22 +347,9 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     invWidth = 1 / imgWidth
     invHeight = 1 / imgHeight
     
-    'In the final version of this function, the user will be able to specify all of these points.  For now,
-    ' we generate them manually
+    'Copy the points given by the user (which are currently strings) into individual floating-point variables
     Dim x0 As Double, x1 As Double, x2 As Double, x3 As Double
     Dim y0 As Double, y1 As Double, y2 As Double, y3 As Double
-        
-    'x0 = 0 - cParams.GetDouble(1)
-    'y0 = 0 + cParams.GetDouble(2)
-    'x1 = 1 - cParams.GetDouble(3)
-    'y1 = 0 + cParams.GetDouble(4)
-    'x2 = 1 - cParams.GetDouble(5)
-    'y2 = 1 + cParams.GetDouble(6)
-    'x3 = 0 - cParams.GetDouble(7)
-    'y3 = 1 + cParams.GetDouble(8)
-    
-    Dim toScale As Boolean
-    toScale = True
     
     x0 = cParams.GetDouble(1)
     y0 = cParams.GetDouble(2)
@@ -389,16 +373,14 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
         y3 = y3 * hModifier
     End If
     
-    If toScale Then
-        x0 = x0 * invWidth
-        y0 = y0 * invHeight
-        x1 = x1 * invWidth
-        y1 = y1 * invHeight
-        x2 = x2 * invWidth
-        y2 = y2 * invHeight
-        x3 = x3 * invWidth
-        y3 = y3 * invHeight
-    End If
+    x0 = x0 * invWidth
+    y0 = y0 * invHeight
+    x1 = x1 * invWidth
+    y1 = y1 * invHeight
+    x2 = x2 * invWidth
+    y2 = y2 * invHeight
+    x3 = x3 * invWidth
+    y3 = y3 * invHeight
     
     'First things first: we need to map the original image (in terms of the unit square)
     ' to the arbitrary quadrilateral defined by the user's parameters
@@ -409,10 +391,15 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     dy2 = y3 - y2
     dx3 = x0 - x1 + x2 - x3
     dy3 = y0 - y1 + y2 - y3
-        
+    
+    'Technically, these are points in a matrix - and they could be defined as an array.  But VB accesses
+    ' individual data types more quickly than an array, so we declare them each separately.
     Dim a11 As Double, a21 As Double, a31 As Double
     Dim a12 As Double, a22 As Double, a32 As Double
     Dim a13 As Double, a23 As Double, a33 As Double
+    
+    'Certain values can lead to divide-by-zero problems - check those in advance and convert 0 to something like 0.000001
+    Dim chkDenom As Double
     
     chkDenom = (dx1 * dy2 - dy1 * dx2)
     If chkDenom = 0 Then chkDenom = 0.000000001
@@ -428,29 +415,31 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     a33 = 1
 
     'Next, we need to calculate the key set of transformation parameters, using the reverse-map data we just generated.
-    Dim vA As Double, VB As Double, vC As Double, vD As Double, vE As Double, vF As Double, VG As Double, vH As Double, vI As Double
+    ' Again, these are technically just matrix entries, but we get better performance by declaring them individually.
+    Dim vA As Double, vB As Double, vC As Double, vD As Double, vE As Double, vF As Double, vG As Double, vH As Double, vI As Double
     
     vA = a22 * a33 - a32 * a23
-    VB = a31 * a23 - a21 * a33
+    vB = a31 * a23 - a21 * a33
     vC = a21 * a32 - a31 * a22
     vD = a32 * a13 - a12 * a33
     vE = a11 * a33 - a31 * a13
     vF = a31 * a12 - a11 * a32
-    VG = a12 * a23 - a22 * a13
+    vG = a12 * a23 - a22 * a13
     vH = a21 * a13 - a11 * a23
     vI = a11 * a22 - a21 * a12
-    
-    If toScale Then
-        vA = vA * invWidth
-        vD = vD * invWidth
-        VG = VG * invWidth
-    
-        VB = VB * invHeight
-        vE = vE * invHeight
-        vH = vH * invHeight
-    End If
-    
-    
+        
+    'Message vA & "," & vB & "," & vC & "," & vD & "," & vE & "," & vF & "," & VG & "," & vH & "," & vI
+        
+    'Scale those values to match the size of the transformed image
+    vA = vA * invWidth
+    vD = vD * invWidth
+    vG = vG * invWidth
+    vB = vB * invHeight
+    vE = vE * invHeight
+    vH = vH * invHeight
+            
+    'With all that data calculated in advanced, the actual transform is quite simple.
+            
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
@@ -460,15 +449,11 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     For y = initY To finalY
                 
         'Reverse-map the coordinates back onto the original image (to allow for resampling)
-        chkDenom = (VG * x + vH * y + vI)
+        chkDenom = (vG * x + vH * y + vI)
         If chkDenom = 0 Then chkDenom = 0.000000001
-        If toScale Then
-            srcX = imgWidth * (vA * x + VB * y + vC) / chkDenom
-            srcY = imgHeight * (vD * x + vE * y + vF) / chkDenom
-        Else
-            srcX = (vA * x + VB * y + vC) / chkDenom
-            srcY = (vD * x + vE * y + vF) / chkDenom
-        End If
+        
+        srcX = imgWidth * (vA * x + vB * y + vC) / chkDenom
+        srcY = imgHeight * (vD * x + vE * y + vF) / chkDenom
                 
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
@@ -680,7 +665,7 @@ Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
     For i = 0 To 3
         dist = pDistance(x, y, m_nPoints(i).pX, m_nPoints(i).pY)
         'If we're close to an existing point, return the index of that point
-        If dist < MOUSEACCURACY Then
+        If dist < mouseAccuracy Then
             checkClick = i
             Exit Function
         End If
