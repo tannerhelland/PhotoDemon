@@ -3,11 +3,11 @@ Begin VB.Form FormTruePerspective
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " True Perspective Test"
-   ClientHeight    =   6540
+   Caption         =   " Free Perspective"
+   ClientHeight    =   9165
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   12090
+   ClientWidth     =   15375
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,87 +20,32 @@ Begin VB.Form FormTruePerspective
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   611
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
+   ScaleWidth      =   1025
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.HScrollBar hsRatioX 
-      Height          =   255
-      Index           =   3
-      LargeChange     =   10
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   19
-      Top             =   1800
-      Width           =   2535
+   Begin VB.CommandButton cmdReset 
+      Caption         =   "Reset perspective"
+      Height          =   495
+      Left            =   120
+      TabIndex        =   10
+      Top             =   7680
+      Width           =   5775
    End
-   Begin VB.HScrollBar hsRatioY 
-      Height          =   255
-      Index           =   3
-      LargeChange     =   10
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   18
-      Top             =   2160
-      Width           =   2535
-   End
-   Begin VB.HScrollBar hsRatioX 
-      Height          =   255
-      Index           =   2
-      LargeChange     =   10
-      Left            =   9240
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   16
-      Top             =   1800
-      Width           =   2535
-   End
-   Begin VB.HScrollBar hsRatioY 
-      Height          =   255
-      Index           =   2
-      LargeChange     =   10
-      Left            =   9240
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   15
-      Top             =   2160
-      Width           =   2535
-   End
-   Begin VB.HScrollBar hsRatioX 
-      Height          =   255
-      Index           =   1
-      LargeChange     =   10
-      Left            =   9240
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   13
-      Top             =   480
-      Width           =   2535
-   End
-   Begin VB.HScrollBar hsRatioY 
-      Height          =   255
-      Index           =   1
-      LargeChange     =   10
-      Left            =   9240
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   12
-      Top             =   840
-      Width           =   2535
-   End
-   Begin VB.HScrollBar hsRatioY 
-      Height          =   255
-      Index           =   0
-      LargeChange     =   10
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   11
-      Top             =   840
-      Width           =   2535
+   Begin VB.PictureBox picDraw 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   8040
+      Left            =   6000
+      ScaleHeight     =   534
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   598
+      TabIndex        =   9
+      Top             =   120
+      Width           =   9000
    End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
@@ -115,45 +60,34 @@ Begin VB.Form FormTruePerspective
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   6120
+      Left            =   240
       Style           =   2  'Dropdown List
-      TabIndex        =   7
-      Top             =   3495
-      Width           =   5700
+      TabIndex        =   5
+      Top             =   6255
+      Width           =   5580
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   9120
+      Left            =   12360
       TabIndex        =   0
-      Top             =   5910
+      Top             =   8550
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   10590
+      Left            =   13830
       TabIndex        =   1
-      Top             =   5910
+      Top             =   8550
       Width           =   1365
-   End
-   Begin VB.HScrollBar hsRatioX 
-      Height          =   255
-      Index           =   0
-      LargeChange     =   10
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   3
-      Top             =   480
-      Width           =   2535
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -162,9 +96,9 @@ Begin VB.Form FormTruePerspective
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
       Index           =   0
-      Left            =   6120
-      TabIndex        =   9
-      Top             =   4440
+      Left            =   240
+      TabIndex        =   7
+      Top             =   7200
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -183,9 +117,9 @@ Begin VB.Form FormTruePerspective
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
       Index           =   1
-      Left            =   7920
-      TabIndex        =   10
-      Top             =   4440
+      Left            =   2040
+      TabIndex        =   8
+      Top             =   7200
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -199,75 +133,6 @@ Begin VB.Form FormTruePerspective
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "bottom left:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   4
-      Left            =   6000
-      TabIndex        =   20
-      Top             =   1440
-      Width           =   1260
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "bottom right:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   9120
-      TabIndex        =   17
-      Top             =   1440
-      Width           =   1425
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "top right:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   9120
-      TabIndex        =   14
-      Top             =   120
-      Width           =   1005
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -285,17 +150,17 @@ Begin VB.Form FormTruePerspective
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   5
-      Left            =   6000
-      TabIndex        =   8
-      Top             =   3120
+      Left            =   120
+      TabIndex        =   6
+      Top             =   5880
       Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   0
-      TabIndex        =   5
-      Top             =   5760
-      Width           =   12135
+      Left            =   -120
+      TabIndex        =   3
+      Top             =   8400
+      Width           =   16095
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -315,33 +180,10 @@ Begin VB.Form FormTruePerspective
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   2
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   4050
-      Width           =   1845
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "top left:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
+      Left            =   120
       TabIndex        =   2
-      Top             =   120
-      Width           =   840
+      Top             =   6810
+      Width           =   1845
    End
 End
 Attribute VB_Name = "FormTruePerspective"
@@ -363,8 +205,32 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Use this to prevent the text box and scroll bar from updating each other in an endless loop
-Dim userChange As Boolean
+'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
+' original image width in order to establish the right ratio.
+Dim iWidth As Long, iHeight As Long
+
+'Control points for the live preview box
+Private Type fPoint
+    pX As Double
+    pY As Double
+End Type
+
+'We track two sets of control point coordinates - the original points, and the new points.  The difference between
+' these is passed to the perspective function.
+Dim m_oPoints(0 To 3) As fPoint
+Dim m_nPoints(0 To 3) As fPoint
+
+'Width and height of the preview image
+Dim m_previewWidth As Long, m_previewHeight As Long
+
+'Track mouse status between MouseDown and MouseMove events
+Dim m_isMouseDown As Boolean
+
+'Currently selected point
+Dim m_selPoint As Long
+
+'How close to a point the user must click to select that point
+Private Const MOUSEACCURACY As Byte = 6
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -386,13 +252,22 @@ Private Sub cmdOK_Click()
     
     Dim paramString As String
     paramString = ""
-    Dim i As Long
+
+    'Top-left
+    paramString = (m_nPoints(0).pX - m_oPoints(0).pX) * (iWidth / m_previewWidth)
+    paramString = paramString & "|" & (m_nPoints(0).pY - m_oPoints(0).pY) * (iHeight / m_previewHeight)
     
-    For i = 0 To 3
-        paramString = paramString & CStr(CDbl(hsRatioX(i) / 100))
-        paramString = paramString & "|" & CStr(CDbl(hsRatioY(i) / 100))
-        If i < 3 Then paramString = paramString & "|"
-    Next i
+    'Top-right
+    paramString = paramString & "|" & (iWidth + ((m_nPoints(1).pX - m_oPoints(1).pX) * (iWidth / m_previewWidth)))
+    paramString = paramString & "|" & (m_nPoints(1).pY - m_oPoints(1).pY) * (iHeight / m_previewHeight)
+    
+    'Bottom-right
+    paramString = paramString & "|" & (iWidth + ((m_nPoints(2).pX - m_oPoints(2).pX) * (iWidth / m_previewWidth)))
+    paramString = paramString & "|" & (iHeight + (m_nPoints(2).pY - m_oPoints(2).pY) * (iHeight / m_previewHeight))
+    
+    'Bottom-left
+    paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
+    paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
     
     'Based on the user's selection, submit the proper processor request
     Process FreePerspective, paramString, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
@@ -441,7 +316,7 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -453,19 +328,77 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     Set cParams = New pdParamString
     If Len(listOfModifiers) > 0 Then cParams.setParamString listOfModifiers
     
+    'Certain values can lead to divide-by-zero problems - check those in advance and convert 0 to something like 0.000001
+    Dim chkDenom As Double
+    
+    'Store region width and height as floating-point
+    Dim imgWidth As Double, imgHeight As Double
+    imgWidth = finalX - initX
+    imgHeight = finalY - initY
+    
+    'If this is a preview, we need to adjust the width and height values to match the size of the preview box
+    Dim wModifier As Double, hModifier As Double
+    wModifier = 1
+    hModifier = 1
+    If toPreview Then
+        wModifier = (imgWidth / iWidth) '* imgWidth
+        hModifier = (imgHeight / iHeight) '* imgHeight
+    End If
+    
+    'Scale quad coordinates to the size of the image
+    Dim invWidth As Double, invHeight As Double
+    invWidth = 1 / imgWidth
+    invHeight = 1 / imgHeight
+    
     'In the final version of this function, the user will be able to specify all of these points.  For now,
     ' we generate them manually
     Dim x0 As Double, x1 As Double, x2 As Double, x3 As Double
     Dim y0 As Double, y1 As Double, y2 As Double, y3 As Double
         
-    x0 = 0 - cParams.GetDouble(1)
-    y0 = 0 + cParams.GetDouble(2)
-    x1 = 1 - cParams.GetDouble(3)
-    y1 = 0 + cParams.GetDouble(4)
-    x2 = 1 - cParams.GetDouble(5)
-    y2 = 1 + cParams.GetDouble(6)
-    x3 = 0 - cParams.GetDouble(7)
-    y3 = 1 + cParams.GetDouble(8)
+    'x0 = 0 - cParams.GetDouble(1)
+    'y0 = 0 + cParams.GetDouble(2)
+    'x1 = 1 - cParams.GetDouble(3)
+    'y1 = 0 + cParams.GetDouble(4)
+    'x2 = 1 - cParams.GetDouble(5)
+    'y2 = 1 + cParams.GetDouble(6)
+    'x3 = 0 - cParams.GetDouble(7)
+    'y3 = 1 + cParams.GetDouble(8)
+    
+    Dim toScale As Boolean
+    toScale = True
+    
+    x0 = cParams.GetDouble(1)
+    y0 = cParams.GetDouble(2)
+    x1 = cParams.GetDouble(3)
+    y1 = cParams.GetDouble(4)
+    x2 = cParams.GetDouble(5)
+    y2 = cParams.GetDouble(6)
+    x3 = cParams.GetDouble(7)
+    y3 = cParams.GetDouble(8)
+    
+    'Message x0 & "," & y0 & " | " & x1 & "," & y1 & " | " & x2 & "," & y2 & " | " & x3 & "," & y3
+    
+    If toPreview Then
+        x0 = x0 * wModifier
+        y0 = y0 * hModifier
+        x1 = x1 * wModifier
+        y1 = y1 * hModifier
+        x2 = x2 * wModifier
+        y2 = y2 * hModifier
+        x3 = x3 * wModifier
+        y3 = y3 * hModifier
+    End If
+    
+    If toScale Then
+        x0 = x0 * invWidth
+        y0 = y0 * invHeight
+        x1 = x1 * invWidth
+        y1 = y1 * invHeight
+        x2 = x2 * invWidth
+        y2 = y2 * invHeight
+        x3 = x3 * invWidth
+        y3 = y3 * invHeight
+    End If
     
     'First things first: we need to map the original image (in terms of the unit square)
     ' to the arbitrary quadrilateral defined by the user's parameters
@@ -480,46 +413,20 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     Dim a11 As Double, a21 As Double, a31 As Double
     Dim a12 As Double, a22 As Double, a32 As Double
     Dim a13 As Double, a23 As Double, a33 As Double
-        
-    a13 = (dx3 * dy2 - dx2 * dy3) / (dx1 * dy2 - dy1 * dx2)
-    a23 = (dx1 * dy3 - dy1 * dx3) / (dx1 * dy2 - dy1 * dx2)
+    
+    chkDenom = (dx1 * dy2 - dy1 * dx2)
+    If chkDenom = 0 Then chkDenom = 0.000000001
+    
+    a13 = (dx3 * dy2 - dx2 * dy3) / chkDenom
+    a23 = (dx1 * dy3 - dy1 * dx3) / chkDenom
     a11 = x1 - x0 + a13 * x1
     a21 = x3 - x0 + a23 * x3
     a31 = x0
     a12 = y1 - y0 + a13 * y1
     a22 = y3 - y0 + a23 * y3
     a32 = y0
-    
     a33 = 1
-    
-    'Next, we need to generate an inverse transformation (so we can reverse-map and use interpolation for better results)
-    Dim ta11 As Double, ta21 As Double, ta31 As Double
-    Dim ta12 As Double, ta22 As Double, ta32 As Double
-    Dim ta13 As Double, ta23 As Double, ta33 As Double
-    
-    ta11 = a22 * a33 - a32 * a23
-    ta21 = a32 * a13 - a12 * a33
-    ta31 = a12 * a23 - a22 * a13
-    ta12 = a31 * a23 - a21 * a33
-    ta22 = a11 * a33 - a31 * a13
-    ta32 = a21 * a13 - a11 * a23
-    ta13 = a21 * a32 - a31 * a22
-    ta23 = a31 * a12 - a11 * a32
-    ta33 = a11 * a22 - a21 * a12
-        
-    Dim tmpF As Double
-    tmpF = 1 / ta33
 
-    a11 = ta11 * tmpF
-    a21 = ta12 * tmpF
-    a31 = ta13 * tmpF
-    a12 = ta21 * tmpF
-    a22 = ta22 * tmpF
-    a32 = ta23 * tmpF
-    a13 = ta31 * tmpF
-    a23 = ta32 * tmpF
-    a33 = 1
-    
     'Next, we need to calculate the key set of transformation parameters, using the reverse-map data we just generated.
     Dim vA As Double, VB As Double, vC As Double, vD As Double, vE As Double, vF As Double, VG As Double, vH As Double, vI As Double
     
@@ -533,26 +440,16 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     vH = a21 * a13 - a11 * a23
     vI = a11 * a22 - a21 * a12
     
-    'Store region width and height as floating-point
-    Dim imgWidth As Double, imgHeight As Double
-    imgWidth = finalX - initX
-    imgHeight = finalY - initY
+    If toScale Then
+        vA = vA * invWidth
+        vD = vD * invWidth
+        VG = VG * invWidth
     
-    'Scale quad coordinates to the size of the image
-    Dim invWidth As Double, invHeight As Double
-    invWidth = 1 / imgWidth
-    invHeight = 1 / imgHeight
+        VB = VB * invHeight
+        vE = vE * invHeight
+        vH = vH * invHeight
+    End If
     
-    vA = vA * invWidth
-    vD = vD * invWidth
-    VG = VG * invWidth
-    
-    VB = VB * invHeight
-    vE = vE * invHeight
-    vH = vH * invHeight
-    
-    'Certain values can lead to divide-by-zero problems - check those in advance and convert 0 to something like 0.000001
-    Dim chkDenom As Double
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
@@ -565,8 +462,13 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
         'Reverse-map the coordinates back onto the original image (to allow for resampling)
         chkDenom = (VG * x + vH * y + vI)
         If chkDenom = 0 Then chkDenom = 0.000000001
-        srcX = imgWidth * (vA * x + VB * y + vC) / chkDenom
-        srcY = imgHeight * (vD * x + vE * y + vF) / chkDenom
+        If toScale Then
+            srcX = imgWidth * (vA * x + VB * y + vC) / chkDenom
+            srcY = imgHeight * (vD * x + vE * y + vF) / chkDenom
+        Else
+            srcX = (vA * x + VB * y + vC) / chkDenom
+            srcY = (vD * x + vE * y + vF) / chkDenom
+        End If
                 
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
@@ -589,7 +491,53 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
         
 End Sub
 
+Private Sub cmdReset_Click()
+
+    'Copy the original values into the "current values" point array and redraw everything
+    Dim i As Long
+    For i = 0 To 3
+        m_nPoints(i).pX = m_oPoints(i).pX
+        m_nPoints(i).pY = m_oPoints(i).pY
+    Next i
+    
+    redrawPreviewBox
+    updatePreview
+
+End Sub
+
 Private Sub Form_Activate()
+        
+    'Note the current image's width and height, which will be needed to adjust the preview effect
+    iWidth = pdImages(CurrentImage).Width
+    iHeight = pdImages(CurrentImage).Height
+        
+    'Determine the size of the preview image
+    convertAspectRatio iWidth, iHeight, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, m_previewWidth, m_previewHeight
+    
+    'Determine initial points for the draw area
+    m_oPoints(0).pX = (picDraw.ScaleWidth - m_previewWidth) / 2
+    m_oPoints(0).pY = (picDraw.ScaleHeight - m_previewHeight) / 2
+    
+    m_oPoints(1).pX = m_oPoints(0).pX + m_previewWidth
+    m_oPoints(1).pY = m_oPoints(0).pY
+    
+    m_oPoints(2).pX = m_oPoints(0).pX + m_previewWidth
+    m_oPoints(2).pY = m_oPoints(0).pY + m_previewHeight
+    
+    m_oPoints(3).pX = m_oPoints(0).pX
+    m_oPoints(3).pY = m_oPoints(0).pY + m_previewHeight
+    
+    'Copy those values into the "current values" point array
+    Dim i As Long
+    For i = 0 To 3
+        m_nPoints(i).pX = m_oPoints(i).pX
+        m_nPoints(i).pY = m_oPoints(i).pY
+    Next i
+        
+    'Mark the mouse as not being down
+    m_isMouseDown = False
+    
+    redrawPreviewBox
         
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -607,22 +555,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub hsRatioX_Change(Index As Integer)
-    updatePreview
-End Sub
-
-Private Sub hsRatioX_Scroll(Index As Integer)
-    updatePreview
-End Sub
-
-Private Sub hsRatioY_Change(Index As Integer)
-    updatePreview
-End Sub
-
-Private Sub hsRatioY_Scroll(Index As Integer)
-    updatePreview
-End Sub
-
 Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
@@ -632,14 +564,132 @@ Private Sub updatePreview()
 
     Dim paramString As String
     paramString = ""
-    Dim i As Long
-    
-    For i = 0 To 3
-        paramString = paramString & CStr(CDbl(hsRatioX(i) / 100))
-        paramString = paramString & "|" & CStr(CDbl(hsRatioY(i) / 100))
-        If i < 3 Then paramString = paramString & "|"
-    Next i
 
+    'Top-left
+    paramString = (m_nPoints(0).pX - m_oPoints(0).pX) * (iWidth / m_previewWidth)
+    paramString = paramString & "|" & (m_nPoints(0).pY - m_oPoints(0).pY) * (iHeight / m_previewHeight)
+    
+    'Top-right
+    paramString = paramString & "|" & (iWidth + ((m_nPoints(1).pX - m_oPoints(1).pX) * (iWidth / m_previewWidth)))
+    paramString = paramString & "|" & (m_nPoints(1).pY - m_oPoints(1).pY) * (iHeight / m_previewHeight)
+    
+    'Bottom-right
+    paramString = paramString & "|" & (iWidth + ((m_nPoints(2).pX - m_oPoints(2).pX) * (iWidth / m_previewWidth)))
+    paramString = paramString & "|" & (iHeight + (m_nPoints(2).pY - m_oPoints(2).pY) * (iHeight / m_previewHeight))
+    
+    'Bottom-left
+    paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
+    paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
+    
     TruePerspectiveImage paramString, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
     
 End Sub
+
+Private Sub redrawPreviewBox()
+
+    picDraw.Cls
+    
+    'Start by drawing a grid through the center of the image
+    picDraw.DrawWidth = 1
+    picDraw.ForeColor = RGB(160, 160, 160)
+    picDraw.Line (0, picDraw.Height / 2)-(picDraw.Width, picDraw.Height / 2)
+    picDraw.Line (picDraw.Width / 2, 0)-(picDraw.Width / 2, picDraw.Height)
+    
+    'Next, draw connecting lines to form an image outline
+    picDraw.ForeColor = RGB(255, 0, 0)
+    Dim i As Long
+    For i = 0 To 3
+        If i < 3 Then
+            picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(i + 1).pX, m_nPoints(i + 1).pY)
+        Else
+            picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(0).pX, m_nPoints(0).pY)
+        End If
+    Next i
+    
+    'Next, draw circles at the corners of the perspective area
+    picDraw.ForeColor = RGB(0, 0, 255)
+    
+    For i = 0 To 3
+        picDraw.Circle (m_nPoints(i).pX, m_nPoints(i).pY), 5
+    Next i
+    
+    'Finally, draw the center cross to help the user orient to the center point of the perspective effect
+    picDraw.Line (m_nPoints(0).pX, m_nPoints(0).pY)-(m_nPoints(2).pX, m_nPoints(2).pY)
+    picDraw.Line (m_nPoints(1).pX, m_nPoints(1).pY)-(m_nPoints(3).pX, m_nPoints(3).pY)
+    
+    picDraw.Refresh
+
+End Sub
+
+Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    m_isMouseDown = True
+    
+    'If the mouse is over a point, mark it as the active point
+    m_selPoint = checkClick(x, y)
+    
+End Sub
+
+Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    'If the mouse is not down, indicate to the user that points can be moved
+    If Not m_isMouseDown Then
+        
+        'If the user is close to a knot, change the mousepointer to 'move'
+        If checkClick(x, y) > -1 Then
+            If picDraw.MousePointer <> 5 Then picDraw.MousePointer = 5
+            
+            Select Case checkClick(x, y)
+                Case 0
+                    picDraw.ToolTipText = g_Language.TranslateMessage("top-left corner")
+                Case 1
+                    picDraw.ToolTipText = g_Language.TranslateMessage("top-right corner")
+                Case 2
+                    picDraw.ToolTipText = g_Language.TranslateMessage("bottom-right corner")
+                Case 3
+                    picDraw.ToolTipText = g_Language.TranslateMessage("bottom-left corner")
+                    
+            End Select
+            
+        Else
+            If picDraw.MousePointer <> 0 Then picDraw.MousePointer = 0
+        End If
+    
+    'If the mouse is down, move the current point and redraw the preview
+    Else
+    
+        If m_selPoint >= 0 Then
+            m_nPoints(m_selPoint).pX = x
+            m_nPoints(m_selPoint).pY = y
+            redrawPreviewBox
+            updatePreview
+        End If
+    
+    End If
+
+End Sub
+
+Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    m_isMouseDown = False
+    m_selPoint = -1
+End Sub
+
+'Simple distance routine to see if a location on the picture box is near an existing point
+Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
+    Dim dist As Double
+    Dim i As Long
+    For i = 0 To 3
+        dist = pDistance(x, y, m_nPoints(i).pX, m_nPoints(i).pY)
+        'If we're close to an existing point, return the index of that point
+        If dist < MOUSEACCURACY Then
+            checkClick = i
+            Exit Function
+        End If
+    Next i
+    'Returning -1 says we're not close to an existing point
+    checkClick = -1
+End Function
+
+'Simple distance formula here - we use this to calculate if the user has clicked on (or near) a point
+Private Function pDistance(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Double
+    pDistance = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+End Function
