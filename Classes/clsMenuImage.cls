@@ -75,21 +75,21 @@ Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVe
 
 ' ------------------------------------------------------- GDI Plus -------------------------------------------------------------------
 Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal CallbackData As Long = 0) As Long
-Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef Graphics As Long) As Long
-Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal Graphics As Long) As Long
+Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef Image As Long) As Long
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef lpInput As GDIPlusStartupInput, Optional ByRef lpOutput As Any) As Long
+Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef lpInput As GdiplusStartupInput, Optional ByRef lpOutput As Any) As Long
 Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As Long
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
-Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, BITMAP As Long) As Long
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal Image As Long, ByVal rfType As Long) As Long
 Private Declare Function GdipCreateBitmapFromHICON Lib "GdiPlus.dll" (ByVal mHicon As Long, ByRef mBitmap As Long) As Long
-Private Declare Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal Image As Long, ByRef Graphics As Long) As Long
+Private Declare Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal Image As Long, ByRef graphics As Long) As Long
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal Bitmap As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal Bitmap As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef Bitmap As Long) As Long
+Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal BITMAP As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
+Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal BITMAP As Long, ByRef LockedBitmapData As BitmapData) As Long
+Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef BITMAP As Long) As Long
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef Image As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Boolean, ByRef MatrixColor As COLORMATRIX, MatrixGray As Any, ByVal Flags As Long) As Long
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
@@ -208,8 +208,8 @@ Private Type BITMAPINFO
     bmiColors As ARGB
 End Type
 
-Private Type GDIPlusStartupInput
-    GDIPlusVersion As Long
+Private Type GdiplusStartupInput
+    GdiplusVersion As Long
     DebugEventCallback As Long
     SuppressBackgroundThread As Long
     SuppressExternalCodecs As Long
@@ -260,7 +260,7 @@ End Enum
 Private Const PixelFormat32bppARGB As Long = &H26200A
 Private Const PixelFormat32bppRGB As Long = &H22009
 
-Private Const GDIPlusVersion As Long = 1&
+Private Const GdiplusVersion As Long = 1&
 Private Const IconVersion As Long = &H30000
     
 Private Const BI_RGB As Long = 0&
@@ -884,8 +884,8 @@ End Function
 
 Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean) As Boolean
     Dim hGraphics As Long
-    Dim ImgWidth As Single
-    Dim ImgHeight As Single
+    Dim imgWidth As Single
+    Dim imgHeight As Single
     Dim Index As Long
     Dim OldhDib As Long
 
@@ -900,7 +900,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
         
             GdipCreateFromHDC mDIB(Index).hDC, hGraphics
         
-            GdipGetImageDimension hImage, ImgWidth, ImgHeight
+            GdipGetImageDimension hImage, imgWidth, imgHeight
             
             If bGhosted Then
                 Dim tMatrixColor As COLORMATRIX
@@ -921,7 +921,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
                 GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, True, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
             End If
 
-            GdipDrawImageRectRectI hGraphics, hImage, 0, 0, m_lWidth, m_lHeight, 0, 0, ImgWidth, ImgHeight, &H2, hAttributes, 0&, 0&
+            GdipDrawImageRectRectI hGraphics, hImage, 0, 0, m_lWidth, m_lHeight, 0, 0, imgWidth, imgHeight, &H2, hAttributes, 0&, 0&
             
             If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
     
@@ -969,7 +969,7 @@ Private Function LoadIconFromStream(ByRef bytIcoData() As Byte) As Long
     Dim tIconHeader As IconHeader
     Dim tIconEntry() As IconEntry
     Dim MaxBitCount As Long
-    Dim maxSize As Long
+    Dim MaxSize As Long
     Dim Aproximate As Long
     Dim IconID As Long
     Dim hIcon As Long
@@ -993,9 +993,9 @@ Private Function LoadIconFromStream(ByRef bytIcoData() As Byte) As Long
        
         For i = 0 To tIconHeader.ihCount - 1
             If MaxBitCount = tIconEntry(i).ieBitCount Then
-                maxSize = CLng(tIconEntry(i).ieWidth) + CLng(tIconEntry(i).ieHeight)
-                If maxSize > Aproximate And maxSize <= (m_lWidth + m_lHeight) Then
-                    Aproximate = maxSize
+                MaxSize = CLng(tIconEntry(i).ieWidth) + CLng(tIconEntry(i).ieHeight)
+                If MaxSize > Aproximate And MaxSize <= (m_lWidth + m_lHeight) Then
+                    Aproximate = MaxSize
                     IconID = i
                 End If
             End If
@@ -1018,12 +1018,12 @@ End Function
 
 
 
-Public Function Init(ByVal hWnd As Long, ImgWidth As Long, ByVal ImgHeight As Long, Optional ByVal bRaiseEvent As Boolean) As Boolean
+Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean) As Boolean
 
     If GdipToken Then
     
-        m_lWidth = ImgWidth
-        m_lHeight = ImgHeight
+        m_lWidth = imgWidth
+        m_lHeight = imgHeight
         m_hWnd = hWnd
         
         If UBound(mDIB) > 0 Then
@@ -1177,8 +1177,8 @@ Private Sub Class_Terminate()
 End Sub
 
 Private Sub InitGDI()
-    Dim GdipStartupInput As GDIPlusStartupInput
-    GdipStartupInput.GDIPlusVersion = GDIPlusVersion
+    Dim GdipStartupInput As GdiplusStartupInput
+    GdipStartupInput.GdiplusVersion = GdiplusVersion
     Call GdiplusStartup(GdipToken, GdipStartupInput, ByVal 0&)
 End Sub
  

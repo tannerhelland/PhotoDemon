@@ -27,7 +27,7 @@ Private Declare Function ImageList_Destroy Lib "comctl32.dll" (ByVal himl As Lon
 Private Declare Function ImageList_AddIcon Lib "comctl32.dll" (ByVal hImagelist As Long, ByVal hIcon As Long) As Long
 Private Declare Function ImageList_SetIconSize Lib "comctl32.dll" (ByVal himl As Long, ByVal cx As Long, ByVal cy As Long) As Long
 Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
-Private Declare Function SetRect Lib "user32.dll" (ByRef lpRect As RECT, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
+Private Declare Function SetRect Lib "user32.dll" (ByRef lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function DestroyIcon Lib "user32.dll" (ByVal hIcon As Long) As Long
 Private Declare Function CreateIconFromResourceEx Lib "user32.dll" (ByRef presbits As Any, ByVal dwResSize As Long, ByVal fIcon As Long, ByVal dwVer As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal Flags As Long) As Long
 Private Declare Function GetObjectType Lib "gdi32.dll" (ByVal hgdiobj As Long) As Long

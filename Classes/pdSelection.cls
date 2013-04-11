@@ -385,7 +385,7 @@ Public Sub lockRelease()
 End Sub
 
 'Render a selection using one of several methods.
-Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal ImgWidth As Long, ByVal ImgHeight As Long, ByVal renderType As SelectionRender)
+Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender)
 
     'If we're the one requesting updates by accident, exit
     If rejectRefreshRequests Then Exit Sub
@@ -413,8 +413,8 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     
     'Just to be safe, declare some bounding variables in advance as well
     Dim rightBound As Long, bottomBound As Long
-    rightBound = imgLeft + ImgWidth - 1
-    bottomBound = imgTop + ImgHeight - 1
+    rightBound = imgLeft + imgWidth - 1
+    bottomBound = imgTop + imgHeight - 1
             
     If rightBound > pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1 Then rightBound = pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1
     If bottomBound > pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1 Then bottomBound = pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1
