@@ -4,10 +4,10 @@ Begin VB.Form FormTruePerspective
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Free Perspective"
-   ClientHeight    =   9165
+   ClientHeight    =   9615
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   15375
+   ClientWidth     =   15135
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,27 +20,27 @@ Begin VB.Form FormTruePerspective
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   611
+   ScaleHeight     =   641
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1025
+   ScaleWidth      =   1009
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdReset 
       Caption         =   "Reset perspective"
-      Height          =   495
-      Left            =   120
+      Height          =   615
+      Left            =   240
       TabIndex        =   10
-      Top             =   7680
-      Width           =   5775
+      Top             =   8160
+      Width           =   5520
    End
    Begin VB.PictureBox picDraw 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H80000008&
-      Height          =   8040
+      Height          =   8640
       Left            =   6000
-      ScaleHeight     =   534
+      ScaleHeight     =   574
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   598
       TabIndex        =   9
@@ -64,24 +64,24 @@ Begin VB.Form FormTruePerspective
       Style           =   2  'Dropdown List
       TabIndex        =   5
       Top             =   6255
-      Width           =   5580
+      Width           =   5550
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   12360
+      Left            =   12120
       TabIndex        =   0
-      Top             =   8550
+      Top             =   9030
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   13830
+      Left            =   13590
       TabIndex        =   1
-      Top             =   8550
+      Top             =   9030
       Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -135,6 +135,29 @@ Begin VB.Form FormTruePerspective
       EndProperty
    End
    Begin VB.Label lblTitle 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "other options:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   120
+      TabIndex        =   11
+      Top             =   7680
+      Width           =   1500
+   End
+   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "if pixels lie outside the image..."
@@ -157,9 +180,9 @@ Begin VB.Form FormTruePerspective
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -120
+      Left            =   -360
       TabIndex        =   3
-      Top             =   8400
+      Top             =   8880
       Width           =   16095
    End
    Begin VB.Label lblTitle 
@@ -194,12 +217,24 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'Image Perspective Distortion
 'Copyright ©2012-2013 by Tanner Helland
-'Created: 04/April/13
-'Last updated: 04/April/13
-'Last update: initial build
+'Created: 08/April/13
+'Last updated: 11/April/13
+'Last update: add original image's silhouette to help orient the user
 '
-'This tool allows the user to apply forced perspective to an image.  The code is similar (in theory) to the
-' shearing algorithm used in FormShear.  Reverse-mapping is used to allow for high-quality antialiasing.
+'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
+' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
+' For a more detailed explanation of the math and theory behind projective transforms, please visit:
+'
+' http://en.wikipedia.org/wiki/Homography
+'
+'As with all distorts, reverse-mapping is used to allow for high-quality antialiasing.
+'
+'I used a number of projects as references while build this tool.  Thank you to the following:
+'
+' http://www.imagemagick.org/Usage/distorts/#perspective
+' http://stackoverflow.com/questions/169902/projective-transformation
+' http://freespace.virgin.net/hugo.elias/graphics/x_persp.htm
+' http://stackoverflow.com/questions/530396/how-to-draw-a-perspective-correct-grid-in-2d?lq=1
 '
 '***************************************************************************
 
@@ -394,9 +429,9 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     
     'Technically, these are points in a matrix - and they could be defined as an array.  But VB accesses
     ' individual data types more quickly than an array, so we declare them each separately.
-    Dim a11 As Double, a21 As Double, a31 As Double
-    Dim a12 As Double, a22 As Double, a32 As Double
-    Dim a13 As Double, a23 As Double, a33 As Double
+    Dim h11 As Double, h21 As Double, h31 As Double
+    Dim h12 As Double, h22 As Double, h32 As Double
+    Dim h13 As Double, h23 As Double, h33 As Double
     
     'Certain values can lead to divide-by-zero problems - check those in advance and convert 0 to something like 0.000001
     Dim chkDenom As Double
@@ -404,39 +439,39 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     chkDenom = (dx1 * dy2 - dy1 * dx2)
     If chkDenom = 0 Then chkDenom = 0.000000001
     
-    a13 = (dx3 * dy2 - dx2 * dy3) / chkDenom
-    a23 = (dx1 * dy3 - dy1 * dx3) / chkDenom
-    a11 = x1 - x0 + a13 * x1
-    a21 = x3 - x0 + a23 * x3
-    a31 = x0
-    a12 = y1 - y0 + a13 * y1
-    a22 = y3 - y0 + a23 * y3
-    a32 = y0
-    a33 = 1
-
+    h13 = (dx3 * dy2 - dx2 * dy3) / chkDenom
+    h23 = (dx1 * dy3 - dy1 * dx3) / chkDenom
+    h11 = x1 - x0 + h13 * x1
+    h21 = x3 - x0 + h23 * x3
+    h31 = x0
+    h12 = y1 - y0 + h13 * y1
+    h22 = y3 - y0 + h23 * y3
+    h32 = y0
+    h33 = 1
+    
     'Next, we need to calculate the key set of transformation parameters, using the reverse-map data we just generated.
     ' Again, these are technically just matrix entries, but we get better performance by declaring them individually.
-    Dim vA As Double, vB As Double, vC As Double, vD As Double, vE As Double, vF As Double, vG As Double, vH As Double, vI As Double
+    Dim hA As Double, hB As Double, hC As Double, hD As Double, hE As Double, hF As Double, hG As Double, hH As Double, hI As Double
     
-    vA = a22 * a33 - a32 * a23
-    vB = a31 * a23 - a21 * a33
-    vC = a21 * a32 - a31 * a22
-    vD = a32 * a13 - a12 * a33
-    vE = a11 * a33 - a31 * a13
-    vF = a31 * a12 - a11 * a32
-    vG = a12 * a23 - a22 * a13
-    vH = a21 * a13 - a11 * a23
-    vI = a11 * a22 - a21 * a12
+    hA = h22 * h33 - h32 * h23
+    hB = h31 * h23 - h21 * h33
+    hC = h21 * h32 - h31 * h22
+    hD = h32 * h13 - h12 * h33
+    hE = h11 * h33 - h31 * h13
+    hF = h31 * h12 - h11 * h32
+    hG = h12 * h23 - h22 * h13
+    hH = h21 * h13 - h11 * h23
+    hI = h11 * h22 - h21 * h12
         
     'Message vA & "," & vB & "," & vC & "," & vD & "," & vE & "," & vF & "," & VG & "," & vH & "," & vI
         
     'Scale those values to match the size of the transformed image
-    vA = vA * invWidth
-    vD = vD * invWidth
-    vG = vG * invWidth
-    vB = vB * invHeight
-    vE = vE * invHeight
-    vH = vH * invHeight
+    hA = hA * invWidth
+    hD = hD * invWidth
+    hG = hG * invWidth
+    hB = hB * invHeight
+    hE = hE * invHeight
+    hH = hH * invHeight
             
     'With all that data calculated in advanced, the actual transform is quite simple.
             
@@ -449,11 +484,11 @@ Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandl
     For y = initY To finalY
                 
         'Reverse-map the coordinates back onto the original image (to allow for resampling)
-        chkDenom = (vG * x + vH * y + vI)
+        chkDenom = (hG * x + hH * y + hI)
         If chkDenom = 0 Then chkDenom = 0.000000001
         
-        srcX = imgWidth * (vA * x + vB * y + vC) / chkDenom
-        srcY = imgHeight * (vD * x + vE * y + vF) / chkDenom
+        srcX = imgWidth * (hA * x + hB * y + hC) / chkDenom
+        srcY = imgHeight * (hD * x + hE * y + hF) / chkDenom
                 
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
@@ -493,8 +528,13 @@ End Sub
 Private Sub Form_Activate()
         
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.selWidth
+        iHeight = pdImages(CurrentImage).mainSelection.selHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
+    End If
         
     'Determine the size of the preview image
     convertAspectRatio iWidth, iHeight, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, m_previewWidth, m_previewHeight
@@ -580,9 +620,18 @@ Private Sub redrawPreviewBox()
     picDraw.Line (0, picDraw.Height / 2)-(picDraw.Width, picDraw.Height / 2)
     picDraw.Line (picDraw.Width / 2, 0)-(picDraw.Width / 2, picDraw.Height)
     
+    'Next, draw a silhouette around the original image outline
+    Dim i As Long
+    For i = 0 To 3
+        If i < 3 Then
+            picDraw.Line (m_oPoints(i).pX, m_oPoints(i).pY)-(m_oPoints(i + 1).pX, m_oPoints(i + 1).pY)
+        Else
+            picDraw.Line (m_oPoints(i).pX, m_oPoints(i).pY)-(m_oPoints(0).pX, m_oPoints(0).pY)
+        End If
+    Next i
+    
     'Next, draw connecting lines to form an image outline
     picDraw.ForeColor = RGB(255, 0, 0)
-    Dim i As Long
     For i = 0 To 3
         If i < 3 Then
             picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(i + 1).pX, m_nPoints(i + 1).pY)

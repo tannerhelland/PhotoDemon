@@ -267,7 +267,7 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "FIGGLASS", 5, 4, 2       'Figured glass
         AddMenuIcon "KALEIDOSCOPE", 5, 4, 3   'Kaleidoscope
         AddMenuIcon "PERSPECTIVE", 5, 4, 4    'Perspective (fixed)
-        'AddMenuIcon "PERSPECTIVE", 5, 4, 5    'Perspective (free)
+        AddMenuIcon "PERSPECFREE", 5, 4, 5    'Perspective (free)
         AddMenuIcon "PINCHWHIRL", 5, 4, 6     'Pinch and whirl
         AddMenuIcon "POLAR", 5, 4, 7          'Polar conversion
         AddMenuIcon "RIPPLE", 5, 4, 8         'Ripple
