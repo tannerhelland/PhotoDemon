@@ -385,11 +385,16 @@ Private Sub Form_Activate()
     userChange = False
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.selWidth
+        iHeight = pdImages(CurrentImage).mainSelection.selHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
+    End If
         
-    hsWidth.Max = pdImages(CurrentImage).Width
-    hsHeight.Max = pdImages(CurrentImage).Height
+    hsWidth.Max = iWidth
+    hsHeight.Max = iHeight
     
     userChange = True
     
