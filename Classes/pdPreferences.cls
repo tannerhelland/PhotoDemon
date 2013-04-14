@@ -118,6 +118,11 @@ Private TempPath As String
 Private IconPath As String
 Private LanguagePath As String
 
+'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
+'  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. FreeImage, zLib, EZTwain dlls)
+'  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user's INI file, saved filters)
+Private AppPath As String
+
 'Return the current Language directory
 Public Function getLanguagePath() As String
     getLanguagePath = LanguagePath
@@ -147,7 +152,12 @@ Public Function getProgramPath() As String
     getProgramPath = ProgramPath
 End Function
 
-'Return the current data directory
+'Return the current app data directory
+Public Function getAppPath() As String
+    getAppPath = AppPath
+End Function
+
+'Return the current user data directory
 Public Function getDataPath() As String
     getDataPath = DataPath
 End Function
@@ -188,9 +198,21 @@ Public Sub initializePaths()
     
     'First things first: figure out where this .exe was launched from
     ProgramPath = App.Path
-    If Right(ProgramPath, 1) <> "\" Then ProgramPath = ProgramPath & "\"
+    ProgramPath = FixPath(ProgramPath)
     
-    'Create a "Data" path based off the ProgramPath - this is where plugins, the INI file, Help, and more are stored.
+    'Create an "App" path based off the ProgramPath - this is where essential plugins are stored.
+    ' Also, make sure the directory exists; if it doesn't, create it.
+    AppPath = ProgramPath & "App\"
+    If Not DirectoryExist(AppPath) Then MkDir AppPath
+    
+    AppPath = AppPath & "PhotoDemon\"
+    If Not DirectoryExist(AppPath) Then MkDir AppPath
+    
+    'Within the App\PhotoDemon\ folder, create a folder for any available translations
+    LanguagePath = AppPath & "Languages\"
+    If Not DirectoryExist(LanguagePath) Then MkDir LanguagePath
+        
+    'Create a "Data" path based off the ProgramPath - this is where the INI file and any other user-specific files (saved filters, macros) will be stored.
     ' Also, make sure the directory exists; if it doesn't, create it.
     DataPath = ProgramPath & "Data\"
     If Not DirectoryExist(DataPath) Then MkDir DataPath
@@ -201,11 +223,7 @@ Public Sub initializePaths()
     
     FilterPath = DataPath & "Filters\"
     If Not DirectoryExist(FilterPath) Then MkDir FilterPath
-    
-    '...and a folder for any available translations
-    LanguagePath = DataPath & "Languages\"
-    If Not DirectoryExist(LanguagePath) Then MkDir LanguagePath
-    
+        
     'Finally, if it does not exist, create a folder to hold the MRU icons
     IconPath = DataPath & "Icons\"
     If Not DirectoryExist(IconPath) Then MkDir IconPath
@@ -213,16 +231,29 @@ Public Sub initializePaths()
     'The INI file is also located in the \Data subdirectory
     INIPath = DataPath & PROGRAMNAME & "_settings.ini"
     
-    'Old versions of PhotoDemon kept the INI file in the same directory as the .exe file.  Check this old location,
-    ' and if an INI file is found, copy it to the new directory.
+    'Historically, language files were stored in a different location.  We need to move any valid language files from
+    ' the old language directory to the new language directory.
     On Error Resume Next
-    Dim tmpINIPath As String
-    tmpINIPath = ProgramPath & PROGRAMNAME & "_settings.ini"
-    If FileExist(tmpINIPath) Then
-        FileCopy tmpINIPath, INIPath
-        Kill tmpINIPath
-    End If
+    Dim chkFile As String
     
+    chkFile = Dir(DataPath & "Languages\" & "*.xml", vbNormal)
+        
+    If chkFile <> "" Then
+        
+        LoadMessage "Moving language files to updated folder location..."
+        
+        Do While chkFile <> ""
+            If FileExist(DataPath & "Languages\" & chkFile) Then
+                FileCopy DataPath & "Languages\" & chkFile, LanguagePath & chkFile
+                Kill DataPath & "Languages\" & chkFile
+            End If
+            chkFile = Dir
+        Loop
+                
+        RmDir DataPath & "Languages\"
+        
+    End If
+        
 End Sub
 
 'Load all user settings from file
