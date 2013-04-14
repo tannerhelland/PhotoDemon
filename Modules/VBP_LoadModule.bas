@@ -277,7 +277,7 @@ Public Sub LoadTheProgram()
         .BarColor = RGB(48, 117, 255)
         .Min = 0
         .Max = 100
-        .XpStyle = True
+        .xpStyle = True
         .TextAlignX = EVPRGcenter
         .TextAlignY = EVPRGcenter
         .ShowText = True
@@ -345,10 +345,10 @@ Private Sub LoadImagesFromCommandLine()
         Dim tChar As String
         
         'Scan the command line one character at a time
-        Dim X As Long
-        For X = 1 To Len(g_CommandLine)
+        Dim x As Long
+        For x = 1 To Len(g_CommandLine)
             
-            tChar = Mid(g_CommandLine, X, 1)
+            tChar = Mid(g_CommandLine, x, 1)
                 
             'If the current character is a quotation mark, change inQuotes to specify that we are either inside
             ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
@@ -360,11 +360,11 @@ Private Sub LoadImagesFromCommandLine()
                     
                 '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
                 ' filename and NOT a delimiter.  Replace it with an asterisk.
-                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, X - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - X)
+                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, x - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - x)
                     
             End If
             
-        Next X
+        Next x
             
         'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
         ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
@@ -373,10 +373,10 @@ Private Sub LoadImagesFromCommandLine()
             
         'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
         ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-        For X = 0 To UBound(sFile)
-            sFile(X) = Replace$(sFile(X), Chr(42), Chr(32))
-            sFile(X) = Replace$(sFile(X), Chr(34), "")
-        Next X
+        For x = 0 To UBound(sFile)
+            sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
+            sFile(x) = Replace$(sFile(x), Chr(34), "")
+        Next x
         
     End If
         
@@ -1136,7 +1136,7 @@ End Sub
 Public Sub LoadPlugins()
     
     'Plugin files are located in the \Data\Plugins subdirectory
-    g_PluginPath = g_UserPreferences.getDataPath & "Plugins\"
+    g_PluginPath = g_UserPreferences.getAppPath & "Plugins\"
     
     'Make sure the plugin path exists
     If Not DirectoryExist(g_PluginPath) Then MkDir g_PluginPath
@@ -1145,10 +1145,10 @@ Public Sub LoadPlugins()
     ' and if plugin-related files are found, copy them to the new directory
     On Error Resume Next
     Dim tmpg_PluginPath As String
-    tmpg_PluginPath = g_UserPreferences.getProgramPath & "Plugins\"
+    tmpg_PluginPath = g_UserPreferences.getDataPath & "Plugins\"
     
     If DirectoryExist(tmpg_PluginPath) Then
-        LoadMessage "Copying plugin files to new \Data\Plugins subdirectory"
+        LoadMessage "Moving plugins to updated folder location..."
         
         Dim pluginName As String
         pluginName = "EZTW32.dll"
@@ -1175,6 +1175,12 @@ Public Sub LoadPlugins()
             Kill tmpg_PluginPath & pluginName
         End If
         
+        pluginName = "license-freeimage.txt"
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
+        End If
+        
         pluginName = "license-gplv2.txt"
         If FileExist(tmpg_PluginPath & pluginName) Then
             FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
@@ -1188,6 +1194,30 @@ Public Sub LoadPlugins()
         End If
         
         pluginName = "zlibwapi.dll"
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
+        End If
+        
+        pluginName = "pngnq-s9.exe"
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
+        End If
+        
+        pluginName = "PNGNQ-S9-LICENSE"
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
+        End If
+        
+        pluginName = "PNGNQ-S9-LICENSE.txt"
+        If FileExist(tmpg_PluginPath & pluginName) Then
+            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
+            Kill tmpg_PluginPath & pluginName
+        End If
+        
+        pluginName = "PNGNQ-S9-LICENCE.txt"
         If FileExist(tmpg_PluginPath & pluginName) Then
             FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
             Kill tmpg_PluginPath & pluginName

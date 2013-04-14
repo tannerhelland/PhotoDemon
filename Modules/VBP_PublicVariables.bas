@@ -56,7 +56,7 @@ Public g_Zoom As ZoomData
 'Whether or not to resize large images to fit on-screen (preference is stored in the INI file; 0 means "yes," 1 means "no")
 Public g_AutosizeLargeImages As Long
 
-'The path where DLLs and related support libraries are kept, currently "ProgramPath\Data\Plugins\"
+'The path where DLLs and related support libraries are kept, currently "ProgramPath\App\PhotoDemon\Plugins\"
 Public g_PluginPath As String
 
 'Command line (used here for processing purposes)

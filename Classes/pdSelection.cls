@@ -18,16 +18,16 @@ Attribute VB_Exposed = False
 'Last updated: 03/October/12
 'Last update: added a "Red" highlight draw option
 '
-'This class handles all selections in PhotoDemon.  At present, selections are simply rectangular areas - but this will change
+'This class handles all selections in PhotoDemon. At present, selections are simply rectangular areas - but this will change
 ' in the future as new selection modes are added.
 '
-'All selections are treated as a subset of pixels within a rectangular area.  The x1, y1, x2, y2 coordinates define opposite
-' corners of the selection area.  There is no guarantee that these coordinates will appear in a given corner - so they must
-' be checked manually.  When a selection is set, those values are translated into Left, Top, Width and Height values, which
+'All selections are treated as a subset of pixels within a rectangular area. The x1, y1, x2, y2 coordinates define opposite
+' corners of the selection area. There is no guarantee that these coordinates will appear in a given corner - so they must
+' be checked manually. When a selection is set, those values are translated into Left, Top, Width and Height values, which
 ' are in turn used for everything from cropping to applying filters.
 '
-'Note also that this class is treated as a subset of pdLayer().  Right now each layer object only contains one selection,
-' but there's no reason it couldn't store multiples in the future.  (Although I'm not sure what purpose that would serve.)
+'Note also that this class is treated as a subset of pdLayer(). Right now each layer object only contains one selection,
+' but there's no reason it couldn't store multiples in the future. (Although I'm not sure what purpose that would serve.)
 '
 '***************************************************************************
 
@@ -36,16 +36,16 @@ Option Explicit
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
 Private Type SAFEARRAYBOUND
     cElements As Long
-    lBound   As Long
+    lBound As Long
 End Type
 
 Private Type SAFEARRAY2D
-    cDims      As Integer
-    fFeatures  As Integer
+    cDims As Integer
+    fFeatures As Integer
     cbElements As Long
-    cLocks     As Long
-    pvData     As Long
-    Bounds(1)  As SAFEARRAYBOUND
+    cLocks As Long
+    pvData As Long
+    Bounds(1) As SAFEARRAYBOUND
 End Type
 
 'SafeArray API functions
@@ -119,10 +119,10 @@ Private lockedIn As Boolean
 'When the selection is moved, it's necessary to know the difference between the current mouse point and the original left / top values
 Private moveXDist As Double, moveYDist As Double
 
-'Is this selection requesting text box updates?  Because if it is, ignore external requests to update.
+'Is this selection requesting text box updates? Because if it is, ignore external requests to update.
 Public rejectRefreshRequests As Boolean
 
-'What is the current transformation mode?  (This is important for dragging to resize the selection.)
+'What is the current transformation mode? (This is important for dragging to resize the selection.)
 Private selTransformationType As Long
 
 'Is transformation mode active?
@@ -359,7 +359,7 @@ Public Sub refreshTextBoxes()
 
 End Sub
 
-'"Lock-in" a selection.  Typically this is prompted by a _MouseUp event
+'"Lock-in" a selection. Typically this is prompted by a _MouseUp event
 Public Sub lockIn(ByRef targetForm As Form)
     
     'Mark this selection as locked-in
@@ -405,7 +405,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     dstTop = ((selTop - dstForm.VScroll.Value) * ZoomVal) + imgTop
     dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * ZoomVal) + imgTop + 0.5
     
-    'Several draw methods use the same variables.  Declare those here.
+    'Several draw methods use the same variables. Declare those here.
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
     Dim x As Long, y As Long
@@ -627,7 +627,7 @@ Private Sub Class_Initialize()
     
 End Sub
 
-'Sometimes a selection needs to directly access the bits of a target layer.  This routine sets up the corresponding SafeArray.
+'Sometimes a selection needs to directly access the bits of a target layer. This routine sets up the corresponding SafeArray.
 Private Sub prepLayerSafeArray(ByRef srcLayer As pdLayer, ByRef tmpSA As SAFEARRAY2D)
     With tmpSA
         .cbElements = 1

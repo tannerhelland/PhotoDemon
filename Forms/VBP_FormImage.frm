@@ -86,13 +86,13 @@ Attribute VB_Exposed = False
 'Created: 11/29/02
 'Last updated: 29/January/13
 'Last update: fixed a long-standing issue where maximized child forms, when closed, don't correctly trigger
-'              the _Activate event of the form that receives focus.  It's a known problem on Microsoft's
-'              end, see http://support.microsoft.com/kb/190634 for details.
+' the _Activate event of the form that receives focus. It's a known problem on Microsoft's
+' end, see http://support.microsoft.com/kb/190634 for details.
 '
-'Every time the user loads an image, one of these forms is spawned.  This form also interfaces with several
+'Every time the user loads an image, one of these forms is spawned. This form also interfaces with several
 ' specialized program components in the MDIWindow module.
 '
-'As I start including more and more paint tools, this form is going to become a bit more complex.  Stay tuned.
+'As I start including more and more paint tools, this form is going to become a bit more complex. Stay tuned.
 '
 '***************************************************************************
 
@@ -174,11 +174,11 @@ Public Sub ActivateWorkaround()
     
 End Sub
 
-'NOTE: _Activate and _GotFocus are confusing in VB6.  _Activate will be fired whenever a child form
-' gains "focus."  _GotFocus will be pre-empted by controls on the form, so do not use it.
+'NOTE: _Activate and _GotFocus are confusing in VB6. _Activate will be fired whenever a child form
+' gains "focus." _GotFocus will be pre-empted by controls on the form, so do not use it.
 
 'Note also that _Activate has known problems - see http://support.microsoft.com/kb/190634
-' This is why ActivateWorkaround exists.  Some external functions call that if I know _Activate won't fire properly - see
+' This is why ActivateWorkaround exists. Some external functions call that if I know _Activate won't fire properly - see
 ' the Unload function in this block, for example.
 Private Sub Form_Activate()
     ActivateWorkaround
@@ -204,8 +204,8 @@ Private Sub Form_Load()
     
     'Add two messages to the subclassing handler - one for handling mousewheel events, and another for handling mouse forward/back keypresses
     If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then
-        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL        'Mouse wheel
-        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK  'Mouse forward/back keys
+        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL 'Mouse wheel
+        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK 'Mouse forward/back keys
     End If
     
     'Assign the system hand cursor to all relevant objects
@@ -304,7 +304,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     'Check the left mouse button
     If lMouseDown Then
     
-        'First, check to see if a selection is active.  (In the future, we will be checking for other tools as well.)
+        'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
         If pdImages(Me.Tag).selectionActive Then
             
             'Check the location of the mouse to see if it's over the image
@@ -336,11 +336,11 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     'This else means the LEFT mouse button is NOT down
     Else
     
-        'Next, check to see if a selection is active.  If it is, we need to provide the user with visual cues about their
+        'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
         ' ability to resize the selection.
         If pdImages(Me.Tag).selectionActive Then
         
-            'This routine will return a best estimate for the location of the mouse.  The possible return values are:
+            'This routine will return a best estimate for the location of the mouse. The possible return values are:
             ' 0 - Cursor is not near a selection point
             ' 1 - NW corner
             ' 2 - NE corner
@@ -416,7 +416,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
         'If a selection was being drawn, lock it into place
         If pdImages(Me.Tag).selectionActive Then
             
-            'Check to see if this mouse location is the same as the initial mouse press.  If it is, and that particular
+            'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
             ' point falls outside the selection, clear the selection from the image.
             If ((x = initMouseX) And (y = initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
                 pdImages(Me.Tag).mainSelection.lockRelease
@@ -508,7 +508,7 @@ Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integ
 
 End Sub
 
-'In VB6, _QueryUnload fires before _Unload.  We check for unsaved images here.
+'In VB6, _QueryUnload fires before _Unload. We check for unsaved images here.
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'If the user wants to be prompted about unsaved images, do it now
@@ -534,7 +534,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                     Next i
                 End If
             
-                'Show the "do you want to save this image?" dialog.  On that form, the number of unsaved images will be
+                'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                 ' displayed and the user will be given an option to apply their choice to all unsaved images.
                 Dim confirmReturn As VbMsgBoxResult
                 confirmReturn = confirmClose(Me.Tag)
@@ -544,9 +544,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             End If
         
             'There are now three possible courses of action:
-            ' 1) The user canceled.  Quit and abandon all notion of closing.
-            ' 2) The user asked us to save this image.  Pass control to MenuSave (which will in turn call SaveAs if necessary)
-            ' 3) The user doesn't give a shit.  Exit without saving.
+            ' 1) The user canceled. Quit and abandon all notion of closing.
+            ' 2) The user asked us to save this image. Pass control to MenuSave (which will in turn call SaveAs if necessary)
+            ' 3) The user doesn't give a shit. Exit without saving.
             
             'Cancel the close operation
             If confirmReturn = vbCancel Then
@@ -559,11 +559,11 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             'Save the image
             ElseIf confirmReturn = vbYes Then
                 
-                'If the form being saved is enabled, bring that image to the foreground.  (If a "Save As" is required, this
+                'If the form being saved is enabled, bring that image to the foreground. (If a "Save As" is required, this
                 ' helps show the user which image the Save As form is referencing.)
                 If FormMain.Enabled Then Me.SetFocus
                 
-                'Attempt to save.  Note that the user can still cancel at this point, and we want to honor their cancellation
+                'Attempt to save. Note that the user can still cancel at this point, and we want to honor their cancellation
                 Dim saveSuccessful As Boolean
                 saveSuccessful = MenuSave(CLng(Me.Tag))
                 
@@ -585,7 +585,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             ElseIf confirmReturn = vbNo Then
                 
                 'I think this "Unload Me" statement may be causing some kind of infinite recursion - perhaps because it triggers this very
-                ' QueryUnload statement?  Not sure, but I may need to revisit it if the problems don't go away...
+                ' QueryUnload statement? Not sure, but I may need to revisit it if the problems don't go away...
                 Unload Me
                 'Set Me = Nothing
                 'Cancel = False
@@ -606,10 +606,10 @@ Private Sub Form_Resize()
         PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
     End If
     
-    'The height of a newly created form is automatically set to 1.  This is normally changed when the image is
+    'The height of a newly created form is automatically set to 1. This is normally changed when the image is
     ' resized to fit on screen, but if an image is loaded into a maximized window, the height value will remain
-    ' at 1.  If the user ever un-maximized the window, it will leave a bare title bar behind, which looks
-    ' terrible.  Thus, let's check for a height of 1, and if found resize the form to a larger (arbitrary) value.
+    ' at 1. If the user ever un-maximized the window, it will leave a bare title bar behind, which looks
+    ' terrible. Thus, let's check for a height of 1, and if found resize the form to a larger (arbitrary) value.
     If (Me.WindowState = vbNormal) And (Me.ScaleHeight <= 1) Then
         Me.Height = 6000
         Me.Width = 8000
@@ -684,7 +684,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     ReleaseFormTheming Me
         
-    'Before exiting, restore focus to some other MDI child.  If we don't, Windows won't do it for us.  This is a known
+    'Before exiting, restore focus to some other MDI child. If we don't, Windows won't do it for us. This is a known
     ' problem - see http://support.microsoft.com/kb/190634
     If NumOfWindows > 0 Then
     
@@ -806,7 +806,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xP
     
 End Sub
 
-'This routine MUST BE KEPT as the final routine for this form.  Its ordinal position determines its ability to subclass properly.
+'This routine MUST BE KEPT as the final routine for this form. Its ordinal position determines its ability to subclass properly.
 ' Subclassing is required to enable mousewheel support.
 Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
                       
@@ -830,7 +830,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
             Me.MouseWheel MouseKeys, mRotation, xPos, yPos
       
         'FYI: I used brute-force testing to discover what messages my mouse uses for its back/forward keys.
-        '      I have no idea if these values are consistent between hardware vendors
+        ' I have no idea if these values are consistent between hardware vendors
         Case WM_MOUSEFORWARDBACK
                     
             'Mouse back key
@@ -850,4 +850,3 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
     End If
                       
 End Sub
-

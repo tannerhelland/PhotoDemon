@@ -6,7 +6,7 @@ Attribute VB_Name = "Misc_Uncategorized"
 'Last updated: 03/October/12
 'Last update: Reorganized this massive module into a bunch of smaller ones for improved organization.
 '
-'If a function doesn't have a home in a more appropriate module, it gets stuck here.  Over time, I'm
+'If a function doesn't have a home in a more appropriate module, it gets stuck here. Over time, I'm
 ' hoping to clear out most of this module in favor of a more organized approach.
 '
 '***************************************************************************
@@ -45,7 +45,7 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLa
             getColorDepthFromColorCount = 8
         Else
             
-            'FreeImage only supports the writing of 4bpp and 1bpp images if they are grayscale.  Thus, only
+            'FreeImage only supports the writing of 4bpp and 1bpp images if they are grayscale. Thus, only
             ' mark images as 4bpp or 1bpp if they are gray/b&w - otherwise, consider them 8bpp indexed color.
             If (srcColors > 2) Then
                                 
@@ -72,7 +72,7 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLa
 
 End Function
 
-'When images are loaded, this function is used to quickly determine the image's color count.  It stops once 257 is reached,
+'When images are loaded, this function is used to quickly determine the image's color count. It stops once 257 is reached,
 ' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
 Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal imageID As Long = -1) As Long
     
@@ -97,7 +97,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     Dim QuickVal As Long, qvDepth As Long
     qvDepth = (srcImage.mainLayer.getLayerColorDepth) \ 8
     
-    'This array will track whether or not a given color has been detected in the image.  (I don't know if powers of two
+    'This array will track whether or not a given color has been detected in the image. (I don't know if powers of two
     ' are allocated more efficiently, but it doesn't hurt to stick to that rule.)
     Dim UniqueColors() As Long
     ReDim UniqueColors(0 To 511) As Long
@@ -153,7 +153,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    'If the image contains only two colors, check to see if they are pure black and pure white.  If so, mark
+    'If the image contains only two colors, check to see if they are pure black and pure white. If so, mark
     ' a global flag accordingly and exit (to save a little bit of extra processing time)
     g_IsImageMonochrome = False
     
@@ -224,7 +224,7 @@ Public Function ConvertSystemColor(ByVal colorRef As OLE_COLOR) As Long
     
 End Function
 
-'Populate a text box with a given integer value.  This is done constantly across the program, so I use a sub to handle it, as
+'Populate a text box with a given integer value. This is done constantly across the program, so I use a sub to handle it, as
 ' there may be additional validations that need to be performed, and it's nice to be able to adjust those from a single location.
 Public Sub copyToTextBoxI(ByRef dstTextBox As TextBox, ByVal srcValue As Long)
 
@@ -242,7 +242,7 @@ Public Sub copyToTextBoxI(ByRef dstTextBox As TextBox, ByVal srcValue As Long)
 
 End Sub
 
-'Populate a text box with a given floating-point value.  This is done constantly across the program, so I use a sub to handle it, as
+'Populate a text box with a given floating-point value. This is done constantly across the program, so I use a sub to handle it, as
 ' there may be additional validations that need to be performed, and it's nice to be able to adjust those from a single location.
 Public Sub copyToTextBoxF(ByVal srcValue As Double, ByRef dstTextBox As TextBox, Optional ByVal numOfSD As Long = 2)
 
@@ -281,7 +281,7 @@ End Function
 
 'Calculate and display the current mouse position.
 ' INPUTS: x and y coordinates of the mouse cursor, current form, and optionally two long-type variables to receive the relative
-'          coordinates (e.g. location on the image) of the current mouse position.
+' coordinates (e.g. location on the image) of the current mouse position.
 Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcForm As Form, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
 
     If isMouseOverImage(x1, y1, srcForm) Then
@@ -294,7 +294,7 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
         x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
         y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
             
-        'When zoomed very far out, the values might be calculated incorrectly.  Force them to the image dimensions if necessary.
+        'When zoomed very far out, the values might be calculated incorrectly. Force them to the image dimensions if necessary.
         If x1 < 0 Then x1 = 0
         If y1 < 0 Then y1 = 0
         If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
@@ -331,7 +331,7 @@ Public Sub findNearestImageCoordinates(ByRef x1 As Double, ByRef y1 As Double, B
 
 End Sub
 
-'This sub will return a constant correlating to the nearest selection point.  Its return values are:
+'This sub will return a constant correlating to the nearest selection point. Its return values are:
 ' 0 - Cursor is not near a selection point
 ' 1 - NW corner
 ' 2 - NE corner
@@ -375,7 +375,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
         Exit Function
     End If
     
-    'If we made it here, this mouse location is worth evaluating.  Corners get preference, so check them first.
+    'If we made it here, this mouse location is worth evaluating. Corners get preference, so check them first.
     Dim nwDist As Double, neDist As Double, seDist As Double, swDist As Double
     
     nwDist = distanceTwoPoints(x1, y1, tLeft, tTop)
@@ -409,13 +409,13 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
         closestPoint = 4
     End If
     
-    'Was a close point found?  If yes, then return that value
+    'Was a close point found? If yes, then return that value
     If closestPoint <> -1 Then
         findNearestSelectionCoordinates = closestPoint
         Exit Function
     End If
 
-    'If we're at this line of code, a closest corner was not found.  So check edges next.
+    'If we're at this line of code, a closest corner was not found. So check edges next.
     Dim nDist As Double, eDist As Double, sDist As Double, wDist As Double
     
     nDist = distanceOneDimension(y1, tTop)
@@ -443,13 +443,13 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
         closestPoint = 8
     End If
     
-    'Was a close point found?  If yes, then return that value.
+    'Was a close point found? If yes, then return that value.
     If closestPoint <> -1 Then
         findNearestSelectionCoordinates = closestPoint
         Exit Function
     End If
 
-    'If we're at this line of code, a closest edge was not found.  Perform one final check to ensure that the mouse is within the
+    'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
     ' image's boundaries, and if it is, return the "move selection" ID, then exit.
     If (x1 > tLeft) And (x1 < tRight) And (y1 > tTop) And (y1 < tBottom) Then
         findNearestSelectionCoordinates = 9
@@ -482,7 +482,7 @@ Public Function ExtractB(ByVal CurrentColor As Long) As Integer
     ExtractB = (CurrentColor \ 65536) And 255
 End Function
 
-'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
+'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
 Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
     BlendColors = ((1 - mixRatio) * Color1) + (mixRatio * Color2)
 End Function
@@ -526,4 +526,3 @@ Public Function Acos(ByVal x As Double) As Double
     If (x > 1) Or (x < -1) Then x = 1
     Acos = Atan2(Sqr(1 - x * x), x)
 End Function
-
