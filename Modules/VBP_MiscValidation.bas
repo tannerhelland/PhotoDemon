@@ -61,7 +61,7 @@ Public Sub textValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed A
 End Sub
 
 'Check a Long-type value to see if it falls within a given range
-Public Function RangeValid(ByVal checkVal As Long, ByVal cMin As Long, ByVal cMax As Long) As Boolean
+Public Function RangeValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVal cMax As Double) As Boolean
     If (checkVal >= cMin) And (checkVal <= cMax) Then
         RangeValid = True
     Else
@@ -71,7 +71,7 @@ Public Function RangeValid(ByVal checkVal As Long, ByVal cMin As Long, ByVal cMa
 End Function
 
 'Check a Variant-type value to see if it's numeric
-Public Function NumberValid(ByVal checkVal) As Boolean
+Public Function NumberValid(ByVal checkVal As Variant) As Boolean
     If Not IsNumeric(checkVal) Then
         pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
         NumberValid = False
@@ -81,7 +81,7 @@ Public Function NumberValid(ByVal checkVal) As Boolean
 End Function
 
 'A pleasant combination of RangeValid and NumberValid
-Public Function EntryValid(ByVal checkVal As Variant, ByVal cMin As Long, ByVal cMax As Long, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
+Public Function EntryValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVal cMax As Double, Optional ByVal displayNumError As Boolean = True, Optional ByVal displayRangeError As Boolean = True) As Boolean
     If Not IsNumeric(checkVal) Then
         If displayNumError = True Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", checkVal
         EntryValid = False
