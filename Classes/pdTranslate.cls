@@ -926,8 +926,8 @@ Public Sub applyTranslations(ByRef srcForm As Form)
             
         End If
         
-        'Picture boxes can have tooltips.  Translate those too.
-        If (TypeOf eControl Is PictureBox) Then
+        'Picture boxes and text boxes can have tooltips.  Translate those too.
+        If (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Then
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
         End If
         
