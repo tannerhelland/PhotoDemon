@@ -146,6 +146,7 @@ Form=Forms\VBP_FormShear.frm
 Form=Forms\VBP_FormPerspective.frm
 Form=Forms\VBP_FormTruePerspective.frm
 ResFile32="Resources\PD_icons.RES"
+UserControl=Controls\textSliderCombo.ctl
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""
