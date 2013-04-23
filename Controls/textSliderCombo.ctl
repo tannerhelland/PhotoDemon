@@ -203,7 +203,7 @@ Public Property Let Max(ByVal NewValue As Double)
 End Property
 
 'Significant digits determines whether the control allows float values or int values (and with how much precision)
-Public Property Get SigDigits() As Double
+Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
@@ -256,7 +256,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
