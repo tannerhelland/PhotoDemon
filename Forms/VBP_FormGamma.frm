@@ -326,6 +326,7 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
+
     'The scroll bar max and min values are used to check the gamma input for validity
     Dim i As Long
     
@@ -337,8 +338,9 @@ Private Sub cmdOK_Click()
     Next i
         
     Me.Visible = False
-    Process GammaCorrection, CSng(Val(txtGamma(0))), CSng(Val(txtGamma(1))), CSng(Val(txtGamma(2)))
+    Process GammaCorrection, CSng(Val(hsGamma(0)) / 100), CSng(Val(hsGamma(1)) / 100), CSng(Val(hsGamma(2)) / 100)
     Unload Me
+    
 End Sub
 
 Private Sub Form_Activate()
@@ -532,8 +534,8 @@ Private Sub updatePreview()
     For y = 0 To 2
         
         'If all channels are in sync, draw only blue; otherwise, color each channel individually
-        gamVal = Val(txtGamma(y))
-        If (txtGamma(0) = txtGamma(1)) And (txtGamma(1) = txtGamma(2)) Then
+        gamVal = Val(hsGamma(y) / 100)
+        If (hsGamma(0) = hsGamma(1)) And (hsGamma(1) = hsGamma(2)) Then
             picChart.ForeColor = RGB(0, 0, 255)
         Else
         
@@ -571,6 +573,6 @@ Private Sub updatePreview()
     picChart.Refresh
 
     'Once the chart is done, redraw the gamma preview as well
-    GammaCorrect CSng(Val(txtGamma(0))), CSng(Val(txtGamma(1))), CSng(Val(txtGamma(2))), True, fxPreview
+    GammaCorrect CSng(Val(hsGamma(0)) / 100), CSng(Val(hsGamma(1)) / 100), CSng(Val(hsGamma(2)) / 100), True, fxPreview
     
 End Sub
