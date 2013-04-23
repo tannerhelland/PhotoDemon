@@ -4,7 +4,7 @@
 
 	<langid>nl-BE</langid>
 	<langname>Vlaams (Nederlands)</langname>
-	<langversion>5.4.0</langversion>
+	<langversion>5.4.1</langversion>
 	<langstatus>Complete</langstatus>
 
 	<author>Frank Donckers</author>
@@ -5740,7 +5740,7 @@ Om uw gebruikerservaring te verbeteren, dient u het programma toegang te geven v
 
 	<phrase>
 		<original>Downloading file %1 of %2</original>
-		<translation>Bownloaden bestand %1 van %2</translation>
+		<translation>Downloaden bestand %1 van %2</translation>
 	</phrase>
 
 	<phrase>
@@ -7033,7 +7033,7 @@ effectively treating at as a non-animated GIF file.</original>
 
 	<phrase>
 		<original>when reducing alpha channels, attempt to preserve values of 0 and 255</original>
-		<translation>bproberen de waarden van 0 en 255 te behouden</translation>
+		<translation>proberen de waarden van 0 en 255 te behouden</translation>
 	</phrase>
 
 	<phrase>
