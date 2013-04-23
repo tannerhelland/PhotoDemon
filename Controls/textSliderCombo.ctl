@@ -214,7 +214,7 @@ End Property
 
 'Forecolor may be used in the future as part of theming, but right now it serves no purpose
 Public Property Get ForeColor() As OLE_COLOR
-    ForeColor = lblCaption.ForeColor
+    'ForeColor = lblCaption.ForeColor
 End Property
 
 Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
@@ -257,13 +257,13 @@ End Sub
 
 'For responsiveness, MouseDown is used instead of Click
 Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    If Value = vbChecked Then
-        chkBox.Value = vbUnchecked
-        Value = vbUnchecked
-    Else
-        chkBox.Value = vbChecked
-        Value = vbChecked
-    End If
+    'If Value = vbChecked Then
+    '    chkBox.Value = vbUnchecked
+    '    Value = vbUnchecked
+    'Else
+    '    chkBox.Value = vbChecked
+    '    Value = vbChecked
+    'End If
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
