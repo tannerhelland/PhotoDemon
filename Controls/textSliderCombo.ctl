@@ -1,10 +1,10 @@
 VERSION 5.00
-Begin VB.UserControl textSliderCombo 
+Begin VB.UserControl sliderTextCombo 
    BackColor       =   &H80000005&
    ClientHeight    =   495
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   6015
+   ClientWidth     =   6000
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,13 +16,13 @@ Begin VB.UserControl textSliderCombo
    EndProperty
    ScaleHeight     =   33
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   401
+   ScaleWidth      =   400
    Begin VB.HScrollBar hsPrimary 
       Height          =   285
       Left            =   120
       Max             =   100
       Min             =   -100
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   90
       Width           =   4935
    End
@@ -40,14 +40,21 @@ Begin VB.UserControl textSliderCombo
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   5160
-      MaxLength       =   4
-      TabIndex        =   0
+      TabIndex        =   1
       Text            =   "0"
       Top             =   60
       Width           =   735
    End
+   Begin VB.Shape shpError 
+      BorderColor     =   &H000000FF&
+      Height          =   465
+      Left            =   5100
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   855
+   End
 End
-Attribute VB_Name = "textSliderCombo"
+Attribute VB_Name = "sliderTextCombo"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -56,8 +63,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / Slider custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 19/April/13
-'Last update: initial build
+'Last updated: 23/April/13
+'Last update: finished initial build
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -74,17 +81,16 @@ Attribute VB_Exposed = False
 '
 'This control handles the following things automatically:
 ' 1) Synching of text and scroll/slide values
-' 2) Hand cursor automatically applied to the slider
-' 3) Validation of text entries
-' 4) Locale handling (like the aforementioned comma/decimal replacement in some locales)
-' 5) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
+' 2) Validation of text entries, including a function for external validation requests
+' 3) Locale handling (like the aforementioned comma/decimal replacement in some countries)
+' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
+' 5) Support for floating-point values (scroll bar max/min values are automatically adjusted to mimic this)
 '
 '***************************************************************************
 
 Option Explicit
 
-'This object really only needs one event raised - Change.  It triggers when either the scrollbar or text box
-' is modified.
+'This object really only needs one event raised: Change (which triggers when either the scrollbar or text box is modified)
 Public Event Change()
 
 Private WithEvents mFont As StdFont
@@ -102,21 +108,42 @@ Private controlVal As Double, controlMin As Double, controlMax As Double
 'The number of significant digits for this control.  0 means integer values.
 Private significantDigits As Long
 
+'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
+Private textBoxInitiated As Boolean
+
+'If the current text value is NOT valid, this will return FALSE
+Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
+    
+    Dim retVal As Boolean
+    retVal = Not shpError.Visible
+    
+    'If the current text value is not valid, highlight the problem and optionally display an error message box
+    If Not retVal Then
+        AutoSelectText txtPrimary
+        If showError Then IsTextEntryValid True
+    End If
+    
+    IsValid = retVal
+    
+End Property
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
-    UserControl.Enabled = NewValue
-    hsPrimary.Enabled = NewValue
-    txtPrimary.Enabled = NewValue
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    hsPrimary.Enabled = newValue
+    txtPrimary.Enabled = newValue
     PropertyChanged "Enabled"
 End Property
 
 'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
 Public Property Get Font() As StdFont
+Attribute Font.VB_ProcData.VB_Invoke_Property = "StandardFont;Font"
+Attribute Font.VB_UserMemId = -512
     Set Font = mFont
 End Property
 
@@ -130,20 +157,15 @@ Public Property Set Font(mNewFont As StdFont)
     PropertyChanged "Font"
 End Property
 
-'Private Sub chkBox_Click()
-'    If chkBox.Value = vbChecked Then Value = vbChecked Else Value = vbUnchecked
-'End Sub
+Private Sub hsPrimary_Change()
+    If Not textBoxInitiated Then copyValToTextBox hsPrimary.Value
+    Value = hsPrimary / (10 ^ significantDigits)
+End Sub
 
-'Setting Value to true will automatically raise all necessary external events and redraw the control
-'Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    'If Value = vbChecked Then
-    '    chkBox.Value = vbUnchecked
-    '    Value = vbUnchecked
-    'Else
-    '    chkBox.Value = vbChecked
-    '    Value = vbChecked
-    'End If
-'End Sub
+Private Sub hsPrimary_Scroll()
+    copyValToTextBox hsPrimary.Value
+    Value = hsPrimary / (10 ^ significantDigits)
+End Sub
 
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
@@ -160,12 +182,27 @@ Attribute Value.VB_UserMemId = 0
     Value = controlVal
 End Property
 
-Public Property Let Value(ByVal NewValue As Double)
-    controlVal = NewValue
-    hsPrimary.Value = CLng(controlVal)
-    txtPrimary.Text = CStr(controlVal)
+Public Property Let Value(ByVal newValue As Double)
+    
+    'Internally track the value of the control
+    controlVal = newValue
+    
+    'Assign the scroll bar the "same" value.  This will vary based on the number of significant digits in use; because
+    ' scroll bars cannot hold float values, we have to multiple by 10^n where n is the number of significant digits
+    ' in use for this control.
+    If hsPrimary <> CLng(controlVal * (10 ^ significantDigits)) Then
+        hsPrimary = CLng(controlVal * (10 ^ significantDigits))
+    End If
+    
+    'Mirror the value to the text box
+    If Not textBoxInitiated Then
+        If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
+    End If
+    
+    'Mark the value property as being changed, and raise the corresponding event.
     PropertyChanged "Value"
     RaiseEvent Change
+    
 End Property
 
 'Note: the control's minimum value is settable at run-time
@@ -173,16 +210,21 @@ Public Property Get Min() As Double
     Min = controlMin
 End Property
 
-Public Property Let Min(ByVal NewValue As Double)
-    controlMin = NewValue
-    If hsPrimary < CLng(controlMin) Then
+Public Property Let Min(ByVal newValue As Double)
+    
+    controlMin = newValue
+    
+    'If the current control .Value is less than the new minimum, change it to match
+    If controlVal < controlMin Then
         controlVal = controlMin
-        hsPrimary = controlVal
-        txtPrimary = controlVal
+        hsPrimary = controlVal * (10 ^ significantDigits)
+        txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
-    hsPrimary.Min = CLng(controlMin)
+    
+    hsPrimary.Min = controlMin * (10 ^ significantDigits)
     PropertyChanged "Min"
+    
 End Property
 
 'Note: the control's maximum value is settable at run-time
@@ -190,16 +232,21 @@ Public Property Get Max() As Double
     Max = controlMax
 End Property
 
-Public Property Let Max(ByVal NewValue As Double)
-    controlMax = NewValue
-    If hsPrimary > CLng(controlMax) Then
+Public Property Let Max(ByVal newValue As Double)
+    
+    controlMax = newValue
+    
+    'If the current control .Value is greater than the new max, change it to match
+    If controlVal > controlMax Then
         controlVal = controlMax
-        hsPrimary = controlVal
-        txtPrimary = controlVal
+        hsPrimary = controlVal * (10 ^ significantDigits)
+        txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
-    hsPrimary.Max = CLng(controlMax)
+    
+    hsPrimary.Max = controlMax * (10 ^ significantDigits)
     PropertyChanged "Max"
+    
 End Property
 
 'Significant digits determines whether the control allows float values or int values (and with how much precision)
@@ -207,20 +254,44 @@ Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
-Public Property Let SigDigits(ByVal NewValue As Long)
-    significantDigits = SigDigits
+Public Property Let SigDigits(ByVal newValue As Long)
+    
+    significantDigits = newValue
+    
+    'Update the scroll bar's min and max values accordingly
+    hsPrimary.Min = controlMin * (10 ^ significantDigits)
+    hsPrimary.Max = controlMax * (10 ^ significantDigits)
+    
     PropertyChanged "SigDigits"
+    
 End Property
 
 'Forecolor may be used in the future as part of theming, but right now it serves no purpose
 Public Property Get ForeColor() As OLE_COLOR
-    'ForeColor = lblCaption.ForeColor
+    ForeColor = origForecolor
 End Property
 
 Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     origForecolor = newColor
     PropertyChanged "ForeColor"
 End Property
+
+Private Sub txtPrimary_GotFocus()
+    AutoSelectText txtPrimary
+End Sub
+
+Private Sub txtPrimary_KeyUp(KeyCode As Integer, Shift As Integer)
+    
+    If IsTextEntryValid() Then
+        If shpError.Visible Then shpError.Visible = False
+        textBoxInitiated = True
+        hsPrimary.Value = Val(txtPrimary) * (10 ^ significantDigits)
+        textBoxInitiated = False
+    Else
+        shpError.Visible = True
+    End If
+    
+End Sub
 
 Private Sub UserControl_Initialize()
     
@@ -242,6 +313,8 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     Set mFont = UserControl.Font
+    mFont.Name = "Tahoma"
+    mFont.Size = 10
     mFont_FontChanged ("")
     ForeColor = &H404040
     origForecolor = ForeColor
@@ -253,17 +326,6 @@ Private Sub UserControl_InitProperties()
     controlMax = 10
     SigDigits = 0
     significantDigits = 0
-End Sub
-
-'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    'If Value = vbChecked Then
-    '    chkBox.Value = vbUnchecked
-    '    Value = vbUnchecked
-    'Else
-    '    chkBox.Value = vbChecked
-    '    Value = vbChecked
-    'End If
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -281,6 +343,18 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     controlMax = Max
     controlVal = Value
     significantDigits = SigDigits
+    
+    'Write the .Value property again to force a refresh that obeys our formatting rules
+    Value = controlVal
+
+End Sub
+
+Private Sub UserControl_Resize()
+
+    'We want to keep the text box and scroll bar universally aligned.  Thus, I have hard-coded specific spacing values.
+    txtPrimary.Left = UserControl.ScaleWidth - 56
+    shpError.Left = txtPrimary.Left - 4
+    If txtPrimary.Left - 15 > 0 Then hsPrimary.Width = txtPrimary.Left - 15         '15 = 8 (scroll bar's .Left) + 7 (distance between scroll bar and text box)
 
 End Sub
 
@@ -326,3 +400,91 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
     
 End Sub
+
+'Because this control can contain either decimal or float values, we want to make sure any entered strings adhere
+' to strict formatting rules.
+Private Function getFormattedStringValue(ByVal srcValue As Double) As String
+
+    Select Case significantDigits
+    
+        Case 0
+            getFormattedStringValue = Format(CStr(srcValue), "#0")
+        
+        Case 1
+            getFormattedStringValue = Format(CStr(srcValue), "#0.0")
+            
+        Case 2
+            getFormattedStringValue = Format(CStr(srcValue), "#0.00")
+            
+        Case Else
+            getFormattedStringValue = Format(CStr(srcValue), "#0.000")
+    
+    End Select
+
+End Function
+
+'Populate the text box with a given integer value.
+Private Sub copyValToTextBox(ByVal srcValue As Double)
+
+    'Remember the current cursor position
+    Dim cursorPos As Long
+    cursorPos = txtPrimary.SelStart
+
+    'Overwrite the current text box value with the new value
+    txtPrimary = getFormattedStringValue(srcValue / (10 ^ significantDigits))
+    txtPrimary.Refresh
+    
+    'Restore the cursor to its original position
+    If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
+    txtPrimary.SelStart = cursorPos
+    
+    'Hide the error box - we know it's not needed, as the value has been set via scroll bar
+    If shpError.Visible Then shpError.Visible = False
+
+End Sub
+
+'Check a passed value against a min and max value to see if it is valid.  Additionally, make sure the value is
+' numeric, and allow the user to display a warning message if necessary.
+Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = False) As Boolean
+        
+    'Some locales use a comma as a decimal separator.  Check for this and replace as necessary.
+    Dim chkString As String
+    chkString = txtPrimary
+    
+    'Remember the current cursor position as necessary
+    Dim cursorPos As Long
+    cursorPos = txtPrimary.SelStart
+    
+    If InStr(1, chkString, ",") Then
+        chkString = Replace(chkString, ",", ".")
+        txtPrimary = chkString
+        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
+        txtPrimary.SelStart = cursorPos
+    End If
+    
+    'It may be possible for the user to enter consecutive ",." characters, which then cause the CDbl() below to fail.
+    ' Check for this and fix it as necessary.
+    If InStr(1, chkString, "..") Then
+        chkString = Replace(chkString, "..", ".")
+        txtPrimary = chkString
+        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
+        txtPrimary.SelStart = cursorPos
+    End If
+        
+    If Not IsNumeric(chkString) Then
+        If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary
+        IsTextEntryValid = False
+    Else
+        
+        Dim checkVal As Double
+        checkVal = CDbl(chkString)
+    
+        If (checkVal >= controlMin) And (checkVal <= controlMax) Then
+            IsTextEntryValid = True
+        Else
+            If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, getFormattedStringValue(controlMin), getFormattedStringValue(controlMax)
+            IsTextEntryValid = False
+        End If
+    End If
+    
+End Function
