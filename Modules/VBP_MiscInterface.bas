@@ -1,10 +1,13 @@
 Attribute VB_Name = "Interface"
 '***************************************************************************
 'Miscellaneous Functions Related to the User Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 03/October/12
-'Last update: First build
+'Last updated: 23/April/13
+'Last update: Adjusted main form label resizing to better handle Italian text lengths
+'
+'Miscellaneous routines related to rendering PhotoDemon interface elements.
+'
 '***************************************************************************
 
 
@@ -96,7 +99,7 @@ Public Sub makeFormPretty(ByRef tForm As Form)
             End If
         End If
         
-        If g_IsVistaOrLater And ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox)) Then
+        If g_IsVistaOrLater And ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo)) Then
             If g_UseFancyFonts Then
                 eControl.Font.Name = "Segoe UI"
             Else
@@ -498,7 +501,7 @@ Public Sub FixToolboxText()
     Dim leftPadding As Long
     leftPadding = 4 'FormMain.lblLeftToolBox(0).Left
     
-    If maxWidth + leftPadding > FormMain.picLeftPane.ScaleWidth Then
+    If maxWidth + leftPadding * 2 > FormMain.picLeftPane.ScaleWidth Then
                 
         'Iterate through increasingly smaller font sizes, until one is reached that fits inside the toolbox
         Do
@@ -544,11 +547,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.X
+    getPixelWidthOfString = txtSize.x
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.Y
+    getPixelHeightOfString = txtSize.y
 End Function
