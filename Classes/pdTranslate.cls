@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright ©2012-2013 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 12/February/13
-'Last update: wrap up official implementation
+'Last updated: 23/April/13
+'Last update: add translation support for text box tooltips
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
