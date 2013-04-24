@@ -27,8 +27,8 @@ Begin VB.Form FormGamma
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
       Left            =   6120
-      TabIndex        =   15
-      Top             =   5145
+      TabIndex        =   9
+      Top             =   5160
       Width           =   2250
       _ExtentX        =   3969
       _ExtentY        =   847
@@ -43,70 +43,6 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.TextBox txtGamma 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Index           =   2
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   13
-      Text            =   "1.00"
-      Top             =   4620
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsGamma 
-      Height          =   255
-      Index           =   2
-      Left            =   6120
-      Max             =   300
-      Min             =   1
-      TabIndex        =   12
-      Top             =   4680
-      Value           =   100
-      Width           =   4935
-   End
-   Begin VB.TextBox txtGamma 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Index           =   1
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   10
-      Text            =   "1.00"
-      Top             =   3780
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsGamma 
-      Height          =   255
-      Index           =   1
-      Left            =   6120
-      Max             =   300
-      Min             =   1
-      TabIndex        =   9
-      Top             =   3840
-      Value           =   100
-      Width           =   4935
-   End
    Begin VB.PictureBox picChart 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -117,7 +53,7 @@ Begin VB.Form FormGamma
       ScaleHeight     =   159
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   231
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   120
       Width           =   3495
    End
@@ -139,20 +75,29 @@ Begin VB.Form FormGamma
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsGamma 
-      Height          =   255
-      Index           =   0
-      Left            =   6120
-      Max             =   300
-      Min             =   1
-      TabIndex        =   2
-      Top             =   3000
-      Value           =   100
-      Width           =   4935
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.TextBox txtGamma 
-      Alignment       =   2  'Center
-      BeginProperty Font 
+   Begin PhotoDemon.sliderTextCombo sltGamma 
+      Height          =   495
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   3000
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0.01
+      Max             =   3
+      Value           =   1
+      SigDigits       =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -161,24 +106,55 @@ Begin VB.Form FormGamma
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Index           =   0
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   3
-      Text            =   "1.00"
-      Top             =   2940
-      Width           =   615
+      ForeColor       =   0
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
-      TabIndex        =   6
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+   Begin PhotoDemon.sliderTextCombo sltGamma 
+      Height          =   495
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   3840
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0.01
+      Max             =   3
+      Value           =   1
+      SigDigits       =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   0
+   End
+   Begin PhotoDemon.sliderTextCombo sltGamma 
+      Height          =   495
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   4680
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0.01
+      Max             =   3
+      Value           =   1
+      SigDigits       =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   0
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -197,7 +173,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   8
       Top             =   4320
       Width           =   540
    End
@@ -218,7 +194,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   3480
       Width           =   690
    End
@@ -238,7 +214,7 @@ Begin VB.Form FormGamma
       Height          =   1005
       Index           =   2
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   1170
       Width           =   2040
       WordWrap        =   -1  'True
@@ -255,7 +231,7 @@ Begin VB.Form FormGamma
       EndProperty
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12135
    End
@@ -276,7 +252,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2640
       Width           =   435
    End
@@ -290,8 +266,9 @@ Attribute VB_Exposed = False
 'Gamma Correction Handler
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 12/May/01
-'Last updated: 19/January/13
-'Last update: added a gamma chart to the form
+'Last updated: 23/April/13
+'Last update: replaced all scroll bars and text boxes with my new combo text/scroll control.  Floating-point entry is
+'              now much easier to deal with.  Also, added divide-by-zero checks to the main function, just in case.
 '
 'Updated version of the gamma handler; fully optimized, it uses a look-up
 ' table and can correct any color channel.
@@ -306,12 +283,12 @@ Private Sub chkUnison_Click()
     
     If CBool(chkUnison) Then
         Dim newGamma As Double
-        newGamma = CSng(hsGamma(0) + hsGamma(1) + hsGamma(2)) / 3
+        newGamma = CDbl(sltGamma(0) + sltGamma(1) + sltGamma(2)) / 3
     
         userChange = False
-        hsGamma(0) = newGamma
-        hsGamma(1) = newGamma
-        hsGamma(2) = newGamma
+        sltGamma(0) = newGamma
+        sltGamma(1) = newGamma
+        sltGamma(2) = newGamma
         userChange = True
     End If
     
@@ -327,19 +304,12 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
 
-    'The scroll bar max and min values are used to check the gamma input for validity
-    Dim i As Long
-    
-    For i = 0 To 2
-        If Not EntryValid(txtGamma(i), hsGamma(i).Min / 100, hsGamma(i).Max / 100, True, True) Then
-            AutoSelectText txtGamma(i)
-            Exit Sub
-        End If
-    Next i
-        
-    Me.Visible = False
-    Process GammaCorrection, CSng(Val(hsGamma(0)) / 100), CSng(Val(hsGamma(1)) / 100), CSng(Val(hsGamma(2)) / 100)
-    Unload Me
+    'If all gamma values are valid, perform a full gamma correction on the current image (or selection)
+    If sltGamma(0).IsValid And sltGamma(1).IsValid And sltGamma(2).IsValid Then
+        Me.Visible = False
+        Process GammaCorrection, sltGamma(0), sltGamma(1), sltGamma(2)
+        Unload Me
+    End If
     
 End Sub
 
@@ -387,6 +357,11 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     
     'Color variables
     Dim r As Long, g As Long, b As Long
+    
+    'Make certain that the gamma adjustment values we were passed are not zero
+    If rGamma = 0 Then rGamma = 0.01
+    If gGamma = 0 Then gGamma = 0.01
+    If bGamma = 0 Then bGamma = 0.01
     
     'Gamma can be easily applied using a look-up table
     Dim gLookup(0 To 2, 0 To 255) As Byte
@@ -446,72 +421,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'When the horizontal scroll bar is moved, change the text box to match
-Private Sub hsGamma_Change(Index As Integer)
-    
-    copyToTextBoxF CSng(hsGamma(Index).Value) / 100, txtGamma(Index)
-        
-    If userChange Then
-        userChange = False
-        
-        If CBool(chkUnison) Then
-            Select Case Index
-                Case 0
-                    hsGamma(1).Value = hsGamma(0).Value
-                    hsGamma(2).Value = hsGamma(0).Value
-                Case 1
-                    hsGamma(0).Value = hsGamma(1).Value
-                    hsGamma(2).Value = hsGamma(1).Value
-                Case 2
-                    hsGamma(0).Value = hsGamma(2).Value
-                    hsGamma(1).Value = hsGamma(2).Value
-            End Select
-        End If
-        
-        userChange = True
-        
-        updatePreview
-    End If
-        
-End Sub
-
-Private Sub hsGamma_Scroll(Index As Integer)
-    
-    copyToTextBoxF CSng(hsGamma(Index).Value) / 100, txtGamma(Index)
-        
-    If userChange Then
-        userChange = False
-        
-        If CBool(chkUnison) Then
-            Select Case Index
-                Case 0
-                    hsGamma(1).Value = hsGamma(0).Value
-                    hsGamma(2).Value = hsGamma(0).Value
-                Case 1
-                    hsGamma(0).Value = hsGamma(1).Value
-                    hsGamma(2).Value = hsGamma(1).Value
-                Case 2
-                    hsGamma(0).Value = hsGamma(2).Value
-                    hsGamma(1).Value = hsGamma(2).Value
-            End Select
-        End If
-        
-        userChange = True
-        
-        updatePreview
-    End If
-End Sub
-
-Private Sub txtGamma_GotFocus(Index As Integer)
-    AutoSelectText txtGamma(Index)
-End Sub
-
-'If the user changes the gamma value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
-Private Sub txtGamma_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
-    textValidate txtGamma(Index), , True
-    If EntryValid(txtGamma(Index), hsGamma(Index).Min / 100, hsGamma(Index).Max / 100, False, False) And userChange Then hsGamma(Index).Value = Val(txtGamma(Index)) * 100
-End Sub
-
 'Redraw the preview effect and the gamma chart
 Private Sub updatePreview()
     
@@ -534,8 +443,8 @@ Private Sub updatePreview()
     For y = 0 To 2
         
         'If all channels are in sync, draw only blue; otherwise, color each channel individually
-        gamVal = Val(hsGamma(y) / 100)
-        If (hsGamma(0) = hsGamma(1)) And (hsGamma(1) = hsGamma(2)) Then
+        gamVal = sltGamma(y)
+        If (sltGamma(0) = sltGamma(1)) And (sltGamma(1) = sltGamma(2)) Then
             picChart.ForeColor = RGB(0, 0, 255)
         Else
         
@@ -573,6 +482,32 @@ Private Sub updatePreview()
     picChart.Refresh
 
     'Once the chart is done, redraw the gamma preview as well
-    GammaCorrect CSng(Val(hsGamma(0)) / 100), CSng(Val(hsGamma(1)) / 100), CSng(Val(hsGamma(2)) / 100), True, fxPreview
+    GammaCorrect sltGamma(0), sltGamma(1), sltGamma(2), True, fxPreview
     
+End Sub
+
+Private Sub sltGamma_Change(Index As Integer)
+
+    If userChange Then
+        userChange = False
+        
+        If CBool(chkUnison) Then
+            Select Case Index
+                Case 0
+                    sltGamma(1).Value = sltGamma(0).Value
+                    sltGamma(2).Value = sltGamma(0).Value
+                Case 1
+                    sltGamma(0).Value = sltGamma(1).Value
+                    sltGamma(2).Value = sltGamma(1).Value
+                Case 2
+                    sltGamma(0).Value = sltGamma(2).Value
+                    sltGamma(1).Value = sltGamma(2).Value
+            End Select
+        End If
+        
+        userChange = True
+        
+        updatePreview
+    End If
+
 End Sub
