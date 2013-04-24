@@ -210,9 +210,8 @@ Attribute VB_Exposed = False
 'About Form
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 25/January/13
-'Last update: converted to names only; names and contributions made the form too crowded.  Note that a full list of
-'              both names and contributions can still be found in the code, the README, and on the website.
+'Last updated: 23/April/13
+'Last update: added additional names
 '
 'A simple "about"/credits form.  Contains credits, copyright, and the program logo.
 '
@@ -250,6 +249,7 @@ Private Sub Form_Load()
     GenerateThankyou "Frank Donckers"
     GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/"
     GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
+    GenerateThankyou "GioRock", "http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266&strAuthorName=GioRock&txtMaxNumberOfEntriesPerPage=25"
     GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
     GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
