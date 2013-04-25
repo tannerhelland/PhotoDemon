@@ -17,6 +17,7 @@ Begin VB.UserControl sliderTextCombo
    ScaleHeight     =   33
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   400
+   ToolboxBitmap   =   "textSliderCombo.ctx":0000
    Begin VB.HScrollBar hsPrimary 
       Height          =   285
       Left            =   120
@@ -184,24 +185,35 @@ End Property
 
 Public Property Let Value(ByVal newValue As Double)
     
-    'Internally track the value of the control
-    controlVal = newValue
+    'Don't make any changes unless the new value deviates from the existing one
+    If newValue <> controlVal Then
     
-    'Assign the scroll bar the "same" value.  This will vary based on the number of significant digits in use; because
-    ' scroll bars cannot hold float values, we have to multiple by 10^n where n is the number of significant digits
-    ' in use for this control.
-    If hsPrimary <> CLng(controlVal * (10 ^ significantDigits)) Then
-        hsPrimary = CLng(controlVal * (10 ^ significantDigits))
+        'Internally track the value of the control
+        controlVal = newValue
+        
+        'Assign the scroll bar the "same" value.  This will vary based on the number of significant digits in use; because
+        ' scroll bars cannot hold float values, we have to multiple by 10^n where n is the number of significant digits
+        ' in use for this control.
+        Dim newScrollVal As Long
+        newScrollVal = CLng(controlVal * (10 ^ significantDigits))
+        
+        If hsPrimary <> newScrollVal Then
+            
+            'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
+            If newScrollVal >= hsPrimary.Min And newScrollVal <= hsPrimary.Max Then hsPrimary = newScrollVal
+            
+        End If
+        
+        'Mirror the value to the text box
+        If Not textBoxInitiated Then
+            If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
+        End If
+        
+        'Mark the value property as being changed, and raise the corresponding event.
+        PropertyChanged "Value"
+        RaiseEvent Change
+        
     End If
-    
-    'Mirror the value to the text box
-    If Not textBoxInitiated Then
-        If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
-    End If
-    
-    'Mark the value property as being changed, and raise the corresponding event.
-    PropertyChanged "Value"
-    RaiseEvent Change
     
 End Property
 
@@ -333,10 +345,10 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Set Font = .ReadProperty("Font", Ambient.Font)
         ForeColor = .ReadProperty("ForeColor", &H404040)
-        Value = .ReadProperty("Value", 0)
         Min = .ReadProperty("Min", 0)
         Max = .ReadProperty("Max", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
+        Value = .ReadProperty("Value", 0)
     End With
     
     controlMin = Min
@@ -344,9 +356,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     controlVal = Value
     significantDigits = SigDigits
     
-    'Write the .Value property again to force a refresh that obeys our formatting rules
-    Value = controlVal
-
 End Sub
 
 Private Sub UserControl_Resize()
@@ -393,8 +402,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Min", controlMin, 0
         .WriteProperty "Max", controlMax, 10
-        .WriteProperty "Value", controlVal, 0
         .WriteProperty "SigDigits", significantDigits, 0
+        .WriteProperty "Value", controlVal, 0
         .WriteProperty "Font", mFont, "Tahoma"
         .WriteProperty "ForeColor", ForeColor, &H404040
     End With
