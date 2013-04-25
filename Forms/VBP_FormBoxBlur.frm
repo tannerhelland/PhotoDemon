@@ -24,28 +24,18 @@ Begin VB.Form FormBoxBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.TextBox txtWidth 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
+   Begin PhotoDemon.sliderTextCombo sltWidth 
+      Height          =   495
+      Left            =   6000
       TabIndex        =   8
-      Text            =   "2"
-      Top             =   2220
-      Width           =   615
-   End
-   Begin VB.TextBox txtHeight 
-      Alignment       =   2  'Center
-      BeginProperty Font 
+      Top             =   2280
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   500
+      Value           =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -54,33 +44,6 @@ Begin VB.Form FormBoxBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      TabIndex        =   7
-      Text            =   "2"
-      Top             =   3180
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsWidth 
-      Height          =   255
-      Left            =   6120
-      Max             =   500
-      Min             =   1
-      TabIndex        =   6
-      Top             =   2280
-      Value           =   2
-      Width           =   4935
-   End
-   Begin VB.HScrollBar hsHeight 
-      Height          =   255
-      Left            =   6120
-      Max             =   500
-      Min             =   1
-      TabIndex        =   5
-      Top             =   3240
-      Value           =   2
-      Width           =   4935
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -112,13 +75,34 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
       Left            =   6120
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   3840
       Width           =   2880
       _ExtentX        =   5080
       _ExtentY        =   847
       Caption         =   "keep both dimensions in sync"
       Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltHeight 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   3240
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   500
+      Value           =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -145,7 +129,7 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   2880
       Width           =   1215
    End
@@ -165,7 +149,7 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   1920
       Width           =   1140
    End
@@ -206,8 +190,8 @@ Attribute VB_Exposed = False
 'Box Blur Tool
 'Copyright ©2000-2013 by Tanner Helland
 'Created: some time 2000
-'Last updated: 17/January/13
-'Last update: rewrote as a full tool, instead of two 3x3 and 5x5 individual filters
+'Last updated: 24/April/13
+'Last update: greatly simplified code by using the new slider/text custom control
 '
 'This is a heavily optimized box blur.  An "accumulation" technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
@@ -224,13 +208,8 @@ Option Explicit
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
-Dim userChange As Boolean
-
 Private Sub chkUnison_Click()
-    userChange = False
-    If CBool(chkUnison) Then hsHeight.Value = hsWidth.Value
-    userChange = True
-    updatePreview
+    If CBool(chkUnison) Then syncScrollBars True
 End Sub
 
 'CANCEL button
@@ -242,18 +221,11 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Validate text box entries
-    If Not EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, True, True) Then
-        AutoSelectText txtWidth
-        Exit Sub
-    End If
-    
-    If Not EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, True, True) Then
-        AutoSelectText txtHeight
-        Exit Sub
-    End If
+    If Not sltWidth.IsValid Then Exit Sub
+    If Not sltHeight.IsValid Then Exit Sub
     
     Me.Visible = False
-    Process BoxBlur, hsWidth.Value, hsHeight.Value
+    Process BoxBlur, sltWidth, sltHeight
     Unload Me
     
 End Sub
@@ -566,11 +538,14 @@ End Sub
 
 Private Sub Form_Activate()
 
-    userChange = True
-
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.selWidth
+        iHeight = pdImages(CurrentImage).mainSelection.selHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
+    End If
 
     'Draw a preview of the effect
     updatePreview
@@ -590,81 +565,32 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'These routines keep the scroll bar and text box values in sync
-
-Private Sub hsHeight_Change()
-    userChange = False
-    copyToTextBoxI txtHeight, hsHeight.Value
-    If CBool(chkUnison) Then syncScrollBars False
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub hsWidth_Change()
-    userChange = False
-    copyToTextBoxI txtWidth, hsWidth.Value
-    If CBool(chkUnison) Then syncScrollBars True
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub hsHeight_Scroll()
-    userChange = False
-    copyToTextBoxI txtHeight, hsHeight.Value
-    If CBool(chkUnison) Then syncScrollBars False
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub hsWidth_Scroll()
-    userChange = False
-    copyToTextBoxI txtWidth, hsWidth.Value
-    If CBool(chkUnison) Then syncScrollBars True
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
-    userChange = False
-    textValidate txtHeight
-    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(txtHeight)
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub txtHeight_GotFocus()
-    AutoSelectText txtHeight
-End Sub
-
-Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
-    userChange = False
-    textValidate txtWidth
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(txtWidth)
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub txtWidth_GotFocus()
-    AutoSelectText txtWidth
-End Sub
-
 'Keep the two scroll bars in sync.  Some extra work has to be done to makes sure scrollbar max values aren't exceeded.
 Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     
-    If hsWidth.Value = hsHeight.Value Then Exit Sub
+    If sltWidth.Value = sltHeight.Value Then Exit Sub
     
     Dim tmpVal As Long
     
     If srcHorizontal Then
-        tmpVal = hsWidth.Value
-        If tmpVal < hsHeight.Max Then hsHeight.Value = hsWidth.Value Else hsHeight.Value = hsHeight.Max
+        tmpVal = sltWidth.Value
+        If tmpVal < sltHeight.Max Then sltHeight.Value = sltWidth.Value Else sltHeight.Value = sltHeight.Max
     Else
-        tmpVal = hsHeight.Value
-        If tmpVal < hsWidth.Max Then hsWidth.Value = hsHeight.Value Else hsWidth.Value = hsWidth.Max
+        tmpVal = sltHeight.Value
+        If tmpVal < sltWidth.Max Then sltWidth.Value = sltHeight.Value Else sltWidth.Value = sltWidth.Max
     End If
     
 End Sub
 Private Sub updatePreview()
-    BoxBlurFilter hsWidth.Value, hsHeight.Value, True, fxPreview
+    BoxBlurFilter sltWidth, sltHeight, True, fxPreview
 End Sub
 
+Private Sub sltHeight_Change()
+    If CBool(chkUnison) Then syncScrollBars False
+    updatePreview
+End Sub
+
+Private Sub sltWidth_Change()
+    If CBool(chkUnison) Then syncScrollBars True
+    updatePreview
+End Sub
