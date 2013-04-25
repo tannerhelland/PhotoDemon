@@ -25,14 +25,17 @@ Begin VB.Form dialog_AlphaCutoff
    ScaleWidth      =   469
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.HScrollBar hsThreshold 
-      Height          =   375
-      Left            =   480
-      Max             =   255
-      TabIndex        =   5
-      Top             =   7200
-      Value           =   127
-      Width           =   6255
+   Begin PhotoDemon.sliderTextCombo sltThreshold 
+      Height          =   495
+      Left            =   360
+      TabIndex        =   2
+      Top             =   7080
+      Width           =   6495
+      _extentx        =   11456
+      _extenty        =   873
+      font            =   "VBP_FormAlphaCutoff.frx":0000
+      max             =   255
+      value           =   127
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -44,7 +47,7 @@ Begin VB.Form dialog_AlphaCutoff
       ScaleHeight     =   338
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   382
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   1200
       Width           =   5760
    End
@@ -88,9 +91,9 @@ Begin VB.Form dialog_AlphaCutoff
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   4800
+      Left            =   3960
       TabIndex        =   7
-      Top             =   7680
+      Top             =   7560
       Width           =   1710
    End
    Begin VB.Label lblAfter 
@@ -110,7 +113,7 @@ Begin VB.Form dialog_AlphaCutoff
       Height          =   195
       Left            =   720
       TabIndex        =   6
-      Top             =   7680
+      Top             =   7560
       Width           =   1230
    End
    Begin VB.Label lblWarning 
@@ -128,7 +131,7 @@ Begin VB.Form dialog_AlphaCutoff
       ForeColor       =   &H00202020&
       Height          =   765
       Left            =   975
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   270
       Width           =   5775
       WordWrap        =   -1  'True
@@ -150,7 +153,7 @@ Begin VB.Form dialog_AlphaCutoff
       Height          =   285
       Index           =   0
       Left            =   240
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   6720
       Width           =   2205
    End
@@ -162,10 +165,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Alpha Cut-Off Dialog
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/December/12
-'Last updated: 15/December/12
-'Last update: initial build
+'Last updated: 24/April/13
+'Last update: rewrote the dialog against the new slider/text combo control
 '
 'Dialog for presenting the user a choice of alpha cut-off.  When reducing complex (32bpp)
 ' alpha channels to the simple ones required by 8bpp images, there is no fool-proof
@@ -214,15 +217,20 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
         
-    'Save the selected color depth to the corresponding global variable (so other functions can access it
-    ' after this form is unloaded)
-    g_AlphaCutoff = hsThreshold.Value
-    
-    'Free up memory
-    tmpLayer.eraseLayer
-    
-    userAnswer = vbOK
-    Me.Hide
+    'Make sure the input value is valid before continuing
+    If sltThreshold.IsValid Then
+        
+        'Save the selected color depth to the corresponding global variable (so other functions can access it
+        ' after this form is unloaded)
+        g_AlphaCutoff = sltThreshold.Value
+        
+        'Free up memory
+        tmpLayer.eraseLayer
+        
+        userAnswer = vbOK
+        Me.Hide
+        
+    End If
     
 End Sub
 
@@ -263,7 +271,7 @@ Private Sub renderPreview()
     tmpLayer.eraseLayer
     
     tmpLayer.createFromExistingLayer srcLayer
-    tmpLayer.applyAlphaCutoff hsThreshold.Value, False
+    tmpLayer.applyAlphaCutoff sltThreshold.Value, False
     
     DrawPreviewImage picPreview, True, tmpLayer
 
@@ -274,10 +282,6 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the preview when the scroll bar is moved
-Private Sub hsThreshold_Change()
-    renderPreview
-End Sub
-
-Private Sub hsThreshold_Scroll()
-    renderPreview
+Private Sub sltThreshold_Change()
+    If sltThreshold.IsValid(False) Then renderPreview
 End Sub
