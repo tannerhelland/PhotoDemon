@@ -235,12 +235,17 @@ End Sub
 Private Sub Form_Activate()
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.selWidth
+        iHeight = pdImages(CurrentImage).mainSelection.selHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
+    End If
     
     'Adjust the scroll bar dimensions to match the current image's width and height
-    hsX.Max = pdImages(CurrentImage).Width - 1
-    hsY.Max = pdImages(CurrentImage).Height - 1
+    hsX.Max = iWidth - 1
+    hsY.Max = iHeight - 1
     hsX.Value = hsX.Max \ 2
     hsY.Value = hsY.Max \ 2
         

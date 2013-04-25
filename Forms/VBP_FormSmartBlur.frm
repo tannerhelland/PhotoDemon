@@ -441,8 +441,13 @@ End Sub
 Private Sub Form_Activate()
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.selWidth
+        iHeight = pdImages(CurrentImage).mainSelection.selHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
+    End If
 
     'Draw a preview of the effect
     updatePreview
