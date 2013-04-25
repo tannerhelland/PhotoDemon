@@ -19,12 +19,12 @@ Begin VB.UserControl sliderTextCombo
    ScaleWidth      =   400
    ToolboxBitmap   =   "textSliderCombo.ctx":0000
    Begin VB.HScrollBar hsPrimary 
-      Height          =   285
+      Height          =   345
       Left            =   120
       Max             =   100
       Min             =   -100
       TabIndex        =   0
-      Top             =   90
+      Top             =   60
       Width           =   4935
    End
    Begin VB.TextBox txtPrimary 
@@ -314,7 +314,10 @@ Private Sub UserControl_Initialize()
     If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
         SubclassFrame UserControl.hWnd, False
     End If
-      
+    
+    'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
+    If g_UseFancyFonts Then hsPrimary.Height = 23 Else hsPrimary.Height = 22
+    
     origForecolor = ForeColor
         
     'Prepare a font object for use
