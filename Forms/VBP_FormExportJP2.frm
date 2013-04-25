@@ -42,18 +42,6 @@ Begin VB.Form dialog_ExportJP2
       Top             =   2550
       Width           =   1365
    End
-   Begin VB.HScrollBar hsQuality 
-      Height          =   330
-      LargeChange     =   5
-      Left            =   600
-      Max             =   256
-      Min             =   1
-      TabIndex        =   5
-      TabStop         =   0   'False
-      Top             =   1245
-      Value           =   16
-      Width           =   5295
-   End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -68,34 +56,27 @@ Begin VB.Form dialog_ExportJP2
       Height          =   360
       Left            =   600
       Style           =   2  'Dropdown List
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   630
       Width           =   6135
    End
-   Begin VB.TextBox txtQuality 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6000
-      MaxLength       =   3
-      TabIndex        =   2
-      Text            =   "90"
-      Top             =   1230
-      Width           =   735
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   480
+      TabIndex        =   7
+      Top             =   1200
+      Width           =   6375
+      _extentx        =   11245
+      _extenty        =   873
+      font            =   "VBP_FormExportJP2.frx":0000
+      min             =   1
+      max             =   256
+      value           =   16
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   2400
       Width           =   7335
    End
@@ -115,7 +96,7 @@ Begin VB.Form dialog_ExportJP2
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   600
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   1680
       Width           =   1545
    End
@@ -136,7 +117,7 @@ Begin VB.Form dialog_ExportJP2
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   4410
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   1680
       Width           =   1470
    End
@@ -157,7 +138,7 @@ Begin VB.Form dialog_ExportJP2
       Height          =   285
       Index           =   0
       Left            =   360
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   240
       Width           =   2700
    End
@@ -169,11 +150,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG-2000 (JP2) Export Dialog
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 04/December/12
-'Last updated: 04/December/12
-'Last update: abandoned my attempt to merge this with the JPEG export form; it's way easier (and less code, surprisingly)
-'             to just give this its own dialog.
+'Last updated: 13/April/13
+'Last update: added a new text/slider custom control
 '
 'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
 ' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
@@ -204,19 +184,19 @@ Private Sub CmbSaveQuality_Click()
     Select Case CmbSaveQuality.ListIndex
         
         Case 0
-            hsQuality.Value = 1
+            sltQuality = 1
                 
         Case 1
-            hsQuality.Value = 16
+            sltQuality = 16
                 
         Case 2
-            hsQuality = 32
+            sltQuality = 32
                 
         Case 3
-            hsQuality = 64
+            sltQuality = 64
                 
         Case 4
-            hsQuality = 256
+            sltQuality = 256
                 
     End Select
     
@@ -247,10 +227,9 @@ Private Sub cmdOK_Click()
         Case 4
             g_JP2Compression = 256
         Case 5
-            If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max) Then
-                g_JP2Compression = Abs(hsQuality.Value)
+            If sltQuality.IsValid Then
+                g_JP2Compression = Abs(sltQuality)
             Else
-                AutoSelectText txtQuality
                 Exit Sub
             End If
     End Select
@@ -264,28 +243,14 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub hsQuality_Change()
-    txtQuality.Text = hsQuality.Value
+Private Sub sltQuality_Change()
     updateComboBox
-End Sub
-
-Private Sub hsQuality_Scroll()
-    txtQuality.Text = hsQuality.Value
-    updateComboBox
-End Sub
-
-Private Sub txtQuality_Change()
-    If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max, False, False) Then hsQuality.Value = Val(txtQuality)
-End Sub
-
-Private Sub txtQuality_GotFocus()
-    AutoSelectText txtQuality
 End Sub
 
 'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
 Private Sub updateComboBox()
     
-    Select Case hsQuality.Value
+    Select Case sltQuality.Value
         
         Case 1
             If CmbSaveQuality.ListIndex <> 0 Then CmbSaveQuality.ListIndex = 0
@@ -333,9 +298,6 @@ Public Sub ShowDialog()
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
-    'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-    If g_UseFancyFonts Then hsQuality.Height = 23 Else hsQuality.Height = 22
-
     'Display the dialog
     Me.Show vbModal, FormMain
 
