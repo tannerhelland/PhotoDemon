@@ -31,11 +31,19 @@ Begin VB.Form dialog_AlphaCutoff
       TabIndex        =   2
       Top             =   7080
       Width           =   6495
-      _extentx        =   11456
-      _extenty        =   873
-      font            =   "VBP_FormAlphaCutoff.frx":0000
-      max             =   255
-      value           =   127
+      _ExtentX        =   11456
+      _ExtentY        =   873
+      Max             =   255
+      Value           =   127
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
