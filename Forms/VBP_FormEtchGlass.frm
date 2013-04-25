@@ -25,11 +25,32 @@ Begin VB.Form FormFiguredGlass
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.sliderTextCombo sltScale 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   1560
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   50
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   4200
       Width           =   1005
       _ExtentX        =   1773
@@ -61,8 +82,8 @@ Begin VB.Form FormFiguredGlass
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   11
-      Top             =   3255
+      TabIndex        =   7
+      Top             =   3285
       Width           =   5700
    End
    Begin VB.CommandButton CmdOK 
@@ -83,70 +104,10 @@ Begin VB.Form FormFiguredGlass
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsScale 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   8
-      Top             =   1620
-      Value           =   50
-      Width           =   4815
-   End
-   Begin VB.TextBox txtScale 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   7
-      Text            =   "50"
-      Top             =   1560
-      Width           =   735
-   End
-   Begin VB.TextBox txtTurbulence 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   5
-      Text            =   "50"
-      Top             =   2340
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsTurbulence 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   4
-      Top             =   2400
-      Value           =   50
-      Width           =   4815
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -156,7 +117,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   14
+      TabIndex        =   10
       Top             =   4200
       Width           =   975
       _ExtentX        =   1720
@@ -165,6 +126,28 @@ Begin VB.Form FormFiguredGlass
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltTurbulence 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   2400
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0.01
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -189,14 +172,14 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   12
-      Top             =   2880
+      TabIndex        =   8
+      Top             =   2910
       Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   5760
       Width           =   12135
    End
@@ -217,7 +200,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   2040
       Width           =   1200
    End
@@ -275,10 +258,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Figured Glass" Distortion
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 08/January/13
-'Last updated: 15/January/13
-'Last update: added support for custom edge handling
+'Last updated: 25/April/13
+'Last update: simplified code by relying on the new slider/text custom control
 '
 'This tool allows the user to apply a distort operation to an image that mimicks seeing it through warped glass, perhaps
 ' glass tiles of some sort.  Many different names are used for this effect - Paint.NET calls it "dents" (which I quite
@@ -288,7 +271,7 @@ Attribute VB_Exposed = False
 'As with other distorts in the program, bilinear interpolation (via reverse-mapping) is available for a
 ' high-quality transformation.
 '
-'No radius is required for the effect.  It always operates on the entire image.
+'Unlike other distortsr, no radius is required for this effect.  It always operates on the entire image/selection.
 '
 'Finally, the transformation used by this tool is a modified version of a transformation originally written by
 ' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
@@ -308,10 +291,6 @@ Private Sub cmbEdges_Click()
     updatePreview
 End Sub
 
-Private Sub cmbEdges_Scroll()
-    updatePreview
-End Sub
-
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -321,22 +300,11 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(txtTurbulence, hsTurbulence.Min, hsTurbulence.Max, True, True) Then
-        AutoSelectText txtTurbulence
-        Exit Sub
+    If sltScale.IsValid And sltTurbulence.IsValid Then
+        Me.Visible = False
+        Process DistortFiguredGlass, sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Unload Me
     End If
-
-    If Not EntryValid(txtScale, hsScale.Min, hsScale.Max, True, True) Then
-        AutoSelectText txtScale
-        Exit Sub
-    End If
-    
-    Me.Visible = False
-    
-    'Based on the user's selection, submit the proper processor request
-    Process DistortFiguredGlass, CDbl(hsScale), CDbl(hsTurbulence / 100), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
-    
-    Unload Me
     
 End Sub
 
@@ -459,10 +427,7 @@ Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
-    
-    'Mark scroll bar changes as coming from the user
-    userChange = True
-    
+        
 End Sub
 
 Private Sub Form_Load()
@@ -477,52 +442,21 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Keep the scroll bar and the text box values in sync
-Private Sub hsTurbulence_Change()
-    copyToTextBoxI txtTurbulence, hsTurbulence.Value
-    updatePreview
-End Sub
-
-Private Sub hsTurbulence_Scroll()
-    copyToTextBoxI txtTurbulence, hsTurbulence.Value
-    updatePreview
-End Sub
-
-Private Sub hsScale_Scroll()
-    copyToTextBoxI txtScale, hsScale.Value
-    updatePreview
-End Sub
-
-Private Sub hsScale_Change()
-    copyToTextBoxI txtScale, hsScale.Value
-    updatePreview
-End Sub
-
 Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 
-Private Sub txtScale_GotFocus()
-    AutoSelectText txtScale
+Private Sub sltScale_Change()
+    updatePreview
 End Sub
 
-Private Sub txtScale_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtScale, True
-    If EntryValid(txtScale, hsScale.Min, hsScale.Max, False, False) Then hsScale.Value = Val(txtScale)
-End Sub
-
-Private Sub txtTurbulence_GotFocus()
-    AutoSelectText hsTurbulence
-End Sub
-
-Private Sub txtTurbulence_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtTurbulence, True
-    If EntryValid(txtTurbulence, hsTurbulence.Min, hsTurbulence.Max, False, False) Then hsTurbulence.Value = Val(txtTurbulence)
+Private Sub sltTurbulence_Change()
+    updatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
 
-    FiguredGlassFX CDbl(hsScale), CDbl(hsTurbulence / 100), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    FiguredGlassFX sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
     
 End Sub
