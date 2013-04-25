@@ -24,6 +24,28 @@ Begin VB.Form FormGaussianBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   2760
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0.1
+      Max             =   200
+      SigDigits       =   1
+      Value           =   5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,40 +64,10 @@ Begin VB.Form FormGaussianBlur
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   2000
-      Min             =   1
-      TabIndex        =   2
-      Top             =   2760
-      Value           =   50
-      Width           =   4935
-   End
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   5
-      TabIndex        =   3
-      Text            =   "5.0"
-      Top             =   2700
-      Width           =   735
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -95,7 +87,7 @@ Begin VB.Form FormGaussianBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
@@ -104,7 +96,7 @@ Begin VB.Form FormGaussianBlur
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12135
    End
@@ -124,7 +116,7 @@ Begin VB.Form FormGaussianBlur
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2400
       Width           =   1230
    End
@@ -136,20 +128,21 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gaussian Blur Tool
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2010-2013 by Tanner Helland
 'Created: 01/July/10
-'Last updated: 17/January/13
-'Last update: rewrote as a full tool, instead of two 3x3 and 5x5 individual filters
+'Last updated: 24/April/13
+'Last update: simplified code by converting interface to new scroll/text custom control
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a variable radius gaussian blur filter
-' that utilizes a separable convolution kernel.
+' that utilizes a separable convolution kernel AND allows for sub-pixel radii.
 
-'The use of separable kernels makes this much, much faster than a standard Gaussian blur.  The exact speed
-' gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel of 9x9) the
-' processing time is 4.5x faster.  For a radius of 100, this is 100x faster than a traditional method.
+'The use of separable kernels makes this much, much faster than a standard Gaussian blur.  The approimate
+' speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel of 9x9)
+' the processing time is 4.5x faster.  For a radius of 100, my technique is 100x faster than a traditional
+' method.
 '
-'Despite this, it's still quite slow in the IDE.  I STRONGLY recommend compiling the project before
-' applying any Gaussian blur of a large radius.
+'Despite this, it's still quite slow in the IDE due to the number of array accesses required.  I STRONGLY
+' recommend compiling the project before applying any Gaussian blur of a large radius.
 '
 '***************************************************************************
 
@@ -167,12 +160,10 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
 
-    If EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, True, True) Then
+    If sltRadius.IsValid Then
         Me.Visible = False
-        Process GaussianBlur, CDbl(hsRadius.Value / 10)
+        Process GaussianBlur, sltRadius
         Unload Me
-    Else
-        AutoSelectText txtRadius
     End If
     
 End Sub
@@ -232,12 +223,12 @@ Private Sub Form_Activate()
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
-        hsRadius.Max = 500
+        sltRadius.Max = 50
         lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
         lblIDEWarning.Visible = True
     Else
         '32bpp images take quite a bit longer to process.  Limit the radius to 100 in this case.
-        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then hsRadius.Max = 1000 Else hsRadius.Max = 2000
+        If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then sltRadius.Max = 100 Else sltRadius.Max = 200
     End If
     
 End Sub
@@ -246,26 +237,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'The next three routines keep the scroll bar and text box values in sync
-Private Sub hsRadius_Change()
-    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Scroll()
-    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
-    updatePreview
-End Sub
-
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
-End Sub
-
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, False, False) Then hsRadius.Value = Val(txtRadius) * 10
-End Sub
-
 Private Sub updatePreview()
-    GaussianBlurFilter hsRadius.Value / 10, True, fxPreview
+    GaussianBlurFilter sltRadius.Value, True, fxPreview
+End Sub
+
+Private Sub sltRadius_Change()
+    updatePreview
 End Sub
