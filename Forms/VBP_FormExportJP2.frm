@@ -222,25 +222,11 @@ End Sub
 Private Sub cmdOK_Click()
         
     'Determine the compression ratio for the JPEG2000 wavelet transformation
-    Select Case CmbSaveQuality.ListIndex
-            
-        Case 0
-            g_JP2Compression = 1
-        Case 1
-            g_JP2Compression = 16
-        Case 2
-            g_JP2Compression = 32
-        Case 3
-            g_JP2Compression = 64
-        Case 4
-            g_JP2Compression = 256
-        Case 5
-            If sltQuality.IsValid Then
-                g_JP2Compression = Abs(sltQuality)
-            Else
-                Exit Sub
-            End If
-    End Select
+    If sltQuality.IsValid Then
+        g_JP2Compression = Abs(sltQuality)
+    Else
+        Exit Sub
+    End If
      
     userAnswer = vbOK
     Me.Hide
