@@ -24,10 +24,29 @@ Begin VB.Form FormDiffuse
    ScaleWidth      =   814
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.sliderTextCombo sltX 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   2160
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkWrap 
       Height          =   480
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   3600
       Width           =   1890
       _ExtentX        =   3334
@@ -61,75 +80,38 @@ Begin VB.Form FormDiffuse
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsY 
-      Height          =   255
-      Left            =   6120
-      Max             =   10
-      TabIndex        =   5
-      Top             =   3000
-      Value           =   5
-      Width           =   5055
-   End
-   Begin VB.HScrollBar hsX 
-      Height          =   255
-      Left            =   6120
-      Max             =   10
-      TabIndex        =   3
-      Top             =   2160
-      Value           =   5
-      Width           =   5055
-   End
-   Begin VB.TextBox txtX 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   315
-      Left            =   11280
-      TabIndex        =   2
-      Text            =   "0"
-      Top             =   2130
-      Width           =   615
-   End
-   Begin VB.TextBox txtY 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   315
-      Left            =   11280
-      TabIndex        =   4
-      Text            =   "0"
-      Top             =   2970
-      Width           =   615
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.sliderTextCombo sltY 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   3000
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   4
       Top             =   5760
       Width           =   12255
    End
@@ -149,7 +131,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   2640
       Width           =   1785
    End
@@ -169,7 +151,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   1800
       Width           =   2085
    End
@@ -181,13 +163,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Diffuse Filter Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 8/14/01
-'Last updated: 09/September/12
-'Last update: rewrote all effects against new layer class
+'Last updated: 25/April/13
+'Last update: simplified code by using new slider/text custom control
 '
-'Module for handling the diffusion-style filters.  Automates both saturated
-'and wrapped diffusion.
+'Module for handling "diffuse"-style filters (also called "displace", e.g. in GIMP).
 '
 '***************************************************************************
 
@@ -198,7 +179,7 @@ Option Explicit
 Dim iWidth As Long, iHeight As Long
 
 Private Sub ChkWrap_Click()
-    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
+    updatePreview
 End Sub
 
 'CANCEL button
@@ -209,25 +190,11 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
     
-    'The max and min values of the scroll bars are used to validate the range of the text box
-    If EntryValid(txtX, hsX.Min, hsX.Max) Then
-        If EntryValid(txtY, hsY.Min, hsY.Max) Then
-            
-            FormDiffuse.Visible = False
-            
-            If chkWrap.Value = vbChecked Then
-                Process CustomDiffuse, hsX.Value, hsY.Value, True
-            Else
-                Process CustomDiffuse, hsX.Value, hsY.Value, False
-            End If
-            
-            Unload Me
-            
-        Else
-            AutoSelectText txtY
-        End If
-    Else
-        AutoSelectText txtX
+    'Validate all text entries before proceeding with the diffuse
+    If sltX.IsValid And sltY.IsValid Then
+        FormDiffuse.Visible = False
+        Process CustomDiffuse, sltX.Value, sltY.Value, CBool(chkWrap.Value)
+        Unload Me
     End If
     
 End Sub
@@ -244,60 +211,21 @@ Private Sub Form_Activate()
     End If
     
     'Adjust the scroll bar dimensions to match the current image's width and height
-    hsX.Max = iWidth - 1
-    hsY.Max = iHeight - 1
-    hsX.Value = hsX.Max \ 2
-    hsY.Value = hsY.Max \ 2
+    sltX.Max = iWidth - 1
+    sltY.Max = iHeight - 1
+    sltX.Value = Int(sltX.Max \ 2)
+    sltY.Value = Int(sltY.Max \ 2)
         
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
     'Render a preview of the effect
-    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
+    updatePreview
     
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-'Everything below this line relates to mirroring the input of the textboxes across the scrollbars (and vice versa)
-Private Sub hsX_Change()
-    copyToTextBoxI txtX, hsX.Value
-    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
-End Sub
-
-Private Sub hsX_Scroll()
-    copyToTextBoxI txtX, hsX.Value
-    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
-End Sub
-
-Private Sub hsY_Change()
-    copyToTextBoxI txtY, hsY.Value
-    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
-End Sub
-
-Private Sub hsY_Scroll()
-    copyToTextBoxI txtY, hsY.Value
-    If chkWrap.Value = vbChecked Then DiffuseCustom hsX.Value, hsY.Value, True, True, fxPreview Else DiffuseCustom hsX.Value, hsY.Value, False, True, fxPreview
-End Sub
-
-Private Sub txtX_GotFocus()
-    AutoSelectText txtX
-End Sub
-
-Private Sub txtX_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtX
-    If EntryValid(txtX, hsX.Min, hsX.Max, False, False) Then hsX.Value = Val(txtX)
-End Sub
-
-Private Sub txtY_GotFocus()
-    AutoSelectText txtY
-End Sub
-
-Private Sub txtY_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtY
-    If EntryValid(txtY, hsY.Min, hsY.Max, False, False) Then hsY.Value = Val(txtY)
 End Sub
 
 'Custom diffuse effect
@@ -409,4 +337,16 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
      
+End Sub
+
+Private Sub sltX_Change()
+    updatePreview
+End Sub
+
+Private Sub updatePreview()
+    DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, fxPreview
+End Sub
+
+Private Sub sltY_Change()
+    updatePreview
 End Sub
