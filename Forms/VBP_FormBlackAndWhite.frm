@@ -24,10 +24,31 @@ Begin VB.Form FormBlackAndWhite
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.sliderTextCombo sltThreshold 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   1320
+      Width           =   5925
+      _ExtentX        =   10451
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   254
+      Value           =   127
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   12
+      TabIndex        =   10
       Top             =   1860
       Width           =   5610
       _ExtentX        =   9895
@@ -70,7 +91,7 @@ Begin VB.Form FormBlackAndWhite
       Left            =   9000
       ScaleHeight     =   465
       ScaleWidth      =   2745
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   3840
       Width           =   2775
    End
@@ -83,7 +104,7 @@ Begin VB.Form FormBlackAndWhite
       Left            =   6120
       ScaleHeight     =   465
       ScaleWidth      =   2745
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   3840
       Width           =   2775
    End
@@ -102,44 +123,14 @@ Begin VB.Form FormBlackAndWhite
       Height          =   330
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2880
       Width           =   4935
-   End
-   Begin VB.HScrollBar hsThreshold 
-      Height          =   255
-      Left            =   6120
-      Max             =   254
-      Min             =   1
-      TabIndex        =   2
-      Top             =   1440
-      Value           =   127
-      Width           =   4935
-   End
-   Begin VB.TextBox txtThreshold 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   315
-      Left            =   11160
-      MaxLength       =   3
-      TabIndex        =   3
-      Text            =   "127"
-      Top             =   1410
-      Width           =   660
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -148,7 +139,7 @@ Begin VB.Form FormBlackAndWhite
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   5760
       Width           =   12255
    End
@@ -168,7 +159,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   3480
       Width           =   3945
    End
@@ -188,7 +179,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   2520
       Width           =   2130
    End
@@ -208,8 +199,8 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
-      Top             =   1080
+      TabIndex        =   3
+      Top             =   960
       Width           =   1080
    End
 End
@@ -220,10 +211,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Black/White Color Reduction Form
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2002-2013 by Tanner Helland
 'Created: some time 2002
-'Last updated: 28/December/12
-'Last update: allow optimal threshold calculation for all dithering types
+'Last updated: 24/April/13
+'Last update: greatly simplify code by using new slider/text custom control
 '
 'The meat of this form is in the module with the same name...look there for
 ' real algorithm info.
@@ -233,23 +224,21 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cboDither_Click()
-    If CBool(chkAutoThreshold.Value) Then txtThreshold.Text = calculateOptimalThreshold(cboDither.ListIndex)
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
+    If CBool(chkAutoThreshold.Value) Then sltThreshold = calculateOptimalThreshold(cboDither.ListIndex)
+    updatePreview
 End Sub
 
 'When the auto threshold button is clicked, disable the scroll bar and text box and calculate the optimal value immediately
 Private Sub chkAutoThreshold_Click()
     
     If CBool(chkAutoThreshold.Value) Then
-        hsThreshold.Enabled = False
-        txtThreshold.Enabled = False
-        txtThreshold.Text = calculateOptimalThreshold(cboDither.ListIndex)
+        sltThreshold = calculateOptimalThreshold(cboDither.ListIndex)
+        sltThreshold.Enabled = False
     Else
-        hsThreshold.Enabled = True
-        txtThreshold.Enabled = True
+        sltThreshold.Enabled = True
     End If
     
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -261,17 +250,14 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
 
-    'Checking the threshold value to make sure it's valid
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max) = False Then
-        AutoSelectText txtThreshold
+    'Before processing, ensure the threshold value is valid
+    If sltThreshold.IsValid Then
+        Me.Visible = False
+        Process BWMaster, sltThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor
+        Unload Me
+    Else
         Exit Sub
     End If
-    
-    Me.Visible = False
-    
-    Process BWMaster, txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor
-    
-    Unload Me
     
 End Sub
 
@@ -291,8 +277,7 @@ Private Sub Form_Activate()
     cboDither.AddItem "Two-Row Sierra", 9
     cboDither.AddItem "Sierra Lite", 10
     cboDither.AddItem "Atkinson / Classic Macintosh", 11
-    cboDither.ListIndex = 11
-    'DoEvents
+    cboDither.ListIndex = 6
         
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -300,23 +285,12 @@ Private Sub Form_Activate()
     setHandCursor picBWColor(1)
     
     'Draw the preview
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
+    updatePreview
     
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub hsThreshold_Change()
-    copyToTextBoxI txtThreshold, hsThreshold.Value
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
-End Sub
-
-Private Sub hsThreshold_Scroll()
-    chkAutoThreshold.Value = vbUnchecked
-    copyToTextBoxI txtThreshold, hsThreshold.Value
-    masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
 End Sub
 
 'Allow the user to select a custom color for each
@@ -330,13 +304,9 @@ Private Sub picBWColor_Click(Index As Integer)
     
     If comDlg.VBChooseColor(newColor, True, True, False, Me.hWnd) Then
         picBWColor(Index).backColor = newColor
-        masterBlackWhiteConversion txtThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
+        updatePreview
     End If
     
-End Sub
-
-Private Sub txtThreshold_GotFocus()
-    AutoSelectText txtThreshold
 End Sub
 
 'Calculate the optimal threshold for the current image
@@ -980,10 +950,11 @@ NextDitheredPixel:     Next j
 
 End Sub
 
-Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
-    
-    chkAutoThreshold.Value = vbUnchecked
-    textValidate txtThreshold
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = Val(txtThreshold)
-        
+Private Sub sltThreshold_Change()
+    If CBool(chkAutoThreshold.Value) Then chkAutoThreshold.Value = vbUnchecked
+    updatePreview
+End Sub
+
+Private Sub updatePreview()
+    masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
 End Sub
