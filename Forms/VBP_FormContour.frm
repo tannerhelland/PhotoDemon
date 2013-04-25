@@ -27,8 +27,8 @@ Begin VB.Form FormContour
    Begin PhotoDemon.smartCheckBox chkBlackBackground 
       Height          =   570
       Left            =   6120
-      TabIndex        =   8
-      Top             =   3000
+      TabIndex        =   6
+      Top             =   3120
       Width           =   2670
       _ExtentX        =   4710
       _ExtentY        =   1005
@@ -43,35 +43,6 @@ Begin VB.Form FormContour
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      TabIndex        =   6
-      Text            =   "1"
-      Top             =   2340
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   30
-      Min             =   1
-      TabIndex        =   5
-      Top             =   2400
-      Value           =   1
-      Width           =   4935
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -103,7 +74,7 @@ Begin VB.Form FormContour
    Begin PhotoDemon.smartCheckBox chkSmoothing 
       Height          =   570
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   3720
       Width           =   3030
       _ExtentX        =   5345
@@ -113,6 +84,27 @@ Begin VB.Form FormContour
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltThickness 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   2400
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   30
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -136,7 +128,7 @@ Begin VB.Form FormContour
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   2040
       Width           =   1050
    End
@@ -177,21 +169,14 @@ Attribute VB_Exposed = False
 'Trace Contour (Outline) Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/Feb/13
-'Last updated: 15/Feb/13
-'Last update: initial build, though previously a simplified version of this was available from
-'              Effects -> Edges -> Find Edges -> Artistic Contour
+'Last updated: 25/April/13
+'Last update: simplified code by relying on new slider/text custom control
 '
-'This is a heavily optimized "extreme rank" function.  An accumulation technique is used instead of the standard sliding
-' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
-' This allows the algorithm to perform extremely well, despite being written in pure VB.
-'
-'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before applying any
-' filter of a large radius (> 20).
-'
-'Extreme rank is a function of my own creation.  Basically, it performs both a minimum and a maxmimum rank calculation,
-' and then it sets the pixel to whichever value is further from the current one.  This leads to an odd cut-out or stencil
-' look unlike any other filter I've seen.  I'm not sure how much utility such a function provides, but it's fun so I
-' include it.  :)
+'Contour tracing is performed by "stacking" a series of filters together:
+' 1) Gaussian blur to smooth out fine details
+' 2) Median to unify colors and round out edges
+' 3) Edge detection
+' 4) Auto white balance (as the original edge detection function is quite dark)
 '
 '***************************************************************************
 
@@ -216,15 +201,12 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Validate text box entries
-    If Not EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
-        AutoSelectText txtRadius
-        Exit Sub
+    If sltThickness.IsValid Then
+        Me.Visible = False
+        Process Contour, sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value)
+        Unload Me
     End If
-    
-    Me.Visible = False
-    Process Contour, hsRadius.Value, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value)
-    Unload Me
-    
+        
 End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
@@ -326,30 +308,15 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'These routines keep the scroll bar and text box values in sync
-Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
 Private Sub chkBlackBackground_Click()
     updatePreview
 End Sub
 
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
-End Sub
-
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
+Private Sub sltThickness_Change()
+    updatePreview
 End Sub
 
 Private Sub updatePreview()
-    If allowPreview Then TraceContour hsRadius.Value, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value), True, fxPreview
+    If allowPreview Then TraceContour sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value), True, fxPreview
 End Sub
+
