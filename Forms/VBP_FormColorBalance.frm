@@ -42,101 +42,74 @@ Begin VB.Form FormColorBalance
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.TextBox txtBlue 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   10
-      Text            =   "0"
-      Top             =   3435
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsBlue 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   8
-      Top             =   3480
-      Width           =   4935
-   End
-   Begin VB.TextBox txtGreen 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   7
-      Text            =   "0"
-      Top             =   2475
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsGreen 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   5
-      Top             =   2520
-      Width           =   4935
-   End
-   Begin VB.TextBox txtRed 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   4
-      Text            =   "0"
-      Top             =   1515
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsRed 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   2
-      Top             =   1560
-      Width           =   4935
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   12
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+   End
+   Begin PhotoDemon.sliderTextCombo sltRed 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   1440
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltGreen 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   2400
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltBlue 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   3360
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -154,7 +127,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   15
+      TabIndex        =   9
       Top             =   3840
       Width           =   675
    End
@@ -174,7 +147,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   14
+      TabIndex        =   8
       Top             =   2880
       Width           =   915
    End
@@ -194,14 +167,14 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   13
+      TabIndex        =   7
       Top             =   1920
       Width           =   480
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   11
+      TabIndex        =   5
       Top             =   5760
       Width           =   12135
    End
@@ -221,8 +194,8 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   10350
-      TabIndex        =   9
+      Left            =   10215
+      TabIndex        =   4
       Top             =   3840
       Width           =   450
    End
@@ -242,8 +215,8 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   10230
-      TabIndex        =   6
+      Left            =   10080
+      TabIndex        =   3
       Top             =   2880
       Width           =   600
    End
@@ -263,8 +236,8 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   10455
-      TabIndex        =   3
+      Left            =   10320
+      TabIndex        =   2
       Top             =   1920
       Width           =   345
    End
@@ -278,8 +251,9 @@ Attribute VB_Exposed = False
 'Color Balance Adjustment Form
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 17/February/13
-'Last update: remove "preserve luminance" slider.  The image always looks better with luminance preserved.
+'Last updated: 25/February/13
+'Last update: Rewrote the color balance formula so that max values (+/-100) result in a completely colorized image.
+'              Also rewrote the algorithm using look-up tables for improved performance.
 '
 'Fairly simple and standard color adjustment form.  Layout and feature set derived from comparable tools
 ' in GIMP and Photoshop.
@@ -297,26 +271,11 @@ End Sub
 Private Sub cmdOK_Click()
     
     'Validate all textbox entries
-    If Not EntryValid(txtRed, hsRed.Min, hsRed.Max, True, True) Then
-        AutoSelectText txtRed
-        Exit Sub
+    If sltRed.IsValid And sltGreen.IsValid And sltBlue.IsValid Then
+        Me.Visible = False
+        Process AdjustColorBalance, sltRed, sltGreen, sltBlue, True
+        Unload Me
     End If
-    
-    'Validate all textbox entries
-    If Not EntryValid(txtGreen, hsGreen.Min, hsGreen.Max, True, True) Then
-        AutoSelectText txtGreen
-        Exit Sub
-    End If
-    
-    'Validate all textbox entries
-    If Not EntryValid(txtBlue, hsBlue.Min, hsBlue.Max, True, True) Then
-        AutoSelectText txtBlue
-        Exit Sub
-    End If
-    
-    Me.Visible = False
-    Process AdjustColorBalance, CLng(hsRed), CLng(hsGreen), CLng(hsBlue), True
-    Unload Me
     
 End Sub
 
@@ -332,26 +291,20 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     bModifier = 0
     
     'Now, Build actual RGB modifiers based off the values provided
-    If rVal < 0 Then
-        gModifier = gModifier + -rVal
-        bModifier = bModifier + -rVal
-    Else
-        rModifier = rModifier + rVal
-    End If
-   
-    If gVal < 0 Then
-        rModifier = rModifier + -gVal
-        bModifier = bModifier + -gVal
-    Else
-        gModifier = gModifier + gVal
-    End If
+    gModifier = gModifier - rVal
+    bModifier = bModifier - rVal
+    rModifier = rModifier + rVal
     
-    If bVal < 0 Then
-        rModifier = rModifier + -bVal
-        gModifier = gModifier + -bVal
-    Else
-        bModifier = bModifier + bVal
-    End If
+    rModifier = rModifier - gVal
+    bModifier = bModifier - gVal
+    gModifier = gModifier + gVal
+    
+    rModifier = rModifier - bVal
+    gModifier = gModifier - bVal
+    bModifier = bModifier + bVal
+    
+    'Because these modifiers are constant throughout the image, we can build look-up tables for them
+    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -381,6 +334,27 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     Dim r As Long, g As Long, b As Long
     Dim h As Double, s As Double, l As Double
     
+    'Populate the lookup tables
+    For x = 0 To 255
+        
+        'Apply the modifiers
+        r = x + rModifier
+        g = x + gModifier
+        b = x + bModifier
+        
+        If r > 255 Then r = 255
+        If r < 0 Then r = 0
+        If g > 255 Then g = 255
+        If g < 0 Then g = 0
+        If b > 255 Then b = 255
+        If b < 0 Then b = 0
+        
+        rLookup(x) = r
+        gLookup(x) = g
+        bLookup(x) = b
+        
+    Next x
+    
     Dim origLuminance As Double
         
     'Loop through each pixel in the image, converting values as we go
@@ -396,17 +370,9 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         'Get the original luminance
         origLuminance = getLuminance(r, g, b) / 255
         
-        'Apply the modifiers
-        r = r + rModifier
-        g = g + gModifier
-        b = b + bModifier
-        
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
-        If g > 255 Then g = 255
-        If g < 0 Then g = 0
-        If b > 255 Then b = 255
-        If b < 0 Then b = 0
+        r = rLookup(r)
+        g = gLookup(g)
+        b = bLookup(b)
         
         'If the user doesn't want us to maintain luminance, our work is done - assign the new values.
         'If they do want us to maintain luminance, things are a bit trickier.  We need to convert our values to
@@ -455,64 +421,18 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'When the hue scroll bar is changed, redraw the preview
-Private Sub hsRed_Change()
-    copyToTextBoxI txtRed, hsRed.Value
+Private Sub sltBlue_Change()
     updatePreview
 End Sub
 
-Private Sub hsRed_Scroll()
-    copyToTextBoxI txtRed, hsRed.Value
+Private Sub sltGreen_Change()
     updatePreview
 End Sub
 
-Private Sub hsBlue_Change()
-    copyToTextBoxI txtBlue, hsBlue.Value
+Private Sub sltRed_Change()
     updatePreview
-End Sub
-
-Private Sub hsBlue_Scroll()
-    copyToTextBoxI txtBlue, hsBlue.Value
-    updatePreview
-End Sub
-
-Private Sub hsGreen_Change()
-    copyToTextBoxI txtGreen, hsGreen.Value
-    updatePreview
-End Sub
-
-Private Sub hsGreen_Scroll()
-    copyToTextBoxI txtGreen, hsGreen.Value
-    updatePreview
-End Sub
-
-Private Sub txtRed_GotFocus()
-    AutoSelectText txtRed
-End Sub
-
-Private Sub txtRed_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRed, True
-    If EntryValid(txtRed, hsRed.Min, hsRed.Max, False, False) Then hsRed.Value = Val(txtRed)
-End Sub
-
-Private Sub txtBlue_GotFocus()
-    AutoSelectText txtBlue
-End Sub
-
-Private Sub txtBlue_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtBlue, True
-    If EntryValid(txtBlue, hsBlue.Min, hsBlue.Max, False, False) Then hsBlue.Value = Val(txtBlue)
-End Sub
-
-Private Sub txtGreen_GotFocus()
-    AutoSelectText txtGreen
-End Sub
-
-Private Sub txtGreen_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtGreen, True
-    If EntryValid(txtGreen, hsGreen.Min, hsGreen.Max, False, False) Then hsGreen.Value = Val(txtGreen)
 End Sub
 
 Private Sub updatePreview()
-    ApplyColorBalance hsRed, hsGreen, hsBlue, True, True, fxPreview
+    ApplyColorBalance sltRed, sltGreen, sltBlue, True, True, fxPreview
 End Sub
