@@ -90,6 +90,1125 @@ Begin VB.Form FormBatchWizard
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   2
+      Left            =   3480
+      ScaleHeight     =   7455
+      ScaleWidth      =   11775
+      TabIndex        =   10
+      Top             =   720
+      Width           =   11775
+      Begin VB.ComboBox cmbOutputFormat 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   720
+         Style           =   2  'Dropdown List
+         TabIndex        =   39
+         Top             =   1920
+         Width           =   7335
+      End
+      Begin PhotoDemon.smartOptionButton optFormat 
+         Height          =   360
+         Index           =   0
+         Left            =   120
+         TabIndex        =   36
+         Top             =   120
+         Width           =   3795
+         _ExtentX        =   6694
+         _ExtentY        =   635
+         Caption         =   "keep images in their original format"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optFormat 
+         Height          =   360
+         Index           =   1
+         Left            =   120
+         TabIndex        =   37
+         Top             =   1320
+         Width           =   3810
+         _ExtentX        =   6720
+         _ExtentY        =   635
+         Caption         =   "convert all images to a new format"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   5
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   80
+         TabStop         =   0   'False
+         Tag             =   "JPG - Joint Photographic Experts Group"
+         Top             =   2520
+         Width           =   10935
+         Begin PhotoDemon.sliderTextCombo sltQuality 
+            Height          =   495
+            Left            =   2640
+            TabIndex        =   102
+            Top             =   945
+            Width           =   5895
+            _ExtentX        =   10398
+            _ExtentY        =   873
+            Min             =   1
+            Max             =   99
+            Value           =   90
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.ComboBox cmbSubsample 
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   840
+            Style           =   2  'Dropdown List
+            TabIndex        =   89
+            ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+            Top             =   3840
+            Width           =   6735
+         End
+         Begin VB.ComboBox cmbJPEGSaveQuality 
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   480
+            Style           =   2  'Dropdown List
+            TabIndex        =   83
+            Top             =   990
+            Width           =   2055
+         End
+         Begin PhotoDemon.smartCheckBox chkOptimize 
+            Height          =   480
+            Left            =   480
+            TabIndex        =   82
+            Top             =   1920
+            Width           =   2805
+            _ExtentX        =   4948
+            _ExtentY        =   847
+            Caption         =   "optimize compression tables"
+            Value           =   1
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.smartCheckBox chkThumbnail 
+            Height          =   480
+            Left            =   480
+            TabIndex        =   84
+            Top             =   2400
+            Width           =   2445
+            _ExtentX        =   4313
+            _ExtentY        =   847
+            Caption         =   "embed thumbnail image"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.smartCheckBox chkProgressive 
+            Height          =   480
+            Left            =   480
+            TabIndex        =   85
+            Top             =   2880
+            Width           =   2550
+            _ExtentX        =   4498
+            _ExtentY        =   847
+            Caption         =   "use progressive encoding"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.smartCheckBox chkSubsample 
+            Height          =   480
+            Left            =   480
+            TabIndex        =   86
+            ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+            Top             =   3360
+            Width           =   2565
+            _ExtentX        =   4524
+            _ExtentY        =   847
+            Caption         =   "use specific subsampling:"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "image quality:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   0
+            Left            =   240
+            TabIndex        =   88
+            Top             =   600
+            Width           =   1215
+         End
+         Begin VB.Label lblAdvancedJpegSettings 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "advanced JPEG settings:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Left            =   240
+            TabIndex        =   87
+            Top             =   1560
+            Width           =   2070
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "JPEG options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   0
+            Left            =   120
+            TabIndex        =   81
+            Top             =   120
+            Width           =   1395
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   1
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   66
+         TabStop         =   0   'False
+         Tag             =   "PNG - Portable Network Graphic"
+         Top             =   2520
+         Width           =   10935
+         Begin VB.HScrollBar hsPNGCompression 
+            Height          =   330
+            Left            =   360
+            Max             =   9
+            TabIndex        =   69
+            Top             =   1080
+            Value           =   9
+            Width           =   7095
+         End
+         Begin PhotoDemon.smartCheckBox chkPNGBackground 
+            Height          =   480
+            Left            =   360
+            TabIndex        =   67
+            Top             =   2520
+            Width           =   4830
+            _ExtentX        =   8520
+            _ExtentY        =   847
+            Caption         =   "preserve file's original background color, if available"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
+            Height          =   480
+            Left            =   360
+            TabIndex        =   68
+            Top             =   2040
+            Width           =   2430
+            _ExtentX        =   4286
+            _ExtentY        =   847
+            Caption         =   "use interlacing (Adam7)"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "PNG options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   20
+            Left            =   120
+            TabIndex        =   73
+            Top             =   120
+            Width           =   1320
+         End
+         Begin VB.Label lblFileStuff 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "when saving, compress PNG files at the following level:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   1
+            Left            =   360
+            TabIndex        =   72
+            Top             =   720
+            Width           =   4725
+         End
+         Begin VB.Label lblPNGCompression 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "no compression"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Index           =   0
+            Left            =   600
+            TabIndex        =   71
+            Top             =   1560
+            Width           =   1110
+         End
+         Begin VB.Label lblPNGCompression 
+            Alignment       =   1  'Right Justify
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "maximum compression"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Index           =   1
+            Left            =   5625
+            TabIndex        =   70
+            Top             =   1560
+            Width           =   1590
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   6
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   737
+         TabIndex        =   90
+         Tag             =   "GIF - Graphics Interchange Format"
+         Top             =   2520
+         Width           =   11055
+         Begin PhotoDemon.sliderTextCombo sltThreshold 
+            Height          =   495
+            Left            =   360
+            TabIndex        =   103
+            Top             =   1080
+            Width           =   8055
+            _ExtentX        =   14208
+            _ExtentY        =   873
+            Max             =   255
+            Value           =   127
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblGIFExplanation 
+            BackStyle       =   0  'Transparent
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   1920
+            Left            =   480
+            TabIndex        =   95
+            Top             =   2280
+            Width           =   9015
+            WordWrap        =   -1  'True
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "GIF options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   1
+            Left            =   120
+            TabIndex        =   94
+            Top             =   120
+            Width           =   1230
+         End
+         Begin VB.Label lblTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "transparency threshold for images with complex (32bpp) alpha channels:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   1
+            Left            =   360
+            TabIndex        =   93
+            Top             =   720
+            Width           =   6270
+         End
+         Begin VB.Label lblAfter 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "no transparency "
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Index           =   0
+            Left            =   720
+            TabIndex        =   92
+            Top             =   1680
+            Width           =   1230
+         End
+         Begin VB.Label Label2 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "maximum transparency "
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Left            =   5520
+            TabIndex        =   91
+            Top             =   1680
+            Width           =   1710
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   2
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   737
+         TabIndex        =   62
+         Tag             =   "PPM - Portable Pixel Map"
+         Top             =   2520
+         Width           =   11055
+         Begin VB.ComboBox cmbPPMFormat 
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   480
+            Style           =   2  'Dropdown List
+            TabIndex        =   63
+            Top             =   960
+            Width           =   6975
+         End
+         Begin VB.Label lblPPMEncoding 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "export PPM files using:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Left            =   240
+            TabIndex        =   65
+            Top             =   600
+            Width           =   1950
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "PPM options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   12
+            Left            =   120
+            TabIndex        =   64
+            Top             =   120
+            Width           =   1305
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   4
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   721
+         TabIndex        =   57
+         Tag             =   "TIFF - Tagged Image File Format"
+         Top             =   2520
+         Width           =   10815
+         Begin VB.ComboBox cmbTIFFCompression 
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   360
+            Style           =   2  'Dropdown List
+            TabIndex        =   59
+            Top             =   960
+            Width           =   7095
+         End
+         Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
+            Height          =   480
+            Left            =   360
+            TabIndex        =   58
+            Top             =   1560
+            Width           =   4230
+            _ExtentX        =   7461
+            _ExtentY        =   847
+            Caption         =   " save TIFFs as separated CMYK (for printing)"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblFileStuff 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "when saving, compress TIFFs using:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   0
+            Left            =   360
+            TabIndex        =   61
+            Top             =   645
+            Width           =   3135
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "TIFF options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   7
+            Left            =   120
+            TabIndex        =   60
+            Top             =   120
+            Width           =   1335
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   7
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   705
+         TabIndex        =   96
+         Tag             =   "JP2 - JPEG 2000"
+         Top             =   2520
+         Width           =   10575
+         Begin PhotoDemon.sliderTextCombo sltJP2Quality 
+            Height          =   495
+            Left            =   480
+            TabIndex        =   104
+            Top             =   1650
+            Width           =   7935
+            _ExtentX        =   13996
+            _ExtentY        =   873
+            Min             =   1
+            Max             =   256
+            Value           =   16
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.ComboBox cmbJP2SaveQuality 
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00800000&
+            Height          =   360
+            Left            =   600
+            Style           =   2  'Dropdown List
+            TabIndex        =   98
+            Top             =   1110
+            Width           =   6855
+         End
+         Begin VB.Label lblTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "image compression ratio:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   2
+            Left            =   360
+            TabIndex        =   101
+            Top             =   720
+            Width           =   2190
+         End
+         Begin VB.Label lblAfter 
+            Alignment       =   1  'Right Justify
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "low quality, small file"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Index           =   1
+            Left            =   5730
+            TabIndex        =   100
+            Top             =   2160
+            Width           =   1470
+         End
+         Begin VB.Label lblBefore 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "high quality, large file"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   -1  'True
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   195
+            Left            =   840
+            TabIndex        =   99
+            Top             =   2160
+            Width           =   1545
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "JPEG-2000 options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   2
+            Left            =   120
+            TabIndex        =   97
+            Top             =   120
+            Width           =   2025
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4575
+         Index           =   0
+         Left            =   600
+         ScaleHeight     =   305
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   705
+         TabIndex        =   77
+         Tag             =   "BMP - Windows Bitmap"
+         Top             =   2520
+         Width           =   10575
+         Begin PhotoDemon.smartCheckBox chkBMPRLE 
+            Height          =   480
+            Left            =   360
+            TabIndex        =   78
+            Top             =   600
+            Width           =   4890
+            _ExtentX        =   8625
+            _ExtentY        =   847
+            Caption         =   "use RLE compression when saving 8bpp BMP images"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "BMP options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   19
+            Left            =   120
+            TabIndex        =   79
+            Top             =   120
+            Width           =   1305
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   4695
+         Index           =   3
+         Left            =   600
+         ScaleHeight     =   313
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   713
+         TabIndex        =   74
+         Tag             =   "TGA - Truevision (TARGA)"
+         Top             =   2520
+         Width           =   10695
+         Begin PhotoDemon.smartCheckBox chkTGARLE 
+            Height          =   480
+            Left            =   360
+            TabIndex        =   75
+            Top             =   600
+            Width           =   4410
+            _ExtentX        =   7779
+            _ExtentY        =   847
+            Caption         =   "use RLE compression when saving TGA images"
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "TGA options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   21
+            Left            =   120
+            TabIndex        =   76
+            Top             =   120
+            Width           =   1335
+         End
+      End
+      Begin VB.Label lblExplanationFormat 
+         BackStyle       =   0  'Transparent
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   600
+         Left            =   720
+         TabIndex        =   38
+         Top             =   540
+         Width           =   10980
+         WordWrap        =   -1  'True
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   1
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   9
+      Top             =   720
+      Width           =   11775
+      Begin VB.CommandButton cmdSelectMacro 
+         Caption         =   "Select macro file..."
+         Height          =   525
+         Left            =   8400
+         TabIndex        =   34
+         Top             =   1440
+         Width           =   3015
+      End
+      Begin VB.TextBox txtMacro 
+         Enabled         =   0   'False
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   315
+         Left            =   720
+         TabIndex        =   33
+         Text            =   "no macro selected"
+         Top             =   1560
+         Width           =   7455
+      End
+      Begin PhotoDemon.smartOptionButton optActions 
+         Height          =   360
+         Index           =   0
+         Left            =   120
+         TabIndex        =   30
+         Top             =   120
+         Width           =   4110
+         _ExtentX        =   7250
+         _ExtentY        =   635
+         Caption         =   "do not apply any photo editing actions"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optActions 
+         Height          =   360
+         Index           =   1
+         Left            =   120
+         TabIndex        =   32
+         Top             =   1080
+         Width           =   4140
+         _ExtentX        =   7303
+         _ExtentY        =   635
+         Caption         =   "apply a recorded macro to the images"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblExplanation 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "if you only want to rename images or change image formats, use this option "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   1
+         Left            =   720
+         TabIndex        =   31
+         Top             =   540
+         Width           =   6615
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
       Height          =   7500
       Index           =   0
       Left            =   3480
@@ -684,1156 +1803,6 @@ Begin VB.Form FormBatchWizard
          Width           =   3030
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   7455
-      Index           =   2
-      Left            =   3480
-      ScaleHeight     =   7455
-      ScaleWidth      =   11775
-      TabIndex        =   10
-      Top             =   720
-      Width           =   11775
-      Begin VB.ComboBox cmbOutputFormat 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   720
-         Style           =   2  'Dropdown List
-         TabIndex        =   39
-         Top             =   1920
-         Width           =   7335
-      End
-      Begin PhotoDemon.smartOptionButton optFormat 
-         Height          =   360
-         Index           =   0
-         Left            =   120
-         TabIndex        =   36
-         Top             =   120
-         Width           =   3795
-         _ExtentX        =   6694
-         _ExtentY        =   635
-         Caption         =   "keep images in their original format"
-         Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartOptionButton optFormat 
-         Height          =   360
-         Index           =   1
-         Left            =   120
-         TabIndex        =   37
-         Top             =   1320
-         Width           =   3810
-         _ExtentX        =   6720
-         _ExtentY        =   635
-         Caption         =   "convert all images to a new format"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   5
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
-         TabIndex        =   80
-         TabStop         =   0   'False
-         Tag             =   "JPG - Joint Photographic Experts Group"
-         Top             =   2520
-         Width           =   10935
-         Begin VB.ComboBox cmbSubsample 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   840
-            Style           =   2  'Dropdown List
-            TabIndex        =   91
-            ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-            Top             =   3840
-            Width           =   6615
-         End
-         Begin VB.TextBox txtQuality 
-            Alignment       =   2  'Center
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   7560
-            MaxLength       =   2
-            TabIndex        =   85
-            Text            =   "90"
-            Top             =   1005
-            Width           =   735
-         End
-         Begin VB.ComboBox cmbJPEGSaveQuality 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   480
-            Style           =   2  'Dropdown List
-            TabIndex        =   84
-            Top             =   990
-            Width           =   2055
-         End
-         Begin VB.HScrollBar hsQuality 
-            Height          =   330
-            LargeChange     =   5
-            Left            =   2640
-            Max             =   99
-            Min             =   1
-            TabIndex        =   83
-            TabStop         =   0   'False
-            Top             =   1005
-            Value           =   90
-            Width           =   4785
-         End
-         Begin PhotoDemon.smartCheckBox chkOptimize 
-            Height          =   480
-            Left            =   480
-            TabIndex        =   82
-            Top             =   1920
-            Width           =   2805
-            _ExtentX        =   4948
-            _ExtentY        =   847
-            Caption         =   "optimize compression tables"
-            Value           =   1
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.smartCheckBox chkThumbnail 
-            Height          =   480
-            Left            =   480
-            TabIndex        =   86
-            Top             =   2400
-            Width           =   2445
-            _ExtentX        =   4313
-            _ExtentY        =   847
-            Caption         =   "embed thumbnail image"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.smartCheckBox chkProgressive 
-            Height          =   480
-            Left            =   480
-            TabIndex        =   87
-            Top             =   2880
-            Width           =   2550
-            _ExtentX        =   4498
-            _ExtentY        =   847
-            Caption         =   "use progressive encoding"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.smartCheckBox chkSubsample 
-            Height          =   480
-            Left            =   480
-            TabIndex        =   88
-            ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-            Top             =   3360
-            Width           =   2565
-            _ExtentX        =   4524
-            _ExtentY        =   847
-            Caption         =   "use specific subsampling:"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.Label lblTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "image quality:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Index           =   0
-            Left            =   240
-            TabIndex        =   90
-            Top             =   600
-            Width           =   1215
-         End
-         Begin VB.Label lblAdvancedJpegSettings 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "advanced JPEG settings:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Left            =   240
-            TabIndex        =   89
-            Top             =   1560
-            Width           =   2070
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "JPEG options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   0
-            Left            =   120
-            TabIndex        =   81
-            Top             =   120
-            Width           =   1395
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   1
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
-         TabIndex        =   66
-         TabStop         =   0   'False
-         Tag             =   "PNG - Portable Network Graphic"
-         Top             =   2520
-         Width           =   10935
-         Begin VB.HScrollBar hsPNGCompression 
-            Height          =   330
-            Left            =   360
-            Max             =   9
-            TabIndex        =   69
-            Top             =   1080
-            Value           =   9
-            Width           =   7095
-         End
-         Begin PhotoDemon.smartCheckBox chkPNGBackground 
-            Height          =   480
-            Left            =   360
-            TabIndex        =   67
-            Top             =   2520
-            Width           =   4830
-            _ExtentX        =   8520
-            _ExtentY        =   847
-            Caption         =   "preserve file's original background color, if available"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
-            Height          =   480
-            Left            =   360
-            TabIndex        =   68
-            Top             =   2040
-            Width           =   2430
-            _ExtentX        =   4286
-            _ExtentY        =   847
-            Caption         =   "use interlacing (Adam7)"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "PNG options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   20
-            Left            =   120
-            TabIndex        =   73
-            Top             =   120
-            Width           =   1320
-         End
-         Begin VB.Label lblFileStuff 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "when saving, compress PNG files at the following level:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Index           =   1
-            Left            =   360
-            TabIndex        =   72
-            Top             =   720
-            Width           =   4725
-         End
-         Begin VB.Label lblPNGCompression 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "no compression"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Index           =   0
-            Left            =   600
-            TabIndex        =   71
-            Top             =   1560
-            Width           =   1110
-         End
-         Begin VB.Label lblPNGCompression 
-            Alignment       =   1  'Right Justify
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "maximum compression"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Index           =   1
-            Left            =   5625
-            TabIndex        =   70
-            Top             =   1560
-            Width           =   1590
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   6
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   737
-         TabIndex        =   92
-         Tag             =   "GIF - Graphics Interchange Format"
-         Top             =   2520
-         Width           =   11055
-         Begin VB.TextBox txtGIFTransparency 
-            Alignment       =   2  'Center
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   7560
-            MaxLength       =   3
-            TabIndex        =   99
-            Text            =   "127"
-            Top             =   1215
-            Width           =   735
-         End
-         Begin VB.HScrollBar hsThreshold 
-            Height          =   375
-            Left            =   480
-            Max             =   255
-            TabIndex        =   93
-            Top             =   1200
-            Value           =   127
-            Width           =   6975
-         End
-         Begin VB.Label lblGIFExplanation 
-            BackStyle       =   0  'Transparent
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   1920
-            Left            =   480
-            TabIndex        =   98
-            Top             =   2280
-            Width           =   9015
-            WordWrap        =   -1  'True
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "GIF options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   1
-            Left            =   120
-            TabIndex        =   97
-            Top             =   120
-            Width           =   1230
-         End
-         Begin VB.Label lblTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "transparency threshold for images with complex (32bpp) alpha channels:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Index           =   1
-            Left            =   360
-            TabIndex        =   96
-            Top             =   720
-            Width           =   6270
-         End
-         Begin VB.Label lblAfter 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "no transparency "
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Index           =   0
-            Left            =   720
-            TabIndex        =   95
-            Top             =   1680
-            Width           =   1230
-         End
-         Begin VB.Label Label2 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "maximum transparency "
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Left            =   5520
-            TabIndex        =   94
-            Top             =   1680
-            Width           =   1710
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   2
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   737
-         TabIndex        =   62
-         Tag             =   "PPM - Portable Pixel Map"
-         Top             =   2520
-         Width           =   11055
-         Begin VB.ComboBox cmbPPMFormat 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   480
-            Style           =   2  'Dropdown List
-            TabIndex        =   63
-            Top             =   960
-            Width           =   6975
-         End
-         Begin VB.Label lblPPMEncoding 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "export PPM files using:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Left            =   240
-            TabIndex        =   65
-            Top             =   600
-            Width           =   1950
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "PPM options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   12
-            Left            =   120
-            TabIndex        =   64
-            Top             =   120
-            Width           =   1305
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   4
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   721
-         TabIndex        =   57
-         Tag             =   "TIFF - Tagged Image File Format"
-         Top             =   2520
-         Width           =   10815
-         Begin VB.ComboBox cmbTIFFCompression 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   360
-            Style           =   2  'Dropdown List
-            TabIndex        =   59
-            Top             =   960
-            Width           =   7095
-         End
-         Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
-            Height          =   480
-            Left            =   360
-            TabIndex        =   58
-            Top             =   1560
-            Width           =   4230
-            _ExtentX        =   7461
-            _ExtentY        =   847
-            Caption         =   " save TIFFs as separated CMYK (for printing)"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.Label lblFileStuff 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "when saving, compress TIFFs using:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Index           =   0
-            Left            =   360
-            TabIndex        =   61
-            Top             =   645
-            Width           =   3135
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "TIFF options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   7
-            Left            =   120
-            TabIndex        =   60
-            Top             =   120
-            Width           =   1335
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   7
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   705
-         TabIndex        =   100
-         Tag             =   "JP2 - JPEG 2000"
-         Top             =   2520
-         Width           =   10575
-         Begin VB.TextBox txtJP2Quality 
-            Alignment       =   2  'Center
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   7560
-            MaxLength       =   3
-            TabIndex        =   104
-            Text            =   "90"
-            Top             =   1710
-            Width           =   735
-         End
-         Begin VB.ComboBox cmbJP2SaveQuality 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   600
-            Style           =   2  'Dropdown List
-            TabIndex        =   103
-            Top             =   1110
-            Width           =   6855
-         End
-         Begin VB.HScrollBar hsJP2Quality 
-            Height          =   330
-            LargeChange     =   5
-            Left            =   600
-            Max             =   256
-            Min             =   1
-            TabIndex        =   102
-            TabStop         =   0   'False
-            Top             =   1725
-            Value           =   16
-            Width           =   6840
-         End
-         Begin VB.Label lblTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "image compression ratio:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Index           =   2
-            Left            =   360
-            TabIndex        =   107
-            Top             =   720
-            Width           =   2190
-         End
-         Begin VB.Label lblAfter 
-            Alignment       =   1  'Right Justify
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "low quality, small file"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Index           =   1
-            Left            =   5730
-            TabIndex        =   106
-            Top             =   2160
-            Width           =   1470
-         End
-         Begin VB.Label lblBefore 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "high quality, large file"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Left            =   840
-            TabIndex        =   105
-            Top             =   2160
-            Width           =   1545
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "JPEG-2000 options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   2
-            Left            =   120
-            TabIndex        =   101
-            Top             =   120
-            Width           =   2025
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4575
-         Index           =   0
-         Left            =   600
-         ScaleHeight     =   305
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   705
-         TabIndex        =   77
-         Tag             =   "BMP - Windows Bitmap"
-         Top             =   2520
-         Width           =   10575
-         Begin PhotoDemon.smartCheckBox chkBMPRLE 
-            Height          =   480
-            Left            =   360
-            TabIndex        =   78
-            Top             =   600
-            Width           =   4890
-            _ExtentX        =   8625
-            _ExtentY        =   847
-            Caption         =   "use RLE compression when saving 8bpp BMP images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "BMP options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   19
-            Left            =   120
-            TabIndex        =   79
-            Top             =   120
-            Width           =   1305
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   4695
-         Index           =   3
-         Left            =   600
-         ScaleHeight     =   313
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   713
-         TabIndex        =   74
-         Tag             =   "TGA - Truevision (TARGA)"
-         Top             =   2520
-         Width           =   10695
-         Begin PhotoDemon.smartCheckBox chkTGARLE 
-            Height          =   480
-            Left            =   360
-            TabIndex        =   75
-            Top             =   600
-            Width           =   4410
-            _ExtentX        =   7779
-            _ExtentY        =   847
-            Caption         =   "use RLE compression when saving TGA images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "TGA options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   21
-            Left            =   120
-            TabIndex        =   76
-            Top             =   120
-            Width           =   1335
-         End
-      End
-      Begin VB.Label lblExplanationFormat 
-         BackStyle       =   0  'Transparent
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   600
-         Left            =   720
-         TabIndex        =   38
-         Top             =   540
-         Width           =   10980
-         WordWrap        =   -1  'True
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   7455
-      Index           =   1
-      Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
-      TabIndex        =   9
-      Top             =   720
-      Width           =   11775
-      Begin VB.CommandButton cmdSelectMacro 
-         Caption         =   "Select macro file..."
-         Height          =   525
-         Left            =   8400
-         TabIndex        =   34
-         Top             =   1440
-         Width           =   3015
-      End
-      Begin VB.TextBox txtMacro 
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   315
-         Left            =   720
-         TabIndex        =   33
-         Text            =   "no macro selected"
-         Top             =   1560
-         Width           =   7455
-      End
-      Begin PhotoDemon.smartOptionButton optActions 
-         Height          =   360
-         Index           =   0
-         Left            =   120
-         TabIndex        =   30
-         Top             =   120
-         Width           =   4110
-         _ExtentX        =   7250
-         _ExtentY        =   635
-         Caption         =   "do not apply any photo editing actions"
-         Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartOptionButton optActions 
-         Height          =   360
-         Index           =   1
-         Left            =   120
-         TabIndex        =   32
-         Top             =   1080
-         Width           =   4140
-         _ExtentX        =   7303
-         _ExtentY        =   635
-         Caption         =   "apply a recorded macro to the images"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblExplanation 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "if you only want to rename images or change image formats, use this option "
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   1
-         Left            =   720
-         TabIndex        =   31
-         Top             =   540
-         Width           =   6615
-      End
-   End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
       Index           =   0
@@ -1999,19 +1968,19 @@ Private Sub cmbJP2SaveQuality_Click()
     Select Case cmbJP2SaveQuality.ListIndex
         
         Case 0
-            hsJP2Quality.Value = 1
+            sltJP2Quality.Value = 1
                 
         Case 1
-            hsJP2Quality.Value = 16
+            sltJP2Quality.Value = 16
                 
         Case 2
-            hsJP2Quality = 32
+            sltJP2Quality = 32
                 
         Case 3
-            hsJP2Quality = 64
+            sltJP2Quality = 64
                 
         Case 4
-            hsJP2Quality = 256
+            sltJP2Quality = 256
                 
     End Select
 
@@ -2043,19 +2012,19 @@ Private Sub cmbJPEGSaveQuality_Click()
     Select Case cmbJPEGSaveQuality.ListIndex
         
         Case 0
-            hsQuality.Value = 99
+            sltQuality.Value = 99
                 
         Case 1
-            hsQuality.Value = 92
+            sltQuality.Value = 92
                 
         Case 2
-            hsQuality = 80
+            sltQuality = 80
                 
         Case 3
-            hsQuality = 65
+            sltQuality = 65
                 
         Case 4
-            hsQuality = 40
+            sltQuality = 40
                 
     End Select
     
@@ -2224,14 +2193,17 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         m_FormatParams = CStr(CBool(chkBMPRLE))
                     
                     Case FIF_GIF
-                        m_FormatParams = CStr(hsThreshold.Value)
+                        If sltThreshold.IsValid Then
+                            m_FormatParams = CStr(sltThreshold.Value)
+                        Else
+                            Exit Sub
+                        End If
                     
                     Case FIF_JP2
                             'Determine the compression ratio for the JPEG-2000 wavelet transformation
-                            If EntryValid(txtJP2Quality, hsJP2Quality.Min, hsJP2Quality.Max) Then
-                                m_FormatParams = CStr(hsJP2Quality.Value)
+                            If sltJP2Quality.IsValid Then
+                                m_FormatParams = CStr(sltQuality.Value)
                             Else
-                                AutoSelectText txtJP2Quality
                                 Exit Sub
                             End If
                     
@@ -2240,10 +2212,9 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         'JPEG options are complicated, on account of some params being required (quality) but others not (thumbnail, etc)
                         
                         'First, determine the compression quality for the quantization tables
-                        If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max) Then
-                            m_FormatParams = CStr(hsQuality)
+                        If sltQuality.IsValid Then
+                            m_FormatParams = CStr(sltQuality)
                         Else
-                            AutoSelectText txtQuality
                             Exit Sub
                         End If
                         
@@ -2641,10 +2612,7 @@ Private Sub Form_Load()
             cmbJP2SaveQuality.AddItem " Super compression, very poor image quality (256:1)", 4
             cmbJP2SaveQuality.AddItem " Custom ratio (X:1)", 5
             cmbJP2SaveQuality.ListIndex = 0
-            
-            'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-            If g_UseFancyFonts Then hsJP2Quality.Height = 23 Else hsJP2Quality.Height = 22
-        
+                    
         'JPEG
     
             'Populate the quality drop-down box with presets corresponding to the JPEG format
@@ -2681,9 +2649,6 @@ Private Sub Form_Load()
             chkOptimize.ToolTipText = g_Language.TranslateMessage("Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.")
             chkThumbnail.ToolTipText = g_Language.TranslateMessage("Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).")
             chkProgressive.ToolTipText = g_Language.TranslateMessage("Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.")
-                
-            'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-            If g_UseFancyFonts Then hsQuality.Height = 23 Else hsQuality.Height = 22
             
         'PPM export
         
@@ -2870,57 +2835,12 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub hsJP2Quality_Change()
-    txtJP2Quality.Text = hsJP2Quality.Value
+Private Sub sltJP2Quality_Change()
     updateJP2ComboBox
 End Sub
 
-Private Sub hsJP2Quality_Scroll()
-    txtJP2Quality.Text = hsJP2Quality.Value
-    updateJP2ComboBox
-End Sub
-
-Private Sub hsQuality_Change()
-    txtQuality.Text = hsQuality.Value
+Private Sub sltQuality_Change()
     updateJPEGComboBox
-End Sub
-
-Private Sub hsQuality_Scroll()
-    txtQuality.Text = hsQuality.Value
-    updateJPEGComboBox
-End Sub
-
-Private Sub hsThreshold_Change()
-    copyToTextBoxI txtGIFTransparency, hsThreshold.Value
-End Sub
-
-Private Sub hsThreshold_Scroll()
-    copyToTextBoxI txtGIFTransparency, hsThreshold.Value
-End Sub
-
-Private Sub txtGIFTransparency_GotFocus()
-    AutoSelectText txtGIFTransparency
-End Sub
-
-Private Sub txtGIFTransparency_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtGIFTransparency
-    If EntryValid(txtGIFTransparency, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = Val(txtGIFTransparency)
-End Sub
-
-Private Sub txtJP2Quality_Change()
-    If EntryValid(txtJP2Quality, hsJP2Quality.Min, hsJP2Quality.Max, False, False) Then hsJP2Quality.Value = Val(txtJP2Quality)
-End Sub
-
-Private Sub txtJP2Quality_GotFocus()
-    AutoSelectText txtJP2Quality
-End Sub
-
-Private Sub txtQuality_KeyUp(KeyCode As Integer, Shift As Integer)
-    If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max, False, False) Then hsQuality.Value = Val(txtQuality)
-End Sub
-
-Private Sub txtQuality_GotFocus()
-    AutoSelectText txtQuality
 End Sub
 
 Private Sub lstFiles_Click()
@@ -3050,12 +2970,12 @@ Private Sub updatePreview(ByVal srcImagePath As String)
                 tmpImage.mainLayer.eraseLayer
             Else
                 'Center the image in the sample area
-                Dim ImgWidth As Long, ImgHeight As Long
-                ImgWidth = tmpImage.mainLayer.getLayerWidth
-                ImgHeight = tmpImage.mainLayer.getLayerHeight
+                Dim imgWidth As Long, imgHeight As Long
+                imgWidth = tmpImage.mainLayer.getLayerWidth
+                imgHeight = tmpImage.mainLayer.getLayerHeight
                 picPreview.Picture = LoadPicture("")
                 If tmpImage.mainLayer.getLayerColorDepth = 32 Then tmpImage.mainLayer.compositeBackgroundColor
-                BitBlt picPreview.hDC, (picPreview.ScaleWidth \ 2) - (ImgWidth \ 2), (picPreview.ScaleHeight \ 2) - (ImgHeight \ 2), ImgWidth, ImgHeight, tmpImage.mainLayer.getLayerDC, 0, 0, vbSrcCopy
+                BitBlt picPreview.hDC, (picPreview.ScaleWidth \ 2) - (imgWidth \ 2), (picPreview.ScaleHeight \ 2) - (imgHeight \ 2), imgWidth, imgHeight, tmpImage.mainLayer.getLayerDC, 0, 0, vbSrcCopy
                 picPreview.Picture = picPreview.Image
                 picPreview.Refresh
             End If
@@ -3150,7 +3070,7 @@ End Sub
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync
 Private Sub updateJPEGComboBox()
     
-    Select Case hsQuality.Value
+    Select Case sltQuality.Value
         
         Case 40
             If cmbJPEGSaveQuality.ListIndex <> 4 Then cmbJPEGSaveQuality.ListIndex = 4
@@ -3177,7 +3097,7 @@ End Sub
 'Used to keep the JPEG-2000 "compression ratio" text box, scroll bar, and combo box in sync
 Private Sub updateJP2ComboBox()
     
-    Select Case hsJP2Quality.Value
+    Select Case sltJP2Quality.Value
         
         Case 1
             If cmbJP2SaveQuality.ListIndex <> 0 Then cmbJP2SaveQuality.ListIndex = 0
