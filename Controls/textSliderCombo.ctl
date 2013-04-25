@@ -225,6 +225,7 @@ End Property
 Public Property Let Min(ByVal newValue As Double)
     
     controlMin = newValue
+    hsPrimary.Min = controlMin * (10 ^ significantDigits)
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
@@ -234,7 +235,6 @@ Public Property Let Min(ByVal newValue As Double)
         RaiseEvent Change
     End If
     
-    hsPrimary.Min = controlMin * (10 ^ significantDigits)
     PropertyChanged "Min"
     
 End Property
@@ -247,6 +247,7 @@ End Property
 Public Property Let Max(ByVal newValue As Double)
     
     controlMax = newValue
+    hsPrimary.Max = controlMax * (10 ^ significantDigits)
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
@@ -256,7 +257,6 @@ Public Property Let Max(ByVal newValue As Double)
         RaiseEvent Change
     End If
     
-    hsPrimary.Max = controlMax * (10 ^ significantDigits)
     PropertyChanged "Max"
     
 End Property
