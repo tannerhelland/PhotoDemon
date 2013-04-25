@@ -1,17 +1,16 @@
 Attribute VB_Name = "FreeImage_Expanded_Interface"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 25/November/12
 'Last update: improved tone-mapping for high-bit-depth images with alpha channels
 '
-'This module represents a new - and significantly more complex - approach to loading images via the FreeImage libary.
-' It handles a variety of decisions on a per-format basis to ensure optimal load speed and quality.
+'This module represents a new - and significantly more comprehensive - approach to loading images via the
+' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
+' and quality.
 '
-'Several sections of this module were heavily tested by Herman Liu, to whom I am very grateful.
-'
-'Additionally, this module continues to rely heavily on Carsten Klein's FreeImage wrapper for VB (included in this project
+'Please note that this module relies heavily on Carsten Klein's FreeImage wrapper for VB (included in this project
 ' as Outside_FreeImageV3; see that file for license details).  Thanks to Carsten for his work on integrating FreeImage
 ' into classic VB.
 '
@@ -25,7 +24,7 @@ Public imageHasMultiplePages As Boolean
 Public imagePageCount As Long
 
 'DIB declarations
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
 Public Function isFreeImageAvailable() As Boolean

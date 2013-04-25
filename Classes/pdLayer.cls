@@ -38,7 +38,6 @@ Attribute VB_Exposed = False
 '
 'SPECIAL THANKS
 'In building this class, I utilized a number of other DIB classes for reference and testing.  Special thanks to:
-' Herman Liu (personal correspondence)
 ' Carles PV's iBMP project: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 ' Steve McMahon's DIB/SafeArray analysis: http://www.vbaccelerator.com/home/VB/Code/vbMedia/DIB_Sections/True_Colour_DIBSection/article.asp
 ' Many thanks to these three individuals for their outstanding work on graphics in VB.

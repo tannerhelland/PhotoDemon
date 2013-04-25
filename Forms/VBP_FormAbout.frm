@@ -253,7 +253,6 @@ Private Sub Form_Load()
     GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
     GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
-    GenerateThankyou "Herman Liu"
     GenerateThankyou "Kroc Camen", "http://camendesign.com"
     GenerateThankyou "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
     GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
