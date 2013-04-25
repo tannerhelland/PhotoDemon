@@ -63,14 +63,14 @@ Begin VB.Form FormColorize
       Width           =   1365
    End
    Begin VB.HScrollBar hsHue 
-      Height          =   255
+      Height          =   375
       Left            =   6240
       Max             =   359
       Min             =   1
       TabIndex        =   2
       Top             =   2160
       Value           =   180
-      Width           =   5775
+      Width           =   5790
    End
    Begin VB.PictureBox picHueDemo 
       Appearance      =   0  'Flat
@@ -92,7 +92,7 @@ Begin VB.Form FormColorize
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   352
       TabIndex        =   3
-      Top             =   2520
+      Top             =   2640
       Width           =   5310
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
