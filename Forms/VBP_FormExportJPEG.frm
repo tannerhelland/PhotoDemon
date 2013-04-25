@@ -27,7 +27,7 @@ Begin VB.Form dialog_ExportJPEG
    Begin PhotoDemon.smartCheckBox chkOptimize 
       Height          =   540
       Left            =   600
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   1920
       Width           =   3105
       _ExtentX        =   5477
@@ -66,7 +66,7 @@ Begin VB.Form dialog_ExportJPEG
       Caption         =   " Hide advanced settings"
       Height          =   495
       Left            =   240
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   5070
       Width           =   2685
    End
@@ -84,22 +84,10 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   360
       Left            =   960
       Style           =   2  'Dropdown List
-      TabIndex        =   7
+      TabIndex        =   5
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
       Top             =   3930
       Width           =   5415
-   End
-   Begin VB.HScrollBar hsQuality 
-      Height          =   330
-      LargeChange     =   5
-      Left            =   2760
-      Max             =   99
-      Min             =   1
-      TabIndex        =   5
-      TabStop         =   0   'False
-      Top             =   645
-      Value           =   90
-      Width           =   3645
    End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
@@ -115,34 +103,14 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   360
       Left            =   600
       Style           =   2  'Dropdown List
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   630
       Width           =   2055
-   End
-   Begin VB.TextBox txtQuality 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6510
-      MaxLength       =   2
-      TabIndex        =   2
-      Text            =   "90"
-      Top             =   645
-      Width           =   735
    End
    Begin PhotoDemon.smartCheckBox chkThumbnail 
       Height          =   540
       Left            =   600
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   2400
       Width           =   2715
       _ExtentX        =   4789
@@ -161,7 +129,7 @@ Begin VB.Form dialog_ExportJPEG
    Begin PhotoDemon.smartCheckBox chkProgressive 
       Height          =   540
       Left            =   600
-      TabIndex        =   12
+      TabIndex        =   10
       Top             =   2880
       Width           =   2835
       _ExtentX        =   5001
@@ -180,7 +148,7 @@ Begin VB.Form dialog_ExportJPEG
    Begin PhotoDemon.smartCheckBox chkSubsample 
       Height          =   540
       Left            =   600
-      TabIndex        =   13
+      TabIndex        =   11
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
       Top             =   3360
       Width           =   2820
@@ -197,10 +165,31 @@ Begin VB.Form dialog_ExportJPEG
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   2640
+      TabIndex        =   12
+      Top             =   585
+      Width           =   4695
+      _ExtentX        =   8281
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   99
+      Value           =   90
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   4920
       Width           =   7575
    End
@@ -228,7 +217,7 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   285
       Index           =   1
       Left            =   360
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   1560
       Width           =   2580
    End
@@ -249,7 +238,7 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   285
       Index           =   0
       Left            =   360
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   240
       Width           =   1515
    End
@@ -265,9 +254,9 @@ Attribute VB_Exposed = False
 'Created: 5/8/00
 'Last updated: 03/December/12
 'Last update: converted this into a true "dialog", in that it can be called from anywhere, and it will return
-'              "OK" or "Cancel" (as type vbmsgboxresult) if the user hit OK or Cancel.  If OK was pressed, three
+'              "OK" or "Cancel" (as type vbMsgBoxResult) if the user hit OK or Cancel.  If OK was pressed, three
 '              global variables - g_JPEGQuality, g_JPEGFlags, and g_JPEGThumbnail - will be set with the user's
-'              answers.  These can then be queried by the calling function as needed.
+'              answers.  These can then be queried by external functions as needed.
 '
 'Dialog for preseting the user a number of options for related to JPEG exporting.  The various advanced features
 ' rely on FreeImage for implementation, and will be disabled if FreeImage cannot be found.
@@ -301,19 +290,19 @@ Private Sub CmbSaveQuality_Click()
     Select Case CmbSaveQuality.ListIndex
         
         Case 0
-            hsQuality.Value = 99
+            sltQuality.Value = 99
                 
         Case 1
-            hsQuality.Value = 92
+            sltQuality.Value = 92
                 
         Case 2
-            hsQuality = 80
+            sltQuality = 80
                 
         Case 3
-            hsQuality = 65
+            sltQuality = 65
                 
         Case 4
-            hsQuality = 40
+            sltQuality = 40
                 
     End Select
     
@@ -331,26 +320,12 @@ End Sub
 Private Sub cmdOK_Click()
         
     'Determine the compression quality for the quantization tables
-    Select Case CmbSaveQuality.ListIndex
-        Case 0
-            g_JPEGQuality = 99
-        Case 1
-            g_JPEGQuality = 92
-        Case 2
-            g_JPEGQuality = 80
-        Case 3
-            g_JPEGQuality = 65
-        Case 4
-            g_JPEGQuality = 40
-        Case 5
-            If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max) Then
-                g_JPEGQuality = hsQuality.Value
-            Else
-                AutoSelectText txtQuality
-                Exit Sub
-            End If
-    End Select
-        
+    If sltQuality.IsValid Then
+        g_JPEGQuality = sltQuality.Value
+    Else
+        Exit Sub
+    End If
+            
     'Determine any extra flags based on the advanced settings
     g_JPEGFlags = 0
         
@@ -397,28 +372,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub hsQuality_Change()
-    txtQuality.Text = hsQuality.Value
-    updateComboBox
-End Sub
-
-Private Sub hsQuality_Scroll()
-    txtQuality.Text = hsQuality.Value
-    updateComboBox
-End Sub
-
-Private Sub txtQuality_Change()
-    If EntryValid(txtQuality, hsQuality.Min, hsQuality.Max, False, False) Then hsQuality.Value = Val(txtQuality)
-End Sub
-
-Private Sub txtQuality_GotFocus()
-    AutoSelectText txtQuality
-End Sub
-
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync
 Private Sub updateComboBox()
     
-    Select Case hsQuality.Value
+    Select Case sltQuality.Value
         
         Case 40
             If CmbSaveQuality.ListIndex <> 4 Then CmbSaveQuality.ListIndex = 4
@@ -461,10 +418,10 @@ Private Sub toggleAdvancedSettings()
         cmbSubsample.Visible = False
     
         'Move all other controls accordingly
-        lineSeparator.Y1 = hsQuality.Top + 48
-        lineSeparator.Y2 = lineSeparator.Y1
-        lblBackground.Top = lineSeparator.Y1
-        cmdShowHide.Top = lineSeparator.Y1 + 10
+        lineSeparator.y1 = sltQuality.Top + 48
+        lineSeparator.y2 = lineSeparator.y1
+        lblBackground.Top = lineSeparator.y1
+        cmdShowHide.Top = lineSeparator.y1 + 10
         CmdOK.Top = cmdShowHide.Top
         CmdCancel.Top = CmdOK.Top
     
@@ -482,10 +439,10 @@ Private Sub toggleAdvancedSettings()
         cmbSubsample.Visible = True
         
         'Move all other controls accordingly
-        lineSeparator.Y1 = cmbSubsample.Top + 48
-        lineSeparator.Y2 = lineSeparator.Y1
-        lblBackground.Top = lineSeparator.Y1
-        cmdShowHide.Top = lineSeparator.Y1 + 10
+        lineSeparator.y1 = cmbSubsample.Top + 48
+        lineSeparator.y2 = lineSeparator.y1
+        lblBackground.Top = lineSeparator.y1
+        cmdShowHide.Top = lineSeparator.y1 + 10
         CmdOK.Top = cmdShowHide.Top
         CmdCancel.Top = CmdOK.Top
     
@@ -496,7 +453,7 @@ Private Sub toggleAdvancedSettings()
     Me.ScaleMode = vbTwips
     formSizeDiff = Me.Height - Me.ScaleHeight
     
-    Me.Height = formSizeDiff + cmdShowHide.Top + cmdShowHide.Height + Abs(lineSeparator.Y1 - cmdShowHide.Top)
+    Me.Height = formSizeDiff + cmdShowHide.Top + cmdShowHide.Height + Abs(lineSeparator.y1 - cmdShowHide.Top)
     
     Me.ScaleMode = vbPixels
 
@@ -556,10 +513,11 @@ Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
-    'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-    If g_UseFancyFonts Then hsQuality.Height = 23 Else hsQuality.Height = 22
-
     'Display the dialog
     Me.Show vbModal, FormMain
 
+End Sub
+
+Private Sub sltQuality_Change()
+    updateComboBox
 End Sub
