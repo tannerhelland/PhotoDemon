@@ -24,6 +24,27 @@ Begin VB.Form FormFade
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.sliderTextCombo sltPercent 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   2760
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   50
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,40 +63,10 @@ Begin VB.Form FormFade
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsPercent 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   3
-      Top             =   2760
-      Value           =   50
-      Width           =   4935
-   End
-   Begin VB.TextBox txtPercent 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   3
-      TabIndex        =   2
-      Text            =   "50"
-      Top             =   2700
-      Width           =   615
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -84,7 +75,7 @@ Begin VB.Form FormFade
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12135
    End
@@ -104,7 +95,7 @@ Begin VB.Form FormFade
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2400
       Width           =   1980
    End
@@ -132,12 +123,10 @@ Option Explicit
 'OK button
 Private Sub cmdOK_Click()
     
-    If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max) Then
+    If sltPercent.IsValid Then
         Me.Visible = False
-        Process Fade, CSng(hsPercent.Value / 100)
+        Process Fade, CDbl(sltPercent.Value / 100)
         Unload Me
-    Else
-        AutoSelectText txtPercent
     End If
     
 End Sub
@@ -309,7 +298,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Render a preview
-    FadeImage CSng(hsPercent.Value / 100), True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -317,21 +306,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub hsPercent_Change()
-    copyToTextBoxI txtPercent, hsPercent.Value
-    FadeImage CSng(hsPercent.Value / 100), True, fxPreview
+Private Sub sltPercent_Change()
+    updatePreview
 End Sub
 
-Private Sub hsPercent_Scroll()
-    copyToTextBoxI txtPercent, hsPercent.Value
-    FadeImage CSng(hsPercent.Value / 100), True, fxPreview
-End Sub
-
-Private Sub txtPercent_GotFocus()
-    AutoSelectText txtPercent
-End Sub
-
-Private Sub txtPercent_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtPercent
-    If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, False, False) Then hsPercent.Value = Val(txtPercent)
+Private Sub updatePreview()
+    FadeImage CDbl(sltPercent.Value / 100), True, fxPreview
 End Sub
