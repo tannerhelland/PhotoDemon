@@ -42,66 +42,6 @@ Begin VB.Form FormColorTemp
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsStrength 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   7
-      Top             =   3600
-      Value           =   55
-      Width           =   5055
-   End
-   Begin VB.TextBox txtStrength 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11280
-      MaxLength       =   3
-      TabIndex        =   6
-      Text            =   "50"
-      Top             =   3555
-      Width           =   735
-   End
-   Begin VB.TextBox txtTemperature 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11280
-      MaxLength       =   5
-      TabIndex        =   5
-      Text            =   "5500"
-      Top             =   1875
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsTemperature 
-      Height          =   255
-      Left            =   6120
-      Max             =   150
-      Min             =   10
-      TabIndex        =   2
-      Top             =   1920
-      Value           =   55
-      Width           =   5055
-   End
    Begin VB.PictureBox picTempDemo 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -121,23 +61,65 @@ Begin VB.Form FormColorTemp
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   303
-      TabIndex        =   3
-      Top             =   2280
+      TabIndex        =   2
+      Top             =   2400
       Width           =   4575
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.sliderTextCombo sltStrength 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   3720
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   50
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltTemperature 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   1830
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   873
+      Min             =   1000
+      Max             =   15000
+      Value           =   5500
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   5760
       Width           =   12375
    End
@@ -157,8 +139,8 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   10125
-      TabIndex        =   10
-      Top             =   2760
+      TabIndex        =   6
+      Top             =   2880
       Width           =   735
    End
    Begin VB.Label lblWarm 
@@ -177,8 +159,8 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   6360
-      TabIndex        =   9
-      Top             =   2760
+      TabIndex        =   5
+      Top             =   2880
       Width           =   840
    End
    Begin VB.Label lblStrength 
@@ -197,8 +179,8 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   8
-      Top             =   3240
+      TabIndex        =   4
+      Top             =   3360
       Width           =   960
    End
    Begin VB.Label lblTemperature 
@@ -217,8 +199,8 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
-      Top             =   1560
+      TabIndex        =   3
+      Top             =   1440
       Width           =   2280
    End
 End
@@ -229,10 +211,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Temperature Adjustment Form
-'Copyright ©2006-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 16/September/12
-'Last updated: 18/September/12
-'Last update: remove "preserve luminance" checkbox.  There was never any reason to uncheck it.
+'Last updated: 25/April/13
+'Last update: greatly simplify code by relying on new slider/text custom control
 '
 'Color temperature adjustment form.  A full discussion of color temperature and how it works is available at this wikipedia article:
 ' http://en.wikipedia.org/wiki/Color_temperature
@@ -251,6 +233,9 @@ Attribute VB_Exposed = False
 '     Then I wrote a function to return values from these best-fit curves based on a supplied color temperature.  It's not perfect
 '     but I've never found a function capable of doing this - especially not in VB - so it's better than anything out there right now.
 '
+'For a detailed explanation of how I reverse-engineered the math, please see this article:
+' http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/
+'
 '***************************************************************************
 
 Option Explicit
@@ -264,21 +249,10 @@ End Sub
 Private Sub cmdOK_Click()
     
     'The scroll bar max and min values are used to check the temperature input for validity
-    If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100) Then
-        
-        'Same goes for the "strength" value
-        If EntryValid(txtStrength, hsStrength.Min, hsStrength.Max) Then
-            
-            Me.Visible = False
-            Process AdjustTemperature, CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2
-            Unload Me
-            
-        Else
-            AutoSelectText txtStrength
-        End If
-        
-    Else
-        AutoSelectText txtTemperature
+    If sltTemperature.IsValid And sltStrength.IsValid Then
+        Me.Visible = False
+        Process AdjustTemperature, sltTemperature.Value, True, sltStrength.Value / 2
+        Unload Me
     End If
     
 End Sub
@@ -383,8 +357,8 @@ Private Sub Form_Activate()
     
         'Based on our x-position, gradient a value between 1000 and 12000
         temperatureVal = x / picTempDemo.ScaleWidth
-        temperatureVal = temperatureVal * (CLng(hsTemperature.Max) * 100)
-        temperatureVal = temperatureVal + (CLng(hsTemperature.Min) * 100)
+        temperatureVal = temperatureVal * sltTemperature.Max
+        temperatureVal = temperatureVal + sltTemperature.Min
         
         'Generate an RGB equivalent for this temperature
         getRGBfromTemperature r, g, b, temperatureVal
@@ -400,33 +374,12 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Display the previewed effect in the neighboring window
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
+    updatePreview
     
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub hsStrength_Change()
-    copyToTextBoxI txtStrength, hsStrength
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
-End Sub
-
-Private Sub hsStrength_Scroll()
-    copyToTextBoxI txtStrength, hsStrength
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
-End Sub
-
-'When the hue scroll bar is changed, redraw the preview
-Private Sub hsTemperature_Change()
-    copyToTextBoxI txtTemperature, hsTemperature * 100
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
-End Sub
-
-Private Sub hsTemperature_Scroll()
-    copyToTextBoxI txtTemperature, hsTemperature * 100
-    ApplyTemperatureToImage CLng(hsTemperature.Value) * 100, True, CSng(hsStrength.Value) / 2, True, fxPreview
 End Sub
 
 'Given a temperature (in Kelvin), generate the RGB equivalent of an ideal black body
@@ -492,22 +445,14 @@ Private Sub getRGBfromTemperature(ByRef r As Long, ByRef g As Long, ByRef b As L
     
 End Sub
 
-'Keep the "Strength" scroll bar and text box in sync
-Private Sub txtStrength_GotFocus()
-    AutoSelectText txtStrength
+Private Sub sltStrength_Change()
+    updatePreview
 End Sub
 
-Private Sub txtStrength_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtStrength
-    If EntryValid(txtStrength, 1, 100, False, False) Then hsStrength.Value = Val(txtStrength)
+Private Sub sltTemperature_Change()
+    updatePreview
 End Sub
 
-'Keep the "Temperature" scroll bar and text box in sync
-Private Sub txtTemperature_GotFocus()
-    AutoSelectText txtTemperature
-End Sub
-
-Private Sub txtTemperature_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtTemperature
-    If EntryValid(txtTemperature, hsTemperature.Min * 100, hsTemperature.Max * 100, False, False) Then hsTemperature.Value = Val(txtTemperature) \ 100
+Private Sub updatePreview()
+    ApplyTemperatureToImage sltTemperature.Value, True, sltStrength.Value / 2, True, fxPreview
 End Sub
