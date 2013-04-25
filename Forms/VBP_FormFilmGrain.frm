@@ -24,9 +24,18 @@ Begin VB.Form FormFilmGrain
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
-      BeginProperty Font 
+   Begin PhotoDemon.sliderTextCombo sltNoise 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   2520
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   50
+      Value           =   10
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -35,24 +44,6 @@ Begin VB.Form FormFilmGrain
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   3
-      TabIndex        =   8
-      Text            =   "5"
-      Top             =   3420
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   25
-      Min             =   1
-      TabIndex        =   7
-      Top             =   3480
-      Value           =   5
-      Width           =   4935
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -72,19 +63,27 @@ Begin VB.Form FormFilmGrain
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsNoise 
-      Height          =   255
-      Left            =   6120
-      Max             =   50
-      Min             =   1
-      TabIndex        =   3
-      Top             =   2640
-      Value           =   10
-      Width           =   4935
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.TextBox txtNoise 
-      Alignment       =   2  'Center
-      BeginProperty Font 
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   3480
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   25
+      Value           =   5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -93,23 +92,6 @@ Begin VB.Form FormFilmGrain
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   3
-      TabIndex        =   2
-      Text            =   "10"
-      Top             =   2580
-      Width           =   615
-   End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
-      TabIndex        =   6
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -128,14 +110,14 @@ Begin VB.Form FormFilmGrain
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   3120
       Width           =   945
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12375
    End
@@ -155,8 +137,8 @@ Begin VB.Form FormFilmGrain
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2280
+      TabIndex        =   2
+      Top             =   2160
       Width           =   960
    End
 End
@@ -193,20 +175,12 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
 
-    'Validate all text box entries
-    If Not EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
-        AutoSelectText txtRadius
-        Exit Sub
+    'Validate all text box entries before proceeding
+    If sltNoise.IsValid And sltRadius.IsValid Then
+        Me.Visible = False
+        Process FilmGrain, sltNoise.Value, sltRadius.Value
+        Unload Me
     End If
-    
-    If Not EntryValid(txtNoise, hsNoise.Min, hsNoise.Max, True, True) Then
-        AutoSelectText txtNoise
-        Exit Sub
-    End If
-    
-    Me.Visible = False
-    Process FilmGrain, hsNoise.Value, hsRadius.Value
-    Unload Me
     
 End Sub
 
@@ -417,45 +391,14 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'The next eight routines keep the value of the textbox and scroll bar in lock-step
-Private Sub hsNoise_Change()
-    copyToTextBoxI txtNoise, hsNoise.Value
+Private Sub sltNoise_Change()
     updatePreview
 End Sub
 
-Private Sub hsNoise_Scroll()
-    copyToTextBoxI txtNoise, hsNoise.Value
+Private Sub sltRadius_Change()
     updatePreview
-End Sub
-
-Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub txtNoise_GotFocus()
-    AutoSelectText txtNoise
-End Sub
-
-Private Sub txtNoise_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtNoise
-    If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max, False, False) Then hsNoise.Value = Val(txtNoise)
-End Sub
-
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
-End Sub
-
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
 End Sub
 
 Private Sub updatePreview()
-    AddFilmGrain hsNoise.Value, hsRadius.Value, True, fxPreview
+    AddFilmGrain sltNoise, sltRadius, True, fxPreview
 End Sub
