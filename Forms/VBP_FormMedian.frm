@@ -24,64 +24,6 @@ Begin VB.Form FormMedian
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      TabIndex        =   8
-      Text            =   "5"
-      Top             =   2220
-      Width           =   615
-   End
-   Begin VB.TextBox txtPercent 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      TabIndex        =   7
-      Text            =   "50"
-      Top             =   3180
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   200
-      Min             =   1
-      TabIndex        =   6
-      Top             =   2280
-      Value           =   5
-      Width           =   4935
-   End
-   Begin VB.HScrollBar hsPercent 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   5
-      Top             =   3240
-      Value           =   50
-      Width           =   4935
-   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -109,6 +51,48 @@ Begin VB.Form FormMedian
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   2280
+      Width           =   5895
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   200
+      Value           =   5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltPercent 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   3240
+      Width           =   5895
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   50
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblPercentile 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
@@ -125,7 +109,7 @@ Begin VB.Form FormMedian
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   2880
       Width           =   1110
    End
@@ -145,7 +129,7 @@ Begin VB.Form FormMedian
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   1920
       Width           =   735
    End
@@ -186,8 +170,8 @@ Attribute VB_Exposed = False
 'Median Filter Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 08/Feb/13
-'Last updated: 08/Feb/13
-'Last update: initial build
+'Last updated: 26/April/13
+'Last update: simplified code by rebuilding interface around new slider/text custom control
 '
 'This is a heavily optimized median filter function.  An "accumulation" technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
@@ -218,19 +202,11 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Validate text box entries
-    If Not EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
-        AutoSelectText txtRadius
-        Exit Sub
+    If sltRadius.IsValid And sltPercent.IsValid Then
+        Me.Visible = False
+        Process Median, sltRadius.Value, sltPercent.Value
+        Unload Me
     End If
-    
-    If Not EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, True, True) Then
-        AutoSelectText txtPercent
-        Exit Sub
-    End If
-    
-    Me.Visible = False
-    Process Median, hsRadius.Value, hsPercent.Value
-    Unload Me
     
 End Sub
 
@@ -255,7 +231,7 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         mRadius = (mRadius / iWidth) * curLayerValues.Width
-        If mRadius = 0 Then mRadius = 1
+        If mRadius < 1 Then mRadius = 1
     End If
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -309,71 +285,38 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'These routines keep the scroll bar and text box values in sync
-Private Sub hsPercent_Change()
-    copyToTextBoxI txtPercent, hsPercent.Value
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub hsPercent_Scroll()
-    copyToTextBoxI txtPercent, hsPercent.Value
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub txtPercent_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtPercent
-    If EntryValid(txtPercent, hsPercent.Min, hsPercent.Max, False, False) Then hsPercent.Value = Val(txtPercent)
-End Sub
-
-Private Sub txtPercent_GotFocus()
-    AutoSelectText txtPercent
-End Sub
-
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
-End Sub
-
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
-End Sub
-
-Private Sub updatePreview()
-    If allowPreview Then ApplyMedianFilter hsRadius.Value, hsPercent.Value, True, fxPreview
-End Sub
-
+'The median dialog is reused for several tools: minimum, median, maximum.
 Public Sub showMedianDialog(ByVal initPercentage As Long)
 
     If initPercentage = 1 Then
-        Me.Caption = "Erode (Minimum rank filter)"
-        hsPercent.Value = 1
-        hsPercent.Visible = False
-        txtPercent.Visible = False
+        Me.Caption = g_Language.TranslateMessage("Erode (Minimum rank filter)")
+        sltPercent.Value = 1
+        sltPercent.Visible = False
         lblPercentile.Visible = False
     ElseIf initPercentage = 100 Then
-        Me.Caption = "Dilate (Maximum rank filter)"
-        hsPercent.Value = 100
-        hsPercent.Visible = False
-        txtPercent.Visible = False
+        Me.Caption = g_Language.TranslateMessage("Dilate (Maximum rank filter)")
+        sltPercent.Value = 100
+        sltPercent.Visible = False
         lblPercentile.Visible = False
     Else
-        Me.Caption = "Median filter"
-        hsPercent.Value = initPercentage
-        hsPercent.Visible = True
-        txtPercent.Visible = True
+        Me.Caption = g_Language.TranslateMessage("Median filter")
+        sltPercent.Value = initPercentage
+        sltPercent.Visible = True
         lblPercentile.Visible = True
     End If
     
     Me.Show vbModal, FormMain
 
+End Sub
+
+Private Sub sltPercent_Change()
+    updatePreview
+End Sub
+
+Private Sub sltRadius_Change()
+    updatePreview
+End Sub
+
+Private Sub updatePreview()
+    If allowPreview Then ApplyMedianFilter sltRadius.Value, sltPercent.Value, True, fxPreview
 End Sub
