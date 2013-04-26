@@ -24,35 +24,6 @@ Begin VB.Form FormMonoToColor
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      TabIndex        =   5
-      Text            =   "3"
-      Top             =   2340
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   8
-      Min             =   1
-      TabIndex        =   4
-      Top             =   2400
-      Value           =   3
-      Width           =   4935
-   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -80,6 +51,27 @@ Begin VB.Form FormMonoToColor
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   2400
+      Width           =   5895
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   8
+      Value           =   3
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
@@ -96,7 +88,7 @@ Begin VB.Form FormMonoToColor
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   3240
       Width           =   2580
    End
@@ -116,7 +108,7 @@ Begin VB.Form FormMonoToColor
       ForeColor       =   &H00404040&
       Height          =   210
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   3840
       Width           =   5535
       WordWrap        =   -1  'True
@@ -137,7 +129,7 @@ Begin VB.Form FormMonoToColor
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   2040
       Width           =   735
    End
@@ -193,14 +185,11 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Validate text box entries
-    If Not EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
-        AutoSelectText txtRadius
-        Exit Sub
+    If sltRadius.IsValid Then
+        Me.Visible = False
+        Process RemoveBW, sltRadius.Value
+        Unload Me
     End If
-    
-    Me.Visible = False
-    Process RemoveBW, hsRadius.Value
-    Unload Me
     
 End Sub
 
@@ -509,26 +498,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'These routines keep the scroll bar and text box values in sync
-Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
-End Sub
-
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
-End Sub
-
 Private Sub updatePreview()
-    If allowPreview Then ConvertMonoToColor hsRadius.Value, True, fxPreview
+    If allowPreview Then ConvertMonoToColor sltRadius.Value, True, fxPreview
+End Sub
+
+Private Sub sltRadius_Change()
+    updatePreview
 End Sub
