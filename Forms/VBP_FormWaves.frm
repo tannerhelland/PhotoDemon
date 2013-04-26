@@ -40,7 +40,7 @@ Begin VB.Form FormWaves
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   18
+      TabIndex        =   10
       Top             =   3975
       Width           =   5700
    End
@@ -62,127 +62,10 @@ Begin VB.Form FormWaves
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.TextBox txtWavelengthY 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   12
-      Text            =   "1"
-      Top             =   2220
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsWavelengthY 
-      Height          =   255
-      Left            =   6120
-      Max             =   50
-      Min             =   1
-      TabIndex        =   11
-      Top             =   2280
-      Value           =   1
-      Width           =   4815
-   End
-   Begin VB.TextBox txtAmplitudeY 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   10
-      Text            =   "0"
-      Top             =   3060
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsAmplitudeY 
-      Height          =   255
-      Left            =   6120
-      Max             =   200
-      TabIndex        =   9
-      Top             =   3120
-      Width           =   4815
-   End
-   Begin VB.HScrollBar hsAmplitudeX 
-      Height          =   255
-      Left            =   6120
-      Max             =   200
-      TabIndex        =   7
-      Top             =   1440
-      Value           =   20
-      Width           =   4815
-   End
-   Begin VB.TextBox txtAmplitudeX 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   6
-      Text            =   "20"
-      Top             =   1380
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsWavelengthX 
-      Height          =   255
-      Left            =   6120
-      Max             =   50
-      Min             =   1
-      TabIndex        =   4
-      Top             =   600
-      Value           =   30
-      Width           =   4815
-   End
-   Begin VB.TextBox txtWavelengthX 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   3
-      Text            =   "30"
-      Top             =   540
-      Width           =   735
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   16
+      TabIndex        =   8
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -192,7 +75,7 @@ Begin VB.Form FormWaves
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   19
+      TabIndex        =   11
       Top             =   4920
       Width           =   1005
       _ExtentX        =   1773
@@ -213,7 +96,7 @@ Begin VB.Form FormWaves
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   20
+      TabIndex        =   12
       Top             =   4920
       Width           =   975
       _ExtentX        =   1720
@@ -222,6 +105,87 @@ Begin VB.Form FormWaves
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltWavelengthX 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   570
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   50
+      Value           =   30
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltWavelengthY 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   2250
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   50
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltAmplitudeX 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   15
+      Top             =   1410
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Max             =   200
+      Value           =   20
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltAmplitudeY 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   16
+      Top             =   3090
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Max             =   200
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -246,14 +210,14 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   17
+      TabIndex        =   9
       Top             =   3600
       Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   15
+      TabIndex        =   7
       Top             =   5760
       Width           =   12135
    End
@@ -274,7 +238,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   6
       Top             =   1920
       Width           =   2115
    End
@@ -295,7 +259,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   5
       Top             =   2760
       Width           =   3090
    End
@@ -316,7 +280,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   4
       Top             =   1080
       Width           =   3390
    End
@@ -337,7 +301,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   240
       Width           =   2415
    End
@@ -374,8 +338,8 @@ Attribute VB_Exposed = False
 'Image "Waves" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 07/January/13
-'Last updated: 15/January/13
-'Last update: added user-settable options for edge handling
+'Last updated: 26/April/13
+'Last update: simplify code by leaning on new slider/text custom control
 '
 'This tool allows the user to apply a "waves" distortion to an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality result.
@@ -398,10 +362,6 @@ Private Sub cmbEdges_Click()
     updatePreview
 End Sub
 
-Private Sub cmbEdges_Scroll()
-    updatePreview
-End Sub
-
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -411,32 +371,11 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(txtWavelengthX, hsWavelengthX.Min, hsWavelengthX.Max, True, True) Then
-        AutoSelectText txtWavelengthX
-        Exit Sub
+    If sltWavelengthX.IsValid And sltWavelengthY.IsValid And sltAmplitudeX.IsValid And sltAmplitudeY.IsValid Then
+        Me.Visible = False
+        Process DistortWaves, sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Unload Me
     End If
-    
-    If Not EntryValid(txtAmplitudeX, hsAmplitudeX.Min, hsAmplitudeX.Max, True, True) Then
-        AutoSelectText txtAmplitudeX
-        Exit Sub
-    End If
-    
-    If Not EntryValid(txtWavelengthY, hsWavelengthY.Min, hsWavelengthY.Max, True, True) Then
-        AutoSelectText txtWavelengthY
-        Exit Sub
-    End If
-    
-    If Not EntryValid(txtAmplitudeY, hsAmplitudeY.Min, hsAmplitudeY.Max, True, True) Then
-        AutoSelectText txtAmplitudeY
-        Exit Sub
-    End If
-
-    Me.Visible = False
-    
-    'Based on the user's selection, submit the proper processor request
-    Process DistortWaves, CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
-        
-    Unload Me
     
 End Sub
 
@@ -537,9 +476,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
-    'Mark scroll bar changes as coming from the user
-    userChange = True
-    
     'Create the preview
     updatePreview
     
@@ -549,89 +485,27 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub hsAmplitudeX_Change()
-    copyToTextBoxI txtAmplitudeX, hsAmplitudeX.Value
-    updatePreview
-End Sub
-
-Private Sub hsAmplitudeX_Scroll()
-    copyToTextBoxI txtAmplitudeX, hsAmplitudeX.Value
-    updatePreview
-End Sub
-
-Private Sub hsWavelengthX_Change()
-    copyToTextBoxI txtWavelengthX, hsWavelengthX.Value
-    updatePreview
-End Sub
-
-Private Sub hsWavelengthX_Scroll()
-    copyToTextBoxI txtWavelengthX, hsWavelengthX.Value
-    updatePreview
-End Sub
-
-Private Sub hsAmplitudeY_Change()
-    copyToTextBoxI txtAmplitudeY, hsAmplitudeY.Value
-    updatePreview
-End Sub
-
-Private Sub hsAmplitudeY_Scroll()
-    copyToTextBoxI txtAmplitudeY, hsAmplitudeY.Value
-    updatePreview
-End Sub
-
-Private Sub hsWavelengthY_Change()
-    copyToTextBoxI txtWavelengthY, hsWavelengthY.Value
-    updatePreview
-End Sub
-
-Private Sub hsWavelengthY_Scroll()
-    copyToTextBoxI txtWavelengthY, hsWavelengthY.Value
-    updatePreview
-End Sub
-
 Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 
-Private Sub txtAmplitudeX_GotFocus()
-    AutoSelectText txtAmplitudeX
+Private Sub sltAmplitudeX_Change()
+    updatePreview
 End Sub
 
-Private Sub txtAmplitudeX_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtAmplitudeX
-    If EntryValid(txtAmplitudeX, hsAmplitudeX.Min, hsAmplitudeX.Max, False, False) Then hsAmplitudeX.Value = Val(txtAmplitudeX)
+Private Sub sltAmplitudeY_Change()
+    updatePreview
 End Sub
 
-Private Sub txtWavelengthX_GotFocus()
-    AutoSelectText txtWavelengthX
+Private Sub sltWavelengthX_Change()
+    updatePreview
 End Sub
 
-Private Sub txtWavelengthX_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtWavelengthX
-    If EntryValid(txtWavelengthX, hsWavelengthX.Min, hsWavelengthX.Max, False, False) Then hsWavelengthX.Value = Val(txtWavelengthX)
-End Sub
-
-Private Sub txtAmplitudeY_GotFocus()
-    AutoSelectText txtAmplitudeY
-End Sub
-
-Private Sub txtAmplitudeY_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtAmplitudeY
-    If EntryValid(txtAmplitudeY, hsAmplitudeY.Min, hsAmplitudeY.Max, False, False) Then hsAmplitudeY.Value = Val(txtAmplitudeY)
-End Sub
-
-Private Sub txtWavelengthY_GotFocus()
-    AutoSelectText txtWavelengthY
-End Sub
-
-Private Sub txtWavelengthY_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtWavelengthY
-    If EntryValid(txtWavelengthY, hsWavelengthY.Min, hsWavelengthY.Max, False, False) Then hsWavelengthY.Value = Val(txtWavelengthY)
+Private Sub sltWavelengthY_Change()
+    updatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-
-    WaveImage CDbl(hsWavelengthX), CDbl(hsAmplitudeX), CDbl(hsWavelengthY), CDbl(hsAmplitudeY), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
-    
+    WaveImage sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
