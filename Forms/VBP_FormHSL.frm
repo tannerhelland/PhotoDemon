@@ -24,6 +24,26 @@ Begin VB.Form FormHSL
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.sliderTextCombo sltHue 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   1770
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -180
+      Max             =   180
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -42,106 +62,59 @@ Begin VB.Form FormHSL
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.TextBox txtLuminance 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   10
-      Text            =   "0"
-      Top             =   3435
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsLuminance 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   8
-      Top             =   3480
-      Width           =   4935
-   End
-   Begin VB.TextBox txtSaturation 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   7
-      Text            =   "0"
-      Top             =   2595
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsSaturation 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   5
-      Top             =   2640
-      Width           =   4935
-   End
-   Begin VB.TextBox txtHue 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   4
-      Text            =   "0"
-      Top             =   1755
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsHue 
-      Height          =   255
-      Left            =   6120
-      Max             =   180
-      Min             =   -180
-      TabIndex        =   2
-      Top             =   1800
-      Width           =   4935
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   12
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.sliderTextCombo sltSaturation 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   2610
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltLuminance 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   3480
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   11
+      TabIndex        =   5
       Top             =   5760
       Width           =   12135
    End
@@ -161,7 +134,7 @@ Begin VB.Form FormHSL
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   4
       Top             =   3120
       Width           =   1020
    End
@@ -181,7 +154,7 @@ Begin VB.Form FormHSL
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   2280
       Width           =   1140
    End
@@ -201,7 +174,7 @@ Begin VB.Form FormHSL
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   1440
       Width           =   480
    End
@@ -213,10 +186,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'HSL Adjustment Form
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 05/October/12
-'Last updated: 05/October/12
-'Last update: initial build
+'Last updated: 26/April/13
+'Last update: simplify code by relying on new slider/text custom control
 '
 'Fairly simple and standard HSL adjustment form.  Layout and feature set derived from comparable tools
 ' in GIMP and Paint.NET.
@@ -224,7 +197,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -234,9 +206,11 @@ End Sub
 'OK button
 Private Sub cmdOK_Click()
     
-    Me.Visible = False
-    Process AdjustHSL, CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value)
-    Unload Me
+    If sltHue.IsValid And sltSaturation.IsValid And sltLuminance.IsValid Then
+        Me.Visible = False
+        Process AdjustHSL, sltHue.Value, sltSaturation.Value, sltLuminance.Value
+        Unload Me
+    End If
     
 End Sub
 
@@ -334,7 +308,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Display the previewed effect in the neighboring window
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -342,60 +316,18 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'When the hue scroll bar is changed, redraw the preview
-Private Sub hsHue_Change()
-    copyToTextBoxI txtHue, hsHue.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
+Private Sub sltHue_Change()
+    updatePreview
 End Sub
 
-Private Sub hsHue_Scroll()
-    copyToTextBoxI txtHue, hsHue.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
+Private Sub sltLuminance_Change()
+    updatePreview
 End Sub
 
-Private Sub hsLuminance_Change()
-    copyToTextBoxI txtLuminance, hsLuminance.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
+Private Sub sltSaturation_Change()
+    updatePreview
 End Sub
 
-Private Sub hsLuminance_Scroll()
-    copyToTextBoxI txtLuminance, hsLuminance.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
-End Sub
-
-Private Sub hsSaturation_Change()
-    copyToTextBoxI txtSaturation, hsSaturation.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
-End Sub
-
-Private Sub hsSaturation_Scroll()
-    copyToTextBoxI txtSaturation, hsSaturation.Value
-    AdjustImageHSL CSng(hsHue.Value), CSng(hsSaturation.Value), CSng(hsLuminance.Value), True, fxPreview
-End Sub
-
-Private Sub txtHue_GotFocus()
-    AutoSelectText txtHue
-End Sub
-
-Private Sub txtHue_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtHue, True
-    If EntryValid(txtHue, hsHue.Min, hsHue.Max, False, False) Then hsHue.Value = Val(txtHue)
-End Sub
-
-Private Sub txtLuminance_GotFocus()
-    AutoSelectText txtLuminance
-End Sub
-
-Private Sub txtLuminance_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtLuminance, True
-    If EntryValid(txtLuminance, hsLuminance.Min, hsLuminance.Max, False, False) Then hsLuminance.Value = Val(txtLuminance)
-End Sub
-
-Private Sub txtSaturation_GotFocus()
-    AutoSelectText txtSaturation
-End Sub
-
-Private Sub txtSaturation_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtSaturation, True
-    If EntryValid(txtSaturation, hsSaturation.Min, hsSaturation.Max, False, False) Then hsSaturation.Value = Val(txtSaturation)
+Private Sub updatePreview()
+    AdjustImageHSL sltHue.Value, sltSaturation.Value, sltLuminance.Value, True, fxPreview
 End Sub
