@@ -30,129 +30,253 @@ Begin VB.Form FormLevels
       Default         =   -1  'True
       Height          =   495
       Left            =   9240
-      TabIndex        =   0
+      TabIndex        =   14
       Top             =   5910
       Width           =   1365
+   End
+   Begin PhotoDemon.sliderTextCombo sltOutL 
+      Height          =   495
+      Left            =   6240
+      TabIndex        =   8
+      Top             =   4050
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Max             =   255
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
       Left            =   10710
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   5910
       Width           =   1365
-   End
-   Begin VB.HScrollBar hsOutL 
-      Height          =   220
-      Left            =   7440
-      Max             =   255
-      TabIndex        =   5
-      Top             =   3360
-      Width           =   3975
-   End
-   Begin VB.HScrollBar hsOutR 
-      Height          =   220
-      Left            =   7440
-      Max             =   255
-      TabIndex        =   6
-      Top             =   3600
-      Value           =   255
-      Width           =   3975
-   End
-   Begin VB.HScrollBar hsInR 
-      Height          =   220
-      Left            =   7440
-      Max             =   255
-      Min             =   2
-      TabIndex        =   4
-      Top             =   2520
-      Value           =   255
-      Width           =   3975
-   End
-   Begin VB.HScrollBar hsInL 
-      Height          =   220
-      Left            =   7440
-      Max             =   253
-      TabIndex        =   2
-      Top             =   2040
-      Width           =   3975
-   End
-   Begin VB.HScrollBar hsInM 
-      Height          =   220
-      Left            =   7440
-      Max             =   254
-      Min             =   1
-      TabIndex        =   3
-      Top             =   2280
-      Value           =   127
-      Width           =   3975
    End
    Begin VB.CommandButton cmdReset 
       Appearance      =   0  'Flat
       Caption         =   "&Reset levels"
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   1
       Top             =   5880
       Width           =   1455
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   26
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.sliderTextCombo sltOutR 
+      Height          =   495
+      Left            =   6240
+      TabIndex        =   9
+      Top             =   4890
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Max             =   255
+      Value           =   255
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltInL 
+      Height          =   495
+      Left            =   6240
+      TabIndex        =   11
+      Top             =   930
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Max             =   253
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltInR 
+      Height          =   495
+      Left            =   6240
+      TabIndex        =   13
+      Top             =   2610
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   2
+      Max             =   255
+      Value           =   255
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltInM 
+      Height          =   495
+      Left            =   6240
+      TabIndex        =   16
+      Top             =   1770
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblSubHeading 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "gray point (midtone):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   4
+      Left            =   6240
+      TabIndex        =   15
+      Top             =   1440
+      Width           =   2295
+   End
+   Begin VB.Label lblSubHeading 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "white point (ceiling):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   3
+      Left            =   6240
+      TabIndex        =   12
+      Top             =   2280
+      Width           =   2205
+   End
+   Begin VB.Label lblSubHeading 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "black point (floor):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   2
+      Left            =   6240
+      TabIndex        =   10
+      Top             =   600
+      Width           =   1995
+   End
+   Begin VB.Label lblSubHeading 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "white point (ceiling):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   1
+      Left            =   6240
+      TabIndex        =   7
+      Top             =   4560
+      Width           =   2205
+   End
+   Begin VB.Label lblSubHeading 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "black point (floor):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   6240
+      TabIndex        =   6
+      Top             =   3720
+      Width           =   1995
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   25
+      TabIndex        =   4
       Top             =   5760
       Width           =   12255
-   End
-   Begin VB.Label Label9 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "0"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   7320
-      TabIndex        =   24
-      Top             =   2040
-      Width           =   90
-   End
-   Begin VB.Label Label7 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "1"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   7305
-      TabIndex        =   23
-      Top             =   3360
-      Width           =   90
-   End
-   Begin VB.Label Label4 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "1"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   7305
-      TabIndex        =   22
-      Top             =   3600
-      Width           =   90
    End
    Begin VB.Label lblOutput 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "output levels:"
+      Caption         =   "output levels"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -163,66 +287,16 @@ Begin VB.Form FormLevels
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   405
+      Height          =   285
       Left            =   6000
-      TabIndex        =   21
-      Top             =   2970
-      Width           =   1440
-   End
-   Begin VB.Label lblOutputL 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Left limit:"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   6120
-      TabIndex        =   20
-      Top             =   3360
-      Width           =   660
-   End
-   Begin VB.Label Label1 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "255"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   11505
-      TabIndex        =   19
-      Top             =   3360
-      Width           =   270
-   End
-   Begin VB.Label Label2 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Right limit:"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   6120
-      TabIndex        =   18
-      Top             =   3600
-      Width           =   750
-   End
-   Begin VB.Label Label3 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "255"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   11505
-      TabIndex        =   17
-      Top             =   3600
-      Width           =   270
+      TabIndex        =   3
+      Top             =   3240
+      Width           =   1350
    End
    Begin VB.Label lblInput 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "input levels:"
+      Caption         =   "input levels"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -233,108 +307,11 @@ Begin VB.Form FormLevels
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   405
+      Height          =   285
       Left            =   6000
-      TabIndex        =   16
-      Top             =   1650
-      Width           =   1290
-   End
-   Begin VB.Label Label5 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "255"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   11505
-      TabIndex        =   15
-      Top             =   2520
-      Width           =   270
-   End
-   Begin VB.Label Label6 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Right limit:"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   6120
-      TabIndex        =   14
-      Top             =   2520
-      Width           =   750
-   End
-   Begin VB.Label lblLeftR 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "253"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   11505
-      TabIndex        =   13
-      Top             =   2040
-      Width           =   270
-   End
-   Begin VB.Label Label8 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Left limit:"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   6120
-      TabIndex        =   12
-      Top             =   2040
-      Width           =   660
-   End
-   Begin VB.Label lblMiddleR 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "254"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   11505
-      TabIndex        =   11
-      Top             =   2280
-      Width           =   270
-   End
-   Begin VB.Label Label10 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Midtones:"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   6120
-      TabIndex        =   10
-      Top             =   2280
-      Width           =   705
-   End
-   Begin VB.Label lblMiddleL 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "1"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   7305
-      TabIndex        =   9
-      Top             =   2280
-      Width           =   90
-   End
-   Begin VB.Label lblRightL 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "2"
-      ForeColor       =   &H00800000&
-      Height          =   195
-      Left            =   7305
-      TabIndex        =   8
-      Top             =   2520
-      Width           =   90
+      TabIndex        =   2
+      Top             =   120
+      Width           =   1200
    End
 End
 Attribute VB_Name = "FormLevels"
@@ -346,12 +323,16 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright ©2006-2013 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 09/September/12
-'Last update: rewrote everything against the new layer class
+'Last updated: 26/April/13
+'Last update: redesigned the entire form around the new slider/text custom control.  This should make it much more
+'              user-friendly, and for the first time ever, values can now be entered via text box.  Yay!
 '
-'This form is an exact model of how to adjust image levels (identical to
-' Photoshop's method).  Be forewarned - there are some fairly involved (i.e. incomprehensible)
-' math sections.
+'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool, and identical
+' values entered into both programs should yield an identical image.
+'
+'Unfortunately, to perfectly mimic Photoshop's behavior, some fairly involved (i.e. incomprehensible) math is required.
+' To mitigate the speed implications of such convoluted math, a number of look-up tables are used.  This makes the
+' function quite fast, but at a hit to readability.  My apologies.
 '
 '***************************************************************************
 
@@ -362,15 +343,6 @@ Private Const MAXGAMMA As Double = 1.8460498941512
 Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
-'Used to track the ratio of the midtones scrollbar, so that when the left and
-'right values get changed, we automatically set the midtone to the same ratio
-'(i.e. as Photoshop does it)
-Dim midRatio As Double
-
-'Whether or not changing the midtone scrollbar is user-generated or program-generated
-'(so we only refresh if the user moved it - otherwise we get bad looping)
-Dim iRefresh As Boolean
-
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -380,115 +352,44 @@ End Sub
 Private Sub cmdOK_Click()
     
     Me.Visible = False
-    
-    Process ImageLevels, hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value
-    
+    Process ImageLevels, sltInL.Value, sltInM.Value, sltInR.Value, sltOutL.Value, sltOutR.Value
     Unload Me
     
 End Sub
 
 Private Sub Form_Activate()
-   
-    'Set the default midtone scrollbar ratio to 1/2
-    midRatio = 0.5
-    
-    '...and allow refreshing
-    iRefresh = True
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
     'Draw a preview image
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
+    updatePreview
 
 End Sub
 
 'This will reset the scrollbars to default levels
 Private Sub cmdReset_Click()
     
-    'Allow refreshing
-    iRefresh = True
-    
     'Set the output levels to (0-255)
-    hsOutL.Value = 0
-    hsOutR.Value = 255
+    sltOutL.Value = 0
+    sltOutR.Value = 255
     
     'Set the input levels to (0-255)
-    hsInL.Value = 0
-    hsInR.Value = 255
+    sltInL.Value = 0
+    sltInR.Value = 255
     FixScrollBars
     
-    'Set the midtone level to default (127)
-    midRatio = 0.5
-    hsInM.Value = 127
-    FixScrollBars
+    'Set the midtone level to default (0.5)
+    sltInM.Value = 0.5
     
 End Sub
-
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'*********************************************************************************
-'The following 10 subroutines are for changing/scrolling any of the scrollbars
-'on the main form
-'*********************************************************************************
-Private Sub hsInL_Change()
-    FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-End Sub
-
-Private Sub hsInL_Scroll()
-    FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-End Sub
-
-Private Sub hsInM_Change()
-    If iRefresh = True Then
-        midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
-        FixScrollBars True
-        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-    End If
-End Sub
-
-Private Sub hsInM_Scroll()
-    If iRefresh = True Then
-        midRatio = (CDbl(hsInM.Value) - CDbl(hsInL.Value)) / (CDbl(hsInR.Value) - CDbl(hsInL.Value))
-        FixScrollBars True
-        MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-    End If
-End Sub
-
-Private Sub hsInR_Change()
-    FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-End Sub
-
-Private Sub hsInR_Scroll()
-    FixScrollBars
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-End Sub
-
-Private Sub hsOutL_Change()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-End Sub
-
-Private Sub hsOutL_Scroll()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-End Sub
-
-Private Sub hsOutR_Change()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-End Sub
-
-Private Sub hsOutR_Scroll()
-    MapImageLevels hsInL.Value, hsInM.Value, hsInR.Value, hsOutL.Value, hsOutR.Value, True, fxPreview
-End Sub
-
-
 'Draw an image based on user-adjusted input and output levels
-Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Mapping new image levels..."
     
@@ -540,15 +441,9 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
         gValues(x) = 1 / ((gValues(x) + 1 / ROOT10) ^ 2)
     Next x
     
-    'Because we've built our look-up tables on a 0-255 scale, correct the inMLimit
-    ' value (from the midtones scroll bar) to simply represent a ratio on that scale
-    Dim tRatio As Double
-    tRatio = (inMLimit - inLLimit) / (inRLimit - inLLimit)
-    tRatio = tRatio * 255
-    
-    'Then convert that ratio into a byte (so we can access a look-up table with it)
+    'Convert the midtone ratio into a byte (so we can access a look-up table with it)
     Dim bRatio As Byte
-    bRatio = CByte(tRatio)
+    bRatio = CByte(inMLimit * 255)
     
     'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
     Dim gLevels(0 To 255) As Byte
@@ -623,37 +518,6 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Long, ByVal 
 
 End Sub
 
-'Used to make sure the scroll bars have appropriate limits
-Private Sub FixScrollBars(Optional midMoving As Boolean = False)
-
-    'Make sure that the input scrollbar values don't overlap, and update the labels
-    'to display such
-    hsInM.Min = hsInL.Value + 1
-    lblMiddleL.Caption = hsInL.Value + 1
-    hsInR.Min = hsInL.Value + 2
-    lblRightL.Caption = hsInL.Value + 2
-    hsInL.Max = hsInR.Value - 2
-    lblLeftR.Caption = hsInR.Value - 2
-    hsInM.Max = hsInR.Value - 1
-    lblMiddleR.Caption = hsInR.Value - 1
-    
-    'If the user hasn't moved the midtones scrollbar, attempt to preserve its ratio
-    If midMoving = False Then
-        iRefresh = False
-        Dim NewValue As Long
-        NewValue = hsInL.Value + midRatio * (CDbl(hsInR.Value) - CDbl(hsInL.Value))
-        If NewValue > hsInM.Max Then
-            NewValue = hsInM.Max
-        ElseIf NewValue < hsInM.Min Then
-            NewValue = hsInM.Min
-        End If
-        hsInM.Value = NewValue
-        'DoEvents
-        iRefresh = True
-    End If
-    
-End Sub
-
 'Used to convert Long-type variables to bytes (with proper [0,255] range)
 Private Function ByteMe(ByVal bVal As Long) As Byte
     If bVal > 255 Then
@@ -665,3 +529,39 @@ Private Function ByteMe(ByVal bVal As Long) As Byte
     End If
 End Function
 
+'Used to make sure the scroll bars have appropriate limits
+Private Sub FixScrollBars()
+    
+    'The black tone input level is never allowed to be > the white tone input level.
+    sltInL.Max = sltInR.Value - 2
+    
+    ' Similarly, the white tone input level is never allowed to be < the black tone input level.
+    sltInR.Min = sltInL.Value + 2
+    
+End Sub
+
+Private Sub sltInL_Change()
+    FixScrollBars
+    updatePreview
+End Sub
+
+Private Sub sltInM_Change()
+    updatePreview
+End Sub
+
+Private Sub sltInR_Change()
+    FixScrollBars
+    updatePreview
+End Sub
+
+Private Sub sltOutL_Change()
+    updatePreview
+End Sub
+
+Private Sub sltOutR_Change()
+    updatePreview
+End Sub
+
+Private Sub updatePreview()
+    MapImageLevels sltInL.Value, sltInM.Value, sltInR.Value, sltOutL.Value, sltOutR.Value, True, fxPreview
+End Sub
