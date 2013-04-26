@@ -323,7 +323,7 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
         midG = 0
         midB = 0
         cutoffTotal = (mPercent * NumOfPixels)
-        'If cutoffTotal = 0 Then cutoffTotal = 1
+        If cutoffTotal = 0 Then cutoffTotal = 1
         
         i = -1
         Do
