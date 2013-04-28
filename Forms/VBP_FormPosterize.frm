@@ -42,19 +42,27 @@ Begin VB.Form FormPosterize
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsBits 
-      Height          =   255
-      Left            =   6120
-      Max             =   7
-      Min             =   1
-      TabIndex        =   3
-      Top             =   2640
-      Value           =   2
-      Width           =   4815
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.TextBox txtBits 
-      Alignment       =   2  'Center
-      BeginProperty Font 
+   Begin PhotoDemon.sliderTextCombo sltBits 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   2640
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   8
+      Value           =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -63,28 +71,11 @@ Begin VB.Form FormPosterize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   1
-      TabIndex        =   2
-      Text            =   "2"
-      Top             =   2580
-      Width           =   615
-   End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
-      TabIndex        =   6
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12015
    End
@@ -106,7 +97,7 @@ Begin VB.Form FormPosterize
       ForeColor       =   &H00404040&
       Height          =   405
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2280
       Width           =   2880
    End
@@ -118,10 +109,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Posterizing Effect Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 24/September/12
-'Last update: interface overhaul
+'Last updated: 28/April/13
+'Last update: simplify code by relying on new slider/text custom control
 '
 'Updated posterizing interface; it has been optimized for speed and
 '  ease-of-implementation.  If only VB had bit-shift operators....
@@ -137,12 +128,10 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
-    If EntryValid(txtBits, hsBits.Min, hsBits.Max) Then
+    If sltBits.IsValid Then
         Me.Visible = False
-        Process Posterize, hsBits.Value
+        Process Posterize, sltBits.Value
         Unload Me
-    Else
-        AutoSelectText txtBits
     End If
 End Sub
 
@@ -217,7 +206,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Create a preview
-    PosterizeImage hsBits.Value, True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -225,22 +214,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'The following routines are for keeping the text box and scroll bar values in lock-step
-Private Sub hsBits_Change()
-    copyToTextBoxI txtBits, hsBits.Value
-    PosterizeImage hsBits.Value, True, fxPreview
+Private Sub sltBits_Change()
+    updatePreview
 End Sub
 
-Private Sub hsBits_Scroll()
-    copyToTextBoxI txtBits, hsBits.Value
-    PosterizeImage hsBits.Value, True, fxPreview
-End Sub
-
-Private Sub txtBits_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtBits
-    If EntryValid(txtBits, hsBits.Min, hsBits.Max, False, False) Then hsBits.Value = Val(txtBits)
-End Sub
-
-Private Sub txtBits_GotFocus()
-    AutoSelectText txtBits
+Private Sub updatePreview()
+    PosterizeImage sltBits.Value, True, fxPreview
 End Sub
