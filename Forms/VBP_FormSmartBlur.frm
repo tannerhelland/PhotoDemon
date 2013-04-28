@@ -28,7 +28,7 @@ Begin VB.Form FormSmartBlur
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   1800
       Width           =   1740
       _ExtentX        =   3069
@@ -44,35 +44,6 @@ Begin VB.Form FormSmartBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.TextBox txtThreshold 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   3
-      TabIndex        =   9
-      Text            =   "50"
-      Top             =   3900
-      Width           =   615
-   End
-   Begin VB.HScrollBar hsThreshold 
-      Height          =   255
-      Left            =   6120
-      Max             =   255
-      TabIndex        =   8
-      Top             =   3960
-      Value           =   50
-      Width           =   4935
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -92,40 +63,10 @@ Begin VB.Form FormSmartBlur
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   500
-      Min             =   1
-      TabIndex        =   2
-      Top             =   3000
-      Value           =   50
-      Width           =   4935
-   End
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   4
-      TabIndex        =   3
-      Text            =   "5.0"
-      Top             =   2940
-      Width           =   615
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -135,7 +76,7 @@ Begin VB.Form FormSmartBlur
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   2160
       Width           =   975
       _ExtentX        =   1720
@@ -144,6 +85,48 @@ Begin VB.Form FormSmartBlur
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   3000
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0.1
+      Max             =   200
+      SigDigits       =   1
+      Value           =   5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltThreshold 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   3960
+      Width           =   5925
+      _ExtentX        =   10451
+      _ExtentY        =   873
+      Max             =   255
+      Value           =   50
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -170,7 +153,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   1440
       Width           =   1440
    End
@@ -191,7 +174,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   3600
       Width           =   1080
    End
@@ -209,7 +192,7 @@ Begin VB.Form FormSmartBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
@@ -218,7 +201,7 @@ Begin VB.Form FormSmartBlur
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12135
    End
@@ -239,7 +222,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2640
       Width           =   735
    End
@@ -253,8 +236,8 @@ Attribute VB_Exposed = False
 '"Smart" Blur Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 17/January/13
-'Last updated: 17/January/13
-'Last update: initial build
+'Last updated: 28/April/13
+'Last update: simplify code by utilizing new slider/text custom control
 '
 'To my knowledge, this tool is the first of its kind in VB6 - an intelligent blur tool that selectively blurs
 ' edges differently from smooth areas of an image.  The user can specify the threshold to use, as well as whether
@@ -282,19 +265,11 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Validate all text box entries
-    If Not EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, True, True) Then
-        AutoSelectText txtRadius
-        Exit Sub
+    If sltRadius.IsValid And sltThreshold.IsValid Then
+        Me.Visible = False
+        Process SmartBlur, sltRadius, sltThreshold, optEdges(1)
+        Unload Me
     End If
-    
-    If Not EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, True, True) Then
-        AutoSelectText txtThreshold
-        Exit Sub
-    End If
-    
-    Me.Visible = False
-    Process SmartBlur, CDbl(hsRadius.Value) / 10, hsThreshold.Value, optEdges(1)
-    Unload Me
     
 End Sub
 
@@ -467,54 +442,19 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'The next three routines keep the scroll bar and text box values in sync
-Private Sub hsRadius_Change()
-    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Scroll()
-    copyToTextBoxF hsRadius.Value / 10, txtRadius, 1
-    updatePreview
-End Sub
-
-Private Sub hsThreshold_Change()
-    copyToTextBoxI txtThreshold, hsThreshold.Value
-    updatePreview
-End Sub
-
-Private Sub hsThreshold_Scroll()
-    copyToTextBoxI txtThreshold, hsThreshold.Value
-    updatePreview
-End Sub
-
 Private Sub OptEdges_Click(Index As Integer)
     updatePreview
 End Sub
 
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
+Private Sub sltRadius_Change()
+    updatePreview
 End Sub
 
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min / 10, hsRadius.Max / 10, False, False) Then
-        hsRadius.Value = Val(txtRadius) * 10
-    End If
-End Sub
-
-Private Sub txtThreshold_GotFocus()
-    AutoSelectText txtThreshold
-End Sub
-
-Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtThreshold
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then
-        hsThreshold.Value = Val(txtThreshold)
-    End If
+Private Sub sltThreshold_Change()
+    updatePreview
 End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    SmartBlurFilter CDbl(hsRadius.Value) / 10, hsThreshold.Value, optEdges(1), True, fxPreview
+    SmartBlurFilter sltRadius, sltThreshold, optEdges(1), True, fxPreview
 End Sub
