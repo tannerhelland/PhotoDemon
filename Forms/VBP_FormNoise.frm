@@ -27,7 +27,7 @@ Begin VB.Form FormNoise
    Begin PhotoDemon.smartCheckBox chkM 
       Height          =   480
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   3360
       Width           =   2610
       _ExtentX        =   4604
@@ -61,19 +61,27 @@ Begin VB.Form FormNoise
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsNoise 
-      Height          =   255
-      Left            =   6120
-      Max             =   500
-      Min             =   1
-      TabIndex        =   3
-      Top             =   2760
-      Value           =   1
-      Width           =   4935
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.TextBox txtNoise 
-      Alignment       =   2  'Center
-      BeginProperty Font 
+   Begin PhotoDemon.sliderTextCombo sltNoise 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   2760
+      Width           =   5895
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   500
+      Value           =   5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -82,28 +90,11 @@ Begin VB.Form FormNoise
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   3
-      TabIndex        =   2
-      Text            =   "1"
-      Top             =   2700
-      Width           =   615
-   End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
-      TabIndex        =   6
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12375
    End
@@ -123,7 +114,7 @@ Begin VB.Form FormNoise
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2400
       Width           =   1530
    End
@@ -135,10 +126,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Noise Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 3/15/01
-'Last updated: 10/September/12
-'Last update: rewrote against new layer class
+'Last updated: 27/April/13
+'Last update: convert interface to new slider/text custom control
 '
 'Form for adding noise to an image.
 '
@@ -147,7 +138,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub ChkM_Click()
-    AddNoise hsNoise.Value, chkM.Value, True, fxPreview
+    updatePreview
 End Sub
 
 'CANCEL button
@@ -157,12 +148,10 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
-    If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max) Then
+    If sltNoise.IsValid Then
         FormNoise.Visible = False
-        Process Noise, hsNoise.Value, chkM.Value
+        Process Noise, sltNoise.Value, CBool(chkM.Value)
         Unload Me
-    Else
-        AutoSelectText txtNoise
     End If
 End Sub
 
@@ -269,7 +258,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Render a preview
-    AddNoise hsNoise.Value, chkM.Value, True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -277,22 +266,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'The following four routines keep the value of the textbox and scroll bar in lock-step
-Private Sub hsNoise_Change()
-    copyToTextBoxI txtNoise, hsNoise.Value
-    AddNoise hsNoise.Value, chkM.Value, True, fxPreview
+Private Sub sltNoise_Change()
+    updatePreview
 End Sub
 
-Private Sub hsNoise_Scroll()
-    copyToTextBoxI txtNoise, hsNoise.Value
-    AddNoise hsNoise.Value, chkM.Value, True, fxPreview
-End Sub
-
-Private Sub txtNoise_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtNoise
-    If EntryValid(txtNoise, hsNoise.Min, hsNoise.Max, False, False) Then hsNoise.Value = Val(txtNoise)
-End Sub
-
-Private Sub txtNoise_GotFocus()
-    AutoSelectText txtNoise
+Private Sub updatePreview()
+    AddNoise sltNoise.Value, CBool(chkM.Value), True, fxPreview
 End Sub
