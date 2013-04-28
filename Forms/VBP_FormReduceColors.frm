@@ -27,8 +27,8 @@ Begin VB.Form FormReduceColors
    Begin PhotoDemon.smartCheckBox chkDither 
       Height          =   480
       Left            =   6480
-      TabIndex        =   20
-      Top             =   4560
+      TabIndex        =   14
+      Top             =   4620
       Width           =   1485
       _ExtentX        =   2619
       _ExtentY        =   847
@@ -48,7 +48,7 @@ Begin VB.Form FormReduceColors
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   15
+      TabIndex        =   9
       Top             =   600
       Width           =   2355
       _ExtentX        =   4154
@@ -82,100 +82,10 @@ Begin VB.Form FormReduceColors
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsBlue 
-      Height          =   255
-      Left            =   6240
-      Max             =   64
-      Min             =   2
-      TabIndex        =   7
-      Top             =   4155
-      Value           =   6
-      Width           =   5055
-   End
-   Begin VB.HScrollBar hsGreen 
-      Height          =   255
-      Left            =   6240
-      Max             =   64
-      Min             =   2
-      TabIndex        =   5
-      Top             =   3405
-      Value           =   7
-      Width           =   5055
-   End
-   Begin VB.HScrollBar hsRed 
-      Height          =   255
-      Left            =   6240
-      Max             =   64
-      Min             =   2
-      TabIndex        =   3
-      Top             =   2655
-      Value           =   6
-      Width           =   5055
-   End
-   Begin VB.TextBox TxtB 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11400
-      MaxLength       =   3
-      TabIndex        =   6
-      Text            =   "6"
-      Top             =   4110
-      Width           =   615
-   End
-   Begin VB.TextBox TxtG 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11400
-      MaxLength       =   3
-      TabIndex        =   4
-      Text            =   "7"
-      Top             =   3360
-      Width           =   615
-   End
-   Begin VB.TextBox TxtR 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11400
-      MaxLength       =   3
-      TabIndex        =   2
-      Text            =   "6"
-      Top             =   2610
-      Width           =   615
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   14
+      TabIndex        =   8
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -185,7 +95,7 @@ Begin VB.Form FormReduceColors
       Height          =   330
       Index           =   1
       Left            =   6120
-      TabIndex        =   16
+      TabIndex        =   10
       Top             =   960
       Width           =   3630
       _ExtentX        =   6403
@@ -205,7 +115,7 @@ Begin VB.Form FormReduceColors
       Height          =   330
       Index           =   2
       Left            =   6120
-      TabIndex        =   17
+      TabIndex        =   11
       Top             =   1320
       Width           =   3180
       _ExtentX        =   5609
@@ -224,13 +134,76 @@ Begin VB.Form FormReduceColors
    Begin PhotoDemon.smartCheckBox chkSmartColors 
       Height          =   480
       Left            =   9000
-      TabIndex        =   21
-      Top             =   4560
+      TabIndex        =   15
+      Top             =   4620
       Width           =   2130
       _ExtentX        =   3757
       _ExtentY        =   847
       Caption         =   "use realistic coloring"
       Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltRed 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   16
+      Top             =   2535
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      Min             =   2
+      Max             =   64
+      Value           =   6
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltGreen 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   17
+      Top             =   3300
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      Min             =   2
+      Max             =   64
+      Value           =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltBlue 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   18
+      Top             =   4095
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      Min             =   2
+      Max             =   64
+      Value           =   6
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -257,8 +230,8 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   270
       Left            =   6120
-      TabIndex        =   19
-      Top             =   3750
+      TabIndex        =   13
+      Top             =   3795
       Width           =   1980
    End
    Begin VB.Label lblGreenValues 
@@ -277,14 +250,14 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   270
       Left            =   6120
-      TabIndex        =   18
+      TabIndex        =   12
       Top             =   3000
       Width           =   2145
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   13
+      TabIndex        =   7
       Top             =   5760
       Width           =   12375
    End
@@ -303,7 +276,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H000000C0&
       Height          =   1095
       Left            =   10200
-      TabIndex        =   12
+      TabIndex        =   6
       Top             =   600
       Visible         =   0   'False
       Width           =   1935
@@ -327,7 +300,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   5
       Top             =   1800
       Width           =   3090
    End
@@ -347,8 +320,8 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   270
       Left            =   6120
-      TabIndex        =   10
-      Top             =   2280
+      TabIndex        =   4
+      Top             =   2250
       Width           =   1905
    End
    Begin VB.Label lblMaxColors 
@@ -367,7 +340,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   240
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   3
       Top             =   5160
       Width           =   3885
    End
@@ -389,7 +362,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   405
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   2
       Top             =   240
       Width           =   2265
    End
@@ -403,12 +376,12 @@ Attribute VB_Exposed = False
 'Color Reduction Form
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 4/October/00
-'Last updated: 11/September/12
-'Last update: Rewrote all reduction algorithms against the new layer class and added previewing
+'Last updated: 28/April/13
+'Last update: greatly simplify code by relying on new slider/text custom control
 '
 'In the original incarnation of PhotoDemon, this was a central part of the project. I have since not used
-' it as much (since the project has become almost entirely centered around 24-bit imaging), but the code
-' is solid and the feature set is large.
+' it much (since the project has become almost entirely centered around 24/32bpp imaging), but the code
+' behind this tool is solid and the feature set is large.
 '
 '***************************************************************************
 
@@ -451,37 +424,20 @@ Private Sub cmdOK_Click()
     Else
     
         'Before reducing anything, check to make sure the textboxes have valid input
-        If Not EntryValid(TxtR, hsRed.Min, hsRed.Max, True, True) Then
-            AutoSelectText TxtR
-            Exit Sub
-        End If
-        If Not EntryValid(TxtG, hsGreen.Min, hsGreen.Max, True, True) Then
-            AutoSelectText TxtG
-            Exit Sub
-        End If
-        If Not EntryValid(TxtB, hsBlue.Min, hsBlue.Max, True, True) Then
-            AutoSelectText TxtB
-            Exit Sub
-        End If
+        If sltRed.IsValid And sltGreen.IsValid And sltBlue.IsValid Then
+            
+            Me.Visible = False
         
-        Me.Visible = False
-        
-        'Do the appropriate method of color reduction
-        If chkDither.Value = vbUnchecked Then
-            If chkSmartColors.Value = vbUnchecked Then
-                Process ReduceColors, REDUCECOLORS_MANUAL, TxtR, TxtG, TxtB, False
+            'Do the appropriate method of color reduction
+            If chkDither.Value = vbUnchecked Then
+                Process ReduceColors, REDUCECOLORS_MANUAL, sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)
             Else
-                Process ReduceColors, REDUCECOLORS_MANUAL, TxtR, TxtG, TxtB, True
+                Process ReduceColors, REDUCECOLORS_MANUAL_ERRORDIFFUSION, sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)
             End If
-        Else
-            If chkSmartColors.Value = vbUnchecked Then
-                Process ReduceColors, REDUCECOLORS_MANUAL_ERRORDIFFUSION, TxtR, TxtG, TxtB, False
-            Else
-                Process ReduceColors, REDUCECOLORS_MANUAL_ERRORDIFFUSION, TxtR, TxtG, TxtB, True
-            End If
-        End If
+            
+            Unload Me
         
-        Unload Me
+        End If
         
     End If
     
@@ -516,72 +472,14 @@ End Sub
 
 'Enable/disable the manual settings depending on which option button has been selected
 Private Sub OptQuant_Click(Index As Integer)
-    If optQuant(2).Value = True Then DisplayManualOptions True Else DisplayManualOptions False
+    DisplayManualOptions optQuant(2).Value
     updateReductionPreview
-End Sub
-
-'The large chunk of subs that follow serve to keep the text box and scroll bar values in lock-step
-Private Sub hsRed_Change()
-    copyToTextBoxI TxtR, hsRed.Value
-    updateColorLabel
-End Sub
-
-Private Sub hsGreen_Change()
-    copyToTextBoxI TxtG, hsGreen.Value
-    updateColorLabel
-End Sub
-
-Private Sub hsBlue_Change()
-    copyToTextBoxI TxtB, hsBlue.Value
-    updateColorLabel
-End Sub
-
-Private Sub hsRed_Scroll()
-    copyToTextBoxI TxtR, hsRed.Value
-    updateColorLabel
-End Sub
-
-Private Sub hsGreen_Scroll()
-    copyToTextBoxI TxtG, hsGreen.Value
-    updateColorLabel
-End Sub
-
-Private Sub hsBlue_Scroll()
-    copyToTextBoxI TxtB, hsBlue.Value
-    updateColorLabel
-End Sub
-
-Private Sub TxtB_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate TxtB
-    If EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then hsBlue.Value = Val(TxtB)
-End Sub
-
-Private Sub TxtB_GotFocus()
-    AutoSelectText TxtB
-End Sub
-
-Private Sub TxtG_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate TxtG
-    If EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) Then hsGreen.Value = Val(TxtG)
-End Sub
-
-Private Sub TxtG_GotFocus()
-    AutoSelectText TxtG
-End Sub
-
-Private Sub TxtR_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate TxtR
-    If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) Then hsRed.Value = Val(TxtR)
-End Sub
-
-Private Sub TxtR_GotFocus()
-    AutoSelectText TxtR
 End Sub
 
 'This lets the user know the max number of colors that the current set of quantization parameters will allow for
 Private Sub updateColorLabel()
-    If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then
-        lblMaxColors = g_Language.TranslateMessage("Maximum # of colors with these parameters:") & " " & Val(TxtR) * Val(TxtG) * Val(TxtB)
+    If sltRed.IsValid And sltGreen.IsValid And sltBlue.IsValid Then
+        lblMaxColors = g_Language.TranslateMessage("Maximum # of colors with these parameters:") & " " & sltRed * sltGreen * sltBlue
         updateReductionPreview
     Else
         lblMaxColors = ""
@@ -590,35 +488,27 @@ End Sub
 
 'Enable/disable the manual options depending on which quantization method has been selected
 Private Sub DisplayManualOptions(ByVal toDisplay As Boolean)
-    If toDisplay = False Then
-        lblQuantizationOptions.ForeColor = RGB(160, 160, 160)
-        lblRedValues.ForeColor = RGB(160, 160, 160)
-        lblGreenValues.ForeColor = RGB(160, 160, 160)
-        lblBlueValues.ForeColor = RGB(160, 160, 160)
-        lblMaxColors.ForeColor = RGB(160, 160, 160)
-        TxtR.Enabled = False
-        TxtG.Enabled = False
-        TxtB.Enabled = False
-        hsRed.Enabled = False
-        hsGreen.Enabled = False
-        hsBlue.Enabled = False
-        chkDither.Enabled = False
-        chkSmartColors.Enabled = False
-    Else
+    
+    If toDisplay Then
         lblQuantizationOptions.ForeColor = &H400000
         lblRedValues.ForeColor = &H400000
         lblGreenValues.ForeColor = &H400000
         lblBlueValues.ForeColor = &H400000
         lblMaxColors.ForeColor = &H400000
-        TxtR.Enabled = True
-        TxtG.Enabled = True
-        TxtB.Enabled = True
-        hsRed.Enabled = True
-        hsGreen.Enabled = True
-        hsBlue.Enabled = True
-        chkDither.Enabled = True
-        chkSmartColors.Enabled = True
+    Else
+        lblQuantizationOptions.ForeColor = RGB(160, 160, 160)
+        lblRedValues.ForeColor = RGB(160, 160, 160)
+        lblGreenValues.ForeColor = RGB(160, 160, 160)
+        lblBlueValues.ForeColor = RGB(160, 160, 160)
+        lblMaxColors.ForeColor = RGB(160, 160, 160)
     End If
+    
+    sltRed.Enabled = toDisplay
+    sltGreen.Enabled = toDisplay
+    sltBlue.Enabled = toDisplay
+    chkDither.Enabled = toDisplay
+    chkSmartColors.Enabled = toDisplay
+    
 End Sub
 
 'Automatic 8-bit color reduction via the FreeImage DLL.
@@ -1092,6 +982,18 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     
 End Sub
 
+Private Sub sltBlue_Change()
+    updateColorLabel
+End Sub
+
+Private Sub sltGreen_Change()
+    updateColorLabel
+End Sub
+
+Private Sub sltRed_Change()
+    updateColorLabel
+End Sub
+
 'Use this sub to update the on-screen preview
 Private Sub updateReductionPreview()
     If optQuant(0).Value = True Then
@@ -1099,21 +1001,12 @@ Private Sub updateReductionPreview()
     ElseIf optQuant(1).Value = True Then
         ReduceImageColors_Auto FIQ_NNQUANT, True, fxPreview
     Else
-        If EntryValid(TxtR, hsRed.Min, hsRed.Max, False, False) And EntryValid(TxtG, hsGreen.Min, hsGreen.Max, False, False) And EntryValid(TxtB, hsBlue.Min, hsBlue.Max, False, False) Then
+        If sltRed.IsValid And sltGreen.IsValid And sltBlue.IsValid Then
             If chkDither.Value = vbUnchecked Then
-                If chkSmartColors.Value = vbUnchecked Then
-                    ReduceImageColors_BitRGB TxtR, TxtG, TxtB, False, True, fxPreview
-                Else
-                    ReduceImageColors_BitRGB TxtR, TxtG, TxtB, True, True, fxPreview
-                End If
+                ReduceImageColors_BitRGB sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, fxPreview
             Else
-                If chkSmartColors.Value = vbUnchecked Then
-                    ReduceImageColors_BitRGB_ErrorDif TxtR, TxtG, TxtB, False, True, fxPreview
-                Else
-                    ReduceImageColors_BitRGB_ErrorDif TxtR, TxtG, TxtB, True, True, fxPreview
-                End If
+                ReduceImageColors_BitRGB_ErrorDif sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, fxPreview
             End If
         End If
     End If
 End Sub
-
