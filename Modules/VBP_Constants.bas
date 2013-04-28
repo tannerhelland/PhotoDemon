@@ -55,10 +55,12 @@ Public Enum EDGE_OPERATOR
     EDGE_REFLECT = 1
     EDGE_WRAP = 2
     EDGE_ERASE = 3
+    EDGE_ORIGINAL = 4
 End Enum
 #If False Then
     Const EDGE_CLAMP = 0
     Const EDGE_REFLECT = 1
     Const EDGE_WRAP = 2
     Const EDGE_ERASE = 3
+    Const EDGE_ORIGINAL = 4
 #End If

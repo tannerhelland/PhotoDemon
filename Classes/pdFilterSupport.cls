@@ -16,10 +16,16 @@ Option Explicit
 Private m_FinalX As Long, m_FinalY As Long
 Private m_EdgeMethod As Long, m_ColorDepth As Long, m_ColorDepthLoop As Long
 Private m_Interpolate As Boolean
+Private m_DstX As Long, m_DstY As Long
 
 'After a transform has generate a set of reverse-mapped pixel coordinates, they are passed to this function.
 ' Based on already established parameters (such as interpolation, edge handling, etc), new pixel values are set.
 Public Sub setPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
+
+    If m_EdgeMethod = EDGE_ORIGINAL Then
+        m_DstX = x
+        m_DstY = y
+    End If
 
     Dim fixDistort As Boolean
 
@@ -69,12 +75,12 @@ End Sub
 'If a pixel lies outside image boundaries, move it in-bounds using one of several methods
 ' If the edge handle method is "Erase", this function will return a boolean indicating whether the supplied pixel
 ' must be erased.  If FALSE is returned, the pixel can be handled normally.
-Public Function FixDistortEdges(ByRef srcX As Double, srcY As Double) As Boolean
+Public Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As Boolean
 
     Select Case m_EdgeMethod
     
         'Clamp
-        Case 0
+        Case EDGE_CLAMP
         
             If srcX < 0 Then srcX = 0
             If srcY < 0 Then srcY = 0
@@ -82,7 +88,7 @@ Public Function FixDistortEdges(ByRef srcX As Double, srcY As Double) As Boolean
             If srcY > m_FinalY Then srcY = m_FinalY
         
         'Reflect
-        Case 1
+        Case EDGE_REFLECT
         
             If srcX < 0 Then srcX = Abs(srcX)
             If srcY < 0 Then srcY = Abs(srcY)
@@ -96,7 +102,7 @@ Public Function FixDistortEdges(ByRef srcX As Double, srcY As Double) As Boolean
             If srcY > m_FinalY Then srcY = Modulo(srcY, (m_FinalY + 1))
         
         'Wrap
-        Case 2
+        Case EDGE_WRAP
         
             If srcX < 0 Then srcX = Modulo(srcX, (m_FinalX + 1))
             If srcY < 0 Then srcY = Modulo(srcY, (m_FinalY + 1))
@@ -104,7 +110,7 @@ Public Function FixDistortEdges(ByRef srcX As Double, srcY As Double) As Boolean
             If srcY > m_FinalY Then srcY = Modulo(srcY, (m_FinalY + 1))
         
         'Erase
-        Case 3
+        Case EDGE_ERASE
         
             If srcX < 0 Then
                 FixDistortEdges = True
@@ -125,6 +131,15 @@ Public Function FixDistortEdges(ByRef srcX As Double, srcY As Double) As Boolean
                 FixDistortEdges = True
                 Exit Function
             End If
+            
+        Case EDGE_ORIGINAL
+            If srcX < 0 Then srcX = m_DstX
+            
+            If srcY < 0 Then srcY = m_DstY
+            
+            If srcX > m_FinalX Then srcX = m_DstX
+            
+            If srcY > m_FinalY Then srcY = m_DstY
             
     End Select
     

@@ -464,6 +464,7 @@ Public Sub popDistortEdgeBox(ByRef cmbEdges As ComboBox, Optional ByVal defaultE
     cmbEdges.AddItem " reflect them across the nearest edge"
     cmbEdges.AddItem " wrap them around the image"
     cmbEdges.AddItem " erase them"
+    cmbEdges.AddItem " ignore them"
     cmbEdges.ListIndex = defaultEdgeMethod
     
 End Sub
@@ -487,12 +488,12 @@ Public Sub FixToolboxText()
     Dim maxWidth As Long, maxIndex As Long
     maxWidth = 0
 
-    Dim txtWidth As Long
+    Dim TxtWidth As Long
     
     For i = 0 To FormMain.lblLeftToolBox.Count - 1
-        txtWidth = getPixelWidthOfString(FormMain.lblLeftToolBox(i).Caption, FormMain.picLeftPane.hDC)
-        If txtWidth > maxWidth Then
-            maxWidth = txtWidth
+        TxtWidth = getPixelWidthOfString(FormMain.lblLeftToolBox(i).Caption, FormMain.picLeftPane.hDC)
+        If TxtWidth > maxWidth Then
+            maxWidth = TxtWidth
             maxIndex = i
         End If
     Next i
@@ -508,9 +509,9 @@ Public Sub FixToolboxText()
         
             currentFontSize = currentFontSize - 1
             FormMain.picLeftPane.FontSize = currentFontSize
-            txtWidth = getPixelWidthOfString(FormMain.lblLeftToolBox(maxIndex).Caption, FormMain.picLeftPane.hDC)
+            TxtWidth = getPixelWidthOfString(FormMain.lblLeftToolBox(maxIndex).Caption, FormMain.picLeftPane.hDC)
         
-        Loop While txtWidth + leftPadding > FormMain.picLeftPane.ScaleWidth
+        Loop While TxtWidth + leftPadding > FormMain.picLeftPane.ScaleWidth
         
     End If
     
