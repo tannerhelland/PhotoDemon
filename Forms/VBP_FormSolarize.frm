@@ -42,19 +42,27 @@ Begin VB.Form FormSolarize
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsThreshold 
-      Height          =   255
-      Left            =   6120
-      Max             =   254
-      Min             =   1
-      TabIndex        =   3
-      Top             =   2520
-      Value           =   127
-      Width           =   4935
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5625
+      _extentx        =   9922
+      _extenty        =   9922
    End
-   Begin VB.TextBox txtThreshold 
-      Alignment       =   2  'Center
-      BeginProperty Font 
+   Begin PhotoDemon.sliderTextCombo sltThreshold 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   2520
+      Width           =   5925
+      _ExtentX        =   10451
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   254
+      Value           =   127
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -63,28 +71,11 @@ Begin VB.Form FormSolarize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      MaxLength       =   3
-      TabIndex        =   2
-      Text            =   "127"
-      Top             =   2475
-      Width           =   615
-   End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
-      TabIndex        =   6
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12135
    End
@@ -106,7 +97,7 @@ Begin VB.Form FormSolarize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2160
       Width           =   1950
    End
@@ -136,12 +127,10 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max) Then
+    If sltThreshold.IsValid Then
         Me.Visible = False
-        Process Solarize, hsThreshold.Value
+        Process Solarize, sltThreshold.Value
         Unload Me
-    Else
-        AutoSelectText txtThreshold
     End If
 End Sub
 
@@ -212,7 +201,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Render a preview
-    SolarizeImage hsThreshold.Value, True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -220,24 +209,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'When the horizontal scroll bar is moved, update the preview and text box to match
-Private Sub hsThreshold_Change()
-    copyToTextBoxI txtThreshold, hsThreshold.Value
-    SolarizeImage hsThreshold.Value, True, fxPreview
+Private Sub sltThreshold_Change()
+    updatePreview
 End Sub
 
-Private Sub hsThreshold_Scroll()
-    copyToTextBoxI txtThreshold, hsThreshold.Value
-    SolarizeImage hsThreshold.Value, True, fxPreview
+Private Sub updatePreview()
+    SolarizeImage sltThreshold.Value, True, fxPreview
 End Sub
-
-'When the text box is changed, update the preview and text box to match (assuming the text box value is valid)
-Private Sub txtThreshold_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtThreshold
-    If EntryValid(txtThreshold, hsThreshold.Min, hsThreshold.Max, False, False) Then hsThreshold.Value = Val(txtThreshold)
-End Sub
-
-Private Sub txtThreshold_GotFocus()
-    AutoSelectText txtThreshold
-End Sub
-
