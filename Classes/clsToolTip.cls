@@ -11,14 +11,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.
+'Note: this file has been modified for use within PhotoDemon, including fixing of several critical bugs.
 
 'To my knowledge, this class is ©2010 Dipak Auddy, with modifications by Roger Gilchrist
 
 'You may download the original version of this code from the following link (good as of March '13):
 ' http://www.vb-helper.com/howto_multi_line_tooltip.html
 
-'Many thanks to Rod for his excellent website and all the great VB tools it provides.
+'Many thanks to Rod Stephens for his excellent VB-helper website.
 
 
 Option Explicit
@@ -45,8 +45,8 @@ Private Type NMHDR
   code                            As Long
 End Type
 Private Type POINTAPI
-  X                               As Long
-  Y                               As Long
+  x                               As Long
+  y                               As Long
 End Type
 Private Type RECT
   Left                            As Long
@@ -222,8 +222,8 @@ Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (By
                                                                               ByVal lpClassName As String, _
                                                                               ByVal lpWindowName As String, _
                                                                               ByVal dwStyle As Long, _
-                                                                              ByVal X As Long, _
-                                                                              ByVal Y As Long, _
+                                                                              ByVal x As Long, _
+                                                                              ByVal y As Long, _
                                                                               ByVal nWidth As Long, _
                                                                               ByVal nHeight As Long, _
                                                                               ByVal hWndParent As Long, _
@@ -326,7 +326,7 @@ End Sub
 Public Function Create(ByRef frm As Object) As Boolean
 
   If (mnlgHwndTT = 0) Then
-    Call InitCommonControls
+    'Call InitCommonControls
 '
 ' The hwndParent param lets the tooltip window
 ' be owned by the specified form and be destroyed
@@ -535,13 +535,15 @@ Public Property Let MaxTipWidth(ByVal lngWidth As Long)
 ' evaluated (i.e. a vbCrLf shows up as "||")
 '
 
-  If mnlgHwndTT = 0 Then
-    Exit Property
-  End If
+  If mnlgHwndTT = 0 Then Exit Property
+  
   If lngWidth < 1 Then
     lngWidth = -1
   End If
-  Call SendMessageT(mnlgHwndTT, TTM_SETMAXTIPWIDTH, 0, lngWidth)
+  
+  'NOTE FROM TANNER: in the original version, this line was incorrect - lngWidth MUST be prefaced with ByVal for
+  ' the MaxTipWidth function to work.  (Otherwise, the address of lngWidth is passed.)
+  Call SendMessageT(mnlgHwndTT, TTM_SETMAXTIPWIDTH, 0, ByVal lngWidth)
 
 End Property
 
