@@ -101,12 +101,12 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
-    UserControl.Enabled = NewValue
-    chkBox.Enabled = NewValue
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    chkBox.Enabled = newValue
     
     'Also change the label color to help indicate disablement
-    If NewValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
+    If newValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
     PropertyChanged "Enabled"
 End Property
 
@@ -130,7 +130,7 @@ Private Sub chkBox_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -156,8 +156,8 @@ Attribute Value.VB_UserMemId = 0
     Value = chkBox.Value
 End Property
 
-Public Property Let Value(ByVal NewValue As CheckBoxConstants)
-    chkBox.Value = NewValue
+Public Property Let Value(ByVal newValue As CheckBoxConstants)
+    chkBox.Value = newValue
     PropertyChanged "Value"
     RaiseEvent Click
 End Property
@@ -227,7 +227,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -260,7 +260,7 @@ Private Sub UserControl_Show()
         With m_ToolTip
         
             .Create Me
-            .MaxTipWidth = 400
+            .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
             .AddTool chkBox, m_ToolString
             
         End With

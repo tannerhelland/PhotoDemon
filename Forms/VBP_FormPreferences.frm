@@ -2883,7 +2883,7 @@ Private Sub Form_Load()
     With m_ToolTip
     
         .Create Me
-        .MaxTipWidth = 400
+        .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
         
         .AddTool picCanvasColor
         .ToolText(picCanvasColor) = g_Language.TranslateMessage("Click to change the image window background color")

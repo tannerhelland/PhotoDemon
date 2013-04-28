@@ -214,7 +214,7 @@ Public Sub ShowDialog()
     With m_ToolTip
     
         .Create Me
-        .MaxTipWidth = 400
+        .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
         
         For i = 0 To cmdAnswer.Count - 1
             .AddTool cmdAnswer(i)

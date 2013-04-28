@@ -64,3 +64,6 @@ End Enum
     Const EDGE_ERASE = 3
     Const EDGE_ORIGINAL = 4
 #End If
+
+'Maximum width (in pixels) for custom-built tooltips
+Public Const PD_MAX_TOOLTIP_WIDTH As Long = 400

@@ -382,7 +382,7 @@ Private Sub UserControl_Show()
         With m_ToolTip
         
             .Create Me
-            .MaxTipWidth = 400
+            .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
             .AddTool hsPrimary, m_ToolString
             .AddTool txtPrimary, m_ToolString
             
