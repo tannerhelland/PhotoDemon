@@ -41,39 +41,10 @@ Begin VB.Form FormShadowHighlight
       Left            =   6120
       ScaleHeight     =   465
       ScaleWidth      =   5625
-      TabIndex        =   11
+      TabIndex        =   7
       TabStop         =   0   'False
       Top             =   2640
       Width           =   5655
-   End
-   Begin VB.TextBox txtHighlight 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      TabIndex        =   8
-      Text            =   "0.05"
-      Top             =   4155
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsHighlight 
-      Height          =   255
-      Left            =   6120
-      Max             =   3000
-      Min             =   1
-      TabIndex        =   7
-      Top             =   4200
-      Value           =   5
-      Width           =   4815
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -93,39 +64,10 @@ Begin VB.Form FormShadowHighlight
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsShadow 
-      Height          =   255
-      Left            =   6120
-      Max             =   3000
-      Min             =   1
-      TabIndex        =   2
-      Top             =   1800
-      Value           =   5
-      Width           =   4815
-   End
-   Begin VB.TextBox txtShadow 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      TabIndex        =   3
-      Text            =   "0.05"
-      Top             =   1755
-      Width           =   735
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -134,12 +76,56 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   3240
       Width           =   3690
       _ExtentX        =   6509
       _ExtentY        =   847
       Caption         =   "use the median midtone for this image"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltShadow 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   1770
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0
+      Max             =   30
+      SigDigits       =   2
+      Value           =   0.05
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltHighlight 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   4170
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0
+      Max             =   30
+      SigDigits       =   2
+      Value           =   0.05
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -168,7 +154,7 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   2280
       Width           =   4530
    End
@@ -190,14 +176,14 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   3840
       Width           =   1125
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12495
    End
@@ -219,7 +205,7 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   1440
       Width           =   1005
    End
@@ -233,18 +219,26 @@ Attribute VB_Exposed = False
 'Shadow / Midtone / Highlight Adjustment Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 17/February/13
-'Last updated: 17/February/13
-'Last update: initial build
+'Last updated: 28/April/13
+'Last update: greatly simplify code by relying on new slider/text custom control
 '
-'White balance handler.  Unlike other programs, which shove this under the Levels dialog as an "auto levels"
-' function, I consider it worthy of its own interface.  The reason is - white balance is an important function.
-' It's arguably more useful than the Levels dialog, especially to a casual user, because it automatically
-' calculates levels according to a reliable, often-accurate algorithm.  Rather than forcing the user through the
-' Levels dialog (because really, how many people know that Auto Levels is actually White Balance in photography
-' parlance?), PhotoDemon provides a full implementation of custom white balance handling.
-' The value box on the form is the percentage of pixels ignored at the top and bottom of the histogram.
-' 0.05 is the recommended default.  I've specified 1.5 as the maximum, but there's no reason it couldn't be set
-' higher... just be forewarned that higher values (obviously) blow out the picture with increasing strength.
+'Shadow / Midtone / Highlight recovery and correction tool.
+'
+'This tool is based heavily on the logic on PhotoDemon's "white balance" tool.  The Shadow and Highlight parameters
+' refer to the amount of pixels in the image which will be ignored at either end of the spectrum, prior to stretching
+' the histogram.  By ignoring more pixels at the bottom, shadows are emphasized.  By ignoring more pixels at the
+' top, highlights are emphasized.
+'
+'Midtones are a separate beast.  The new midtone color functions as the midpoint of the image's new histogram.
+' Pixels will be spread so that half fall below the midtone, and half fall above it.  Midtones are calculated
+' separately for each of red, green, and blue, so this tool can be used to apply a particular color cast to an image.
+' (Though the results are difficult to predict, so use with caution.)
+'
+'The automatic midtone detection algorithm works by finding the actual midpoint of the original image's histogram, and
+' centering the new histogram using that midpoint as (127, 127, 127). This results in a theoretically "perfect"
+' exposure, but as with most "theoretically perfect" color algorithms(e.g. histogram equalization), it is unlikely to
+' offer ideal results.  Rather, think of it as a starting point from which you can more easily find your ideal midtone
+' point.
 '
 '***************************************************************************
 
@@ -266,20 +260,13 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
+
     'The scroll bar max and min values are used to check the gamma input for validity
-    If Not EntryValid(txtShadow, hsShadow.Min / 100, hsShadow.Max / 100) Then
-        AutoSelectText txtShadow
-        Exit Sub
+    If sltShadow.IsValid And sltHighlight.IsValid Then
+        Me.Visible = False
+        Process ShadowHighlight, sltShadow, sltHighlight, CLng(PicColor.backColor)
+        Unload Me
     End If
-    
-    If Not EntryValid(txtHighlight, hsHighlight.Min / 100, hsHighlight.Max / 100) Then
-        AutoSelectText txtHighlight
-        Exit Sub
-    End If
-    
-    Me.Visible = False
-    Process ShadowHighlight, CSng(hsShadow / 100), CSng(hsHighlight / 100), CLng(PicColor.backColor)
-    Unload Me
     
 End Sub
 
@@ -314,17 +301,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'When the horizontal scroll bar is moved, change the text box to match
-Private Sub hsShadow_Change()
-    copyToTextBoxF CSng(hsShadow) / 100, txtShadow
-    updatePreview
-End Sub
-
-Private Sub hsShadow_Scroll()
-    copyToTextBoxF CSng(hsShadow) / 100, txtShadow
-    updatePreview
-End Sub
-
 Private Sub PicColor_Click()
     'Use a common dialog box to select a new color.  (In the future, perhaps I'll design a better custom box.)
     Dim retColor As Long
@@ -336,39 +312,6 @@ Private Sub PicColor_Click()
         PicColor.backColor = retColor
         updatePreview
     End If
-End Sub
-
-Private Sub txtShadow_GotFocus()
-    AutoSelectText txtShadow
-End Sub
-
-'If the user changes the text box value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
-Private Sub txtShadow_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtShadow, , True
-    If EntryValid(txtShadow, hsShadow.Min / 100, hsShadow.Max / 100, False, False) Then hsShadow.Value = Val(txtShadow) * 100
-End Sub
-
-Private Sub hsHighlight_Change()
-    copyToTextBoxF CSng(hsHighlight) / 100, txtHighlight
-    updatePreview
-End Sub
-
-Private Sub hsHighlight_Scroll()
-    copyToTextBoxF CSng(hsHighlight) / 100, txtHighlight
-    updatePreview
-End Sub
-
-Private Sub txtHighlight_GotFocus()
-    AutoSelectText txtHighlight
-End Sub
-
-Private Sub txtHighlight_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtHighlight, , True
-    If EntryValid(txtHighlight, hsHighlight.Min / 100, hsHighlight.Max / 100, False, False) Then hsHighlight.Value = Val(txtHighlight) * 100
-End Sub
-
-Private Sub updatePreview()
-    ApplyShadowHighlight CSng(hsShadow / 100), CSng(hsHighlight / 100), CLng(PicColor.backColor), True, fxPreview
 End Sub
 
 Private Sub CalculateOptimalMidtone()
@@ -458,6 +401,18 @@ Private Sub CalculateOptimalMidtone()
     bCount = x - 1
     
     PicColor.backColor = RGB(255 - rCount, 255 - gCount, 255 - bCount)
-    'PicColor.backColor = RGB(rCount, gCount, bCount)
         
 End Sub
+
+Private Sub sltHighlight_Change()
+    updatePreview
+End Sub
+
+Private Sub sltShadow_Change()
+    updatePreview
+End Sub
+
+Private Sub updatePreview()
+    ApplyShadowHighlight sltShadow, sltHighlight, CLng(PicColor.backColor), True, fxPreview
+End Sub
+
