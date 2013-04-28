@@ -29,7 +29,7 @@ Begin VB.Form FormRotate
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   3330
       Width           =   3390
       _ExtentX        =   5980
@@ -64,40 +64,10 @@ Begin VB.Form FormRotate
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.TextBox txtAngle 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   6
-      TabIndex        =   4
-      Text            =   "0.0"
-      Top             =   2280
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsAngle 
-      Height          =   255
-      LargeChange     =   10
-      Left            =   6120
-      Max             =   1800
-      Min             =   -1800
-      TabIndex        =   3
-      Top             =   2340
-      Width           =   4815
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -107,7 +77,7 @@ Begin VB.Form FormRotate
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   3720
       Width           =   3315
       _ExtentX        =   5847
@@ -123,10 +93,31 @@ Begin VB.Form FormRotate
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin PhotoDemon.sliderTextCombo sltAngle 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   2280
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -360
+      Max             =   360
+      SigDigits       =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   5760
       Width           =   12135
    End
@@ -148,7 +139,7 @@ Begin VB.Form FormRotate
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   2880
       Width           =   2025
    End
@@ -182,10 +173,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Rotation Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 12/November/12
-'Last updated: 12/November/12
-'Last update: initial build
+'Last updated: 28/April/13
+'Last update: simplify code by relying on new slider/text custom control
 '
 'This tool allows the user to rotate an image at an arbitrary angle in 1/10 degree increments.  FreeImage is required
 ' for the tool to work, as this relies upon FreeImage to perform the rotation in a fast, efficient manner.  The
@@ -203,9 +194,6 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal
 'This temporary layer will be used for rendering the preview
 Dim smallLayer As pdLayer
 
-'Use this to prevent the text box and scroll bar from updating each other in an endless loop
-Dim userChange As Boolean
-
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -215,21 +203,20 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(txtAngle, -180, 180, True, True) Then
-        AutoSelectText txtAngle
-        Exit Sub
+    If sltAngle.IsValid Then
+        
+        Me.Visible = False
+        
+        'Based on the user's selection, submit the proper processor request
+        If optRotate(0) Then
+            Process FreeRotate, 0, sltAngle
+        Else
+            Process FreeRotate, 1, sltAngle
+        End If
+        
+        Unload Me
+        
     End If
-
-    Me.Visible = False
-    
-    'Based on the user's selection, submit the proper processor request
-    If optRotate(0) Then
-        Process FreeRotate, 0, CSng(hsAngle / 10)
-    Else
-        Process FreeRotate, 1, CSng(hsAngle / 10)
-    End If
-    
-    Unload Me
     
 End Sub
 
@@ -380,9 +367,7 @@ Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
-    
-    userChange = True
-    
+        
     'Render a preview
     updatePreview
         
@@ -392,45 +377,21 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Keep the scroll bar and the text box values in sync
-Private Sub hsAngle_Change()
-    If userChange = True Then
-        txtAngle.Text = Format(CSng(hsAngle.Value) / 10, "##0.0")
-        txtAngle.Refresh
-    End If
-    updatePreview
-End Sub
-
-Private Sub hsAngle_Scroll()
-    txtAngle.Text = Format(CSng(hsAngle.Value) / 10, "##0.0")
-    txtAngle.Refresh
-    updatePreview
-End Sub
-
 Private Sub OptRotate_Click(Index As Integer)
     updatePreview
-End Sub
-
-Private Sub txtAngle_GotFocus()
-    AutoSelectText txtAngle
-End Sub
-
-Private Sub txtAngle_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtAngle, True, True
-    If EntryValid(txtAngle, hsAngle.Min / 10, hsAngle.Max / 10, False, False) Then
-        userChange = False
-        hsAngle.Value = Val(txtAngle) * 10
-        userChange = True
-    End If
 End Sub
 
 'Redraw the on-screen preview of the rotated image
 Private Sub updatePreview()
 
     If optRotate(0).Value Then
-        RotateArbitrary 0, CDbl(hsAngle / 10), True
+        RotateArbitrary 0, sltAngle, True
     Else
-        RotateArbitrary 1, CDbl(hsAngle / 10), True
+        RotateArbitrary 1, sltAngle, True
     End If
 
+End Sub
+
+Private Sub sltAngle_Change()
+    updatePreview
 End Sub
