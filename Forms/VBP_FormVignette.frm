@@ -29,7 +29,7 @@ Begin VB.Form FormVignette
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   16
+      TabIndex        =   10
       Top             =   4440
       Width           =   1500
       _ExtentX        =   2646
@@ -63,70 +63,10 @@ Begin VB.Form FormVignette
       Left            =   6120
       ScaleHeight     =   465
       ScaleWidth      =   5625
-      TabIndex        =   14
+      TabIndex        =   8
       TabStop         =   0   'False
       Top             =   3360
       Width           =   5655
-   End
-   Begin VB.HScrollBar hsFeathering 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   11
-      Top             =   1680
-      Value           =   30
-      Width           =   4815
-   End
-   Begin VB.TextBox txtFeathering 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   10
-      Text            =   "30"
-      Top             =   1620
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsTransparency 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   8
-      Top             =   2520
-      Value           =   80
-      Width           =   4815
-   End
-   Begin VB.TextBox txtTransparency 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   7
-      Text            =   "80"
-      Top             =   2460
-      Width           =   735
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -146,40 +86,10 @@ Begin VB.Form FormVignette
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   3
-      Text            =   "60"
-      Top             =   780
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   2
-      Top             =   840
-      Value           =   60
-      Width           =   4815
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -189,7 +99,7 @@ Begin VB.Form FormVignette
       Height          =   360
       Index           =   1
       Left            =   8880
-      TabIndex        =   17
+      TabIndex        =   11
       Top             =   4440
       Width           =   1050
       _ExtentX        =   1852
@@ -198,6 +108,69 @@ Begin VB.Form FormVignette
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   810
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   60
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltFeathering 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   1650
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   30
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltTransparency 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   2490
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   80
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -221,7 +194,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   15
+      TabIndex        =   9
       Top             =   4080
       Width           =   705
    End
@@ -241,7 +214,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   7
       Top             =   3000
       Width           =   4020
    End
@@ -261,7 +234,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   6
       Top             =   1320
       Width           =   945
    End
@@ -281,14 +254,14 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   2160
       Width           =   960
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12135
    End
@@ -308,7 +281,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   480
       Width           =   2145
    End
@@ -322,8 +295,8 @@ Attribute VB_Exposed = False
 'Image Vignette tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 31/January/13
-'Last update: initial build
+'Last updated: 27/April/13
+'Last update: simplify code by relying on new slider/text custom control
 '
 'This tool allows the user to apply vignetting to an image.
 '
@@ -340,25 +313,11 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
-        AutoSelectText txtRadius
-        Exit Sub
+    If sltRadius.IsValid And sltFeathering.IsValid And sltTransparency.IsValid Then
+        Me.Visible = False
+        Process Vignetting, sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, PicColor.backColor
+        Unload Me
     End If
-    
-    If Not EntryValid(txtFeathering, hsFeathering.Min, hsFeathering.Max, True, True) Then
-        AutoSelectText txtFeathering
-        Exit Sub
-    End If
-    
-    If Not EntryValid(txtTransparency, hsTransparency.Min, hsTransparency.Max, True, True) Then
-        AutoSelectText txtTransparency
-        Exit Sub
-    End If
-    
-    'Based on the user's selection, submit the proper processor request
-    Me.Visible = False
-    Process Vignetting, hsRadius.Value, hsFeathering.Value, hsTransparency.Value, optShape(0).Value, PicColor.backColor
-    Unload Me
     
 End Sub
 
@@ -539,17 +498,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Keep the scroll bar and the text box values in sync
-Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
 Private Sub optShape_Click(Index As Integer)
     updatePreview
 End Sub
@@ -569,56 +517,19 @@ Private Sub PicColor_Click()
     
 End Sub
 
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
-End Sub
-
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
-End Sub
-
-Private Sub hsTransparency_Change()
-    copyToTextBoxI txtTransparency, hsTransparency.Value
+Private Sub sltFeathering_Change()
     updatePreview
 End Sub
 
-Private Sub hsTransparency_Scroll()
-    copyToTextBoxI txtTransparency, hsTransparency.Value
+Private Sub sltRadius_Change()
     updatePreview
 End Sub
 
-Private Sub txtTransparency_GotFocus()
-    AutoSelectText txtTransparency
-End Sub
-
-Private Sub txtTransparency_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtTransparency
-    If EntryValid(txtTransparency, hsTransparency.Min, hsTransparency.Max, False, False) Then hsTransparency.Value = Val(txtTransparency)
-End Sub
-
-Private Sub hsFeathering_Change()
-    copyToTextBoxI txtFeathering, hsFeathering.Value
+Private Sub sltTransparency_Change()
     updatePreview
-End Sub
-
-Private Sub hsFeathering_Scroll()
-    copyToTextBoxI txtFeathering, hsFeathering.Value
-    updatePreview
-End Sub
-
-Private Sub txtFeathering_GotFocus()
-    AutoSelectText txtFeathering
-End Sub
-
-Private Sub txtFeathering_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtFeathering
-    If EntryValid(txtFeathering, hsFeathering.Min, hsFeathering.Max, False, False) Then hsFeathering.Value = Val(txtFeathering)
 End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-
-    ApplyVignette hsRadius.Value, hsFeathering.Value, hsTransparency.Value, optShape(0).Value, PicColor.backColor, True, fxPreview
-    
+    ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, PicColor.backColor, True, fxPreview
 End Sub
