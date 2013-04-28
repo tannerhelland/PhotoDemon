@@ -355,9 +355,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Use this to prevent the text box and scroll bar from updating each other in an endless loop
-Dim userChange As Boolean
-
 Private Sub cmbEdges_Click()
     updatePreview
 End Sub

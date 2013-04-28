@@ -524,7 +524,6 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
 
     'Generating an icon requires many variables; see below for specific comments on each one
-    Dim MonoDC As Long
     Dim MonoBmp As Long
     Dim icoInfo As ICONINFO
     Dim generatedIcon As Long

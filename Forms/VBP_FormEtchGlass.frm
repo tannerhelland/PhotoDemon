@@ -281,9 +281,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Use this to prevent the text box and scroll bar from updating each other in an endless loop
-Dim userChange As Boolean
-
 'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
 Dim m_zOffset As Double
 
