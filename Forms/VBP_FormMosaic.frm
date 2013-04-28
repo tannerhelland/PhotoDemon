@@ -28,7 +28,7 @@ Begin VB.Form FormMosaic
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   3600
       Width           =   2880
       _ExtentX        =   5080
@@ -62,77 +62,61 @@ Begin VB.Form FormMosaic
       Top             =   5880
       Width           =   1365
    End
-   Begin VB.HScrollBar hsHeight 
-      Height          =   255
-      Left            =   6120
-      Max             =   64
-      Min             =   1
-      TabIndex        =   5
-      Top             =   3000
-      Value           =   2
-      Width           =   4935
-   End
-   Begin VB.HScrollBar hsWidth 
-      Height          =   255
-      Left            =   6120
-      Max             =   64
-      Min             =   1
-      TabIndex        =   3
-      Top             =   2040
-      Value           =   2
-      Width           =   4935
-   End
-   Begin VB.TextBox txtHeight 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      TabIndex        =   4
-      Text            =   "2"
-      Top             =   2940
-      Width           =   615
-   End
-   Begin VB.TextBox txtWidth 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11160
-      TabIndex        =   2
-      Text            =   "2"
-      Top             =   1980
-      Width           =   615
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.sliderTextCombo sltWidth 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   2010
+      Width           =   5895
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   64
+      Value           =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltHeight 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   2970
+      Width           =   5895
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   64
+      Value           =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   4
       Top             =   5730
       Width           =   12135
    End
@@ -152,7 +136,7 @@ Begin VB.Form FormMosaic
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   1680
       Width           =   1305
    End
@@ -172,7 +156,7 @@ Begin VB.Form FormMosaic
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   2640
       Width           =   1380
    End
@@ -186,9 +170,8 @@ Attribute VB_Exposed = False
 'Mosaic filter interface
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 8/5/00
-'Last updated: 10/September/12
-'Last update: fixed many problems; rewrote code against new layer class, fixed code to work with mosaic sizes of 1,
-'              changed BlockSize to be as large as the image if desired (previous limit was 255).
+'Last updated: 27/April/13
+'Last update: simplify code by implementing new slider/text custom control
 '
 'Form for handling all the mosaic image transform code.
 '
@@ -200,12 +183,8 @@ Option Explicit
 ' original image width in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
-Dim userChange As Boolean
-
 Private Sub chkUnison_Click()
-    userChange = False
-    If CBool(chkUnison) Then hsHeight.Value = hsWidth.Value
-    userChange = True
+    If CBool(chkUnison) Then syncScrollBars True
     updatePreview
 End Sub
 
@@ -216,17 +195,13 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max) Then
-        If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max) Then
-            Me.Visible = False
-            Process Mosaic, hsWidth.Value, hsHeight.Value
-            Unload Me
-        Else
-            AutoSelectText txtHeight
-        End If
-    Else
-        AutoSelectText txtWidth
+    
+    If sltWidth.IsValid And sltHeight.IsValid Then
+        Me.Visible = False
+        Process Mosaic, sltWidth.Value, sltHeight.Value
+        Unload Me
     End If
+    
 End Sub
 
 'Apply a mosaic effect (sometimes called "pixelize") to an image
@@ -382,8 +357,6 @@ End Sub
 
 Private Sub Form_Activate()
 
-    userChange = False
-
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(CurrentImage).selectionActive Then
         iWidth = pdImages(CurrentImage).mainSelection.selWidth
@@ -393,12 +366,10 @@ Private Sub Form_Activate()
         iHeight = pdImages(CurrentImage).Height
     End If
         
-    hsWidth.Max = iWidth
-    hsHeight.Max = iHeight
+    sltWidth.Max = iWidth
+    sltHeight.Max = iHeight
     
-    userChange = True
-    
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
+    updatePreview
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
@@ -409,80 +380,34 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub hsHeight_Change()
-    userChange = False
-    copyToTextBoxI txtHeight, hsHeight.Value
-    If CBool(chkUnison) Then syncScrollBars False
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub hsWidth_Change()
-    userChange = False
-    copyToTextBoxI txtWidth, hsWidth.Value
-    If CBool(chkUnison) Then syncScrollBars True
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub hsHeight_Scroll()
-    userChange = False
-    copyToTextBoxI txtHeight, hsHeight.Value
-    If CBool(chkUnison) Then syncScrollBars False
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub hsWidth_Scroll()
-    userChange = False
-    copyToTextBoxI txtWidth, hsWidth.Value
-    If CBool(chkUnison) Then syncScrollBars True
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
-    userChange = False
-    textValidate txtHeight
-    If EntryValid(txtHeight, hsHeight.Min, hsHeight.Max, False, False) Then hsHeight.Value = Val(txtHeight)
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub txtHeight_GotFocus()
-    AutoSelectText txtHeight
-End Sub
-
-Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
-    userChange = False
-    textValidate txtWidth
-    If EntryValid(txtWidth, hsWidth.Min, hsWidth.Max, False, False) Then hsWidth.Value = Val(txtWidth)
-    userChange = True
-    updatePreview
-End Sub
-
-Private Sub txtWidth_GotFocus()
-    AutoSelectText txtWidth
-End Sub
-
 'Keep the two scroll bars in sync.  Some extra work has to be done to makes sure scrollbar max values aren't exceeded.
 Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     
-    If hsWidth.Value = hsHeight.Value Then Exit Sub
+    If sltWidth.Value = sltHeight.Value Then Exit Sub
     
     Dim tmpVal As Long
     
     If srcHorizontal Then
-        tmpVal = hsWidth.Value
-        If tmpVal < hsHeight.Max Then hsHeight.Value = hsWidth.Value Else hsHeight.Value = hsHeight.Max
+        tmpVal = sltWidth.Value
+        If tmpVal < sltHeight.Max Then sltHeight.Value = sltWidth.Value Else sltHeight.Value = sltHeight.Max
     Else
-        tmpVal = hsHeight.Value
-        If tmpVal < hsWidth.Max Then hsWidth.Value = hsHeight.Value Else hsWidth.Value = hsWidth.Max
+        tmpVal = sltHeight.Value
+        If tmpVal < sltWidth.Max Then sltWidth.Value = sltHeight.Value Else sltWidth.Value = sltWidth.Max
     End If
     
 End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    MosaicFilter hsWidth.Value, hsHeight.Value, True, fxPreview
+    MosaicFilter sltWidth.Value, sltHeight.Value, True, fxPreview
+End Sub
+
+Private Sub sltHeight_Change()
+    If CBool(chkUnison) Then syncScrollBars False
+    updatePreview
+End Sub
+
+Private Sub sltWidth_Change()
+    If CBool(chkUnison) Then syncScrollBars True
+    updatePreview
 End Sub
