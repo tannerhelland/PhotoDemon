@@ -261,8 +261,8 @@ Attribute VB_Exposed = False
 'Image Shear Distortion
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 03/April/13
-'Last updated: 26/April/13
-'Last update: simplify code by rebuilding interface around new slider/text custom control
+'Last updated: 28/April/13
+'Last update: double the strength of the "shear" calculation to allow for more extreme shearing
 '
 'This tool allows the user to "shear" an image, or convert it from a rectangle to a parallelogram.  Bilinear
 ' interpolation (via reverse-mapping) is available for a high-quality transformation.
@@ -357,8 +357,8 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
         QuickVal = x * qvDepth
     For y = initY To finalY
        
-        srcX = x + ((finalY - y) * sinX)
-        srcY = y + (x * sinY)
+        srcX = x + ((finalY - y) * sinX) * 2
+        srcY = y + (x * sinY) * 2
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
