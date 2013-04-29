@@ -218,8 +218,8 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 11/April/13
-'Last update: add original image's silhouette to help orient the user
+'Last updated: 29/April/13
+'Last update: render the workspace lines with antialiasing (much prettier)
 '
 'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
@@ -240,9 +240,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
-' original image width in order to establish the right ratio.
+'When previewing, we need to modify all measurements by the ratio between the (generally smaller) preview image
+' and the full-size image.
 Dim iWidth As Long, iHeight As Long
+
+'Width and height of the preview image
+Dim m_previewWidth As Long, m_previewHeight As Long
 
 'Control points for the live preview box
 Private Type fPoint
@@ -255,16 +258,13 @@ End Type
 Dim m_oPoints(0 To 3) As fPoint
 Dim m_nPoints(0 To 3) As fPoint
 
-'Width and height of the preview image
-Dim m_previewWidth As Long, m_previewHeight As Long
-
 'Track mouse status between MouseDown and MouseMove events
 Dim m_isMouseDown As Boolean
 
-'Currently selected point
+'Currently selected node in the workspace area
 Dim m_selPoint As Long
 
-'How close to a point the user must click to select that point
+'How close to a node the user must click to select that node
 Private Const mouseAccuracy As Byte = 6
 
 Private Sub cmbEdges_Click()
@@ -630,13 +630,15 @@ Private Sub redrawPreviewBox()
         End If
     Next i
     
-    'Next, draw connecting lines to form an image outline
+    'Next, draw connecting lines to form an image outline.  Use Wu's antialiasing algorithm for this for better results.
     picDraw.ForeColor = RGB(255, 0, 0)
     For i = 0 To 3
         If i < 3 Then
-            picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(i + 1).pX, m_nPoints(i + 1).pY)
+            DrawLineWuAA picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(i + 1).pX, m_nPoints(i + 1).pY, picDraw.ForeColor
+            'picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(i + 1).pX, m_nPoints(i + 1).pY)
         Else
-            picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(0).pX, m_nPoints(0).pY)
+            DrawLineWuAA picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(0).pX, m_nPoints(0).pY, picDraw.ForeColor
+            'picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(0).pX, m_nPoints(0).pY)
         End If
     Next i
     
@@ -644,12 +646,15 @@ Private Sub redrawPreviewBox()
     picDraw.ForeColor = RGB(0, 0, 255)
     
     For i = 0 To 3
-        picDraw.Circle (m_nPoints(i).pX, m_nPoints(i).pY), 5
+        DrawCircleAA picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, 5, picDraw.ForeColor
+        'picDraw.Circle (m_nPoints(i).pX, m_nPoints(i).pY), 5
     Next i
     
     'Finally, draw the center cross to help the user orient to the center point of the perspective effect
-    picDraw.Line (m_nPoints(0).pX, m_nPoints(0).pY)-(m_nPoints(2).pX, m_nPoints(2).pY)
-    picDraw.Line (m_nPoints(1).pX, m_nPoints(1).pY)-(m_nPoints(3).pX, m_nPoints(3).pY)
+    DrawLineWuAA picDraw.hDC, m_nPoints(0).pX, m_nPoints(0).pY, m_nPoints(2).pX, m_nPoints(2).pY, picDraw.ForeColor
+    'picDraw.Line (m_nPoints(0).pX, m_nPoints(0).pY)-(m_nPoints(2).pX, m_nPoints(2).pY)
+    DrawLineWuAA picDraw.hDC, m_nPoints(1).pX, m_nPoints(1).pY, m_nPoints(3).pX, m_nPoints(3).pY, picDraw.ForeColor
+    'picDraw.Line (m_nPoints(1).pX, m_nPoints(1).pY)-(m_nPoints(3).pX, m_nPoints(3).pY)
     
     picDraw.Refresh
 

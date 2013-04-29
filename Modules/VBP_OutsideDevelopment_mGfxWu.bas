@@ -657,5 +657,57 @@ Private Sub BlendPixel8(ByVal hDC As Long, _
 End Sub
 #End If
 
+'===========================================================================================================
+'An Anti-Aliased (x^2 style) version of optimised Bresenhams Circle good for r=1 to 16384 at least
+'===========================================================================================================
 
+Public Sub DrawCircleAA(ByVal hDC As Long, _
+                        ByVal x0 As Long, ByVal y0 As Long, ByVal r As Long, _
+                        ByVal Colour As Long)
+
+  Dim dx As Long, dy As Long, dd As Long
+  Dim incE As Long, incSE As Long, incEx As Long, incEy As Long
+  Dim Er As Long, Ez As Long, w As Long, dytmp As Long
+
+  If StartingCircle(hDC, x0, y0, r, Colour) Then
+    dx = 0
+    dy = r
+    dd = 1 - r
+    incE = 3
+    incSE = 5 - r * 2
+    incEx = incE - 2    '1
+    incEy = incSE - 4
+    Ez = 4 - incSE      'r^2-1
+
+    Do While dx < dy - 1
+      If dd < 0 Then        '(x,y)->(x+1,Y)
+        dd = dd + incE
+        incSE = incSE + 2   '
+      Else                  '(x,y)->(x+1,y-1)
+        dd = dd + incSE
+        incSE = incSE + 4
+        dy = dy - 1
+        'error
+        Er = Er + incEy
+        incEy = incEy + 2
+        Ez = Ez - 2
+      End If
+      dx = dx + 1
+      incE = incE + 2
+      'error
+      Er = Er + incEx
+      incEx = incEx + 2
+
+      w = (MAX_WEIGHT * Er) \ Ez    'W is the weight 0,,MAX_WEIGHT of Pixel(x,y+1) and 1-w = weight Pixel(x,y)
+      dytmp = dy
+      If w < 0 Then                 'if W<0 then we need to complement and step back one
+        dytmp = dytmp + 1
+        w = MAX_WEIGHT + w
+      End If
+      Call BlendPixel8(hDC, x0, y0, dx, dytmp, Colour, MAX_WEIGHT - w) 'Weight of Pixel(x,y)
+      Call BlendPixel8(hDC, x0, y0, dx, dytmp - 1, Colour, w)       'Weight of Pixel(x,y+1)
+    Loop
+  End If
+  
+End Sub
 
