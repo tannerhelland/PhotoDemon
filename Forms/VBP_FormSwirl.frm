@@ -40,7 +40,7 @@ Begin VB.Form FormSwirl
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   3225
       Width           =   5700
    End
@@ -62,70 +62,10 @@ Begin VB.Form FormSwirl
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.TextBox txtRadius 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   3
-      TabIndex        =   7
-      Text            =   "100"
-      Top             =   2340
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsRadius 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   6
-      Top             =   2400
-      Value           =   100
-      Width           =   4815
-   End
-   Begin VB.TextBox txtAngle 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      MaxLength       =   6
-      TabIndex        =   4
-      Text            =   "0.0"
-      Top             =   1560
-      Width           =   735
-   End
-   Begin VB.HScrollBar hsAngle 
-      Height          =   255
-      LargeChange     =   10
-      Left            =   6120
-      Max             =   1800
-      Min             =   -1800
-      TabIndex        =   3
-      Top             =   1620
-      Width           =   4815
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -135,7 +75,7 @@ Begin VB.Form FormSwirl
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   4080
       Width           =   1005
       _ExtentX        =   1773
@@ -156,7 +96,7 @@ Begin VB.Form FormSwirl
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   14
+      TabIndex        =   10
       Top             =   4080
       Width           =   975
       _ExtentX        =   1720
@@ -165,6 +105,48 @@ Begin VB.Form FormSwirl
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltAngle 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   1530
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -180
+      Max             =   180
+      SigDigits       =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   2370
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -189,14 +171,14 @@ Begin VB.Form FormSwirl
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   2850
       Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   5760
       Width           =   12135
    End
@@ -216,7 +198,7 @@ Begin VB.Form FormSwirl
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   4
       Top             =   2040
       Width           =   2145
    End
@@ -238,7 +220,7 @@ Begin VB.Form FormSwirl
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   3720
       Width           =   1845
    End
@@ -272,10 +254,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Swirl" Distortion
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 15/January/13
-'Last update: added support for custom edge handling
+'Last updated: 29/April/13
+'Last update: simplified code by utilizing new slider/text custom control
 '
 'This tool allows the user to "swirl" an image at an arbitrary angle in 1/10 degree increments.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality swirl.
@@ -291,14 +273,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Use this to prevent the text box and scroll bar from updating each other in an endless loop
-Dim userChange As Boolean
-
 Private Sub cmbEdges_Click()
-    updatePreview
-End Sub
-
-Private Sub cmbEdges_Scroll()
     updatePreview
 End Sub
 
@@ -311,22 +286,11 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(txtAngle, -180, 180, True, True) Then
-        AutoSelectText txtAngle
-        Exit Sub
+    If sltAngle.IsValid And sltRadius.IsValid Then
+        Me.Visible = False
+        Process DistortSwirl, sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Unload Me
     End If
-
-    If Not EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, True, True) Then
-        AutoSelectText txtRadius
-        Exit Sub
-    End If
-
-    Me.Visible = False
-    
-    'Based on the user's selection, submit the proper processor request
-    Process DistortSwirl, CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
-        
-    Unload Me
     
 End Sub
 
@@ -462,10 +426,7 @@ Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
-    
-    'Mark scroll bar changes as coming from the user
-    userChange = True
-    
+        
     'Create the preview
     updatePreview
     
@@ -475,60 +436,19 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Keep the scroll bar and the text box values in sync
-Private Sub hsAngle_Change()
-    If userChange Then
-        txtAngle.Text = Format(CDbl(hsAngle.Value) / 10, "##0.0")
-        txtAngle.Refresh
-    End If
-    updatePreview
-End Sub
-
-Private Sub hsAngle_Scroll()
-    txtAngle.Text = Format(CDbl(hsAngle.Value) / 10, "##0.0")
-    txtAngle.Refresh
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Change()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
-Private Sub hsRadius_Scroll()
-    copyToTextBoxI txtRadius, hsRadius.Value
-    updatePreview
-End Sub
-
 Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 
-Private Sub txtAngle_GotFocus()
-    AutoSelectText txtAngle
+Private Sub sltAngle_Change()
+    updatePreview
 End Sub
 
-Private Sub txtAngle_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtAngle, True, True
-    If EntryValid(txtAngle, hsAngle.Min / 10, hsAngle.Max / 10, False, False) Then
-        userChange = False
-        hsAngle.Value = Val(txtAngle) * 10
-        userChange = True
-    End If
-End Sub
-
-Private Sub txtRadius_GotFocus()
-    AutoSelectText txtRadius
-End Sub
-
-Private Sub txtRadius_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtRadius
-    If EntryValid(txtRadius, hsRadius.Min, hsRadius.Max, False, False) Then hsRadius.Value = Val(txtRadius)
+Private Sub sltRadius_Change()
+    updatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-
-    SwirlImage CDbl(hsAngle / 10), hsRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
-    
+    SwirlImage sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
