@@ -42,19 +42,28 @@ Begin VB.Form FormWhiteBalance
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.HScrollBar hsIgnore 
-      Height          =   255
-      Left            =   6120
-      Max             =   100
-      Min             =   1
-      TabIndex        =   2
-      Top             =   2880
-      Value           =   5
-      Width           =   4815
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.TextBox txtIgnore 
-      Alignment       =   2  'Center
-      BeginProperty Font 
+   Begin PhotoDemon.sliderTextCombo sltStrength 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   2850
+      Width           =   5925
+      _ExtentX        =   10451
+      _ExtentY        =   873
+      Min             =   0.01
+      Max             =   5
+      SigDigits       =   2
+      Value           =   0.05
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -63,27 +72,11 @@ Begin VB.Form FormWhiteBalance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   11040
-      TabIndex        =   3
-      Text            =   "0.05"
-      Top             =   2835
-      Width           =   735
-   End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
-      TabIndex        =   6
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5760
       Width           =   12495
    End
@@ -105,7 +98,7 @@ Begin VB.Form FormWhiteBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2520
       Width           =   960
    End
@@ -117,10 +110,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'White Balance Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 03/July/12
-'Last updated: 03/July/12
-'Last update: first build
+'Last updated: 29/April/13
+'Last update: simplify code by relying on new slider/text custom control
 '
 'White balance handler.  Unlike other programs, which shove this under the Levels dialog as an "auto levels"
 ' function, I consider it worthy of its own interface.  The reason is - white balance is an important function.
@@ -129,7 +122,7 @@ Attribute VB_Exposed = False
 ' Levels dialog (because really, how many people know that Auto Levels is actually White Balance in photography
 ' parlance?), PhotoDemon provides a full implementation of custom white balance handling.
 ' The value box on the form is the percentage of pixels ignored at the top and bottom of the histogram.
-' 0.05 is the recommended default.  I've specified 1.5 as the maximum, but there's no reason it couldn't be set
+' 0.05 is the recommended default.  I've specified 5.0 as the maximum, but there's no reason it couldn't be set
 ' higher... just be forewarned that higher values (obviously) blow out the picture with increasing strength.
 '
 '***************************************************************************
@@ -143,14 +136,13 @@ End Sub
 
 'OK button
 Private Sub cmdOK_Click()
-    'The scroll bar max and min values are used to check the gamma input for validity
-    If EntryValid(txtIgnore, hsIgnore.Min / 100, hsIgnore.Max / 100) Then
+    
+    If sltStrength.IsValid Then
         Me.Visible = False
-        Process WhiteBalance, CSng(Val(txtIgnore))
+        Process WhiteBalance, sltStrength
         Unload Me
-    Else
-        AutoSelectText txtIgnore
     End If
+    
 End Sub
 
 Private Sub Form_Activate()
@@ -159,7 +151,7 @@ Private Sub Form_Activate()
     makeFormPretty Me
     
     'Render a preview
-    AutoWhiteBalance CSng(Val(txtIgnore)), True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -183,24 +175,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'When the horizontal scroll bar is moved, change the text box to match
-Private Sub hsIgnore_Change()
-    copyToTextBoxF CSng(hsIgnore) / 100, txtIgnore
-    AutoWhiteBalance CSng(Val(txtIgnore)), True, fxPreview
+Private Sub sltStrength_Change()
+    updatePreview
 End Sub
 
-Private Sub hsIgnore_Scroll()
-    copyToTextBoxF CSng(hsIgnore) / 100, txtIgnore
-    AutoWhiteBalance CSng(Val(txtIgnore)), True, fxPreview
+Private Sub updatePreview()
+    AutoWhiteBalance sltStrength, True, fxPreview
 End Sub
-
-Private Sub txtIgnore_GotFocus()
-    AutoSelectText txtIgnore
-End Sub
-
-'If the user changes the gamma value by hand, check it for numerical correctness, then change the horizontal scroll bar to match
-Private Sub txtIgnore_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtIgnore, , True
-    If EntryValid(txtIgnore, hsIgnore.Min / 100, hsIgnore.Max / 100, False, False) Then hsIgnore.Value = Val(txtIgnore) * 100
-End Sub
-
