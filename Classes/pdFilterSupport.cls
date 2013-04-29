@@ -133,13 +133,25 @@ Public Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As B
             End If
             
         Case EDGE_ORIGINAL
-            If srcX < 0 Then srcX = m_DstX
+            If srcX < 0 Then
+                srcX = m_DstX
+                srcY = m_DstY
+            End If
             
-            If srcY < 0 Then srcY = m_DstY
+            If srcY < 0 Then
+                srcX = m_DstX
+                srcY = m_DstY
+            End If
             
-            If srcX > m_FinalX Then srcX = m_DstX
+            If srcX > m_FinalX Then
+                srcX = m_DstX
+                srcY = m_DstY
+            End If
             
-            If srcY > m_FinalY Then srcY = m_DstY
+            If srcY > m_FinalY Then
+                srcX = m_DstX
+                srcY = m_DstY
+            End If
             
     End Select
     
