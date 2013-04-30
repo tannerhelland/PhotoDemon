@@ -222,7 +222,8 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     'If the image has not yet been loaded, exit
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
     
-    'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
+    'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
+    ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
     Dim imgX As Double, imgY As Double
     imgX = -1
     imgY = -1
@@ -231,7 +232,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     If Button = vbLeftButton Then
         
         'Check the location of the mouse to see if it's over the image
-        If isMouseOverImage(x, y, Me) Then
+        'If isMouseOverImage(x, y, Me) Then
         
             lMouseDown = True
             
@@ -278,7 +279,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
             'Render the new selection
             RenderViewport Me
             
-        End If
+        'End If
         
     End If
     
@@ -308,7 +309,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         If pdImages(Me.Tag).selectionActive Then
             
             'Check the location of the mouse to see if it's over the image
-            If isMouseOverImage(x, y, Me) Then
+            'If isMouseOverImage(x, y, Me) Then
             
                 'Display the image coordinates under the mouse pointer
                 displayImageCoordinates x, y, Me, imgX, imgY
@@ -317,16 +318,16 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
                 pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
             
             'If the mouse coordinates are NOT over the image, we need to find the closest points in the image and pass those instead
-            Else
+            'Else
         
-                imgX = x
-                imgY = y
-                findNearestImageCoordinates imgX, imgY, Me
+                'imgX = x
+                'imgY = y
+                'findNearestImageCoordinates imgX, imgY, Me
                 
                 'Pass those points to the active selection
-                pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
+                'pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
             
-            End If
+            'End If
             
         End If
         

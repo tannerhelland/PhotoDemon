@@ -319,17 +319,25 @@ Private Sub updateInternalCoords()
 
     'Calculate left, top width, height based off the current x1/x2/y1/y2 values
     If x1 < x2 Then
+        If x1 < 0 Then x1 = 0
+        If x2 > containingPDImage.Width Then x2 = containingPDImage.Width
         selLeft = x1
         selWidth = x2 - x1
     Else
+        If x2 < 0 Then x2 = 0
+        If x1 > containingPDImage.Width Then x1 = containingPDImage.Width
         selLeft = x2
         selWidth = x1 - x2
     End If
     
     If y1 < y2 Then
+        If y1 < 0 Then y1 = 0
+        If y2 > containingPDImage.Height Then y2 = containingPDImage.Height
         selTop = y1
         selHeight = y2 - y1
     Else
+        If y2 < 0 Then y2 = 0
+        If y1 > containingPDImage.Height Then y1 = containingPDImage.Height
         selTop = y2
         selHeight = y1 - y2
     End If

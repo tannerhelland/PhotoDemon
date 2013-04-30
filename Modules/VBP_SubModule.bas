@@ -280,11 +280,11 @@ Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcFo
 End Function
 
 'Calculate and display the current mouse position.
-' INPUTS: x and y coordinates of the mouse cursor, current form, and optionally two long-type variables to receive the relative
+' INPUTS: x and y coordinates of the mouse cursor, current form, and optionally two Double-type variables to receive the relative
 ' coordinates (e.g. location on the image) of the current mouse position.
 Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcForm As Form, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
 
-    If isMouseOverImage(x1, y1, srcForm) Then
+    'If isMouseOverImage(x1, y1, srcForm) Then
             
         'Grab the current zoom value
         Dim ZoomVal As Double
@@ -295,10 +295,10 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
         y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
             
         'When zoomed very far out, the values might be calculated incorrectly. Force them to the image dimensions if necessary.
-        If x1 < 0 Then x1 = 0
-        If y1 < 0 Then y1 = 0
-        If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
-        If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
+        'If x1 < 0 Then x1 = 0
+        'If y1 < 0 Then y1 = 0
+        'If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
+        'If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
         
         'If the user has requested copies of these coordinates, assign them now
         If copyX Then copyX = x1
@@ -308,7 +308,7 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
         FormMain.lblCoordinates.Refresh
         'DoEvents
         
-    End If
+    'End If
     
 End Sub
 
