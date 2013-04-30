@@ -42,66 +42,6 @@ Begin VB.Form FormResize
       Top             =   3870
       Width           =   1365
    End
-   Begin VB.VScrollBar VSHeight 
-      Height          =   420
-      Left            =   2430
-      Max             =   32766
-      Min             =   1
-      TabIndex        =   11
-      TabStop         =   0   'False
-      Top             =   1200
-      Value           =   15000
-      Width           =   270
-   End
-   Begin VB.VScrollBar VSWidth 
-      Height          =   420
-      Left            =   2430
-      Max             =   32766
-      Min             =   1
-      TabIndex        =   10
-      TabStop         =   0   'False
-      Top             =   570
-      Value           =   15000
-      Width           =   270
-   End
-   Begin VB.TextBox TxtHeight 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   1560
-      TabIndex        =   3
-      Text            =   "N/A"
-      Top             =   1230
-      Width           =   855
-   End
-   Begin VB.TextBox TxtWidth 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   1560
-      TabIndex        =   2
-      Text            =   "N/A"
-      Top             =   600
-      Width           =   855
-   End
    Begin VB.ComboBox cboResample 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -116,20 +56,58 @@ Begin VB.Form FormResize
       Height          =   360
       Left            =   840
       Style           =   2  'Dropdown List
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2520
       Width           =   5535
    End
    Begin PhotoDemon.smartCheckBox chkRatio 
       Height          =   480
       Left            =   4110
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   840
       Width           =   2355
       _ExtentX        =   4154
       _ExtentY        =   847
       Caption         =   "lock image aspect ratio"
       Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.textUpDown tudWidth 
+      Height          =   405
+      Left            =   1560
+      TabIndex        =   10
+      Top             =   585
+      Width           =   1200
+      _ExtentX        =   2117
+      _ExtentY        =   714
+      Max             =   32767
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.textUpDown tudHeight 
+      Height          =   405
+      Left            =   1560
+      TabIndex        =   11
+      Top             =   1215
+      Width           =   1200
+      _ExtentX        =   2117
+      _ExtentY        =   714
+      Max             =   32767
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -171,7 +149,7 @@ Begin VB.Form FormResize
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -2280
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   3720
       Width           =   9975
    End
@@ -192,7 +170,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00808080&
       Height          =   375
       Left            =   2850
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   1245
       Width           =   855
    End
@@ -213,7 +191,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00808080&
       Height          =   480
       Left            =   2850
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   615
       Width           =   855
    End
@@ -235,7 +213,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   720
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   1245
       Width           =   750
    End
@@ -257,7 +235,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   720
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   615
       Width           =   675
    End
@@ -278,7 +256,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   375
       Left            =   720
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   2160
       Width           =   2895
    End
@@ -290,10 +268,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 10/September/12
-'Last update: rewrote all resize functions against the new layer class
+'Last updated: 29/April/13
+'Last update: rebuilt the form around the new text/up-down custom control.  LOC for the module was significantly reduced.
 '
 'Handles all image-size related functions.  Currently supports standard resizing and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it in VB code) and bilinear resampling via pure VB)
@@ -302,51 +280,45 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to prevent the scroll bars from getting stuck in update loops
-Private updateWidthBar As Boolean, updateHeightBar As Boolean
-
 'Used for maintaining ratios when the check box is clicked
 Private wRatio As Double, hRatio As Double
 
-'If the ratio button is checked, then update the height box to match
+Dim allowedToUpdateWidth As Boolean, allowedToUpdateHeight As Boolean
+
+'If the ratio button is checked, update the height box to reflect the image's current aspect ratio
 Private Sub ChkRatio_Click()
-    If chkRatio.Value = vbChecked Then UpdateHeightBox
+    If CBool(chkRatio.Value) Then tudHeight = Int((tudWidth * hRatio) + 0.5)
 End Sub
 
 'Perform a resize operation
 Private Sub CmdResize_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
-    If Not EntryValid(TxtWidth, 1, 32767, True, True) Then
-        AutoSelectText TxtWidth
-        Exit Sub
+    If tudWidth.IsValid And tudHeight.IsValid Then
+        
+        Me.Visible = False
+    
+        'Resample based on the combo box entry...
+        Select Case cboResample.ListIndex
+            Case 0
+                Process ImageSize, tudWidth, tudHeight, RESIZE_NORMAL
+            Case 1
+                Process ImageSize, tudWidth, tudHeight, RESIZE_HALFTONE
+            Case 2
+                Process ImageSize, tudWidth, tudHeight, RESIZE_BILINEAR
+            Case 3
+                Process ImageSize, tudWidth, tudHeight, RESIZE_BSPLINE
+            Case 4
+                Process ImageSize, tudWidth, tudHeight, RESIZE_BICUBIC_MITCHELL
+            Case 5
+                Process ImageSize, tudWidth, tudHeight, RESIZE_BICUBIC_CATMULL
+            Case 6
+                Process ImageSize, tudWidth, tudHeight, RESIZE_LANCZOS
+        End Select
+        
+        Unload Me
+        
     End If
-    If Not EntryValid(TxtHeight, 1, 32767, True, True) Then
-        AutoSelectText TxtHeight
-        Exit Sub
-    End If
-    
-    Me.Visible = False
-    
-    'Resample based on the combo box entry...
-    Select Case cboResample.ListIndex
-        Case 0
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_NORMAL
-        Case 1
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_HALFTONE
-        Case 2
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BILINEAR
-        Case 3
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BSPLINE
-        Case 4
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BICUBIC_MITCHELL
-        Case 5
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BICUBIC_CATMULL
-        Case 6
-            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_LANCZOS
-    End Select
-    
-    Unload Me
     
 End Sub
 
@@ -357,17 +329,10 @@ End Sub
 'Upon form activation, determine the ratio between the width and height of the image
 Private Sub Form_Activate()
     
-    'Add one to the displayed width and height, since we store them -1 for loops
-    TxtWidth.Text = pdImages(CurrentImage).Width
-    TxtHeight.Text = pdImages(CurrentImage).Height
-    
-    'Make the scroll bars match the text boxes
-    updateWidthBar = False
-    updateHeightBar = False
-    VSWidth.Value = Abs(32767 - CInt(TxtWidth))
-    VSHeight.Value = Abs(32767 - CInt(TxtHeight))
-    updateWidthBar = True
-    updateHeightBar = True
+    'To prevent aspect ratio changes to one box resulting in recursion-type changes to the other, we only
+    ' allow one box at a time to be updated.
+    allowedToUpdateWidth = True
+    allowedToUpdateHeight = True
     
     'Establish ratios
     wRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
@@ -388,6 +353,10 @@ Private Sub Form_Activate()
         cboResample.ListIndex = 5
     End If
     
+    'Automatically set the width and height text boxes to match the image's current dimensions
+    tudWidth.Value = pdImages(CurrentImage).Width
+    tudHeight.Value = pdImages(CurrentImage).Height
+    
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me
     
@@ -396,54 +365,6 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
-
-'*************************************************************************************
-'If "Preserve Size Ratio" is selected, this set of routines handles the preservation
-
-Private Sub txtHeight_GotFocus()
-    AutoSelectText TxtHeight
-End Sub
-
-Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
-    If (KeyCode <> vbKeyTab) And (KeyCode <> vbKeyShift) Then
-        textValidate TxtHeight
-        ChangeToHeight
-    End If
-End Sub
-
-Private Sub TxtHeight_LostFocus()
-    ChangeToHeight
-End Sub
-
-Private Sub txtWidth_GotFocus()
-    AutoSelectText TxtWidth
-End Sub
-
-Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
-    If (KeyCode <> vbKeyTab) And (KeyCode <> vbKeyShift) Then
-        textValidate TxtWidth
-        ChangeToWidth
-    End If
-End Sub
-
-Private Sub TxtWidth_LostFocus()
-    ChangeToWidth
-End Sub
-
-Private Sub UpdateHeightBox()
-    updateHeightBar = False
-    TxtHeight = Int((CDbl(Val(TxtWidth)) * hRatio) + 0.5)
-    VSHeight.Value = Abs(32767 - Val(TxtHeight))
-    updateHeightBar = True
-End Sub
-
-Private Sub UpdateWidthBox()
-    updateWidthBar = False
-    TxtWidth = Int((CDbl(Val(TxtHeight)) * wRatio) + 0.5)
-    VSWidth.Value = Abs(32767 - Val(TxtWidth))
-    updateWidthBar = True
-End Sub
-'*************************************************************************************
 
 'Resize an image using the FreeImage library.  Very fast.
 Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
@@ -491,44 +412,6 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
         
     End If
     
-End Sub
-
-'Because the scrollbars work backward (up means up and down means down) we have to reverse its input
-' relative to the associated text box
-Private Sub VSHeight_Change()
-    If updateHeightBar = True Then
-        TxtHeight = Abs(32767 - CStr(VSHeight.Value))
-        ChangeToHeight
-    End If
-End Sub
-
-Private Sub VSWidth_Change()
-    If updateWidthBar = True Then
-        TxtWidth = Abs(32767 - CStr(VSWidth.Value))
-        ChangeToWidth
-    End If
-End Sub
-
-Private Sub ChangeToWidth()
-    If EntryValid(TxtWidth, 1, 32767, False, False) Then
-        updateWidthBar = False
-        VSWidth.Value = Abs(32767 - CInt(TxtWidth))
-        updateWidthBar = True
-        If chkRatio.Value = vbChecked Then
-            UpdateHeightBox
-        End If
-    End If
-End Sub
-
-Private Sub ChangeToHeight()
-    If EntryValid(TxtHeight, 1, 32767, False, False) Then
-        updateHeightBar = False
-        VSHeight.Value = Abs(32767 - CInt(TxtHeight))
-        updateHeightBar = True
-        If chkRatio.Value = vbChecked Then
-            UpdateWidthBox
-        End If
-    End If
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
@@ -736,4 +619,21 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
     
     Message "Finished."
     
+End Sub
+
+'If "Lock Image Aspect Ratio" is selected, these two routines keep all values in sync
+Private Sub tudHeight_Change()
+    If CBool(chkRatio) And allowedToUpdateWidth Then
+        allowedToUpdateHeight = False
+        tudWidth = Int((tudHeight * wRatio) + 0.5)
+        allowedToUpdateHeight = True
+    End If
+End Sub
+
+Private Sub tudWidth_Change()
+    If CBool(chkRatio) And allowedToUpdateHeight Then
+        allowedToUpdateWidth = False
+        tudHeight = Int((tudWidth * hRatio) + 0.5)
+        allowedToUpdateWidth = True
+    End If
 End Sub
