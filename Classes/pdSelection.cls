@@ -252,7 +252,8 @@ End Sub
 'Takes x and y coordinates (from a _MouseMove event, typically) and stores them internally
 Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
     
-    'Check for transformation mode activation
+    'Check for an active transformation mode.  (A transformation is something like resizing or moving an existing selection,
+    ' versus drawing a new one from scratch.)
     If transformModeActive Then
     
         'Based on the transform mode, set the initial points accordingly
@@ -260,6 +261,8 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
         
             'Cases 0 should never occur, but if it does - treat this like a normal subsequent coordinate call
             'Cases 1-4 can similarly be treated like a normal subsequent coordinate call
+            ' (See setInitialTransformCoordinates for details on what the different cases mean.  And yes, I should convert
+            '  these to constants instead of numbers... :P)
             Case 0 To 4
                 x2 = x
                 y2 = y
@@ -286,12 +289,22 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                 x2 = x
                 updateInternalCoords
             
-            '9 - interior of selection, not near a corner or edge
+            '9 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
             Case 9
+            
+                'When moving the selection, force it to retain its current size.  This means the selection cannot be moved
+                ' off the image - it must remain completely on it, at its current size.
                 x1 = x - moveXDist
+                If x1 < 0 Then x1 = 0
+                If x1 + selWidth > containingPDImage.Width Then x1 = containingPDImage.Width - selWidth
+                
                 y1 = y - moveYDist
+                If y1 < 0 Then y1 = 0
+                If y1 + selHeight > containingPDImage.Height Then y1 = containingPDImage.Height - selHeight
+                
                 x2 = x1 + selWidth
                 y2 = y1 + selHeight
+                                
                 updateInternalCoords
                 'Message x1 & "," & y1 & " <--> " & x2 & "," & y2 & " | " & selLeft & "," & selTop & " <--> " & selWidth & "," & selHeight
         

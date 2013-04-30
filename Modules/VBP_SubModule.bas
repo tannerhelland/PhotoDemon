@@ -353,10 +353,10 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
     
     'Force any invalid values to their nearest matching point in the image
-    If x1 < 0 Then x1 = 0
-    If y1 < 0 Then y1 = 0
-    If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
-    If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
+    'If x1 < 0 Then x1 = 0
+    'If y1 < 0 Then y1 = 0
+    'If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
+    'If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
 
     'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
     Dim tLeft As Double, tTop As Double, tRight As Double, tBottom As Double
