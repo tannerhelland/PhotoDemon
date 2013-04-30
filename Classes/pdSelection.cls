@@ -105,9 +105,13 @@ End Enum
 
 Private sType As SelectionType
 
-'The outer boundaries of the current selection
+'The coordinates of the current selection (if rectangular)
 Private x1 As Double, x2 As Double
 Private y1 As Double, y2 As Double
+
+'The actual coordinates passed to the image.  These coordinates are not modified in any way.
+Private actualX1 As Double, actualX2 As Double
+Private actualY1 As Double, actualY2 As Double
 
 'When a selection is "locked in", the x and y values are converted to these values
 Public selLeft As Long, selTop As Long
@@ -240,6 +244,10 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
     x1 = x
     y1 = y
     
+    'Make a back-up copy of the coordinates.  These values will never be changed except by the user moving the mouse.
+    actualX1 = x
+    actualY1 = y
+    
     If sType = sRectangle Then
         x2 = x
         y2 = y
@@ -315,6 +323,10 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
     
         x2 = x
         y2 = y
+        
+        'Make a back-up copy of the coordinates.  These values will never be changed except by the user moving the mouse.
+        actualX2 = x
+        actualY2 = y
     
         updateInternalCoords
         
@@ -365,6 +377,29 @@ Private Sub updateInternalCoords()
     refreshTextBoxes
 
 End Sub
+
+'Because selections can be created off the image, it is sometimes necessary to check if ALL selection coordinates lie off the
+' image.  If this is the case, we don't want to finalize the current selection - we want to forget about it.
+Public Function areAllCoordinatesInvalid() As Boolean
+
+    'Transforms (resizing, moving, etc) do their own validation.  As such, this function is unnecessary because transforms
+    ' can only result in a valid selection.
+    If transformModeActive Then
+        areAllCoordinatesInvalid = False
+    
+    'If this selection wasn't just adjusted by a transform, it may be invalid.  Check for that now.
+    Else
+        
+        'If both coordinates lie outside the image, there is still a chance the selection itself can be valid (for example,
+        ' if the selection extends the full width or height of the image).  Check for this special case now.
+        If (actualX1 < 0) And (actualX2 < 0) Then areAllCoordinatesInvalid = True
+        If (actualX1 > containingPDImage.Width) And (actualX2 > containingPDImage.Width) Then areAllCoordinatesInvalid = True
+        If (actualY1 < 0) And (actualY2 < 0) Then areAllCoordinatesInvalid = True
+        If (actualY1 > containingPDImage.Height) And (actualY2 > containingPDImage.Height) Then areAllCoordinatesInvalid = True
+        
+    End If
+
+End Function
 
 'Use this to populate the text boxes on the main form with the current selection values
 Public Sub refreshTextBoxes()

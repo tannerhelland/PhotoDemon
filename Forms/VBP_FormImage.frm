@@ -425,12 +425,19 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
                 tInit tSelection, False
             Else
             
-                'Lock the selection
-                pdImages(Me.Tag).mainSelection.lockIn Me
-                tInit tSelection, True
+                'Check to see if all selection coordinates are invalid.  If they are, forget about this selection.
+                If pdImages(Me.Tag).mainSelection.areAllCoordinatesInvalid Then
+                    pdImages(Me.Tag).mainSelection.lockRelease
+                    pdImages(Me.Tag).selectionActive = False
+                    tInit tSelection, False
+                Else
                 
-                'Message x & "," & initMouseX & "-" & y & "," & initMouseY & "-" & hasMouseMoved
-            
+                    'Lock-in the active selection
+                    pdImages(Me.Tag).mainSelection.lockIn Me
+                    tInit tSelection, True
+                    
+                End If
+                
             End If
             
             'Force a redraw of the screen
