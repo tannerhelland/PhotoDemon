@@ -4,11 +4,14 @@ Option Explicit
 'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects
 Public Const DISPLAY_TIMINGS As Boolean = True
 
-'Constants related to mousewheel handling
+'Constants related to specialized mouse handling
 Public Const WM_MOUSEWHEEL As Long = &H20A
 Public Const WM_MOUSEFORWARDBACK As Long = 793
 Public Const WM_MOUSEKEYBACK As Long = -2147418112
 Public Const WM_MOUSEKEYFORWARD As Long = -2147352576
+Public Const WM_MOUSELEAVE As Long = &H2A3
+Public Const TME_LEAVE As Long = &H2
+Public Const TME_CANCEL As Long = &H80000000
 
 'Constants used for pulling up an API browse-for-folder box
 Public Const BIF_RETURNONLYFSDIRS = 1

@@ -113,6 +113,15 @@ Dim initMouseX As Double, initMouseY As Double
 'Used to prevent the obnoxious blinking effect of the main image scroll bars
 Private Declare Function DestroyCaret Lib "user32" () As Long
 
+'We want mouse events tracked for this form
+Private Type tagTRACKMOUSEEVENT
+    cbSize As Long
+    dwFlags As Long
+    hWndTrack As Long
+    dwHoverTime As Long
+End Type
+Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As tagTRACKMOUSEEVENT) As Long
+
 'New approach to mousewheel support - should be more robust than the old system
 Dim m_Subclass As cSelfSubHookCallback
 
@@ -199,6 +208,9 @@ End Sub
 'LOAD form
 Private Sub Form_Load()
     
+    'Request mouse tracking
+    requestMouseTracking
+    
     'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
     Set m_Subclass = New cSelfSubHookCallback
     
@@ -206,6 +218,7 @@ Private Sub Form_Load()
     If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then
         m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL 'Mouse wheel
         m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK 'Mouse forward/back keys
+        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window
     End If
     
     'Assign the system hand cursor to all relevant objects
@@ -288,12 +301,15 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
+        
     'If the main form is disabled, exit
     If FormMain.Enabled = False Then Exit Sub
     
     'If the image has not yet been loaded, exit
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
+        
+    'Ask Windows to track the mouse relative to this form
+    requestMouseTracking
     
     hasMouseMoved = hasMouseMoved + 1
     
@@ -398,8 +414,8 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         
     End If
         
-    'Display the image coordinates under the mouse pointer
-    displayImageCoordinates x, y, Me
+    'Display the image coordinates under the mouse pointer (but only if this is the currently active image)
+    If Me.Tag = CurrentImage Then displayImageCoordinates x, y, Me
     
 End Sub
 
@@ -668,6 +684,9 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
+    'Stop requesting mouse tracking
+    requestMouseTracking True
+    
     'Release the subclassing object responsible for mouse wheel support
     m_Subclass.ssc_Terminate
     Set m_Subclass = Nothing
@@ -734,6 +753,35 @@ End Sub
 
 Private Sub VScroll_Scroll()
     ScrollViewport Me
+End Sub
+
+'Request mouse tracking of this form.  (Windows requires you to re-request tracking after a tracking message is posted.)
+Private Sub requestMouseTracking(Optional ByVal stopTracking As Boolean = False)
+
+    Dim tracker As tagTRACKMOUSEEVENT
+
+    If stopTracking Then
+        
+        'Prepare a mouse tracking object, which will be sent to Windows so we can track mouse events for this form
+        With tracker
+            .cbSize = 16
+            .dwFlags = TME_LEAVE Or TME_CANCEL
+            .dwHoverTime = 0
+            .hWndTrack = Me.hWnd
+        End With
+        TrackMouseEvent tracker
+    Else
+    
+        With tracker
+            .cbSize = 16
+            .dwFlags = TME_LEAVE
+            .dwHoverTime = 0
+            .hWndTrack = Me.hWnd
+        End With
+        TrackMouseEvent tracker
+    
+    End If
+
 End Sub
 
 'This custom routine, combined with careful subclassing, allows us to handle mouse wheel events.
@@ -815,7 +863,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xP
 End Sub
 
 'This routine MUST BE KEPT as the final routine for this form. Its ordinal position determines its ability to subclass properly.
-' Subclassing is required to enable mousewheel support.
+' Subclassing is required to enable mousewheel support and other mouse events (e.g. the mouse leaving the window).
 Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
                       
     Dim MouseKeys As Long
@@ -830,28 +878,33 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
   
             Case WM_MOUSEWHEEL
     
-            MouseKeys = wParam And 65535
-            mRotation = wParam / 65536
-            xPos = lParam And 65535
-            yPos = lParam / 65536
-      
-            Me.MouseWheel MouseKeys, mRotation, xPos, yPos
-      
-        'FYI: I used brute-force testing to discover what messages my mouse uses for its back/forward keys.
-        ' I have no idea if these values are consistent between hardware vendors
-        Case WM_MOUSEFORWARDBACK
-                    
-            'Mouse back key
-            If lParam = WM_MOUSEKEYBACK Then
-                If pdImages(Me.Tag).IsActive Then
-                    If pdImages(Me.Tag).UndoState Then Process Undo
+                MouseKeys = wParam And 65535
+                mRotation = wParam / 65536
+                xPos = lParam And 65535
+                yPos = lParam / 65536
+          
+                Me.MouseWheel MouseKeys, mRotation, xPos, yPos
+          
+            'FYI: I used brute-force testing to discover what messages my mouse uses for its back/forward keys.
+            ' I have no idea if these values are consistent between hardware vendors
+            Case WM_MOUSEFORWARDBACK
+                        
+                'Mouse back key
+                If lParam = WM_MOUSEKEYBACK Then
+                    If pdImages(Me.Tag).IsActive Then
+                        If pdImages(Me.Tag).UndoState Then Process Undo
+                    End If
+                'Mouse forward key
+                ElseIf lParam = WM_MOUSEKEYFORWARD Then
+                    If pdImages(Me.Tag).IsActive Then
+                        If pdImages(Me.Tag).RedoState Then Process Redo
+                    End If
                 End If
-            'Mouse forward key
-            ElseIf lParam = WM_MOUSEKEYFORWARD Then
-                If pdImages(Me.Tag).IsActive Then
-                    If pdImages(Me.Tag).RedoState Then Process Redo
-                End If
-            End If
+                
+            'If the mouse leaves the window and no button is pressed,
+            Case WM_MOUSELEAVE
+                'MsgBox "wha?"
+                If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
             
         End Select
   
