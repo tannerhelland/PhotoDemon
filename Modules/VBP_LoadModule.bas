@@ -155,7 +155,7 @@ Public Sub LoadTheProgram()
     
         
     '*************************************************************************************************************************************
-    ' Set up all default tool values
+    ' Set all default tool values
     '*************************************************************************************************************************************
         
     LoadMessage "Initializing image tools..."
@@ -184,7 +184,7 @@ Public Sub LoadTheProgram()
     
     
     '*************************************************************************************************************************************
-    ' PhotoDemon's complex interface requires a lot of aspects to be generated at run-time.
+    ' PhotoDemon's complex interface requires a lot of things to be generated at run-time.
     '*************************************************************************************************************************************
     
     LoadMessage "Initializing user interface..."

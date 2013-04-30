@@ -99,7 +99,7 @@ Public Sub makeFormPretty(ByRef tForm As Form)
             End If
         End If
         
-        If g_IsVistaOrLater And ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo)) Then
+        If g_IsVistaOrLater And ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown)) Then
             If g_UseFancyFonts Then
                 eControl.Font.Name = "Segoe UI"
             Else
@@ -359,6 +359,12 @@ End Sub
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size") & ": " & iWidth & "x" & iHeight
     FormMain.lblImgSize.Refresh
+    
+    'Size is only displayed when it is changed, so change the upper limit of the selection boxes to match
+    FormMain.tudSelLeft.Max = iWidth - 1
+    FormMain.tudSelTop.Max = iHeight - 1
+    FormMain.tudSelWidth.Max = iWidth
+    FormMain.tudSelHeight.Max = iHeight
 End Sub
 
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but

@@ -350,10 +350,10 @@ Public Sub refreshTextBoxes()
 
     rejectRefreshRequests = True
 
-    If selLeft >= 0 Then FormMain.vsSelLeft.Value = Abs(32767 - selLeft)
-    If selTop >= 0 Then FormMain.vsSelTop.Value = Abs(32767 - selTop)
-    If selWidth > 0 Then FormMain.vsSelWidth.Value = Abs(32767 - selWidth) Else FormMain.txtSelWidth = ""
-    If selHeight > 0 Then FormMain.vsSelHeight.Value = Abs(32767 - selHeight) Else FormMain.txtSelHeight = ""
+    If selLeft >= 0 Then FormMain.tudSelLeft.Value = selLeft
+    If selTop >= 0 Then FormMain.tudSelTop.Value = selTop
+    If selWidth > 0 Then FormMain.tudSelWidth.Value = selWidth
+    If selHeight > 0 Then FormMain.tudSelHeight.Value = selHeight
 
     rejectRefreshRequests = False
 
@@ -565,47 +565,55 @@ Public Sub updateViaTextBox()
     rejectRefreshRequests = True
 
     'Check all text box entries for validity, then update the corresponding selection values
-    If EntryValid(FormMain.txtSelLeft, 0, 32767, False, False) Then
-        If Val(FormMain.txtSelLeft) > containingPDImage.Width - 1 Then FormMain.txtSelLeft = containingPDImage.Width - 1
-        selLeft = Val(FormMain.txtSelLeft)
+    If FormMain.tudSelLeft.IsValid(False) Then
+        If FormMain.tudSelLeft.Value > containingPDImage.Width - 1 Then FormMain.tudSelLeft = containingPDImage.Width - 1
+        selLeft = FormMain.tudSelLeft
     End If
-    If EntryValid(FormMain.txtSelTop, 0, 32767, False, False) Then
-        If Val(FormMain.txtSelTop) > containingPDImage.Height - 1 Then FormMain.txtSelTop = containingPDImage.Height - 1
-        selTop = Val(FormMain.txtSelTop)
+    If FormMain.tudSelTop.IsValid(False) Then
+        If FormMain.tudSelTop > containingPDImage.Height - 1 Then FormMain.tudSelTop = containingPDImage.Height - 1
+        selTop = FormMain.tudSelTop
     End If
-    If EntryValid(FormMain.txtSelWidth, 1, 32767, False, False) Then
-        If Val(FormMain.txtSelWidth) + Val(FormMain.txtSelLeft) > containingPDImage.Width Then
+    If FormMain.tudSelWidth.IsValid(False) Then
+        If FormMain.tudSelWidth + FormMain.tudSelLeft > containingPDImage.Width Then
             'FormMain.txtSelWidth = pdImages(CurrentImage).Width - Val(FormMain.txtSelLeft)
-            selLeft = containingPDImage.Width - Val(FormMain.txtSelWidth)
-            FormMain.txtSelLeft = selLeft
+            selLeft = containingPDImage.Width - FormMain.tudSelWidth
+            FormMain.tudSelLeft = selLeft
         End If
-        selWidth = Val(FormMain.txtSelWidth)
+        selWidth = FormMain.tudSelWidth
     End If
-    If EntryValid(FormMain.txtSelHeight, 1, 32767, False, False) Then
-        If Val(FormMain.txtSelHeight) + Val(FormMain.txtSelTop) > containingPDImage.Height Then
+    If FormMain.tudSelHeight.IsValid(False) Then
+        If FormMain.tudSelHeight + FormMain.tudSelTop > containingPDImage.Height Then
             'FormMain.txtSelHeight = pdImages(CurrentImage).Height - Val(FormMain.txtSelTop)
-            selTop = containingPDImage.Height - Val(FormMain.txtSelHeight)
-            FormMain.txtSelTop = selTop
+            selTop = containingPDImage.Height - FormMain.tudSelHeight
+            FormMain.tudSelTop = selTop
         End If
-        selHeight = Val(FormMain.txtSelHeight)
+        selHeight = FormMain.tudSelHeight
     End If
     
     'Perform one final sanity check on all selection values
     If selLeft < 0 Then
         selLeft = 0
-        FormMain.txtSelLeft = selLeft
+        FormMain.tudSelLeft = selLeft
     End If
     If selTop < 0 Then
         selTop = 0
-        FormMain.txtSelTop = selTop
+        FormMain.tudSelTop = selTop
     End If
     If selWidth > containingPDImage.Width Then
         selWidth = containingPDImage.Width
-        FormMain.txtSelWidth = selWidth
+        FormMain.tudSelWidth = selWidth
+    End If
+    If selWidth = 0 Then
+        selWidth = 1
+        FormMain.tudSelWidth = selWidth
     End If
     If selHeight > containingPDImage.Height Then
         selHeight = containingPDImage.Height
-        FormMain.txtSelHeight = selHeight
+        FormMain.tudSelHeight = selHeight
+    End If
+    If selHeight = 0 Then
+        selHeight = 1
+        FormMain.tudSelHeight = selHeight
     End If
     
     'Adjust the x1, y1, x2, y2 values to match these new ones

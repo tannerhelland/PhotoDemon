@@ -3,10 +3,10 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H00FFFFFF&
    Caption         =   "Image Window"
-   ClientHeight    =   2580
+   ClientHeight    =   2295
    ClientLeft      =   120
    ClientTop       =   345
-   ClientWidth     =   6015
+   ClientWidth     =   5430
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -21,9 +21,9 @@ Begin VB.Form FormImage
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   172
+   ScaleHeight     =   153
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   401
+   ScaleWidth      =   362
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin VB.HScrollBar HScroll 

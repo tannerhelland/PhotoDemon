@@ -138,14 +138,10 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
         'Selections
         Case tSelection
-            FormMain.txtSelLeft.Visible = tState
-            FormMain.txtSelTop.Visible = tState
-            FormMain.txtSelWidth.Visible = tState
-            FormMain.txtSelHeight.Visible = tState
-            FormMain.vsSelLeft.Visible = tState
-            FormMain.vsSelTop.Visible = tState
-            FormMain.vsSelWidth.Visible = tState
-            FormMain.vsSelHeight.Visible = tState
+            FormMain.tudSelLeft.Visible = tState
+            FormMain.tudSelTop.Visible = tState
+            FormMain.tudSelWidth.Visible = tState
+            FormMain.tudSelHeight.Visible = tState
             FormMain.lblSelSize.Visible = tState
             FormMain.lblSelPosition.Visible = tState
             

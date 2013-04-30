@@ -317,12 +317,12 @@ End Sub
 Private Sub CmdResize_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
-    If Not EntryValid(txtWidth, 1, 32767, True, True) Then
-        AutoSelectText txtWidth
+    If Not EntryValid(TxtWidth, 1, 32767, True, True) Then
+        AutoSelectText TxtWidth
         Exit Sub
     End If
-    If Not EntryValid(txtHeight, 1, 32767, True, True) Then
-        AutoSelectText txtHeight
+    If Not EntryValid(TxtHeight, 1, 32767, True, True) Then
+        AutoSelectText TxtHeight
         Exit Sub
     End If
     
@@ -331,19 +331,19 @@ Private Sub CmdResize_Click()
     'Resample based on the combo box entry...
     Select Case cboResample.ListIndex
         Case 0
-            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_NORMAL
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_NORMAL
         Case 1
-            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_HALFTONE
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_HALFTONE
         Case 2
-            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_BILINEAR
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BILINEAR
         Case 3
-            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_BSPLINE
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BSPLINE
         Case 4
-            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_BICUBIC_MITCHELL
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BICUBIC_MITCHELL
         Case 5
-            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_BICUBIC_CATMULL
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_BICUBIC_CATMULL
         Case 6
-            Process ImageSize, Val(txtWidth), Val(txtHeight), RESIZE_LANCZOS
+            Process ImageSize, Val(TxtWidth), Val(TxtHeight), RESIZE_LANCZOS
     End Select
     
     Unload Me
@@ -358,14 +358,14 @@ End Sub
 Private Sub Form_Activate()
     
     'Add one to the displayed width and height, since we store them -1 for loops
-    txtWidth.Text = pdImages(CurrentImage).Width
-    txtHeight.Text = pdImages(CurrentImage).Height
+    TxtWidth.Text = pdImages(CurrentImage).Width
+    TxtHeight.Text = pdImages(CurrentImage).Height
     
     'Make the scroll bars match the text boxes
     updateWidthBar = False
     updateHeightBar = False
-    VSWidth.Value = Abs(32767 - CInt(txtWidth))
-    VSHeight.Value = Abs(32767 - CInt(txtHeight))
+    VSWidth.Value = Abs(32767 - CInt(TxtWidth))
+    VSHeight.Value = Abs(32767 - CInt(TxtHeight))
     updateWidthBar = True
     updateHeightBar = True
     
@@ -401,12 +401,12 @@ End Sub
 'If "Preserve Size Ratio" is selected, this set of routines handles the preservation
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText txtHeight
+    AutoSelectText TxtHeight
 End Sub
 
 Private Sub txtHeight_KeyUp(KeyCode As Integer, Shift As Integer)
     If (KeyCode <> vbKeyTab) And (KeyCode <> vbKeyShift) Then
-        textValidate txtHeight
+        textValidate TxtHeight
         ChangeToHeight
     End If
 End Sub
@@ -416,12 +416,12 @@ Private Sub TxtHeight_LostFocus()
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText txtWidth
+    AutoSelectText TxtWidth
 End Sub
 
 Private Sub txtWidth_KeyUp(KeyCode As Integer, Shift As Integer)
     If (KeyCode <> vbKeyTab) And (KeyCode <> vbKeyShift) Then
-        textValidate txtWidth
+        textValidate TxtWidth
         ChangeToWidth
     End If
 End Sub
@@ -432,15 +432,15 @@ End Sub
 
 Private Sub UpdateHeightBox()
     updateHeightBar = False
-    txtHeight = Int((CDbl(Val(txtWidth)) * hRatio) + 0.5)
-    VSHeight.Value = Abs(32767 - Val(txtHeight))
+    TxtHeight = Int((CDbl(Val(TxtWidth)) * hRatio) + 0.5)
+    VSHeight.Value = Abs(32767 - Val(TxtHeight))
     updateHeightBar = True
 End Sub
 
 Private Sub UpdateWidthBox()
     updateWidthBar = False
-    txtWidth = Int((CDbl(Val(txtHeight)) * wRatio) + 0.5)
-    VSWidth.Value = Abs(32767 - Val(txtWidth))
+    TxtWidth = Int((CDbl(Val(TxtHeight)) * wRatio) + 0.5)
+    VSWidth.Value = Abs(32767 - Val(TxtWidth))
     updateWidthBar = True
 End Sub
 '*************************************************************************************
@@ -497,22 +497,22 @@ End Sub
 ' relative to the associated text box
 Private Sub VSHeight_Change()
     If updateHeightBar = True Then
-        txtHeight = Abs(32767 - CStr(VSHeight.Value))
+        TxtHeight = Abs(32767 - CStr(VSHeight.Value))
         ChangeToHeight
     End If
 End Sub
 
 Private Sub VSWidth_Change()
     If updateWidthBar = True Then
-        txtWidth = Abs(32767 - CStr(VSWidth.Value))
+        TxtWidth = Abs(32767 - CStr(VSWidth.Value))
         ChangeToWidth
     End If
 End Sub
 
 Private Sub ChangeToWidth()
-    If EntryValid(txtWidth, 1, 32767, False, False) Then
+    If EntryValid(TxtWidth, 1, 32767, False, False) Then
         updateWidthBar = False
-        VSWidth.Value = Abs(32767 - CInt(txtWidth))
+        VSWidth.Value = Abs(32767 - CInt(TxtWidth))
         updateWidthBar = True
         If chkRatio.Value = vbChecked Then
             UpdateHeightBox
@@ -521,9 +521,9 @@ Private Sub ChangeToWidth()
 End Sub
 
 Private Sub ChangeToHeight()
-    If EntryValid(txtHeight, 1, 32767, False, False) Then
+    If EntryValid(TxtHeight, 1, 32767, False, False) Then
         updateHeightBar = False
-        VSHeight.Value = Abs(32767 - CInt(txtHeight))
+        VSHeight.Value = Abs(32767 - CInt(TxtHeight))
         updateHeightBar = True
         If chkRatio.Value = vbChecked Then
             UpdateWidthBox
@@ -719,10 +719,10 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
     If selActive Then
                 
         'Populate the selection text boxes (which are now invisible)
-        FormMain.txtSelLeft = Int(tsLeft * wRatio)
-        FormMain.txtSelTop = Int(tsTop * hRatio)
-        FormMain.txtSelWidth = Int(tsWidth * wRatio)
-        FormMain.txtSelHeight = Int(tsHeight * hRatio)
+        FormMain.tudSelLeft = Int(tsLeft * wRatio)
+        FormMain.tudSelTop = Int(tsTop * hRatio)
+        FormMain.tudSelWidth = Int(tsWidth * wRatio)
+        FormMain.tudSelHeight = Int(tsHeight * hRatio)
         
         'Reactivate the current selection with the new values
         tInit tSelection, True
