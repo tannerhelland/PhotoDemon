@@ -284,31 +284,26 @@ End Function
 ' coordinates (e.g. location on the image) of the current mouse position.
 Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcForm As Form, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
 
-    'If isMouseOverImage(x1, y1, srcForm) Then
-            
-        'Grab the current zoom value
-        Dim ZoomVal As Double
-        ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
-            
-        'Calculate x and y positions, while taking into account zoom and scroll values
-        x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
-        y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
-            
-        'When zoomed very far out, the values might be calculated incorrectly. Force them to the image dimensions if necessary.
-        'If x1 < 0 Then x1 = 0
-        'If y1 < 0 Then y1 = 0
-        'If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
-        'If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
+    'Grab the current zoom value
+    Dim ZoomVal As Double
+    ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
+                
+    'Calculate x and y positions, while taking into account zoom and scroll values
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
+    
+    'When zoomed very far out, the values might be calculated incorrectly. Force them to the image dimensions if necessary.
+    'If x1 < 0 Then x1 = 0
+    'If y1 < 0 Then y1 = 0
+    'If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
+    'If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
         
-        'If the user has requested copies of these coordinates, assign them now
-        If copyX Then copyX = x1
-        If copyY Then copyY = y1
-        
-        FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
-        FormMain.lblCoordinates.Refresh
-        'DoEvents
-        
-    'End If
+    'If the user has requested copies of these coordinates, assign them now
+    If copyX Then copyX = x1
+    If copyY Then copyY = y1
+    
+    FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+    FormMain.lblCoordinates.Refresh
     
 End Sub
 

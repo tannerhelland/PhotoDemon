@@ -324,26 +324,11 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
         If pdImages(Me.Tag).selectionActive Then
             
-            'Check the location of the mouse to see if it's over the image
-            'If isMouseOverImage(x, y, Me) Then
+            'Display the image coordinates under the mouse pointer
+            displayImageCoordinates x, y, Me, imgX, imgY
             
-                'Display the image coordinates under the mouse pointer
-                displayImageCoordinates x, y, Me, imgX, imgY
-            
-                'Pass new points to the active selection
-                pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
-            
-            'If the mouse coordinates are NOT over the image, we need to find the closest points in the image and pass those instead
-            'Else
-        
-                'imgX = x
-                'imgY = y
-                'findNearestImageCoordinates imgX, imgY, Me
-                
-                'Pass those points to the active selection
-                'pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
-            
-            'End If
+            'Pass new points to the active selection
+            pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
             
         End If
         

@@ -143,7 +143,7 @@ Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC A
 'Object API functions
 Private Const OBJ_BITMAP As Long = 7
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GetObjectType Lib "gdi32" (ByVal hgdiobj As Long) As Long
+Private Declare Function GetObjectType Lib "gdi32" (ByVal hGDIobj As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Rectangle objects to be used with brushes
