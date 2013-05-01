@@ -1,10 +1,10 @@
 Attribute VB_Name = "Viewport_Handler"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 12/November/12
-'Last update: Maintain scroll bar value whenever possible (e.g. when Undo/Redo data is loaded, do not reset the scroll bars unless we absolutely have to)
+'Last updated: 01/April/13
+'Last update: Improve comments and clean up a bit of sloppy code
 '
 'Module for handling the image viewport.  There are key routines:
 ' - PrepareViewport: for recalculating all viewport variables and controls (done only when the zoom value is changed or a new picture is loaded)
@@ -42,7 +42,7 @@ Dim frontBuffer As pdLayer
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Dim cornerFix As pdLayer
 
-'renderViewport is the last step in the viewport chain.  (PrepareViewport -> ScrollViewport -> renderViewport)
+'RenderViewport is the last step in the viewport chain.  (PrepareViewport -> ScrollViewport -> RenderViewport)
 ' It can only be executed after both PrepareViewport and ScrollViewport have been run at least once.  It assumes a fully composited backbuffer,
 ' which is then copied to the front buffer, and any final composites (such as a selection) are drawn atop that.
 Public Sub RenderViewport(ByRef formToBuffer As Form)
@@ -51,7 +51,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If formToBuffer Is Nothing Then Exit Sub
     
     'If the image associated with this form is inactive, ignore this request
-    If pdImages(formToBuffer.Tag).IsActive = False Then Exit Sub
+    If Not pdImages(formToBuffer.Tag).IsActive Then Exit Sub
 
     'Reset the front buffer
     If Not (frontBuffer Is Nothing) Then
@@ -74,10 +74,10 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     'If the user has requested a drop shadow drawn onto the canvas, handle that next
     If g_CanvasDropShadow Then
     
-        'We'll handle this in two steps; first, the horizontal stretches
-        If formToBuffer.VScroll.Visible = False Then
+        'We'll handle this in two steps; first, render the horizontal shadows
+        If Not formToBuffer.VScroll.Visible Then
                     
-            'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
+            'Make sure the image isn't snugly fit inside the viewport; if it is, rendering drop shadows is a waste of time
             If pdImages(formToBuffer.Tag).targetTop <> 0 Then
                 'Top edge
                 StretchBlt frontBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop - PD_CANVASSHADOWSIZE, pdImages(formToBuffer.Tag).targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
@@ -87,7 +87,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
         
         End If
         
-        'Second, the vertical stretches
+        'Second, the vertical shadows
         If Not formToBuffer.HScroll.Visible Then
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
@@ -138,9 +138,6 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     formToBuffer.Picture = formToBuffer.Image
     formToBuffer.Refresh
     
-    'If we don't fire DoEvents here, the image will only scroll after the mouse button is released.
-    'DoEvents
-
 End Sub
 
 'ScrollViewport is used to update the on-screen image when the scroll bars are used.
@@ -151,7 +148,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     If formToBuffer Is Nothing Then Exit Sub
     
     'If the image associated with this form is inactive, ignore this request
-    If pdImages(formToBuffer.Tag).IsActive = False Then Exit Sub
+    If Not pdImages(formToBuffer.Tag).IsActive Then Exit Sub
     
     'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
     ZoomVal = g_Zoom.ZoomArray(pdImages(formToBuffer.Tag).CurrentZoomValue)
@@ -164,7 +161,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     If formToBuffer.HScroll.Visible Then srcX = formToBuffer.HScroll.Value Else srcX = 0
     If formToBuffer.VScroll.Visible Then srcY = formToBuffer.VScroll.Value Else srcY = 0
         
-    'Paint the image from the back buffer to the front buffer
+    'Paint the image from the back buffer to the front buffer.  We handle this as two cases: one for zooming in, another for zooming out.
     If ZoomVal < 1 Then
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
@@ -187,7 +184,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
             pdImages(formToBuffer.Tag).alphaFixLayer.compositeBackgroundColorSpecial hackLayer
             BitBlt pdImages(formToBuffer.Tag).backBuffer.getLayerDC, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, pdImages(formToBuffer.Tag).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
             
-            'Remove our temporary layer from memory to prevent leaks
+            'Remove our temporary layer from memory
             hackLayer.eraseLayer
             Set hackLayer = Nothing
             
@@ -234,19 +231,19 @@ End Sub
 
 'This routine requires a target form as a parameter.  This form will almost always be FormMain.ActiveForm, but in
 ' certain rare cases (cascading windows, for example), it may be necessary to recalculate the viewport and scroll bars
-' in non-active windows - in those cases, the calling routine must tell us which viewport it wants rebuilt.
+' in non-active windows - in those cases, the calling routine must specify which viewport it wants rebuilt.
 Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForRedraw As String)
 
     'Don't attempt to resize the scroll bars if g_FixScrolling is disabled. This is used to provide a smoother user experience,
     ' especially when images are being loaded. (This routine is triggered on Form_Resize, which is in turn triggered when a
     ' new picture is loaded.  To prevent PrepareViewport from being fired multiple times, g_FixScrolling is utilized.)
-    If g_FixScrolling = False Then Exit Sub
+    If Not g_FixScrolling Then Exit Sub
     
     'Make sure the form is valid
     If formToBuffer Is Nothing Then Exit Sub
     
     'If the image associated with this form is inactive, ignore this request
-    If pdImages(formToBuffer.Tag).IsActive = False Then Exit Sub
+    If Not pdImages(formToBuffer.Tag).IsActive Then Exit Sub
     
     'Because this routine is time-consuming, I track it carefully to try and minimize how frequently it's called.  Feel free to comment out this line.
     Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & formToBuffer.Tag & ") | " & formToBuffer.Caption
@@ -276,15 +273,15 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If Int(zWidth) > FormWidth Then hScrollEnabled = True
     
     'Step 2: compare viewport height to zoomed image height.  If the horizontal scrollbar has been enabled, factor that into our calculations
-    If (Int(zHeight) > FormHeight) Or ((hScrollEnabled = True) And (Int(zHeight) > (FormHeight - formToBuffer.HScroll.Height))) Then vScrollEnabled = True
+    If (Int(zHeight) > FormHeight) Or (hScrollEnabled And (Int(zHeight) > (FormHeight - formToBuffer.HScroll.Height))) Then vScrollEnabled = True
     
     'Step 3: one last check on horizontal viewport width; if the vertical scrollbar was enabled, the horizontal viewport width has changed.
-    If (vScrollEnabled = True) And (hScrollEnabled = False) And (Int(zWidth) > (FormWidth - formToBuffer.VScroll.Width)) Then hScrollEnabled = True
+    If vScrollEnabled And (Not hScrollEnabled) And (Int(zWidth) > (FormWidth - formToBuffer.VScroll.Width)) Then hScrollEnabled = True
     
     'We now know which scroll bars need to be enabled.  Before calculating scroll bar stuff, however, let's figure out where our viewport will
     ' be located - on the edge if scroll bars are enabled, or centered in the viewable area if scroll bars are NOT enabled.
     
-    'Additionally, calculate viewport size - full form size if scroll bars enabled, full zoomed size if they are not
+    'Additionally, calculate viewport size - full form size if scroll bars are enabled, full image size (including zoom) if they are not
     Dim viewportLeft As Long, viewportTop As Long
     Dim viewportWidth As Long, viewportHeight As Long
     
@@ -366,12 +363,12 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         formToBuffer.HScroll.Max = newScrollMax
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If formToBuffer.HScroll.Max > 7 Then formToBuffer.HScroll.LargeChange = formToBuffer.HScroll.Max \ 8
+        If formToBuffer.HScroll.Max > 15 Then formToBuffer.HScroll.LargeChange = formToBuffer.HScroll.Max \ 16
         
     End If
     
     'Same formula, but with width and height swapped for vertical scrolling
-    If vScrollEnabled = True Then
+    If vScrollEnabled Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
@@ -385,7 +382,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
         formToBuffer.VScroll.Max = newScrollMax
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If formToBuffer.VScroll.Max > 7 Then formToBuffer.VScroll.LargeChange = formToBuffer.VScroll.Max \ 8
+        If formToBuffer.VScroll.Max > 15 Then formToBuffer.VScroll.LargeChange = formToBuffer.VScroll.Max \ 16
         
     End If
     
