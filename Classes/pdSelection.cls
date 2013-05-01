@@ -88,6 +88,10 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+
+'Brush creation
+Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 
 'Stock object retrieval
 Private Const NULL_BRUSH = 5
@@ -109,7 +113,8 @@ Private sType As SelectionType
 Private x1 As Double, x2 As Double
 Private y1 As Double, y2 As Double
 
-'The actual coordinates passed to the image.  These coordinates are not modified in any way.
+'The actual coordinates passed from the user's mouse movements to this selection object.  These coordinates are not modified in any way.
+' (e.g. these coordinates could lie outside the image, viewport, or screen, because no bounds checking is applied to them)
 Private actualX1 As Double, actualX2 As Double
 Private actualY1 As Double, actualY2 As Double
 
@@ -134,6 +139,14 @@ Private transformModeActive As Boolean
 
 'What image does this selection belong to?
 Public containingPDImage As pdImage
+
+'This DIB contains the selection mask for this selection object.  Black pixels in the selection mask represent unselected pixels in the image.
+' White pixels represent selected ones.  Non-white and non-black pixels can be used for aliasing.
+Public selMask As pdLayer
+
+'After the mask has been generated, its status will be set as "ready".  Any function that changes the selected area will reset this to "false".
+' The selection rendering code can check this value to see if the mask needs to be recreated before rendering it to screen.
+Private isMaskReady As Boolean
 
 'set a transformation type
 Public Sub setTransformationType(ByVal transType As Long)
@@ -342,6 +355,9 @@ End Function
 'Whenever the x1, y1, x2, y2 values are changed, this sub needs to be called to update the left/right/width/height values accordingly
 Private Sub updateInternalCoords()
 
+    'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
+    isMaskReady = False
+
     'Calculate left, top width, height based off the current x1/x2/y1/y2 values
     If x1 < x2 Then
         If x1 < 0 Then x1 = 0
@@ -387,7 +403,8 @@ Public Function areAllCoordinatesInvalid() As Boolean
     If transformModeActive Then
         areAllCoordinatesInvalid = False
     
-    'If this selection wasn't just adjusted by a transform, it may be invalid.  Check for that now.
+    'If this selection wasn't just adjusted by a transform, it may be invalid (for example, if all its coordinates lie off the image).
+    ' Check for validity now.
     Else
         
         'If both coordinates lie outside the image, there is still a chance the selection itself can be valid (for example,
@@ -415,203 +432,6 @@ Public Sub refreshTextBoxes()
 
 End Sub
 
-'"Lock-in" a selection. Typically this is prompted by a _MouseUp event
-Public Sub lockIn(ByRef targetForm As Form)
-    
-    'Mark this selection as locked-in
-    lockedIn = True
-        
-    'Update the internal coordinates one final time
-    updateInternalCoords
-    
-    'The final thing we need to check for is the width and height, which may be still be zero at this point.
-    If selWidth < 1 Then selWidth = 1
-    If selHeight < 1 Then selHeight = 1
-    
-    'Adjust the main form's selection text boxes to match the newly calculated values
-    refreshTextBoxes
-        
-End Sub
-
-'"Unlock" a selection
-Public Sub lockRelease()
-
-    lockedIn = False
-
-End Sub
-
-'Render a selection using one of several methods.
-Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender)
-
-    'If we're the one requesting updates by accident, exit
-    If rejectRefreshRequests Then Exit Sub
-
-    'Update the internal coordinates, just in case
-    'updateInternalCoords
-    
-    'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates
-    Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
-    
-    Dim dstLeft As Double, dstRight As Double
-    Dim dstTop As Double, dstBottom As Double
-        
-    dstLeft = ((selLeft - dstForm.HScroll.Value) * ZoomVal) + imgLeft
-    dstRight = ((selLeft + selWidth - dstForm.HScroll.Value) * ZoomVal) + imgLeft + 0.5
-    dstTop = ((selTop - dstForm.VScroll.Value) * ZoomVal) + imgTop
-    dstBottom = ((selTop + selHeight - dstForm.VScroll.Value) * ZoomVal) + imgTop + 0.5
-    
-    'Several draw methods use the same variables. Declare those here.
-    Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    Dim x As Long, y As Long
-    Dim QuickVal As Long
-    
-    'Just to be safe, declare some bounding variables in advance as well
-    Dim rightBound As Long, bottomBound As Long
-    rightBound = imgLeft + imgWidth - 1
-    bottomBound = imgTop + imgHeight - 1
-            
-    If rightBound > pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1 Then rightBound = pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1
-    If bottomBound > pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1 Then bottomBound = pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1
-        
-    'Based on the selection type, draw a corresponding selection of some sort
-    Select Case renderType
-    
-        'Lightbox style
-        Case 0
-        
-            'Start by acquiring a pointer to the target layer's pixel bits
-            prepLayerSafeArray dstLayer, tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            'Use a look-up table to dim the non-active parts of the image
-            Dim hData(0 To 255) As Byte
-            
-            For x = 0 To 255
-                hData(x) = x \ 3
-            Next x
-            
-            dstRight = dstRight - 1
-            dstBottom = dstBottom - 1
-            
-            'Dim the non-active parts of the image
-            For x = imgLeft To rightBound
-                QuickVal = x * 3
-            For y = imgTop To bottomBound
-            
-                If (x < dstLeft) Or (x > dstRight) Or (y < dstTop) Or (y > dstBottom) Then
-                    iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
-                    iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
-                    iData(QuickVal, y) = hData(iData(QuickVal, y))
-                End If
-                
-            Next y
-            Next x
-            
-            'With our work complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            Erase iData
-        
-            dstRight = dstRight + 1
-            dstBottom = dstBottom + 1
-        
-        'Highlight style (Paint.NET)
-        Case 1 To 2
-        
-            'Start by acquiring a pointer to the target layer's pixel bits
-            prepLayerSafeArray dstLayer, tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            'Use look-up tables to highlight the active parts of the image
-            Dim rData(0 To 255) As Byte, gData(0 To 255) As Byte, bData(0 To 255) As Byte
-            
-            Dim newR As Long, newG As Long, newB As Long
-            
-            If renderType = sHighlightBlue Then
-                newR = 112
-                newG = 183
-                newB = 255
-            Else
-                newR = 255
-                newG = 35
-                newB = 49
-            End If
-            
-            For x = 0 To 255
-                rData(x) = (newR + x) \ 2
-                gData(x) = (newG + x) \ 2
-                bData(x) = (newB + x) \ 2
-            Next x
-            
-            dstRight = dstRight - 1
-            dstBottom = dstBottom - 1
-            
-            'Dim the non-active parts of the image
-            For x = imgLeft To rightBound
-                QuickVal = x * 3
-            For y = imgTop To bottomBound
-            
-                If (x >= dstLeft) And (x <= dstRight) And (y >= dstTop) And (y <= dstBottom) Then
-                    iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
-                    iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
-                    iData(QuickVal, y) = bData(iData(QuickVal, y))
-                End If
-                
-            Next y
-            Next x
-            
-            'With our work complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            Erase iData
-            
-            dstRight = dstRight + 1
-            dstBottom = dstBottom + 1
-            
-        'Focus rectangle ("Simple" style)
-        Case Else
-        
-            'Store the destination DC to a local variable
-            Dim DstDC As Long
-            DstDC = dstLayer.getLayerDC
-            
-            'Since we'll be using the API to draw our selection area, we need to initialize several brushes
-            Dim hPen As Long, hOldPen As Long
-            
-            hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
-            hOldPen = SelectObject(DstDC, hPen)
-            
-            'Get a transparent brush
-            Dim hBrush As Long, hOldBrush As Long
-            hBrush = GetStockObject(NULL_BRUSH)
-            hOldBrush = SelectObject(DstDC, hBrush)
-            
-            'Change the rasterOp to XOR (this will invert the line)
-            SetROP2 DstDC, vbSrcInvert
-            
-            'If dstLeft > imgLeft Then dstLeft = dstLeft - 1
-            'If dstTop > imgTop Then dstTop = dstTop - 1
-            'dstRight = dstRight + 1
-            'dstBottom = dstBottom + 1
-            
-            'Draw the rectangle
-            Rectangle DstDC, dstLeft, dstTop, dstRight, dstBottom
-            
-            'Restore the normal COPY rOp
-            SetROP2 DstDC, vbSrcCopy
-            
-            'Remove the brush from the DC
-            SelectObject DstDC, hOldBrush
-            DeleteObject hBrush
-            
-            'Remove the pen from the DC
-            SelectObject DstDC, hOldPen
-            DeleteObject hPen
-                    
-    End Select
-        
-End Sub
-
 'Update this selection using the values in the main form's selection text boxes
 Public Sub updateViaTextBox()
 
@@ -619,6 +439,9 @@ Public Sub updateViaTextBox()
     If isLockedIn = False Then Exit Sub
 
     rejectRefreshRequests = True
+
+    'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
+    isMaskReady = False
 
     'Check all text box entries for validity, then update the corresponding selection values
     If FormMain.tudSelLeft.IsValid(False) Then
@@ -685,10 +508,295 @@ Public Sub updateViaTextBox()
     
 End Sub
 
+'"Lock-in" a selection. Typically this is prompted by a _MouseUp event
+Public Sub lockIn(ByRef targetForm As Form)
+    
+    'Mark this selection as locked-in
+    lockedIn = True
+        
+    'Update the internal coordinates one final time
+    updateInternalCoords
+    
+    'The final thing we need to check for is the width and height, which may be still be zero at this point.  Do not allow selections of size 0.
+    If selWidth < 1 Then selWidth = 1
+    If selHeight < 1 Then selHeight = 1
+    
+    'Adjust the main form's selection text boxes to match the newly calculated values
+    refreshTextBoxes
+        
+End Sub
+
+'"Unlock" a selection
+Public Sub lockRelease()
+
+    lockedIn = False
+
+End Sub
+
+'Create a selection mask based on the current selection type.  A few items to note:
+' 1) The selection mask is always the size of the full image.  This makes transforms (e.g. "grow selection") much easier to handle.
+' 2) Black pixels in the mask represent unselected pixels in the image.  White represents selected.  Other shades can be used for aliasing
+'     or partial selections.
+' 3) The selection mask is stored as a pdLayer object, so any image filters can be applied to it.
+' 4) For shape-based selections (rectangle, square, etc), the selection's dimensions need to be set BEFORE calling this function.  This function
+'     relies on things like selLeft and selWidth to know where to render the mask.
+Private Sub createSelectionMask()
+
+    'Start by creating a blank mask (this will also erase any existing mask)
+    selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, 0
+    
+    'The actual rendering of the selection will vary based on the current selection type (obviously).
+    Select Case sType
+    
+        'Squares and rectangles are easy - use FillRect to draw a white rectangle at the mask's location
+        Case sRectangle, sSquare
+        
+            Dim maskRect As RECT
+            SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
+            
+            Dim hBrush As Long
+            hBrush = CreateSolidBrush(RGB(255, 255, 255))
+            FillRect selMask.getLayerDC, maskRect, hBrush
+            DeleteObject hBrush
+    
+    End Select
+
+End Sub
+
+'Render a selection using one of several methods.
+Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender)
+
+    'If an update has been requested, but we are already in the middle of one, deny subsequent requests
+    If rejectRefreshRequests Then Exit Sub
+
+    'Is the selection mask ready to be used?  If not, prepare it now.
+    If Not isMaskReady Then createSelectionMask
+    
+    'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates.
+    ' (e.g., the location of this selection is stored as image coordinates - but we need to have it in "viewport" coordinates so we can
+    '        draw it to the screen, while accounting for things like zoom and scroll values)
+    Dim ZoomVal As Double
+    ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
+    
+    Dim hScrollVal As Long, vScrollVal As Long
+    hScrollVal = dstForm.HScroll.Value
+    vScrollVal = dstForm.VScroll.Value
+    
+    Dim dstLeft As Double, dstRight As Double
+    Dim dstTop As Double, dstBottom As Double
+        
+    dstLeft = ((selLeft - hScrollVal) * ZoomVal) + imgLeft
+    dstRight = ((selLeft + selWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
+    dstTop = ((selTop - vScrollVal) * ZoomVal) + imgTop
+    dstBottom = ((selTop + selHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+    
+    'Several different selection rendering methods use the same variables.  I've declared the common ones here.
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    Dim x As Long, y As Long
+    Dim QuickVal As Long
+    
+    Dim selMaskData() As Byte
+    Dim selMaskSA As SAFEARRAY2D
+    Dim selMaskQuickVal As Long
+    
+    Dim srcX As Long, srcY As Long
+    Dim srcWidth As Long, srcHeight As Long
+    srcWidth = containingPDImage.Width - 1
+    srcHeight = containingPDImage.Height - 1
+    
+    'Just to be safe, declare some bounding variables in advance as well
+    Dim rightBound As Long, bottomBound As Long
+    rightBound = imgLeft + imgWidth - 1
+    bottomBound = imgTop + imgHeight - 1
+            
+    If rightBound > pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1 Then rightBound = pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1
+    If bottomBound > pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1 Then bottomBound = pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1
+        
+    'Based on the selection type, draw a corresponding selection of some sort
+    Select Case renderType
+    
+        'Lightbox style
+        Case 0
+        
+            'Start by acquiring a pointer to the target layer's pixel bits
+            prepLayerSafeArray dstLayer, tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+            
+            'Next, acquire a pointer to the selection mask's pixel bits
+            prepLayerSafeArray selMask, selMaskSA
+            CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+            
+            'Use a look-up table to dim the non-active parts of the image
+            Dim hData(0 To 255) As Byte
+            
+            For x = 0 To 255
+                hData(x) = x \ 3
+            Next x
+            
+            dstRight = dstRight - 1
+            dstBottom = dstBottom - 1
+            
+            'Dim the non-active parts of the image
+            For x = imgLeft To rightBound
+                QuickVal = x * 3
+            For y = imgTop To bottomBound
+            
+                'Calculate source x and y positions, while taking into account zoom and scroll values
+                srcX = hScrollVal + Int((x - imgLeft) / ZoomVal)
+                srcY = vScrollVal + Int((y - imgTop) / ZoomVal)
+                
+                'Make sure srcX and srcY are not out of bounds
+                If srcX < 0 Then srcX = 0
+                If srcX > srcWidth Then srcX = srcWidth
+                If srcY < 0 Then srcY = 0
+                If srcY > srcHeight Then srcY = srcHeight
+                
+                selMaskQuickVal = srcX * 3
+            
+                'Remember that lightbox works a little weirdly - UNSELECTED pixels are marked, while selected ones are left untouched
+                If selMaskData(selMaskQuickVal, srcY) = 0 Then
+                    iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
+                    iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
+                    iData(QuickVal, y) = hData(iData(QuickVal, y))
+                End If
+                
+            Next y
+            Next x
+            
+            'With our work complete, point all arrays away from their respective DIBs, then deallocate them
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+            Erase iData
+            Erase selMaskData
+                    
+            dstRight = dstRight + 1
+            dstBottom = dstBottom + 1
+        
+        'Highlight style (Paint.NET)
+        Case 1 To 2
+        
+            'Start by acquiring a pointer to the target layer's pixel bits
+            prepLayerSafeArray dstLayer, tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+            
+            'Next, acquire a pointer to the selection mask's pixel bits
+            prepLayerSafeArray selMask, selMaskSA
+            CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+            
+            'Use look-up tables to highlight the active parts of the image
+            Dim rData(0 To 255) As Byte, gData(0 To 255) As Byte, bData(0 To 255) As Byte
+            
+            Dim newR As Long, newG As Long, newB As Long
+            
+            If renderType = sHighlightBlue Then
+                newR = 112
+                newG = 183
+                newB = 255
+            Else
+                newR = 255
+                newG = 35
+                newB = 49
+            End If
+            
+            For x = 0 To 255
+                rData(x) = (newR + x) \ 2
+                gData(x) = (newG + x) \ 2
+                bData(x) = (newB + x) \ 2
+            Next x
+            
+            dstRight = dstRight - 1
+            dstBottom = dstBottom - 1
+            
+            'Dim the non-active parts of the image
+            For x = imgLeft To rightBound
+                QuickVal = x * 3
+            For y = imgTop To bottomBound
+            
+                'Calculate source x and y positions, while taking into account zoom and scroll values
+                srcX = hScrollVal + Int((x - imgLeft) / ZoomVal)
+                srcY = vScrollVal + Int((y - imgTop) / ZoomVal)
+                
+                'Make sure srcX and srcY are not out of bounds
+                If srcX < 0 Then srcX = 0
+                If srcX > srcWidth Then srcX = srcWidth
+                If srcY < 0 Then srcY = 0
+                If srcY > srcHeight Then srcY = srcHeight
+                
+                selMaskQuickVal = srcX * 3
+            
+                'If this pixels is over an active pixel in the selection mask, mark it with the selected color
+                If selMaskData(selMaskQuickVal, srcY) > 0 Then
+                    iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
+                    iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
+                    iData(QuickVal, y) = bData(iData(QuickVal, y))
+                End If
+                
+            Next y
+            Next x
+            
+            'With our work complete, point all arrays away from their respective DIBs, then deallocate them
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+            Erase iData
+            Erase selMaskData
+            
+            dstRight = dstRight + 1
+            dstBottom = dstBottom + 1
+            
+        'NOTE: focus rectangle is not used at present, so this technique may or may not work.  I simply keep it around for reference's sake.
+        'Focus rectangle ("Simple" style)
+        Case Else
+        
+            'Store the destination DC to a local variable
+            Dim DstDC As Long
+            DstDC = dstLayer.getLayerDC
+            
+            'Since we'll be using the API to draw our selection area, we need to initialize several brushes
+            Dim hPen As Long, hOldPen As Long
+            
+            hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
+            hOldPen = SelectObject(DstDC, hPen)
+            
+            'Get a transparent brush
+            Dim hBrush As Long, hOldBrush As Long
+            hBrush = GetStockObject(NULL_BRUSH)
+            hOldBrush = SelectObject(DstDC, hBrush)
+            
+            'Change the rasterOp to XOR (this will invert the line)
+            SetROP2 DstDC, vbSrcInvert
+            
+            'If dstLeft > imgLeft Then dstLeft = dstLeft - 1
+            'If dstTop > imgTop Then dstTop = dstTop - 1
+            'dstRight = dstRight + 1
+            'dstBottom = dstBottom + 1
+            
+            'Draw the rectangle
+            Rectangle DstDC, dstLeft, dstTop, dstRight, dstBottom
+            
+            'Restore the normal COPY rOp
+            SetROP2 DstDC, vbSrcCopy
+            
+            'Remove the brush from the DC
+            SelectObject DstDC, hOldBrush
+            DeleteObject hBrush
+            
+            'Remove the pen from the DC
+            SelectObject DstDC, hOldPen
+            DeleteObject hPen
+                    
+    End Select
+        
+End Sub
+
 Private Sub Class_Initialize()
     
     lockedIn = False
     
+    'Initialize the selection mask for this object and mark it as "not ready" (because no mask has been drawn yet)
+    Set selMask = New pdLayer
+    isMaskReady = False
+        
 End Sub
 
 'Sometimes a selection needs to directly access the bits of a target layer. This routine sets up the corresponding SafeArray.
@@ -702,4 +810,14 @@ Private Sub prepLayerSafeArray(ByRef srcLayer As pdLayer, ByRef tmpSA As SAFEARR
         .Bounds(1).cElements = srcLayer.getLayerArrayWidth
         .pvData = srcLayer.getLayerDIBits
     End With
+End Sub
+
+Private Sub Class_Terminate()
+
+    'Erase the selection mask
+    If Not (selMask Is Nothing) Then
+        selMask.eraseLayer
+        Set selMask = Nothing
+    End If
+
 End Sub
