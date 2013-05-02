@@ -11,6 +11,23 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon Filter Support Class
+'Copyright ©2013-2013 by Tanner Helland
+'Created: 15/January/13
+'Last updated: 29/April/13
+'Last update: added "Ignore" option for out-of-bounds pixels; this mimicks Paint Shop Pro behavior
+'
+'Per its name, this class provides support routines for certain types of image filters, namely: filters
+' that move pixels.  Automated edge-handling (with a variety of approaches) and interpolation are key features.
+'
+'The main utilizer of this class is the Effects -> Distort menu.  See any Distort tool for example usage.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
+'***************************************************************************
+
 Option Explicit
 
 Private m_FinalX As Long, m_FinalY As Long
