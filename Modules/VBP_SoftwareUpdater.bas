@@ -18,6 +18,9 @@ Attribute VB_Name = "Software_Updater"
 'Additionally, this code interfaces with the .INI file so the user can opt to not check for updates and never be
 ' notified again. (FYI - this option can be enabled/disabled from the 'Edit' -> 'Program Preferences' menu.)
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

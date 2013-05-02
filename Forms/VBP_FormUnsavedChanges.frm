@@ -59,18 +59,10 @@ Begin VB.Form dialog_UnsavedChanges
       TabIndex        =   2
       Top             =   4005
       Width           =   4875
-      _ExtentX        =   8599
-      _ExtentY        =   847
-      Caption         =   "Repeat this action for all unsaved images (X in total)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   8599
+      _extenty        =   847
+      caption         =   "Repeat this action for all unsaved images (X in total)"
+      font            =   "VBP_FormUnsavedChanges.frx":0000
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -137,6 +129,9 @@ Attribute VB_Exposed = False
 ' unsaved changes dialogs available.
 '
 'Finally, note that this prompt can be turned off completely from the Edit -> Preferences menu.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

@@ -383,6 +383,9 @@ Attribute VB_Exposed = False
 ' it much (since the project has become almost entirely centered around 24/32bpp imaging), but the code
 ' behind this tool is solid and the feature set is large.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit
@@ -784,7 +787,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     Dim cR As Long, cG As Long, cb As Long
     Dim iR As Long, iG As Long, iB As Long
     Dim mR As Double, mG As Double, mB As Double
-    Dim eR As Double, eG As Double, eB As Double
+    Dim Er As Double, eG As Double, eB As Double
     
     'New code for so-called "Intelligent Coloring"
     Dim rLookup() As Long
@@ -824,7 +827,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         iG = ImageData(QuickVal + 1, y)
         iB = ImageData(QuickVal, y)
         
-        r = iR + eR
+        r = iR + Er
         g = iG + eG
         b = iB + eB
         
@@ -855,13 +858,13 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         cb = cb * mB
         
         'Calculate error
-        eR = iR - cR
+        Er = iR - cR
         eG = iG - cG
         eB = iB - cb
         
         'Diffuse the error further (in a grid pattern) to prevent undesirable lining effects
         If (x + y) And 3 <> 0 Then
-            eR = eR \ 2
+            Er = Er \ 2
             eG = eG \ 2
             eB = eB \ 2
         End If
@@ -883,7 +886,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     Next x
         
         'At the end of each line, reset our error-tracking values
-        eR = 0
+        Er = 0
         eG = 0
         eB = 0
         
@@ -927,7 +930,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
             iG = ImageData(QuickVal + 1, y)
             iB = ImageData(QuickVal, y)
             
-            r = iR + eR
+            r = iR + Er
             g = iG + eG
             b = iB + eB
             
@@ -951,13 +954,13 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
             cG = cG * mG
             cb = cb * mB
         
-            eR = iR - cR
+            Er = iR - cR
             eG = iG - cG
             eB = iB - cb
             
             'Diffuse the error further (in a grid pattern) to prevent undesirable lining effects
             If (x + y) And 3 <> 0 Then
-                eR = eR \ 2
+                Er = Er \ 2
                 eG = eG \ 2
                 eB = eB \ 2
             End If
@@ -965,7 +968,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         Next x
         
             'At the end of each line, reset our error-tracking values
-            eR = 0
+            Er = 0
             eG = 0
             eB = 0
         

@@ -30,19 +30,11 @@ Begin VB.Form FormColorize
       TabIndex        =   7
       Top             =   3240
       Width           =   2745
-      _ExtentX        =   4842
-      _ExtentY        =   847
-      Caption         =   "preserve existing saturation"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4842
+      _extenty        =   847
+      caption         =   "preserve existing saturation"
+      font            =   "VBP_FormColorize.frx":0000
+      value           =   1
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -101,8 +93,8 @@ Begin VB.Form FormColorize
       TabIndex        =   5
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -146,6 +138,9 @@ Attribute VB_Exposed = False
 '
 'Fairly simple and standard routine - look in the Miscellaneous Filters module
 ' for the HSL transformation code
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

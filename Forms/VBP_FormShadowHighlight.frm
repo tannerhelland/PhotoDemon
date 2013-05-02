@@ -100,7 +100,6 @@ Begin VB.Form FormShadowHighlight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0
       Max             =   30
       SigDigits       =   2
       Value           =   0.05
@@ -122,7 +121,6 @@ Begin VB.Form FormShadowHighlight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0
       Max             =   30
       SigDigits       =   2
       Value           =   0.05
@@ -239,6 +237,9 @@ Attribute VB_Exposed = False
 ' exposure, but as with most "theoretically perfect" color algorithms(e.g. histogram equalization), it is unlikely to
 ' offer ideal results.  Rather, think of it as a starting point from which you can more easily find your ideal midtone
 ' point.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

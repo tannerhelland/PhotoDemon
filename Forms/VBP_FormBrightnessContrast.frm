@@ -30,18 +30,10 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   6
       Top             =   3600
       Width           =   5445
-      _ExtentX        =   9604
-      _ExtentY        =   847
-      Caption         =   "sample image for true contrast (slower but more accurate)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   9604
+      _extenty        =   847
+      caption         =   "sample image for true contrast (slower but more accurate)"
+      font            =   "VBP_FormBrightnessContrast.frx":0000
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -67,8 +59,8 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   5
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltBright 
       Height          =   495
@@ -76,19 +68,11 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   7
       Top             =   2160
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   -255
-      Max             =   255
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormBrightnessContrast.frx":0028
+      min             =   -255
+      max             =   255
    End
    Begin PhotoDemon.sliderTextCombo sltContrast 
       Height          =   495
@@ -96,19 +80,11 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   8
       Top             =   3000
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormBrightnessContrast.frx":0050
+      min             =   -100
+      max             =   100
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -174,6 +150,9 @@ Attribute VB_Exposed = False
 ' It's all linear (not logarithmic; sorry). Maybe someday I'll change that, maybe not... honestly, I probably
 ' won't, since brightness and contrast are such stupid functions anyway.  People should be using levels or
 ' curves or white balance instead!
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

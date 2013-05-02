@@ -30,18 +30,10 @@ Begin VB.Form FormDiffuse
       TabIndex        =   7
       Top             =   2160
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   873
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10610
+      _extenty        =   873
+      font            =   "VBP_FormDiffuse.frx":0000
+      value           =   1
    End
    Begin PhotoDemon.smartCheckBox chkWrap 
       Height          =   480
@@ -49,18 +41,10 @@ Begin VB.Form FormDiffuse
       TabIndex        =   6
       Top             =   3600
       Width           =   1890
-      _ExtentX        =   3334
-      _ExtentY        =   847
-      Caption         =   "wrap edge values"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   3334
+      _extenty        =   847
+      caption         =   "wrap edge values"
+      font            =   "VBP_FormDiffuse.frx":0028
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -86,8 +70,8 @@ Begin VB.Form FormDiffuse
       TabIndex        =   5
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltY 
       Height          =   495
@@ -95,18 +79,10 @@ Begin VB.Form FormDiffuse
       TabIndex        =   8
       Top             =   3000
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   873
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10610
+      _extenty        =   873
+      font            =   "VBP_FormDiffuse.frx":0050
+      value           =   1
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -169,6 +145,9 @@ Attribute VB_Exposed = False
 'Last update: simplified code by using new slider/text custom control
 '
 'Module for handling "diffuse"-style filters (also called "displace", e.g. in GIMP).
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

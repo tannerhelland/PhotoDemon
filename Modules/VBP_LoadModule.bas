@@ -1,13 +1,16 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'Program/File Loading Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 23/January/13
 'Last update: began implementing translation support
 '
 'Module for handling any and all program loading.  This includes the program itself,
-'files, and anything else the program needs to take from the hard drive.
+' files, and anything else the program needs to take from the hard drive.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

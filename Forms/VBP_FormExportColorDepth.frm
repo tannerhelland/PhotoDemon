@@ -32,18 +32,10 @@ Begin VB.Form dialog_ExportColorDepth
       TabIndex        =   4
       Top             =   960
       Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   661
-      Caption         =   "1 bpp (monochrome)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4710
+      _extenty        =   661
+      caption         =   "1 bpp (monochrome)"
+      font            =   "VBP_FormExportColorDepth.frx":0000
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -71,18 +63,10 @@ Begin VB.Form dialog_ExportColorDepth
       TabIndex        =   5
       Top             =   1440
       Width           =   3150
-      _ExtentX        =   5556
-      _ExtentY        =   661
-      Caption         =   "4 bpp (16 shades of gray)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   5556
+      _extenty        =   661
+      caption         =   "4 bpp (16 shades of gray)"
+      font            =   "VBP_FormExportColorDepth.frx":0028
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
@@ -92,18 +76,10 @@ Begin VB.Form dialog_ExportColorDepth
       TabIndex        =   6
       Top             =   1920
       Width           =   4125
-      _ExtentX        =   7276
-      _ExtentY        =   661
-      Caption         =   "8 bpp (256 colors or full grayscale)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   7276
+      _extenty        =   661
+      caption         =   "8 bpp (256 colors or full grayscale)"
+      font            =   "VBP_FormExportColorDepth.frx":0050
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
@@ -113,18 +89,10 @@ Begin VB.Form dialog_ExportColorDepth
       TabIndex        =   7
       Top             =   2400
       Width           =   3165
-      _ExtentX        =   5583
-      _ExtentY        =   661
-      Caption         =   "24 bpp (16 million colors)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   5583
+      _extenty        =   661
+      caption         =   "24 bpp (16 million colors)"
+      font            =   "VBP_FormExportColorDepth.frx":0078
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
@@ -134,18 +102,10 @@ Begin VB.Form dialog_ExportColorDepth
       TabIndex        =   8
       Top             =   2880
       Width           =   5250
-      _ExtentX        =   9260
-      _ExtentY        =   661
-      Caption         =   "32 bpp (16 million colors + full transparency)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   9260
+      _extenty        =   661
+      caption         =   "32 bpp (16 million colors + full transparency)"
+      font            =   "VBP_FormExportColorDepth.frx":00A0
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -191,6 +151,9 @@ Attribute VB_Exposed = False
 'Dialog for presenting the user a choice of exported color depths.  I prefer this to be
 ' handled automatically by the software, but in certain rare cases it may be desirable
 ' for a user to manually export a certain color depth
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

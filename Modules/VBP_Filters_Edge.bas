@@ -8,6 +8,9 @@ Attribute VB_Name = "Filters_Edge"
 '
 'Runs all edge-related filters (edge detection, relief, etc.).
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

@@ -208,12 +208,16 @@ Private Sub pInstall(ByVal bState As Boolean)
    End If
 End Sub
 Private Property Get ShiftState(ByVal bShift As Boolean, ByVal bAlt As Boolean, ByVal bControl As Boolean) As ShiftConstants
-Dim eR As ShiftConstants
-   eR = Abs(vbShiftMask * bShift)
-   eR = eR Or Abs(vbAltMask * bAlt)
-   eR = eR Or Abs(vbCtrlMask * bControl)
-   ShiftState = eR
+Dim Er As ShiftConstants
+   Er = Abs(vbShiftMask * bShift)
+   Er = Er Or Abs(vbAltMask * bAlt)
+   Er = Er Or Abs(vbCtrlMask * bControl)
+   ShiftState = Er
 End Property
+
+Private Sub imgIcon_Click()
+
+End Sub
 
 Private Function IWindowsHook_HookProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, bConsume As Boolean) As Long
 Dim bKeyUp As Boolean

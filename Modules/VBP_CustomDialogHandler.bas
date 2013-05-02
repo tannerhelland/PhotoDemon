@@ -16,6 +16,9 @@ Attribute VB_Name = "Custom_Dialog_Handler"
 ' burdens here so that calling functions can simply use a MsgBox-style line to call the dialogs and check
 ' the user's response.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

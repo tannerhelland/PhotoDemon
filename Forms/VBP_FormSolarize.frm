@@ -48,8 +48,8 @@ Begin VB.Form FormSolarize
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
@@ -115,6 +115,9 @@ Attribute VB_Exposed = False
 'Last update: rewrote against new layer class; also, optimized with look-up tables
 '
 'Updated solarizing interface; it has been optimized for speed and ease-of-implementation.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

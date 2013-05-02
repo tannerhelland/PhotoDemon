@@ -68,18 +68,10 @@ Begin VB.Form dialog_MultiImage
       TabIndex        =   1
       Top             =   3120
       Width           =   4110
-      _ExtentX        =   7250
-      _ExtentY        =   847
-      Caption         =   "always apply this action to multi-image files"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   7250
+      _extenty        =   847
+      caption         =   "always apply this action to multi-image files"
+      font            =   "VBP_FormMultiImage.frx":0000
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
@@ -120,6 +112,9 @@ Attribute VB_Exposed = False
 'This form is tied into the settable user preference for handling multipage images.  Checking the
 ' "remember this decision and don't ask me again" option will set that preference for the user.
 ' Note that this setting can also be changed from the Edit -> Preferences menu.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

@@ -30,18 +30,10 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   7
       Top             =   2880
       Width           =   5580
-      _ExtentX        =   9843
-      _ExtentY        =   847
-      Caption         =   "use custom background color (click colored box to change)..."
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   9843
+      _extenty        =   847
+      caption         =   "use custom background color (click colored box to change)..."
+      font            =   "VBP_FormEmbossEngrave.frx":0000
    End
    Begin PhotoDemon.smartOptionButton optEmboss 
       Height          =   345
@@ -49,19 +41,11 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   2
       Top             =   1740
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   661
-      Caption         =   "emboss"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2117
+      _extenty        =   661
+      caption         =   "emboss"
+      font            =   "VBP_FormEmbossEngrave.frx":0028
+      value           =   -1
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -109,8 +93,8 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.smartOptionButton optEngrave 
       Height          =   345
@@ -118,18 +102,10 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   3
       Top             =   2160
       Width           =   1230
-      _ExtentX        =   2170
-      _ExtentY        =   661
-      Caption         =   "engrave"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2170
+      _extenty        =   661
+      caption         =   "engrave"
+      font            =   "VBP_FormEmbossEngrave.frx":0050
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -162,6 +138,9 @@ Attribute VB_Exposed = False
 '
 'Module for handling all emboss and engrave filters.  It's basically just an
 'interfacing layer to the 4 main filters: Emboss/EmbossToColor and Engrave/EngraveToColor
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 
@@ -280,10 +259,10 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tB As Long, tG As Long
+    Dim TR As Long, tB As Long, tG As Long
 
     'Extract the red, green, and blue values from the color we've been passed
-    tR = ExtractR(cColor)
+    TR = ExtractR(cColor)
     tG = ExtractG(cColor)
     tB = ExtractB(cColor)
         
@@ -294,7 +273,7 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + tR)
+        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + TR)
         g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
         
@@ -388,10 +367,10 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tB As Long, tG As Long
+    Dim TR As Long, tB As Long, tG As Long
     
     'Extract the red, green, and blue values from the color we've been passed
-    tR = ExtractR(cColor)
+    TR = ExtractR(cColor)
     tG = ExtractG(cColor)
     tB = ExtractB(cColor)
         
@@ -402,7 +381,7 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + tR)
+        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + TR)
         g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
         

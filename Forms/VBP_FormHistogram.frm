@@ -604,6 +604,9 @@ Attribute VB_Exposed = False
 'Additional thanks go out to Ron van Tilburg, for his native-VB implementation of Xiaolin Wu's line antialiasing algorithm.
 ' (See the "Outside_mGfxWu" module for details.)
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

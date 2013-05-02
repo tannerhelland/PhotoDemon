@@ -334,7 +334,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Software Updater (note: it doesn't do the actual updating, it just CHECKS for updates!)
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 19/August/12
 'Last update: initial build
@@ -344,6 +344,9 @@ Attribute VB_Exposed = False
 '
 'Note that this code interfaces with the .INI file so the user can opt to not check for updates and never be
 ' notified again. (FYI - this option can be enabled/disabled from the 'Edit' -> 'Program Preferences' menu.)
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

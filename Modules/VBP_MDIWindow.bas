@@ -1,13 +1,16 @@
 Attribute VB_Name = "MDI_Handler"
 '***************************************************************************
 'MDI Window Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 10/September/12
 'Last update: when calling FitOnScreen, maximized forms are now left maximized (previously they were forceably un-maximized)
 '
 'Interfaces with the main MDI active form; this module handles determining
 'form size in relation to image size, etc.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 
@@ -287,18 +290,18 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     Dim zVal As Long
     zVal = ZoomIndex100
     
-    Dim X As Long
+    Dim x As Long
     
     'First, let's check to see if we need to adjust zppm because the width is too big
     If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) > (FormMain.ScaleWidth - tDif) Then
         'If it is too big, run a loop backwards through the possible zoom values to see
         'if one will make it fit
-        For X = ZoomIndex100 To g_Zoom.ZoomCount Step 1
-            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(X)) < (FormMain.ScaleWidth - tDif) Then
-                zVal = X
+        For x = ZoomIndex100 To g_Zoom.ZoomCount Step 1
+            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < (FormMain.ScaleWidth - tDif) Then
+                zVal = x
                 Exit For
             End If
-        Next X
+        Next x
         
     End If
     
@@ -306,12 +309,12 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) > (FormMain.ScaleHeight - hDif) Then
         'If the image's height is too big for the form, run a loop backwards through all
         ' possible zoom values to see if one will make it fit
-        For X = zVal To g_Zoom.ZoomCount Step 1
-            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(X)) < FormMain.ScaleHeight - hDif Then
-                zVal = X
+        For x = zVal To g_Zoom.ZoomCount Step 1
+            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
+                zVal = x
                 Exit For
             End If
-        Next X
+        Next x
         
     End If
     
@@ -355,24 +358,24 @@ Public Sub FitOnScreen()
     Dim zVal As Long
     zVal = 0
     
-    Dim X As Long
+    Dim x As Long
     
     'Run a loop backwards through the possible zoom values to see
     'if one will make it fit at the maximum possible size
-    For X = 0 To g_Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(X)) < FormMain.ScaleWidth - tDif Then
-            zVal = X
+    For x = 0 To g_Zoom.ZoomCount Step 1
+        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
+            zVal = x
             Exit For
         End If
-    Next X
+    Next x
     
     'Now we do the same thing for the height
-    For X = zVal To g_Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(X)) < FormMain.ScaleHeight - hDif Then
-            zVal = X
+    For x = zVal To g_Zoom.ZoomCount Step 1
+        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
+            zVal = x
             Exit For
         End If
-    Next X
+    Next x
     FormMain.CmbZoom.ListIndex = zVal
     pdImages(CurrentImage).CurrentZoomValue = zVal
     

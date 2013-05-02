@@ -300,6 +300,9 @@ Attribute VB_Exposed = False
 '
 'This tool allows the user to apply vignetting to an image.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

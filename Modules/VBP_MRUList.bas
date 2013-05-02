@@ -14,6 +14,9 @@ Attribute VB_Name = "MRU_List_Handler"
 ' You can download his original version from this link (good as of 22 Nov '12):
 ' http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

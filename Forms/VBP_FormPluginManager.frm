@@ -1557,6 +1557,9 @@ Attribute VB_Exposed = False
 'In the future, I suppose this could be merged with the plugin updater to form one happy plugin
 ' handler, but for now it makes sense to make them both available (and to keep them separate).
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

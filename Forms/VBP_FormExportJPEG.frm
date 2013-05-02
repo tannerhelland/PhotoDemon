@@ -30,19 +30,11 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   8
       Top             =   1920
       Width           =   3105
-      _ExtentX        =   5477
-      _ExtentY        =   953
-      Caption         =   "optimize compression tables"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   5477
+      _extenty        =   953
+      caption         =   "optimize compression tables"
+      font            =   "VBP_FormExportJPEG.frx":0000
+      value           =   1
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -113,18 +105,10 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   9
       Top             =   2400
       Width           =   2715
-      _ExtentX        =   4789
-      _ExtentY        =   953
-      Caption         =   "embed thumbnail image"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4789
+      _extenty        =   953
+      caption         =   "embed thumbnail image"
+      font            =   "VBP_FormExportJPEG.frx":0028
    End
    Begin PhotoDemon.smartCheckBox chkProgressive 
       Height          =   540
@@ -132,18 +116,10 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   10
       Top             =   2880
       Width           =   2835
-      _ExtentX        =   5001
-      _ExtentY        =   953
-      Caption         =   "use progressive encoding"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   5001
+      _extenty        =   953
+      caption         =   "use progressive encoding"
+      font            =   "VBP_FormExportJPEG.frx":0050
    End
    Begin PhotoDemon.smartCheckBox chkSubsample 
       Height          =   540
@@ -152,18 +128,10 @@ Begin VB.Form dialog_ExportJPEG
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
       Top             =   3360
       Width           =   2820
-      _ExtentX        =   4974
-      _ExtentY        =   953
-      Caption         =   "use specific subsampling:"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4974
+      _extenty        =   953
+      caption         =   "use specific subsampling:"
+      font            =   "VBP_FormExportJPEG.frx":0078
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   495
@@ -171,20 +139,12 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   12
       Top             =   585
       Width           =   4695
-      _ExtentX        =   8281
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   99
-      Value           =   90
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   8281
+      _extenty        =   873
+      font            =   "VBP_FormExportJPEG.frx":00A0
+      min             =   1
+      max             =   99
+      value           =   90
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -260,6 +220,9 @@ Attribute VB_Exposed = False
 '
 'Dialog for preseting the user a number of options for related to JPEG exporting.  The various advanced features
 ' rely on FreeImage for implementation, and will be disabled if FreeImage cannot be found.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

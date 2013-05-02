@@ -35,6 +35,9 @@ Attribute VB_Exposed = False
 ' specialized copy of DIB data for FreeImage's internal handling - so in the case of batch conversions, GDI+ is actually
 ' used preferentially over FreeImage for reading and writing certain filetypes.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

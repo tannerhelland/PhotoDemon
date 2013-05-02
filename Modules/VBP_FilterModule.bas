@@ -11,6 +11,9 @@ Attribute VB_Name = "Filters_Area"
 ' Also contains the DoFilter routine, which is central to running custom filters
 ' (as well as many of the intrinsic PhotoDemon ones, like blur/sharpen/etc).
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

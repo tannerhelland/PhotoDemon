@@ -81,6 +81,9 @@ Attribute VB_Exposed = False
 ' filter-modified versions of the image.  The user can toggle between these by using the command link below the
 ' main picture box.  This replaces the side-by-side "before and after" of past versions.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

@@ -32,18 +32,10 @@ Begin VB.Form dialog_IDEWarning
       TabIndex        =   5
       Top             =   5520
       Width           =   3210
-      _ExtentX        =   5662
-      _ExtentY        =   847
-      Caption         =   "Do not display this warning again"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   5662
+      _extenty        =   847
+      caption         =   "Do not display this warning again"
+      font            =   "VBP_FormIDEWarning.frx":0000
    End
    Begin PhotoDemon.jcbutton cmdOK 
       Default         =   -1  'True
@@ -52,26 +44,18 @@ Begin VB.Form dialog_IDEWarning
       TabIndex        =   0
       Top             =   4560
       Width           =   6690
-      _ExtentX        =   11800
-      _ExtentY        =   1296
-      ButtonStyle     =   13
-      ShowFocusRect   =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "I understand the risks of running PhotoDemon in the IDE"
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormIDEWarning.frx":0000
-      PictureAlign    =   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipType     =   1
+      _extentx        =   11800
+      _extenty        =   1296
+      buttonstyle     =   13
+      showfocusrect   =   -1
+      font            =   "VBP_FormIDEWarning.frx":0028
+      caption         =   "I understand the risks of running PhotoDemon in the IDE"
+      handpointer     =   -1
+      picturenormal   =   "VBP_FormIDEWarning.frx":0050
+      disabledpicturemode=   1
+      captioneffects  =   0
+      picturealign    =   0
+      tooltiptype     =   1
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
@@ -172,6 +156,9 @@ Attribute VB_Exposed = False
 '
 'Generally speaking, it's not a great idea to run PhotoDemon in the IDE.  This dialog
 ' is used to warn the user of the associated risks with doing so.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

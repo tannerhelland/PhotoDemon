@@ -287,6 +287,9 @@ Attribute VB_Exposed = False
 ' The interface for custom sizes is derived from the Image Size form; ideally, any changes to that
 ' should be mirrored here.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit
@@ -320,11 +323,11 @@ Private Sub cboTarget_Click()
             cScreenHeight = Screen.Height / Screen.TwipsPerPixelY
             
             'Add one to the displayed width and height, since we store them -1 for loops
-            txtWidth.Text = cScreenWidth
-            txtHeight.Text = cScreenHeight
+            TxtWidth.Text = cScreenWidth
+            TxtHeight.Text = cScreenHeight
             
-            txtWidth.Enabled = False
-            txtHeight.Enabled = False
+            TxtWidth.Enabled = False
+            TxtHeight.Enabled = False
             VSWidth.Enabled = False
             VSHeight.Enabled = False
             lblWidthType = "pixels"
@@ -332,37 +335,37 @@ Private Sub cboTarget_Click()
         
         'Custom size (in pixels)
         Case 1
-            txtWidth.Enabled = True
-            txtHeight.Enabled = True
+            TxtWidth.Enabled = True
+            TxtHeight.Enabled = True
             VSWidth.Enabled = True
             VSHeight.Enabled = True
             lblWidthType = "pixels"
             lblHeightType = "pixels"
             
             'If the user was previously measuring in tiles, convert that value to pixels
-            If (lastTargetMode = 2) And (NumberValid(txtWidth)) And (NumberValid(txtHeight)) Then
-                txtWidth = CLng(txtWidth) * iWidth
-                txtHeight = CLng(txtHeight) * iHeight
+            If (lastTargetMode = 2) And (NumberValid(TxtWidth)) And (NumberValid(TxtHeight)) Then
+                TxtWidth = CLng(TxtWidth) * iWidth
+                TxtHeight = CLng(TxtHeight) * iHeight
             End If
             
         'Custom size (as number of tiles)
         Case 2
-            txtWidth.Enabled = True
-            txtHeight.Enabled = True
+            TxtWidth.Enabled = True
+            TxtHeight.Enabled = True
             VSWidth.Enabled = True
             VSHeight.Enabled = True
             lblWidthType = "tiles"
             lblHeightType = "tiles"
             
             'Since the user will have previously been measuring in pixels, convert that value to tiles
-            If NumberValid(txtWidth) And NumberValid(txtHeight) Then
+            If NumberValid(TxtWidth) And NumberValid(TxtHeight) Then
                 Dim xTiles As Long, yTiles As Long
-                xTiles = CLng(CSng(txtWidth) / CSng(iWidth))
-                yTiles = CLng(CSng(txtHeight) / CSng(iHeight))
+                xTiles = CLng(CSng(TxtWidth) / CSng(iWidth))
+                yTiles = CLng(CSng(TxtHeight) / CSng(iHeight))
                 If xTiles < 1 Then xTiles = 1
                 If yTiles < 1 Then yTiles = 1
-                txtWidth = xTiles
-                txtHeight = yTiles
+                TxtWidth = xTiles
+                TxtHeight = yTiles
             End If
     End Select
     
@@ -373,9 +376,9 @@ Private Sub cboTarget_Click()
     redrawPreview = True
 
     'Finally, draw a preview
-    If EntryValid(txtWidth, 1, 32767, False, False) And EntryValid(txtHeight, 1, 32767, False, False) Then
+    If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) Then
         updateDescription
-        GenerateTile cboTarget.ListIndex, txtWidth, txtHeight, True
+        GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
     End If
 
 End Sub
@@ -389,19 +392,19 @@ End Sub
 Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(txtWidth, 1, 32767, True, True) Then
-        AutoSelectText txtWidth
+    If Not EntryValid(TxtWidth, 1, 32767, True, True) Then
+        AutoSelectText TxtWidth
         Exit Sub
     End If
-    If Not EntryValid(txtHeight, 1, 32767, True, True) Then
-        AutoSelectText txtHeight
+    If Not EntryValid(TxtHeight, 1, 32767, True, True) Then
+        AutoSelectText TxtHeight
         Exit Sub
     End If
 
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    Process Tile, cboTarget.ListIndex, txtWidth, txtHeight
+    Process Tile, cboTarget.ListIndex, TxtWidth, TxtHeight
     
     Unload Me
     
@@ -526,7 +529,7 @@ Private Sub Form_Activate()
     
     'Render a preview
     redrawPreview = True
-    GenerateTile cboTarget.ListIndex, txtWidth, txtHeight, True
+    GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
     
     'Allow updating via scroll bars (which are masquerading as up/down controls)
     updateWidthBar = True
@@ -543,50 +546,50 @@ End Sub
 
 'When the text boxes are changed, keep the scroll bar values in sync
 Private Sub TxtHeight_Change()
-    textValidate txtHeight
-    If EntryValid(txtHeight, 1, 32767, False, True) Then
+    textValidate TxtHeight
+    If EntryValid(TxtHeight, 1, 32767, False, True) Then
         updateHeightBar = False
-        VSHeight.Value = Abs(32767 - CInt(txtHeight))
+        VSHeight.Value = Abs(32767 - CInt(TxtHeight))
         updateHeightBar = True
-        If EntryValid(txtWidth, 1, 32767, False, False) And EntryValid(txtHeight, 1, 32767, False, False) And redrawPreview Then
+        If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) And redrawPreview Then
             updateDescription
-            GenerateTile cboTarget.ListIndex, txtWidth, txtHeight, True
+            GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
         End If
     Else
-        AutoSelectText txtHeight
+        AutoSelectText TxtHeight
     End If
 End Sub
 
 Private Sub txtHeight_GotFocus()
-    AutoSelectText txtHeight
+    AutoSelectText TxtHeight
 End Sub
 
 Private Sub txtWidth_Change()
-    textValidate txtWidth
-    If EntryValid(txtWidth, 1, 32767, False, True) Then
+    textValidate TxtWidth
+    If EntryValid(TxtWidth, 1, 32767, False, True) Then
         updateWidthBar = False
-        VSWidth.Value = Abs(32767 - CInt(txtWidth))
+        VSWidth.Value = Abs(32767 - CInt(TxtWidth))
         updateWidthBar = True
-        If EntryValid(txtWidth, 1, 32767, False, False) And EntryValid(txtHeight, 1, 32767, False, False) And redrawPreview Then
+        If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) And redrawPreview Then
             updateDescription
-            GenerateTile cboTarget.ListIndex, txtWidth, txtHeight, True
+            GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
         End If
     Else
-        AutoSelectText txtWidth
+        AutoSelectText TxtWidth
     End If
 End Sub
 
 Private Sub txtWidth_GotFocus()
-    AutoSelectText txtWidth
+    AutoSelectText TxtWidth
 End Sub
 
 'When the scroll bars are changed, keep the text box values in sync
 Private Sub VSHeight_Change()
-    If updateHeightBar = True Then txtHeight = Abs(32767 - CStr(VSHeight.Value))
+    If updateHeightBar = True Then TxtHeight = Abs(32767 - CStr(VSHeight.Value))
 End Sub
 
 Private Sub VSWidth_Change()
-    If updateWidthBar = True Then txtWidth = Abs(32767 - CStr(VSWidth.Value))
+    If updateWidthBar = True Then TxtWidth = Abs(32767 - CStr(VSWidth.Value))
 End Sub
 
 'Show the user a description of how large the new, tiled image will be
@@ -607,24 +610,24 @@ Private Sub updateDescription()
         
         'Wallpaper size
         Case 0
-            xVal = txtWidth / iWidth
-            yVal = txtHeight / iHeight
+            xVal = TxtWidth / iWidth
+            yVal = TxtHeight / iHeight
             xText = Format(xVal, "#####.0")
             yText = Format(yVal, "#####.0")
             metricText = g_Language.TranslateMessage("tiles")
             
         'Custom size (in pixels)
         Case 1
-            xVal = txtWidth / iWidth
-            yVal = txtHeight / iHeight
+            xVal = TxtWidth / iWidth
+            yVal = TxtHeight / iHeight
             xText = Format(xVal, "#####.0")
             yText = Format(yVal, "#####.0")
             metricText = g_Language.TranslateMessage("tiles")
             
         'Custom size (in tiles)
         Case 2
-            xVal = txtWidth * iWidth
-            yVal = txtHeight * iHeight
+            xVal = TxtWidth * iWidth
+            yVal = TxtHeight * iHeight
             xText = Format(xVal, "#####")
             yText = Format(yVal, "#####")
             metricText = g_Language.TranslateMessage("pixels")

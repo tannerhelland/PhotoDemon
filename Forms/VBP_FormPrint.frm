@@ -478,6 +478,9 @@ Attribute VB_Exposed = False
 ' (PrintPictureToFitPage) was first written by Waty Thierry (http://www.ppreview.net/) - many thanks go out to him for
 ' his great work on printing in VB.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit
@@ -596,12 +599,12 @@ Private Sub Form_Load()
         lblWarning.Visible = True
     End If
     
-    Dim X As Long
+    Dim x As Long
     
     'Load a list of printers into the combo box
-    For X = 0 To Printers.Count - 1
-        cbPrinters.AddItem Printers(X).DeviceName
-    Next X
+    For x = 0 To Printers.Count - 1
+        cbPrinters.AddItem Printers(x).DeviceName
+    Next x
 
     'Pre-select the current printer
     cbPrinters = Printer.DeviceName
@@ -966,13 +969,13 @@ Private Sub UpdatePaperSize()
     Dim pWidth As Double, pHeight As Double
     pWidth = Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
     pHeight = Printer.ScaleY(Printer.Height, Printer.ScaleMode, vbInches)
-    Dim txtWidth As String, txtHeight As String
-    txtWidth = Format(pWidth, "#0.##")
-    txtHeight = Format(pHeight, "#0.##")
-    If Right(txtWidth, 1) = "." Then txtWidth = Left$(txtWidth, Len(txtWidth) - 1)
-    If Right(txtHeight, 1) = "." Then txtHeight = Left$(txtHeight, Len(txtHeight) - 1)
+    Dim TxtWidth As String, TxtHeight As String
+    TxtWidth = Format(pWidth, "#0.##")
+    TxtHeight = Format(pHeight, "#0.##")
+    If Right(TxtWidth, 1) = "." Then TxtWidth = Left$(TxtWidth, Len(TxtWidth) - 1)
+    If Right(TxtHeight, 1) = "." Then TxtHeight = Left$(TxtHeight, Len(TxtHeight) - 1)
     
-    lblPaperSize = g_Language.TranslateMessage("paper size") & ": " & txtWidth & """ x  " & txtHeight & """"
+    lblPaperSize = g_Language.TranslateMessage("paper size") & ": " & TxtWidth & """ x  " & TxtHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
     Dim aspectRatio As Double

@@ -14,6 +14,9 @@ Attribute VB_Name = "Undo_Handler"
 'IMPORTANT NOTE: the pdImages() array (of type pdImage) is declared in the
 '                MDIWindow module.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

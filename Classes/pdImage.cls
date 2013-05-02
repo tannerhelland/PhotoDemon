@@ -27,6 +27,9 @@ Attribute VB_Exposed = False
 ' called "mainLayer", which contains an in-memory copy of the relevant image's data.  In the future,
 ' additional layers may be utilized within each image.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 
@@ -328,11 +331,11 @@ Public Sub ClearUndos()
     'Using a temporary string, destroy every possible Undo file
     Dim tempFile As String
     
-    Dim X As Long
-    For X = 0 To UndoTotal
-        tempFile = GenerateUndoFile(X)
+    Dim x As Long
+    For x = 0 To UndoTotal
+        tempFile = GenerateUndoFile(x)
         If FileExist(tempFile) Then Kill tempFile
-    Next X
+    Next x
     
     'Set the current and maximum Undo number to 0
     UndoNum = 0

@@ -29,6 +29,9 @@ Attribute VB_Exposed = False
 'Note also that this class is treated as a subset of pdLayer(). Right now each layer object only contains one selection,
 ' but there's no reason it couldn't store multiples in the future. (Although I'm not sure what purpose that would serve.)
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

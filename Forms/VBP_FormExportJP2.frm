@@ -66,20 +66,12 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   7
       Top             =   1200
       Width           =   6375
-      _ExtentX        =   11245
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   256
-      Value           =   16
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   11245
+      _extenty        =   873
+      font            =   "VBP_FormExportJP2.frx":0000
+      min             =   1
+      max             =   256
+      value           =   16
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -165,6 +157,9 @@ Attribute VB_Exposed = False
 '
 'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
 ' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

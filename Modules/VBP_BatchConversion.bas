@@ -12,6 +12,9 @@ Attribute VB_Name = "Macro_and_Batch_Handler"
 ' Similarly, PhotoDemon's batch processing functionality relies heavily on
 ' this module.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

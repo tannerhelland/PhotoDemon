@@ -604,8 +604,8 @@ Begin VB.Form FormCustomFilter
       TabIndex        =   33
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -691,6 +691,9 @@ Attribute VB_Exposed = False
 'Last update: several routines from this form have been moved to the Filters_Area module, which is a more sensible place for them.
 '
 'This form handles creation/loading/saving of user-defined filters.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

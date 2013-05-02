@@ -30,18 +30,10 @@ Begin VB.Form FormGamma
       TabIndex        =   9
       Top             =   5160
       Width           =   2250
-      _ExtentX        =   3969
-      _ExtentY        =   847
-      Caption         =   "keep all colors in sync"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   3969
+      _extenty        =   847
+      caption         =   "keep all colors in sync"
+      font            =   "VBP_FormGamma.frx":0000
    End
    Begin VB.PictureBox picChart 
       Appearance      =   0  'Flat
@@ -81,8 +73,8 @@ Begin VB.Form FormGamma
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
       Height          =   495
@@ -91,22 +83,14 @@ Begin VB.Form FormGamma
       TabIndex        =   10
       Top             =   3000
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   0.01
-      Max             =   3
-      Value           =   1
-      SigDigits       =   2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   0
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormGamma.frx":0028
+      forecolor       =   0
+      min             =   0.01
+      max             =   3
+      sigdigits       =   2
+      value           =   1
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
       Height          =   495
@@ -115,22 +99,14 @@ Begin VB.Form FormGamma
       TabIndex        =   11
       Top             =   3840
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   0.01
-      Max             =   3
-      Value           =   1
-      SigDigits       =   2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   0
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormGamma.frx":0050
+      forecolor       =   0
+      min             =   0.01
+      max             =   3
+      sigdigits       =   2
+      value           =   1
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
       Height          =   495
@@ -139,22 +115,14 @@ Begin VB.Form FormGamma
       TabIndex        =   12
       Top             =   4680
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   0.01
-      Max             =   3
-      Value           =   1
-      SigDigits       =   2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   0
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormGamma.frx":0078
+      forecolor       =   0
+      min             =   0.01
+      max             =   3
+      sigdigits       =   2
+      value           =   1
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -272,6 +240,9 @@ Attribute VB_Exposed = False
 '
 'Updated version of the gamma handler; fully optimized, it uses a look-up
 ' table and can correct any color channel.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

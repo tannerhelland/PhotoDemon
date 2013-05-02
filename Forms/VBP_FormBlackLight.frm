@@ -30,20 +30,12 @@ Begin VB.Form FormBlackLight
       TabIndex        =   5
       Top             =   2760
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   1
-      Value           =   2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   0
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormBlackLight.frx":0000
+      forecolor       =   0
+      min             =   1
+      value           =   2
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -69,8 +61,8 @@ Begin VB.Form FormBlackLight
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -114,6 +106,9 @@ Attribute VB_Exposed = False
 '
 'I found this effect on accident, and it has gradually become one of my favorite effects.
 ' Visually stunning on many photographs.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

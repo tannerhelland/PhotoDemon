@@ -31,18 +31,10 @@ Begin VB.Form FormFindEdges
       TabIndex        =   7
       Top             =   3360
       Width           =   2220
-      _ExtentX        =   3916
-      _ExtentY        =   847
-      Caption         =   "use black background"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   3916
+      _extenty        =   847
+      caption         =   "use black background"
+      font            =   "VBP_FormFindEdges.frx":0000
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -85,8 +77,8 @@ Begin VB.Form FormFindEdges
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -160,6 +152,9 @@ Attribute VB_Exposed = False
 '
 'All known edge-detection routines are handled from this form.  Most are simply convolution kernels that are passed off
 ' to the "DoFilter" function, but at least one (Artistic Contour) resides here.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

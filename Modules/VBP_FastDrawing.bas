@@ -1,12 +1,12 @@
 Attribute VB_Name = "FastDrawing"
 '***************************************************************************
 'Fast API Graphics Routines Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 31/August/12
 'Last update: Completed work on prepImageData and finalizeImageData, which are the much-improved successors to
 '             Get/SetImageData.  These routines rely on SafeArrays instead of Get/SetDIBits, so they are quite a bit
-'             faster.  They are also image independent; passing a "preview" flag will result in the ability to paint the
+'             faster.  They are also image-independent; passing a "preview" flag will result in the ability to paint the
 '             results of a filter to any picture box, and it's all managed internally - meaning the filter/effect routine
 '             doesn't have to worry about a thing.  A public "curLayerValues" variable contains everything a filter could
 '             ever want to know about the data it's working on.  Most of the values it provides are unused at present, but
@@ -18,6 +18,9 @@ Attribute VB_Name = "FastDrawing"
 '
 'If you want to know more about how DIB sections work - and why they're so fast compared to VB's internal
 ' .PSet and .Point methods - please visit http://www.tannerhelland.com/42/vb-graphics-programming-3/
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

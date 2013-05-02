@@ -102,6 +102,9 @@ Attribute VB_Exposed = False
 ' TRUE.  We forcibly return it to FALSE - otherwise, the user would have to tab through both the option button
 ' and the check box on each user control, and we don't want that.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

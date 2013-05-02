@@ -15,6 +15,9 @@ Attribute VB_Name = "Filters_Layers"
 ' filters to create more complex effects.  It also cuts down on code maintenance because I need only perfect a
 ' formula once, then call it externally.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

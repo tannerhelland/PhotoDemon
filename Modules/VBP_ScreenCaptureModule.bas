@@ -1,13 +1,16 @@
 Attribute VB_Name = "Screen_Capture"
 '***************************************************************************
 'Screen Capture Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©1999-2013 by Tanner Helland
 'Created: 12/June/99
 'Last updated: 04/September/12
 'Last update: use the Sleep API call to prevent the capture message box from being caught in the capture.
 '
 'Description: this module captures the screen.  The options are fairly minimal - it only captures
 '             the entire screen, but it does give the user the option to minimize the form first.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

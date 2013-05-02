@@ -183,6 +183,9 @@ Attribute VB_Exposed = False
 'An optional percentile option is available.  At minimum value, this performs identically to an erode (minimum) filter.
 ' Similarly, at max value it performs identically to a dilate (maximum) filter.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

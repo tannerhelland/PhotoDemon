@@ -481,6 +481,9 @@ Attribute VB_Exposed = False
 'Additionally, this form interfaces with the .INI file so the user can opt to not download the plugins and never be
 ' reminded again. (FYI - this option can be enabled/disabled from the 'Edit' -> 'Program Preferences' menu.)
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit
@@ -728,7 +731,7 @@ Private Function downloadAllPlugins() As Boolean
     dProgBar.BarColor = RGB(48, 117, 255)
     dProgBar.Min = 0
     dProgBar.Max = 100
-    dProgBar.XpStyle = True
+    dProgBar.xpStyle = True
     dProgBar.ShowText = False
     dProgBar.Draw
     

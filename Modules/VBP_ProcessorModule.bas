@@ -17,6 +17,9 @@ Attribute VB_Name = "Processor"
 'Due to the nature of this routine, very little of interest happens here - this is primarily a router
 ' for various functions, so the majority of the routine is a huge Case Select statement.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

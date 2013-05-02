@@ -36,6 +36,9 @@ Attribute VB_Exposed = False
 ' really get a feel for how the translation engine works, I suggest starting with the Loading module, and
 ' looking at the order in which the various subs in this class are called.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

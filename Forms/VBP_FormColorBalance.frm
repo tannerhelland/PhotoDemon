@@ -48,8 +48,8 @@ Begin VB.Form FormColorBalance
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   495
@@ -57,19 +57,11 @@ Begin VB.Form FormColorBalance
       TabIndex        =   10
       Top             =   1440
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormColorBalance.frx":0000
+      min             =   -100
+      max             =   100
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
@@ -77,19 +69,11 @@ Begin VB.Form FormColorBalance
       TabIndex        =   11
       Top             =   2400
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormColorBalance.frx":0028
+      min             =   -100
+      max             =   100
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
@@ -97,19 +81,11 @@ Begin VB.Form FormColorBalance
       TabIndex        =   12
       Top             =   3360
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormColorBalance.frx":0050
+      min             =   -100
+      max             =   100
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -257,6 +233,9 @@ Attribute VB_Exposed = False
 '
 'Fairly simple and standard color adjustment form.  Layout and feature set derived from comparable tools
 ' in GIMP and Photoshop.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

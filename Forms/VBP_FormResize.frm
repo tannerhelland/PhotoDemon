@@ -276,6 +276,9 @@ Attribute VB_Exposed = False
 'Handles all image-size related functions.  Currently supports standard resizing and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it in VB code) and bilinear resampling via pure VB)
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

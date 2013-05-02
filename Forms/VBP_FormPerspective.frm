@@ -267,6 +267,9 @@ Attribute VB_Exposed = False
 'This tool allows the user to apply forced perspective to an image.  The code is similar (in theory) to the
 ' shearing algorithm used in FormShear.  Reverse-mapping is used to allow for high-quality antialiasing.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

@@ -22,6 +22,9 @@ Attribute VB_Name = "pngnq_Interface"
 ' other versions of the tool.  Additional documentation regarding the use of pngnq-s9 is available
 ' as part of the official pngnq-s9 zip, downloadable from http://sourceforge.net/projects/pngnqs9/files/
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

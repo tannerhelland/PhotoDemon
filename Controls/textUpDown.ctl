@@ -87,6 +87,9 @@ Attribute VB_Exposed = False
 ' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
 ' 5) Support for floating-point values (scroll bar max/min values are automatically adjusted to mimic this)
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

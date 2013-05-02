@@ -125,6 +125,9 @@ Attribute VB_Exposed = False
 ' 0.05 is the recommended default.  I've specified 5.0 as the maximum, but there's no reason it couldn't be set
 ' higher... just be forewarned that higher values (obviously) blow out the picture with increasing strength.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

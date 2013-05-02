@@ -30,21 +30,13 @@ Begin VB.Form FormGaussianBlur
       TabIndex        =   6
       Top             =   2760
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   0.1
-      Max             =   200
-      SigDigits       =   1
-      Value           =   5
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormGaussianBlur.frx":0000
+      min             =   0.1
+      max             =   200
+      sigdigits       =   1
+      value           =   5
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -70,8 +62,8 @@ Begin VB.Form FormGaussianBlur
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -143,6 +135,9 @@ Attribute VB_Exposed = False
 '
 'Despite this, it's still quite slow in the IDE due to the number of array accesses required.  I STRONGLY
 ' recommend compiling the project before applying any Gaussian blur of a large radius.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

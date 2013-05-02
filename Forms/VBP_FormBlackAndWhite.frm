@@ -30,20 +30,12 @@ Begin VB.Form FormBlackAndWhite
       TabIndex        =   11
       Top             =   1320
       Width           =   5925
-      _ExtentX        =   10451
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   254
-      Value           =   127
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10451
+      _extenty        =   873
+      font            =   "VBP_FormBlackAndWhite.frx":0000
+      min             =   1
+      max             =   254
+      value           =   127
    End
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
@@ -51,18 +43,10 @@ Begin VB.Form FormBlackAndWhite
       TabIndex        =   10
       Top             =   1860
       Width           =   5610
-      _ExtentX        =   9895
-      _ExtentY        =   847
-      Caption         =   "have PhotoDemon estimate the ideal threshold for this image"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   9895
+      _extenty        =   847
+      caption         =   "have PhotoDemon estimate the ideal threshold for this image"
+      font            =   "VBP_FormBlackAndWhite.frx":0028
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -133,8 +117,8 @@ Begin VB.Form FormBlackAndWhite
       TabIndex        =   9
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -218,6 +202,9 @@ Attribute VB_Exposed = False
 '
 'The meat of this form is in the module with the same name...look there for
 ' real algorithm info.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

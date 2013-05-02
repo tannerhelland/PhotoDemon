@@ -334,6 +334,9 @@ Attribute VB_Exposed = False
 ' To mitigate the speed implications of such convoluted math, a number of look-up tables are used.  This makes the
 ' function quite fast, but at a hit to readability.  My apologies.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

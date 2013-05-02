@@ -31,20 +31,12 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   11
       Top             =   1560
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   50
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormEtchGlass.frx":0000
+      min             =   1
+      max             =   100
+      value           =   50
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
@@ -53,19 +45,11 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   9
       Top             =   4200
       Width           =   1005
-      _ExtentX        =   1773
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   1773
+      _extenty        =   635
+      caption         =   "quality"
+      font            =   "VBP_FormEtchGlass.frx":0028
+      value           =   -1
    End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
@@ -110,8 +94,8 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
@@ -120,18 +104,10 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   10
       Top             =   4200
       Width           =   975
-      _ExtentX        =   1720
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   1720
+      _extenty        =   635
+      caption         =   "speed"
+      font            =   "VBP_FormEtchGlass.frx":0050
    End
    Begin PhotoDemon.sliderTextCombo sltTurbulence 
       Height          =   495
@@ -139,21 +115,13 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   12
       Top             =   2400
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   0.01
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormEtchGlass.frx":0078
+      min             =   0.01
+      max             =   1
+      sigdigits       =   2
+      value           =   0.5
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -276,6 +244,9 @@ Attribute VB_Exposed = False
 'Finally, the transformation used by this tool is a modified version of a transformation originally written by
 ' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
 ' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

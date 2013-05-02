@@ -30,20 +30,12 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   8
       Top             =   2280
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   500
-      Value           =   2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormBoxBlur.frx":0000
+      min             =   1
+      max             =   500
+      value           =   2
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -69,8 +61,8 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   3
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
@@ -78,19 +70,11 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   7
       Top             =   3840
       Width           =   2880
-      _ExtentX        =   5080
-      _ExtentY        =   847
-      Caption         =   "keep both dimensions in sync"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   5080
+      _extenty        =   847
+      caption         =   "keep both dimensions in sync"
+      font            =   "VBP_FormBoxBlur.frx":0028
+      value           =   1
    End
    Begin PhotoDemon.sliderTextCombo sltHeight 
       Height          =   495
@@ -98,20 +82,12 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   9
       Top             =   3240
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   500
-      Value           =   2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormBoxBlur.frx":0050
+      min             =   1
+      max             =   500
+      value           =   2
    End
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
@@ -199,6 +175,9 @@ Attribute VB_Exposed = False
 '
 'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before
 ' applying any box blur of a large radius.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

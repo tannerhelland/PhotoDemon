@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menu_Icon_Handler"
 '***************************************************************************
 'Specialized Icon Handler
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 13/February/13
 'Last update: removed all non-FreeImage fallbacks for custom form icons.  No custom icons are rendered unless FreeImage is available.
@@ -22,6 +22,9 @@ Attribute VB_Name = "Menu_Icon_Handler"
 ' based off this MSDN article: http://support.microsoft.com/kb/318876
 ' The new code is much leaner (and cleaner!) than past incarnations, and FreeImage is now required for the operation.  If
 ' FreeImage is not found, custom form icons will not be generated.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

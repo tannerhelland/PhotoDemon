@@ -30,20 +30,12 @@ Begin VB.Form FormFade
       TabIndex        =   5
       Top             =   2760
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   50
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormFade.frx":0000
+      min             =   1
+      max             =   100
+      value           =   50
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -69,8 +61,8 @@ Begin VB.Form FormFade
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -115,6 +107,9 @@ Attribute VB_Exposed = False
 '
 'Module for handling the fade-style filter.  All it does is alpha-blend a grayscale copy of the image at the
 ' specified percentage.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

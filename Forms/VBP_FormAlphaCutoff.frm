@@ -31,19 +31,11 @@ Begin VB.Form dialog_AlphaCutoff
       TabIndex        =   2
       Top             =   7080
       Width           =   6495
-      _ExtentX        =   11456
-      _ExtentY        =   873
-      Max             =   255
-      Value           =   127
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   11456
+      _extenty        =   873
+      font            =   "VBP_FormAlphaCutoff.frx":0000
+      max             =   255
+      value           =   127
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -187,6 +179,9 @@ Attribute VB_Exposed = False
 ' channel.  The individual save functions automatically check for binary alpha channels,
 ' and if one is found, it handles the alpha-cutoff on its own (on account of there only
 ' being "fully transparent" and "fully opaque" pixels).
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

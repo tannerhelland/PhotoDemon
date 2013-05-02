@@ -166,6 +166,9 @@ Attribute VB_Exposed = False
 'The blue channel alone is used for calculations (for speed purposes - three times faster than checking all three channels!) so results will
 ' be wonky when used on a color image.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit

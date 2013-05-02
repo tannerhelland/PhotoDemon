@@ -1,13 +1,16 @@
 Attribute VB_Name = "Misc_Uncategorized"
 '***************************************************************************
 'Miscellaneous Operations Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 03/October/12
 'Last update: Reorganized this massive module into a bunch of smaller ones for improved organization.
 '
 'If a function doesn't have a home in a more appropriate module, it gets stuck here. Over time, I'm
 ' hoping to clear out most of this module in favor of a more organized approach.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 

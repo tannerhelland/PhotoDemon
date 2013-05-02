@@ -6,6 +6,9 @@ Attribute VB_Name = "Misc_FileInteractions"
 'Last updated: 13/November/12
 'Last update: Updated DirectoryExist to not only check for a directory's existence, but also make sure we have access rights.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
 '***************************************************************************
 
 Option Explicit
