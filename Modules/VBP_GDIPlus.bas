@@ -226,8 +226,8 @@ Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, hGlobal As Long) As Long
     
 'Start-up and shutdown
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
-Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As GDIPlusStatus
+Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
+Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal token As Long) As GDIPlusStatus
 
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, GpImage As Long) As Long
@@ -253,8 +253,22 @@ Private Declare Function lstrlenA Lib "kernel32" (ByVal psString As Any) As Long
 'CopyMemory
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
 
+'GDI+ calls related to drawing circles and ellipses
+Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
+Private Declare Function GdipSetSmoothingMode Lib "GdiPlus.dll" (ByVal mGraphics As Long, ByVal mSmoothingMode As Long) As Long
+Private Declare Function GdipDeleteBrush Lib "GdiPlus.dll" (ByVal mBrush As Long) As Long
+Private Declare Function GdipCreateSolidFill Lib "GdiPlus.dll" (ByVal mColor As Long, ByRef mBrush As Long) As Long
+Private Declare Function GdipFillEllipseI Lib "GdiPlus.dll" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
+
+Private Const SmoothingModeAntiAlias As Long = &H4
+
 'When GDI+ is initialized, it will assign us a token.  We use this to release GDI+ when the program terminates.
 Private GDIPlusToken As Long
+
+Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal centerX As Long, ByVal centerY As Long, ByVal cRadius As Long, ByVal useAA As Boolean) As Boolean
+
+End Function
 
 'Use GDI+ to load a picture into a StdPicture object - not ideal, as some information will be lost in the transition, but since
 ' this is only a fallback from FreeImage I'm not going out of my way to improve it.
