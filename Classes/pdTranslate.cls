@@ -285,12 +285,22 @@ Public Sub ApplyLanguage()
         makeFormPretty FormMain
         DrawMenuShortcuts
         ApplyAllMenuIcons
-        ResetMenuIcons
+        
+        'Because the Undo and Redo captions are dynamic, they must be recreated in the current language
+        tInit tUndo, FormMain.MnuUndo.Enabled
+        tInit tRedo, FormMain.MnuRedo.Enabled
+        
+        'Normally we would want to reset menu icons manually, but the tInit calls above call ResetMenuIcons for us.
+        'ResetMenuIcons
+        
+        'If an image is loaded, we need to redraw the "size" caption on the left
         If (NumOfWindows > 0) Then
             If Not pdImages(CurrentImage) Is Nothing Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
         End If
+        
     End If
     
+    'FixToolboxText will resize the text on the left-hand toolbar as necessary so that it fits the current language
     FixToolboxText
     
 End Sub
