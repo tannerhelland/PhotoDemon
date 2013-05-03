@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection class
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 03/October/12
-'Last update: added a "Red" highlight draw option
+'Last updated: 02/May/13
+'Last update: rebuilt all selection techniques around selection masks
 '
 'This class handles all selections in PhotoDemon. At present, selections are simply rectangular areas - but this will change
 ' in the future as new selection modes are added.
@@ -150,6 +150,11 @@ Public selMask As pdLayer
 'After the mask has been generated, its status will be set as "ready".  Any function that changes the selected area will reset this to "false".
 ' The selection rendering code can check this value to see if the mask needs to be recreated before rendering it to screen.
 Private isMaskReady As Boolean
+
+'Some types of transformations (basic shapes, like rectangles, etc), are transformable, meaning that after they are created, the user can
+' click on them again to resize or move them.  Complex transformations (magic wand, lasso, etc), may not be transformable.  This boolean
+' is read by the mouse tracker in the image form, and it uses it to determine if the user is allowed to transform the current selection.
+Public isTransformable As Boolean
 
 'set a transformation type
 Public Sub setTransformationType(ByVal transType As Long)
@@ -561,9 +566,71 @@ Private Sub createSelectionMask()
             hBrush = CreateSolidBrush(RGB(255, 255, 255))
             FillRect selMask.getLayerDC, maskRect, hBrush
             DeleteObject hBrush
+            
+            'Also, mark this particular mask as transformable
+            isTransformable = True
+            
     
     End Select
 
+End Sub
+
+Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long)
+    
+    'If an update has been requested, but we are already in the middle of one, deny subsequent requests
+    If rejectRefreshRequests Then Exit Sub
+    
+    'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates.
+    ' (e.g., the location of this selection is stored as image coordinates - but we need to have it in "viewport" coordinates so we can
+    '        draw it to the screen, while accounting for things like zoom and scroll values)
+    Dim ZoomVal As Double
+    ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
+    
+    Dim hScrollVal As Long, vScrollVal As Long
+    hScrollVal = dstForm.HScroll.Value
+    vScrollVal = dstForm.VScroll.Value
+    
+    Dim dstLeft As Double, dstRight As Double
+    Dim dstTop As Double, dstBottom As Double
+        
+    dstLeft = ((selLeft - hScrollVal) * ZoomVal) + imgLeft
+    dstRight = ((selLeft + selWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
+    dstTop = ((selTop - vScrollVal) * ZoomVal) + imgTop
+    dstBottom = ((selTop + selHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+    
+    'If this selection is transformable, draw transform circles at the corners and edges of the transformation.
+    If isTransformable Then
+    
+        Dim oldDrawMode As Long, oldFillStyle As Long
+        oldDrawMode = dstForm.DrawMode
+        oldFillStyle = dstForm.FillStyle
+        dstForm.DrawMode = vbInvert
+        dstForm.FillStyle = 1 'Transparent
+        
+        Dim circRadius As Long
+        circRadius = 5
+        
+        'Draw corner circles first
+        dstForm.Circle (dstLeft, dstTop), circRadius, RGB(255, 255, 255)
+        dstForm.Circle (dstRight, dstTop), circRadius, RGB(255, 255, 255)
+        dstForm.Circle (dstRight, dstBottom), circRadius, RGB(255, 255, 255)
+        dstForm.Circle (dstLeft, dstBottom), circRadius, RGB(255, 255, 255)
+        
+        'Draw mid-line circles next
+        Dim midHorizontal As Long, midVertical As Long
+        midHorizontal = (dstLeft + dstRight) \ 2
+        midVertical = (dstTop + dstBottom) \ 2
+        
+        dstForm.Circle (dstLeft, midVertical), circRadius, RGB(255, 255, 255)
+        dstForm.Circle (midHorizontal, dstTop), circRadius, RGB(255, 255, 255)
+        dstForm.Circle (dstRight, midVertical), circRadius, RGB(255, 255, 255)
+        dstForm.Circle (midHorizontal, dstBottom), circRadius, RGB(255, 255, 255)
+        
+        dstForm.FillStyle = oldFillStyle
+        dstForm.DrawMode = oldDrawMode
+        
+    End If
+    
 End Sub
 
 'Render a selection using one of several methods.
@@ -799,6 +866,9 @@ Private Sub Class_Initialize()
     'Initialize the selection mask for this object and mark it as "not ready" (because no mask has been drawn yet)
     Set selMask = New pdLayer
     isMaskReady = False
+    
+    'Mark it as not transformable... yet
+    isTransformable = False
         
 End Sub
 

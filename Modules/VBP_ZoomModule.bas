@@ -138,6 +138,14 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
         
     End If
     
+    'Finally, we can do some VB-specific rendering directly to the form.  Check to see if a selection is active and transformable.
+    If pdImages(formToBuffer.Tag).selectionActive And pdImages(formToBuffer.Tag).mainSelection.isTransformable Then
+    
+        'If it is, composite the selection against the temporary buffer
+        pdImages(formToBuffer.Tag).mainSelection.renderTransformNodes formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight
+    
+    End If
+    
     formToBuffer.Picture = formToBuffer.Image
     formToBuffer.Refresh
     
