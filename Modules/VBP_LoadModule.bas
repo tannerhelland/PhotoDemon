@@ -164,11 +164,14 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing image tools..."
     
     'Initialize all Selection Tool controls
-    FormMain.cmbSelRender.AddItem "Lightbox", 0
-    FormMain.cmbSelRender.AddItem "Highlight (Blue)", 1
-    FormMain.cmbSelRender.AddItem "Highlight (Red)", 2
-    FormMain.cmbSelRender.ListIndex = 0
-    g_selectionRenderPreference = 0
+    Dim i As Long
+    For i = 0 To FormMain.cmbSelRender.Count - 1
+        FormMain.cmbSelRender(i).AddItem "Lightbox", 0
+        FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
+        FormMain.cmbSelRender(i).AddItem "Highlight (Red)", 2
+        FormMain.cmbSelRender(i).ListIndex = 0
+        g_selectionRenderPreference = 0
+    Next i
     
     g_UserPreferences.loadToolSettings
             
