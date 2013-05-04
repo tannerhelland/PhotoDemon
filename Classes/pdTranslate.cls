@@ -301,7 +301,7 @@ Public Sub ApplyLanguage()
     End If
     
     'FixToolboxText will resize the text on the left-hand toolbar as necessary so that it fits the current language
-    FixToolboxText
+    'FixToolboxText
     
 End Sub
 
@@ -589,6 +589,9 @@ Private Function getFileAsString(ByVal fName As String) As String
     
         'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
         If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
+    
+        'Replace any pure linefeed characters with vbCrLf, which is handled better by the translation engine
+        If InStr(1, getFileAsString, vbLf) <> 0 Then getFileAsString = Replace(getFileAsString, vbLf, vbCrLf)
     
     Else
         getFileAsString = ""
