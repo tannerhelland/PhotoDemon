@@ -603,16 +603,16 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
     
     'If the image had a selection, recreate it - but make it match the new image size
     If selActive Then
-                
+        
         'Populate the selection text boxes (which are now invisible)
-        FormMain.tudSelLeft = Int(tsLeft * wRatio)
-        FormMain.tudSelTop = Int(tsTop * hRatio)
-        FormMain.tudSelWidth = Int(tsWidth * wRatio)
-        FormMain.tudSelHeight = Int(tsHeight * hRatio)
+        FormMain.tudSelLeft(pdImages(CurrentImage).mainSelection.getSelectionType) = Int(tsLeft * wRatio)
+        FormMain.tudSelTop(pdImages(CurrentImage).mainSelection.getSelectionType) = Int(tsTop * hRatio)
+        FormMain.tudSelWidth(pdImages(CurrentImage).mainSelection.getSelectionType) = Int(tsWidth * wRatio)
+        FormMain.tudSelHeight(pdImages(CurrentImage).mainSelection.getSelectionType) = Int(tsHeight * hRatio)
         
         'Reactivate the current selection with the new values
         tInit tSelection, True
-        pdImages(CurrentImage).mainSelection.updateViaTextBox
+        pdImages(CurrentImage).mainSelection.updateViaTextBox pdImages(CurrentImage).mainSelection.getSelectionType
         pdImages(CurrentImage).selectionActive = True
         
         'Redraw the image
