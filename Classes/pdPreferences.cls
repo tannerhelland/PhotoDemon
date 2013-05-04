@@ -363,15 +363,18 @@ End Sub
 Public Sub loadToolSettings()
 
     'Selection type
-    FormMain.cmbSelRender.ListIndex = GetPreference_Long("Tool Preferences", "LastSelectionType", 0)
+    Dim i As Long
+    For i = 0 To FormMain.cmbSelRender.Count - 1
+        FormMain.cmbSelRender(i).ListIndex = GetPreference_Long("Tool Preferences", "LastSelectionType", 0)
+    Next i
     
 End Sub
 
 Public Sub saveToolSettings()
     
-    'Selection type
-    SetPreference_Long "Tool Preferences", "LastSelectionType", FormMain.cmbSelRender.ListIndex
-    
+    'Last-used tool
+    SetPreference_Long "Tool Preferences", "LastActiveTool", g_CurrentTool
+        
 End Sub
 
 'Reset the INI file to its default state.  (Basically, delete any existing file then call createNewINIFile.)
@@ -497,6 +500,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "[Tool Preferences]"
         Print #fileNum, "ClearSelectionAfterCrop=1"
         Print #fileNum, "LastSelectionType=0"
+        Print #fileNum, "LastActiveTool=0"
         Print #fileNum, ""
                 
         'Finally, write out MRU placeholders
