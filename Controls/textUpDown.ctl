@@ -396,6 +396,9 @@ End Sub
 
 Private Sub UserControl_Show()
         
+    'Apply a hand cursor to the scroll bar
+    setHandCursor vsPrimary
+        
     'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
     ' using a custom solution (which allows for linebreaks and theming).
     m_ToolString = Extender.ToolTipText
