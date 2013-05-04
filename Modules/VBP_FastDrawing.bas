@@ -3,14 +3,10 @@ Attribute VB_Name = "FastDrawing"
 'Fast API Graphics Routines Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 31/August/12
-'Last update: Completed work on prepImageData and finalizeImageData, which are the much-improved successors to
-'             Get/SetImageData.  These routines rely on SafeArrays instead of Get/SetDIBits, so they are quite a bit
-'             faster.  They are also image-independent; passing a "preview" flag will result in the ability to paint the
-'             results of a filter to any picture box, and it's all managed internally - meaning the filter/effect routine
-'             doesn't have to worry about a thing.  A public "curLayerValues" variable contains everything a filter could
-'             ever want to know about the data it's working on.  Most of the values it provides are unused at present, but
-'             could be useful once selections/layers are implemented.
+'Last updated: 03/May/13
+'Last update: rewrote all selection handling code to work with new selection mask code.  All selections are now represented as masks,
+'              e.g. a grayscale image whose values correspond to the amount of "selection" a given pixel has, from "completely selected"
+'              to "completely unselected".  This allows for advanced selection operations like feathering, arbitrary shapes, etc.
 '
 'This interface provides API support for the main image interaction routines. It assigns memory data
 ' into a useable array, and later transfers that array back into memory.  Very fast, very compact, can't
@@ -52,6 +48,9 @@ End Type
 
 Public curLayerValues As FilterInfo
 
+'We may need a temporary copy of the selection mask; if so, it will be stored here
+Dim tmpSelectionMask As pdLayer
+
 'This function can be used to populate a valid SAFEARRAY2D structure against any layer
 Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcLayer As pdLayer)
     
@@ -87,13 +86,21 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     'Prepare a reference to a picture box (only needed when previewing)
     Dim previewPictureBox As PictureBox
     
+    'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window
+    Dim dstWidth As Double, dstHeight As Double
+    Dim srcWidth As Double, srcHeight As Double
+    Dim newWidth As Long, newHeight As Long
+        
     'If this is not a preview, simply copy the current layer without modification
-    If isPreview = False Then
+    If Not isPreview Then
     
         'Check for an active selection; if one is present, use that instead of the full layer
         If pdImages(CurrentImage).selectionActive Then
+            
+            'Make a working copy of the image data within the selection
             workingLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
             BitBlt workingLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+            
         Else
             workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
         End If
@@ -101,14 +108,10 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     'If this IS a preview, more work is involved.
     Else
     
-        'Start by calculating the aspect ratio of both the current image and the previewing picture box
-        Dim dstWidth As Double, dstHeight As Double
         Set previewPictureBox = previewTarget.getPreviewPic
         dstWidth = previewPictureBox.ScaleWidth
         dstHeight = previewPictureBox.ScaleHeight
-    
-        Dim srcWidth As Double, srcHeight As Double
-        
+            
         'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
         If pdImages(CurrentImage).selectionActive Then
             srcWidth = pdImages(CurrentImage).mainSelection.selWidth
@@ -119,8 +122,6 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         End If
             
         'Now, use that aspect ratio to determine a proper size for our temporary layer
-        Dim newWidth As Long, newHeight As Long
-    
         If (srcWidth > dstWidth) Or (srcHeight > dstHeight) Then
             convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
         Else
@@ -137,6 +138,66 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             workingLayer.createFromExistingLayer copyLayer, newWidth, newHeight
             copyLayer.eraseLayer
             Set copyLayer = Nothing
+            
+            'Also, make a copy of the selection mask at the same dimensions as the preview.  We will use this to remove the sections of the
+            ' selection that are not selected.  (Say that 10 times fast...lol)
+            Dim tmpSelectionMaskCopy As pdLayer
+            Set tmpSelectionMaskCopy = New pdLayer
+            tmpSelectionMaskCopy.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, 24
+            BitBlt tmpSelectionMaskCopy.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainSelection.selMask.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+            Set tmpSelectionMask = New pdLayer
+            tmpSelectionMask.createFromExistingLayer tmpSelectionMaskCopy, newWidth, newHeight
+            tmpSelectionMaskCopy.eraseLayer
+            Set tmpSelectionMaskCopy = Nothing
+            
+            'In the future, we will first check to see if this selection has a complex area, e.g. if it is not a
+            ' square or a rectangle.  If it IS complex, we need to modify it further to remove inactive pixels.
+            'If pdImages(CurrentImage).mainSelection.isComplicated (or something like this) ...
+            
+            'For now, however, all selections are fully processed.
+            
+            'Start by converting the working layer to 32bpp.  Unselected areas must be made transparent, so 24bpp won't work.
+            Dim already32bpp As Boolean
+            
+            If workingLayer.getLayerColorDepth = 32 Then
+                already32bpp = True
+            Else
+                already32bpp = False
+                workingLayer.convertTo32bpp
+            End If
+            
+            'Next, we are going to remove any pixels that are not part of the selection mask.
+            Dim wlImageData() As Byte
+            Dim wlSA As SAFEARRAY2D
+            prepSafeArray wlSA, workingLayer
+            CopyMemory ByVal VarPtrArray(wlImageData()), VarPtr(wlSA), 4
+            
+            Dim selImageData() As Byte
+            Dim selSA As SAFEARRAY2D
+            prepSafeArray selSA, tmpSelectionMask
+            CopyMemory ByVal VarPtrArray(selImageData()), VarPtr(selSA), 4
+                        
+            Dim x As Long, y As Long
+            For x = 0 To workingLayer.getLayerWidth - 1
+            For y = 0 To workingLayer.getLayerHeight - 1
+                
+                'If the image is already 32bpp, instead of relying solely on the selection mask values, we need to blend any
+                ' transparent pixels with the selection mask's transparency - this will give an accurate portrayal of how
+                ' the final processed area will look.
+                If already32bpp Then
+                    wlImageData(x * 4 + 3, y) = wlImageData(x * 4 + 3, y) * (selImageData(x * 3, y) / 255)
+                Else
+                    wlImageData(x * 4 + 3, y) = selImageData(x * 3, y)
+                End If
+            Next y
+            Next x
+            
+            'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+            CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
+            Erase wlImageData
+            CopyMemory ByVal VarPtrArray(selImageData), 0&, 4
+            Erase selImageData
+            
         Else
             workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight
         End If
@@ -145,7 +206,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingLayer
         
     End If
-    
+        
     'With our temporary layer successfully created, populate the relevant SafeArray variable
     prepSafeArray tmpSA, workingLayer
 
@@ -168,7 +229,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     End With
 
     'Set up the progress bar (only if this is NOT a preview, mind you)
-    If isPreview = False Then
+    If Not isPreview Then
         If newProgBarMax = -1 Then
             SetProgBarMax (curLayerValues.Left + curLayerValues.Width)
         Else
@@ -186,14 +247,92 @@ End Sub
 ' the values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS be called before this routine.
 Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl)
 
+    Dim wlImageData() As Byte
+    Dim wlSA As SAFEARRAY2D
+    
+    Dim selImageData() As Byte
+    Dim selSA As SAFEARRAY2D
+    
+    Dim x As Long, y As Long
+    
     'If this is not a preview, our job is simple - get the newly processed DIB rendered to the screen.
     If Not isPreview Then
         
         Message "Rendering image to screen..."
         
-        'Paint the working layer over the original layer
+        'If a selection is active, we need to paint the selected area back onto the image.  This can be simple (e.g. a square selection),
+        ' or hideously complex (e.g. a "magic wand" selection).
         If pdImages(CurrentImage).selectionActive Then
-            BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, workingLayer.getLayerWidth, workingLayer.getLayerHeight, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+        
+            'In the future, we will first check to see if this selection has a complex area, e.g. if it is not a
+            ' square or a rectangle.  If it IS complex, we need to modify it further to remove inactive pixels.
+            'If pdImages(CurrentImage)...
+            ' Simple: BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, workingLayer.getLayerWidth, workingLayer.getLayerHeight, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+            'Else
+            prepSafeArray wlSA, workingLayer
+            CopyMemory ByVal VarPtrArray(wlImageData()), VarPtr(wlSA), 4
+            
+            prepSafeArray selSA, pdImages(CurrentImage).mainSelection.selMask
+            CopyMemory ByVal VarPtrArray(selImageData()), VarPtr(selSA), 4
+            
+            Dim dstImageData() As Byte
+            Dim dstSA As SAFEARRAY2D
+            prepSafeArray dstSA, pdImages(CurrentImage).mainLayer
+            CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+            
+            Dim leftOffset As Long, topOffset As Long
+            leftOffset = pdImages(CurrentImage).mainSelection.selLeft
+            topOffset = pdImages(CurrentImage).mainSelection.selTop
+                        
+            Dim i As Long
+            Dim thisAlpha As Long
+            Dim blendAlpha As Double
+            
+            Dim dstQuickVal As Long
+            dstQuickVal = pdImages(CurrentImage).mainLayer.getLayerColorDepth \ 8
+            
+            Dim workingLayerCD As Long
+            workingLayerCD = workingLayer.getLayerColorDepth \ 8
+            
+            For x = 0 To workingLayer.getLayerWidth - 1
+            For y = 0 To workingLayer.getLayerHeight - 1
+                
+                thisAlpha = selImageData((leftOffset + x) * 3, topOffset + y)
+                
+                Select Case thisAlpha
+                    
+                    'This pixel is not part of the selection, so ignore it
+                    Case 0
+                    
+                    'This pixel completely replaces the destination one, so simply copy it over
+                    Case 255
+                        For i = 0 To dstQuickVal - 1
+                            dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y) = wlImageData(x * workingLayerCD + i, y)
+                        Next i
+                        
+                    'This pixel is antialiased or feathered, so it needs to be blended with the destination at the level specified
+                    ' by the selection mask.
+                    Case Else
+                        blendAlpha = thisAlpha / 255
+                        For i = 0 To dstQuickVal - 1
+                            dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y) = BlendColors(dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y), wlImageData(x * 4 + i, y), blendAlpha)
+                        Next i
+                    
+                End Select
+                
+            Next y
+            Next x
+            
+            'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+            CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
+            CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+            CopyMemory ByVal VarPtrArray(selImageData), 0&, 4
+            
+            Erase wlImageData
+            Erase dstImageData
+            Erase selImageData
+            
+            
         Else
             BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, curLayerValues.LayerX, curLayerValues.LayerY, curLayerValues.Width, curLayerValues.Height, workingLayer.getLayerDC, 0, 0, vbSrcCopy
         End If
@@ -211,7 +350,43 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Message "Finished."
         
     Else
-    
+        
+        'If this is a preview, and a selection mask was in use, and we forced it to 32bpp to remove the unselected areas,
+        ' we now need to restore those areas to their original state.  Otherwise the preview will look funky.
+        If Not tmpSelectionMask Is Nothing Then
+            
+            'Next, we are going to remove any pixels that are not part of the selection mask.
+            prepSafeArray wlSA, workingLayer
+            CopyMemory ByVal VarPtrArray(wlImageData()), VarPtr(wlSA), 4
+            
+            prepSafeArray selSA, tmpSelectionMask
+            CopyMemory ByVal VarPtrArray(selImageData()), VarPtr(selSA), 4
+                        
+            Dim already32bpp As Boolean
+            If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then already32bpp = False Else already32bpp = True
+            
+            For x = 0 To workingLayer.getLayerWidth - 1
+            For y = 0 To workingLayer.getLayerHeight - 1
+                If already32bpp Then
+                    If selImageData(x * 3, y) = 0 Then wlImageData(x * 4 + 3, y) = 0
+                Else
+                    wlImageData(x * 4 + 3, y) = selImageData(x * 3, y)
+                End If
+            Next y
+            Next x
+            
+            'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+            CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
+            Erase wlImageData
+            CopyMemory ByVal VarPtrArray(selImageData), 0&, 4
+            Erase selImageData
+            
+            'We can now erase our temporary copy of the selection mask
+            tmpSelectionMask.eraseLayer
+            Set tmpSelectionMask = Nothing
+            
+        End If
+        
         'If the current layer is 32bpp, precomposite it against a checkerboard background before rendering
         If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor
     
