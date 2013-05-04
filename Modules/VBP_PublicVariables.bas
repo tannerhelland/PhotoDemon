@@ -21,6 +21,19 @@ Public g_ProgBar As cProgressBar
 'Color variables
 Public g_EmbossEngraveColor As Long 'last used emboss/engrave color
 
+'Currently selected tool
+Public g_CurrentTool As PDTools
+
+Public Enum PDTools
+    SELECT_RECT = 0
+    SELECT_CIRC = 1
+End Enum
+
+#If False Then
+    Const SELECT_RECT = 0
+    Const SELECT_CIRC = 1
+#End If
+
 'Filter variables
 'The array containing the filter data
 Public g_FM() As Long

@@ -36,6 +36,8 @@ Public Const tImgMode32bpp As Byte = 14
 'tInit enables or disables a specified button and/or menu item
 Public Sub tInit(tButton As Byte, tState As Boolean)
     
+    Dim i As Long
+    
     Select Case tButton
         
         'Open (left-hand panel button AND menu item)
@@ -96,9 +98,7 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 FormMain.MnuFitWindowToImage.Enabled = tState
                 FormMain.MnuZoomIn.Enabled = tState
                 FormMain.MnuZoomOut.Enabled = tState
-                
-                Dim i As Long
-                
+                                
                 For i = 0 To FormMain.MnuSpecificZoom.Count - 1
                     FormMain.MnuSpecificZoom(i).Enabled = tState
                 Next i
@@ -141,13 +141,17 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
         'Selections
         Case tSelection
-            FormMain.tudSelLeft.Visible = tState
-            FormMain.tudSelTop.Visible = tState
-            FormMain.tudSelWidth.Visible = tState
-            FormMain.tudSelHeight.Visible = tState
-            FormMain.lblSelSize.Visible = tState
-            FormMain.lblSelPosition.Visible = tState
             
+            'If selections are not active, clear all the selection value textboxes
+            If Not tState Then
+                For i = 0 To FormMain.tudSelLeft.Count - 1
+                    FormMain.tudSelLeft(i).Value = 0
+                    FormMain.tudSelTop(i).Value = 0
+                    FormMain.tudSelWidth(i).Value = 0
+                    FormMain.tudSelHeight(i).Value = 0
+                Next i
+            End If
+                                    
             'Selection enabling/disabling also affects the Crop to Selection command
             If FormMain.MnuCropSelection.Enabled <> tState Then FormMain.MnuCropSelection.Enabled = tState
             

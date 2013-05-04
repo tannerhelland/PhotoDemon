@@ -79,7 +79,7 @@ Private Const RGN_COPY = 5
 Private Const HS_DIAGCROSS = 5
 
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-
+   
 'Rectangle drawing
 Private Type RECT
     Left As Long
@@ -92,6 +92,10 @@ Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As L
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+
+'Region drawing
+Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal x3 As Long, ByVal y3 As Long) As Long
+Private Declare Function FillRgn Lib "gdi32" (ByVal hDC As Long, ByVal hRgn As Long, ByVal hBrush As Long) As Long
 
 'Brush creation
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
@@ -106,9 +110,13 @@ Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode
 'What type of selection is this?
 Public Enum SelectionType
     sRectangle = 0
-    sSquare = 1
-    sCircle = 2
+    sCircle = 1
 End Enum
+
+#If False Then
+    Const sRectangle = 0
+    Const sCircle = 1
+#End If
 
 Private sType As SelectionType
 
@@ -156,14 +164,33 @@ Private isMaskReady As Boolean
 ' is read by the mouse tracker in the image form, and it uses it to determine if the user is allowed to transform the current selection.
 Public isTransformable As Boolean
 
-'set a transformation type
+'If the user holds "Shift" while moving the selection, it will be forced to a 1:1 aspect ratio.
+Public requestSquare As Boolean
+
+'Rectangular selections can have rounded corners.  If this value is > 0, round the corners by that many pixels.
+Public roundedCorners As Long
+
+'Set a transformation type
 Public Sub setTransformationType(ByVal transType As Long)
     selTransformationType = transType
 End Sub
 
-'Set a selection type
+'Get/set a selection type
+Public Function getSelectionType() As SelectionType
+    getSelectionType = sType
+End Function
+
 Public Sub setSelectionType(ByVal selType As SelectionType)
     sType = selType
+End Sub
+
+'Change the amount of corner rounding for rectangular selections
+Public Sub setRoundedCornerAmount(ByVal cornerRounding As Long)
+    roundedCorners = cornerRounding
+    If lockedIn Then
+        createSelectionMask
+        RenderViewport FormMain.ActiveForm
+    End If
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
@@ -431,17 +458,28 @@ Public Sub refreshTextBoxes()
 
     rejectRefreshRequests = True
 
-    If selLeft >= 0 Then FormMain.tudSelLeft.Value = selLeft
-    If selTop >= 0 Then FormMain.tudSelTop.Value = selTop
-    If selWidth > 0 Then FormMain.tudSelWidth.Value = selWidth
-    If selHeight > 0 Then FormMain.tudSelHeight.Value = selHeight
+    Dim targetTextBoxIndex As Long
+    
+    Select Case sType
+    
+        Case sRectangle
+            targetTextBoxIndex = 0
+        Case sCircle
+            targetTextBoxIndex = 1
+        
+    End Select
+        
+    If selLeft >= 0 Then FormMain.tudSelLeft(targetTextBoxIndex).Value = selLeft
+    If selTop >= 0 Then FormMain.tudSelTop(targetTextBoxIndex).Value = selTop
+    If selWidth > 0 Then FormMain.tudSelWidth(targetTextBoxIndex).Value = selWidth
+    If selHeight > 0 Then FormMain.tudSelHeight(targetTextBoxIndex).Value = selHeight
 
     rejectRefreshRequests = False
 
 End Sub
 
 'Update this selection using the values in the main form's selection text boxes
-Public Sub updateViaTextBox()
+Public Sub updateViaTextBox(ByVal textSourceIndex As Long)
 
     'Ignore text box update requests until the selection is locked in
     If isLockedIn = False Then Exit Sub
@@ -452,55 +490,53 @@ Public Sub updateViaTextBox()
     isMaskReady = False
 
     'Check all text box entries for validity, then update the corresponding selection values
-    If FormMain.tudSelLeft.IsValid(False) Then
-        If FormMain.tudSelLeft.Value > containingPDImage.Width - 1 Then FormMain.tudSelLeft = containingPDImage.Width - 1
-        selLeft = FormMain.tudSelLeft
+    If FormMain.tudSelLeft(textSourceIndex).IsValid(False) Then
+        If FormMain.tudSelLeft(textSourceIndex).Value > containingPDImage.Width - 1 Then FormMain.tudSelLeft(textSourceIndex) = containingPDImage.Width - 1
+        selLeft = FormMain.tudSelLeft(textSourceIndex)
     End If
-    If FormMain.tudSelTop.IsValid(False) Then
-        If FormMain.tudSelTop > containingPDImage.Height - 1 Then FormMain.tudSelTop = containingPDImage.Height - 1
-        selTop = FormMain.tudSelTop
+    If FormMain.tudSelTop(textSourceIndex).IsValid(False) Then
+        If FormMain.tudSelTop(textSourceIndex) > containingPDImage.Height - 1 Then FormMain.tudSelTop(textSourceIndex) = containingPDImage.Height - 1
+        selTop = FormMain.tudSelTop(textSourceIndex)
     End If
-    If FormMain.tudSelWidth.IsValid(False) Then
-        If FormMain.tudSelWidth + FormMain.tudSelLeft > containingPDImage.Width Then
-            'FormMain.txtSelWidth = pdImages(CurrentImage).Width - Val(FormMain.txtSelLeft)
-            selLeft = containingPDImage.Width - FormMain.tudSelWidth
-            FormMain.tudSelLeft = selLeft
+    If FormMain.tudSelWidth(textSourceIndex).IsValid(False) Then
+        If FormMain.tudSelWidth(textSourceIndex) + FormMain.tudSelLeft(textSourceIndex) > containingPDImage.Width Then
+            selLeft = containingPDImage.Width - FormMain.tudSelWidth(textSourceIndex)
+            FormMain.tudSelLeft(textSourceIndex) = selLeft
         End If
-        selWidth = FormMain.tudSelWidth
+        selWidth = FormMain.tudSelWidth(textSourceIndex)
     End If
-    If FormMain.tudSelHeight.IsValid(False) Then
-        If FormMain.tudSelHeight + FormMain.tudSelTop > containingPDImage.Height Then
-            'FormMain.txtSelHeight = pdImages(CurrentImage).Height - Val(FormMain.txtSelTop)
-            selTop = containingPDImage.Height - FormMain.tudSelHeight
-            FormMain.tudSelTop = selTop
+    If FormMain.tudSelHeight(textSourceIndex).IsValid(False) Then
+        If FormMain.tudSelHeight(textSourceIndex) + FormMain.tudSelTop(textSourceIndex) > containingPDImage.Height Then
+            selTop = containingPDImage.Height - FormMain.tudSelHeight(textSourceIndex)
+            FormMain.tudSelTop(textSourceIndex) = selTop
         End If
-        selHeight = FormMain.tudSelHeight
+        selHeight = FormMain.tudSelHeight(textSourceIndex)
     End If
     
     'Perform one final sanity check on all selection values
     If selLeft < 0 Then
         selLeft = 0
-        FormMain.tudSelLeft = selLeft
+        FormMain.tudSelLeft(textSourceIndex) = selLeft
     End If
     If selTop < 0 Then
         selTop = 0
-        FormMain.tudSelTop = selTop
+        FormMain.tudSelTop(textSourceIndex) = selTop
     End If
     If selWidth > containingPDImage.Width Then
         selWidth = containingPDImage.Width
-        FormMain.tudSelWidth = selWidth
+        FormMain.tudSelWidth(textSourceIndex) = selWidth
     End If
     If selWidth = 0 Then
         selWidth = 1
-        FormMain.tudSelWidth = selWidth
+        FormMain.tudSelWidth(textSourceIndex) = selWidth
     End If
     If selHeight > containingPDImage.Height Then
         selHeight = containingPDImage.Height
-        FormMain.tudSelHeight = selHeight
+        FormMain.tudSelHeight(textSourceIndex) = selHeight
     End If
     If selHeight = 0 Then
         selHeight = 1
-        FormMain.tudSelHeight = selHeight
+        FormMain.tudSelHeight(textSourceIndex) = selHeight
     End If
     
     'Adjust the x1, y1, x2, y2 values to match these new ones
@@ -553,23 +589,36 @@ Private Sub createSelectionMask()
     'Start by creating a blank mask (this will also erase any existing mask)
     selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, 0
     
+    Dim hBrush As Long
+    
     'The actual rendering of the selection will vary based on the current selection type (obviously).
     Select Case sType
     
-        'Squares and rectangles are easy - use FillRect to draw a white rectangle at the mask's location
-        Case sRectangle, sSquare
+        'Squares and rectangles are easy - use FillRect to draw a white rectangle at the mask's location.  If corner rounding
+        ' has been specified, apply it now.
+        Case sRectangle
         
-            Dim maskRect As RECT
-            SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
-            
-            Dim hBrush As Long
-            hBrush = CreateSolidBrush(RGB(255, 255, 255))
-            FillRect selMask.getLayerDC, maskRect, hBrush
-            DeleteObject hBrush
+            If roundedCorners = 0 Then
+                Dim maskRect As RECT
+                SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
+                
+                hBrush = CreateSolidBrush(RGB(255, 255, 255))
+                FillRect selMask.getLayerDC, maskRect, hBrush
+                DeleteObject hBrush
+            Else
+        
+                Dim maskRegion As Long
+                maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
+                
+                hBrush = CreateSolidBrush(RGB(255, 255, 255))
+                FillRgn selMask.getLayerDC, maskRegion, hBrush
+                DeleteObject hBrush
+            End If
             
             'Also, mark this particular mask as transformable
             isTransformable = True
             
+        Case Else
     
     End Select
 
@@ -579,6 +628,8 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If rejectRefreshRequests Then Exit Sub
+    
+    If areAllCoordinatesInvalid Then Exit Sub
     
     'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates.
     ' (e.g., the location of this selection is stored as image coordinates - but we need to have it in "viewport" coordinates so we can
@@ -869,7 +920,10 @@ Private Sub Class_Initialize()
     
     'Mark it as not transformable... yet
     isTransformable = False
-        
+    
+    'By default, don't round off the corners of rectangular selections
+    roundedCorners = 0
+    
 End Sub
 
 'Sometimes a selection needs to directly access the bits of a target layer. This routine sets up the corresponding SafeArray.
