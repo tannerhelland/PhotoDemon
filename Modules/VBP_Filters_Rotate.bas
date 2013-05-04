@@ -270,7 +270,10 @@ Public Sub MenuCropToSelection()
         pdImages(CurrentImage).mainSelection.refreshTextBoxes
         pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
         g_selectionRenderPreference = sHighlightRed
-        FormMain.cmbSelRender.ListIndex = 2
+        Dim i As Long
+        For i = 0 To FormMain.cmbSelRender.Count - 1
+            FormMain.cmbSelRender(i).ListIndex = 2
+        Next i
         Message "Crop complete.  Selection drawing mode changed to make selection visible."
     End If
     
