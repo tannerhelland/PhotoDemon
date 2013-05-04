@@ -334,13 +334,16 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
                 'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
                 If pdImages(Me.Tag).selectionActive Then
-                    
+                                        
                     'Display the image coordinates under the mouse pointer
                     displayImageCoordinates x, y, Me, imgX, imgY
                     
+                    'If the SHIFT key is down, notify the selection engine that a square shape is requested
+                    pdImages(Me.Tag).mainSelection.requestSquare ShiftDown
+                    
                     'Pass new points to the active selection
                     pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
-                    
+                                        
                 End If
                 
                 'Force a redraw of the viewport

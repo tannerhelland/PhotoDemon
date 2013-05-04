@@ -165,10 +165,23 @@ Private isMaskReady As Boolean
 Public isTransformable As Boolean
 
 'If the user holds "Shift" while moving the selection, it will be forced to a 1:1 aspect ratio.
-Public requestSquare As Boolean
+Private isSquare As Boolean
 
 'Rectangular selections can have rounded corners.  If this value is > 0, round the corners by that many pixels.
-Public roundedCorners As Long
+Private roundedCorners As Long
+
+'Request a 1:1 aspect ratio selection (squares, circles)
+Public Sub requestSquare(ByVal requestChoice As Boolean)
+    isSquare = requestChoice
+    
+    'Redraw the selection if necessary
+    If Not containingPDImage Is Nothing Then
+        updateInternalCoords
+        createSelectionMask
+        RenderViewport FormMain.ActiveForm
+    End If
+    
+End Sub
 
 'Set a transformation type
 Public Sub setTransformationType(ByVal transType As Long)
@@ -418,6 +431,15 @@ Private Sub updateInternalCoords()
         selHeight = y1 - y2
     End If
     
+    'If a 1:1 aspect ratio has been requested, recalculate that now
+    'If isSquare Then
+    '    If selWidth < selHeight Then
+    '        selWidth = selHeight
+    '    Else
+    '        selHeight = selWidth
+    '    End If
+    'End If
+    
     'Perform a quick sanity check on the calculated variables
     If selLeft < 0 Then selLeft = 0
     If selTop < 0 Then selTop = 0
@@ -590,7 +612,9 @@ Private Sub createSelectionMask()
     selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, 0
     
     Dim hBrush As Long
-    
+    Dim maskRect As RECT
+    Dim maskRegion As Long
+                
     'The actual rendering of the selection will vary based on the current selection type (obviously).
     Select Case sType
     
@@ -599,15 +623,13 @@ Private Sub createSelectionMask()
         Case sRectangle
         
             If roundedCorners = 0 Then
-                Dim maskRect As RECT
                 SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
                 
                 hBrush = CreateSolidBrush(RGB(255, 255, 255))
                 FillRect selMask.getLayerDC, maskRect, hBrush
                 DeleteObject hBrush
+            
             Else
-        
-                Dim maskRegion As Long
                 maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
                 
                 hBrush = CreateSolidBrush(RGB(255, 255, 255))
@@ -618,6 +640,9 @@ Private Sub createSelectionMask()
             'Also, mark this particular mask as transformable
             isTransformable = True
             
+        Case sCircle
+        
+        
         Case Else
     
     End Select
