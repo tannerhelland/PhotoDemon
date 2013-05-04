@@ -258,15 +258,16 @@ End Sub
 'Perform any drawing routines related to the main form
 Public Sub RedrawMainForm()
 
-    'Draw a subtle gradient on either pane if visible
+    'Draw a subtle gradient on either pane if visible.
+    ' NOTE: this is momentarily disabled as part of tool implementation.  I may revisit it in the future.
     If FormMain.picLeftPane.Visible Then
         FormMain.picLeftPane.Refresh
-        DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
+        'DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
     End If
     
     If FormMain.picRightPane.Visible Then
         FormMain.picRightPane.Refresh
-        DrawGradient FormMain.picRightPane, RGB(201, 211, 226), RGB(240, 240, 240), True
+        'DrawGradient FormMain.picRightPane, RGB(201, 211, 226), RGB(240, 240, 240), True
     End If
     
     'Redraw the progress bar
@@ -364,10 +365,14 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     FormMain.lblImgSize.Refresh
     
     'Size is only displayed when it is changed, so change the upper limit of the selection boxes to match
-    FormMain.tudSelLeft.Max = iWidth - 1
-    FormMain.tudSelTop.Max = iHeight - 1
-    FormMain.tudSelWidth.Max = iWidth
-    FormMain.tudSelHeight.Max = iHeight
+    Dim i As Long
+    For i = 0 To FormMain.tudSelLeft.Count - 1
+        FormMain.tudSelLeft(i).Max = iWidth - 1
+        FormMain.tudSelTop(i).Max = iHeight - 1
+        FormMain.tudSelWidth(i).Max = iWidth
+        FormMain.tudSelHeight(i).Max = iHeight
+    Next i
+    If iWidth < iHeight Then FormMain.sltCornerRounding.Max = iWidth Else FormMain.sltCornerRounding.Max = iHeight
 End Sub
 
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but
