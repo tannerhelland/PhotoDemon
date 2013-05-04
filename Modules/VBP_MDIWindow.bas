@@ -425,7 +425,7 @@ Public Sub UpdateMDIStatus()
         FormMain.MnuFitOnScreen.Enabled = False
         If FormMain.CmbZoom.Enabled = True Then
             FormMain.CmbZoom.Enabled = False
-            FormMain.lblLeftToolBox(3).ForeColor = &H606060
+            'FormMain.lblLeftToolBox(3).ForeColor = &H606060
             FormMain.CmbZoom.ListIndex = ZoomIndex100   'Reset zoom to 100%
             FormMain.cmdZoomIn.Enabled = False
             FormMain.cmdZoomOut.Enabled = False
@@ -494,7 +494,7 @@ Public Sub UpdateMDIStatus()
         FormMain.lblCoordinates.ForeColor = &H544E43
         If FormMain.CmbZoom.Enabled = False Then
             FormMain.CmbZoom.Enabled = True
-            FormMain.lblLeftToolBox(3).ForeColor = &H544E43
+            'FormMain.lblLeftToolBox(3).ForeColor = &H544E43
             FormMain.cmdZoomIn.Enabled = True
             FormMain.cmdZoomOut.Enabled = True
         End If
