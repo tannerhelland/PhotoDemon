@@ -247,55 +247,59 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     'Check mouse button use
     If Button = vbLeftButton Then
         
-        'Check the location of the mouse to see if it's over the image
-        'If isMouseOverImage(x, y, Me) Then
+        lMouseDown = True
+            
+        hasMouseMoved = 0
+            
+        'Remember this location
+        initMouseX = x
+        initMouseY = y
+            
+        'Display the image coordinates under the mouse pointer
+        displayImageCoordinates x, y, Me, imgX, imgY
         
-            lMouseDown = True
-            
-            hasMouseMoved = 0
-            
-            'Remember this location
-            initMouseX = x
-            initMouseY = y
-            
-            'Display the image coordinates under the mouse pointer
-            displayImageCoordinates x, y, Me, imgX, imgY
+        'Any further processing depends on which tool is currently active
         
-            'Check to see if a selection is already active.
-            If pdImages(Me.Tag).selectionActive Then
+        Select Case g_CurrentTool
+        
+            'Rectangular selection
+            Case SELECT_RECT
             
-                'Check the mouse coordinates of this click.
-                Dim sCheck As Long
-                sCheck = findNearestSelectionCoordinates(x, y, Me)
+                'Check to see if a selection is already active.
+                If pdImages(Me.Tag).selectionActive Then
                 
-                'If that function did not return zero, notify the selection and exit
-                If sCheck <> 0 Then
-                
-                    pdImages(Me.Tag).mainSelection.setTransformationType sCheck
-                    pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
+                    'Check the mouse coordinates of this click.
+                    Dim sCheck As Long
+                    sCheck = findNearestSelectionCoordinates(x, y, Me)
                     
-                    Exit Sub
+                    'If that function did not return zero, notify the selection and exit
+                    If sCheck <> 0 Then
+                    
+                        pdImages(Me.Tag).mainSelection.setTransformationType sCheck
+                        pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
+                        
+                        Exit Sub
+                                        
+                    End If
                 
                 End If
+                        
+                'Activate the selection and pass in the first two points
+                pdImages(Me.Tag).selectionActive = True
+                pdImages(Me.Tag).mainSelection.selLeft = 0
+                pdImages(Me.Tag).mainSelection.selTop = 0
+                pdImages(Me.Tag).mainSelection.selWidth = 0
+                pdImages(Me.Tag).mainSelection.selHeight = 0
+                pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
+                pdImages(Me.Tag).mainSelection.refreshTextBoxes
+                    
+                'Make the selection tools visible
+                tInit tSelection, True
+        
+                'Render the new selection
+                RenderViewport Me
             
-            End If
-                
-            'Activate the selection and pass in the first two points
-            pdImages(Me.Tag).selectionActive = True
-            pdImages(Me.Tag).mainSelection.selLeft = 0
-            pdImages(Me.Tag).mainSelection.selTop = 0
-            pdImages(Me.Tag).mainSelection.selWidth = 0
-            pdImages(Me.Tag).mainSelection.selHeight = 0
-            pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
-            pdImages(Me.Tag).mainSelection.refreshTextBoxes
-            
-            'Make the selection tools visible
-            tInit tSelection, True
-
-            'Render the new selection
-            RenderViewport Me
-            
-        'End If
+        End Select
         
     End If
     
@@ -324,81 +328,93 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     'Check the left mouse button
     If lMouseDown Then
     
-        'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
-        If pdImages(Me.Tag).selectionActive Then
-            
-            'Display the image coordinates under the mouse pointer
-            displayImageCoordinates x, y, Me, imgX, imgY
-            
-            'Pass new points to the active selection
-            pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
-            
-        End If
+        Select Case g_CurrentTool
         
-        'Force a redraw of the viewport
-        If hasMouseMoved > 1 Then RenderViewport Me
+            Case SELECT_RECT
+    
+                'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
+                If pdImages(Me.Tag).selectionActive Then
+                    
+                    'Display the image coordinates under the mouse pointer
+                    displayImageCoordinates x, y, Me, imgX, imgY
+                    
+                    'Pass new points to the active selection
+                    pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
+                    
+                End If
+                
+                'Force a redraw of the viewport
+                If hasMouseMoved > 1 Then RenderViewport Me
+                
+        End Select
     
     'This else means the LEFT mouse button is NOT down
     Else
     
-        'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
-        ' ability to resize the selection.
-        If pdImages(Me.Tag).selectionActive Then
+        Select Case g_CurrentTool
         
-            'This routine will return a best estimate for the location of the mouse. The possible return values are:
-            ' 0 - Cursor is not near a selection point
-            ' 1 - NW corner
-            ' 2 - NE corner
-            ' 3 - SE corner
-            ' 4 - SW corner
-            ' 5 - N edge
-            ' 6 - E edge
-            ' 7 - S edge
-            ' 8 - W edge
-            ' 9 - interior of selection, not near a corner or edge
-            Dim sCheck As Long
-            sCheck = findNearestSelectionCoordinates(x, y, Me)
+            Case SELECT_RECT
             
-            'Based on that return value, assign a new mouse cursor to the form
-            Select Case sCheck
+                'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
+                ' ability to resize the selection.
+                If pdImages(Me.Tag).selectionActive Then
                 
-                Case 0
-                    setArrowCursor Me
-                Case 1
-                    setSizeNWSECursor Me
-                Case 2
-                    setSizeNESWCursor Me
-                Case 3
-                    setSizeNWSECursor Me
-                Case 4
-                    setSizeNESWCursor Me
-                Case 5
-                    setSizeNSCursor Me
-                Case 6
-                    setSizeWECursor Me
-                Case 7
-                    setSizeNSCursor Me
-                Case 8
-                    setSizeWECursor Me
-                Case 9
-                    setSizeAllCursor Me
+                    'This routine will return a best estimate for the location of the mouse. The possible return values are:
+                    ' 0 - Cursor is not near a selection point
+                    ' 1 - NW corner
+                    ' 2 - NE corner
+                    ' 3 - SE corner
+                    ' 4 - SW corner
+                    ' 5 - N edge
+                    ' 6 - E edge
+                    ' 7 - S edge
+                    ' 8 - W edge
+                    ' 9 - interior of selection, not near a corner or edge
+                    Dim sCheck As Long
+                    sCheck = findNearestSelectionCoordinates(x, y, Me)
                     
-            End Select
+                    'Based on that return value, assign a new mouse cursor to the form
+                    Select Case sCheck
+                
+                        Case 0
+                            setArrowCursor Me
+                        Case 1
+                            setSizeNWSECursor Me
+                        Case 2
+                            setSizeNESWCursor Me
+                        Case 3
+                            setSizeNWSECursor Me
+                        Case 4
+                            setSizeNESWCursor Me
+                        Case 5
+                            setSizeNSCursor Me
+                        Case 6
+                            setSizeWECursor Me
+                        Case 7
+                            setSizeNSCursor Me
+                        Case 8
+                            setSizeWECursor Me
+                        Case 9
+                            setSizeAllCursor Me
+                            
+                    End Select
+                
+                    'Set the active selection's transformation type to match
+                    pdImages(Me.Tag).mainSelection.setTransformationType sCheck
+                    
+                End If
         
-            'Set the active selection's transformation type to match
-            pdImages(Me.Tag).mainSelection.setTransformationType sCheck
+            Case Else
         
-        Else
-        
-            'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
-            ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-            If isMouseOverImage(x, y, Me) Then
-                setArrowCursor Me
-            Else
-                setArrowCursor Me
-            End If
+                'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
+                ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
+                If isMouseOverImage(x, y, Me) Then
+                    setArrowCursor Me
+                Else
+                    setArrowCursor Me
+                End If
             
-        End If
+        End Select
         
     End If
         
@@ -418,42 +434,48 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
     
         lMouseDown = False
     
-        'If a selection was being drawn, lock it into place
-        If pdImages(Me.Tag).selectionActive Then
+        Select Case g_CurrentTool
+        
+            Case SELECT_RECT
             
-            'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
-            ' point falls outside the selection, clear the selection from the image.
-            If ((x = initMouseX) And (y = initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
-                pdImages(Me.Tag).mainSelection.lockRelease
-                pdImages(Me.Tag).selectionActive = False
-                tInit tSelection, False
-            Else
-            
-                'Check to see if all selection coordinates are invalid.  If they are, forget about this selection.
-                If pdImages(Me.Tag).mainSelection.areAllCoordinatesInvalid Then
-                    pdImages(Me.Tag).mainSelection.lockRelease
-                    pdImages(Me.Tag).selectionActive = False
-                    tInit tSelection, False
-                Else
-                
-                    'Lock-in the active selection
-                    pdImages(Me.Tag).mainSelection.lockIn Me
-                    tInit tSelection, True
+                'If a selection was being drawn, lock it into place
+                If pdImages(Me.Tag).selectionActive Then
                     
+                    'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
+                    ' point falls outside the selection, clear the selection from the image.
+                    If ((x = initMouseX) And (y = initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
+                        pdImages(Me.Tag).mainSelection.lockRelease
+                        pdImages(Me.Tag).selectionActive = False
+                        tInit tSelection, False
+                    Else
+                    
+                        'Check to see if all selection coordinates are invalid.  If they are, forget about this selection.
+                        If pdImages(Me.Tag).mainSelection.areAllCoordinatesInvalid Then
+                            pdImages(Me.Tag).mainSelection.lockRelease
+                            pdImages(Me.Tag).selectionActive = False
+                            tInit tSelection, False
+                        Else
+                        
+                            'Lock-in the active selection
+                            pdImages(Me.Tag).mainSelection.lockIn Me
+                            tInit tSelection, True
+                            
+                        End If
+                        
+                    End If
+                    
+                    'Force a redraw of the screen
+                    RenderViewport Me
+                    
+                Else
+                    'If the selection is not active, make sure it stays that way
+                    pdImages(Me.Tag).mainSelection.lockRelease
                 End If
                 
-            End If
-            
-            'Force a redraw of the screen
-            RenderViewport Me
-            
-        Else
-        
-            'If the selection is not active, make sure it stays that way
-            pdImages(Me.Tag).mainSelection.lockRelease
-        
-            
-        End If
+                
+            Case Else
+                    
+        End Select
                         
     End If
     
