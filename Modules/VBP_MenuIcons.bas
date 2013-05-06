@@ -250,9 +250,8 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "FILMNOIR", 5, 2, 2       'Film Noir
         AddMenuIcon "MODERNART", 5, 2, 3      'Modern Art
         AddMenuIcon "PENCIL", 5, 2, 4         'Pencil
-        AddMenuIcon "MOSAIC", 5, 2, 5         'Pixelate (Mosaic)
-        AddMenuIcon "POSTERIZE", 5, 2, 6      'Posterize
-        AddMenuIcon "RELIEF", 5, 2, 7         'Relief
+        AddMenuIcon "POSTERIZE", 5, 2, 5      'Posterize
+        AddMenuIcon "RELIEF", 5, 2, 6         'Relief
     AddMenuIcon "BLUR", 5, 3            'Blur
         '--> Blur sub-menu
         AddMenuIcon "SOFTEN", 5, 3, 0         'Soften
@@ -263,6 +262,7 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "GAUSSBLUR", 5, 3, 6      'Gaussian Blur
         AddMenuIcon "GRIDBLUR", 5, 3, 7       'Grid Blur
         AddMenuIcon "SMARTBLUR", 5, 3, 8      'Smart Blur
+        AddMenuIcon "MOSAIC", 5, 3, 10        'Pixelate (Mosaic)
     AddMenuIcon "DISTORT", 5, 4      'Distort
         '--> Distort sub-menu
         AddMenuIcon "LENSDISTORT", 5, 4, 0    'Apply lens distortion
