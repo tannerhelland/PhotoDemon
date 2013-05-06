@@ -361,7 +361,7 @@ End Sub
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
-    FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size") & ": " & iWidth & "x" & iHeight
+    FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size") & ":" & vbCrLf & iWidth & "x" & iHeight
     FormMain.lblImgSize.Refresh
     
     'Size is only displayed when it is changed, so change the upper limit of the selection boxes to match
@@ -373,6 +373,7 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
         FormMain.tudSelHeight(i).Max = iHeight
     Next i
     If iWidth < iHeight Then FormMain.sltCornerRounding.Max = iWidth Else FormMain.sltCornerRounding.Max = iHeight
+    
 End Sub
 
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but
