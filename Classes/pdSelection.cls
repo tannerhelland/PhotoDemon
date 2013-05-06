@@ -94,6 +94,7 @@ Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long,
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 
 'Region drawing
+Private Declare Function CreateEllipticRgnIndirect Lib "gdi32" (ByRef lpRect As RECT) As Long
 Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal x3 As Long, ByVal y3 As Long) As Long
 Private Declare Function FillRgn Lib "gdi32" (ByVal hDC As Long, ByVal hRgn As Long, ByVal hBrush As Long) As Long
 
@@ -484,10 +485,8 @@ Public Sub refreshTextBoxes()
     
     Select Case sType
     
-        Case sRectangle
+        Case sRectangle, sCircle
             targetTextBoxIndex = 0
-        Case sCircle
-            targetTextBoxIndex = 1
         
     End Select
         
@@ -619,7 +618,7 @@ Private Sub createSelectionMask()
     Select Case sType
     
         'Squares and rectangles are easy - use FillRect to draw a white rectangle at the mask's location.  If corner rounding
-        ' has been specified, apply it now.
+        ' has been specified, apply it using CreateRoundRectRgn.
         Case sRectangle
         
             If roundedCorners = 0 Then
@@ -641,8 +640,15 @@ Private Sub createSelectionMask()
             isTransformable = True
             
         Case sCircle
-        
-        
+            SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
+            maskRegion = CreateEllipticRgnIndirect(maskRect)
+            hBrush = CreateSolidBrush(RGB(255, 255, 255))
+            FillRgn selMask.getLayerDC, maskRegion, hBrush
+            DeleteObject hBrush
+            
+            'Elliptical regions are transformable (meaning the user can resize and move them after they've been created)
+            isTransformable = True
+            
         Case Else
     
     End Select
@@ -758,7 +764,10 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             
     If rightBound > pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1 Then rightBound = pdImages(dstForm.Tag).backBuffer.getLayerWidth - 1
     If bottomBound > pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1 Then bottomBound = pdImages(dstForm.Tag).backBuffer.getLayerHeight - 1
-        
+    
+    Dim xLookup() As Long, yLookup() As Long
+    Dim tmpCalculation As Long
+    
     'Based on the selection type, draw a corresponding selection of some sort
     Select Case renderType
     
@@ -783,25 +792,32 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             dstRight = dstRight - 1
             dstBottom = dstBottom - 1
             
+            'Build look-up tables for both the x and y direction.  This is faster than calculating
+            ' such values for every pixel inside the loop.
+                        
+            ReDim xLookup(imgLeft To rightBound) As Long
+            For x = imgLeft To rightBound
+                tmpCalculation = hScrollVal + Int((x - imgLeft) / ZoomVal)
+                If tmpCalculation < 0 Then tmpCalculation = 0
+                If tmpCalculation > srcWidth Then tmpCalculation = srcWidth
+                xLookup(x) = tmpCalculation * 3
+            Next x
+            
+            ReDim yLookup(imgTop To bottomBound) As Long
+            For y = imgTop To bottomBound
+                tmpCalculation = vScrollVal + Int((y - imgTop) / ZoomVal)
+                If tmpCalculation < 0 Then tmpCalculation = 0
+                If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
+                yLookup(y) = tmpCalculation
+            Next y
+            
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
                 QuickVal = x * 3
             For y = imgTop To bottomBound
             
-                'Calculate source x and y positions, while taking into account zoom and scroll values
-                srcX = hScrollVal + Int((x - imgLeft) / ZoomVal)
-                srcY = vScrollVal + Int((y - imgTop) / ZoomVal)
-                
-                'Make sure srcX and srcY are not out of bounds
-                If srcX < 0 Then srcX = 0
-                If srcX > srcWidth Then srcX = srcWidth
-                If srcY < 0 Then srcY = 0
-                If srcY > srcHeight Then srcY = srcHeight
-                
-                selMaskQuickVal = srcX * 3
-            
                 'Remember that lightbox works a little weirdly - UNSELECTED pixels are marked, while selected ones are left untouched
-                If selMaskData(selMaskQuickVal, srcY) = 0 Then
+                If selMaskData(xLookup(x), yLookup(y)) = 0 Then
                     iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
                     iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
                     iData(QuickVal, y) = hData(iData(QuickVal, y))
@@ -854,25 +870,31 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             dstRight = dstRight - 1
             dstBottom = dstBottom - 1
             
+            'Build look-up tables for both the x and y direction.  This is faster than calculating
+            ' such values for every pixel inside the loop.
+            ReDim xLookup(imgLeft To rightBound) As Long
+            For x = imgLeft To rightBound
+                tmpCalculation = hScrollVal + Int((x - imgLeft) / ZoomVal)
+                If tmpCalculation < 0 Then tmpCalculation = 0
+                If tmpCalculation > srcWidth Then tmpCalculation = srcWidth
+                xLookup(x) = tmpCalculation * 3
+            Next x
+            
+            ReDim yLookup(imgTop To bottomBound) As Long
+            For y = imgTop To bottomBound
+                tmpCalculation = vScrollVal + Int((y - imgTop) / ZoomVal)
+                If tmpCalculation < 0 Then tmpCalculation = 0
+                If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
+                yLookup(y) = tmpCalculation
+            Next y
+            
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
                 QuickVal = x * 3
             For y = imgTop To bottomBound
             
-                'Calculate source x and y positions, while taking into account zoom and scroll values
-                srcX = hScrollVal + Int((x - imgLeft) / ZoomVal)
-                srcY = vScrollVal + Int((y - imgTop) / ZoomVal)
-                
-                'Make sure srcX and srcY are not out of bounds
-                If srcX < 0 Then srcX = 0
-                If srcX > srcWidth Then srcX = srcWidth
-                If srcY < 0 Then srcY = 0
-                If srcY > srcHeight Then srcY = srcHeight
-                
-                selMaskQuickVal = srcX * 3
-            
                 'If this pixels is over an active pixel in the selection mask, mark it with the selected color
-                If selMaskData(selMaskQuickVal, srcY) > 0 Then
+                If selMaskData(xLookup(x), yLookup(y)) > 0 Then
                     iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
                     iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
                     iData(QuickVal, y) = bData(iData(QuickVal, y))
