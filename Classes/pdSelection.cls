@@ -634,6 +634,7 @@ Private Sub createSelectionMask()
                 hBrush = CreateSolidBrush(RGB(255, 255, 255))
                 FillRgn selMask.getLayerDC, maskRegion, hBrush
                 DeleteObject hBrush
+                DeleteObject maskRegion
             End If
             
             'Also, mark this particular mask as transformable
@@ -645,6 +646,7 @@ Private Sub createSelectionMask()
             hBrush = CreateSolidBrush(RGB(255, 255, 255))
             FillRgn selMask.getLayerDC, maskRegion, hBrush
             DeleteObject hBrush
+            DeleteObject maskRegion
             
             'Elliptical regions are transformable (meaning the user can resize and move them after they've been created)
             isTransformable = True
