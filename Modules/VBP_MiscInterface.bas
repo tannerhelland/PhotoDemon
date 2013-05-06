@@ -367,10 +367,12 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     'Size is only displayed when it is changed, so change the upper limit of the selection boxes to match
     Dim i As Long
     For i = 0 To FormMain.tudSelLeft.Count - 1
+        If pdImages(FormMain.ActiveForm.Tag).selectionActive Then pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests = True
         FormMain.tudSelLeft(i).Max = iWidth - 1
         FormMain.tudSelTop(i).Max = iHeight - 1
         FormMain.tudSelWidth(i).Max = iWidth
         FormMain.tudSelHeight(i).Max = iHeight
+        If pdImages(FormMain.ActiveForm.Tag).selectionActive Then pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests = False
     Next i
     If iWidth < iHeight Then FormMain.sltCornerRounding.Max = iWidth Else FormMain.sltCornerRounding.Max = iHeight
     

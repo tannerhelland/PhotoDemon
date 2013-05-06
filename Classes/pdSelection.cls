@@ -179,7 +179,7 @@ Public Sub requestSquare(ByVal requestChoice As Boolean)
     If Not containingPDImage Is Nothing Then
         updateInternalCoords
         createSelectionMask
-        RenderViewport FormMain.ActiveForm
+        RenderViewport containingPDImage.containingForm
     End If
     
 End Sub
@@ -203,7 +203,7 @@ Public Sub setRoundedCornerAmount(ByVal cornerRounding As Long)
     roundedCorners = cornerRounding
     If lockedIn Then
         createSelectionMask
-        RenderViewport FormMain.ActiveForm
+        RenderViewport containingPDImage.containingForm
     End If
 End Sub
 
@@ -569,7 +569,7 @@ Public Sub updateViaTextBox(ByVal textSourceIndex As Long)
     rejectRefreshRequests = False
     
     'Redraw the selection to the active form
-    RenderViewport FormMain.ActiveForm
+    RenderViewport containingPDImage.containingForm
     
 End Sub
 

@@ -265,7 +265,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
             'Rectangular selection
             Case SELECT_RECT, SELECT_CIRC
             
-                'Check to see if a selection is already active.
+                'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
                 If pdImages(Me.Tag).selectionActive Then
                 
                     'Check the mouse coordinates of this click.
@@ -287,6 +287,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                 'Activate the selection and pass in the first two points
                 pdImages(Me.Tag).selectionActive = True
                 pdImages(Me.Tag).mainSelection.setSelectionType g_CurrentTool
+                pdImages(Me.Tag).mainSelection.setRoundedCornerAmount FormMain.sltCornerRounding.Value
                 pdImages(Me.Tag).mainSelection.selLeft = 0
                 pdImages(Me.Tag).mainSelection.selTop = 0
                 pdImages(Me.Tag).mainSelection.selWidth = 0
