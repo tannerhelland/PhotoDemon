@@ -219,9 +219,9 @@ Private Sub Form_Load()
     
     'Add two messages to the subclassing handler - one for handling mousewheel events, and another for handling mouse forward/back keypresses
     If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then
-        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL 'Mouse wheel
-        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK 'Mouse forward/back keys
-        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window
+        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL 'Mouse wheel (used for zoom/pan)
+        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK 'Mouse forward/back keys (used for undo/redo)
+        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window (used to clear pixel coordinate display)
     End If
     
     'Assign the system hand cursor to all relevant objects
@@ -263,7 +263,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         Select Case g_CurrentTool
         
             'Rectangular selection
-            Case SELECT_RECT
+            Case SELECT_RECT, SELECT_CIRC
             
                 'Check to see if a selection is already active.
                 If pdImages(Me.Tag).selectionActive Then
@@ -286,6 +286,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                         
                 'Activate the selection and pass in the first two points
                 pdImages(Me.Tag).selectionActive = True
+                pdImages(Me.Tag).mainSelection.setSelectionType g_CurrentTool
                 pdImages(Me.Tag).mainSelection.selLeft = 0
                 pdImages(Me.Tag).mainSelection.selTop = 0
                 pdImages(Me.Tag).mainSelection.selWidth = 0
@@ -330,7 +331,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
         Select Case g_CurrentTool
         
-            Case SELECT_RECT
+            Case SELECT_RECT, SELECT_CIRC
     
                 'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
                 If pdImages(Me.Tag).selectionActive Then
@@ -356,7 +357,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
         Select Case g_CurrentTool
         
-            Case SELECT_RECT
+            Case SELECT_RECT, SELECT_CIRC
             
                 'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
                 ' ability to resize the selection.
@@ -439,7 +440,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
     
         Select Case g_CurrentTool
         
-            Case SELECT_RECT
+            Case SELECT_RECT, SELECT_CIRC
             
                 'If a selection was being drawn, lock it into place
                 If pdImages(Me.Tag).selectionActive Then
