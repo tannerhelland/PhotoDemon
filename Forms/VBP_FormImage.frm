@@ -277,7 +277,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     
                     'If that function did not return zero, notify the selection and exit
                     If sCheck <> 0 Then
-                    
+                        
                         pdImages(Me.Tag).mainSelection.setTransformationType sCheck
                         pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
                         
@@ -285,24 +285,26 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                                         
                     End If
                 
-                End If
+                Else
                         
-                'Activate the selection and pass in the first two points
-                pdImages(Me.Tag).selectionActive = True
-                pdImages(Me.Tag).mainSelection.setSelectionType g_CurrentTool
-                pdImages(Me.Tag).mainSelection.setRoundedCornerAmount FormMain.sltCornerRounding.Value
-                pdImages(Me.Tag).mainSelection.selLeft = 0
-                pdImages(Me.Tag).mainSelection.selTop = 0
-                pdImages(Me.Tag).mainSelection.selWidth = 0
-                pdImages(Me.Tag).mainSelection.selHeight = 0
-                pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
-                pdImages(Me.Tag).mainSelection.refreshTextBoxes
+                    'Activate the selection and pass in the first two points
+                    pdImages(Me.Tag).selectionActive = True
+                    pdImages(Me.Tag).mainSelection.setSelectionType g_CurrentTool
+                    pdImages(Me.Tag).mainSelection.setRoundedCornerAmount FormMain.sltCornerRounding.Value
+                    pdImages(Me.Tag).mainSelection.selLeft = 0
+                    pdImages(Me.Tag).mainSelection.selTop = 0
+                    pdImages(Me.Tag).mainSelection.selWidth = 0
+                    pdImages(Me.Tag).mainSelection.selHeight = 0
+                    pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
+                    pdImages(Me.Tag).mainSelection.refreshTextBoxes
+                        
+                    'Make the selection tools visible
+                    tInit tSelection, True
+            
+                    'Render the new selection
+                    RenderViewport Me
                     
-                'Make the selection tools visible
-                tInit tSelection, True
-        
-                'Render the new selection
-                RenderViewport Me
+                End If
             
         End Select
         
