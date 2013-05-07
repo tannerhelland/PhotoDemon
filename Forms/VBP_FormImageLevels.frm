@@ -164,7 +164,7 @@ Begin VB.Form FormLevels
    Begin VB.Label lblSubHeading 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "gray point (midtone):"
+      Caption         =   "gray level (midtones):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -180,12 +180,12 @@ Begin VB.Form FormLevels
       Left            =   6240
       TabIndex        =   15
       Top             =   1440
-      Width           =   2295
+      Width           =   2340
    End
    Begin VB.Label lblSubHeading 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "white point (ceiling):"
+      Caption         =   "ceiling (highlights):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -201,12 +201,12 @@ Begin VB.Form FormLevels
       Left            =   6240
       TabIndex        =   12
       Top             =   2280
-      Width           =   2205
+      Width           =   2055
    End
    Begin VB.Label lblSubHeading 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "black point (floor):"
+      Caption         =   "floor (shadows):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -222,12 +222,12 @@ Begin VB.Form FormLevels
       Left            =   6240
       TabIndex        =   10
       Top             =   600
-      Width           =   1995
+      Width           =   1755
    End
    Begin VB.Label lblSubHeading 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "white point (ceiling):"
+      Caption         =   "white point:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -243,12 +243,12 @@ Begin VB.Form FormLevels
       Left            =   6240
       TabIndex        =   7
       Top             =   4560
-      Width           =   2205
+      Width           =   1275
    End
    Begin VB.Label lblSubHeading 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "black point (floor):"
+      Caption         =   "black point:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -264,7 +264,7 @@ Begin VB.Form FormLevels
       Left            =   6240
       TabIndex        =   6
       Top             =   3720
-      Width           =   1995
+      Width           =   1245
    End
    Begin VB.Label lblBackground 
       Height          =   855
