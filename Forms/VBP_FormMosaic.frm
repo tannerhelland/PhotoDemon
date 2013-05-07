@@ -186,6 +186,9 @@ Option Explicit
 ' original image width in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub chkUnison_Click()
     If CBool(chkUnison) Then syncScrollBars True
     updatePreview
@@ -375,7 +378,7 @@ Private Sub Form_Activate()
     updatePreview
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
 End Sub
 

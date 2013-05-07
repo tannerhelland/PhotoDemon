@@ -303,6 +303,9 @@ Dim lastTargetMode As Long
 'We only want the preview redrawn at certain times; this is used to limit it
 Dim redrawPreview As Boolean
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'When the combo box is changed, make the appropriate controls visible
 Private Sub cboTarget_Click()
 
@@ -536,7 +539,7 @@ Private Sub Form_Activate()
     updateHeightBar = True
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
 End Sub
 

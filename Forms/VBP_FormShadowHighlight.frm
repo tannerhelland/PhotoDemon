@@ -245,6 +245,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub chkAutoThreshold_Click()
     If CBool(chkAutoThreshold) Then
         CalculateOptimalMidtone
@@ -274,7 +277,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     setHandCursor PicColor
     
     'Render a preview

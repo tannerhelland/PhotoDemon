@@ -354,6 +354,9 @@ Option Explicit
 
 Dim cImgCtl As clsControlImage
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'Do not download the update, but prompt the user again in the future
 Private Sub cmdNoDownload_Click()
     
@@ -441,7 +444,7 @@ Private Sub Form_Load()
     End If
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
 End Sub
 

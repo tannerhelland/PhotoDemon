@@ -30,10 +30,18 @@ Begin VB.Form FormEqualize
       TabIndex        =   5
       Top             =   2040
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1005
-      caption         =   "red"
-      font            =   "VBP_FormEqualize.frx":0000
+      _ExtentX        =   1270
+      _ExtentY        =   1005
+      Caption         =   "red"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -59,8 +67,8 @@ Begin VB.Form FormEqualize
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkGreen 
       Height          =   570
@@ -68,10 +76,18 @@ Begin VB.Form FormEqualize
       TabIndex        =   6
       Top             =   2520
       Width           =   975
-      _extentx        =   1720
-      _extenty        =   1005
-      caption         =   "green"
-      font            =   "VBP_FormEqualize.frx":0028
+      _ExtentX        =   1720
+      _ExtentY        =   1005
+      Caption         =   "green"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkBlue 
       Height          =   570
@@ -79,10 +95,18 @@ Begin VB.Form FormEqualize
       TabIndex        =   7
       Top             =   3000
       Width           =   825
-      _extentx        =   1455
-      _extenty        =   1005
-      caption         =   "blue"
-      font            =   "VBP_FormEqualize.frx":0050
+      _ExtentX        =   1455
+      _ExtentY        =   1005
+      Caption         =   "blue"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   570
@@ -90,10 +114,18 @@ Begin VB.Form FormEqualize
       TabIndex        =   8
       Top             =   3480
       Width           =   1455
-      _extentx        =   2566
-      _extenty        =   1005
-      caption         =   "luminance"
-      font            =   "VBP_FormEqualize.frx":0078
+      _ExtentX        =   2566
+      _ExtentY        =   1005
+      Caption         =   "luminance"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -147,6 +179,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'Whenever a check box is changed, redraw the preview
 Private Sub chkBlue_Click()
     EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
@@ -186,7 +221,7 @@ Private Sub Form_Activate()
     EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
 End Sub
 

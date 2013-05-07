@@ -30,12 +30,20 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   8
       Top             =   2280
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormBoxBlur.frx":0000
-      min             =   1
-      max             =   500
-      value           =   2
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   500
+      Value           =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -61,8 +69,8 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   3
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
@@ -70,11 +78,19 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   7
       Top             =   3840
       Width           =   2880
-      _extentx        =   5080
-      _extenty        =   847
-      caption         =   "keep both dimensions in sync"
-      font            =   "VBP_FormBoxBlur.frx":0028
-      value           =   1
+      _ExtentX        =   5080
+      _ExtentY        =   847
+      Caption         =   "keep both dimensions in sync"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltHeight 
       Height          =   495
@@ -82,12 +98,20 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   9
       Top             =   3240
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormBoxBlur.frx":0050
-      min             =   1
-      max             =   500
-      value           =   2
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   500
+      Value           =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
@@ -186,6 +210,9 @@ Option Explicit
 'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 Private Sub chkUnison_Click()
     If CBool(chkUnison) Then syncScrollBars True
@@ -530,7 +557,7 @@ Private Sub Form_Activate()
     updatePreview
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then

@@ -290,6 +290,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'This routine is used to call the appropriate grayscale routine with the preview flag set
 Private Sub drawGrayscalePreview()
 
@@ -441,7 +444,7 @@ Private Sub Form_Activate()
     'lblExplanation = "This tool removes color data from an image.  The new image contains only shades of gray." & vbCrLf & vbCrLf & "Sometimes this tool is called a ""black and white"" tool, but that name is misleading because the processed image contains many more shades than just ""black"" and ""white"".  A separate ""Black and White"" tool (found in the ""Color"" menu) exists if you want an image with just black and just white." & vbCrLf & vbCrLf & "While there are many ways to remove color from an image, most users stick with the ""Highest Quality (ITU Standard)"" method, which produces the best grayscale image.  Other options are provided for artistic effect." & vbCrLf & vbCrLf & "To learn more about the various grayscale conversion options, please visit this link:"
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     setArrowCursorToObject picChannel
     setArrowCursorToObject picDecompose
     

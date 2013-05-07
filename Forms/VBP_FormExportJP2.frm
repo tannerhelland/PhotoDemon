@@ -66,12 +66,20 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   7
       Top             =   1200
       Width           =   6375
-      _extentx        =   11245
-      _extenty        =   873
-      font            =   "VBP_FormExportJP2.frx":0000
-      min             =   1
-      max             =   256
-      value           =   16
+      _ExtentX        =   11245
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   256
+      Value           =   16
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -170,6 +178,9 @@ Private userAnswer As VbMsgBoxResult
 
 'The pdImage object being exported
 Private imageBeingExported As pdImage
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -285,7 +296,7 @@ Public Sub ShowDialog()
     Message "Waiting for user to specify JPEG-2000 export options... "
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Display the dialog
     Me.Show vbModal, FormMain

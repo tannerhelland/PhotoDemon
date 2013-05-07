@@ -30,13 +30,21 @@ Begin VB.Form FormGaussianBlur
       TabIndex        =   6
       Top             =   2760
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormGaussianBlur.frx":0000
-      min             =   0.1
-      max             =   200
-      sigdigits       =   1
-      value           =   5
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0.1
+      Max             =   200
+      SigDigits       =   1
+      Value           =   5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -62,8 +70,8 @@ Begin VB.Form FormGaussianBlur
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -147,6 +155,9 @@ Option Explicit
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -214,7 +225,7 @@ Private Sub Form_Activate()
     updatePreview
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then

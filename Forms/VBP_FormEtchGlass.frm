@@ -31,12 +31,20 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   11
       Top             =   1560
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormEtchGlass.frx":0000
-      min             =   1
-      max             =   100
-      value           =   50
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   50
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
@@ -45,11 +53,19 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   9
       Top             =   4200
       Width           =   1005
-      _extentx        =   1773
-      _extenty        =   635
-      caption         =   "quality"
-      font            =   "VBP_FormEtchGlass.frx":0028
-      value           =   -1
+      _ExtentX        =   1773
+      _ExtentY        =   635
+      Caption         =   "quality"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
@@ -94,8 +110,8 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
@@ -104,10 +120,18 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   10
       Top             =   4200
       Width           =   975
-      _extentx        =   1720
-      _extenty        =   635
-      caption         =   "speed"
-      font            =   "VBP_FormEtchGlass.frx":0050
+      _ExtentX        =   1720
+      _ExtentY        =   635
+      Caption         =   "speed"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltTurbulence 
       Height          =   495
@@ -115,13 +139,21 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   12
       Top             =   2400
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormEtchGlass.frx":0078
-      min             =   0.01
-      max             =   1
-      sigdigits       =   2
-      value           =   0.5
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   0.01
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -254,6 +286,9 @@ Option Explicit
 
 'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
 Dim m_zOffset As Double
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -394,7 +429,7 @@ Private Sub Form_Activate()
     updatePreview
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
         
 End Sub
 

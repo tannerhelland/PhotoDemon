@@ -30,10 +30,18 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   6
       Top             =   3600
       Width           =   5445
-      _extentx        =   9604
-      _extenty        =   847
-      caption         =   "sample image for true contrast (slower but more accurate)"
-      font            =   "VBP_FormBrightnessContrast.frx":0000
+      _ExtentX        =   9604
+      _ExtentY        =   847
+      Caption         =   "sample image for true contrast (slower but more accurate)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -59,8 +67,8 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   5
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltBright 
       Height          =   495
@@ -68,11 +76,19 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   7
       Top             =   2160
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormBrightnessContrast.frx":0028
-      min             =   -255
-      max             =   255
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -255
+      Max             =   255
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltContrast 
       Height          =   495
@@ -80,11 +96,19 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   8
       Top             =   3000
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormBrightnessContrast.frx":0050
-      min             =   -100
-      max             =   100
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -161,6 +185,9 @@ Option Explicit
 'While previewing, we don't need to repeatedly sample contrast.  Just do it once and store the value.
 Dim previewHasSampled As Boolean
 Dim previewSampledContrast As Long
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
@@ -366,7 +393,7 @@ Private Sub Form_Activate()
     updatePreview
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
 End Sub
 

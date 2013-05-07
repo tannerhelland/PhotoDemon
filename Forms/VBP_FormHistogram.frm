@@ -640,6 +640,9 @@ Private p() As Double
 Private u() As Double
 Private results() As Long   'Stores the y-values for each x-value in the final spline
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'When channels are enabled or disabled, redraw the histogram
 Private Sub chkChannel_Click(Index As Integer)
     
@@ -755,7 +758,7 @@ Private Sub Form_Activate()
     histogramGenerated = False
 
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'For now, initialize all histogram types
     Dim i As Long

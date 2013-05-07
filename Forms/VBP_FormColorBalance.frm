@@ -48,8 +48,8 @@ Begin VB.Form FormColorBalance
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   495
@@ -57,11 +57,19 @@ Begin VB.Form FormColorBalance
       TabIndex        =   10
       Top             =   1440
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormColorBalance.frx":0000
-      min             =   -100
-      max             =   100
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
@@ -69,11 +77,19 @@ Begin VB.Form FormColorBalance
       TabIndex        =   11
       Top             =   2400
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormColorBalance.frx":0028
-      min             =   -100
-      max             =   100
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
@@ -81,11 +97,19 @@ Begin VB.Form FormColorBalance
       TabIndex        =   12
       Top             =   3360
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormColorBalance.frx":0050
-      min             =   -100
-      max             =   100
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -241,6 +265,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -389,7 +416,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Display the previewed effect in the neighboring window
     updatePreview

@@ -2265,7 +2265,7 @@ Dim originalg_AlphaCheckOne As Long
 Dim originalg_AlphaCheckTwo As Long
 Dim originalg_CanvasBackground As Long
 
-'Custom tooltip class for multiline tooltips
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
 'For this particular box, update the interface instantly
@@ -2880,24 +2880,10 @@ Private Sub Form_Load()
         cmbAlphaCheck.ToolTipText = g_Language.TranslateMessage("If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors.")
         cmbAlphaCheckSize.ToolTipText = g_Language.TranslateMessage("If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size.")
         cmbFiletype.ToolTipText = g_Language.TranslateMessage("Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.")
-    
-    'Picture box tooltips are not automatically discovered by the master translation file generator.  Create them manually here.
-    Set m_ToolTip = New clsToolTip
-    With m_ToolTip
-    
-        .Create Me
-        .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
+        picCanvasColor.ToolTipText = g_Language.TranslateMessage("Click to change the image window background color")
+        picAlphaOne.ToolTipText = g_Language.TranslateMessage("Click to change the first checkerboard background color for alpha channels")
+        picAlphaTwo.ToolTipText = g_Language.TranslateMessage("Click to change the second checkerboard background color for alpha channels")
         
-        .AddTool picCanvasColor
-        .ToolText(picCanvasColor) = g_Language.TranslateMessage("Click to change the image window background color")
-        
-        .AddTool picAlphaOne
-        .ToolText(picAlphaOne) = g_Language.TranslateMessage("Click to change the first checkerboard background color for alpha channels")
-        
-        .AddTool picAlphaTwo
-        .ToolText(picAlphaTwo) = g_Language.TranslateMessage("Click to change the second checkerboard background color for alpha channels")
-            
-    End With
        
     'Finally, hide the inactive category panels
     Dim i As Long
@@ -2917,8 +2903,10 @@ Private Sub Form_Load()
     cmbFiletype.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "LastFilePreferencesPage", 1)
     picFileContainer(g_UserPreferences.GetPreference_Long("General Preferences", "LastFilePreferencesPage", 1)).Visible = True
     
-    'Translate and decorate the form
-    makeFormPretty Me
+    'Translate and decorate the form; note that a custom tooltip object is passed.  makeFormPretty will automatically
+    ' populate this object for us, which allows for themed and multiline tooltips.
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
     
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.

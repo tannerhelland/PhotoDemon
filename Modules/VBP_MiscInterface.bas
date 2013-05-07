@@ -74,7 +74,7 @@ Public Const VISIBILITY_FORCEHIDE As Long = 2
 'Because VB6 apps tend to look pretty lame on modern version of Windows, we do a bit of beautification to every form when
 ' it's loaded.  This routine is nice because every form calls it at least once, so we can make centralized changes without
 ' having to rewrite code in every individual form.
-Public Sub makeFormPretty(ByRef tForm As Form)
+Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False)
 
     'Before doing anything else, make sure the form's default cursor is set to an arrow
     tForm.MouseIcon = LoadPicture("")
@@ -134,6 +134,34 @@ Public Sub makeFormPretty(ByRef tForm As Form)
         g_Language.activateShortcut tForm.Name
         g_Language.applyTranslations tForm
         g_Language.deactivateShortcut
+    End If
+    
+    'FORM STEP 4: if a custom tooltip handler was passed in, activate and populate it now.
+    If Not (customTooltips Is Nothing) Then
+        
+        'In rare cases, the custom tooltip handler passed to this function may already be initialized.  Some forms
+        ' do this if they need to handle multiline tooltips (as VB will not handle them properly).  If the class has
+        ' NOT been initialized, we can do so now - otherwise, trust that it was already created correctly.
+        If Not tooltipsAlreadyInitialized Then
+            customTooltips.Create tForm
+            customTooltips.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
+        End If
+        
+        'Once again, enumerate every control on the form and copy their tooltips into this object.  (This allows
+        ' for things like automatic multiline support, unsupported characters, theming, and displaying tooltips
+        ' on the correct monitor of a multimonitor setup.)
+        For Each eControl In tForm.Controls
+            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
+                If (Trim(eControl.ToolTipText) <> "") Then
+                    Dim tmpTooltip As String
+                    tmpTooltip = eControl.ToolTipText
+                    Message tmpTooltip
+                    eControl.ToolTipText = ""
+                    customTooltips.AddTool eControl, tmpTooltip
+                End If
+            End If
+        Next
+        
     End If
     
     'Refresh all non-MDI forms after making the changes above

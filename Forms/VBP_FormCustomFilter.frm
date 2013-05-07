@@ -604,8 +604,8 @@ Begin VB.Form FormCustomFilter
       TabIndex        =   33
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -702,6 +702,9 @@ Option Explicit
 'Used to render images onto the command buttons
 Private cImgCtl As clsControlImage
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'When the user clicks OK...
 Private Sub cmdOK_Click()
     
@@ -779,7 +782,7 @@ Private Sub Form_Activate()
     If g_HasCreatedFilter = True Then OpenCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Render a preview
     updatePreview

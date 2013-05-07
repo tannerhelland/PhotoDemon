@@ -30,10 +30,18 @@ Begin VB.Form FormDiffuse
       TabIndex        =   7
       Top             =   2160
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   873
-      font            =   "VBP_FormDiffuse.frx":0000
-      value           =   1
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkWrap 
       Height          =   480
@@ -41,10 +49,18 @@ Begin VB.Form FormDiffuse
       TabIndex        =   6
       Top             =   3600
       Width           =   1890
-      _extentx        =   3334
-      _extenty        =   847
-      caption         =   "wrap edge values"
-      font            =   "VBP_FormDiffuse.frx":0028
+      _ExtentX        =   3334
+      _ExtentY        =   847
+      Caption         =   "wrap edge values"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -70,8 +86,8 @@ Begin VB.Form FormDiffuse
       TabIndex        =   5
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltY 
       Height          =   495
@@ -79,10 +95,18 @@ Begin VB.Form FormDiffuse
       TabIndex        =   8
       Top             =   3000
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   873
-      font            =   "VBP_FormDiffuse.frx":0050
-      value           =   1
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -157,6 +181,9 @@ Option Explicit
 ' original image width in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub ChkWrap_Click()
     updatePreview
 End Sub
@@ -196,7 +223,7 @@ Private Sub Form_Activate()
     sltY.Value = Int(sltY.Max \ 2)
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Render a preview of the effect
     updatePreview

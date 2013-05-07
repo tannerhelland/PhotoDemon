@@ -127,6 +127,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'Import an image from the Internet; all that's required is a valid URL (must be prefaced with http:// or ftp://)
 Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
 
@@ -340,7 +343,7 @@ Private Sub Form_Load()
     Message "Waiting for user input..."
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
 
 End Sub
 

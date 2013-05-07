@@ -1601,6 +1601,9 @@ Dim vString(0 To 3) As String
 'If the user presses "cancel", we need to restore the previous enabled/disabled values
 Dim pEnabled(0 To 3) As Boolean
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As Long)
    
    Dim StrucVer As String, FileVer As String, ProdVer As String
@@ -1784,7 +1787,7 @@ Private Sub Form_Load()
     Next i
             
     'Apply visual styles
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'If a translation is active, realign text as necessary
     If g_Language.translationActive Then

@@ -496,6 +496,9 @@ End Enum
 ' We use a variety of tricky math to adjust this, and in turn adjust the print quality of the image.
 Dim baseDPI As Double, desiredDPI As Double
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'Changing the orientation box forces a refresh of the preview
 Private Sub cbOrientation_Click()
     UpdatePrintPreview True
@@ -665,7 +668,7 @@ Private Sub Form_Load()
     cmbDPI = baseDPI
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
 
     If g_UseFancyFonts Then
         txtCopies.Height = txtCopies.Height + 1

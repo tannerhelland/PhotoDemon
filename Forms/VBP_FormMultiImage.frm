@@ -68,10 +68,18 @@ Begin VB.Form dialog_MultiImage
       TabIndex        =   1
       Top             =   3120
       Width           =   4110
-      _extentx        =   7250
-      _extenty        =   847
-      caption         =   "always apply this action to multi-image files"
-      font            =   "VBP_FormMultiImage.frx":0000
+      _ExtentX        =   7250
+      _ExtentY        =   847
+      Caption         =   "always apply this action to multi-image files"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
@@ -128,6 +136,9 @@ Private restoreCursor As Boolean
 
 'Used to render images onto the command buttons
 Private cImgCtl As clsControlImage
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -190,7 +201,7 @@ Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     End If
 
     'Apply any custom styles to the form
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
 
     'Display the form
     Me.Show vbModal, FormMain

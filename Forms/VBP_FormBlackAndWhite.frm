@@ -30,12 +30,20 @@ Begin VB.Form FormBlackAndWhite
       TabIndex        =   11
       Top             =   1320
       Width           =   5925
-      _extentx        =   10451
-      _extenty        =   873
-      font            =   "VBP_FormBlackAndWhite.frx":0000
-      min             =   1
-      max             =   254
-      value           =   127
+      _ExtentX        =   10451
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   254
+      Value           =   127
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
@@ -43,10 +51,18 @@ Begin VB.Form FormBlackAndWhite
       TabIndex        =   10
       Top             =   1860
       Width           =   5610
-      _extentx        =   9895
-      _extenty        =   847
-      caption         =   "have PhotoDemon estimate the ideal threshold for this image"
-      font            =   "VBP_FormBlackAndWhite.frx":0028
+      _ExtentX        =   9895
+      _ExtentY        =   847
+      Caption         =   "have PhotoDemon estimate the ideal threshold for this image"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -117,8 +133,8 @@ Begin VB.Form FormBlackAndWhite
       TabIndex        =   9
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -210,6 +226,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub cboDither_Click()
     If CBool(chkAutoThreshold.Value) Then sltThreshold = calculateOptimalThreshold(cboDither.ListIndex)
     updatePreview
@@ -267,7 +286,7 @@ Private Sub Form_Activate()
     cboDither.ListIndex = 6
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     setHandCursor picBWColor(0)
     setHandCursor picBWColor(1)
     

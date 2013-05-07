@@ -71,8 +71,8 @@ Begin VB.Form FormColorTemp
       TabIndex        =   8
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
@@ -80,12 +80,20 @@ Begin VB.Form FormColorTemp
       TabIndex        =   9
       Top             =   3720
       Width           =   6135
-      _extentx        =   10821
-      _extenty        =   873
-      font            =   "VBP_FormColorTemp.frx":0000
-      min             =   1
-      max             =   100
-      value           =   50
+      _ExtentX        =   10821
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   50
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltTemperature 
       Height          =   495
@@ -93,12 +101,20 @@ Begin VB.Form FormColorTemp
       TabIndex        =   10
       Top             =   1830
       Width           =   6135
-      _extentx        =   10821
-      _extenty        =   873
-      font            =   "VBP_FormColorTemp.frx":0028
-      min             =   1000
-      max             =   15000
-      value           =   5500
+      _ExtentX        =   10821
+      _ExtentY        =   873
+      Min             =   1000
+      Max             =   15000
+      Value           =   5500
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -226,6 +242,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -358,7 +377,7 @@ Private Sub Form_Activate()
     picTempDemo.Picture = picTempDemo.Image
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Display the previewed effect in the neighboring window
     updatePreview

@@ -30,10 +30,18 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   7
       Top             =   2880
       Width           =   5580
-      _extentx        =   9843
-      _extenty        =   847
-      caption         =   "use custom background color (click colored box to change)..."
-      font            =   "VBP_FormEmbossEngrave.frx":0000
+      _ExtentX        =   9843
+      _ExtentY        =   847
+      Caption         =   "use custom background color (click colored box to change)..."
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optEmboss 
       Height          =   345
@@ -41,11 +49,19 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   2
       Top             =   1740
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   661
-      caption         =   "emboss"
-      font            =   "VBP_FormEmbossEngrave.frx":0028
-      value           =   -1
+      _ExtentX        =   2117
+      _ExtentY        =   661
+      Caption         =   "emboss"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -93,8 +109,8 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartOptionButton optEngrave 
       Height          =   345
@@ -102,10 +118,18 @@ Begin VB.Form FormEmbossEngrave
       TabIndex        =   3
       Top             =   2160
       Width           =   1230
-      _extentx        =   2170
-      _extenty        =   661
-      caption         =   "engrave"
-      font            =   "VBP_FormEmbossEngrave.frx":0050
+      _ExtentX        =   2170
+      _ExtentY        =   661
+      Caption         =   "engrave"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -146,6 +170,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub ChkToColor_Click()
     UpdateEmbossPreview
 End Sub
@@ -178,7 +205,7 @@ Private Sub Form_Activate()
     PicColor.backColor = g_EmbossEngraveColor
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     setHandCursor PicColor
     
     'Render a preview of the emboss/engrave effect

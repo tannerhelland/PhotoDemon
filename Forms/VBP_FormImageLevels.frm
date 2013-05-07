@@ -346,6 +346,9 @@ Private Const MAXGAMMA As Double = 1.8460498941512
 Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -363,7 +366,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Draw a preview image
     updatePreview

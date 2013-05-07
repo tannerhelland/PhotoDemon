@@ -197,6 +197,9 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal
 'This temporary layer will be used for rendering the preview
 Dim smallLayer As pdLayer
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -369,7 +372,7 @@ Private Sub Form_Activate()
     fxPreview.setOriginalImage smallLayer
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
         
     'Render a preview
     updatePreview

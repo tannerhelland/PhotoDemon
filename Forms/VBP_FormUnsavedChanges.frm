@@ -59,10 +59,18 @@ Begin VB.Form dialog_UnsavedChanges
       TabIndex        =   2
       Top             =   4005
       Width           =   4875
-      _extentx        =   8599
-      _extenty        =   847
-      caption         =   "Repeat this action for all unsaved images (X in total)"
-      font            =   "VBP_FormUnsavedChanges.frx":0000
+      _ExtentX        =   8599
+      _ExtentY        =   847
+      Caption         =   "Repeat this action for all unsaved images (X in total)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -147,8 +155,8 @@ Private userAnswer As VbMsgBoxResult
 'Used to render images onto the save/don't save buttons
 Private cImgCtl As clsControlImage
 
-'Used to render multiline tooltips
-Private m_ToolTip As clsToolTip
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -218,7 +226,7 @@ Public Sub ShowDialog()
         'If the image has been saved before, update the tooltip text on the "Save" button accordingly
         If pdImages(imageBeingClosed).LocationOnDisk <> "" Then
             'cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.  If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
-            .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the" & vbCrLf & " File -> Save As menu item.")
+            .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
         Else
             .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("Because this image has not been saved before, you will be prompted to provide a file name for it.")
         End If
@@ -259,7 +267,7 @@ Public Sub ShowDialog()
     chkRepeat.Left = Me.ScaleWidth - chkRepeat.Width - 26
 
     'Apply any custom styles to the form
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip, True
 
     'Display the form
     Me.Show vbModal, FormMain

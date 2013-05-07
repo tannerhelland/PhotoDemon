@@ -349,6 +349,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -379,7 +382,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Render a preview
     RechannelImage 0, True, fxPreview

@@ -30,11 +30,19 @@ Begin VB.Form FormContour
       TabIndex        =   6
       Top             =   3120
       Width           =   2670
-      _extentx        =   4710
-      _extenty        =   1005
-      caption         =   "use black background"
-      font            =   "VBP_FormContour.frx":0000
-      value           =   1
+      _ExtentX        =   4710
+      _ExtentY        =   1005
+      Caption         =   "use black background"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -60,8 +68,8 @@ Begin VB.Form FormContour
       TabIndex        =   3
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkSmoothing 
       Height          =   570
@@ -69,11 +77,19 @@ Begin VB.Form FormContour
       TabIndex        =   7
       Top             =   3720
       Width           =   3030
-      _extentx        =   5345
-      _extenty        =   1005
-      caption         =   "apply contour smoothing"
-      font            =   "VBP_FormContour.frx":0028
-      value           =   1
+      _ExtentX        =   5345
+      _ExtentY        =   1005
+      Caption         =   "apply contour smoothing"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltThickness 
       Height          =   495
@@ -81,12 +97,20 @@ Begin VB.Form FormContour
       TabIndex        =   8
       Top             =   2400
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormContour.frx":0050
-      min             =   1
-      max             =   30
-      value           =   1
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   30
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblThickness 
       AutoSize        =   -1  'True
@@ -166,6 +190,9 @@ Option Explicit
 Dim iWidth As Long, iHeight As Long
 
 Dim allowPreview As Boolean
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 Private Sub chkSmoothing_Click()
     updatePreview
@@ -269,7 +296,7 @@ Private Sub Form_Activate()
     updatePreview
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then

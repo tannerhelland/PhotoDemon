@@ -97,6 +97,9 @@ Option Explicit
 Private Const LOADTIME As Double = 1#
 Dim OT As Double
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'The form is loaded invisibly, so this code is placed in the _Activate event instead of the more common _Load event
 Private Sub Form_Activate()
     

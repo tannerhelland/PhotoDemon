@@ -328,6 +328,9 @@ Option Explicit
 'Use this to prevent the text box and scroll bar from updating each other in an endless loop
 Dim userChange As Boolean
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -476,7 +479,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Mark scroll bar changes as coming from the user
     userChange = True

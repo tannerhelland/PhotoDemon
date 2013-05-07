@@ -515,6 +515,9 @@ Dim hInternetSession As Long
 'The progress bar class we'll use to update the user on download progress
 Dim dProgBar As cProgressBar
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub cmdChoice_Click(Index As Integer)
 
     Select Case Index
@@ -650,7 +653,7 @@ Private Sub Form_Load()
     Message "Ready to download required plugins. Awaiting user permission..."
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
 
 End Sub
 

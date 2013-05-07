@@ -179,6 +179,9 @@ Dim iWidth As Long, iHeight As Long
 
 Dim allowPreview As Boolean
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -486,7 +489,7 @@ Private Sub Form_Activate()
     updatePreview
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Provide a small explanation about how this process works
     lblExplanation.Caption = g_Language.TranslateMessage("Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)")

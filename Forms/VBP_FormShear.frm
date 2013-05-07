@@ -277,6 +277,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub cmbEdges_Click()
     updatePreview
 End Sub
@@ -391,7 +394,7 @@ Private Sub Form_Activate()
     popDistortEdgeBox cmbEdges, EDGE_WRAP
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
         
     'Create the preview
     updatePreview

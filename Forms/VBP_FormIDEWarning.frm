@@ -32,10 +32,18 @@ Begin VB.Form dialog_IDEWarning
       TabIndex        =   5
       Top             =   5520
       Width           =   3210
-      _extentx        =   5662
-      _extenty        =   847
-      caption         =   "Do not display this warning again"
-      font            =   "VBP_FormIDEWarning.frx":0000
+      _ExtentX        =   5662
+      _ExtentY        =   847
+      Caption         =   "Do not display this warning again"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.jcbutton cmdOK 
       Default         =   -1  'True
@@ -44,18 +52,26 @@ Begin VB.Form dialog_IDEWarning
       TabIndex        =   0
       Top             =   4560
       Width           =   6690
-      _extentx        =   11800
-      _extenty        =   1296
-      buttonstyle     =   13
-      showfocusrect   =   -1
-      font            =   "VBP_FormIDEWarning.frx":0028
-      caption         =   "I understand the risks of running PhotoDemon in the IDE"
-      handpointer     =   -1
-      picturenormal   =   "VBP_FormIDEWarning.frx":0050
-      disabledpicturemode=   1
-      captioneffects  =   0
-      picturealign    =   0
-      tooltiptype     =   1
+      _ExtentX        =   11800
+      _ExtentY        =   1296
+      ButtonStyle     =   13
+      ShowFocusRect   =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "I understand the risks of running PhotoDemon in the IDE"
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormIDEWarning.frx":0000
+      PictureAlign    =   0
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipType     =   1
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
@@ -167,6 +183,9 @@ Option Explicit
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
@@ -188,7 +207,7 @@ Public Sub ShowDialog()
     userAnswer = vbOK
 
     'Apply any custom styles to the form
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
 
     'Display the form
     Me.Show vbModal, FormMain

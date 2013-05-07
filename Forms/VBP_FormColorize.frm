@@ -30,11 +30,19 @@ Begin VB.Form FormColorize
       TabIndex        =   7
       Top             =   3240
       Width           =   2745
-      _extentx        =   4842
-      _extenty        =   847
-      caption         =   "preserve existing saturation"
-      font            =   "VBP_FormColorize.frx":0000
-      value           =   1
+      _ExtentX        =   4842
+      _ExtentY        =   847
+      Caption         =   "preserve existing saturation"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -93,8 +101,8 @@ Begin VB.Form FormColorize
       TabIndex        =   5
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -145,6 +153,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 'When the "maintain saturation" check box is clicked, redraw the image
 Private Sub chkSaturation_Click()
@@ -270,7 +281,7 @@ Private Sub Form_Activate()
     picHueDemo.Picture = picHueDemo.Image
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Display the previewed effect in the neighboring window
     If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview

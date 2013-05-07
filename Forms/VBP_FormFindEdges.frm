@@ -31,10 +31,18 @@ Begin VB.Form FormFindEdges
       TabIndex        =   7
       Top             =   3360
       Width           =   2220
-      _extentx        =   3916
-      _extenty        =   847
-      caption         =   "use black background"
-      font            =   "VBP_FormFindEdges.frx":0000
+      _ExtentX        =   3916
+      _ExtentY        =   847
+      Caption         =   "use black background"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -77,8 +85,8 @@ Begin VB.Form FormFindEdges
       TabIndex        =   6
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -160,6 +168,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 Private Sub chkInvert_Click()
     UpdateDescriptions
 End Sub
@@ -215,7 +226,7 @@ Private Sub Form_Activate()
     LstEdgeOptions.ListIndex = 5
         
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
     UpdateDescriptions

@@ -244,6 +244,9 @@ Private Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString
 Dim m_cff As New cFrxFile
 Dim requestUnload As Boolean
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     
@@ -351,7 +354,7 @@ TryBinaryImportAgain:
         End If
         
         'Assign the system hand cursor to all relevant objects
-        makeFormPretty Me
+        makeFormPretty Me, m_ToolTip
         
     'If the commondialog box is canceled...
     Else

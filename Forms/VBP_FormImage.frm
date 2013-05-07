@@ -111,7 +111,7 @@ Dim lMouseDown As Boolean, rMouseDown As Boolean
 Dim hasMouseMoved As Long
 
 'Track initial mouse button locations
-Dim initMouseX As Double, initMouseY As Double
+Dim m_initMouseX As Double, m_initMouseY As Double
 
 'Used to prevent the obnoxious blinking effect of the main image scroll bars
 Private Declare Function DestroyCaret Lib "user32" () As Long
@@ -127,6 +127,9 @@ Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As tag
 
 'New approach to mousewheel support - should be more robust than the old system
 Dim m_Subclass As cSelfSubHookCallback
+
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
 
 Public Sub ActivateWorkaround()
 
@@ -225,7 +228,7 @@ Private Sub Form_Load()
     End If
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
 End Sub
 
@@ -252,8 +255,8 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         hasMouseMoved = 0
             
         'Remember this location
-        initMouseX = x
-        initMouseY = y
+        m_initMouseX = x
+        m_initMouseY = y
             
         'Display the image coordinates under the mouse pointer
         displayImageCoordinates x, y, Me, imgX, imgY
@@ -448,7 +451,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((x = initMouseX) And (y = initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
+                    If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
                         pdImages(Me.Tag).mainSelection.lockRelease
                         pdImages(Me.Tag).selectionActive = False
                         tInit tSelection, False
@@ -487,7 +490,8 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
     If Button = vbRightButton Then rMouseDown = False
     
     makeFormPretty Me
-    
+    setArrowCursorToHwnd Me.hWnd
+        
     'Reset the mouse movement tracker
     hasMouseMoved = 0
     

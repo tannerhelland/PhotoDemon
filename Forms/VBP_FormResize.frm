@@ -288,6 +288,9 @@ Private wRatio As Double, hRatio As Double
 
 Dim allowedToUpdateWidth As Boolean, allowedToUpdateHeight As Boolean
 
+'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
+Dim m_ToolTip As clsToolTip
+
 'If the ratio button is checked, update the height box to reflect the image's current aspect ratio
 Private Sub ChkRatio_Click()
     If CBool(chkRatio.Value) Then tudHeight = Int((tudWidth * hRatio) + 0.5)
@@ -361,7 +364,7 @@ Private Sub Form_Activate()
     tudHeight.Value = pdImages(CurrentImage).Height
     
     'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    makeFormPretty Me, m_ToolTip
     
 End Sub
 
