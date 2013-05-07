@@ -310,10 +310,16 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
     actualX1 = x
     actualY1 = y
     
-    If sType = sRectangle Then
-        x2 = x
-        y2 = y
-    End If
+    'Set the second set of point to match the first set
+    Select Case sType
+        
+        Case sRectangle, sCircle
+            x2 = x
+            y2 = y
+        
+        Case Else
+        
+    End Select
     
     updateInternalCoords
     
