@@ -66,7 +66,7 @@ Public Sub MenuFadeLastEffect()
     'Create another array, but point it at the pixel data of the current image
     Dim cImageData() As Byte
     Dim cSA As SAFEARRAY2D
-    prepImageData cSA
+    prepSafeArray cSA, pdImages(CurrentImage).mainLayer
     CopyMemory ByVal VarPtrArray(cImageData()), VarPtr(cSA), 4
     
     'Because the undo file and current image may be different sizes (if the last action was a resize, for example), we need to
@@ -102,7 +102,7 @@ Public Sub MenuFadeLastEffect()
         aLookUp(x, y) = CByte(tmpCalc)
     Next y
     Next x
-    
+        
     'Loop through both images, alpha-blending pixels as we go
     For x = 0 To minWidth - 1
         QuickVal = x * qvDepth
@@ -116,18 +116,23 @@ Public Sub MenuFadeLastEffect()
     Next x
         
     'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(uImageData), 0&, 4
+    Erase uImageData
+    
     CopyMemory ByVal VarPtrArray(cImageData), 0&, 4
     Erase cImageData
     
-    CopyMemory ByVal VarPtrArray(uImageData), 0&, 4
-    Erase uImageData
+    'Copy the temporary layer onto the active pdLayer object
+    'pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
     
     'Erase our temporary layer as well
     tmpLayer.eraseLayer
     Set tmpLayer = Nothing
     
-    'Finally, pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    'Render the final image to the screen
+    SetProgBarVal 0
+    Message "Finished."
+    ScrollViewport pdImages(CurrentImage).containingForm
     
 End Sub
 
