@@ -226,8 +226,8 @@ Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, hGlobal As Long) As Long
     
 'Start-up and shutdown
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
-Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal token As Long) As GDIPlusStatus
+Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
+Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As GDIPlusStatus
 
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, GpImage As Long) As Long
@@ -264,7 +264,7 @@ Private Declare Function GdipFillEllipseI Lib "GdiPlus.dll" (ByVal mGraphics As 
 Private Const SmoothingModeAntiAlias As Long = &H4
 
 'When GDI+ is initialized, it will assign us a token.  We use this to release GDI+ when the program terminates.
-Private GDIPlusToken As Long
+Public g_GDIPlusToken As Long
 
 Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal centerX As Long, ByVal centerY As Long, ByVal cRadius As Long, ByVal useAA As Boolean) As Boolean
 
@@ -569,7 +569,7 @@ Public Function isGDIPlusAvailable() As Boolean
     Dim gdiCheck As GdiplusStartupInput
     gdiCheck.GdiplusVersion = 1
     
-    If (GdiplusStartup(GDIPlusToken, gdiCheck) <> [OK]) Then
+    If (GdiplusStartup(g_GDIPlusToken, gdiCheck) <> [OK]) Then
         isGDIPlusAvailable = False
     Else
         isGDIPlusAvailable = True
@@ -579,7 +579,7 @@ End Function
 
 'At shutdown, this function must be called to release our GDI+ instance
 Public Function releaseGDIPlus()
-    GdiplusShutdown GDIPlusToken
+    GdiplusShutdown g_GDIPlusToken
 End Function
 
 'Thanks to Carles P.V. for providing the following four functions, which are used as part of GDI+ image saving.

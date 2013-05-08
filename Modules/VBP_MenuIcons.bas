@@ -1,21 +1,20 @@
-Attribute VB_Name = "Menu_Icon_Handler"
+Attribute VB_Name = "Icon_and_Cursor_Handler"
 '***************************************************************************
-'Specialized Icon Handler
+'PhotoDemon Icon and Cursor Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 13/February/13
-'Last update: removed all non-FreeImage fallbacks for custom form icons.  No custom icons are rendered unless FreeImage is available.
+'Last updated: 08/May/13
+'Last update: completed a very exciting function that allows me to use any 32bpp PNG file as a cursor.  No subclassing
+'              required! First of its kind in VB, and a bitch to reverse-engineer... but well worth the effort, I think.
 '
-'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of
-' icon-related functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written
-' by Leandro Ascierto.  Menu icons are extracted from a resource file (where they're stored in PNG format) and
-' rendered to the menu at run-time.  See the clsMenuImage class for details on how this works.
-' (A link to Leandro's original project can also be found there.)
+'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
+' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
+' Menu icons are extracted from a resource file (where they're stored in PNG format) and rendered to the menu at run-time.
+' See the clsMenuImage class for details on how this works. (A link to Leandro's original project can also be found there.)
 '
-'NOTE: Because the Windows XP version of Leandro's code utilizes potentially dirty subclassing,
-' PhotoDemon automatically disables menu icons while running in the IDE on Windows XP.  Compile the project to see icons.
-' (Windows Vista and 7 use a different mechanism, so menu icons are enabled in the IDE, and menu icons appear on all
-' versions of Windows when compiled.)
+'NOTE: Because the Windows XP version of Leandro's code utilizes potentially dirty subclassing, PhotoDemon automatically
+' disables menu icons while running in the IDE on Windows XP.  Compile the project to see icons. (Windows Vista and 7 use
+' a different mechanism, so menu icons are enabled in the IDE, and menu icons appear on all versions of Windows when compiled.)
 '
 'This module also handles the rendering of dynamic form, program, and taskbar icons.  (When an image is loaded and active,
 ' those icons can change to match the current image.)  As of February 2013, custom form icon generation has now been reworked
@@ -46,6 +45,23 @@ Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
 Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
+'API needed for converting PNG data to icon or cursor format
+Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
+Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
+Private Declare Function GdipCreateHICONFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
+Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
+Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiImage As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
+Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal gdiImage As Long) As Long
+
+'GDI+ types and constants
+Private Const UNITPIXEL As Long = &H2&
+Private Type RECTF
+    fLeft As Single
+    fTop As Single
+    fWidth As Single
+    fHeight As Single
+End Type
+
 'Type required to create an icon on-the-fly
 Private Type ICONINFO
    fIcon As Boolean
@@ -55,6 +71,43 @@ Private Type ICONINFO
    hbmColor As Long
 End Type
 
+'Used to apply and manage custom cursors (without subclassing)
+Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
+Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
+
+Public Const IDC_APPSTARTING = 32650&
+Public Const IDC_HAND = 32649&
+Public Const IDC_ARROW = 32512&
+Public Const IDC_CROSS = 32515&
+Public Const IDC_IBEAM = 32513&
+Public Const IDC_ICON = 32641&
+Public Const IDC_NO = 32648&
+Public Const IDC_SIZEALL = 32646&
+Public Const IDC_SIZENESW = 32643&
+Public Const IDC_SIZENS = 32645&
+Public Const IDC_SIZENWSE = 32642&
+Public Const IDC_SIZEWE = 32644&
+Public Const IDC_UPARROW = 32516&
+Public Const IDC_WAIT = 32514&
+
+Private Const GCL_HCURSOR = (-12)
+
+'These variables will hold the values of all custom-loaded cursors.
+' They need to be deleted (via DestroyCursor) when the program exits; this is handled by unloadAllCursors.
+Private hc_Handle_Arrow As Long
+Private hc_Handle_Cross As Long
+Public hc_Handle_Hand As Long       'The hand cursor handle is used by the jcButton control as well, so it is declared publicly.
+Private hc_Handle_SizeAll As Long
+Private hc_Handle_SizeNESW As Long
+Private hc_Handle_SizeNS As Long
+Private hc_Handle_SizeNWSE As Long
+Private hc_Handle_SizeWE As Long
+
+Dim numOfCustomCursors As Long
+Dim customCursorNames() As String
+Dim customCursorHandles() As Long
+
 'This array will be used to store our dynamically created icon handles so we can delete them on program exit
 Dim numOfIcons As Long
 Dim iconHandles() As Long
@@ -62,7 +115,7 @@ Dim iconHandles() As Long
 'This constant is used for testing only.  It should always be set to TRUE for production code.
 Public Const ALLOW_DYNAMIC_ICONS As Boolean = True
 
-'These arrays will track the resource identifiers and consequent numeric identifiers of all loaded icons.  The size of the array
+'This array tracks the resource identifiers and consequent numeric identifiers of all loaded icons.  The size of the array
 ' is arbitrary; just make sure it's larger than the max number of loaded icons.
 Private iconNames(0 To 511) As String
 
@@ -713,3 +766,239 @@ Public Sub destroyAllIcons()
     ReDim iconHandles(0) As Long
 
 End Sub
+
+'Given an image in the .exe's resource section (typically a PNG image), return an icon handle to it (hIcon).
+' The calling function is responsible for deleting this object once they are done with it.
+Public Function createIconFromResource(ByVal resTitle As String) As Long
+    
+    'Start by extracting the PNG data into a bytestream
+    Dim ImageData() As Byte
+    ImageData() = LoadResData(resTitle, "CUSTOM")
+    
+    Dim IStream As IUnknown
+    Dim hBitmap As Long, hIcon As Long
+        
+    CreateStreamOnHGlobal ImageData(0), 0&, IStream
+    
+    If Not IStream Is Nothing Then
+        
+        'Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine
+        If GdipLoadImageFromStream(IStream, hBitmap) = 0 Then
+        
+            'hBitmap now contains the PNG file as an hBitmap (obviously).  Now we need to convert it to icon format.
+            If GdipCreateHICONFromBitmap(hBitmap, hIcon) = 0 Then
+                createIconFromResource = hIcon
+            Else
+                createIconFromResource = 0
+            End If
+            
+            GdipDisposeImage hBitmap
+                
+        End If
+    
+        Set IStream = Nothing
+    
+    End If
+    
+    Exit Function
+    
+End Function
+
+'Given an image in the .exe's resource section (typically a PNG image), return it as a cursor object.
+' The calling function is responsible for deleting the cursor once they are done with it.
+Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVal curHotSpotX As Long = 8, Optional ByVal curHotSpotY As Long = 16) As Long
+    
+    'Start by extracting the PNG data into a bytestream
+    Dim ImageData() As Byte
+    ImageData() = LoadResData(resTitle, "CUSTOM")
+    
+    Dim IStream As IUnknown
+    Dim tmpRect As RECTF
+    Dim gdiBitmap As Long, hBitmap As Long, hIcon As Long
+        
+    CreateStreamOnHGlobal ImageData(0), 0&, IStream
+    
+    If Not IStream Is Nothing Then
+        
+        'Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine
+        If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
+        
+            'Retrieve the image's size
+            GdipGetImageBounds gdiBitmap, tmpRect, UNITPIXEL
+        
+            'Convert the GDI+ bitmap to a standard Windows hBitmap
+            If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
+                        
+                'Generate a blank monochrome mask to pass to the icon creation function.
+                Dim MonoBmp As Long
+                MonoBmp = CreateBitmap(CLng(tmpRect.fWidth), CLng(tmpRect.fHeight), 1, 1, ByVal 0&)
+                            
+                'With the transfer complete, release the FreeImage DIB and unload the library
+                Dim icoInfo As ICONINFO
+                With icoInfo
+                    .fIcon = False
+                    .xHotspot = curHotSpotX
+                    .yHotspot = curHotSpotY
+                    .hbmMask = MonoBmp
+                    .hbmColor = hBitmap
+                End With
+                    
+                'Create the 32x32 cursor
+                createCursorFromResource = CreateIconIndirect(icoInfo)
+                
+                DeleteObject MonoBmp
+                DeleteObject hBitmap
+            
+            End If
+            
+            GdipDisposeImage gdiBitmap
+                
+        End If
+    
+        Set IStream = Nothing
+    
+    End If
+    
+    Exit Function
+    
+End Function
+
+'Load all system cursors into memory
+Public Sub InitAllCursors()
+
+    hc_Handle_Arrow = LoadCursor(0, IDC_ARROW)
+    hc_Handle_Cross = LoadCursor(0, IDC_CROSS)
+    hc_Handle_Hand = LoadCursor(0, IDC_HAND)
+    hc_Handle_SizeAll = LoadCursor(0, IDC_SIZEALL)
+    hc_Handle_SizeNESW = LoadCursor(0, IDC_SIZENESW)
+    hc_Handle_SizeNS = LoadCursor(0, IDC_SIZENS)
+    hc_Handle_SizeNWSE = LoadCursor(0, IDC_SIZENWSE)
+    hc_Handle_SizeWE = LoadCursor(0, IDC_SIZEWE)
+
+End Sub
+
+'Remove the hand cursor from memory
+Public Sub unloadAllCursors()
+    DestroyCursor hc_Handle_Hand
+    DestroyCursor hc_Handle_Arrow
+    DestroyCursor hc_Handle_Cross
+    DestroyCursor hc_Handle_SizeAll
+    DestroyCursor hc_Handle_SizeNESW
+    DestroyCursor hc_Handle_SizeNS
+    DestroyCursor hc_Handle_SizeNWSE
+    DestroyCursor hc_Handle_SizeWE
+    
+    Dim i As Long
+    For i = 0 To numOfCustomCursors - 1
+        DestroyCursor customCursorHandles(i)
+    Next i
+    
+End Sub
+
+'Use any 32bpp PNG resource as a cursor (yes, it's amazing!)
+Public Sub setPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String)
+    SetClassLong dstHwnd, GCL_HCURSOR, requestCustomCursor(pngTitle)
+End Sub
+
+'Set a single object to use the hand cursor
+Public Sub setHandCursor(ByRef tControl As Control)
+    tControl.MouseIcon = LoadPicture("")
+    tControl.MousePointer = 0
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Hand
+End Sub
+
+Public Sub setHandCursorToHwnd(ByVal dstHwnd As Long)
+    SetClassLong dstHwnd, GCL_HCURSOR, hc_Handle_Hand
+End Sub
+
+'Set a single object to use the arrow cursor
+Public Sub setArrowCursorToObject(ByRef tControl As Control)
+    tControl.MouseIcon = LoadPicture("")
+    tControl.MousePointer = 0
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
+End Sub
+
+Public Sub setArrowCursorToHwnd(ByVal dstHwnd As Long)
+    SetClassLong dstHwnd, GCL_HCURSOR, hc_Handle_Arrow
+End Sub
+
+'Set a single form to use the arrow cursor
+Public Sub setArrowCursor(ByRef tControl As Form)
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
+End Sub
+
+'Set a single form to use the cross cursor
+Public Sub setCrossCursor(ByRef tControl As Form)
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Cross
+End Sub
+    
+'Set a single form to use the Size All cursor
+Public Sub setSizeAllCursor(ByRef tControl As Form)
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeAll
+End Sub
+
+'Set a single form to use the Size NESW cursor
+Public Sub setSizeNESWCursor(ByRef tControl As Form)
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNESW
+End Sub
+
+'Set a single form to use the Size NS cursor
+Public Sub setSizeNSCursor(ByRef tControl As Form)
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNS
+End Sub
+
+'Set a single form to use the Size NWSE cursor
+Public Sub setSizeNWSECursor(ByRef tControl As Form)
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNWSE
+End Sub
+
+'Set a single form to use the Size WE cursor
+Public Sub setSizeWECursor(ByRef tControl As Form)
+    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeWE
+End Sub
+
+'If a custom PNG cursor has not been loaded, this function will load the PNG, convert it to cursor format, then store
+' the cursor resource for future reference (so the image doesn't have to be loaded again).
+Private Function requestCustomCursor(ByVal cursorName As String) As Long
+
+    Dim i As Long
+    Dim cursorLocation As Long
+    Dim cursorAlreadyLoaded As Boolean
+    
+    cursorLocation = 0
+    cursorAlreadyLoaded = False
+    
+    'Loop through all cursors that have been loaded, and see if this one has been requested already.
+    If numOfCustomCursors > 0 Then
+    
+        For i = 0 To numOfCustomCursors - 1
+        
+            If customCursorNames(i) = cursorName Then
+                cursorAlreadyLoaded = True
+                cursorLocation = i
+                Exit For
+            End If
+        
+        Next i
+    
+    End If
+    
+    'If the cursor was not found, load it and add it to the list
+    If cursorAlreadyLoaded Then
+        requestCustomCursor = customCursorHandles(cursorLocation)
+    Else
+        Dim tmpHandle As Long
+        tmpHandle = createCursorFromResource(cursorName)
+        
+        ReDim Preserve customCursorNames(0 To numOfCustomCursors) As String
+        ReDim Preserve customCursorHandles(0 To numOfCustomCursors) As Long
+        
+        customCursorNames(numOfCustomCursors) = cursorName
+        customCursorHandles(numOfCustomCursors) = tmpHandle
+        
+        numOfCustomCursors = numOfCustomCursors + 1
+        
+        requestCustomCursor = tmpHandle
+    End If
+
+End Function
