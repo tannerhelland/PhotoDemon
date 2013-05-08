@@ -1,10 +1,10 @@
 Attribute VB_Name = "Interface"
 '***************************************************************************
 'Miscellaneous Functions Related to the User Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 23/April/13
-'Last update: Adjusted main form label resizing to better handle Italian text lengths
+'Last updated: 08/May/13
+'Last update: Moved all cursor handling to the icon module, where it made much more sense
 '
 'Miscellaneous routines related to rendering PhotoDemon interface elements.
 '
@@ -29,39 +29,6 @@ Private Const WM_PRINTCLIENT As Long = &H318
 Private Const WM_PAINT As Long = &HF&
 Private Const GWL_WNDPROC As Long = -4
 Private Const WM_DESTROY As Long = &H2
-
-'Used to set the cursor for an object to the system's hand cursor
-Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
-Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
-
-Public Const IDC_APPSTARTING = 32650&
-Public Const IDC_HAND = 32649&
-Public Const IDC_ARROW = 32512&
-Public Const IDC_CROSS = 32515&
-Public Const IDC_IBEAM = 32513&
-Public Const IDC_ICON = 32641&
-Public Const IDC_NO = 32648&
-Public Const IDC_SIZEALL = 32646&
-Public Const IDC_SIZENESW = 32643&
-Public Const IDC_SIZENS = 32645&
-Public Const IDC_SIZENWSE = 32642&
-Public Const IDC_SIZEWE = 32644&
-Public Const IDC_UPARROW = 32516&
-Public Const IDC_WAIT = 32514&
-
-Private Const GCL_HCURSOR = (-12)
-
-'These variables will hold the values of all custom-loaded cursors.
-' They need to be deleted (via DestroyCursor) when the program exits; this is handled by unloadAllCursors.
-Private hc_Handle_Arrow As Long
-Private hc_Handle_Cross As Long
-Public hc_Handle_Hand As Long       'The hand cursor handle is used by the jcButton control as well, so it is declared publicly.
-Private hc_Handle_SizeAll As Long
-Private hc_Handle_SizeNESW As Long
-Private hc_Handle_SizeNS As Long
-Private hc_Handle_SizeNWSE As Long
-Private hc_Handle_SizeWE As Long
 
 'Used to measure the expected length of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -302,89 +269,6 @@ Public Sub RedrawMainForm()
     FormMain.picProgBar.Refresh
     g_ProgBar.Draw
     
-End Sub
-
-'Load all system cursors into memory
-Public Sub InitAllCursors()
-
-    hc_Handle_Arrow = LoadCursor(0, IDC_ARROW)
-    hc_Handle_Cross = LoadCursor(0, IDC_CROSS)
-    hc_Handle_Hand = LoadCursor(0, IDC_HAND)
-    hc_Handle_SizeAll = LoadCursor(0, IDC_SIZEALL)
-    hc_Handle_SizeNESW = LoadCursor(0, IDC_SIZENESW)
-    hc_Handle_SizeNS = LoadCursor(0, IDC_SIZENS)
-    hc_Handle_SizeNWSE = LoadCursor(0, IDC_SIZENWSE)
-    hc_Handle_SizeWE = LoadCursor(0, IDC_SIZEWE)
-
-End Sub
-
-'Remove the hand cursor from memory
-Public Sub unloadAllCursors()
-    DestroyCursor hc_Handle_Hand
-    DestroyCursor hc_Handle_Arrow
-    DestroyCursor hc_Handle_Cross
-    DestroyCursor hc_Handle_SizeAll
-    DestroyCursor hc_Handle_SizeNESW
-    DestroyCursor hc_Handle_SizeNS
-    DestroyCursor hc_Handle_SizeNWSE
-    DestroyCursor hc_Handle_SizeWE
-End Sub
-
-'Set a single object to use the hand cursor
-Public Sub setHandCursor(ByRef tControl As Control)
-    tControl.MouseIcon = LoadPicture("")
-    tControl.MousePointer = 0
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Hand
-End Sub
-
-Public Sub setHandCursorToHwnd(ByVal dstHwnd As Long)
-    SetClassLong dstHwnd, GCL_HCURSOR, hc_Handle_Hand
-End Sub
-
-'Set a single object to use the arrow cursor
-Public Sub setArrowCursorToObject(ByRef tControl As Control)
-    tControl.MouseIcon = LoadPicture("")
-    tControl.MousePointer = 0
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
-End Sub
-
-Public Sub setArrowCursorToHwnd(ByVal dstHwnd As Long)
-    SetClassLong dstHwnd, GCL_HCURSOR, hc_Handle_Arrow
-End Sub
-
-'Set a single form to use the arrow cursor
-Public Sub setArrowCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
-End Sub
-
-'Set a single form to use the cross cursor
-Public Sub setCrossCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Cross
-End Sub
-    
-'Set a single form to use the Size All cursor
-Public Sub setSizeAllCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeAll
-End Sub
-
-'Set a single form to use the Size NESW cursor
-Public Sub setSizeNESWCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNESW
-End Sub
-
-'Set a single form to use the Size NS cursor
-Public Sub setSizeNSCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNS
-End Sub
-
-'Set a single form to use the Size NWSE cursor
-Public Sub setSizeNWSECursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNWSE
-End Sub
-
-'Set a single form to use the Size WE cursor
-Public Sub setSizeWECursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeWE
 End Sub
 
 'Display the specified size in the main form's status bar
