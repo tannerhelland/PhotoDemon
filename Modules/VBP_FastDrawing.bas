@@ -80,6 +80,9 @@ End Sub
 ' layer's width, but some routines run vertically and the progress bar needs to be changed accordingly.
 Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1)
 
+    'Reset the public "cancel current action" tracker
+    cancelCurrentAction = False
+
     'Prepare our temporary layer
     Set workingLayer = New pdLayer
     
@@ -246,6 +249,18 @@ End Sub
 ' to the screen.  Like prepImageData(), a preview target can also be named.  In this case, finalizeImageData will rely on
 ' the values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS be called before this routine.
 Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl)
+
+    'If the user has canceled the current action, disregard the working layer and exit immediately
+    If cancelCurrentAction Then
+        SetProgBarVal 0
+        Message "Action canceled."
+        
+        workingLayer.eraseLayer
+        Set workingLayer = Nothing
+                
+        cancelCurrentAction = False
+        Exit Sub
+    End If
 
     Dim wlImageData() As Byte
     Dim wlSA As SAFEARRAY2D
