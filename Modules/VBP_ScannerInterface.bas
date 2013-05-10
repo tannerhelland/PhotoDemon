@@ -1,10 +1,10 @@
 Attribute VB_Name = "Scanner_Interface"
 '***************************************************************************
 'Scanner Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 1/10/01
-'Last updated: 04/September/12
-'Last update: improved system for loading/unloading the scanner interface (now it's done only at program load and unload)
+'Last updated: 10/May/13
+'Last update: add trailing parentheses to suggested scanner filename (e.g. "Scanned Image (dd MM YY)")
 '
 'Module for handling all TWAIN32 acquisition features.  This module relies heavily
 ' upon the EZTW32.dll file, which is required because VB does not have native scanner support.
@@ -148,7 +148,7 @@ Public Sub Twain32Scan()
         sTitle = g_Language.TranslateMessage("Scanned Image")
         
         Dim sFilename As String
-        sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now)
+        sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
         
         PreLoadImage sFile, False, sTitle, sFilename
         
