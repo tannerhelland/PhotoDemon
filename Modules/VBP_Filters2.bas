@@ -121,10 +121,7 @@ Public Sub MenuFadeLastEffect()
     
     CopyMemory ByVal VarPtrArray(cImageData), 0&, 4
     Erase cImageData
-    
-    'Copy the temporary layer onto the active pdLayer object
-    'pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-    
+        
     'Erase our temporary layer as well
     tmpLayer.eraseLayer
     Set tmpLayer = Nothing
@@ -218,7 +215,10 @@ Public Sub MenuHeatMap()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -268,6 +268,13 @@ Public Sub MenuComicBook()
     finalY = curLayerValues.Bottom
     
     CreateGaussianBlurLayer gRadius, srcLayer, gaussLayer, False, finalY + finalY + finalX + finalX
+    
+    If cancelCurrentAction Then
+        srcLayer.eraseLayer
+        gaussLayer.eraseLayer
+        finalizeImageData
+        Exit Sub
+    End If
         
     'Now that we have a gaussian layer created in gaussLayer, we can point arrays toward it and the source layer
     Dim dstImageData() As Byte
@@ -329,7 +336,10 @@ Public Sub MenuComicBook()
         End If
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalY * 2)
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x + (finalY * 2)
+        End If
     Next x
         
     'With our work complete, release all arrays
@@ -338,6 +348,15 @@ Public Sub MenuComicBook()
     
     gaussLayer.eraseLayer
     Set gaussLayer = Nothing
+    
+    'Because this function occurs in multiple passes, it requires specialized cancel behavior.  All array references must be dropped
+    ' or the program will experience a hard-freeze.
+    If cancelCurrentAction Then
+        CopyMemory ByVal VarPtrArray(dstImageData()), 0&, 4
+        CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
+        finalizeImageData
+        Exit Sub
+    End If
     
     'The last thing we need to do is sketch in the edges of the image.
     
@@ -411,7 +430,10 @@ Public Sub MenuComicBook()
         dstImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x + finalX + (finalY * 2)
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x + finalX + (finalY * 2)
+        End If
     Next x
     
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -490,7 +512,10 @@ Public Sub MenuSynthesize()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -559,7 +584,10 @@ Public Sub MenuAlien()
         ImageData(QuickVal, y) = newB
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -663,7 +691,10 @@ Public Sub MenuAntique()
         ImageData(QuickVal, y) = newB
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -734,7 +765,10 @@ Public Sub MenuSepia()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -830,7 +864,10 @@ Public Sub MenuDream()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -902,7 +939,10 @@ Public Sub MenuRadioactive()
         ImageData(QuickVal, y) = newB
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -914,7 +954,7 @@ Public Sub MenuRadioactive()
 
 End Sub
 
-'Stretch out the contrast and convert the image to dramatic black and white.  "Comic book" filter.
+'Stretch out the contrast and convert the image to dramatic black and white.  Originally called the "comic book" filter, since renamed to Film Noir.
 Public Sub MenuFilmNoir()
 
     Message "Embuing image with the essence of F. Miller..."
@@ -976,7 +1016,10 @@ Public Sub MenuFilmNoir()
         ImageData(QuickVal, y) = grayVal
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it

@@ -1354,5 +1354,5 @@ Public Function CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLay
     Set gaussLayer = Nothing
     
     If cancelCurrentAction Then CreateGaussianBlurLayer = 0 Else CreateGaussianBlurLayer = 1
-        
+    
 End Function

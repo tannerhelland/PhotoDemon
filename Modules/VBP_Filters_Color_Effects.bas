@@ -51,7 +51,10 @@ Public Sub MenuInvert()
         ImageData(QuickVal + 1, y) = 255 Xor ImageData(QuickVal + 1, y)
         ImageData(QuickVal + 2, y) = 255 Xor ImageData(QuickVal + 2, y)
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -115,7 +118,10 @@ Public Sub MenuCShift(ByVal sType As Byte)
         ImageData(QuickVal + 1, y) = g
         ImageData(QuickVal, y) = b
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -181,7 +187,10 @@ Public Sub MenuNegative()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -250,7 +259,10 @@ Public Sub MenuInvertHue()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -320,7 +332,10 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
         ImageData(QuickVal, y) = newB
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -406,7 +421,10 @@ Public Sub MenuAutoEnhanceContrast()
         ImageData(QuickVal, y) = newB
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -501,7 +519,10 @@ Public Sub MenuAutoEnhanceHighlights()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -602,7 +623,10 @@ Public Sub MenuAutoEnhanceMidtones()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -697,7 +721,10 @@ Public Sub MenuAutoEnhanceShadows()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it

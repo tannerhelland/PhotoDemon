@@ -202,7 +202,10 @@ NextCustomFilterPixel:  Next y2
         
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     
@@ -582,7 +585,10 @@ Public Sub FilterGridBlur()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -602,8 +608,6 @@ Public Sub FilterIsometric()
         pdImages(CurrentImage).selectionActive = False
         tInit tSelection, False
     End If
-
-    Message "Preparing conversion tables..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim srcImageData() As Byte
@@ -685,7 +689,10 @@ Public Sub FilterIsometric()
         
     
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
     
     'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
@@ -693,6 +700,14 @@ Public Sub FilterIsometric()
     Erase srcImageData
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
+    
+    'If the action was canceled, exit before copying the processed image over
+    If cancelCurrentAction Then
+        dstLayer.eraseLayer
+        Message "Action canceled."
+        SetProgBarVal 0
+        Exit Sub
+    End If
     
     'dstImageData now contains the isometric image.  We need to transfer that back into the current image.
     pdImages(CurrentImage).mainLayer.eraseLayer

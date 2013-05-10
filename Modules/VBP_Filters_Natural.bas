@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Natural"
 '***************************************************************************
 '"Natural" Filters
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2002-2013 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 08/January/13
 'Last update: completely rewrote the fog filter.  It now uses Perlin noise for much more realistic fog generation.
@@ -75,7 +75,10 @@ Public Sub MenuRainbow()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -203,7 +206,10 @@ Public Sub MenuFogEffect()
         End If
                 
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
@@ -322,7 +328,10 @@ Public Sub MenuWater()
         If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = a
             
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
@@ -387,7 +396,10 @@ Public Sub MenuAtmospheric()
         ImageData(QuickVal, y) = newB
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -456,7 +468,10 @@ Public Sub MenuFrozen()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -526,7 +541,10 @@ Public Sub MenuLava()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -598,7 +616,10 @@ Public Sub MenuBurn()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -680,7 +701,10 @@ Public Sub MenuSteel()
         ImageData(QuickVal, y) = b
         
     Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
+        If (x And progBarCheck) = 0 Then
+            If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
     Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
