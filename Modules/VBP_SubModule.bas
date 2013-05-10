@@ -16,11 +16,57 @@ Attribute VB_Name = "Misc_Uncategorized"
 
 Option Explicit
 
+'Types and API calls for processing ESC keypresses mid-loop
+Private Type winMsg
+    hWnd As Long
+    sysMsg As Long
+    wParam As Long
+    lParam As Long
+    msgTime As Long
+    ptX As Long
+    ptY As Long
+End Type
+'Private Declare Function TranslateMessage Lib "user32" (lpMsg As winMsg) As Long
+'Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As winMsg) As Long
+Private Declare Function GetInputState Lib "user32" () As Long
+Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Const WM_KEYFIRST As Long = &H100
+Private Const WM_KEYLAST As Long = &H108
+Private Const PM_REMOVE As Long = &H1
+
+Public cancelCurrentAction As Boolean
+
 'Distance value for mouse_over events and selections; a literal "radius" below which the mouse cursor is considered "over" a point
 Private Const mouseSelAccuracy As Double = 8
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
+
+'This function will quickly and efficiently check the last unprocessed keypress submitted by the user.  If an ESC keypress was found,
+' this function will return TRUE.  It is then up to the calling function to determine how to proceed.
+Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boolean = True) As Boolean
+
+    Dim tmpMsg As winMsg
+    If GetInputState() Then
+        PeekMessage tmpMsg, 0, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE
+        If tmpMsg.wParam = vbKeyEscape Then
+            If displayConfirmationPrompt Then
+                Dim msgReturn As VbMsgBoxResult
+                msgReturn = pdMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", GetNameOfProcess(LastFilterCall.MainType))
+                If msgReturn = vbYes Then cancelCurrentAction = True Else cancelCurrentAction = False
+            Else
+                cancelCurrentAction = True
+            End If
+        Else
+            cancelCurrentAction = False
+        End If
+    Else
+        cancelCurrentAction = False
+    End If
+    
+    userPressedESC = cancelCurrentAction
+    
+End Function
 
 'Convert a width and height pair to a new max width and height, while preserving aspect ratio
 Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long)
