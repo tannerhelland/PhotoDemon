@@ -3,8 +3,9 @@ Attribute VB_Name = "Misc_Uncategorized"
 'Miscellaneous Operations Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 03/October/12
-'Last update: Reorganized this massive module into a bunch of smaller ones for improved organization.
+'Last updated: 10/May/13
+'Last update: Built "userPressedESC" function, which can be used to terminate long-running image processing loops.  Note that
+'              additional coding is required in said loops, because array references must be freed to avoid unhandled exceptions.
 '
 'If a function doesn't have a home in a more appropriate module, it gets stuck here. Over time, I'm
 ' hoping to clear out most of this module in favor of a more organized approach.
@@ -40,14 +41,23 @@ Public cancelCurrentAction As Boolean
 Private Const mouseSelAccuracy As Double = 8
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
 'This function will quickly and efficiently check the last unprocessed keypress submitted by the user.  If an ESC keypress was found,
 ' this function will return TRUE.  It is then up to the calling function to determine how to proceed.
 Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boolean = True) As Boolean
 
     Dim tmpMsg As winMsg
+    
+    'GetInputState returns a non-0 value if key or mouse events are pending.  By Microsoft's own admission, it is much faster
+    ' than PeekMessage, so to keep things fast we check it before manually inspecting individual messages
+    ' (see http://support.microsoft.com/kb/35605 for more details)
     If GetInputState() Then
+    
+        'Use the WM_KEYFIRST/LAST constants to explicitly request only keypress messages.  If the user has pressed multiple
+        ' keys besides just ESC, this function may not operate as intended.  (Per the MSDN documentation: "...the first queued
+        ' message that matches the specified filter is retrieved.")  We could technically parse all keypress messages and look
+        ' for just ESC, but this would slow the function without providing any clear benefit.
         PeekMessage tmpMsg, 0, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE
         If tmpMsg.wParam = vbKeyEscape Then
             If displayConfirmationPrompt Then

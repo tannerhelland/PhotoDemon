@@ -3,8 +3,9 @@ Attribute VB_Name = "Filters_Layers"
 'Layer Filters Module
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/February/13
-'Last updated: 15/Feburary/13
-'Last update: initial build
+'Last updated: 10/May/13
+'Last update: rebuilt all subs as functions that return 0 if canceled, 1 if successful.  Also, all functions are now
+'              cancelable by pressing ESC mid-function.  (Keypresses are handled during progress bar refreshes.)
 '
 'Some filters in PhotoDemon are capable of operating "on-demand" on any supplied layers.  In a perfect world, *all*
 ' filters would work this way - but alas I did not design the program very well up front.  Going forward I will be
@@ -27,8 +28,9 @@ Private Const MAXGAMMA As Double = 1.8460498941512
 Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
-'Given two layers, fill one with a median-filtered version of the other
-Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
+'Given two layers, fill one with a median-filtered version of the other.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -357,7 +359,10 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
     Next y
         atBottom = Not atBottom
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x + modifyProgBarOffset
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
         End If
     Next x
         
@@ -367,11 +372,14 @@ Public Sub CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, By
     
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
+    
+    If cancelCurrentAction Then CreateMedianLayer = 0 Else CreateMedianLayer = 1
 
-End Sub
+End Function
 
-'White balance a given layer
-Public Sub WhiteBalanceLayer(ByVal percentIgnore As Double, ByRef srcLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
+'White balance a given layer.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function WhiteBalanceLayer(ByVal percentIgnore As Double, ByRef srcLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -562,7 +570,10 @@ Public Sub WhiteBalanceLayer(ByVal percentIgnore As Double, ByRef srcLayer As pd
         
     Next y
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x + modifyProgBarOffset
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
         End If
     Next x
     
@@ -570,10 +581,13 @@ Public Sub WhiteBalanceLayer(ByVal percentIgnore As Double, ByRef srcLayer As pd
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-End Sub
+    If cancelCurrentAction Then WhiteBalanceLayer = 0 Else WhiteBalanceLayer = 1
+    
+End Function
 
-'Given two layers, fill one with an artistically contoured (edge detect) version of the other
-Public Sub CreateContourLayer(ByVal blackBackground As Boolean, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
+'Given two layers, fill one with an artistically contoured (edge detect) version of the other.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function CreateContourLayer(ByVal blackBackground As Boolean, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
  
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -659,7 +673,10 @@ Public Sub CreateContourLayer(ByVal blackBackground As Boolean, ByRef srcLayer A
         Next z
     Next y
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x + modifyProgBarOffset
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
         End If
     Next x
     
@@ -670,10 +687,13 @@ Public Sub CreateContourLayer(ByVal blackBackground As Boolean, ByRef srcLayer A
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-End Sub
+    If cancelCurrentAction Then CreateContourLayer = 0 Else CreateContourLayer = 1
+    
+End Function
 
-'Make shadows, midtone, and/or highlight adjustments to a given layer
-Public Sub AdjustLayerShadowHighlight(ByVal shadowClipping As Double, ByVal highlightClipping As Double, ByVal targetMidtone As Long, ByRef srcLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
+'Make shadows, midtone, and/or highlight adjustments to a given layer.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function AdjustLayerShadowHighlight(ByVal shadowClipping As Double, ByVal highlightClipping As Double, ByVal targetMidtone As Long, ByRef srcLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -921,7 +941,10 @@ Public Sub AdjustLayerShadowHighlight(ByVal shadowClipping As Double, ByVal high
         
     Next y
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x + modifyProgBarOffset
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
         End If
     Next x
     
@@ -929,11 +952,17 @@ Public Sub AdjustLayerShadowHighlight(ByVal shadowClipping As Double, ByVal high
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-End Sub
+    If cancelCurrentAction Then AdjustLayerShadowHighlight = 0 Else AdjustLayerShadowHighlight = 1
+    
+End Function
 
 'Given two layers, fill one with a gaussian-blur version of the other.
-' This is an integer-based version of the standard gaussian blur routine.
-Public Sub CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0)
+' This is an extremely optimized, integer-based version of a standard gaussian blur routine.  It uses some standard optimizations
+' (e.g. separable kernels) as well as a number of VB-specific optimizations.  As such, it may not be appropriate for direct translation to
+' other languages.
+'
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
             
     'Create a local array and point it at the pixel data of the destination image
     Dim dstImageData() As Byte
@@ -1230,7 +1259,8 @@ Public Sub CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLayer As
         CopyMemory ByVal VarPtrArray(dstImageData()), 0&, 4
         CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
         CopyMemory ByVal VarPtrArray(GaussImageData()), 0&, 4
-        Exit Sub
+        CreateGaussianBlurLayer = 0
+        Exit Function
     End If
     
     dstDIBPointer = dstLayer.getLayerDIBits
@@ -1322,5 +1352,7 @@ Public Sub CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLayer As
     'We can also erase our intermediate gaussian layer
     gaussLayer.eraseLayer
     Set gaussLayer = Nothing
+    
+    If cancelCurrentAction Then CreateGaussianBlurLayer = 0 Else CreateGaussianBlurLayer = 1
         
-End Sub
+End Function

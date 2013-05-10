@@ -169,8 +169,8 @@ Attribute VB_Exposed = False
 'Trace Contour (Outline) Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/Feb/13
-'Last updated: 25/April/13
-'Last update: simplified code by relying on new slider/text custom control
+'Last updated: 10/May/13
+'Last update: allow the user to cancel at any time by pressing ESC
 '
 'Contour tracing is performed by "stacking" a series of filters together:
 ' 1) Gaussian blur to smooth out fine details
@@ -246,34 +246,40 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
     finalY = workingLayer.getLayerHeight
         
     If useSmoothing Then
+    
         'Blur the current layer
-        CreateGaussianBlurLayer cRadius, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 3
+        If CreateGaussianBlurLayer(cRadius, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 3) Then
         
-        'Use the median filter to round out edges
-        CreateMedianLayer cRadius, 50, workingLayer, srcLayer, toPreview, finalY * 2 + finalX * 3, finalY * 2
+            'Use the median filter to round out edges
+            If CreateMedianLayer(cRadius, 50, workingLayer, srcLayer, toPreview, finalY * 2 + finalX * 3, finalY * 2) Then
         
-        'Next, create a contour of the layer
-        CreateContourLayer useBlackBackground, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 3, finalY * 2 + finalX
+                'Next, create a contour of the layer
+                If CreateContourLayer(useBlackBackground, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 3, finalY * 2 + finalX) Then
             
-        srcLayer.eraseLayer
-        Set srcLayer = Nothing
-        
-        'Finally, white balance the resulting layer
-        WhiteBalanceLayer 0.01, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2 + finalX * 2
+                    'Finally, white balance the resulting layer
+                    WhiteBalanceLayer 0.01, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2 + finalX * 2
+                    
+                End If
+            End If
+        End If
     Else
+        
         'Blur the current layer
-        CreateGaussianBlurLayer cRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX * 2
+        If CreateGaussianBlurLayer(cRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX * 2) Then
         
-        'Next, create a contour of the layer
-        CreateContourLayer useBlackBackground, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2
+            'Next, create a contour of the layer
+            If CreateContourLayer(useBlackBackground, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2) Then
             
-        srcLayer.eraseLayer
-        Set srcLayer = Nothing
-        
-        'Finally, white balance the resulting layer
-        WhiteBalanceLayer 0.01, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2 + finalX
+                'Finally, white balance the resulting layer
+                WhiteBalanceLayer 0.01, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2 + finalX
+                
+            End If
+        End If
     End If
     
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
+        
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
     finalizeImageData toPreview, dstPic
 
