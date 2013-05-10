@@ -1214,12 +1214,24 @@ Public Sub CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLayer As
         
     Next x
         If Not suppressMessages Then
-            If (y And progBarCheck) = 0 Then SetProgBarVal y + modifyProgBarOffset
+            If (y And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
+            End If
         End If
     Next y
     
     CopyMemory ByVal VarPtrArray(tmpImageData()), 0&, 4
     CopyMemory ByVal VarPtrArray(tmpDstImageData()), 0&, 4
+    
+    'Because this function occurs in multiple passes, it requires specialized cancel behavior.  All array references must be dropped
+    ' or the program will experience a hard-freeze.
+    If cancelCurrentAction Then
+        CopyMemory ByVal VarPtrArray(dstImageData()), 0&, 4
+        CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
+        CopyMemory ByVal VarPtrArray(GaussImageData()), 0&, 4
+        Exit Sub
+    End If
     
     dstDIBPointer = dstLayer.getLayerDIBits
     tmpDstSA.pvData = dstDIBPointer
@@ -1288,7 +1300,10 @@ Public Sub CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLayer As
                 
     Next x
         If Not suppressMessages Then
-            If (y And progBarCheck) = 0 Then SetProgBarVal (y + finalY) + modifyProgBarOffset
+            If (y And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal (y + finalY) + modifyProgBarOffset
+            End If
         End If
     Next y
         
