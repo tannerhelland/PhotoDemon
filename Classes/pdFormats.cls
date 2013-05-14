@@ -13,17 +13,17 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Format Manager
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 19/December/12
-'Last update: added pngnq availability tracking
+'Last updated: 14/May/13
+'Last update: added formal RAW and DNG support
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
 ' or adjust PhotoDemon's support for individual formats.  To remedy this problem, this class was created.
 '
 'Based on the available plugins, this class generates a list of file formats that PhotoDemon is capable of writing
-' and reading.  These format lists are separately maintained, and the presence of a format in one column does not
+' and reading.  These format lists are separately maintained, and the presence of a format in one category does not
 ' have any connection to the other.
 '
 'Most non-standard formats rely on FreeImage for loading and/or saving, and they can additionally be tested against
@@ -42,7 +42,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Is FreeImage.dll enabled?
+'Is the FreeImage DLL available?
 Public FreeImageEnabled As Boolean
 
 'Is GDI+ available?
@@ -210,6 +210,7 @@ Public Sub generateInputFormats()
     
     If FreeImageEnabled Then
         addInputFormat "DDS - DirectDraw Surface", "*.dds", FIF_DDS
+        addInputFormat "DNG - Adobe Digital Negative", "*.dng", FIF_RAW
         addInputFormat "EXR - Industrial Light and Magic", "*.exr", FIF_EXR
         addInputFormat "G3 - Digital Fax Format", "*.g3", FIF_FAXG3
     End If
@@ -252,6 +253,7 @@ Public Sub generateInputFormats()
         addInputFormat "PPM - Portable Pixelmap", "*.ppm", FIF_PPM
         addInputFormat "PSD - Adobe Photoshop", "*.psd", FIF_PSD
         addInputFormat "RAS - Sun Raster File", "*.ras", FIF_RAS
+        addInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", FIF_RAW
         addInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta", FIF_SGI
         addInputFormat "TGA - Truevision (TARGA)", "*.tga", FIF_TARGA
     End If
@@ -431,6 +433,8 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
             getExtensionFromFIF = "ppm"
         Case FIF_RAS
             getExtensionFromFIF = "ras"
+        Case FIF_RAW
+            getExtensionFromFIF = "hdr"
         Case FIF_TARGA
             getExtensionFromFIF = "tga"
         Case FIF_TIFF
