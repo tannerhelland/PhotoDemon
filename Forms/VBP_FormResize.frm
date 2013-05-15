@@ -431,10 +431,10 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
         selActive = True
         
         'Remember all the current selection values
-        tsLeft = pdImages(CurrentImage).mainSelection.selLeft
-        tsTop = pdImages(CurrentImage).mainSelection.selTop
-        tsWidth = pdImages(CurrentImage).mainSelection.selWidth
-        tsHeight = pdImages(CurrentImage).mainSelection.selHeight
+        tsLeft = pdImages(CurrentImage).mainSelection.boundLeft
+        tsTop = pdImages(CurrentImage).mainSelection.boundTop
+        tsWidth = pdImages(CurrentImage).mainSelection.boundWidth
+        tsHeight = pdImages(CurrentImage).mainSelection.boundHeight
         
         'Deactivate the current selection
         pdImages(CurrentImage).selectionActive = False

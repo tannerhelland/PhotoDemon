@@ -54,8 +54,8 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
         srcHeight = otherPictureSrc.getLayerHeight
     Else
         If pdImages(CurrentImage).selectionActive Then
-            srcWidth = pdImages(CurrentImage).mainSelection.selWidth
-            srcHeight = pdImages(CurrentImage).mainSelection.selHeight
+            srcWidth = pdImages(CurrentImage).mainSelection.boundWidth
+            srcHeight = pdImages(CurrentImage).mainSelection.boundHeight
         Else
             srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
             srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
@@ -86,8 +86,8 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
         
             'Copy the current selection into a temporary layer
             Set tmpLayer = New pdLayer
-            tmpLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
-            BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+            tmpLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
         
             'If the image is transparent, composite it; otherwise, render the preview using the temporary object
             If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then

@@ -101,8 +101,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         If pdImages(CurrentImage).selectionActive Then
             
             'Make a working copy of the image data within the selection
-            workingLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
-            BitBlt workingLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+            workingLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            BitBlt workingLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
             
         Else
             workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
@@ -117,8 +117,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             
         'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
         If pdImages(CurrentImage).selectionActive Then
-            srcWidth = pdImages(CurrentImage).mainSelection.selWidth
-            srcHeight = pdImages(CurrentImage).mainSelection.selHeight
+            srcWidth = pdImages(CurrentImage).mainSelection.boundWidth
+            srcHeight = pdImages(CurrentImage).mainSelection.boundHeight
         Else
             srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
             srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
@@ -136,8 +136,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         If pdImages(CurrentImage).selectionActive Then
             Dim copyLayer As pdLayer
             Set copyLayer = New pdLayer
-            copyLayer.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
-            BitBlt copyLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+            copyLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            BitBlt copyLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
             workingLayer.createFromExistingLayer copyLayer, newWidth, newHeight
             copyLayer.eraseLayer
             Set copyLayer = Nothing
@@ -146,8 +146,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             ' selection that are not selected.  (Say that 10 times fast...lol)
             Dim tmpSelectionMaskCopy As pdLayer
             Set tmpSelectionMaskCopy = New pdLayer
-            tmpSelectionMaskCopy.createBlank pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, 24
-            BitBlt tmpSelectionMaskCopy.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.selWidth, pdImages(CurrentImage).mainSelection.selHeight, pdImages(CurrentImage).mainSelection.selMask.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, vbSrcCopy
+            tmpSelectionMaskCopy.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, 24
+            BitBlt tmpSelectionMaskCopy.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainSelection.selMask.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
             Set tmpSelectionMask = New pdLayer
             tmpSelectionMask.createFromExistingLayer tmpSelectionMaskCopy, newWidth, newHeight
             tmpSelectionMaskCopy.eraseLayer
@@ -279,9 +279,9 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         ' or hideously complex (e.g. a "magic wand" selection).
         If pdImages(CurrentImage).selectionActive Then
         
-            'In the future, we will first check to see if this selection has a complex area, e.g. if it is not a
-            ' square or a rectangle.  If it IS complex, we need to modify it further to remove inactive pixels.
-            'If pdImages(CurrentImage)...
+            'In the future, we could optimize this function to check for plain square selections.  If found, we can simply BitBlt the selected
+            ' area onto the main image, rather than doing a complex check for partial selections or non-square selection regions.
+            'If pdImages(CurrentImage).mainSelection.isPlainOldSquare Then...
             ' Simple: BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.selLeft, pdImages(CurrentImage).mainSelection.selTop, workingLayer.getLayerWidth, workingLayer.getLayerHeight, workingLayer.getLayerDC, 0, 0, vbSrcCopy
             'Else
             prepSafeArray wlSA, workingLayer
@@ -296,8 +296,8 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
             
             Dim leftOffset As Long, topOffset As Long
-            leftOffset = pdImages(CurrentImage).mainSelection.selLeft
-            topOffset = pdImages(CurrentImage).mainSelection.selTop
+            leftOffset = pdImages(CurrentImage).mainSelection.boundLeft
+            topOffset = pdImages(CurrentImage).mainSelection.boundTop
                         
             Dim i As Long
             Dim thisAlpha As Long

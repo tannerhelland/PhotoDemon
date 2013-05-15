@@ -130,9 +130,14 @@ Private y1 As Double, y2 As Double
 Private actualX1 As Double, actualX2 As Double
 Private actualY1 As Double, actualY2 As Double
 
-'When a selection is "locked in", the x and y values are converted to these values
+'When a selection is "locked in", the x and y values of corner points are converted to these values
 Public selLeft As Long, selTop As Long
 Public selWidth As Long, selHeight As Long
+
+'And finally, for nonstandard or inverted selections, an additional set of coordinates is required to track the bounding area of the
+' selection as a whole.  External functions need these values to determine how to handle the selection's data.
+Public boundLeft As Long, boundTop As Long
+Public boundWidth As Long, boundHeight As Long
 
 'Is this selection "locked in"?
 Private lockedIn As Boolean
@@ -606,11 +611,12 @@ End Sub
 
 'Create a selection mask based on the current selection type.  A few items to note:
 ' 1) The selection mask is always the size of the full image.  This makes transforms (e.g. "grow selection") much easier to handle.
-' 2) Black pixels in the mask represent unselected pixels in the image.  White represents selected.  Other shades can be used for aliasing
-'     or partial selections.
+' 2) Black pixels (0) in the mask represent unselected pixels in the image.  White (255) represents selected.  Other values can be
+'     used to specify aliasing or partial selections.
 ' 3) The selection mask is stored as a pdLayer object, so any image filters can be applied to it.
 ' 4) For shape-based selections (rectangle, square, etc), the selection's dimensions need to be set BEFORE calling this function.  This function
-'     relies on things like selLeft and selWidth to know where to render the mask.
+'     relies on things like selLeft and selWidth to know where to render the mask.  For non-shape-based selections, this function will call a
+'     separate function to find the bounding rect.
 Private Sub createSelectionMask()
 
     'Start by creating a blank mask (this will also erase any existing mask)
@@ -660,6 +666,36 @@ Private Sub createSelectionMask()
         Case Else
     
     End Select
+    
+    'Finally, we need to establish a bounding region for the selection.  For certain types of selections, we can do this with existing knowledge
+    ' (e.g. the selLeft/Top/Width/Height values may reflect this).  For other types of selections, we need to find bounds via pixel searching.
+    Select Case sType
+        
+        Case sRectangle
+            
+            'If isInverted Then
+            'Else
+                boundLeft = selLeft
+                boundTop = selTop
+                boundWidth = selWidth
+                boundHeight = selHeight
+            'End If
+            
+        Case sCircle
+        
+            'If isInverted Then
+            'Else
+                boundLeft = selLeft
+                boundTop = selTop
+                boundWidth = selWidth
+                boundHeight = selHeight
+            'End If
+            
+        Case Else
+        
+            'findBoundsManually()
+        
+    End Select
 
 End Sub
 
@@ -683,10 +719,10 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
         
-    dstLeft = ((selLeft - hScrollVal) * ZoomVal) + imgLeft
-    dstRight = ((selLeft + selWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
-    dstTop = ((selTop - vScrollVal) * ZoomVal) + imgTop
-    dstBottom = ((selTop + selHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+    dstLeft = ((boundLeft - hScrollVal) * ZoomVal) + imgLeft
+    dstRight = ((boundLeft + boundWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
+    dstTop = ((boundTop - vScrollVal) * ZoomVal) + imgTop
+    dstBottom = ((boundTop + boundHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
     
     'If this selection is transformable, draw transform circles at the corners and edges of the transformation.
     If isTransformable Then
@@ -745,10 +781,10 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
         
-    dstLeft = ((selLeft - hScrollVal) * ZoomVal) + imgLeft
-    dstRight = ((selLeft + selWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
-    dstTop = ((selTop - vScrollVal) * ZoomVal) + imgTop
-    dstBottom = ((selTop + selHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+    dstLeft = ((boundLeft - hScrollVal) * ZoomVal) + imgLeft
+    dstRight = ((boundLeft + boundWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
+    dstTop = ((boundTop - vScrollVal) * ZoomVal) + imgTop
+    dstBottom = ((boundTop + boundHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
     
     'Several different selection rendering methods use the same variables.  I've declared the common ones here.
     Dim iData() As Byte

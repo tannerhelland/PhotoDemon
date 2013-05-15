@@ -414,10 +414,10 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
 
     'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
     Dim tLeft As Double, tTop As Double, tRight As Double, tBottom As Double
-    tLeft = pdImages(srcForm.Tag).mainSelection.selLeft
-    tTop = pdImages(srcForm.Tag).mainSelection.selTop
-    tRight = pdImages(srcForm.Tag).mainSelection.selLeft + pdImages(srcForm.Tag).mainSelection.selWidth
-    tBottom = pdImages(srcForm.Tag).mainSelection.selTop + pdImages(srcForm.Tag).mainSelection.selHeight
+    tLeft = pdImages(srcForm.Tag).mainSelection.boundLeft
+    tTop = pdImages(srcForm.Tag).mainSelection.boundTop
+    tRight = pdImages(srcForm.Tag).mainSelection.boundLeft + pdImages(srcForm.Tag).mainSelection.boundWidth
+    tBottom = pdImages(srcForm.Tag).mainSelection.boundTop + pdImages(srcForm.Tag).mainSelection.boundHeight
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
