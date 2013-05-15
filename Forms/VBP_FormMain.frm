@@ -125,7 +125,7 @@ Begin VB.MDIForm FormMain
             Height          =   495
             Left            =   0
             TabIndex        =   28
-            Top             =   4320
+            Top             =   4800
             Width           =   3000
             _ExtentX        =   5318
             _ExtentY        =   873
@@ -239,6 +239,29 @@ Begin VB.MDIForm FormMain
                Strikethrough   =   0   'False
             EndProperty
          End
+         Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+            CausesValidation=   0   'False
+            Height          =   495
+            Left            =   0
+            TabIndex        =   32
+            Top             =   3840
+            Visible         =   0   'False
+            Width           =   3000
+            _ExtentX        =   5318
+            _ExtentY        =   873
+            Min             =   1
+            Max             =   100
+            Value           =   1
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
          Begin VB.Label lblSelection 
             Appearance      =   0  'Flat
             AutoSize        =   -1  'True
@@ -282,7 +305,7 @@ Begin VB.MDIForm FormMain
             Index           =   3
             Left            =   120
             TabIndex        =   29
-            Top             =   3960
+            Top             =   4440
             Width           =   1710
          End
          Begin VB.Label lblSelection 
@@ -1720,9 +1743,13 @@ End Sub
 
 Private Sub cmbSelType_Click(Index As Integer)
 
+    'Display the border slider as necessary
+    If cmbSelType(Index).ListIndex = sBorder Then sltSelectionBorder.Visible = True Else sltSelectionBorder.Visible = False
+
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed Then
         pdImages(CurrentImage).mainSelection.setSelectionType cmbSelType(Index).ListIndex
+        pdImages(CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
         RenderViewport FormMain.ActiveForm
     End If
     
@@ -3361,6 +3388,13 @@ End Sub
 
 Private Sub sltCornerRounding_Change()
     If selectionsAllowed Then pdImages(CurrentImage).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
+End Sub
+
+Private Sub sltSelectionBorder_Change()
+    If selectionsAllowed Then
+        pdImages(CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
+        RenderViewport FormMain.ActiveForm
+    End If
 End Sub
 
 'When the selection text boxes are updated, change the scrollbars to match

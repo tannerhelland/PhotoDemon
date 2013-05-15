@@ -125,11 +125,13 @@ Private sShape As SelectionShape
 Public Enum SelectionType
     sInterior = 0
     sExterior = 1
+    sBorder = 2
 End Enum
 
 #If False Then
     Const sInterior = 0
     Const sExterior = 1
+    Const sBorder = 2
 #End If
 
 Private sType As SelectionType
@@ -189,6 +191,9 @@ Private isSquare As Boolean
 'Rectangular selections can have rounded corners.  If this value is > 0, round the corners by that many pixels.
 Private roundedCorners As Long
 
+'Selections can be border-only.  This value specifies the border radius, which cannot be larger than (minimum dimension \ 2)
+Private borderSize As Long
+
 'Request a 1:1 aspect ratio selection (squares, circles)
 Public Sub requestSquare(ByVal requestChoice As Boolean)
     isSquare = requestChoice
@@ -200,6 +205,11 @@ Public Sub requestSquare(ByVal requestChoice As Boolean)
         RenderViewport containingPDImage.containingForm
     End If
     
+End Sub
+
+'Set the border size
+Public Sub setBorderSize(ByVal newBorderSize As Long)
+    borderSize = newBorderSize
 End Sub
 
 'Set a transformation type
@@ -644,12 +654,12 @@ Private Sub createSelectionMask()
     Dim maskBackColor As Long, maskForeColor As Long
     
     'Interior and exterior selections are rendered using identical code; the only difference is the colors used
-    If sType = sInterior Then
-        maskBackColor = RGB(0, 0, 0)
-        maskForeColor = RGB(255, 255, 255)
-    Else
+    If sType = sExterior Then
         maskBackColor = RGB(255, 255, 255)
         maskForeColor = RGB(0, 0, 0)
+    Else
+        maskBackColor = RGB(0, 0, 0)
+        maskForeColor = RGB(255, 255, 255)
     End If
 
     'Start by creating a blank mask (this will also erase any existing mask)
@@ -658,6 +668,23 @@ Private Sub createSelectionMask()
     Dim hBrush As Long
     Dim maskRect As RECT
     Dim maskRegion As Long
+    
+    'Border-style selections require some additional checking; in particular, if the border value is too large, just ignore it
+    ' and draw a regular shape instead.
+    Dim rectModifier As Long
+    rectModifier = borderSize
+    
+    Dim ignoreBorderValue As Boolean
+    ignoreBorderValue = False
+    
+    If sType = sBorder Then
+        If rectModifier < 1 Then rectModifier = 1
+        If selWidth < selHeight Then
+            If rectModifier > selWidth \ 2 Then ignoreBorderValue = True
+        Else
+            If rectModifier > selHeight \ 2 Then ignoreBorderValue = True
+        End If
+    End If
                 
     'The actual rendering of the selection will vary based on the current selection type (obviously).
     Select Case sShape
@@ -666,32 +693,101 @@ Private Sub createSelectionMask()
         ' has been specified, apply it using CreateRoundRectRgn.
         Case sRectangle
         
+            'RECTANGLE SELECTION, NO ROUNDED CORNERS
             If roundedCorners = 0 Then
-                SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
-                
-                hBrush = CreateSolidBrush(maskForeColor)
-                FillRect selMask.getLayerDC, maskRect, hBrush
-                DeleteObject hBrush
             
-            Else
-                maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
+                'Interior/exterior selections use identical rendering code.
+                If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
                 
-                hBrush = CreateSolidBrush(maskForeColor)
-                FillRgn selMask.getLayerDC, maskRegion, hBrush
-                DeleteObject hBrush
-                DeleteObject maskRegion
+                    SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
+                    hBrush = CreateSolidBrush(maskForeColor)
+                    FillRect selMask.getLayerDC, maskRect, hBrush
+                    DeleteObject hBrush
+                    
+                'Border selections are a bit different; we must draw two rectangles - an exterior and an interior one.
+                Else
+                
+                    'Draw the exterior rectangle
+                    hBrush = CreateSolidBrush(maskForeColor)
+                    SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
+                    FillRect selMask.getLayerDC, maskRect, hBrush
+                    DeleteObject hBrush
+                    
+                    'Next, draw the interior one
+                    hBrush = CreateSolidBrush(maskBackColor)
+                    SetRect maskRect, selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth - rectModifier, selTop + selHeight - rectModifier
+                    FillRect selMask.getLayerDC, maskRect, hBrush
+                    DeleteObject hBrush
+                    
+                End If
+            
+            'RECTANGLE SELECTION *WITH* ROUNDED CORNERS
+            Else
+                
+                'Interior/exterior selections use identical rendering code.
+                If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
+                    
+                    maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
+                    hBrush = CreateSolidBrush(maskForeColor)
+                    FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    DeleteObject hBrush
+                    DeleteObject maskRegion
+                
+                'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
+                Else
+                    
+                    'Draw the exterior rectangle
+                    maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
+                    hBrush = CreateSolidBrush(maskForeColor)
+                    FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    DeleteObject hBrush
+                    DeleteObject maskRegion
+                    
+                    'Next, draw the interior one
+                    maskRegion = CreateRoundRectRgn(selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier, roundedCorners, roundedCorners)
+                    hBrush = CreateSolidBrush(maskBackColor)
+                    FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    DeleteObject hBrush
+                    DeleteObject maskRegion
+                    
+                End If
+                
             End If
             
             'Also, mark this particular mask as transformable
             isTransformable = True
             
         Case sCircle
-            SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
-            maskRegion = CreateEllipticRgnIndirect(maskRect)
-            hBrush = CreateSolidBrush(maskForeColor)
-            FillRgn selMask.getLayerDC, maskRegion, hBrush
-            DeleteObject hBrush
-            DeleteObject maskRegion
+        
+            'Interior/exterior selections use identical rendering code.
+            If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
+                SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
+                maskRegion = CreateEllipticRgnIndirect(maskRect)
+                hBrush = CreateSolidBrush(maskForeColor)
+                FillRgn selMask.getLayerDC, maskRegion, hBrush
+                DeleteObject hBrush
+                DeleteObject maskRegion
+            
+            'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
+            Else
+            
+                'Draw the exterior oval
+                SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
+                maskRegion = CreateEllipticRgnIndirect(maskRect)
+                hBrush = CreateSolidBrush(maskForeColor)
+                FillRgn selMask.getLayerDC, maskRegion, hBrush
+                DeleteObject hBrush
+                DeleteObject maskRegion
+                
+                'Next, draw the interior one
+                SetRect maskRect, selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier
+                maskRegion = CreateEllipticRgnIndirect(maskRect)
+                hBrush = CreateSolidBrush(maskBackColor)
+                FillRgn selMask.getLayerDC, maskRegion, hBrush
+                DeleteObject hBrush
+                DeleteObject maskRegion
+            
+            End If
             
             'Elliptical regions are transformable (meaning the user can resize and move them after they've been created)
             isTransformable = True

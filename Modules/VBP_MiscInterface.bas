@@ -287,6 +287,7 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
         If pdImages(FormMain.ActiveForm.Tag).selectionActive Then pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests = False
     Next i
     If iWidth < iHeight Then FormMain.sltCornerRounding.Max = iWidth Else FormMain.sltCornerRounding.Max = iHeight
+    If iWidth < iHeight Then FormMain.sltSelectionBorder.Max = iWidth Else FormMain.sltSelectionBorder.Max = iHeight
     
 End Sub
 

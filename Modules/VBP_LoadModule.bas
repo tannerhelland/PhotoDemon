@@ -178,6 +178,7 @@ Public Sub LoadTheProgram()
     'Types (currently interior or exterior)
     FormMain.cmbSelType(0).AddItem "Interior", 0
     FormMain.cmbSelType(0).AddItem "Exterior", 1
+    FormMain.cmbSelType(0).AddItem "Border", 2
     FormMain.cmbSelType(0).ListIndex = 0
     
     g_UserPreferences.loadToolSettings
