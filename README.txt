@@ -1,4 +1,4 @@
-PhotoDemon v5.4 - Copyright (c) 2013 by Tanner Helland
+PhotoDemon v5.6 beta - Copyright (c) 2013 by Tanner Helland
 =====================================================================================
 A free, open-source photo editor and image processing tool.
 http://tannerhelland.com/photodemon
@@ -42,7 +42,7 @@ What doesn't PhotoDemon do?
 -------------------------------------------------------------------------------------
 :: Painting tools.
 	PhotoDemon does not provide any painting tools.  These are coming, but they did
-	not make the cut for version 5.4.
+	not make the cut for this release.
 		
 :: Advanced color management (ICC profiles)
 	PhotoDemon ignores embedded ICC profiles.  As a tool designed for consumers and
@@ -174,6 +174,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 * Jerry Huxtable and JHLabs for an excellent reference on Distort-style filters (Apache 2.0)
   (http://www.jhlabs.com/ip/filters/index.html)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
+  * audioglider
   * Zhu JinYong
   * Andrew Yeoman
   * Dave Jamison
