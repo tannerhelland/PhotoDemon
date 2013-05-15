@@ -365,7 +365,7 @@ Public Sub loadToolSettings()
     'Selection type
     Dim i As Long
     For i = 0 To FormMain.cmbSelRender.Count - 1
-        FormMain.cmbSelRender(i).ListIndex = GetPreference_Long("Tool Preferences", "LastSelectionType", 0)
+        FormMain.cmbSelRender(i).ListIndex = GetPreference_Long("Tool Preferences", "LastSelectionShape", 0)
     Next i
     
 End Sub
@@ -499,7 +499,7 @@ Private Sub createNewINIFile()
         'Write out tool preferences
         Print #fileNum, "[Tool Preferences]"
         Print #fileNum, "ClearSelectionAfterCrop=1"
-        Print #fileNum, "LastSelectionType=0"
+        Print #fileNum, "LastSelectionShape=0"
         Print #fileNum, "LastActiveTool=0"
         Print #fileNum, ""
                 

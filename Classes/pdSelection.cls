@@ -109,7 +109,7 @@ Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Lo
 Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
 
 'What type of selection is this?
-Public Enum SelectionType
+Public Enum SelectionShape
     sRectangle = 0
     sCircle = 1
 End Enum
@@ -119,7 +119,7 @@ End Enum
     Const sCircle = 1
 #End If
 
-Private sType As SelectionType
+Private sType As SelectionShape
 
 'The coordinates of the current selection (if rectangular)
 Private x1 As Double, x2 As Double
@@ -195,11 +195,11 @@ Public Sub setTransformationType(ByVal transType As Long)
 End Sub
 
 'Get/set a selection type
-Public Function getSelectionType() As SelectionType
-    getSelectionType = sType
+Public Function getSelectionShape() As SelectionShape
+    getSelectionShape = sType
 End Function
 
-Public Sub setSelectionType(ByVal selType As SelectionType)
+Public Sub setSelectionShape(ByVal selType As SelectionShape)
     sType = selType
 End Sub
 

@@ -165,6 +165,8 @@ Public Sub LoadTheProgram()
     
     'Initialize all Selection Tool controls
     Dim i As Long
+    
+    'Visual styles (currently lightbox or highlight)
     For i = 0 To FormMain.cmbSelRender.Count - 1
         FormMain.cmbSelRender(i).AddItem "Lightbox", 0
         FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
@@ -172,6 +174,11 @@ Public Sub LoadTheProgram()
         FormMain.cmbSelRender(i).ListIndex = 0
         g_selectionRenderPreference = 0
     Next i
+    
+    'Types (currently interior or exterior)
+    FormMain.cmbSelType(0).AddItem "Interior", 0
+    FormMain.cmbSelType(0).AddItem "Exterior", 1
+    FormMain.cmbSelType(0).ListIndex = 0
     
     g_UserPreferences.loadToolSettings
             

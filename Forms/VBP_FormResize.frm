@@ -273,8 +273,9 @@ Attribute VB_Exposed = False
 'Last updated: 29/April/13
 'Last update: rebuilt the form around the new text/up-down custom control.  LOC for the module was significantly reduced.
 '
-'Handles all image-size related functions.  Currently supports standard resizing and halftone resampling
-' (via the API; not 100% accurate but faster than doing it in VB code) and bilinear resampling via pure VB)
+'Handles all image-size related functions.  Currently supports nearest-neighbor and halftone resampling
+' (via the API; not 100% accurate but faster than doing it manually), bilinear resampling via pure VB, and
+' a number of more advanced resampling techniques via FreeImage.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license

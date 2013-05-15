@@ -420,7 +420,7 @@ Private Sub Class_Initialize()
     'Initialize the main selection
     Set mainSelection = New pdSelection
     selectionActive = False
-    mainSelection.setSelectionType sRectangle
+    mainSelection.setSelectionShape sRectangle
     Set mainSelection.containingPDImage = Me
         
 End Sub
