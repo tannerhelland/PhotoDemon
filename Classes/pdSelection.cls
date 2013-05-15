@@ -756,7 +756,8 @@ Private Sub createSelectionMask()
             
             'Also, mark this particular mask as transformable
             isTransformable = True
-            
+        
+        'CIRCLES / ELLIPSES
         Case sCircle
         
             'Interior/exterior selections use identical rendering code.
@@ -768,7 +769,7 @@ Private Sub createSelectionMask()
                 DeleteObject hBrush
                 DeleteObject maskRegion
             
-            'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
+            'Border selections are a bit different; we must draw two rounded ellipses - an exterior and an interior one.
             Else
             
                 'Draw the exterior oval
