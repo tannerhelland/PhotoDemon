@@ -81,7 +81,6 @@ Begin VB.Form FormPreferences
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipType     =   1
       TooltipTitle    =   "Interface Options"
       ColorScheme     =   3
    End
@@ -115,7 +114,6 @@ Begin VB.Form FormPreferences
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipType     =   1
       TooltipTitle    =   "Update Options"
       ColorScheme     =   3
    End
@@ -149,7 +147,6 @@ Begin VB.Form FormPreferences
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipType     =   1
       TooltipTitle    =   "Tool Options"
       ColorScheme     =   3
    End
@@ -183,7 +180,6 @@ Begin VB.Form FormPreferences
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipType     =   1
       TooltipTitle    =   "Advanced Options"
       ColorScheme     =   3
    End
@@ -217,7 +213,6 @@ Begin VB.Form FormPreferences
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipType     =   1
       TooltipTitle    =   "Transparency Options"
       ColorScheme     =   3
    End
@@ -251,7 +246,6 @@ Begin VB.Form FormPreferences
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipType     =   1
       TooltipTitle    =   "Load (Import) Options"
       ColorScheme     =   3
    End
@@ -285,7 +279,6 @@ Begin VB.Form FormPreferences
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipType     =   1
       TooltipTitle    =   "Save (Export) Options"
       ColorScheme     =   3
    End
@@ -319,7 +312,6 @@ Begin VB.Form FormPreferences
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipType     =   1
       TooltipTitle    =   "File Format Options"
       ColorScheme     =   3
    End
