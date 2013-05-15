@@ -1718,6 +1718,16 @@ Private Sub cmbSelRender_Click(Index As Integer)
     
 End Sub
 
+Private Sub cmbSelType_Click(Index As Integer)
+
+    'If a selection is already active, change its type to match the current selection, then redraw it
+    If selectionsAllowed Then
+        pdImages(CurrentImage).mainSelection.setSelectionType cmbSelType(Index).ListIndex
+        RenderViewport FormMain.ActiveForm
+    End If
+    
+End Sub
+
 'When the zoom combo box is changed, redraw the image using the new zoom value
 Private Sub CmbZoom_Click()
     
@@ -1845,7 +1855,7 @@ Private Sub newToolSelected()
             'Load the visual style setting from the INI file
             FormMain.cmbSelRender(0).ListIndex = g_UserPreferences.GetPreference_Long("Tool Preferences", "LastSelectionShape", 0)
         
-            'If a selection is already active, change its type to match the current selection, then redraw it
+            'If a selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed Then
                 pdImages(CurrentImage).mainSelection.setSelectionShape g_CurrentTool
                 If g_CurrentTool = SELECT_RECT Then pdImages(CurrentImage).mainSelection.setRoundedCornerAmount sltCornerRounding.Value

@@ -108,7 +108,7 @@ Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Lo
 'RasterOp selection
 Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
 
-'What type of selection is this?
+'What shape does this selection have?
 Public Enum SelectionShape
     sRectangle = 0
     sCircle = 1
@@ -119,7 +119,20 @@ End Enum
     Const sCircle = 1
 #End If
 
-Private sType As SelectionShape
+Private sShape As SelectionShape
+
+'What type of selection is this?
+Public Enum SelectionType
+    sInterior = 0
+    sExterior = 1
+End Enum
+
+#If False Then
+    Const sInterior = 0
+    Const sExterior = 1
+#End If
+
+Private sType As SelectionType
 
 'The coordinates of the current selection (if rectangular)
 Private x1 As Double, x2 As Double
@@ -190,16 +203,25 @@ Public Sub requestSquare(ByVal requestChoice As Boolean)
 End Sub
 
 'Set a transformation type
-Public Sub setTransformationType(ByVal transType As Long)
-    selTransformationType = transType
+Public Sub setTransformationType(ByVal transShape As Long)
+    selTransformationType = transShape
+End Sub
+
+'Get/set a selection shape
+Public Function getSelectionShape() As SelectionShape
+    getSelectionShape = sShape
+End Function
+
+Public Sub setSelectionShape(ByVal selShape As SelectionShape)
+    sShape = selShape
 End Sub
 
 'Get/set a selection type
-Public Function getSelectionShape() As SelectionShape
-    getSelectionShape = sType
+Public Function getSelectionType() As SelectionType
+    getSelectionType = sType
 End Function
 
-Public Sub setSelectionShape(ByVal selType As SelectionShape)
+Public Sub setSelectionType(ByVal selType As SelectionType)
     sType = selType
 End Sub
 
@@ -316,7 +338,7 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
     actualY1 = y
     
     'Set the second set of point to match the first set
-    Select Case sType
+    Select Case sShape
         
         Case sRectangle, sCircle
             x2 = x
@@ -494,7 +516,7 @@ Public Sub refreshTextBoxes()
 
     Dim targetTextBoxIndex As Long
     
-    Select Case sType
+    Select Case sShape
     
         Case sRectangle, sCircle
             targetTextBoxIndex = 0
@@ -619,15 +641,26 @@ End Sub
 '     separate function to find the bounding rect.
 Private Sub createSelectionMask()
 
+    Dim maskBackColor As Long, maskForeColor As Long
+    
+    'Interior and exterior selections are rendered using identical code; the only difference is the colors used
+    If sType = sInterior Then
+        maskBackColor = RGB(0, 0, 0)
+        maskForeColor = RGB(255, 255, 255)
+    Else
+        maskBackColor = RGB(255, 255, 255)
+        maskForeColor = RGB(0, 0, 0)
+    End If
+
     'Start by creating a blank mask (this will also erase any existing mask)
-    selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, 0
+    selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
     
     Dim hBrush As Long
     Dim maskRect As RECT
     Dim maskRegion As Long
                 
     'The actual rendering of the selection will vary based on the current selection type (obviously).
-    Select Case sType
+    Select Case sShape
     
         'Squares and rectangles are easy - use FillRect to draw a white rectangle at the mask's location.  If corner rounding
         ' has been specified, apply it using CreateRoundRectRgn.
@@ -636,14 +669,14 @@ Private Sub createSelectionMask()
             If roundedCorners = 0 Then
                 SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
                 
-                hBrush = CreateSolidBrush(RGB(255, 255, 255))
+                hBrush = CreateSolidBrush(maskForeColor)
                 FillRect selMask.getLayerDC, maskRect, hBrush
                 DeleteObject hBrush
             
             Else
                 maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
                 
-                hBrush = CreateSolidBrush(RGB(255, 255, 255))
+                hBrush = CreateSolidBrush(maskForeColor)
                 FillRgn selMask.getLayerDC, maskRegion, hBrush
                 DeleteObject hBrush
                 DeleteObject maskRegion
@@ -655,7 +688,7 @@ Private Sub createSelectionMask()
         Case sCircle
             SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
             maskRegion = CreateEllipticRgnIndirect(maskRect)
-            hBrush = CreateSolidBrush(RGB(255, 255, 255))
+            hBrush = CreateSolidBrush(maskForeColor)
             FillRgn selMask.getLayerDC, maskRegion, hBrush
             DeleteObject hBrush
             DeleteObject maskRegion
@@ -669,27 +702,35 @@ Private Sub createSelectionMask()
     
     'Finally, we need to establish a bounding region for the selection.  For certain types of selections, we can do this with existing knowledge
     ' (e.g. the selLeft/Top/Width/Height values may reflect this).  For other types of selections, we need to find bounds via pixel searching.
-    Select Case sType
+    Select Case sShape
         
         Case sRectangle
             
-            'If isInverted Then
-            'Else
+            If sType = sExterior Then
+                boundLeft = 0
+                boundTop = 0
+                boundWidth = containingPDImage.Width - 1
+                boundHeight = containingPDImage.Height - 1
+            Else
                 boundLeft = selLeft
                 boundTop = selTop
                 boundWidth = selWidth
                 boundHeight = selHeight
-            'End If
+            End If
             
         Case sCircle
         
-            'If isInverted Then
-            'Else
+            If sType = sExterior Then
+                boundLeft = 0
+                boundTop = 0
+                boundWidth = containingPDImage.Width - 1
+                boundHeight = containingPDImage.Height - 1
+            Else
                 boundLeft = selLeft
                 boundTop = selTop
                 boundWidth = selWidth
                 boundHeight = selHeight
-            'End If
+            End If
             
         Case Else
         
@@ -718,11 +759,18 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
-        
-    dstLeft = ((boundLeft - hScrollVal) * ZoomVal) + imgLeft
-    dstRight = ((boundLeft + boundWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
-    dstTop = ((boundTop - vScrollVal) * ZoomVal) + imgTop
-    dstBottom = ((boundTop + boundHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+    
+    If (sShape = sRectangle) Or (sShape = sCircle) Then
+        dstLeft = ((selLeft - hScrollVal) * ZoomVal) + imgLeft
+        dstRight = ((selLeft + selWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
+        dstTop = ((selTop - vScrollVal) * ZoomVal) + imgTop
+        dstBottom = ((selTop + selHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+    Else
+        dstLeft = ((boundLeft - hScrollVal) * ZoomVal) + imgLeft
+        dstRight = ((boundLeft + boundWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
+        dstTop = ((boundTop - vScrollVal) * ZoomVal) + imgTop
+        dstBottom = ((boundTop + boundHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+    End If
     
     'If this selection is transformable, draw transform circles at the corners and edges of the transformation.
     If isTransformable Then
