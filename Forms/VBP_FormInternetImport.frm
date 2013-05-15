@@ -284,7 +284,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     
     'Unique to this particular import is remembering the full filename + extension (because this method of import
     ' actually supplies a file extension, unlike scanning or screen capturing or something else)
-    pdImages(CurrentImage).OriginalFileNameAndExtension = tmpFilename
+    If Not pdImages(CurrentImage) Is Nothing Then pdImages(CurrentImage).OriginalFileNameAndExtension = tmpFilename
     
     SetProgBarVal 0
     
