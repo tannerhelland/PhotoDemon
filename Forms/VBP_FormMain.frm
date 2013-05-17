@@ -1748,8 +1748,8 @@ Private Sub cmbSelType_Click(Index As Integer)
 
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed Then
-        pdImages(CurrentImage).mainSelection.setSelectionType cmbSelType(Index).ListIndex
-        pdImages(CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
+        pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionType cmbSelType(Index).ListIndex
+        pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize sltSelectionBorder.Value
         RenderViewport FormMain.ActiveForm
     End If
     
@@ -1884,8 +1884,8 @@ Private Sub newToolSelected()
         
             'If a selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed Then
-                pdImages(CurrentImage).mainSelection.setSelectionShape g_CurrentTool
-                If g_CurrentTool = SELECT_RECT Then pdImages(CurrentImage).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
+                pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
+                If g_CurrentTool = SELECT_RECT Then pdImages(FormMain.ActiveForm.Tag).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
                 RenderViewport FormMain.ActiveForm
             End If
             
@@ -3384,12 +3384,12 @@ Private Sub picProgBar_Resize()
 End Sub
 
 Private Sub sltCornerRounding_Change()
-    If selectionsAllowed Then pdImages(CurrentImage).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
+    If selectionsAllowed Then pdImages(FormMain.ActiveForm.Tag).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
 End Sub
 
 Private Sub sltSelectionBorder_Change()
     If selectionsAllowed Then
-        pdImages(CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
+        pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize sltSelectionBorder.Value
         RenderViewport FormMain.ActiveForm
     End If
 End Sub
@@ -3413,13 +3413,13 @@ End Sub
 
 Private Sub updateSelectionsValuesViaText(ByVal textBoxIndex As Long)
     If selectionsAllowed Then
-        If Not pdImages(CurrentImage).mainSelection.rejectRefreshRequests Then pdImages(CurrentImage).mainSelection.updateViaTextBox textBoxIndex
+        If Not pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests Then pdImages(FormMain.ActiveForm.Tag).mainSelection.updateViaTextBox textBoxIndex
     End If
 End Sub
 
 Private Function selectionsAllowed() As Boolean
     If NumOfWindows > 0 Then
-        If pdImages(CurrentImage).selectionActive And (Not pdImages(CurrentImage).mainSelection Is Nothing) Then
+        If pdImages(FormMain.ActiveForm.Tag).selectionActive And (Not pdImages(FormMain.ActiveForm.Tag).mainSelection Is Nothing) Then
             selectionsAllowed = True
         Else
             selectionsAllowed = False
