@@ -762,32 +762,34 @@ Private Sub createSelectionMask()
         
             'Interior/exterior selections use identical rendering code.
             If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
-                SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
-                maskRegion = CreateEllipticRgnIndirect(maskRect)
-                hBrush = CreateSolidBrush(maskForeColor)
-                FillRgn selMask.getLayerDC, maskRegion, hBrush
-                DeleteObject hBrush
-                DeleteObject maskRegion
-                'GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
+                'SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
+                'maskRegion = CreateEllipticRgnIndirect(maskRect)
+                'hBrush = CreateSolidBrush(maskForeColor)
+                'FillRgn selMask.getLayerDC, maskRegion, hBrush
+                'DeleteObject hBrush
+                'DeleteObject maskRegion
+                GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
             
             'Border selections are a bit different; we must draw two rounded ellipses - an exterior and an interior one.
             Else
             
                 'Draw the exterior oval
-                SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
-                maskRegion = CreateEllipticRgnIndirect(maskRect)
-                hBrush = CreateSolidBrush(maskForeColor)
-                FillRgn selMask.getLayerDC, maskRegion, hBrush
-                DeleteObject hBrush
-                DeleteObject maskRegion
-                
+                'SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
+                'maskRegion = CreateEllipticRgnIndirect(maskRect)
+                'hBrush = CreateSolidBrush(maskForeColor)
+                'FillRgn selMask.getLayerDC, maskRegion, hBrush
+                'DeleteObject hBrush
+                'DeleteObject maskRegion
+                GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
+                                
                 'Next, draw the interior one
-                SetRect maskRect, selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier
-                maskRegion = CreateEllipticRgnIndirect(maskRect)
-                hBrush = CreateSolidBrush(maskBackColor)
-                FillRgn selMask.getLayerDC, maskRegion, hBrush
-                DeleteObject hBrush
-                DeleteObject maskRegion
+                'SetRect maskRect, selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier
+                'maskRegion = CreateEllipticRgnIndirect(maskRect)
+                'hBrush = CreateSolidBrush(maskBackColor)
+                'FillRgn selMask.getLayerDC, maskRegion, hBrush
+                'DeleteObject hBrush
+                'DeleteObject maskRegion
+                GDIPlusDrawEllipse selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, True
             
             End If
             

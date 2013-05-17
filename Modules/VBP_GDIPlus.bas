@@ -256,18 +256,65 @@ Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest A
 'GDI+ calls related to drawing circles and ellipses
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
-Private Declare Function GdipSetSmoothingMode Lib "GdiPlus.dll" (ByVal mGraphics As Long, ByVal mSmoothingMode As Long) As Long
-Private Declare Function GdipDeleteBrush Lib "GdiPlus.dll" (ByVal mBrush As Long) As Long
-Private Declare Function GdipCreateSolidFill Lib "GdiPlus.dll" (ByVal mColor As Long, ByRef mBrush As Long) As Long
-Private Declare Function GdipFillEllipseI Lib "GdiPlus.dll" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
+Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
+Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
+Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
+Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 
-Private Const SmoothingModeAntiAlias As Long = &H4
+' Quality mode constants
+Private Enum QualityMode
+   QualityModeInvalid = -1
+   QualityModeDefault = 0
+   QualityModeLow = 1       ' Best performance
+   QualityModeHigh = 2       ' Best rendering quality
+End Enum
+
+Private Enum SmoothingMode
+   SmoothingModeInvalid = QualityModeInvalid
+   SmoothingModeDefault = QualityModeDefault
+   SmoothingModeHighSpeed = QualityModeLow
+   SmoothingModeHighQuality = QualityModeHigh
+   SmoothingModeNone = 3
+   SmoothingModeAntiAlias = 4
+End Enum
+
+Private Type tmpLong
+    lngResult As Long
+End Type
 
 'When GDI+ is initialized, it will assign us a token.  We use this to release GDI+ when the program terminates.
 Public g_GDIPlusToken As Long
 
-Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal centerX As Long, ByVal centerY As Long, ByVal cRadius As Long, ByVal useAA As Boolean) As Boolean
+'Use GDI+ to render
+Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
 
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    
+    'Create a solid fill brush
+    Dim iBrush As Long
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, 255), iBrush
+    
+    'Fill the ellipse
+    GdipFillEllipseI iGraphics, iBrush, x1, y1, xWidth, yHeight
+    
+    'Release all created objects
+    GdipDeleteBrush iBrush
+    GdipDeleteGraphics iGraphics
+
+End Function
+
+Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
+    Dim dstQuad As RGBQUAD
+    dstQuad.Red = ExtractR(vbRGB)
+    dstQuad.Green = ExtractG(vbRGB)
+    dstQuad.Blue = ExtractB(vbRGB)
+    dstQuad.Alpha = alphaValue
+    Dim placeHolder As tmpLong
+    LSet placeHolder = dstQuad
+    fillQuadWithVBRGB = placeHolder.lngResult
 End Function
 
 'Use GDI+ to load a picture into a StdPicture object - not ideal, as some information will be lost in the transition, but since
