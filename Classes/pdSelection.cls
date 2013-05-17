@@ -768,6 +768,7 @@ Private Sub createSelectionMask()
                 FillRgn selMask.getLayerDC, maskRegion, hBrush
                 DeleteObject hBrush
                 DeleteObject maskRegion
+                'GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
             
             'Border selections are a bit different; we must draw two rounded ellipses - an exterior and an interior one.
             Else
@@ -957,6 +958,9 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     Dim xLookup() As Long, yLookup() As Long
     Dim tmpCalculation As Long
     
+    Dim tmpSelHolder As Byte
+    Dim tmpSelDivider As Double
+    
     'Based on the selection type, draw a corresponding selection of some sort
     Select Case renderType
     
@@ -999,17 +1003,24 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
                 If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
                 yLookup(y) = tmpCalculation
             Next y
-            
+                        
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
                 QuickVal = x * 3
             For y = imgTop To bottomBound
             
+                tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
+                
                 'Remember that lightbox works a little weirdly - UNSELECTED pixels are marked, while selected ones are left untouched
-                If selMaskData(xLookup(x), yLookup(y)) = 0 Then
+                If tmpSelHolder = 0 Then
                     iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
                     iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
                     iData(QuickVal, y) = hData(iData(QuickVal, y))
+                ElseIf tmpSelHolder < 255 Then
+                    tmpSelDivider = tmpSelHolder / 255
+                    iData(QuickVal + 2, y) = BlendColors(hData(iData(QuickVal + 2, y)), iData(QuickVal + 2, y), tmpSelDivider)
+                    iData(QuickVal + 1, y) = BlendColors(hData(iData(QuickVal + 1, y)), iData(QuickVal + 1, y), tmpSelDivider)
+                    iData(QuickVal, y) = BlendColors(hData(iData(QuickVal, y)), iData(QuickVal, y), tmpSelDivider)
                 End If
                 
             Next y
@@ -1082,11 +1093,20 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
                 QuickVal = x * 3
             For y = imgTop To bottomBound
             
+                tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
+                
                 'If this pixels is over an active pixel in the selection mask, mark it with the selected color
-                If selMaskData(xLookup(x), yLookup(y)) > 0 Then
+                If tmpSelHolder = 255 Then
                     iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
                     iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
                     iData(QuickVal, y) = bData(iData(QuickVal, y))
+                    
+                'Partially selected pixels are rendered with antialiasing
+                ElseIf tmpSelHolder > 0 Then
+                    tmpSelDivider = tmpSelHolder / 255
+                    iData(QuickVal + 2, y) = BlendColors(iData(QuickVal + 2, y), rData(iData(QuickVal + 2, y)), tmpSelDivider)
+                    iData(QuickVal + 1, y) = BlendColors(iData(QuickVal + 1, y), gData(iData(QuickVal + 1, y)), tmpSelDivider)
+                    iData(QuickVal, y) = BlendColors(iData(QuickVal, y), bData(iData(QuickVal, y)), tmpSelDivider)
                 End If
                 
             Next y
