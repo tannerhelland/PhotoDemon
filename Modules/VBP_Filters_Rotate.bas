@@ -227,7 +227,7 @@ End Sub
 Public Sub MenuCropToSelection()
 
     'First, make sure there is an active selection
-    If pdImages(CurrentImage).selectionActive = False Then
+    If Not pdImages(CurrentImage).selectionActive Then
         Message "No active selection found.  Crop abandoned."
         Exit Sub
     End If
@@ -237,10 +237,14 @@ Public Sub MenuCropToSelection()
     'Create a new layer the size of the active selection
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+    pdImages(CurrentImage).retrieveProcessedSelection tmpLayer
     
+    'NOTE: historically, the entire rectangular bounding region of the selection was included in the crop.  (This is GIMP's behavior.)
+    ' I now fully crop the image, including removal of all unselected pixels.  This almost always results in a 32bpp image.
+    ' I am leaving the old code here in case I decide to revert it after further user testing.  (Comment added during 5.6 beta.)
     'Copy the selection area to the temporary layer
-    BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
+    'tmpLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+    'BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
     
     'Transfer the newly cropped image back into the main layer object
     pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
