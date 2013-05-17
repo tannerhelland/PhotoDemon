@@ -3061,9 +3061,6 @@ Private Sub MnuSynthesize_Click()
 End Sub
 
 Private Sub MnuTest_Click()
-    'FormShear.Show vbModal, FormMain
-    'FormPerspective.Show vbModal, FormMain
-    FormTruePerspective.Show vbModal, FormMain
     'MenuTest
 End Sub
 

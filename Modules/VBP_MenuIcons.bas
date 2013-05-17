@@ -54,7 +54,7 @@ Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiImage As Lon
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal gdiImage As Long) As Long
 
 'GDI+ types and constants
-Private Const UNITPIXEL As Long = &H2&
+Private Const UnitPixel As Long = &H2&
 Private Type RECTF
     fLeft As Single
     fTop As Single
@@ -824,7 +824,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
         If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
         
             'Retrieve the image's size
-            GdipGetImageBounds gdiBitmap, tmpRect, UNITPIXEL
+            GdipGetImageBounds gdiBitmap, tmpRect, UnitPixel
         
             'Convert the GDI+ bitmap to a standard Windows hBitmap
             If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then

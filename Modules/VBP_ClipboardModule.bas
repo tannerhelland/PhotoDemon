@@ -38,23 +38,16 @@ Public Sub ClipboardCopy()
         'Fill the temporary layer with the selection
         tmpLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
         BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
-    
-        'If the selection contains transparency, blend it against a white background
-        If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
         
     Else
     
         'If a selection is NOT active, just make a copy of the full image
         tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
-    
-        'If the image contains transparency, blend it against a white background
-        If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor 255, 255, 255
         
     End If
     
     'Copy the temporary layer to the clipboard, then erase it
     tmpLayer.copyLayerToClipboard
-    
     tmpLayer.eraseLayer
     
 End Sub
@@ -66,6 +59,56 @@ End Sub
 
 'Paste an image (e.g. create a new image based on data in the clipboard
 Public Sub ClipboardPaste()
+    
+    Dim tmpClipboardFile As String
+    Dim sFile(0) As String
+    Dim sTitle As String, sFilename As String
+    
+    'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first
+    Dim clpObject As cCustomClipboard
+    Set clpObject = New cCustomClipboard
+    
+    'See if clipboard data is available in PNG format.  If it is, attempt to load it
+    If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "PNG") Then
+            
+        Dim PNGID As Long
+        PNGID = clpObject.FormatIDForName(FormMain.hWnd, "PNG")
+        
+        Dim PNGData() As Byte
+        If clpObject.ClipboardOpen(FormMain.hWnd) Then
+        
+            If clpObject.GetBinaryData(PNGID, PNGData) Then
+                
+                'Dump the PNG data out to file
+                tmpClipboardFile = g_UserPreferences.getTempPath & "PDClipboard.png"
+                
+                Dim fileID As Integer
+                fileID = FreeFile()
+                Open tmpClipboardFile For Binary As #fileID
+                    Put #fileID, 1, PNGData
+                Close #fileID
+                
+                'We can now use the standard image load routine to import the temporary file
+                sFile(0) = tmpClipboardFile
+                sTitle = g_Language.TranslateMessage("Clipboard Image")
+                sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+                PreLoadImage sFile, False, sTitle, sFilename
+                    
+                'Be polite and remove the temporary file
+                If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile
+                    
+                Message "Clipboard data imported successfully "
+                
+                clpObject.ClipboardClose
+                Exit Sub
+        
+            End If
+        
+            clpObject.ClipboardClose
+        
+        End If
+                
+    End If
     
     'Make sure the clipboard format is a bitmap
     If Clipboard.GetFormat(CLIPBOARD_FORMAT_BMP) Then
@@ -80,7 +123,6 @@ Public Sub ClipboardPaste()
         tmpLayer.CreateFromPicture tmpPicture
         
         'Ask the layer to write its contents to file in BMP format
-        Dim tmpClipboardFile As String
         tmpClipboardFile = g_UserPreferences.getTempPath & "PDClipboard.tmp"
         tmpLayer.writeToBitmapFile tmpClipboardFile
         
@@ -90,15 +132,10 @@ Public Sub ClipboardPaste()
         Set tmpLayer = Nothing
         
         'Use the standard image load routine to import the temporary file
-        Dim sFile(0) As String
+        
         sFile(0) = tmpClipboardFile
-        
-        Dim sTitle As String
         sTitle = g_Language.TranslateMessage("Clipboard Image")
-        
-        Dim sFilename As String
         sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-        
         PreLoadImage sFile, False, sTitle, sFilename
             
         'Be polite and remove the temporary file

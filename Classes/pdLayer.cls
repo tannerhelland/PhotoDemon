@@ -15,11 +15,11 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2011-2013 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 25/November/12
-'Last update: added a function for copying just the alpha values from another layer object
+'Last updated: 16/May/13
+'Last update: added support for writing 32bpp images to the clipboard in PNG format, which preserves transparency
 '
 'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
-' pdLayer is a powerful DIB class responsible for managing all image data in memory.  Some of the benefits provided by
+' pdLayer is a powerful DIB class responsible for managing all image data in memory. Some of the benefits provided by
 ' this approach include:
 '
 '- Ability to load large images without problems
@@ -31,24 +31,23 @@ Attribute VB_Exposed = False
 'These are serious benefits.
 '
 'Note that anything you can do with an hDC property you can do with this class - simply use the getLayerDC function to
-' return the DIB's hDC, then do with it what you please.  All functions are heavily commented and should be self-explanatory.
+' return the DIB's hDC, then do with it what you please. All functions are heavily commented and should be self-explanatory.
 '
-'Note also that this class is treated as a subset of pdImage().  Right now each pdImage object only contains one layer
+'Note also that this class is treated as a subset of pdImage(). Right now each pdImage object only contains one layer
 ' (the image itself), but in the future a pdImage object could theoretically store many layers.
 '
 'SPECIAL THANKS
-'In building this class, I utilized a number of other DIB classes for reference and testing.  Special thanks to:
+'In building this class, I utilized a number of other DIB classes for reference and testing. Special thanks to:
 ' Carles PV's iBMP project: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 ' Steve McMahon's DIB/SafeArray analysis: http://www.vbaccelerator.com/home/VB/Code/vbMedia/DIB_Sections/True_Colour_DIBSection/article.asp
 ' Many thanks to these three individuals for their outstanding work on graphics in VB.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
+' projects IF you provide attribution. For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 
 Option Explicit
-
 
 'DIB Types
 Private Type RGBQUAD
@@ -88,11 +87,11 @@ Private Type BITMAPINFO
 End Type
 
 Private Type BITMAPFILEHEADER
-    Type      As Integer
-    Size      As Long
+    Type As Integer
+    Size As Long
     Reserved1 As Integer
     Reserved2 As Integer
-    OffBits   As Long
+    OffBits As Long
 End Type
 
 'Rectangle type for use with SetRect/FillRect API calls
@@ -106,16 +105,16 @@ End Type
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
 Private Type SAFEARRAYBOUND
     cElements As Long
-    lBound   As Long
+    lBound As Long
 End Type
 
 Private Type SAFEARRAY2D
-    cDims      As Integer
-    fFeatures  As Integer
+    cDims As Integer
+    fFeatures As Integer
     cbElements As Long
-    cLocks     As Long
-    pvData     As Long
-    Bounds(1)  As SAFEARRAYBOUND
+    cLocks As Long
+    pvData As Long
+    Bounds(1) As SAFEARRAYBOUND
 End Type
 
 
@@ -133,7 +132,8 @@ Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any
 'DIB API functions
 ' (Note that these are currently declared in FastDrawing as well)
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
-Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
+'Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
@@ -195,7 +195,7 @@ Private layerColorDepth As Long
 Private Const LAYER_IDENTIFIER As String * 4 = "PDlr"
 Private Const LAYER_FILE_VERSION_2012 As Long = &H1000
 
-'These variables are a temporary addition to ensure that print previewing still works.  They will be removed in a future
+'These variables are a temporary addition to ensure that print previewing still works. They will be removed in a future
 ' update as part of a print preview revamp, so DO NOT add features that rely on them.
 Public PreviewX As Long
 Public PreviewY As Long
@@ -214,17 +214,17 @@ Public Function getOriginalTransparentColor() As Long
     getOriginalTransparentColor = originalTransparentColor
 End Function
 
-'Return the location of a transparent pixel.  This will be set as part of the MarkAlpha routine.
+'Return the location of a transparent pixel. This will be set as part of the MarkAlpha routine.
 Public Sub getTransparentLocation(ByRef srcX As Long, ByRef srcY As Long)
     srcX = trnsX
     srcY = trnsY
 End Sub
 
-'This function will apply an "alpha-cutoff" to a 32bpp image.  Any alpha values above the cutoff will be replaced with
+'This function will apply an "alpha-cutoff" to a 32bpp image. Any alpha values above the cutoff will be replaced with
 ' magic magenta (253,0,253) and the location of a transparent pixel (trnsX, trnsY) will be marked.
 Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True)
 
-    'Make sure this layer is 32bpp.  If it isn't, running this function is pointless.
+    'Make sure this layer is 32bpp. If it isn't, running this function is pointless.
     If layerColorDepth = 32 Then
 
         'Make sure this layer isn't empty
@@ -265,7 +265,7 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                         originalTransparentColor = RGB(iData(QuickX + 2, y), iData(QuickX + 1, y), iData(QuickX, y))
                     End If
                     
-                    'When previewing this effect, we don't actually want to change pixel colors.  Otherwise,
+                    'When previewing this effect, we don't actually want to change pixel colors. Otherwise,
                     ' HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
                     If forceColor Then
                         'Color this pixel with magic magenta (253,0,253)
@@ -362,9 +362,38 @@ Public Sub copyLayerToClipboard()
     'Make sure the current layer actually contains an image before copying it to the clipboard
     If (layerDIB <> 0) Then
     
-        'Make sure the clipboard is available and working
-        If (OpenClipboard(0) <> 0) Then
-               
+        'We are going to copy the image data to the clipboard twice - once in PNG format, then again in standard BMP format.
+        ' This maxmimizes operability between major software packages.
+        
+        'Start by using the wonderful vbAccelerator clipboard class, which will handle the messiest parts for us.
+        Dim clpObject As cCustomClipboard
+        Set clpObject = New cCustomClipboard
+        If clpObject.ClipboardOpen(FormMain.hWnd) Then
+        
+            clpObject.ClearClipboard
+        
+            'FreeImage is required to perform the PNG transformation.  We could use GDI+, but FreeImage is easier to interface with.
+            If g_ImageFormats.FreeImageEnabled And layerColorDepth = 32 Then
+            
+                Dim PNGID As Long
+                PNGID = clpObject.AddFormat("PNG")
+                
+                'Convert our current layer to a FreeImage-type DIB
+                Dim fi_DIB As Long
+                fi_DIB = FreeImage_CreateFromDC(layerDC)
+                
+                'Convert the bitmap to PNG format, save it to an array, and release the original bitmap from memory
+                Dim pngArray() As Byte
+                Dim fi_Check As Long
+                fi_Check = FreeImage_SaveToMemoryEx(FIF_PNG, fi_DIB, pngArray, FISO_PNG_Z_DEFAULT_COMPRESSION, True)
+                
+                'Now, hand over the filled PNG array to the clipboard
+                clpObject.SetBinaryData PNGID, pngArray
+                
+            End If
+            
+            'With a PNG copy successfully saved, proceed to copy a standard 24bpp bitmap to the clipboard
+            
             'Get a handle to the current desktop, and create a compatible clipboard device context in it
             Dim desktophWnd As Long
             desktophWnd = GetDesktopWindow
@@ -373,10 +402,10 @@ Public Sub copyLayerToClipboard()
             desktopDC = GetDC(desktophWnd)
             clipboardDC = CreateCompatibleDC(desktopDC)
             
-            'Make sure the clipboard was able to receive a compatible device context
+            'If our temporary DC was created successfully, use it to create a temporary bitmap for the clipboard
             If (clipboardDC <> 0) Then
             
-                'Create a bitmap compatible with the current desktop.  This will receive the actual pixel data of the current layer
+                'Create a bitmap compatible with the current desktop. This will receive the actual pixel data of the current layer.
                 Dim clipboardBMP As Long
                 clipboardBMP = CreateCompatibleBitmap(desktopDC, layerWidth, layerHeight)
                 
@@ -386,36 +415,16 @@ Public Sub copyLayerToClipboard()
                     Dim clipboardOldBMP As Long
                     clipboardOldBMP = SelectObject(clipboardDC, clipboardBMP)
                     
-                    'Use BitBlt to paint the current layer to that bitmap
+                    'Composite the layer against a white background, then use BitBlt to paint the current layer to the clipboard bitmap
+                    Me.convertTo24bpp
                     BitBlt clipboardDC, 0, 0, layerWidth, layerHeight, layerDC, 0, 0, vbSrcCopy
                     
                     'Remove that bitmap from the clipboard device context to leave room for the copy
                     SelectObject clipboardDC, clipboardOldBMP
         
-                    'Empty the current clipboard, copy this layer into it, then close the clipboard and delete the temporary
-                    ' DC we created.
-                    EmptyClipboard
-                    SetClipboardData CLIPBOARD_FORMAT_BMP, clipboardBMP
+                    'Copy the bitmap to the clipboard, then close and exit
+                    clpObject.SetClipboardMemoryHandle CLIPBOARD_FORMAT_BMP, clipboardBMP
                     
-                    'Also, add a PNG-format copy of the image if GDI+ is available
-                    
-                    'If g_ImageFormats.GDIPlusEnabled Then
-                  '
-                  '      Dim tmpStream() As Byte
-                  '      Dim tmpIIStream As IUnknown
-                  '
-                  '      Dim gdiCheck As Boolean
-                  '      gdiCheck = GDIPlusSavePNGStream(CurrentImage, tmpStream, tmpIIStream)
-                  '
-                  '      Dim lPNG As Long
-                  '      lPNG = RegisterClipboardFormat("PNG")
-                  '
-                  '      SetClipboardData lPNG, VarPtr(tmpIIStream)
-                  '
-                  '  End If
-                                        
-                    CloseClipboard
-        
                     DeleteDC clipboardDC
                     
                 End If
@@ -424,6 +433,9 @@ Public Sub copyLayerToClipboard()
             
             'Release (DON'T DELETE!) our control of the current desktop device context
             ReleaseDC desktophWnd, desktopDC
+            
+            'Release our hold on the clipboard
+            clpObject.ClipboardClose
             
         End If
         
@@ -468,7 +480,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
                 'Resize and copy the image data
                 StretchBlt layerDC, 0, 0, newWidth, newHeight, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, vbSrcCopy
                 
-                'Now comes a nasty hack; HALFTONE stretching does not preserve the alpha channel, but COLORONCOLOR does.  So for 32bpp
+                'Now comes a nasty hack; HALFTONE stretching does not preserve the alpha channel, but COLORONCOLOR does. So for 32bpp
                 ' images, we now make a second copy of the original image using COLORONCOLOR - which means it contains valid alpha values.
                 ' Then we copy those into our current image, effectively taking the best of both HALFTONE and COLORONCOLOR stretching.
                 If srcLayer.getLayerColorDepth = 32 Then
@@ -480,7 +492,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
                     SetStretchBltMode hackLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
                     StretchBlt hackLayer.getLayerDC, 0, 0, newWidth, newHeight, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, vbSrcCopy
             
-                    'At this point, hacklayer contains transparency data roughly equivalent to our half-toned images.  (Not perfect, but close.)
+                    'At this point, hacklayer contains transparency data roughly equivalent to our half-toned images. (Not perfect, but close.)
                     ' We need to copy that data into our image, then release the hack layer.
                     
                     'Start, as always, with a SafeArray
@@ -535,7 +547,7 @@ End Function
 'Convert this layer to 24bpp mode
 Public Function convertTo24bpp() As Boolean
 
-    'Make sure this layer is 32bpp.  If it isn't, running this function pointless.
+    'Make sure this layer is 32bpp. If it isn't, running this function pointless.
     If layerColorDepth = 32 Then
 
         'Make sure this layer isn't empty
@@ -580,7 +592,7 @@ End Function
 'Convert this layer to 32bpp mode
 Public Function convertTo32bpp() As Boolean
 
-    'Make sure this layer is 24bpp.  If it isn't, running this function is pointless.
+    'Make sure this layer is 24bpp. If it isn't, running this function is pointless.
     If layerColorDepth = 24 Then
 
         'Make sure this layer isn't empty
@@ -604,7 +616,7 @@ Public Function convertTo32bpp() As Boolean
                 tmpLayer.eraseLayer
                 Set tmpLayer = Nothing
                                 
-                'Finally, we need to loop through the image and set all alpha values to 255.  Otherwise the image will
+                'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
                 ' be completely transparent (and we don't want that!)
                 Dim iData() As Byte
                 Dim tmpSA As SAFEARRAY2D
@@ -701,7 +713,7 @@ Public Sub convertToCMYK32()
     
 End Sub
 
-'Is this layer grayscale?  Determination is made by scanning each pixel and comparing RGB values to see if they match.
+'Is this layer grayscale? Determination is made by scanning each pixel and comparing RGB values to see if they match.
 Public Function isLayerGrayscale() As Boolean
     
     'Make sure this layer isn't empty
@@ -729,8 +741,8 @@ Public Function isLayerGrayscale() As Boolean
             g = iData(QuickX + 1, y)
             b = iData(QuickX, y)
             
-            'For optimization reasons, this is stated as multiple IFs instead of an OR.  I'm not sure if VB
-            ' short-circuits OR statements, but I know multiple IF statements work.  :)
+            'For optimization reasons, this is stated as multiple IFs instead of an OR. I'm not sure if VB
+            ' short-circuits OR statements, but I know multiple IF statements work. :)
             If r <> g Then
                 
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -780,13 +792,13 @@ End Function
 ' (This is used to determine how transparency is handled when exporting to lower color depths.)
 Public Function isAlphaBinary() As Boolean
 
-    'Make sure this layer is 32bpp.  If it isn't, running this function is pointless.
+    'Make sure this layer is 32bpp. If it isn't, running this function is pointless.
     If layerColorDepth = 32 Then
 
         'Make sure this layer isn't empty
         If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
     
-            'Loop through the image and compare each alpha value against 0 and 255.  If a value doesn't
+            'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
             ' match either of this, this is a non-binary alpha channel and it must be handled specially.
             Dim iData() As Byte
             Dim tmpSA As SAFEARRAY2D
@@ -795,7 +807,7 @@ Public Function isAlphaBinary() As Boolean
     
             Dim x As Long, y As Long, QuickX As Long
                 
-            'By default, assume that the image does not have a binary alpha channel.  (This is the preferable
+            'By default, assume that the image does not have a binary alpha channel. (This is the preferable
             ' default, as we will exit the loop IFF a non-0 or non-255 value is found.)
             Dim notBinary As Boolean
             notBinary = False
@@ -808,8 +820,8 @@ Public Function isAlphaBinary() As Boolean
             For y = 0 To layerHeight - 1
                 chkAlpha = iData(QuickX + 3, y)
                 
-                'For optimization reasons, this is stated as two IFs instead of an OR.  I'm not sure if VB
-                ' short-circuits OR statements, but I know nested IF statements work.  :)
+                'For optimization reasons, this is stated as two IFs instead of an OR. I'm not sure if VB
+                ' short-circuits OR statements, but I know nested IF statements work. :)
                 If chkAlpha <> 255 Then
                 
                     If chkAlpha <> 0 Then
@@ -876,7 +888,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
                     DeleteDC TmpDC
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
-                    ' black background.  We want the background to be white, so perform our own premultiplication.
+                    ' black background. We want the background to be white, so perform our own premultiplication.
                     ' (In the future, this could be a checkerboard pattern or a custom color instead of white.)
                     'NOTE! This is now handled at draw-time, and the instruction to re-render has been made optional.
                     If forceWhiteBackground And (layerColorDepth = 32) Then compositeBackgroundColor
@@ -903,7 +915,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
 
 End Function
 
-'Create a blank layer.  If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
+'Create a blank layer. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
 Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal backColor As Long = vbWhite) As Boolean
     
     'Erase any existing layer data
@@ -973,7 +985,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     
 End Function
 
-'This will effectively reset everything related to this layer, including image data.  Use cautiously!
+'This will effectively reset everything related to this layer, including image data. Use cautiously!
 Public Function eraseLayer()
 
     'If we have image data, clear it out
@@ -1017,7 +1029,7 @@ Private Sub Class_Terminate()
     eraseLayer
 End Sub
 
-'Draw this layer to a picture box.  The image will be automatically resized and centered.
+'Draw this layer to a picture box. The image will be automatically resized and centered.
 Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
 
     'Erase any existing picture
@@ -1051,7 +1063,7 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         PreviewY = CInt((dstHeight - dHeight) / 2)
         PreviewX = 0
         'PreviewWidth and PreviewHeight are only generated so that the "Print Preview" function works (it relies on those values
-        ' to render its picture box).  They will be removed in a future update so DO NOT rely on them elsewhere.
+        ' to render its picture box). They will be removed in a future update so DO NOT rely on them elsewhere.
         PreviewWidth = dWidth
         PreviewHeight = dHeight
         StretchBlt dstPicture.hDC, 0, PreviewY, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
@@ -1102,11 +1114,11 @@ Public Sub createFromFile(ByRef srcFilename As String)
         Get #fileNum, , fHeight
         Get #fileNum, , fArrayWidth
         
-        'Is it compressed?  (Not implemented now; might be in the future)
+        'Is it compressed? (Not implemented now; might be in the future)
         Dim toUncompress As Boolean
         Get #fileNum, , toUncompress
         
-        'If we've made it this far, attempt to load pixel data.  Start by erasing and re-initializing this object to the proper size.
+        'If we've made it this far, attempt to load pixel data. Start by erasing and re-initializing this object to the proper size.
         createBlank fWidth, fHeight, fColorDepth
         
         'Now pull the pixel data from the file
@@ -1157,7 +1169,7 @@ Public Sub writeToFile(ByRef dstFilename As String)
         Put #fileNum, , layerHeight
         Put #fileNum, , layerArrayWidth
         
-        'Is it compressed?  (Not implemented now; might be in the future)
+        'Is it compressed? (Not implemented now; might be in the future)
         Dim toCompress As Boolean
         toCompress = False
         Put #fileNum, , toCompress
@@ -1168,7 +1180,7 @@ Public Sub writeToFile(ByRef dstFilename As String)
         prepInternalSafeArray tmpSA
         CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
         
-        'Now dump the entire array into the file.  To my knowledge, this is the fastest way to do this in VB.
+        'Now dump the entire array into the file. To my knowledge, this is the fastest way to do this in VB.
         Put #fileNum, , iData
         
     Close #fileNum
@@ -1195,9 +1207,9 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     
     'Build the file header first
     With bmpFileHeader
-        .Type = &H4D42      'BMP identifier
-        .Size = Len(bmpFileHeader) + (slWidth * layerHeight)      'Length of the file
-        .OffBits = Len(bmpFileHeader) + Len(bmpInfoHeader)          'Length of the header area
+        .Type = &H4D42 'BMP identifier
+        .Size = Len(bmpFileHeader) + (slWidth * layerHeight) 'Length of the file
+        .OffBits = Len(bmpFileHeader) + Len(bmpInfoHeader) 'Length of the header area
     End With
     
     '...then the image header
@@ -1214,7 +1226,7 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     ReDim iData(0 To slWidth - 1, 0 To layerHeight - 1) As Byte
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
     
-    'With all our information in place, check to see if that file already exists.  Delete it if necessary.
+    'With all our information in place, check to see if that file already exists. Delete it if necessary.
     If FileExist(dstFilename) = True Then Kill dstFilename
         
     Dim fileNum As Integer
@@ -1236,7 +1248,7 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     
 End Sub
 
-'Sometimes a layer needs to access its own bits.  Here's how.
+'Sometimes a layer needs to access its own bits. Here's how.
 Private Sub prepInternalSafeArray(ByRef tmpSA As SAFEARRAY2D)
     With tmpSA
         .cbElements = 1
@@ -1249,7 +1261,7 @@ Private Sub prepInternalSafeArray(ByRef tmpSA As SAFEARRAY2D)
     End With
 End Sub
 
-'Sometimes a layer needs to access the bits of other layers.  Here's how.
+'Sometimes a layer needs to access the bits of other layers. Here's how.
 Private Sub prepExternalSafeArray(ByRef srcLayer As pdLayer, ByRef tmpSA As SAFEARRAY2D)
     With tmpSA
         .cbElements = 1
@@ -1262,11 +1274,11 @@ Private Sub prepExternalSafeArray(ByRef srcLayer As pdLayer, ByRef tmpSA As SAFE
     End With
 End Sub
 
-'Pre-composite an image with an alpha-channel against a background color.  Until PhotoDemon is capable of rendering transparent
+'Pre-composite an image with an alpha-channel against a background color. Until PhotoDemon is capable of rendering transparent
 ' images itself, this is necessary to give transparent images a white background.
 Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1)
 
-    'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
+    'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If layerColorDepth <> 32 Then Exit Sub
 
     'DEBUG: These variables can be used to run timing tests on the composite routine.
@@ -1354,7 +1366,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
         'Access the alpha data for this pixel
         checkAlpha = iData(QuickX + 3, y)
         
-        'Ignore fully opaque pixels.  (This makes the routine much faster.)
+        'Ignore fully opaque pixels. (This makes the routine much faster.)
         If checkAlpha <> 255 Then
             
             'Convert the alpha value to a floating-point variable
@@ -1386,7 +1398,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
 
 End Sub
 
-'Blend byte1 w/ byte2 based on mixRatio.  mixRatio is expected to be a value between 0 and 1.
+'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
 Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
     Blend2Colors = (mixRatio * Color1) + ((1 - mixRatio) * Color2)
     'Alternate blend formula from Robert Rayment - my own testing shows no measurable speed difference between the two methods
@@ -1394,11 +1406,11 @@ Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef 
 End Function
 
 
-'Pre-composite an image with an alpha-channel against a background color.  Until PhotoDemon is capable of rendering transparent
+'Pre-composite an image with an alpha-channel against a background color. Until PhotoDemon is capable of rendering transparent
 ' images itself, this is necessary to give transparent images a white background.
 Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1)
 
-    'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
+    'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If layerColorDepth <> 32 Then Exit Sub
 
     'Start, as always, with a SafeArray
@@ -1486,7 +1498,7 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
         'Access the alpha data for this pixel
         checkAlpha = aData(QuickX + 3, y)
         
-        'Ignore fully opaque pixels.  (This makes the routine much faster.)
+        'Ignore fully opaque pixels. (This makes the routine much faster.)
         If checkAlpha <> 255 Then
             
             'Convert the alpha value to a floating-point variable
@@ -1516,11 +1528,11 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
 
 End Sub
 
-'Check to see if a 32bpp image is really 32bpp. (Basically, scan all pixels in the alpha channel.  If all values are set to
+'Check to see if a 32bpp image is really 32bpp. (Basically, scan all pixels in the alpha channel. If all values are set to
 ' 255 or all values are set to 0, remove the alpha channel and rebuild this layer in 24bpp mode.)
 Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1) As Boolean
 
-    'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
+    'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If layerColorDepth <> 32 Then
         verifyAlphaChannel = True
         Exit Function
@@ -1542,7 +1554,7 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
     Dim checkAlpha As Boolean, initAlpha As Double
     checkAlpha = False
     
-    'Determine the alpha value of the top-left pixel.  This will be used as our baseline value.
+    'Determine the alpha value of the top-left pixel. This will be used as our baseline value.
     initAlpha = iData(3, 0)
     
     'If initAlpha is something other than 255 or 0, we don't need to check the image
@@ -1558,7 +1570,7 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
         QuickX = x * 4
     For y = 0 To layerHeight - 1
         
-        'Compare the alpha data for this pixel to the initial pixel.  If they DO NOT match, this is a valid alpha channel.
+        'Compare the alpha data for this pixel to the initial pixel. If they DO NOT match, this is a valid alpha channel.
         If initAlpha <> iData(QuickX + 3, y) Then
             checkAlpha = True
             Exit For
@@ -1575,21 +1587,21 @@ Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional By
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     Erase iData
 
-    'Return checkAlpha.  If varying alpha values were found, this function returns TRUE.  If all values were the same,
+    'Return checkAlpha. If varying alpha values were found, this function returns TRUE. If all values were the same,
     ' this function returns FALSE.
     verifyAlphaChannel = checkAlpha
 
 End Function
 
-'Copy the alpha values from another pdLayer object to this one.  This is useful when the alpha channel for this layer must be lost
+'Copy the alpha values from another pdLayer object to this one. This is useful when the alpha channel for this layer must be lost
 ' during a transformation (typically something involving FreeImage or GDI+), and a temporary layer was made to preserve the alpha
-' data.  If the image is currently 24bpp, this function will first convert it to 32bpp before copying the alpha data.
+' data. If the image is currently 24bpp, this function will first convert it to 32bpp before copying the alpha data.
 
-'IMPORTANT NOTE: to keep this function fast, NO ARRAY BOUNDS CHECKING IS DONE.  Make sure that the passed pdLayer object is
-'                 THE SAME SIZE (or larger) than this layer, or you will experience critical errors.
+'IMPORTANT NOTE: to keep this function fast, NO ARRAY BOUNDS CHECKING IS DONE. Make sure that the passed pdLayer object is
+' THE SAME SIZE (or larger) than this layer, or you will experience critical errors.
 Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
 
-    'This is only useful for images with alpha channels.  Exit if no alpha channel is present.
+    'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If layerColorDepth <> 32 Then convertTo32bpp
 
     'Prepare a SafeArray that points to our own DIB data
@@ -1625,8 +1637,8 @@ Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
 
 End Sub
 
-'Layers created from GDI+ contain pre-multiplied alpha values.  These are great for high-performance blting, but terrible for
-' photo editing.  This routine can be used to restore (well, estimate) the original color values of the image.
+'Layers created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
+' photo editing. This routine can be used to restore (well, estimate) the original color values of the image.
 Public Sub fixPremultipliedAlpha()
 
     'Prepare a SAFEARRAY, which allows us to access the DIB data directly
@@ -1676,3 +1688,4 @@ Public Sub fixPremultipliedAlpha()
     Erase iData
 
 End Sub
+
