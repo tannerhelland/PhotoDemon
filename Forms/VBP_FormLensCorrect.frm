@@ -454,7 +454,10 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
                 
     Next y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     

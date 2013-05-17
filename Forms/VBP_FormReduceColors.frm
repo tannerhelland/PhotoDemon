@@ -695,15 +695,18 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     
     'Intelligent Coloring requires extra work.  Perform a second loop through the image, replacing values with their
     ' computed counterparts.
-    If smartColors Then
+    If smartColors And (Not cancelCurrentAction) Then
     
-        If toPreview = False Then
+        If Not toPreview Then
             SetProgBarVal getProgBarMax
             Message "Applying intelligent coloring..."
         End If
@@ -880,7 +883,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         If cb < 0 Then cb = 0
         
         'If we are not doing Intelligent Coloring, assign the colors now (to avoid having to do another loop at the end)
-        If smartColors = False Then
+        If Not smartColors Then
             ImageData(QuickVal + 2, y) = cR
             ImageData(QuickVal + 1, y) = cG
             ImageData(QuickVal, y) = cb
@@ -894,15 +897,18 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         eB = 0
         
         If toPreview = False Then
-            If (y And progBarCheck) = 0 Then SetProgBarVal y
+            If (y And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal y
+            End If
         End If
     Next y
     
     'Intelligent Coloring requires extra work.  Perform a second loop through the image, replacing values with their
     ' computed counterparts.
-    If smartColors Then
+    If smartColors And (Not cancelCurrentAction) Then
         
-        If toPreview = False Then
+        If Not toPreview Then
             SetProgBarVal getProgBarMax
             Message "Applying intelligent coloring..."
         End If

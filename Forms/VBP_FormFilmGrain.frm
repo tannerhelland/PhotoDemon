@@ -263,7 +263,10 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
         
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     
@@ -272,9 +275,9 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     Erase dstImageData
     
     'Next, we need to soften the noise layer
-    If Not toPreview Then Message "Softening film grain..."
+    If (Not toPreview) And (Not cancelCurrentAction) Then Message "Softening film grain..."
     
-    If gSoftness > 0 Then
+    If (gSoftness > 0) And (Not cancelCurrentAction) Then
     
         'If this is a preview, we need to adjust the softening radius to match the size of the preview box
         If toPreview Then
@@ -298,76 +301,83 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     'Delete the original noise layer to conserve resources
     noiseLayer.eraseLayer
     Set noiseLayer = Nothing
-        
-    'We now have a softened noise layer.  Next, create three arrays - one pointing at the original image data, one pointing at
-    ' the noise data, and one pointing at the destination data.
-    prepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    Dim GaussImageData() As Byte
-    Dim gaussSA As SAFEARRAY2D
-    prepSafeArray gaussSA, gaussLayer
-    CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
-        
-    If Not toPreview Then Message "Applying film grain to image..."
+    If Not cancelCurrentAction Then
     
-    Dim r As Long, g As Long, b As Long
-    
-    'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+        'We now have a softened noise layer.  Next, create three arrays - one pointing at the original image data, one pointing at
+        ' the noise data, and one pointing at the destination data.
+        prepImageData dstSA, toPreview, dstPic
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
-        'Retrieve the original image's pixels
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
-                
-        'Now, retrieve a noise pixel (we only need one, as each color component will be identical)
-        nColor = GaussImageData(QuickVal, y) - 127
-                
-        'Add the noise to each color component
-        r = r + nColor
-        g = g + nColor
-        b = b + nColor
+        Dim srcImageData() As Byte
+        Dim srcSA As SAFEARRAY2D
+        prepSafeArray srcSA, srcLayer
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+            
+        Dim GaussImageData() As Byte
+        Dim gaussSA As SAFEARRAY2D
+        prepSafeArray gaussSA, gaussLayer
+        CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
+            
+        If Not toPreview Then Message "Applying film grain to image..."
         
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
-        If g > 255 Then g = 255
-        If g < 0 Then g = 0
-        If b > 255 Then b = 255
-        If b < 0 Then b = 0
+        Dim r As Long, g As Long, b As Long
         
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
+            
+            'Retrieve the original image's pixels
+            r = srcImageData(QuickVal + 2, y)
+            g = srcImageData(QuickVal + 1, y)
+            b = srcImageData(QuickVal, y)
+                    
+            'Now, retrieve a noise pixel (we only need one, as each color component will be identical)
+            nColor = GaussImageData(QuickVal, y) - 127
+                    
+            'Add the noise to each color component
+            r = r + nColor
+            g = g + nColor
+            b = b + nColor
+            
+            If r > 255 Then r = 255
+            If r < 0 Then r = 0
+            If g > 255 Then g = 255
+            If g < 0 Then g = 0
+            If b > 255 Then b = 255
+            If b < 0 Then b = 0
+            
+            dstImageData(QuickVal + 2, y) = r
+            dstImageData(QuickVal + 1, y) = g
+            dstImageData(QuickVal, y) = b
+            
+        Next y
+            If Not toPreview Then
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal finalX + x + finalY + finalY
+                End If
+            End If
+        Next x
         
-    Next y
-        If Not toPreview Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal finalX + x + finalY + finalY
-        End If
-    Next x
+        'With our work complete, release all arrays
+        CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
+        Erase GaussImageData
         
-    'With our work complete, release all arrays
-    CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
-    Erase GaussImageData
-    
-    gaussLayer.eraseLayer
-    Set gaussLayer = Nothing
-    
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
-    
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+        gaussLayer.eraseLayer
+        Set gaussLayer = Nothing
+        
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
+        
+        srcLayer.eraseLayer
+        Set srcLayer = Nothing
+        
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        Erase dstImageData
+        
+    End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic

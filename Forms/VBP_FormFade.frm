@@ -196,7 +196,10 @@ Public Sub FadeImage(ByVal fadeRatio As Double, Optional ByVal toPreview As Bool
         
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     
@@ -285,7 +288,10 @@ Public Sub UnfadeImage(Optional ByVal toPreview As Boolean = False, Optional ByR
         
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     

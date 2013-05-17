@@ -320,99 +320,105 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
         End If
     End If
     
-    CreateGaussianBlurLayer gRadius, srcLayer, gaussLayer, toPreview, finalY * 2 + finalX
-        
-    'Now that we have a gaussian layer created in gaussLayer, we can point arrays toward it and the source layer
-    Dim dstImageData() As Byte
-    prepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    Dim GaussImageData() As Byte
-    Dim gaussSA As SAFEARRAY2D
-    prepSafeArray gaussSA, gaussLayer
-    CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
+    'Smart blur requires a gaussian blur layer to operate.  Create that layer now.
+    If CreateGaussianBlurLayer(gRadius, srcLayer, gaussLayer, toPreview, finalY * 2 + finalX) Then
             
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+        'Now that we have a gaussian layer created in gaussLayer, we can point arrays toward it and the source layer
+        Dim dstImageData() As Byte
+        prepImageData dstSA, toPreview, dstPic
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
-    If toPreview = False Then Message "Applying smart blur..."
-        
-    Dim blendVal As Double
-    
-    'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        
-        'Retrieve the original image's pixels
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
-        
-        tDelta = (213 * r + 715 * g + 72 * b) \ 1000
-        
-        'Now, retrieve the gaussian pixels
-        r2 = GaussImageData(QuickVal + 2, y)
-        g2 = GaussImageData(QuickVal + 1, y)
-        b2 = GaussImageData(QuickVal, y)
-        
-        'Calculate a delta between the two
-        tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
-        If tDelta < 0 Then tDelta = -tDelta
+        Dim srcImageData() As Byte
+        Dim srcSA As SAFEARRAY2D
+        prepSafeArray srcSA, srcLayer
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+            
+        Dim GaussImageData() As Byte
+        Dim gaussSA As SAFEARRAY2D
+        prepSafeArray gaussSA, gaussLayer
+        CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
                 
-        'If the delta is below the specified threshold, replace it with the blurred data.
-        If smoothEdges Then
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = curLayerValues.BytesPerPixel
         
-            If tDelta > gThreshold Then
-                If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
-                dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-                dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-                dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-                If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+        ' based on the size of the area to be processed.
+        Dim progBarCheck As Long
+        progBarCheck = findBestProgBarValue()
+            
+        If toPreview = False Then Message "Applying smart blur..."
+            
+        Dim blendVal As Double
+        
+        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
+            
+            'Retrieve the original image's pixels
+            r = srcImageData(QuickVal + 2, y)
+            g = srcImageData(QuickVal + 1, y)
+            b = srcImageData(QuickVal, y)
+            
+            tDelta = (213 * r + 715 * g + 72 * b) \ 1000
+            
+            'Now, retrieve the gaussian pixels
+            r2 = GaussImageData(QuickVal + 2, y)
+            g2 = GaussImageData(QuickVal + 1, y)
+            b2 = GaussImageData(QuickVal, y)
+            
+            'Calculate a delta between the two
+            tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
+            If tDelta < 0 Then tDelta = -tDelta
+            
+            'If the delta is below the specified threshold, replace it with the blurred data.
+            If smoothEdges Then
+            
+                If tDelta > gThreshold Then
+                    If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
+                    dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
+                    dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
+                    dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
+                    If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+                End If
+            
+            Else
+            
+                If tDelta <= gThreshold Then
+                    If gThreshold <> 0 Then blendVal = 1 - (tDelta / gThreshold) Else blendVal = 1
+                    dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
+                    dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
+                    dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
+                    If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+                End If
+        
             End If
-        
-        Else
-        
-            If tDelta <= gThreshold Then
-                If gThreshold <> 0 Then blendVal = 1 - (tDelta / gThreshold) Else blendVal = 1
-                dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-                dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-                dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-                If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+            
+        Next y
+            If toPreview = False Then
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal x + (finalY * 2)
+                End If
             End If
+        Next x
+            
+        'With our work complete, release all arrays
+        CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
+        Erase GaussImageData
         
-        End If
+        gaussLayer.eraseLayer
+        Set gaussLayer = Nothing
         
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalY * 2)
-        End If
-    Next x
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
         
-    'With our work complete, release all arrays
-    CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
-    Erase GaussImageData
-    
-    gaussLayer.eraseLayer
-    Set gaussLayer = Nothing
-    
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        Erase dstImageData
+        
+    End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic

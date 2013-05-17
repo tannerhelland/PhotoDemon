@@ -476,7 +476,10 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
                         
     Next y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     

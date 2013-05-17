@@ -335,7 +335,10 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
         
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     
@@ -443,7 +446,10 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
         
     Next y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
         End If
     Next x
     

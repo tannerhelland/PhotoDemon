@@ -291,111 +291,117 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         End If
     End If
     
-    CreateGaussianBlurLayer umRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX
+    'Unsharp masking requires a gaussian blur layer to operate.  Create one now.
+    If CreateGaussianBlurLayer(umRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX) Then
     
-    'Now that we have a gaussian layer created in workingLayer, we can point arrays toward it and the source layer
-    Dim dstImageData() As Byte
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+        'Now that we have a gaussian layer created in workingLayer, we can point arrays toward it and the source layer
+        Dim dstImageData() As Byte
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
-    If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 2, 2
+        Dim srcImageData() As Byte
+        Dim srcSA As SAFEARRAY2D
+        prepSafeArray srcSA, srcLayer
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
-    'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
-    Dim scaleFactor As Double, invScaleFactor As Double
-    scaleFactor = umAmount + 1
-    invScaleFactor = 1 - scaleFactor
-
-    Dim blendVal As Double
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = curLayerValues.BytesPerPixel
+        
+        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+        ' based on the size of the area to be processed.
+        Dim progBarCheck As Long
+        progBarCheck = findBestProgBarValue()
+            
+        If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 2, 2
+            
+        'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
+        Dim scaleFactor As Double, invScaleFactor As Double
+        scaleFactor = umAmount + 1
+        invScaleFactor = 1 - scaleFactor
     
-    'More color variables - in this case, sums for each color component
-    Dim r As Long, g As Long, b As Long, a As Long
-    Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
-    Dim newR As Long, newG As Long, newB As Long, newA As Long
-    Dim tLumDelta As Long
-    
-    umThreshold = umThreshold \ 5
-    
-    'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+        Dim blendVal As Double
         
-        'Retrieve the original image's pixels
-        r = dstImageData(QuickVal + 2, y)
-        g = dstImageData(QuickVal + 1, y)
-        b = dstImageData(QuickVal, y)
+        'More color variables - in this case, sums for each color component
+        Dim r As Long, g As Long, b As Long, a As Long
+        Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
+        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        Dim tLumDelta As Long
         
-        'Now, retrieve the gaussian pixels
-        r2 = srcImageData(QuickVal + 2, y)
-        g2 = srcImageData(QuickVal + 1, y)
-        b2 = srcImageData(QuickVal, y)
+        umThreshold = umThreshold \ 5
         
-        tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
-                        
-        'If the delta is below the specified threshold, sharpen it
-        If tLumDelta > umThreshold Then
-                        
-            newR = (scaleFactor * r) + (invScaleFactor * r2)
-            If newR > 255 Then newR = 255
-            If newR < 0 Then newR = 0
+        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
+            
+            'Retrieve the original image's pixels
+            r = dstImageData(QuickVal + 2, y)
+            g = dstImageData(QuickVal + 1, y)
+            b = dstImageData(QuickVal, y)
+            
+            'Now, retrieve the gaussian pixels
+            r2 = srcImageData(QuickVal + 2, y)
+            g2 = srcImageData(QuickVal + 1, y)
+            b2 = srcImageData(QuickVal, y)
+            
+            tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
+                            
+            'If the delta is below the specified threshold, sharpen it
+            If tLumDelta > umThreshold Then
+                            
+                newR = (scaleFactor * r) + (invScaleFactor * r2)
+                If newR > 255 Then newR = 255
+                If newR < 0 Then newR = 0
+                    
+                newG = (scaleFactor * g) + (invScaleFactor * g2)
+                If newG > 255 Then newG = 255
+                If newG < 0 Then newG = 0
+                    
+                newB = (scaleFactor * b) + (invScaleFactor * b2)
+                If newB > 255 Then newB = 255
+                If newB < 0 Then newB = 0
                 
-            newG = (scaleFactor * g) + (invScaleFactor * g2)
-            If newG > 255 Then newG = 255
-            If newG < 0 Then newG = 0
+                blendVal = tLumDelta / 255
                 
-            newB = (scaleFactor * b) + (invScaleFactor * b2)
-            If newB > 255 Then newB = 255
-            If newB < 0 Then newB = 0
-            
-            blendVal = tLumDelta / 255
-            
-            newR = BlendColors(newR, r, blendVal)
-            newG = BlendColors(newG, g, blendVal)
-            newB = BlendColors(newB, b, blendVal)
-            
-            dstImageData(QuickVal + 2, y) = newR
-            dstImageData(QuickVal + 1, y) = newG
-            dstImageData(QuickVal, y) = newB
-            
-            If qvDepth = 4 Then
-                a2 = srcImageData(QuickVal + 3, y)
-                a = dstImageData(QuickVal + 3, y)
-                newA = (scaleFactor * a) + (invScaleFactor * a2)
-                If newA > 255 Then newA = 255
-                If newA < 0 Then newA = 0
-                dstImageData(QuickVal + 3, y) = BlendColors(newA, a, blendVal)
+                newR = BlendColors(newR, r, blendVal)
+                newG = BlendColors(newG, g, blendVal)
+                newB = BlendColors(newB, b, blendVal)
+                
+                dstImageData(QuickVal + 2, y) = newR
+                dstImageData(QuickVal + 1, y) = newG
+                dstImageData(QuickVal, y) = newB
+                
+                If qvDepth = 4 Then
+                    a2 = srcImageData(QuickVal + 3, y)
+                    a = dstImageData(QuickVal + 3, y)
+                    newA = (scaleFactor * a) + (invScaleFactor * a2)
+                    If newA > 255 Then newA = 255
+                    If newA < 0 Then newA = 0
+                    dstImageData(QuickVal + 3, y) = BlendColors(newA, a, blendVal)
+                End If
+                
             End If
-            
-        End If
-                
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x + (finalY * 2)
-        End If
-    Next x
-    
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
-    
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+                    
+        Next y
+            If toPreview = False Then
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal x + (finalY * 2)
+                End If
+            End If
+        Next x
+        
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
+        
+        srcLayer.eraseLayer
+        Set srcLayer = Nothing
+        
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        Erase dstImageData
+        
+    End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic

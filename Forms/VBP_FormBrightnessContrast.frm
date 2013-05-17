@@ -280,14 +280,17 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
             
         Next y
             If toPreview = False Then
-                If (x And progBarCheck) = 0 Then SetProgBarVal x
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal x
+                End If
             End If
         Next x
         
     End If
     
     'If the contrast value is anything but 0, process it
-    If (Contrast <> 0) Then
+    If (Contrast <> 0) And (Not cancelCurrentAction) Then
     
         'Contrast requires an average value to operate correctly; it works by pushing luminance values away from that average.
         Dim Mean As Long
@@ -368,6 +371,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         Next y
             If toPreview = False Then
                 If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
                     If Bright <> 0 Then SetProgBarVal x + finalX Else SetProgBarVal x
                 End If
             End If
