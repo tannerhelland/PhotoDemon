@@ -424,3 +424,82 @@ Private Sub Class_Initialize()
     Set mainSelection.containingPDImage = Me
         
 End Sub
+
+'Return a layer that contains the currently selected area, fully processed according to the selection mask
+Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
+
+    'If this image does not contain an active selection, exit now.
+    If (Not IsActive) Or (Not selectionActive) Then
+        retrieveProcessedSelection = False
+        Exit Function
+    End If
+    
+    'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
+    ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp layers.
+    
+    'Start by initializing the destination layer to the size of the active selection
+    Set dstLayer = New pdLayer
+    dstLayer.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32
+    
+    'We now need pointers to three separate sets of image data: destination layer, source layer, and selection mask.
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, mainLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    Dim selData() As Byte
+    Dim selSA As SAFEARRAY2D
+    prepSafeArray selSA, mainSelection.selMask
+    CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
+            
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    Dim leftOffset As Long, topOffset As Long
+    leftOffset = mainSelection.boundLeft
+    topOffset = mainSelection.boundTop
+    
+    Dim x As Long, y As Long, i As Long
+    Dim thisAlpha As Long
+    Dim blendAlpha As Double
+    
+    Dim srcLayerCD As Long, srcQuickX As Long, srcQuickY As Long
+    srcLayerCD = mainLayer.getLayerColorDepth \ 8
+    
+    Dim dstLayerCD As Long, dstQuickX As Long
+    dstLayerCD = dstLayer.getLayerColorDepth \ 8
+            
+    For x = 0 To dstLayer.getLayerWidth - 1
+        dstQuickX = x * dstLayerCD
+        srcQuickX = (leftOffset + x) * srcLayerCD
+    For y = 0 To dstLayer.getLayerHeight - 1
+    
+        srcQuickY = topOffset + y
+        thisAlpha = selData((leftOffset + x) * 3, srcQuickY)
+        
+        dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
+        dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
+        dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
+        If srcLayerCD = 4 Then
+            dstImageData(dstQuickX + 3, y) = (srcImageData(srcQuickX + 3, srcQuickY) + thisAlpha) \ 2
+        Else
+            dstImageData(dstQuickX + 3, y) = thisAlpha
+        End If
+        
+    Next y
+    Next x
+    
+    'Clear all array references
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(selData), 0&, 4
+    
+    Erase srcImageData
+    Erase dstImageData
+    Erase selData
+    
+    retrieveProcessedSelection = True
+
+End Function

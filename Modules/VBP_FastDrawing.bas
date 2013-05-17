@@ -330,7 +330,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
                     Case Else
                         blendAlpha = thisAlpha / 255
                         For i = 0 To dstQuickVal - 1
-                            dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y) = BlendColors(dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y), wlImageData(x * 4 + i, y), blendAlpha)
+                            dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y) = BlendColors(dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y), wlImageData(x * workingLayerCD + i, y), blendAlpha)
                         Next i
                     
                 End Select
