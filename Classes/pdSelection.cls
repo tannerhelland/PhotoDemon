@@ -674,16 +674,17 @@ Private Sub createSelectionMask()
     Dim rectModifier As Long
     rectModifier = borderSize
     
+    Dim modifiedCornerVal As Long
+    
+    Dim minDimension As Long
+    If selWidth < selHeight Then minDimension = selWidth Else minDimension = selHeight
+    
     Dim ignoreBorderValue As Boolean
     ignoreBorderValue = False
     
     If sType = sBorder Then
         If rectModifier < 1 Then rectModifier = 1
-        If selWidth < selHeight Then
-            If rectModifier > selWidth \ 2 Then ignoreBorderValue = True
-        Else
-            If rectModifier > selHeight \ 2 Then ignoreBorderValue = True
-        End If
+        If rectModifier > minDimension \ 2 Then ignoreBorderValue = True
     End If
                 
     'The actual rendering of the selection will vary based on the current selection type (obviously).
@@ -727,28 +728,36 @@ Private Sub createSelectionMask()
                 'Interior/exterior selections use identical rendering code.
                 If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
                     
-                    maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
-                    hBrush = CreateSolidBrush(maskForeColor)
-                    FillRgn selMask.getLayerDC, maskRegion, hBrush
-                    DeleteObject hBrush
-                    DeleteObject maskRegion
+                    'maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
+                    'hBrush = CreateSolidBrush(maskForeColor)
+                    'FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    'DeleteObject hBrush
+                    'DeleteObject maskRegion
+                    If roundedCorners > minDimension \ 2 Then modifiedCornerVal = minDimension \ 2 Else modifiedCornerVal = roundedCorners
+                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, True
                 
                 'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
                 Else
                     
                     'Draw the exterior rectangle
-                    maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
-                    hBrush = CreateSolidBrush(maskForeColor)
-                    FillRgn selMask.getLayerDC, maskRegion, hBrush
-                    DeleteObject hBrush
-                    DeleteObject maskRegion
+                    'maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
+                    'hBrush = CreateSolidBrush(maskForeColor)
+                    'FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    'DeleteObject hBrush
+                    'DeleteObject maskRegion
+                    If roundedCorners > minDimension \ 2 Then modifiedCornerVal = minDimension \ 2 Else modifiedCornerVal = roundedCorners
+                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, True
                     
                     'Next, draw the interior one
-                    maskRegion = CreateRoundRectRgn(selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier, roundedCorners, roundedCorners)
-                    hBrush = CreateSolidBrush(maskBackColor)
-                    FillRgn selMask.getLayerDC, maskRegion, hBrush
-                    DeleteObject hBrush
-                    DeleteObject maskRegion
+                    'maskRegion = CreateRoundRectRgn(selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier, roundedCorners, roundedCorners)
+                    'hBrush = CreateSolidBrush(maskBackColor)
+                    'FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    'DeleteObject hBrush
+                    'DeleteObject maskRegion
+                    'If roundedCorners > minDimension \ 2 Then roundedCorners = minDimension \ 2
+                    If (selWidth - (rectModifier * 2) - 1) < (selHeight - (rectModifier * 2) - 1) Then minDimension = (selWidth - (rectModifier * 2) - 1) Else minDimension = (selHeight - (rectModifier * 2) - 1)
+                    If roundedCorners > minDimension \ 2 Then modifiedCornerVal = minDimension \ 2 Else modifiedCornerVal = roundedCorners
+                    GDIPlusDrawRoundRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, modifiedCornerVal, maskBackColor, True
                     
                 End If
                 

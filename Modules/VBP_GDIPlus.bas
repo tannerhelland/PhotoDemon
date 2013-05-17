@@ -254,12 +254,21 @@ Private Declare Function lstrlenA Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
 
 'GDI+ calls related to drawing circles and ellipses
-Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
-Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
+Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef mGraphics As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Long) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
 Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
+Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
+Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal mPath As Long) As Long
+Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal mPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
+Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal mPath As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
+Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal mPath As Long) As Long
+Private Declare Function GdipFillPath Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mPath As Long) As Long
+Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal mPath As Long) As Long
+Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal mColor As Long, ByVal mWidth As Single, ByVal mUnit As GpUnit, mPen As Long) As Long
+Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal mPen As Long) As Long
 
 ' Quality mode constants
 Private Enum QualityMode
@@ -278,6 +287,21 @@ Private Enum SmoothingMode
    SmoothingModeAntiAlias = 4
 End Enum
 
+Private Enum GDIFillMode
+   FillModeAlternate = 0
+   FillModeWinding = 1
+End Enum
+
+Public Enum GpUnit
+   UnitWorld = 0
+   UnitDisplay = 1
+   UnitPixel = 2
+   UnitPoint = 3
+   UnitInch = 4
+   UnitDocument = 5
+   UnitMillimeter = 6
+End Enum
+
 Private Type tmpLong
     lngResult As Long
 End Type
@@ -285,7 +309,7 @@ End Type
 'When GDI+ is initialized, it will assign us a token.  We use this to release GDI+ when the program terminates.
 Public g_GDIPlusToken As Long
 
-'Use GDI+ to render
+'Use GDI+ to render an ellipse, with optional antialiasing
 Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
@@ -306,6 +330,65 @@ Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal x1 As Single
 
 End Function
 
+'Use GDI+ to render a rectangle with rounded corners, with optional antialiasing
+Public Function GDIPlusDrawRoundRect(ByRef dstLayer As pdLayer, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal rRadius As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
+
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    
+    'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
+    Dim rrPath As Long
+    GdipCreatePath FillModeWinding, rrPath
+        
+    'The path needs to be expanded by a pixel in each direction as we are effectively rendering it without a border.
+    ' (The other alternative would be to fill the path, then stroke it with a pen.)
+    'x1 = x1 - 1
+    'y1 = y1 - 1
+    xWidth = xWidth - 1
+    yHeight = yHeight - 1
+    
+    rRadius = rRadius * 2
+    
+    GdipAddPathArc rrPath, x1, y1, rRadius, rRadius, 180, 90
+    GdipAddPathArc rrPath, x1 + xWidth - rRadius, y1, rRadius, rRadius, 270, 90
+    GdipAddPathArc rrPath, x1 + xWidth - rRadius, y1 + yHeight - rRadius, rRadius, rRadius, 0, 90
+    GdipAddPathArc rrPath, x1, y1 + yHeight - rRadius, rRadius, rRadius, 90, 90
+    'GdipAddPathLine rrPath, x1, y1 + yHeight - rRadius, x1, y1 + rRadius / 2
+    
+    'GdipAddPathLine rrPath, x1 + rRadius, y1, x1 + xWidth - (rRadius * 2), y1
+    'GdipAddPathArc rrPath, x1 + xWidth - (rRadius * 2), y1, rRadius * 2, rRadius * 2, 270, 90
+    'GdipAddPathLine rrPath, x1 + xWidth, y1 + rRadius, x1 + xWidth, y1 + yHeight - (rRadius * 2)
+    'GdipAddPathArc rrPath, x1 + xWidth - (rRadius * 2), y1 + yHeight - (rRadius * 2), rRadius * 2, rRadius * 2, 0, 90
+    'GdipAddPathLine rrPath, x1 + xWidth - (rRadius * 2), y1 + yHeight, x1 + rRadius, y1 + yHeight
+    'GdipAddPathArc rrPath, x1, y1 + yHeight - (rRadius * 2), rRadius * 2, rRadius * 2, 90, 90
+    'GdipAddPathLine rrPath, x1, y1 + yHeight - (rRadius * 2), x1, y1 + rRadius
+    'GdipAddPathArc rrPath, x1, y1, rRadius * 2, rRadius * 2, 180, 90
+    GdipClosePathFigure rrPath
+    
+    'Create a solid fill brush
+    Dim iBrush As Long
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, 255), iBrush
+    
+    'Fill the path
+    GdipFillPath iGraphics, iBrush, rrPath
+    
+    'Stroke the path as well (to fill the exterior border)
+    Dim iPen As Long
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, 255), 1, UnitPixel, iPen
+    GdipDrawPath iGraphics, iPen, rrPath
+    
+    'Release all created objects
+    GdipDeletePen iPen
+    GdipDeletePath rrPath
+    GdipDeleteBrush iBrush
+    GdipDeleteGraphics iGraphics
+
+End Function
+
+'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD from a standard RGB() long
+' and supplied alpha.  It's not a particularly efficient implementation, but it's used infrequently enough to not matter.
 Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
     Dim dstQuad As RGBQUAD
     dstQuad.Red = ExtractR(vbRGB)
