@@ -342,29 +342,16 @@ Public Function GDIPlusDrawRoundRect(ByRef dstLayer As pdLayer, ByVal x1 As Sing
     Dim rrPath As Long
     GdipCreatePath FillModeWinding, rrPath
         
-    'The path needs to be expanded by a pixel in each direction as we are effectively rendering it without a border.
-    ' (The other alternative would be to fill the path, then stroke it with a pen.)
-    'x1 = x1 - 1
-    'y1 = y1 - 1
+    'The path will be rendered in two sections: first, filling it.  Second, stroking the path itself to complete the
+    ' 1px outside border.
     xWidth = xWidth - 1
     yHeight = yHeight - 1
-    
     rRadius = rRadius * 2
-    
-    GdipAddPathArc rrPath, x1, y1, rRadius, rRadius, 180, 90
+
     GdipAddPathArc rrPath, x1 + xWidth - rRadius, y1, rRadius, rRadius, 270, 90
     GdipAddPathArc rrPath, x1 + xWidth - rRadius, y1 + yHeight - rRadius, rRadius, rRadius, 0, 90
     GdipAddPathArc rrPath, x1, y1 + yHeight - rRadius, rRadius, rRadius, 90, 90
-    'GdipAddPathLine rrPath, x1, y1 + yHeight - rRadius, x1, y1 + rRadius / 2
-    
-    'GdipAddPathLine rrPath, x1 + rRadius, y1, x1 + xWidth - (rRadius * 2), y1
-    'GdipAddPathArc rrPath, x1 + xWidth - (rRadius * 2), y1, rRadius * 2, rRadius * 2, 270, 90
-    'GdipAddPathLine rrPath, x1 + xWidth, y1 + rRadius, x1 + xWidth, y1 + yHeight - (rRadius * 2)
-    'GdipAddPathArc rrPath, x1 + xWidth - (rRadius * 2), y1 + yHeight - (rRadius * 2), rRadius * 2, rRadius * 2, 0, 90
-    'GdipAddPathLine rrPath, x1 + xWidth - (rRadius * 2), y1 + yHeight, x1 + rRadius, y1 + yHeight
-    'GdipAddPathArc rrPath, x1, y1 + yHeight - (rRadius * 2), rRadius * 2, rRadius * 2, 90, 90
-    'GdipAddPathLine rrPath, x1, y1 + yHeight - (rRadius * 2), x1, y1 + rRadius
-    'GdipAddPathArc rrPath, x1, y1, rRadius * 2, rRadius * 2, 180, 90
+    GdipAddPathArc rrPath, x1, y1, rRadius, rRadius, 180, 90
     GdipClosePathFigure rrPath
     
     'Create a solid fill brush
@@ -374,7 +361,7 @@ Public Function GDIPlusDrawRoundRect(ByRef dstLayer As pdLayer, ByVal x1 As Sing
     'Fill the path
     GdipFillPath iGraphics, iBrush, rrPath
     
-    'Stroke the path as well (to fill the exterior border)
+    'Stroke the path as well (to fill the 1px exterior border)
     Dim iPen As Long
     GdipCreatePen1 fillQuadWithVBRGB(eColor, 255), 1, UnitPixel, iPen
     GdipDrawPath iGraphics, iPen, rrPath
