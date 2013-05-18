@@ -3,10 +3,10 @@ Begin VB.MDIForm FormMain
    AutoShowChildren=   0   'False
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   8775
+   ClientHeight    =   10635
    ClientLeft      =   225
    ClientTop       =   855
-   ClientWidth     =   15870
+   ClientWidth     =   17940
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
@@ -28,9 +28,9 @@ Begin VB.MDIForm FormMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   8400
-      Left            =   12900
-      ScaleHeight     =   560
+      Height          =   10260
+      Left            =   14970
+      ScaleHeight     =   684
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   198
       TabIndex        =   15
@@ -86,17 +86,17 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H80000008&
-         Height          =   5535
+         Height          =   6135
          Index           =   0
          Left            =   0
-         ScaleHeight     =   369
+         ScaleHeight     =   409
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   198
          TabIndex        =   16
          Top             =   2760
          Visible         =   0   'False
          Width           =   2970
-         Begin VB.ComboBox cmbSelType 
+         Begin VB.ComboBox cmbSelSmoothing 
             Appearance      =   0  'Flat
             CausesValidation=   0   'False
             BeginProperty Font 
@@ -114,10 +114,34 @@ Begin VB.MDIForm FormMain
             Left            =   120
             List            =   "VBP_FormMain.frx":000E
             Style           =   2  'Dropdown List
+            TabIndex        =   35
+            TabStop         =   0   'False
+            ToolTipText     =   "Click to change the way selections are rendered"
+            Top             =   3000
+            Width           =   2685
+         End
+         Begin VB.ComboBox cmbSelType 
+            Appearance      =   0  'Flat
+            CausesValidation=   0   'False
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   360
+            Index           =   0
+            ItemData        =   "VBP_FormMain.frx":0010
+            Left            =   120
+            List            =   "VBP_FormMain.frx":0012
+            Style           =   2  'Dropdown List
             TabIndex        =   31
             TabStop         =   0   'False
             ToolTipText     =   "Click to change the way selections are rendered"
-            Top             =   3360
+            Top             =   4320
             Width           =   2685
          End
          Begin PhotoDemon.sliderTextCombo sltCornerRounding 
@@ -125,7 +149,7 @@ Begin VB.MDIForm FormMain
             Height          =   495
             Left            =   0
             TabIndex        =   28
-            Top             =   4800
+            Top             =   5640
             Width           =   3000
             _ExtentX        =   5318
             _ExtentY        =   873
@@ -153,9 +177,9 @@ Begin VB.MDIForm FormMain
             EndProperty
             Height          =   360
             Index           =   0
-            ItemData        =   "VBP_FormMain.frx":0010
+            ItemData        =   "VBP_FormMain.frx":0014
             Left            =   180
-            List            =   "VBP_FormMain.frx":0012
+            List            =   "VBP_FormMain.frx":0016
             Style           =   2  'Dropdown List
             TabIndex        =   17
             TabStop         =   0   'False
@@ -168,7 +192,7 @@ Begin VB.MDIForm FormMain
             Index           =   0
             Left            =   120
             TabIndex        =   18
-            Top             =   1440
+            Top             =   1320
             Width           =   1320
             _ExtentX        =   2328
             _ExtentY        =   714
@@ -187,7 +211,7 @@ Begin VB.MDIForm FormMain
             Index           =   0
             Left            =   1560
             TabIndex        =   19
-            Top             =   1440
+            Top             =   1320
             Width           =   1320
             _ExtentX        =   2328
             _ExtentY        =   714
@@ -206,7 +230,7 @@ Begin VB.MDIForm FormMain
             Index           =   0
             Left            =   120
             TabIndex        =   20
-            Top             =   2400
+            Top             =   2160
             Width           =   1320
             _ExtentX        =   2328
             _ExtentY        =   714
@@ -225,7 +249,7 @@ Begin VB.MDIForm FormMain
             Index           =   0
             Left            =   1560
             TabIndex        =   21
-            Top             =   2400
+            Top             =   2160
             Width           =   1320
             _ExtentX        =   2328
             _ExtentY        =   714
@@ -244,7 +268,7 @@ Begin VB.MDIForm FormMain
             Height          =   495
             Left            =   0
             TabIndex        =   32
-            Top             =   3840
+            Top             =   4710
             Visible         =   0   'False
             Width           =   3000
             _ExtentX        =   5318
@@ -261,6 +285,48 @@ Begin VB.MDIForm FormMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
+         End
+         Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
+            CausesValidation=   0   'False
+            Height          =   495
+            Left            =   0
+            TabIndex        =   34
+            Top             =   3390
+            Width           =   3000
+            _ExtentX        =   5318
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "smoothing"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   285
+            Index           =   5
+            Left            =   120
+            TabIndex        =   33
+            Top             =   2640
+            Width           =   1125
          End
          Begin VB.Label lblSelection 
             Appearance      =   0  'Flat
@@ -282,7 +348,7 @@ Begin VB.MDIForm FormMain
             Index           =   4
             Left            =   120
             TabIndex        =   30
-            Top             =   3000
+            Top             =   3960
             Width           =   1440
          End
          Begin VB.Label lblSelection 
@@ -305,7 +371,7 @@ Begin VB.MDIForm FormMain
             Index           =   3
             Left            =   120
             TabIndex        =   29
-            Top             =   4440
+            Top             =   5280
             Width           =   1710
          End
          Begin VB.Label lblSelection 
@@ -351,7 +417,7 @@ Begin VB.MDIForm FormMain
             Index           =   1
             Left            =   120
             TabIndex        =   23
-            Top             =   1050
+            Top             =   960
             Width           =   1830
          End
          Begin VB.Label lblSelection 
@@ -374,7 +440,7 @@ Begin VB.MDIForm FormMain
             Index           =   2
             Left            =   120
             TabIndex        =   22
-            Top             =   2010
+            Top             =   1800
             Width           =   1380
          End
       End
@@ -428,11 +494,11 @@ Begin VB.MDIForm FormMain
       Left            =   0
       ScaleHeight     =   25
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1058
+      ScaleWidth      =   1196
       TabIndex        =   6
       TabStop         =   0   'False
-      Top             =   8400
-      Width           =   15870
+      Top             =   10260
+      Width           =   17940
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
@@ -457,9 +523,9 @@ Begin VB.MDIForm FormMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   8400
+      Height          =   10260
       Left            =   0
-      ScaleHeight     =   560
+      ScaleHeight     =   684
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   70
       TabIndex        =   0
@@ -484,7 +550,7 @@ Begin VB.MDIForm FormMain
          ForeColor       =   &H80000008&
          Height          =   2250
          Left            =   360
-         Picture         =   "VBP_FormMain.frx":0014
+         Picture         =   "VBP_FormMain.frx":0018
          ScaleHeight     =   150
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   600
@@ -506,9 +572,9 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          Height          =   360
-         ItemData        =   "VBP_FormMain.frx":81F5
+         ItemData        =   "VBP_FormMain.frx":81F9
          Left            =   60
-         List            =   "VBP_FormMain.frx":81F7
+         List            =   "VBP_FormMain.frx":81FB
          Style           =   2  'Dropdown List
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
@@ -536,7 +602,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":81F9
+         PictureNormal   =   "VBP_FormMain.frx":81FD
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Open"
@@ -562,7 +628,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":964B
+         PictureNormal   =   "VBP_FormMain.frx":964F
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Save"
@@ -588,7 +654,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":A69D
+         PictureNormal   =   "VBP_FormMain.frx":A6A1
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Undo"
@@ -615,7 +681,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":B6EF
+         PictureNormal   =   "VBP_FormMain.frx":B6F3
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Redo"
@@ -642,7 +708,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":C741
+         PictureNormal   =   "VBP_FormMain.frx":C745
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Close"
@@ -668,7 +734,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":D793
+         PictureNormal   =   "VBP_FormMain.frx":D797
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Save As"
@@ -694,7 +760,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":E7E5
+         PictureNormal   =   "VBP_FormMain.frx":E7E9
          DisabledPictureMode=   1
          CaptionEffects  =   0
          ToolTip         =   "Use this button to increase image zoom."
@@ -721,7 +787,7 @@ Begin VB.MDIForm FormMain
          BackColor       =   15199212
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":EC37
+         PictureNormal   =   "VBP_FormMain.frx":EC3B
          DisabledPictureMode=   1
          CaptionEffects  =   0
          ToolTip         =   "Use this button to decrease image zoom."
@@ -1741,6 +1807,22 @@ Private Sub cmbSelRender_Click(Index As Integer)
     
 End Sub
 
+'Change selection smoothing (e.g. none, antialiased, fully feathered)
+Private Sub cmbSelSmoothing_Click(Index As Integer)
+    
+    'Display the feathering slider as necessary
+    If cmbSelSmoothing(Index).ListIndex = sFullyFeathered Then sltSelectionFeathering.Visible = True Else sltSelectionFeathering.Visible = False
+    
+    'If a selection is already active, change its type to match the current selection, then redraw it
+    If selectionsAllowed Then
+        pdImages(FormMain.ActiveForm.Tag).mainSelection.setSmoothingType cmbSelSmoothing(Index).ListIndex
+        pdImages(FormMain.ActiveForm.Tag).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
+        RenderViewport FormMain.ActiveForm
+    End If
+    
+End Sub
+
+'Change selection type (e.g. interior, exterior, bordered)
 Private Sub cmbSelType_Click(Index As Integer)
 
     'Display the border slider as necessary
@@ -1885,6 +1967,10 @@ Private Sub newToolSelected()
             'If a selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed Then
                 pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
+                pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionType FormMain.cmbSelType(0).ListIndex
+                pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize FormMain.sltSelectionBorder.Value
+                pdImages(FormMain.ActiveForm.Tag).mainSelection.setSmoothingType FormMain.cmbSelSmoothing(0).ListIndex
+                pdImages(FormMain.ActiveForm.Tag).mainSelection.setFeatheringRadius FormMain.sltSelectionFeathering.Value
                 If g_CurrentTool = SELECT_RECT Then pdImages(FormMain.ActiveForm.Tag).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
                 RenderViewport FormMain.ActiveForm
             End If
@@ -3390,6 +3476,13 @@ End Sub
 Private Sub sltSelectionBorder_Change()
     If selectionsAllowed Then
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize sltSelectionBorder.Value
+        RenderViewport FormMain.ActiveForm
+    End If
+End Sub
+
+Private Sub sltSelectionFeathering_Change()
+    If selectionsAllowed Then
+        pdImages(FormMain.ActiveForm.Tag).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
         RenderViewport FormMain.ActiveForm
     End If
 End Sub

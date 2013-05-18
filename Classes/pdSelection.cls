@@ -136,6 +136,21 @@ End Enum
 
 Private sType As SelectionType
 
+'What kind of smoothing (feathering) will be applied to this selection?
+Public Enum SelectionSmoothing
+    sNone = 0
+    sAntialiased = 1
+    sFullyFeathered = 2
+End Enum
+
+#If False Then
+    Const sNone = 0
+    Const sAntialiased = 1
+    Const sFullyFeathered = 2
+#End If
+
+Private sSmooth As SelectionSmoothing
+
 'The coordinates of the current selection (if rectangular)
 Private x1 As Double, x2 As Double
 Private y1 As Double, y2 As Double
@@ -194,6 +209,10 @@ Private roundedCorners As Long
 'Selections can be border-only.  This value specifies the border radius, which cannot be larger than (minimum dimension \ 2)
 Private borderSize As Long
 
+'Selections can have any amount of feathering.  Feathering is implemented identically to GIMP (http://docs.gimp.org/en/gimp-painting.html#gimp-concepts-selection),
+' specifically, feathering is implemented by applying a Gaussian blur to the selection mask with radius equal to the feathering size.
+Private featheringRadius As Long
+
 'Request a 1:1 aspect ratio selection (squares, circles)
 Public Sub requestSquare(ByVal requestChoice As Boolean)
     isSquare = requestChoice
@@ -205,6 +224,11 @@ Public Sub requestSquare(ByVal requestChoice As Boolean)
         RenderViewport containingPDImage.containingForm
     End If
     
+End Sub
+
+'Set feathering radius
+Public Sub setFeatheringRadius(ByVal newRadius As Long)
+    featheringRadius = newRadius
 End Sub
 
 'Set the border size
@@ -233,6 +257,15 @@ End Function
 
 Public Sub setSelectionType(ByVal selType As SelectionType)
     sType = selType
+End Sub
+
+'Get/set a smoothing type
+Public Function getSmoothingType() As SelectionSmoothing
+    getSmoothingType = sSmooth
+End Function
+
+Public Sub setSmoothingType(ByVal selSmooth As SelectionSmoothing)
+    sSmooth = selSmooth
 End Sub
 
 'Change the amount of corner rounding for rectangular selections
@@ -695,6 +728,7 @@ Private Sub createSelectionMask()
         Case sRectangle
         
             'RECTANGLE SELECTION, NO ROUNDED CORNERS
+            ' (Note: rectangular selections ignore antialiasing, as there's no point)
             If roundedCorners = 0 Then
             
                 'Interior/exterior selections use identical rendering code.
@@ -728,36 +762,47 @@ Private Sub createSelectionMask()
                 'Interior/exterior selections use identical rendering code.
                 If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
                     
-                    'maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
-                    'hBrush = CreateSolidBrush(maskForeColor)
-                    'FillRgn selMask.getLayerDC, maskRegion, hBrush
-                    'DeleteObject hBrush
-                    'DeleteObject maskRegion
-                    If roundedCorners > minDimension \ 2 Then modifiedCornerVal = minDimension \ 2 Else modifiedCornerVal = roundedCorners
-                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, True
-                
+                    'Use GDI+ for antialiasing, regular GDI for non-antialiased
+                    If sSmooth > sNone Then
+                        If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
+                        GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, True
+                    Else
+                        maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
+                        hBrush = CreateSolidBrush(maskForeColor)
+                        FillRgn selMask.getLayerDC, maskRegion, hBrush
+                        DeleteObject hBrush
+                        DeleteObject maskRegion
+                    End If
+                    
                 'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
                 Else
                     
-                    'Draw the exterior rectangle
-                    'maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
-                    'hBrush = CreateSolidBrush(maskForeColor)
-                    'FillRgn selMask.getLayerDC, maskRegion, hBrush
-                    'DeleteObject hBrush
-                    'DeleteObject maskRegion
-                    If roundedCorners > minDimension \ 2 Then modifiedCornerVal = minDimension \ 2 Else modifiedCornerVal = roundedCorners
-                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, True
+                    If sSmooth > sNone Then
                     
-                    'Next, draw the interior one
-                    'maskRegion = CreateRoundRectRgn(selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier, roundedCorners, roundedCorners)
-                    'hBrush = CreateSolidBrush(maskBackColor)
-                    'FillRgn selMask.getLayerDC, maskRegion, hBrush
-                    'DeleteObject hBrush
-                    'DeleteObject maskRegion
-                    'If roundedCorners > minDimension \ 2 Then roundedCorners = minDimension \ 2
-                    If (selWidth - (rectModifier * 2) - 1) < (selHeight - (rectModifier * 2) - 1) Then minDimension = (selWidth - (rectModifier * 2) - 1) Else minDimension = (selHeight - (rectModifier * 2) - 1)
-                    If roundedCorners > minDimension \ 2 Then modifiedCornerVal = minDimension \ 2 Else modifiedCornerVal = roundedCorners
-                    GDIPlusDrawRoundRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, modifiedCornerVal, maskBackColor, True
+                        'Draw the exterior rectangle
+                        If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
+                        GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, True
+                        
+                        'Next, draw the interior one.  Note that specialized handling is required to prevent the corner curvature from rendering incorrectly.
+                        If (selWidth - (rectModifier * 2) - 1) < (selHeight - (rectModifier * 2) - 1) Then minDimension = (selWidth - (rectModifier * 2) - 1) Else minDimension = (selHeight - (rectModifier * 2) - 1)
+                        If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
+                        GDIPlusDrawRoundRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, modifiedCornerVal, maskBackColor, True
+                    
+                    Else
+                        
+                        maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
+                        hBrush = CreateSolidBrush(maskForeColor)
+                        FillRgn selMask.getLayerDC, maskRegion, hBrush
+                        DeleteObject hBrush
+                        DeleteObject maskRegion
+                        
+                        maskRegion = CreateRoundRectRgn(selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier, roundedCorners, roundedCorners)
+                        hBrush = CreateSolidBrush(maskBackColor)
+                        FillRgn selMask.getLayerDC, maskRegion, hBrush
+                        DeleteObject hBrush
+                        DeleteObject maskRegion
+                        
+                    End If
                     
                 End If
                 
@@ -771,35 +816,47 @@ Private Sub createSelectionMask()
         
             'Interior/exterior selections use identical rendering code.
             If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
-                'SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
-                'maskRegion = CreateEllipticRgnIndirect(maskRect)
-                'hBrush = CreateSolidBrush(maskForeColor)
-                'FillRgn selMask.getLayerDC, maskRegion, hBrush
-                'DeleteObject hBrush
-                'DeleteObject maskRegion
-                GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
             
+                If sSmooth > sNone Then
+                    GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
+                Else
+                    SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
+                    maskRegion = CreateEllipticRgnIndirect(maskRect)
+                    hBrush = CreateSolidBrush(maskForeColor)
+                    FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    DeleteObject hBrush
+                    DeleteObject maskRegion
+                End If
+                
             'Border selections are a bit different; we must draw two rounded ellipses - an exterior and an interior one.
             Else
             
-                'Draw the exterior oval
-                'SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
-                'maskRegion = CreateEllipticRgnIndirect(maskRect)
-                'hBrush = CreateSolidBrush(maskForeColor)
-                'FillRgn selMask.getLayerDC, maskRegion, hBrush
-                'DeleteObject hBrush
-                'DeleteObject maskRegion
-                GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
-                                
-                'Next, draw the interior one
-                'SetRect maskRect, selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier
-                'maskRegion = CreateEllipticRgnIndirect(maskRect)
-                'hBrush = CreateSolidBrush(maskBackColor)
-                'FillRgn selMask.getLayerDC, maskRegion, hBrush
-                'DeleteObject hBrush
-                'DeleteObject maskRegion
-                GDIPlusDrawEllipse selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, True
-            
+                If sSmooth > sNone Then
+                
+                    'Draw the exterior oval
+                    GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
+                    
+                    'Next, draw the interior one
+                    GDIPlusDrawEllipse selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, True
+                    
+                Else
+                    
+                    SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
+                    maskRegion = CreateEllipticRgnIndirect(maskRect)
+                    hBrush = CreateSolidBrush(maskForeColor)
+                    FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    DeleteObject hBrush
+                    DeleteObject maskRegion
+                    
+                    SetRect maskRect, selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier
+                    maskRegion = CreateEllipticRgnIndirect(maskRect)
+                    hBrush = CreateSolidBrush(maskBackColor)
+                    FillRgn selMask.getLayerDC, maskRegion, hBrush
+                    DeleteObject hBrush
+                    DeleteObject maskRegion
+                
+                End If
+                
             End If
             
             'Elliptical regions are transformable (meaning the user can resize and move them after they've been created)

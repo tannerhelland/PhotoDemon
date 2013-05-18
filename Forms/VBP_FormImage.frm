@@ -293,6 +293,8 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     pdImages(Me.Tag).mainSelection.setRoundedCornerAmount FormMain.sltCornerRounding.Value
                     pdImages(Me.Tag).mainSelection.setSelectionType FormMain.cmbSelType(0).ListIndex
                     pdImages(Me.Tag).mainSelection.setBorderSize FormMain.sltSelectionBorder.Value
+                    pdImages(Me.Tag).mainSelection.setSmoothingType FormMain.cmbSelSmoothing(0).ListIndex
+                    pdImages(Me.Tag).mainSelection.setFeatheringRadius FormMain.sltSelectionFeathering.Value
                     pdImages(Me.Tag).mainSelection.selLeft = 0
                     pdImages(Me.Tag).mainSelection.selTop = 0
                     pdImages(Me.Tag).mainSelection.selWidth = 0

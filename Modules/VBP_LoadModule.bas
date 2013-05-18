@@ -163,23 +163,30 @@ Public Sub LoadTheProgram()
         
     LoadMessage "Initializing image tools..."
     
-    'Initialize all Selection Tool controls
     Dim i As Long
     
-    'Visual styles (currently lightbox or highlight)
-    For i = 0 To FormMain.cmbSelRender.Count - 1
-        FormMain.cmbSelRender(i).AddItem "Lightbox", 0
-        FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
-        FormMain.cmbSelRender(i).AddItem "Highlight (Red)", 2
-        FormMain.cmbSelRender(i).ListIndex = 0
-        g_selectionRenderPreference = 0
-    Next i
+    'INITIALIZE ALL SELECTION TOOLS
     
-    'Types (currently interior or exterior)
-    FormMain.cmbSelType(0).AddItem "Interior", 0
-    FormMain.cmbSelType(0).AddItem "Exterior", 1
-    FormMain.cmbSelType(0).AddItem "Border", 2
-    FormMain.cmbSelType(0).ListIndex = 0
+        'Selection visual styles (currently lightbox or highlight)
+        For i = 0 To FormMain.cmbSelRender.Count - 1
+            FormMain.cmbSelRender(i).AddItem "Lightbox", 0
+            FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
+            FormMain.cmbSelRender(i).AddItem "Highlight (Red)", 2
+            FormMain.cmbSelRender(i).ListIndex = 0
+            g_selectionRenderPreference = 0
+        Next i
+        
+        'Selection types (currently interior, exterior, border)
+        FormMain.cmbSelType(0).AddItem "Interior", 0
+        FormMain.cmbSelType(0).AddItem "Exterior", 1
+        FormMain.cmbSelType(0).AddItem "Border", 2
+        FormMain.cmbSelType(0).ListIndex = 0
+        
+        'Selection smoothing (currently none, antialiased, fully feathered)
+        FormMain.cmbSelSmoothing(0).AddItem "None", 0
+        FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
+        FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
+        FormMain.cmbSelSmoothing(0).ListIndex = 1
     
     g_UserPreferences.loadToolSettings
             

@@ -346,8 +346,7 @@ Public Function GDIPlusDrawRoundRect(ByRef dstLayer As pdLayer, ByVal x1 As Sing
     ' 1px outside border.
     xWidth = xWidth - 1
     yHeight = yHeight - 1
-    rRadius = rRadius * 2
-
+    
     GdipAddPathArc rrPath, x1 + xWidth - rRadius, y1, rRadius, rRadius, 270, 90
     GdipAddPathArc rrPath, x1 + xWidth - rRadius, y1 + yHeight - rRadius, rRadius, rRadius, 0, 90
     GdipAddPathArc rrPath, x1, y1 + yHeight - rRadius, rRadius, rRadius, 90, 90
@@ -374,8 +373,8 @@ Public Function GDIPlusDrawRoundRect(ByRef dstLayer As pdLayer, ByVal x1 As Sing
 
 End Function
 
-'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD from a standard RGB() long
-' and supplied alpha.  It's not a particularly efficient implementation, but it's used infrequently enough to not matter.
+'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
+' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
 Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
     Dim dstQuad As RGBQUAD
     dstQuad.Red = ExtractR(vbRGB)
