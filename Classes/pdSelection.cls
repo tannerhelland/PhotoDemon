@@ -215,7 +215,9 @@ Private featheringRadius As Long
 
 'Request a 1:1 aspect ratio selection (squares, circles)
 Public Sub requestSquare(ByVal requestChoice As Boolean)
+    
     isSquare = requestChoice
+    isMaskReady = False
     
     'Redraw the selection if necessary
     If Not containingPDImage Is Nothing Then
@@ -228,11 +230,13 @@ End Sub
 
 'Set feathering radius
 Public Sub setFeatheringRadius(ByVal newRadius As Long)
+    isMaskReady = False
     featheringRadius = newRadius
 End Sub
 
 'Set the border size
 Public Sub setBorderSize(ByVal newBorderSize As Long)
+    isMaskReady = False
     borderSize = newBorderSize
 End Sub
 
@@ -247,6 +251,7 @@ Public Function getSelectionShape() As SelectionShape
 End Function
 
 Public Sub setSelectionShape(ByVal selShape As SelectionShape)
+    isMaskReady = False
     sShape = selShape
 End Sub
 
@@ -265,11 +270,13 @@ Public Function getSmoothingType() As SelectionSmoothing
 End Function
 
 Public Sub setSmoothingType(ByVal selSmooth As SelectionSmoothing)
+    isMaskReady = False
     sSmooth = selSmooth
 End Sub
 
 'Change the amount of corner rounding for rectangular selections
 Public Sub setRoundedCornerAmount(ByVal cornerRounding As Long)
+    isMaskReady = False
     roundedCorners = cornerRounding
     If lockedIn Then
         createSelectionMask
@@ -923,6 +930,9 @@ Private Sub createSelectionMask()
     If boundTop < 0 Then boundTop = 0
     If boundLeft + boundWidth > containingPDImage.Width - 1 Then boundWidth = (containingPDImage.Width - 1) - boundLeft
     If boundTop + boundHeight > containingPDImage.Height - 1 Then boundHeight = (containingPDImage.Height - 1) - boundTop
+    
+    'Mark the mask as ready for us
+    isMaskReady = True
 
 End Sub
 
