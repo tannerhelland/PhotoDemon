@@ -295,6 +295,7 @@ Begin VB.MDIForm FormMain
             Width           =   3000
             _ExtentX        =   5318
             _ExtentY        =   873
+            Max             =   100
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   9.75

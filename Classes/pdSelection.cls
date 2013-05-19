@@ -866,6 +866,20 @@ Private Sub createSelectionMask()
     
     End Select
     
+    'If the selection is locked and feathering has been requested, apply it now
+    If lockedIn And (featheringRadius > 0) Then
+    
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        tmpLayer.createFromExistingLayer selMask
+        
+        Message "Feathering selection..."
+        CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
+        SetProgBarVal 0
+        Message "Feathering complete."
+    
+    End If
+    
     'Finally, we need to establish a bounding region for the selection.  For certain types of selections, we can do this with existing knowledge
     ' (e.g. the selLeft/Top/Width/Height values may reflect this).  For other types of selections, we need to find bounds via pixel searching.
     Select Case sShape
@@ -878,10 +892,10 @@ Private Sub createSelectionMask()
                 boundWidth = containingPDImage.Width - 1
                 boundHeight = containingPDImage.Height - 1
             Else
-                boundLeft = selLeft
-                boundTop = selTop
-                boundWidth = selWidth
-                boundHeight = selHeight
+                boundLeft = selLeft - featheringRadius
+                boundTop = selTop - featheringRadius
+                boundWidth = selWidth + featheringRadius * 2
+                boundHeight = selHeight + featheringRadius * 2
             End If
             
         Case sCircle
@@ -892,10 +906,10 @@ Private Sub createSelectionMask()
                 boundWidth = containingPDImage.Width - 1
                 boundHeight = containingPDImage.Height - 1
             Else
-                boundLeft = selLeft
-                boundTop = selTop
-                boundWidth = selWidth
-                boundHeight = selHeight
+                boundLeft = selLeft - featheringRadius
+                boundTop = selTop - featheringRadius
+                boundWidth = selWidth + featheringRadius * 2
+                boundHeight = selHeight + featheringRadius * 2
             End If
             
         Case Else
@@ -903,6 +917,12 @@ Private Sub createSelectionMask()
             'findBoundsManually()
         
     End Select
+    
+    'Do some basic bounds checking on the bound values to make sure they lie inside the image
+    If boundLeft < 0 Then boundLeft = 0
+    If boundTop < 0 Then boundTop = 0
+    If boundLeft + boundWidth > containingPDImage.Width - 1 Then boundWidth = (containingPDImage.Width - 1) - boundLeft
+    If boundTop + boundHeight > containingPDImage.Height - 1 Then boundHeight = (containingPDImage.Height - 1) - boundTop
 
 End Sub
 
