@@ -874,7 +874,7 @@ Private Sub createSelectionMask()
     End Select
     
     'If the selection is locked and feathering has been requested, apply it now
-    If lockedIn And (featheringRadius > 0) Then
+    If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then
     
         'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to PD's internal Gaussian blur function.
         If g_GDIPlusFXAvailable Then
