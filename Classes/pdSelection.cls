@@ -876,14 +876,25 @@ Private Sub createSelectionMask()
     'If the selection is locked and feathering has been requested, apply it now
     If lockedIn And (featheringRadius > 0) Then
     
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        tmpLayer.createFromExistingLayer selMask
+        'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to PD's internal Gaussian blur function.
+        If g_GDIPlusFXAvailable Then
+       
+            Message "Feathering selection..."
+            GDIPlusBlurLayer selMask, featheringRadius
+            Message "Finished."
         
-        Message "Feathering selection..."
-        CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
-        SetProgBarVal 0
-        Message "Feathering complete."
+        Else
+        
+            Dim tmpLayer As pdLayer
+            Set tmpLayer = New pdLayer
+            tmpLayer.createFromExistingLayer selMask
+            
+            Message "Feathering selection..."
+            CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
+            SetProgBarVal 0
+            Message "Finished."
+        
+        End If
     
     End If
     

@@ -217,13 +217,16 @@ Private Type BITMAPINFO
     Colors(0 To 255) As RGBQUAD
 End Type
 
+'Necessary to check for v1.1 of the GDI+ dll
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+
 'Workaround for VB not exposing an IStream interface
-Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ppstm As Any) As Long
-Private Declare Function GlobalAlloc Lib "kernel32" (ByVal uFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, hGlobal As Long) As Long
+'Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ppstm As Any) As Long
+'Private Declare Function GlobalAlloc Lib "kernel32" (ByVal uFlags As Long, ByVal dwBytes As Long) As Long
+'Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+'Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+'Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
+'Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, hGlobal As Long) As Long
     
 'Start-up and shutdown
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
@@ -255,6 +258,7 @@ Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest A
 
 'GDI+ calls related to drawing circles and ellipses
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef mGraphics As Long) As Long
+Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Long) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
@@ -269,6 +273,12 @@ Private Declare Function GdipFillPath Lib "gdiplus" (ByVal mGraphics As Long, By
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal mPath As Long) As Long
 Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal mColor As Long, ByVal mWidth As Single, ByVal mUnit As GpUnit, mPen As Long) As Long
 Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal mPen As Long) As Long
+Private Declare Function GdipCreateEffect Lib "gdiplus" (ByVal dwCid1 As Long, ByVal dwCid2 As Long, ByVal dwCid3 As Long, ByVal dwCid4 As Long, ByRef mEffect As Long) As Long
+Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal mEffect As Long, ByRef eParams As Any, ByVal Size As Long) As Long
+Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal mEffect As Long) As Long
+Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RECTF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
+Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
+Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal mMatrix As Long) As Long
 
 ' Quality mode constants
 Private Enum QualityMode
@@ -302,12 +312,104 @@ Public Enum GpUnit
    UnitMillimeter = 6
 End Enum
 
+Private Type BlurParams
+  bRadius As Single
+  ExpandEdge As Long
+End Type
+
 Private Type tmpLong
     lngResult As Long
 End Type
 
+Private Type RECTF
+    Left        As Single
+    Top         As Single
+    Width       As Single
+    Height      As Single
+End Type
+
 'When GDI+ is initialized, it will assign us a token.  We use this to release GDI+ when the program terminates.
 Public g_GDIPlusToken As Long
+
+'GDI+ v1.1 allows for advanced fx work.  When we initialize GDI+, we check the version as well
+Public g_GDIPlusFXAvailable As Boolean
+
+'Use GDI+ to blur a layer with variable radius
+Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As Long) As Boolean
+
+    'Create a GDI+ graphics object that points to the destination layer's DC
+    Dim iGraphics As Long, tBitmap As Long
+    GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+    
+    'Next, we need a temporary copy of the image (in GDI+ Bitmap format) to use as our source image reference.
+    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
+    
+    If dstLayer.getLayerColorDepth = 32 Then
+        
+        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
+        GdipCreateBitmapFromScan0 dstLayer.getLayerWidth, dstLayer.getLayerHeight, dstLayer.getLayerWidth * 4, PixelFormat32bppARGB, ByVal dstLayer.getLayerDIBits, tBitmap
+    
+    Else
+    
+        'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
+        Dim imgHeader As BITMAPINFO
+        With imgHeader.Header
+            .Size = Len(imgHeader.Header)
+            .Planes = 1
+            .BitCount = dstLayer.getLayerColorDepth
+            .Width = dstLayer.getLayerWidth
+            .Height = -dstLayer.getLayerHeight
+        End With
+        GdipCreateBitmapFromGdiDib imgHeader, ByVal dstLayer.getLayerDIBits, tBitmap
+        
+    End If
+        
+    'Create a GDI+ blur effect object
+    Dim hEffect As Long
+    If GdipCreateEffect(&H633C80A4, &H482B1843, &H28BEF29E, &HD4FDC534, hEffect) = 0 Then
+        
+        'Next, create a compatible set of blur parameters and pass those to the GDI+ blur object
+        Dim tmpParams As BlurParams
+        tmpParams.bRadius = CSng(blurRadius)
+        tmpParams.ExpandEdge = 0
+    
+        If GdipSetEffectParameters(hEffect, tmpParams, Len(tmpParams)) = 0 Then
+    
+            'The DrawImageFX call requires a target rect.  Create one now (in GDI+ format, e.g. RECTF)
+            Dim tmpRect As RECTF
+            tmpRect.Left = 0
+            tmpRect.Top = 0
+            tmpRect.Width = dstLayer.getLayerWidth
+            tmpRect.Height = dstLayer.getLayerHeight
+            
+            'Create a temporary GDI+ transformation matrix as well
+            Dim tmpMatrix As Long
+            GdipCreateMatrix2 1&, 0&, 0&, 1&, 0&, 0&, tmpMatrix
+            
+            'Attempt to render the blur effect
+            Dim GDIPlusDebug As Long
+            GDIPlusDebug = GdipDrawImageFX(iGraphics, tBitmap, tmpRect, tmpMatrix, hEffect, 0&, UnitPixel)
+            If GDIPlusDebug > 0 Then Message "GDI+ failed to render blur effect (Error Code %1).", GDIPlusDebug
+            
+            'Delete our temporary transformation matrix
+            GdipDeleteMatrix tmpMatrix
+            
+        Else
+            Message "GDI+ failed to set effect parameters."
+        End If
+    
+        'Delete our GDI+ blur object
+        GdipDeleteEffect hEffect
+    
+    Else
+        Message "GDI+ failed to create blur effect object"
+    End If
+        
+    'Release both the destination graphics object and the source bitmap object
+    GdipDeleteGraphics iGraphics
+    GdipDisposeImage tBitmap
+    
+End Function
 
 'Use GDI+ to render an ellipse, with optional antialiasing
 Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
@@ -687,8 +789,21 @@ Public Function isGDIPlusAvailable() As Boolean
     
     If (GdiplusStartup(g_GDIPlusToken, gdiCheck) <> [OK]) Then
         isGDIPlusAvailable = False
+        g_GDIPlusFXAvailable = False
     Else
+    
         isGDIPlusAvailable = True
+        
+        'Next, check to see if v1.1 is available.  This allows for advanced fx work.
+        Dim hMod As Long
+        hMod = LoadLibrary("gdiplus.dll")
+        If hMod Then
+            Dim testAddress As Long
+            testAddress = GetProcAddress(hMod, "GdipDrawImageFX")
+            If testAddress Then g_GDIPlusFXAvailable = True Else g_GDIPlusFXAvailable = False
+            FreeLibrary hMod
+        End If
+        
     End If
 
 End Function
