@@ -2015,8 +2015,8 @@ Private Sub MDIForm_Load()
     Set cImgCtl = New clsControlImage
     If g_IsProgramCompiled Then
         With cImgCtl
-            .LoadImageFromStream cmdTools(0).hWnd, LoadResData("T_SELRECT", "CUSTOM"), 16, 16
-            .LoadImageFromStream cmdTools(1).hWnd, LoadResData("T_SELCIRCLE", "CUSTOM"), 16, 16
+            .LoadImageFromStream cmdTools(0).hWnd, LoadResData("T_SELRECT", "CUSTOM"), 22, 22
+            .LoadImageFromStream cmdTools(1).hWnd, LoadResData("T_SELCIRCLE", "CUSTOM"), 22, 22
             
             For i = 0 To cmdTools.Count - 1
                 cmdTools(i).Caption = ""
