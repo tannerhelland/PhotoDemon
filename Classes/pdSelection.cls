@@ -987,29 +987,25 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
         
         Dim circRadius As Long
         circRadius = 5
-        
-        Dim drawRadius As Single
-        drawRadius = 1.5
-        
-        Dim circColor As Long, circAlpha As Long
-        circColor = RGB(255, 255, 255)
-        circAlpha = 200
+                
+        Dim circAlpha As Long
+        circAlpha = 190
         
         'Draw corner circles first
-        GDIPlusDrawAACircleToDC dstForm.hDC, dstLeft, dstTop, circRadius, circColor, circAlpha, drawRadius, True
-        GDIPlusDrawAACircleToDC dstForm.hDC, dstRight, dstTop, circRadius, circColor, circAlpha, drawRadius, True
-        GDIPlusDrawAACircleToDC dstForm.hDC, dstRight, dstBottom, circRadius, circColor, circAlpha, drawRadius, True
-        GDIPlusDrawAACircleToDC dstForm.hDC, dstLeft, dstBottom, circRadius, circColor, circAlpha, drawRadius, True
+        GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstTop, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstTop, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstBottom, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstBottom, circRadius, circAlpha
         
         'Draw mid-line circles next
         Dim midHorizontal As Long, midVertical As Long
         midHorizontal = (dstLeft + dstRight) \ 2
         midVertical = (dstTop + dstBottom) \ 2
         
-        GDIPlusDrawAACircleToDC dstForm.hDC, dstLeft, midVertical, circRadius, circColor, circAlpha, drawRadius, True
-        GDIPlusDrawAACircleToDC dstForm.hDC, midHorizontal, dstTop, circRadius, circColor, circAlpha, drawRadius, True
-        GDIPlusDrawAACircleToDC dstForm.hDC, dstRight, midVertical, circRadius, circColor, circAlpha, drawRadius, True
-        GDIPlusDrawAACircleToDC dstForm.hDC, midHorizontal, dstBottom, circRadius, circColor, circAlpha, drawRadius, True
+        GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, midVertical, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstForm.hDC, midHorizontal, dstTop, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, midVertical, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstForm.hDC, midHorizontal, dstBottom, circRadius, circAlpha
         dstForm.Picture = dstForm.Image
         
     End If

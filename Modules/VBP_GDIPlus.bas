@@ -412,6 +412,14 @@ Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As 
     
 End Function
 
+'Use GDI+ to render a series of white-black-white circles, which are preferable for on-canvas controls with good readability
+Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 255) As Boolean
+
+    GDIPlusDrawAACircleToDC dstDC, cX, cY, cRadius, RGB(0, 0, 0), cTransparency, 3, True
+    GDIPlusDrawAACircleToDC dstDC, cX, cY, cRadius, RGB(255, 255, 255), 220, 1, True
+    
+End Function
+
 'Use GDI+ to render a hollow circle, with optional antialiasing
 Public Function GDIPlusDrawAACircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
