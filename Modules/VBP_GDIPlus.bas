@@ -220,7 +220,7 @@ End Type
 'Necessary to check for v1.1 of the GDI+ dll
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 
-'Workaround for VB not exposing an IStream interface
+'Workaround for VB not exposing an IStream interface natively
 'Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ppstm As Any) As Long
 'Private Declare Function GlobalAlloc Lib "kernel32" (ByVal uFlags As Long, ByVal dwBytes As Long) As Long
 'Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
@@ -263,6 +263,7 @@ Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Lo
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
+Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
 Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal mPath As Long) As Long
@@ -411,14 +412,35 @@ Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As 
     
 End Function
 
-'Use GDI+ to render an ellipse, with optional antialiasing
+'Use GDI+ to render a hollow circle, with optional antialiasing
+Public Function GDIPlusDrawAACircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDC, iGraphics
+    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    
+    'Create a pen, which will be used to stroke the circle
+    Dim iPen As Long
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), drawRadius, UnitPixel, iPen
+    
+    'Render the circle
+    GdipDrawEllipse iGraphics, iPen, cX - cRadius, cY - cRadius, cRadius * 2, cRadius * 2
+        
+    'Release all created objects
+    GdipDeletePen iPen
+    GdipDeleteGraphics iGraphics
+
+End Function
+
+'Use GDI+ to render a filled ellipse, with optional antialiasing
 Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
     If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
-    
+        
     'Create a solid fill brush
     Dim iBrush As Long
     GdipCreateSolidFill fillQuadWithVBRGB(eColor, 255), iBrush
